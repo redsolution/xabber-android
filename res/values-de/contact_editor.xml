@@ -3,7 +3,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="CANNOT_ADD_TO_GROUP">Fehler: Kann nicht zur Gruppe hinzugefügt werden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
-    <string name="CANNOT_CREATE_CONTACT">Fehler: Kann Kontakt nicht hinfügen</string>
+    <string name="CANNOT_CREATE_CONTACT">Fehler: Kann Kontakt nicht hinzufügen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="CANNOT_REMOVE_CONTACT">Fehler: Kann Kontakt nicht löschen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
@@ -21,7 +21,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
     <string name="contact_name">Alias (optional)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add_confirm.png -->
-    <string name="contact_subscribe_confirm">Kontakt %1$s zu Account %2$s hinfügen</string>
+    <string name="contact_subscribe_confirm">Kontakt %1$s zu Account %2$s hinzufügen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
     <string name="contact_user">Alias</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
@@ -37,7 +37,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/group_add.png -->
     <string name="group_name">Gruppename</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
-    <string name="choose_account">Bitte Konto wählen</string>
+    <string name="choose_account">Bitte Konto auswählen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="EMPTY_ACCOUNT">Bitte Konto auswählen</string>
 </resources>

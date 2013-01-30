@@ -9,7 +9,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_kick">%1$s wurde rausgeworfen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
-    <string name="account_is_offline">Nachrichten werden versandt sobald Ihr Benutzerkonto Online geht</string>
+    <string name="account_is_offline">Nachrichten werden versandt sobald dein Benutzerkonto online geht</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_delay">Nachricht um %s gesendet</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
@@ -23,7 +23,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="clear_message">Text löschen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
-    <string name="contact_is_offline">Der Empfänger ist offline. Die Nachricht wird gesendet, sobald er wieder online kommt.</string>
+    <string name="contact_is_offline">Der Empfänger ist offline. Die Nachricht wird gesendet, sobald er wieder online ist.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="ENTRY_IS_NOT_AVAILABLE">Kontakt nicht verfügbar</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -37,7 +37,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
     <string name="message_repeat">Erneut senden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
-    <string name="save_history">Chatverlauf speichern \nDen Chatverlauf lokal speichern</string>
+    <string name="save_history">Gesprächsverlauf speichern\nDen Gesprächsverlauf lokal speichern</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="show_history">Gesprächsverlauf anzeigen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -73,13 +73,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_failed">Überprüfung fehlgeschlagen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="action_otr_smp_not_approved">Ihre Antwort auf die geheime Frage wurde verifiziert. Sie sollten Ihren Gesprächspartner ebenfalls fragen, oder ein geteiltes Geheimnis prüfen.</string>
+    <string name="action_otr_smp_not_approved">Ihre Antwort auf die geheime Frage wurde verifiziert. Du solltest deinen Gesprächspartner ebenfalls fragen oder ein geteiltes Geheimnis prüfen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_unverified">Verifikation fehlgeschlagen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_verified">Verifikation erfolgreich</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="action_otr_unreadable">Die erhaltene verschlüsselte Nachricht konnte nicht gelesen werden</string>
+    <string name="action_otr_unreadable">Die erhaltene verschlüsselte Nachricht konnte nicht gelesen werden.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_verified">Verschlüsselung aktiviert</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -117,7 +117,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
     <string name="muc_invite">Zu Gespräch einladen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
-    <string name="muc_is_unavailable">Deine Nachricht kann nicht zugestellt werden. Bitte trete dem Gespräch bei</string>
+    <string name="muc_is_unavailable">Deine Nachricht kann nicht zugestellt werden. Bitte tritt dem Gespräch bei.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="otr_encryption">OTR Verschlüsselung</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
@@ -125,13 +125,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Verschlüsselung aktualisieren</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Es wurde eine private Unterhaltung durch Off-the-Record angefordert, Sie haben jedoch nicht das unterstützende Plugin. Nutzen Sie Pidgin oder Adium für PC/Mac und Xabber oder GibberBot für Adnroid. Besuchen Sie http://otr.cypherpunks.ca/ für weitere Informationen.</string>
+    <string name="otr_request">Es wurde eine private Unterhaltung durch Off-the-Record angefordert, du hast das benötigte Plugin jedoch nicht installiert. Bitte benutze Pidgin oder Adium für PC/Mac und Xabber oder GibberBot für Android. Weitere Informationen findest du unter http://otr.cypherpunks.ca/</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Verschlüsselung starten</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="otr_unencrypted_message">Diese Nachricht wurde nicht verschlüsselt</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_unreadable_message">Die verschlüsselte Nachricht, die Sie gesendet haben, ist nicht lesbar</string>
+    <string name="otr_unreadable_message">Die verschlüsselte Nachricht, die du gesendet hast, ist nicht lesbar.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
     <string name="otr_verification">OTR Verifikation</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
@@ -139,5 +139,5 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_verify_question">Mittels Frage verifizieren</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
-    <string name="otr_verify_secret">Mittels geteilten Geheimnisses verifizieren</string>
+    <string name="otr_verify_secret">Mittels geteiltem Geheimnis verifizieren</string>
 </resources>
