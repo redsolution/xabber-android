@@ -5,7 +5,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="away">Absent</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
-    <string name="chat">Disponible pour discuter!</string>
+    <string name="chat">Disponible pour bavarder !</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
     <string name="clear_statuses">Supprimer les messages de statut sauvegardés</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
