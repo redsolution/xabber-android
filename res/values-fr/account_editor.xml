@@ -21,7 +21,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type">Type de compte</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_facebook">nom d\'utilisateur facebook (pas le mail)</string>
+    <string name="account_type_hints_facebook">nom d\'utilisateur Facebook (pas le mail)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_gtalk">nom d\'utilisateur pour gmail.com ou domaine Google Apps</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
