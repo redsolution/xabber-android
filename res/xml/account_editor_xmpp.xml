@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="@string/account_enabled"
+        android:summary="@string/account_enabled_summary"
+        android:key="@string/account_enabled_key"
+        />
+    <CheckBoxPreference
+        android:title="@string/account_syncable"
+        android:summary="@string/account_syncable_summary"
+        android:key="@string/account_syncable_key"
+        />
+    <EditTextPreference
+        android:key="@string/account_username_key"
+        android:title="@string/account_user_name"
+        android:dialogTitle="@string/account_user_name"
+        android:singleLine="true"
+        />
+    <CheckBoxPreference
+        android:title="@string/account_store_password"
+        android:summary="@string/account_store_password_summary"
+        android:key="@string/account_store_password_key"
+        />
+    <EditTextPreference
+        android:key="@string/account_password_key"
+        android:title="@string/account_password"
+        android:dialogTitle="@string/account_password"
+        android:password="true"
+        android:singleLine="true"
+        />
+    <EditTextPreference
+        android:key="@string/account_server_key"
+        android:title="@string/account_server_name"
+        android:dialogTitle="@string/account_server_name"
+        android:singleLine="true"
+        />
+    <CheckBoxPreference
+        android:title="@string/account_custom"
+        android:summary="@string/account_custom_summary"
+        android:key="@string/account_custom_key"
+        />
+    <EditTextPreference
+        android:key="@string/account_host_key"
+        android:title="@string/account_host"
+        android:dialogTitle="@string/account_host"
+        android:singleLine="true"
+        android:dependency="@string/account_custom_key"
+        />
+    <EditTextPreference
+        android:key="@string/account_port_key"
+        android:title="@string/account_port"
+        android:dialogTitle="@string/account_host"
+        android:singleLine="true"
+        android:dependency="@string/account_custom_key"
+        />
+    <EditTextPreference
+        android:key="@string/account_resource_key"
+        android:title="@string/account_resource"
+        android:dialogTitle="@string/account_resource"
+        android:singleLine="true"
+        />
+    <com.xabber.android.ui.widget.PriorityPreference
+        android:key="@string/account_priority_key"
+        android:title="@string/account_priority"
+        android:dialogTitle="@string/account_priority"
+        android:singleLine="true"
+        />
+    <CheckBoxPreference
+        android:title="@string/account_sasl"
+        android:summary="@string/account_sasl_summary"
+        android:key="@string/account_sasl_key"
+        />
+    <ListPreference
+        android:title="@string/account_tls_mode"
+        android:key="@string/account_tls_mode_key"
+        android:entries="@array/account_tls_entries"
+        android:entryValues="@array/account_tls_entryvalues"
+        />
+    <CheckBoxPreference
+        android:title="@string/account_compression"
+        android:summary="@string/account_compression_summary"
+        android:key="@string/account_compression_key"
+        />
+    <ListPreference
+        android:title="@string/account_archive_mode"
+        android:key="@string/account_archive_mode_key"
+        android:entries="@array/account_archive_mode_entries"
+        android:entryValues="@array/account_archive_mode_entryvalues"
+        />
+</PreferenceScreen>

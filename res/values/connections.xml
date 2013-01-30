@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<resources>
+    <string name="account_protocol_xmpp">xmpp</string>
+    <string name="account_protocol_gtalk">gtalk</string>
+    <string name="account_protocol_wlm">wlm</string>
+
+    <!--
+    <array name="account_type_name">
+        <item>protocol</item>
+        <item>name</item>
+        <item>hint</item>
+        <item>help_text</item>
+        <item>icon</item>
+        <item>allow custom server</item>
+        <item>host</item>
+        <item>port</item>
+        <item>required tls</item>
+        <item>server 1</item>
+        ...
+        <item>server N</item>
+    </array>
+    -->
+
+    <array name="account_type_xmpp">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_xmpp</item>
+        <item>@string/account_type_hints_xmpp</item>
+        <item>@string/account_type_helps_xmpp</item>
+        <item>@drawable/ic_type_xmpp</item>
+        <item>True</item>
+        <item></item>
+        <item>5222</item>
+        <item>False</item>
+        <item></item>
+    </array>
+
+    <array name="account_type_gtalk">
+        <item>@string/account_protocol_gtalk</item>
+        <item>@string/account_type_names_gtalk</item>
+        <item>@string/account_type_hints_gtalk</item>
+        <item>@string/account_type_helps_gtalk</item>
+        <item>@drawable/ic_type_gtalk</item>
+        <item>True</item>
+        <item>talk.google.com</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>gmail.com</item>
+        <item>googlemail.com</item>
+    </array>
+
+    <array name="account_type_wlm">
+        <item>@string/account_protocol_wlm</item>
+        <item>@string/account_type_names_wlm</item>
+        <item>@string/account_type_hints_wlm</item>
+        <item>@string/account_type_helps_wlm</item>
+        <item>@drawable/ic_type_wlm</item>
+        <item>True</item>
+        <item>xmpp.messenger.live.com</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>messenger.live.com</item>
+    </array>
+
+    <array name="account_type_facebook">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_facebook</item>
+        <item>@string/account_type_hints_facebook</item>
+        <item>@string/account_type_helps_facebook</item>
+        <item>@drawable/ic_type_facebook</item>
+        <item>False</item>
+        <item>chat.facebook.com</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>chat.facebook.com</item>
+    </array>
+
+    <array name="account_type_vkontakte">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_vkontakte</item>
+        <item>@string/account_type_hints_vkontakte</item>
+        <item>@string/account_type_helps_vkontakte</item>
+        <item>@drawable/ic_type_vkontakte</item>
+        <item>False</item>
+        <item>vkmessenger.com</item>
+        <item>5222</item>
+        <item>False</item>
+        <item>vk.com</item>
+    </array>
+
+    <array name="account_type_qip">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_qip</item>
+        <item>@string/account_type_hints_qip</item>
+        <item>@string/account_type_helps_qip</item>
+        <item>@drawable/ic_type_qip</item>
+        <item>True</item>
+        <item>webim.qip.ru</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>qip.ru</item>
+    </array>
+
+    <array name="account_type_ya">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_ya</item>
+        <item>@string/account_type_hints_ya</item>
+        <item>@string/account_type_helps_ya</item>
+        <item>@drawable/ic_type_yandex</item>
+        <item>True</item>
+        <item>xmpp.yandex.ru</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>yandex.ru</item>
+        <item>ya.ru</item>
+    </array>
+
+    <array name="account_type_livejournal">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_livejournal</item>
+        <item>@string/account_type_hints_livejournal</item>
+        <item>@string/account_type_helps_livejournal</item>
+        <item>@drawable/ic_type_livejournal</item>
+        <item>False</item>
+        <item>livejournal.com</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>livejournal.com</item>
+    </array>
+
+    <array name="account_type_odnoklassniki">
+        <item>@string/account_protocol_xmpp</item>
+        <item>@string/account_type_names_odnoklassniki</item>
+        <item>@string/account_type_hints_odnoklassniki</item>
+        <item>@string/account_type_helps_odnoklassniki</item>
+        <item>@drawable/ic_type_odnoklassniki</item>
+        <item>False</item>
+        <item>xmpp.odnoklassniki.ru</item>
+        <item>5222</item>
+        <item>True</item>
+        <item>odnoklassniki.ru</item>
+    </array>    
+
+    <array name="account_types">
+        <item>@array/account_type_xmpp</item>
+        <item>@array/account_type_gtalk</item>
+        <item>@array/account_type_wlm</item>
+        <item>@array/account_type_facebook</item>
+        <item>@array/account_type_vkontakte</item>
+        <item>@array/account_type_qip</item>
+        <item>@array/account_type_ya</item>
+        <item>@array/account_type_livejournal</item>
+        <item>@array/account_type_odnoklassniki</item>
+    </array>
+
+</resources>

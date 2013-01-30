@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <RelativeLayout
+        android:id="@android:id/title"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/title_height"
+        android:background="@drawable/title_main_background_dark"
+        >
+        <ImageButton
+            android:id="@+id/back_button"
+	        android:background="@drawable/title_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            />
+        <LinearLayout
+	        android:orientation="horizontal"
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+            android:layout_marginRight="@dimen/contact_list_status_mode_width"
+            android:layout_toRightOf="@id/back_button"
+            android:layout_alignParentRight="true"
+	        >
+	        <HorizontalScrollView
+	            android:id="@+id/account_bar"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginRight="72dip"
+	            >
+	            <LinearLayout
+	                android:id="@+id/account_list"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:orientation="horizontal"
+	                >
+<!--
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/account_bg"
+    android:layout_width="42dip"
+    android:layout_height="44dip"
+    android:background="@drawable/account_bg">
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_marginTop="4dip"
+        android:layout_marginLeft="4dip"
+        android:src="@drawable/avatar_account_1"
+        />
+    <ImageView
+        android:id="@+id/status_mode"
+        android:layout_width="42dip"
+        android:layout_height="44dip"
+        android:src="@drawable/ic_status_account"
+        android:background="@drawable/ic_status_connection_account"
+    />
+</RelativeLayout>
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/account_bg"
+    android:layout_width="42dip"
+    android:layout_height="44dip"
+    android:background="@drawable/account_bg">
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_marginTop="4dip"
+        android:layout_marginLeft="4dip"
+        android:src="@drawable/avatar_account_1"
+        />
+    <ImageView
+        android:id="@+id/status_mode"
+        android:layout_width="42dip"
+        android:layout_height="44dip"
+        android:src="@drawable/ic_status_account"
+        android:background="@drawable/ic_status_connection_account"
+    />
+</RelativeLayout>
+ -->
+                </LinearLayout>
+	        </HorizontalScrollView>
+            <TextView
+                android:id="@+id/common_status_text"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="-72dip"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="online"
+                android:padding="2dip"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:layout_gravity="left"
+                />
+        </LinearLayout>
+        <ImageButton
+            android:id="@+id/common_status_mode"
+            android:src="@drawable/ic_status"
+            android:paddingLeft="@dimen/active_chat_padding_right"
+            android:paddingRight="@dimen/active_chat_padding_right"
+            android:background="@drawable/btn_status_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            />
+    </RelativeLayout>
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textFilterEnabled="true"
+		/>
+    <RelativeLayout
+        android:id="@+id/info"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        >
+        <ImageView
+            android:id="@+id/connected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_connect"
+            />
+        <ImageView
+            android:id="@+id/disconnected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_disconnect"
+            />
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorSecondary"
+            android:layout_below="@id/connected"
+            android:layout_centerHorizontal="true"
+            android:text="@string/application_state_starting"
+            />
+        <Button 
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dip"
+            android:layout_below="@id/text" 
+            android:visibility="gone"
+            android:text="@string/application_action_waiting"
+            />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<resources>
+    <array name="default_avatars">
+        <item>@drawable/avatar_1_1</item>
+        <item>@drawable/avatar_1_2</item>
+        <item>@drawable/avatar_1_3</item>
+        <item>@drawable/avatar_1_4</item>
+        <item>@drawable/avatar_1_5</item>
+        <item>@drawable/avatar_1_6</item>
+        <item>@drawable/avatar_1_7</item>
+        <item>@drawable/avatar_1_8</item>
+        <item>@drawable/avatar_2_1</item>
+        <item>@drawable/avatar_2_2</item>
+        <item>@drawable/avatar_2_3</item>
+        <item>@drawable/avatar_2_4</item>
+        <item>@drawable/avatar_2_5</item>
+        <item>@drawable/avatar_2_6</item>
+        <item>@drawable/avatar_2_7</item>
+        <item>@drawable/avatar_3_8</item>
+        <item>@drawable/avatar_3_1</item>
+        <item>@drawable/avatar_3_2</item>
+        <item>@drawable/avatar_3_3</item>
+        <item>@drawable/avatar_3_4</item>
+        <item>@drawable/avatar_3_5</item>
+        <item>@drawable/avatar_3_6</item>
+        <item>@drawable/avatar_3_7</item>
+        <item>@drawable/avatar_3_8</item>
+        <item>@drawable/avatar_4_1</item>
+        <item>@drawable/avatar_4_2</item>
+        <item>@drawable/avatar_4_3</item>
+        <item>@drawable/avatar_4_4</item>
+        <item>@drawable/avatar_4_5</item>
+        <item>@drawable/avatar_4_6</item>
+        <item>@drawable/avatar_4_7</item>
+        <item>@drawable/avatar_4_8</item>
+        <item>@drawable/avatar_5_1</item>
+        <item>@drawable/avatar_5_2</item>
+        <item>@drawable/avatar_5_3</item>
+        <item>@drawable/avatar_5_4</item>
+        <item>@drawable/avatar_5_5</item>
+        <item>@drawable/avatar_5_6</item>
+        <item>@drawable/avatar_5_7</item>
+        <item>@drawable/avatar_5_8</item>
+        <item>@drawable/avatar_6_1</item>
+        <item>@drawable/avatar_6_2</item>
+        <item>@drawable/avatar_6_3</item>
+        <item>@drawable/avatar_6_4</item>
+        <item>@drawable/avatar_6_5</item>
+        <item>@drawable/avatar_6_6</item>
+        <item>@drawable/avatar_6_7</item>
+        <item>@drawable/avatar_6_8</item>
+    </array>
+    <array name="account_avatars">
+        <item>@drawable/avatar_account_1</item>
+        <item>@drawable/avatar_account_2</item>
+        <item>@drawable/avatar_account_3</item>
+        <item>@drawable/avatar_account_4</item>
+    </array>
+    <array name="muc_avatars">
+        <item>@drawable/avatar_muc_1</item>
+        <item>@drawable/avatar_muc_2</item>
+        <item>@drawable/avatar_muc_3</item>
+        <item>@drawable/avatar_muc_4</item>
+        <item>@drawable/avatar_muc_5</item>
+        <item>@drawable/avatar_muc_6</item>
+        <item>@drawable/avatar_muc_7</item>
+        <item>@drawable/avatar_muc_8</item>
+	</array>
+</resources>

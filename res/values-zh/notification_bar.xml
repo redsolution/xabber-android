@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_authorization.png -->
+    <string name="AUTHENTICATION_FAILED">认证错误</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_status">从%3$d %4$s %1$d %2$s</string>
+</resources>

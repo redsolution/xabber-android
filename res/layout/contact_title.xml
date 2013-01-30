@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/title_height"
+    android:background="@drawable/title_account_background_light"
+    >
+    <LinearLayout
+        android:id="@+id/title_color"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center_vertical"
+        >
+        <ImageButton
+            android:id="@+id/back_button"
+            android:src="@drawable/btn_title_back"
+            android:background="@drawable/title_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chat_border"
+            android:orientation="vertical"
+            >
+            <include layout="@layout/contact_title_avatar" />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/security"
+            android:src="@drawable/ic_security"
+            android:paddingLeft="6dip"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:visibility="gone"
+            />
+        <LinearLayout
+            android:id="@+id/name_holder"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="6dip"
+            >
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="name"
+                />
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="status"
+                />
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/status_mode"
+            android:src="@drawable/ic_status"
+            android:paddingLeft="@dimen/active_chat_padding_right"
+            android:paddingRight="@dimen/active_chat_padding_right"
+            android:background="@drawable/btn_status_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            />
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/shadow"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/shadow"
+        />
+</RelativeLayout>

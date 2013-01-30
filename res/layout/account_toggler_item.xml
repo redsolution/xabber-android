@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/account_background"
+    >
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_marginTop="4dip"
+        android:layout_marginLeft="4dip"
+        android:src="@drawable/avatar_1_1"
+        />
+    <ImageView
+        android:id="@+id/status_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/account_border"
+        android:src="@drawable/ic_status_account"
+        android:clickable="true"
+        />
+    <ImageView
+        android:id="@+id/disabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/account_border_disabled"
+        />
+</RelativeLayout>

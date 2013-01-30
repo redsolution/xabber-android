@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_horizontal"
+    android:padding="4dip"
+    >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dip"
+            android:src="@drawable/ic_launcher"
+            />
+        <TextView
+            android:text="@string/application_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:paddingTop="8dip"
+            android:paddingBottom="8dip"
+            android:textColor="?android:attr/textColorPrimary"
+            />
+        <TextView
+            android:id="@+id/about_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dip"
+            android:textColor="?android:attr/textColorPrimary"
+            />
+        <TextView
+            android:text="@string/about_site"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dip"
+            android:textColor="?android:attr/textColorPrimary"
+            android:autoLink="all"
+            android:gravity="center"
+            android:textColorLink="#0099FF"
+            />
+         <TextView
+            android:text="@string/about_feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dip"
+            android:textColor="?android:attr/textColorPrimary"
+            android:autoLink="all"
+            android:gravity="center"
+            android:textColorLink="#0099FF"
+            />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/about_license"
+        android:text="@string/about_license"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dip"
+        android:textColor="?android:attr/textColorPrimary"
+        android:gravity="center"
+        android:textColorLink="#0099FF"
+        />
+    <TextView
+        android:text="@string/about_copyright"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dip"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textColorLink="#0099FF" />
+</LinearLayout>

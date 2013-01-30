@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:title="@string/phrase_text"
+        android:key="@string/phrase_text_key"
+        />
+    <EditTextPreference
+        android:title="@string/phrase_user"
+        android:key="@string/phrase_user_key"
+        />
+    <EditTextPreference
+        android:title="@string/phrase_group"
+        android:key="@string/phrase_group_key"
+        />
+    <CheckBoxPreference
+        android:title="@string/phrase_regexp"
+        android:key="@string/phrase_regexp_key"
+        />
+    <com.xabber.android.ui.widget.RingtonePreference
+        android:title="@string/phrase_sound"
+        android:key="@string/phrase_sound_key"
+        android:ringtoneType="notification"
+        android:showSilent="true" 
+        android:showDefault="true"
+        />
+</PreferenceScreen>

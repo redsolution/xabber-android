@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<resources>
+
+    <style name="NotificationTitle">
+      <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+      <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="NotificationText">
+      <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+    </style>
+
+    <style name="NotificationText2" parent="@style/NotificationText">
+      <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="ChatHeader" parent="@android:style/TextAppearance">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="ChatHeader.Time">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="ChatHeader.Name">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ChatHeader.Delay">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="ChatText" parent="@android:style/TextAppearance">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="ChatText.Small">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="ChatText.Normal">
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="ChatText.Large">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ChatText.XLarge">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="ChatInfo">
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="ChatInfo.Warning">
+        <item name="android:textColor">#D00000</item>
+    </style>
+
+    <style name="ChatRead">
+        <!-- <item name="android:textColor">#222222</item> -->
+    </style>
+
+    <style name="ChatInfo.Info">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="ChatList" parent="@android:style/TextAppearance" />
+    <style name="ChatList.Normal">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+    <style name="ChatList.Notification">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="OccupantList" parent="@android:style/TextAppearance" />
+    <style name="OccupantList.Moderator">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="OccupantList.Participant">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+    <style name="OccupantList.Visitor">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <dimen name="status_icon_width">24dip</dimen>
+    <dimen name="avatar_size">48dip</dimen>
+
+    <dimen name="title_height">44dip</dimen>
+
+    <dimen name="contact_list_item_padding_top">2dip</dimen>
+    <dimen name="contact_list_item_padding_bottom">2dip</dimen>
+    <dimen name="contact_list_item_height">52dip</dimen>
+    <!-- = avatar_size + contact_list_item_padding_top + contact_list_item_padding_bottom -->
+
+    <dimen name="contact_list_status_mode_width">44dip</dimen>
+    <!-- = status_icon_width + active_chat_padding_right * 2 -->
+
+    <dimen name="active_chat_padding_left">10dip</dimen>
+    <dimen name="active_chat_padding_top">0dip</dimen>
+    <dimen name="active_chat_padding_right">10dip</dimen>
+    <dimen name="active_chat_padding_bottom">0dip</dimen>
+
+    <dimen name="client_software_margin_left">34dip</dimen>
+    <!-- = active_chat_padding_right + status_icon_width -->
+
+    <dimen name="contact_name_height_hide_status">48dip</dimen>
+    <!-- = avatar_size - active_chat_padding_top - active_chat_padding_bottom -->
+    <dimen name="contact_name_height_show_status">24dip</dimen>
+    <!-- = contact_name_height_hide_status / 2 -->
+
+    <dimen name="expander_height">38dip</dimen>
+    <dimen name="expander_arrow_margin_left">6dip</dimen>
+    <dimen name="expander_arrow_margin_right">4dip</dimen>
+    <dimen name="expander_text_margin_right">14dip</dimen>
+    <!-- = ( status_icon_width - offline_mode_width ) / 2 + active_chat_padding_right -->
+
+    <!-- The width of the big icons in notifications. -->
+    <dimen name="notification_large_icon_width">64dp</dimen>
+    <!-- The width of the big icons in notifications. -->
+    <dimen name="notification_large_icon_height">64dp</dimen>
+</resources>

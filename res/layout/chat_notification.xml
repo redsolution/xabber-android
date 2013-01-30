@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="3dp">
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:layout_marginRight="6dip"
+        android:layout_centerVertical="true"
+        android:src="@drawable/avatar_1_1"
+        />
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:gravity="bottom"
+        android:layout_toRightOf="@id/icon"
+        android:text="name"
+        style="@style/NotificationTitle"
+        />
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:layout_toRightOf="@id/icon"
+        android:layout_below="@id/title"
+        android:layout_marginRight="10dip"
+        android:text="22:11:00"
+        style="@style/NotificationText"
+        />
+    <TextView  
+        android:id="@+id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:layout_below="@id/title"
+        android:layout_toRightOf="@id/time"
+        android:ellipsize="marquee"
+        android:text="text text text text text text text text text text text"
+        style="@style/NotificationText"
+        />
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:layout_below="@id/time"
+        android:layout_toRightOf="@id/icon"
+        android:text="1 message from 1 contact"
+        style="@style/NotificationText"
+        />
+</RelativeLayout>

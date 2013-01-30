@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xabber.androiddev"
+    android:versionCode="78"
+    android:versionName="@string/application_version"
+    android:installLocation="auto"
+    >
+    <application
+        android:debuggable="true"
+        android:label="@string/application_name"
+        android:icon="@drawable/ic_launcher"
+        android:name="com.xabber.android.data.Application"
+        >
+        <activity
+            android:label="@string/application_name"
+            android:name="com.xabber.android.ui.ContactList"
+            android:theme="@style/Theme.NoTitleBar"
+            android:launchMode="singleTop"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="xmpp" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="imto" />
+                <data android:host="jabber" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="imto" />
+                <data android:host="gtalk" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.xabber.android.ui.LoadActivity"
+            android:theme="@style/Theme.NoTitleBar"
+            />
+        <activity
+            android:label="@string/about_viewer"
+            android:name="com.xabber.android.ui.AboutViewer"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/preference_accounts"
+            android:name="com.xabber.android.ui.AccountList"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/account_editor"
+            android:name="com.xabber.android.ui.AccountEditor"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/chat_list"
+            android:name="com.xabber.android.ui.ChatList"
+            android:theme="@android:style/Theme.Dialog"
+            />
+        <activity
+            android:label="@string/occupant_list"
+            android:name="com.xabber.android.ui.OccupantList"
+            android:theme="@android:style/Theme.Dialog"
+            />
+        <activity
+            android:label="@string/chat_viewer"
+            android:name="com.xabber.android.ui.ChatViewer"
+            android:theme="@style/Theme.Light.NoTitleBar"
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTop"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:label="@string/contact_editor"
+            android:name="com.xabber.android.ui.ContactEditor"
+            android:theme="@style/Theme.NoTitleBar"
+            />
+        <activity
+            android:label="@string/contact_add"
+            android:name="com.xabber.android.ui.ContactAdd"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/account_add"
+            android:name="com.xabber.android.ui.AccountAdd"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/account_oauth"
+            android:name="com.xabber.android.ui.OAuthActivity"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/muc_add"
+            android:name="com.xabber.android.ui.MUCEditor"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/status_editor"
+            android:name="com.xabber.android.ui.StatusEditor"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/preference_editor"
+            android:name="com.xabber.android.ui.PreferenceEditor"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/chat_settings"
+            android:name="com.xabber.android.ui.ChatEditor"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:label="@string/contact_viewer"
+            android:name="com.xabber.android.ui.ContactViewer"
+            android:theme="@style/Theme"
+            android:icon="@drawable/ic_information"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="@string/contact_viewer_mime_type" />
+                <data android:scheme="content" />
+                <data android:host="com.android.contacts" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.xabber.android.ui.FingerprintViewer"
+            android:label="@string/otr_verify_fingerprint"
+            android:theme="@style/Theme.NoTitleBar"
+            />
+        <activity
+            android:name="com.xabber.android.ui.QuestionViewer"
+            android:label="@string/otr_verify_fingerprint"
+            android:theme="@style/Theme.NoTitleBar"
+            />
+        <activity
+            android:name="com.xabber.android.ui.OpenSourceViewer"
+            android:theme="@style/Theme.NoTitleBar"
+            />
+        <activity
+            android:name="com.xabber.android.ui.CertificateConfirmation"
+            />
+        <activity
+            android:name="com.xabber.android.ui.PasswordRequest"
+            />
+        <activity
+            android:name="com.xabber.android.ui.ArchiveRequest"
+            />
+        <activity
+            android:name="com.xabber.android.ui.PhraseList"
+            android:theme="@style/Theme"
+            android:label="@string/events_phrases_title"
+            />
+        <activity
+            android:name="com.xabber.android.ui.PhraseEditor"
+            android:theme="@style/Theme"
+            />
+        <activity
+            android:name="com.xabber.android.ui.ReconnectionActivity"
+            />
+        <activity
+            android:label="ClearNotifications"
+            android:name="com.xabber.android.ui.ClearNotifications"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:stateNotNeeded="true"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.NoDisplay"
+            />
+        <service android:name="com.xabber.android.service.XabberService" />
+        <service
+            android:name="com.xabber.android.service.SyncAdapterService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter"
+                />
+            <meta-data
+                android:name="android.provider.CONTACTS_STRUCTURE"
+                android:resource="@xml/contacts_structure"
+                />
+        </service>
+        <service
+            android:name="com.xabber.android.service.AccountAuthenticatorService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator" />
+        </service>
+        <receiver
+            android:name="com.xabber.android.receiver.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.xabber.android.receiver.GoAwayReceiver" />
+        <receiver android:name="com.xabber.android.receiver.GoXaReceiver" />
+        <receiver android:name="com.xabber.android.receiver.ComposingPausedReceiver" />
+    </application>
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="9" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+</manifest> 

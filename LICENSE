@@ -1,0 +1,62 @@
+Copyright (c) 2013, Redsolution LTD.
+All rights reserved.
+
+Project is distributed under "GNU General Public License, Version 3" (see assets/LICENSE-GPLv3.txt).
+
+Note about restrictions:
+
+Following files are distributed under "Creative Commons Attribution Non-Commercial No Derivatives":
+res/drawable*/ic_connect.png
+res/drawable*/ic_disconnect.png
+res/drawable*/ic_information.png
+res/drawable*/ic_launcher.png
+res/drawable*/ic_stat_*.png
+res/drawable*/title_logo.9.png
+
+Following files are part of The Android Open Source Project licensed under the Apache License, Version 2.0 (the "License") (see assets/LICENSE-Apache2.txt):
+res/drawable/notify_panel_notification_icon_bg_tile.xml
+res/layout/info_preference.xml
+res/layout/preference.xml
+res/layout/progress_preference.xml
+res/drawable*/emo_im_*.png
+res/drawable*/ic_menu_*.png
+
+The rest of graphic in res/drawable* as well as translations in res/values* are distributed under "Creative Commons Attribution Non-Commercial Share Alike".
+
+Also following components are in use (see the source code or official sites for license details):
+
+ZXing
+src/com/google/zxing/*
+Apache License, Version 2.0 (the "License").
+
+JZLib
+src/com/jcraft/jzlib/*
+BSD license.
+
+Novel sasl client
+src/com/novell/sasl/*
+The OpenLDAP Public License.
+
+Measite Smack SASL
+src/de/measite/smack/*
+Apache License, Version 2.0 (the "License").
+
+Apache Harmony
+src/org/apache/harmony/*
+Apache License, Version 2.0 (the "License").
+
+Apache Qpid
+src/org/apache/qpid/*
+Apache License, Version 2.0 (the "License").
+
+Smack
+src/org/jivesoftware/*
+Apache License, Version 2.0 (the "License").
+
+DNS Java
+src/org/xbill/*
+BSD license.
+
+OTR4J
+libs/otr4j.jar
+GNU Lesser General Public License, Version 3.

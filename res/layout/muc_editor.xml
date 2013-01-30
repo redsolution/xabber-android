@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+
+        <TextView
+            android:text="@string/contact_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <com.xabber.android.ui.widget.NoDefaultSpinner
+            android:id="@+id/contact_account"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/choose_account"
+            />
+    
+        <TextView
+            android:text="@string/muc_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <EditText
+            android:id="@+id/muc_server"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/muc_server_hint"
+            android:singleLine="true"
+            android:inputType="textEmailAddress"
+            />
+    
+        <TextView
+            android:text="@string/muc_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <EditText
+            android:id="@+id/muc_room"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            />
+
+        <TextView
+            android:text="@string/muc_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <EditText
+            android:id="@+id/muc_nick"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:hint="@string/muc_nick_hint"
+            />
+
+        <TextView
+            android:text="@string/muc_password"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+        <EditText
+            android:id="@+id/muc_password"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:password="true"
+            android:singleLine="true"
+            android:hint="@string/muc_password_hint"
+            />
+        
+        <CheckBox
+            android:id="@+id/muc_join"
+            android:checked="true"
+            android:text="@string/muc_join"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+        
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_horizontal|bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            >
+
+            <Button
+                android:text="@string/muc_save"
+                android:id="@+id/ok"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

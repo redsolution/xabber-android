@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_status_chat" android:minLevel="0" android:maxLevel="0" />
+    <item android:drawable="@drawable/ic_status_available" android:minLevel="1" android:maxLevel="1" />
+    <item android:drawable="@drawable/ic_status_away" android:minLevel="2" android:maxLevel="2" />
+    <item android:drawable="@drawable/ic_status_xa" android:minLevel="3" android:maxLevel="3" />
+    <item android:drawable="@drawable/ic_status_dnd" android:minLevel="4" android:maxLevel="4" />
+    <item android:drawable="@drawable/ic_status_invisible" android:minLevel="5" android:maxLevel="5" />
+    <item android:drawable="@drawable/ic_status_unavailable" android:minLevel="6" android:maxLevel="6" />
+    <item android:drawable="@drawable/ic_status_connection" android:minLevel="7" android:maxLevel="7" />
+    <item android:drawable="@drawable/ic_status_unsubscribed" android:minLevel="8" android:maxLevel="8" />
+</level-list>

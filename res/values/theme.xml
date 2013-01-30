@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<resources>
+
+    <style name="Theme" parent="@android:style/Theme">
+        <item name="expanderBackground">@drawable/expander_background_dark</item>
+        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
+        <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
+        <item name="accountBackground">@drawable/account_background</item>
+        <item name="titleMainBackground">@drawable/title_main_background_dark</item>
+        <item name="titleAccountBackground">@drawable/title_account_background_light</item>
+        <item name="textColorPrimaryNoSelected">@color/bright_foreground_dark</item>
+    </style>
+
+    <style name="Theme.NoTitleBar" parent="@android:style/Theme.NoTitleBar">
+        <item name="expanderBackground">@drawable/expander_background_dark</item>
+        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
+        <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
+        <item name="accountBackground">@drawable/account_background</item>
+        <item name="titleMainBackground">@drawable/title_main_background_dark</item>
+        <item name="titleAccountBackground">@drawable/title_account_background_light</item>
+        <item name="textColorPrimaryNoSelected">@color/bright_foreground_dark</item>
+    </style>
+
+    <style name="Theme.Dark" parent="@android:style/Theme.Black">
+        <item name="expanderBackground">@drawable/expander_background_dark</item>
+        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
+        <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="accountBackground">@drawable/account_background</item>
+        <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
+        <item name="titleMainBackground">@drawable/title_main_background_dark</item>
+        <item name="titleAccountBackground">@drawable/title_account_background_dark</item>
+        <item name="textColorPrimaryNoSelected">@color/bright_foreground_dark</item>
+    </style>
+
+    <style name="Theme.Dark.NoTitleBar" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="expanderBackground">@drawable/expander_background_dark</item>
+        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
+        <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
+        <item name="accountBackground">@drawable/account_background</item>
+        <item name="titleMainBackground">@drawable/title_main_background_dark</item>
+        <item name="titleAccountBackground">@drawable/title_account_background_dark</item>
+        <item name="textColorPrimaryNoSelected">@color/bright_foreground_dark</item>
+    </style>
+
+    <style name="Theme.Light" parent="@android:style/Theme.Light">
+        <item name="expanderBackground">@drawable/expander_background_light</item>
+        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
+        <item name="expanderAccountColor">?android:attr/textColorPrimary</item>
+        <item name="expanderIndicator">@drawable/expander_indicator_light</item>
+        <item name="accountBackground">@drawable/account_background</item>
+        <item name="titleMainBackground">@drawable/title_main_background_light</item>
+        <item name="titleAccountBackground">@drawable/title_account_background_light</item>
+        <item name="textColorPrimaryNoSelected">@color/bright_foreground_light</item>
+    </style>
+
+    <style name="Theme.Light.NoTitleBar" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="expanderBackground">@drawable/expander_background_light</item>
+        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
+        <item name="expanderAccountColor">?android:attr/textColorPrimary</item>
+        <item name="expanderIndicator">@drawable/expander_indicator_light</item>
+        <item name="accountBackground">@drawable/account_background</item>
+        <item name="titleMainBackground">@drawable/title_main_background_light</item>
+        <item name="titleAccountBackground">@drawable/title_account_background_light</item>
+        <item name="textColorPrimaryNoSelected">@color/bright_foreground_light</item>
+    </style>
+
+</resources>

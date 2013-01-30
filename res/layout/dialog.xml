@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:paddingTop="9dip"
+    android:paddingBottom="3dip"
+    android:paddingLeft="3dip"
+    android:paddingRight="1dip"
+    >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="54dip"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dip"
+            android:layout_marginBottom="9dip"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="10dip"
+            >
+
+            <ImageView
+				android:id="@android:id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:paddingTop="6dip"
+                android:paddingRight="10dip"
+                android:src="@android:drawable/ic_dialog_info"
+				/>
+
+            <TextView
+				android:id="@android:id/title"
+                style="?android:attr/textAppearanceLarge"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+				/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:visibility="gone"
+            android:scaleType="fitXY"
+            android:gravity="fill_horizontal"
+            android:src="@android:drawable/divider_horizontal_dark"
+			/>
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="2dip"
+        android:paddingBottom="12dip"
+        android:paddingLeft="14dip"
+        android:paddingRight="10dip"
+        android:overScrollMode="ifContentScrolls"
+        >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@android:id/message"
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+				android:padding="5dip"
+				/>
+
+            </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+	    <FrameLayout
+	        android:id="@android:id/custom"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingTop="5dip"
+	        android:paddingBottom="5dip"
+	        />
+
+        <LinearLayout
+            style="@android:style/ButtonBar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="4dip"
+            android:paddingLeft="2dip"
+            android:paddingRight="2dip"
+	        android:minHeight="54dip"
+            >
+
+            <Button
+	            android:id="@android:id/button1"
+                style="?android:attr/buttonStyle"
+                android:layout_width="0dip"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:maxLines="2"
+                android:layout_height="wrap_content"
+                android:text="@android:string/ok"
+				/>
+
+            <Button
+	            android:id="@android:id/button3"
+                style="?android:attr/buttonStyle"
+                android:layout_width="0dip"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:maxLines="2"
+                android:layout_height="wrap_content"
+                />
+
+            <Button
+	            android:id="@android:id/button2"
+                style="?android:attr/buttonStyle"
+                android:layout_width="0dip"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:maxLines="2"
+                android:layout_height="wrap_content"
+                android:text="@android:string/cancel"
+				/>
+            
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
