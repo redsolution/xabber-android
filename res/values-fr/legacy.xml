@@ -11,12 +11,12 @@
     <string name="production_changes_4">+ Correction du mode debug</string>
     <string name="production_changes_5">+ Fonctionne maintenant en tant que service</string>
     <string name="production_changes_6">+ Pas de son à chaque notification</string>
-    <string name="production_changes_7">+ Les notification sont sauvegardées dans la base de donnée\n+ Correction de la synchronisation\n+ Le claiver logiciel affiche/masque maintenant correctement le defilement de la fenêtre de chat</string>
+    <string name="production_changes_7">+ Les notification sont sauvegardées dans la base de donnée\n+ Correction de la synchronisation\n+ Le clavier logiciel affiche/masque maintenant correctement le défilement de la fenêtre de chat</string>
     <string name="production_changes_8">+ 48 avatars différent par défaut\n+ Groupes dans la liste de contacts\n+ Menu Préférences\n+ Types de comptes\n+ Amélioration de l\'interface</string>
     <string name="production_changes_9">+ Interface utilisateur optimisée\n+ le tri de la liste de contact n\'est désormais plus sensible à la casse\n+ compte chat Facebook\n+ Option pour masquer l\'avatar dans le titre de la fenêtre de chat\n+ Les comptes peuvent être optionnellement Activés/Désactivés\n+ Amélioration de l\'interface\n- les fonctions de GeoLocalisation sont désactivées (pour le moment)</string>
     <string name="production_changes_10">- Suppression de comptes non compatibles\n+ Correction de l\'appuye long sur "Ajouter compte"</string>
     <string name="production_changes_11">- Suppression du menu contextuel pour passer En Ligne/Hors Ligne</string>
-    <string name="production_changes_12">+ Nom de l\'application modifié\n+ structure de données améliorée\n+Nombreuses corrections et mise à jour</string>
+    <string name="production_changes_12">+ Nom de l\'application modifié\n+ structure de données améliorée\n+Nombreuses corrections et mises à jour</string>
     <string name="production_changes_13">+ Vider l\'historique en fonction des paramètres\n+ Dernier message de contacts amélioré</string>
     <string name="production_changes_14">+ Correction des opérations d\'exploitation</string>
     <string name="production_changes_16">+ Support Emoticon</string>
