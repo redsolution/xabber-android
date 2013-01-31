@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
-    <string name="account_compression">Kompression benutzen</string>
+    <string name="account_compression">Kompression verwenden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_editor_title">%1$s Konto %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
@@ -21,33 +21,33 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type">Kontotyp</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_facebook">Benutzername für facebook.com (keine E-Mail-Adresse)</string>
+    <string name="account_type_hints_facebook">Benutzername für Facebook (keine E-Mail-Adresse)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_gtalk">Benutzername für gmail.com</string>
+    <string name="account_type_hints_gtalk">Benutzername für Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_livejournal">Benutzername für livejournal.com</string>
+    <string name="account_type_hints_livejournal">Benutzername für LiveJournal</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_qip">Benutzername für qip.ru</string>
+    <string name="account_type_hints_qip">Benutzername für QIP</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_vkontakte">ID-Nummer oder Name bei vkontakte.ru</string>
+    <string name="account_type_hints_vkontakte">ID-Nummer oder Name bei VKontakte</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_xmpp">name@beispiel.de</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_ya">Benutzername für yandex.ru</string>
+    <string name="account_type_hints_ya">Benutzername für Ya.Online</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_facebook">Du kannst Dich nicht mit Deiner E-Mail zum Facebook-Chat anmelden. Zum Einrichten des Facebook-Chat musst Du Deinen Facebook-Benutzernamen und Dein Passwort eingeben.\nDetails unter http://www.facebook.com/sitetour/chat.php</string>
+    <string name="account_type_helps_facebook">Du kannst dich nicht mit deiner E-Mail zum Facebook-Chat anmelden. Zum Einrichten des Facebook-Chats musst du deinen Facebook-Benutzernamen und dein Passwort eingeben.\nDetails unter http://www.facebook.com/sitetour/chat.php</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_gtalk">Wenn Du kein Google Konto hast, kannst Du eins unter http://mail.google.com einrichten.</string>
+    <string name="account_type_helps_gtalk">Wenn du kein Google Konto hast, kannst du unter http://mail.google.com eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_livejournal">Wenn Du kein Livejournal Konto hast, kannst Du eins unter http://livejournal.com einrichten.</string>
+    <string name="account_type_helps_livejournal">Wenn du kein LiveJournal Konto hast, kannst du unter http://livejournal.com eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_qip">Wenn Du kein QIP Konto hast, kannst Du eins unter http://qip.ru einrichten.</string>
+    <string name="account_type_helps_qip">Wenn du kein QIP Konto hast, kannst du unter http://qip.ru eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_vkontakte">Bitte Benutzernamen (z.B. masha.v.kontakte) oder die ID (z.B. id123456) angeben. Der Login bei VKontakte ist nicht mit der E-Mail Adresse möglich. Zur Einrichtung sind Benutzername und Passwort nötig. Details unter http://vk.com/help.php?page=jabber</string>
+    <string name="account_type_helps_vkontakte">Bitte Benutzernamen (z.&nbsp;B. masha.v.kontakte) oder die ID (z.&nbsp;B. id123456) angeben. Der Login bei VKontakte ist nicht mit der E-Mail-Adresse möglich. Zur Einrichtung sind Benutzername und Passwort nötig. Details unter http://vk.com/help.php?page=jabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Weitere Informationen zu XMPP (Jabber) gibt es hier: http://xmpp.org\n \nEin neues XMPP Konto kannst Du unter https://register.jabber.org oder jedem anderen Jabber-Server registrieren.</string>
+    <string name="account_type_helps_xmpp">Weitere Informationen zu XMPP (Jabber) gibt es unter http://xmpp.org\n\nEin neues XMPP Konto kannst du unter https://register.jabber.org oder auf jedem anderen XMPP-Server registrieren.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_ya">Wenn Du kein Ya.Online Konto hast, kannst Du eins unter http://yandex.com einrichten.</string>
+    <string name="account_type_helps_ya">Wenn du kein Ya.Online Konto hast, kannst du eins unter http://yandex.com einrichten.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_facebook">Facebook</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -71,19 +71,19 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
     <string name="account_archive_mode">Speichern des Chatverlaufs</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
-    <string name="account_archive_mode_available">auf dem Server, wenn möglich</string>
+    <string name="account_archive_mode_available">Auf dem Server, wenn möglich</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
-    <string name="account_archive_mode_local">auf diesem Gerät</string>
+    <string name="account_archive_mode_local">Auf diesem Gerät</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
-    <string name="account_archive_mode_server">auf dem Server</string>
+    <string name="account_archive_mode_server">Auf dem Server</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
-    <string name="account_archive_mode_unread">auf diesem Gerät (nur ungelesen/ungesendet)</string>
+    <string name="account_archive_mode_unread">Auf diesem Gerät (nur ungelesen/ungesendet)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_compression_summary">Datenkomprimierung aktivieren</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_custom">Benutzerdefinierter Host</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
-    <string name="account_custom_summary">Benutzerdefinierte Einstellung anstatt SRV-Eintrag nutzen</string>
+    <string name="account_custom_summary">Benutzerdefinierte Einstellung statt SRV-Eintrag nutzen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_enabled_summary">Auswählen um das Konto zu aktivieren</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
@@ -129,9 +129,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_tls_require_summary">TLS-Verschlüsselung ist erforderlich zum Verbinden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_odnoklassniki">Du musst Deine ID als Nutzername verwenden (123456 z.B.). Der Login via E-Mail-Adresse, Benutzername oder Telefonnummer ist nicht möglich. Deine ID kannst Du unter http://odnoklassniki.ru/settings finden.</string>
+    <string name="account_type_helps_odnoklassniki">Du musst deine ID als Login verwenden (z.&nbsp;B. 123456). Der Login via E-Mail-Adresse, Benutzername oder Telefonnummer ist nicht möglich. Deine ID kannst du unter http://odnoklassniki.ru/settings finden.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_wlm">Du wirst zur http://live.com weitergeleitet, um Dich einzuloggen.</string>
+    <string name="account_type_helps_wlm">Du wirst zu http://live.com weitergeleitet, um dich einzuloggen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_odnoklassniki">ID für odnoklassniki.ru (keine E-Mail-Adresse und kein Benutzername)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
@@ -141,7 +141,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
-    <string name="confirm_cancellation">Wollen sie wirklich alle Änderungen verwerfen?</string>
+    <string name="confirm_cancellation">Willst du wirklich alle Änderungen verwerfen?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Falscher Benutzername. Siehe Hilfe unten!</string>
 </resources>

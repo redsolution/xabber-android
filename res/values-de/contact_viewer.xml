@@ -7,15 +7,15 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_xmpp">XMPP</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_jid">Jabber ID</string>
+    <string name="contact_viewer_jid">Jabber-ID</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_name">Jabber-Name</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_resources">Resourcen</string>
+    <string name="contact_viewer_resources">Ressourcen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_resource_summary">Resource: %1$s\nPriorität: %2$d\nClient: %3$s</string>
+    <string name="contact_viewer_resource_summary">Ressource: %1$s\nPriorität: %2$d\nClient: %3$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_client_info">%1$s, schreib: %2$s</string>
+    <string name="contact_viewer_client_info">%1$s, schreibt: %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
     <string name="vcard_person">Persönliche Informationen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->

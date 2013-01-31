@@ -7,7 +7,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
     <string name="application_action_disabled">Konten verwalten</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
-    <string name="application_action_empty">Konto hinfügen</string>
+    <string name="application_action_empty">Konto hinzufügen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
     <string name="application_action_no_contacts">Kontakt hinzufügen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
@@ -49,7 +49,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
     <string name="contact_delete">Kontakt löschen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
-    <string name="contact_delete_confirm">Möchtest Du wirklich Kontakt %1$s aus Konto %2$s löschen?</string>
+    <string name="contact_delete_confirm">Möchtest du wirklich Kontakt %1$s aus Konto %2$s löschen?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
     <string name="contact_editor">Kontakt bearbeiten</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
@@ -65,7 +65,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
     <string name="group_remove">Gruppe löschen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
-    <string name="group_remove_confirm">Willst Du die Gruppe %s wirklich löschen? Benutzer dieser Gruppe bleiben in der Kontaktliste.</string>
+    <string name="group_remove_confirm">Willst du die Gruppe %s wirklich löschen? Benutzer dieser Gruppe bleiben in der Kontaktliste.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
     <string name="group_rename">Gruppe umbenennen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -77,23 +77,23 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="XMPP_EXCEPTION">Fehler im Datenstrom</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
-    <string name="application_state_closing">Einstellungen werden gespeichert... \nDie Anwendung wird beendet.</string>
+    <string name="application_state_closing">Einstellungen werden gespeichert...\nDie Anwendung wird beendet.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_confirmation">%1$s.\nVertrauen Sie dem Zertifikat mit folgendem SHA1 Fingerabdruck: %2$s vollständig? \nMöchten Sie über jedes Problem mit diesem Zeritifikat informiert werden?</string>
+    <string name="certificate_confirmation">%1$s.\nVertraust du dem Zertifikat mit folgendem SHA1 Fingerabdruck: %2$s vollständig?\nMöchtest du über jedes Problem mit diesem Zeritifikat informiert werden?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
-    <string name="certificate_details">\n\nAusgestellt an:\nCommon Name (CN): %1$s \nOrganisation (O): %2$s \nOrganisationseinheit (OU): %3$s \nSeriennummer: %4$s\n\nErstellt durch:\nCommon Name (CN): %5$s \nOrganisation (O): %6$s \nOrganisationseinheit (OU): %7$s \n\nGültigkeit:\nErstellt am: %8$s \nAuflaufdatum: %9$s.</string>
+    <string name="certificate_details">\n\nAusgestellt an:\nCommon Name (CN): %1$s\nOrganisation (O): %2$s\nOrganisationseinheit (OU): %3$s\nSeriennummer: %4$s\n\nErstellt durch:\nCommon Name (CN): %5$s\nOrganisation (O): %6$s\nOrganisationseinheit (OU): %7$s\n\nGültigkeit:\nErstellt am: %8$s\nAuflaufdatum: %9$s.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_invalid_chane">Verifikation der Signaturkette fehlgeschlagen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_invalid_target">Ziel konnte nicht verifiziert werden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_self_signed">selbst-signiertes Zertifikat</string>
+    <string name="certificate_self_signed">Selbst-signiertes Zertifikat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_show_details">Details:</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="close_chats">Alle Chats beenden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
-    <string name="contact_integration_suggest">Möchtest du Xabber in deine Kontaktliste integrieren?\nEs kann unter "Einstellungen" → "XMPP Accounts" → Dein Account → "Integration der Kontakte"\nEs ist möglich, dass die Kontakliste für ein paar Minuten langsamer reagiert.</string>
+    <string name="contact_integration_suggest">Möchtest du Xabber in deine Kontaktliste integrieren?\nEs kann unter "Einstellungen" → "XMPP Accounts" → Dein Account → "Integration der Kontakte" hinzugefügt werden.\nEs ist möglich, dass die Kontakliste für ein paar Minuten langsamer reagiert.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="group_room">Konferenzen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -105,9 +105,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
     <string name="show_offline_never">Niemals anzeigen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
-    <string name="show_offline_normal">Glabale Einstellungen benutzen</string>
+    <string name="show_offline_normal">Globale Einstellungen benutzen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
-    <string name="show_offline_settings">Kontakte, die offline sind, anzeigen</string>
+    <string name="show_offline_settings">Offline Kontakte anzeigen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
-    <string name="start_at_boot_suggest">Xabber beim Start von Android starten? \nDies kann unter "Einstellungen" → "Verbindungseinstellungen" → "Mit Android starten" geändert werden.</string>
+    <string name="start_at_boot_suggest">Xabber beim Start von Android starten?\nDies kann unter "Einstellungen" → "Verbindungseinstellungen" → "Mit Android starten" geändert werden.</string>
 </resources>
