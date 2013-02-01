@@ -5,6 +5,7 @@
     <string name="development_changes_22">+ Correction du chat multiple et de l\'autorisation</string>
     <string name="development_changes_23">+ Problèmes de déconnexion sur le changement du réseau partiellement corrigé</string>
     <string name="development_changes_24">Joyeux Noël !</string>
+    <string name="development_changes_76">+ Traduction slovaque (Merci, Dominik)\n* Correction du problème de validation du certificat serveur\n* Corrections mineures</string>
     <string name="production_changes_1">Version initiale</string>
     <string name="production_changes_2">Première mise à jour</string>
     <string name="production_changes_3">+Status sauvegardé entre les sessions</string>
@@ -24,4 +25,5 @@
     <string name="production_changes_20">+ L\'anglais est désormais la langue par défaut\n+ Changement dans l\'interface utilisateur</string>
     <string name="production_changes_23">+ Icônes haute résolution\n+ Options de compression</string>
     <string name="production_changes_24">+ Thèmes de couleur</string>
+    <string name="production_changes_45">Joyeux Noël!\n+ traductions en Néerlandais, slovaque, turc, chinois\n+ Support de l\'archivage des messages (module prosody recommandé)\n+ Historique spécifique par compte\n+ Copie des empreintes OTR\nCorrections:\n* Validation du certificat\n* Réduction du trafic lors d\'une reconnexion\n* Notifications de conférences\n* Liste des conférences actives\n* Reçus de remise de message\n* Notifications lors de la frappe\n* diverses bug mineures\n* Traductions\nMerci les gars!</string>
 </resources>

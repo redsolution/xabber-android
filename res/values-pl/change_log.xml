@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="development_changes_24">Wesołych Świąt!</string>
+    <string name="development_changes_76">+ Słowackie tłumaczenie (dzięki, Dominik!)\n* Naprawiono sprawdzanie certyfikatu serwera\n* Inne poprawki</string>
     <string name="production_changes_1">Pierwsze wydanie</string>
     <string name="production_changes_2">Pierwsza aktualizacja</string>
     <string name="production_changes_3">+ Status zapamiętywany między sesjami</string>
@@ -31,4 +32,5 @@
     <string name="production_changes_29">+ Wsparcie dla rekordów SRV\n* Funkcja geolokalizacji tymczasowo wyłączona</string>
     <string name="production_changes_30">+ Opcja uruchamiania wraz ze startem systemu\n+ Wyszukiwanie kontaktów\n+ Opcja "Zawsze pokazuj niepołączone kontakty" dla wybranych grup \n+ Status "Oddalony" po wybranym czasie\n* Poprawka wznawiania połączenia\n* Stała lista kontaktów, nie znika po rozłączeniu\n* Poprawiono przewijanie listy kontaktów i treści rozmów\n* Niepołączone pokoje na liście kontaktów są teraz wyświetlane\n* Poprawki w menu dodawania kontaktu\n* Poprawiono wibracje w niektórych telefonach\n* Drobne poprawki</string>
     <string name="production_changes_31">+ Polskie tłumaczenie (dzięki, Qrix!)\n+ Eksport archiwum wiadomości na kartę SD\n+ Opcja "Nie używaj uwierzytelniania SASL" dla starych serwerów\n+ Opcja zamykania wszystkich rozmów\n+ Ukrywanie klawiatury po wysłaniu wiadomości\n* Zaktualizowano ikonę\n* Naprawiono ekran dodawania kontaktu\n* Poprawki wznawiania połączenia\n* Naprawiono wyświetlanie niepołączonych kontaktów\n* Naprawiono błąd z wibracjami\nJeśli wibracje nie działają, sprawdź ustawienia telefonu lub włącz opcję: Ustawienia - Powiadomienia - Ignoruj systemowe ustawienia wibracji.</string>
+    <string name="production_changes_45">Wesołych Świąt!\n+ Holenderskie, Słowackie, Tureckie, Chińskie tłumaczenia\n+ Wsparcie dla zapisu wiadomości(Polecany wtyk Prosody po stronie serwera)\n+ Ustawienia historii dla kont\n+ Kopiowanie odcisku sha1 OTR\n* Naprawiona walidacja certyfikatu serwera\n* Redukcja zużycia danych przy ponownym łączeniu\n* Naprawiono powiadomienia w konferencjach\n* Naprawiono listę aktywnych czatów\n* Naprawiono raporty doręczeń\n* Naprawiono powiadomienia o pisaniu\n* Inne poprawki\n* Poprawiono tłumaczenia</string>
 </resources>
