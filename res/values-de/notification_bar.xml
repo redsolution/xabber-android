@@ -17,9 +17,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
     <string name="chat_contact_quantity_1">Kontakt</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
-    <string name="chat_contact_quantity_2">Kontakten</string>
+    <string name="chat_contact_quantity_2">Kontakte</string>
     <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
-    <string name="chat_contact_quantity_5">Kontakten</string>
+    <string name="chat_contact_quantity_5">Kontakte</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
     <string name="chat_message_quantity_1">Nachricht</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
@@ -49,13 +49,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
     <string name="connection_state_offline">%1$d %2$s offline</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/message_archive.png -->
-    <string name="archive_available_request_message">Möchten Sie Ihre Nachrichten auf dem Server speichern?\nDies ermöglicht Xabber Ihren Verlauf von jedem Gerät zu laden, das diesen Account nutzt.\nDieses Feature wird zusätzliches Datenvolumen benötigen und die Verbindungsgeschwindigkeit leicht reduzieren.\nWARNUNG: Alle lokalen Verläufe werden gelöscht.</string>
+    <string name="archive_available_request_message">Möchtest du deine Nachrichten auf dem Server speichern?\nDies ermöglicht Xabber deinen Verlauf auf jedem Gerät zu laden, das diesen Account nutzt.\nDieses Feature wird zusätzliches Datenvolumen benötigen und die Verbindungsgeschwindigkeit leicht reduzieren.\nWARNUNG: Alle lokalen Verläufe werden gelöscht.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_archive.png -->
     <string name="archive_available_request_title">Nachrichtenarchiv aktivieren?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_certificate.png -->
     <string name="INVALID_CERTIFICATE">Ungültiges Zertifikat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_invite.png -->
-    <string name="muc_invite_message">Möchtest Du der Konferenz beitreten?</string>
+    <string name="muc_invite_message">Möchtest du der Konferenz beitreten?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
     <string name="otr_verification_in_progress">Hier klicken um abzubrechen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_password.png -->
