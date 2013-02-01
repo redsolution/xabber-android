@@ -43,9 +43,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_qip">Wenn du kein QIP Konto hast, kannst du unter http://qip.ru eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_vkontakte">Bitte Benutzernamen (z.&nbsp;B. masha.v.kontakte) oder die ID (z.&nbsp;B. id123456) angeben. Der Login bei VKontakte ist nicht mit der E-Mail-Adresse möglich. Zur Einrichtung sind Benutzername und Passwort nötig. Details unter http://vk.com/help.php?page=jabber</string>
+    <string name="account_type_helps_vkontakte">Bitte Benutzernamen (z. B. masha.v.kontakte) oder die ID (z. B. id123456) angeben. Der Login bei VKontakte ist nicht mit der E-Mail-Adresse möglich.\nZur Einrichtung sind Benutzername und Passwort nötig. Details unter http://vk.com/help.php?page=jabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Weitere Informationen zu XMPP (Jabber) gibt es unter http://xmpp.org\n\nEin neues XMPP Konto kannst du unter https://register.jabber.org oder auf jedem anderen XMPP-Server registrieren.</string>
+    <string name="account_type_helps_xmpp">Weitere Informationen zu XMPP (Jabber) gibt es unter http://xmpp.org\nEin neues XMPP Konto kannst du unter https://register.jabber.org oder auf jedem anderen XMPP-Server registrieren.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Wenn du kein Ya.Online Konto hast, kannst du eins unter http://yandex.com einrichten.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -129,7 +129,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_tls_require_summary">TLS-Verschlüsselung ist erforderlich zum Verbinden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_odnoklassniki">Du musst deine ID als Login verwenden (z.&nbsp;B. 123456). Der Login via E-Mail-Adresse, Benutzername oder Telefonnummer ist nicht möglich. Deine ID kannst du unter http://odnoklassniki.ru/settings finden.</string>
+    <string name="account_type_helps_odnoklassniki">Du musst deine ID als Login verwenden (z. B. 123456). Der Login via E-Mail-Adresse, Benutzername oder Telefonnummer ist nicht möglich. Deine ID kannst du unter http://odnoklassniki.ru/settings finden.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_wlm">Du wirst zu http://live.com weitergeleitet, um dich einzuloggen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
