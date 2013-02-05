@@ -284,10 +284,12 @@ public class AccountItem extends ConnectionItem {
 			return new Presence(Type.unavailable);
 		else {
 			int priority;
-			if (AccountManager.getInstance().isXa())
-				statusMode = StatusMode.xa;
-			else if (AccountManager.getInstance().isAway())
-				statusMode = StatusMode.away;
+			if (statusMode != StatusMode.dnd) {
+				if (AccountManager.getInstance().isXa())
+					statusMode = StatusMode.xa;
+				else if (AccountManager.getInstance().isAway())
+					statusMode = StatusMode.away;
+			}
 			if (SettingsManager.connectionAdjustPriority()) {
 				if (statusMode == StatusMode.available)
 					priority = SettingsManager.connectionPriorityAvailable();
