@@ -511,6 +511,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 				final String userName = RosterManager.getInstance().getName(
 						account, user);
 				for (MessageItem messageItem : abstractChat.getMessages()) {
+					if (messageItem.getAction() != null)
+						continue;
 					final String name;
 					if (isMUC) {
 						name = messageItem.getResource();
