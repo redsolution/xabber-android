@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.ClipboardManager;
 import android.view.ContextMenu;
@@ -745,26 +746,51 @@ public class ChatViewer extends ManagedActivity implements
 		switch (dialogBuilder.getDialogId()) {
 		case DIALOG_EXPORT_CHAT_ID:
 			ExportChatDialogBuilder builder = (ExportChatDialogBuilder) dialogBuilder;
-			File file;
+			exportChat(builder);
+		}
+	}
+	
+	private void exportChat(ExportChatDialogBuilder dialogBuilder) {
+		//TODO: retain AsyncTask via retained fragment
+		new ChatExportAsyncTask(dialogBuilder).execute();
+	}
+	
+	private class ChatExportAsyncTask extends AsyncTask<Void, Void, File> {
+		private ExportChatDialogBuilder builder;
+		
+		public ChatExportAsyncTask(ExportChatDialogBuilder builder) {
+			this.builder = builder;
+		}
+		
+		@Override
+		protected File doInBackground(Void... params) {
+			File file = null;
 			try {
 				file = MessageManager.getInstance().exportChat(
 						actionWithAccount, actionWithUser, builder.getName());
 			} catch (NetworkException e) {
 				Application.getInstance().onError(e);
-				return;
 			}
-			if (builder.isSendChecked()) {
-				Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-				intent.setType("text/plain");
-				Uri uri = Uri.fromFile(file);
-				intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
-				startActivity(Intent.createChooser(intent,
-						getString(R.string.export_chat)));
-			} else {
-				Toast.makeText(this, R.string.export_chat_done,
-						Toast.LENGTH_LONG).show();
+			return file;
+		}
+		
+		@Override
+		public void onPostExecute(File result) {
+			if (result != null) {
+				if (builder.isSendChecked()) {
+					Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+					intent.setType("text/plain");
+					Uri uri = Uri.fromFile(result);
+					intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
+					startActivity(Intent.createChooser(intent,
+							getString(R.string.export_chat)));
+				} else {
+					Toast.makeText(ChatViewer.this, R.string.export_chat_done,
+							Toast.LENGTH_LONG).show();
+				}
 			}
 		}
+		
 	}
 
 	@Override
