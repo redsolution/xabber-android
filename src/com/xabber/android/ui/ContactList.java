@@ -25,6 +25,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -973,18 +974,17 @@ public class ContactList extends ManagedListActivity implements
 								abstractContact.getUser()));
 				intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
 						abstractContact.getName());
+				Bitmap bitmap;
 				if (MUCManager.getInstance()
 						.hasRoom(abstractContact.getAccount(),
 								abstractContact.getUser()))
-					intent.putExtra(
-							Intent.EXTRA_SHORTCUT_ICON,
-							AvatarManager.getInstance().getRoomBitmap(
-									abstractContact.getUser()));
+					bitmap = AvatarManager.getInstance().getRoomBitmap(
+							abstractContact.getUser());
 				else
-					intent.putExtra(
-							Intent.EXTRA_SHORTCUT_ICON,
-							AvatarManager.getInstance().getUserBitmap(
-									abstractContact.getUser()));
+					bitmap = AvatarManager.getInstance().getUserBitmap(
+							abstractContact.getUser());
+				intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, AvatarManager
+						.getInstance().createShortcutBitmap(bitmap));
 				setResult(RESULT_OK, intent);
 				finish();
 			} else {

@@ -462,4 +462,29 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
 			setHash(bareAddress, hash);
 		}
 	}
+
+	/**
+	 * @param bitmap
+	 * @return Scaled bitmap to be used for shortcut.
+	 */
+	public Bitmap createShortcutBitmap(Bitmap bitmap) {
+		int size = getLauncherLargeIconSize();
+		int max = Math.max(bitmap.getWidth(), bitmap.getHeight());
+		if (max == size)
+			return bitmap;
+		double scale = ((double) size) / max;
+		int width = (int) (bitmap.getWidth() * scale);
+		int height = (int) (bitmap.getHeight() * scale);
+		return Bitmap.createScaledBitmap(bitmap, width, height, true);
+	}
+
+	private int getLauncherLargeIconSize() {
+		if (Application.SDK_INT < 9)
+			return BaseShortcutHelper.getLauncherLargeIconSize();
+		else if (Application.SDK_INT < 11)
+			return GingerbreadShortcutHelper.getLauncherLargeIconSize();
+		else
+			return HoneycombShortcutHelper.getLauncherLargeIconSize();
+	}
+
 }
