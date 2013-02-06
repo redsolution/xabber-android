@@ -104,7 +104,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 	public AttentionManager() {
 	}
 
-	public void onSettingChange() {
+	public void onSettingsChanged() {
 		synchronized (enabledLock) {
 			for (String account : AccountManager.getInstance().getAccounts()) {
 				ConnectionThread connectionThread = AccountManager

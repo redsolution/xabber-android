@@ -369,7 +369,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 	/**
 	 * Called on action settings change.
 	 */
-	public void onActionSettings() {
+	public void onSettingsChanged() {
 		ChatsShowStatusChange showStatusChange = SettingsManager
 				.chatsShowStatusChange();
 		Collection<BaseEntity> changedEntities = new ArrayList<BaseEntity>();
