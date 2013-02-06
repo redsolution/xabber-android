@@ -542,11 +542,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				}
 			}
 			if (result.getArchiveMode() != archiveMode) {
+				reconnect = (result.getArchiveMode() == ArchiveMode.server) != (archiveMode == ArchiveMode.server);
 				result.setArchiveMode(archiveMode);
 				for (OnAccountArchiveModeChangedListener listener : application
 						.getManagers(OnAccountArchiveModeChangedListener.class))
 					listener.onAccountArchiveModeChanged(result);
-				reconnect = true;
 			}
 			if (changed && enabled) {
 				enabledAccounts.add(account);
