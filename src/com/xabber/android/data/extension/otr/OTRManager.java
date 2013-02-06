@@ -691,16 +691,25 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 		});
 	}
 
-	@Override
-	public void onClose() {
+	private void endAllSessions() {
 		NestedMap<String> entities = new NestedMap<String>();
 		entities.addAll(actives);
 		for (Entry<String> entry : entities)
 			try {
 				endSession(entry.getFirst(), entry.getSecond());
 			} catch (NetworkException e) {
-				// Just ignore.
+				LogManager.exception(this, e);
 			}
+	}
+
+	@Override
+	public void onClose() {
+		endAllSessions();
+	}
+
+	public void onSettingsChanged() {
+		if (SettingsManager.securityOtrMode() == SecurityOtrMode.disabled)
+			endAllSessions();
 	}
 
 }
