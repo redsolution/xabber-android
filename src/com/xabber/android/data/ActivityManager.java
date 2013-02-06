@@ -38,7 +38,7 @@ import com.xabber.androiddev.R;
  * @author alexander.ivanov
  * 
  */
-public class ActivityManager {
+public class ActivityManager implements OnUnloadListener {
 
 	private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
 
@@ -312,6 +312,11 @@ public class ActivityManager {
 			return;
 		LogManager.i(activity, "Fetch task index " + index);
 		taskIndexes.put(activity, index);
+	}
+
+	@Override
+	public void onUnload() {
+		clearStack(true);
 	}
 
 }
