@@ -43,6 +43,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.OnAccountArchiveModeChangedListener;
 import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
@@ -50,6 +51,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
@@ -67,7 +69,8 @@ import com.xabber.xmpp.delay.Delay;
  */
 public class MessageManager implements OnLoadListener, OnPacketListener,
 		OnDisconnectListener, OnAccountRemovedListener,
-		OnRosterReceivedListener, OnAccountArchiveModeChangedListener {
+		OnRosterReceivedListener, OnAccountArchiveModeChangedListener,
+		OnStatusChangeListener {
 
 	/**
 	 * Registered chats for bareAddresses in accounts.
@@ -579,6 +582,30 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 				messageItem.setId(null);
 		}
 		return ids;
+	}
+
+	private boolean isStatusTrackingEnabled(String account, String bareAddress) {
+		if (SettingsManager.chatsShowStatusChange() != ChatsShowStatusChange.always)
+			return false;
+		AbstractChat abstractChat = getChat(account, bareAddress);
+		return abstractChat != null && abstractChat instanceof RegularChat
+				&& abstractChat.isStatusTrackingEnabled();
+	}
+
+	@Override
+	public void onStatusChanged(String account, String bareAddress,
+			String resource, String statusText) {
+		if (isStatusTrackingEnabled(account, bareAddress))
+			getChat(account, bareAddress).newAction(resource, statusText,
+					ChatAction.status);
+	}
+
+	@Override
+	public void onStatusChanged(String account, String bareAddress,
+			String resource, StatusMode statusMode, String statusText) {
+		if (isStatusTrackingEnabled(account, bareAddress))
+			getChat(account, bareAddress).newAction(resource, statusText,
+					ChatAction.getChatAction(statusMode));
 	}
 
 }

@@ -74,6 +74,11 @@ public abstract class AbstractChat extends BaseEntity {
 	protected boolean active;
 
 	/**
+	 * Whether changes in status should be record.
+	 */
+	protected boolean trackStatus;
+
+	/**
 	 * Whether user never received notifications from this chat.
 	 */
 	protected boolean firstNotification;
@@ -109,6 +114,7 @@ public abstract class AbstractChat extends BaseEntity {
 		super(account, user);
 		threadId = StringUtils.randomString(12);
 		active = false;
+		trackStatus = false;
 		firstNotification = true;
 		lastText = "";
 		lastTime = null;
@@ -264,11 +270,16 @@ public abstract class AbstractChat extends BaseEntity {
 
 	void openChat() {
 		active = true;
+		trackStatus = true;
 	}
 
 	void closeChat() {
 		active = false;
 		firstNotification = true;
+	}
+
+	boolean isStatusTrackingEnabled() {
+		return trackStatus;
 	}
 
 	/**
@@ -390,7 +401,7 @@ public abstract class AbstractChat extends BaseEntity {
 			save = false;
 		Date timestamp = new Date();
 		if (notify || !incoming)
-			active = true;
+			openChat();
 		if (!incoming)
 			notify = false;
 		if (notify && !notifyAboutMessage())

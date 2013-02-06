@@ -14,12 +14,9 @@
  */
 package com.xabber.android.data.message;
 
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Presence.Mode;
-import org.jivesoftware.smack.packet.Presence.Type;
-
 import android.content.Context;
 
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.androiddev.R;
 
 /**
@@ -180,20 +177,21 @@ public enum ChatAction {
 	 */
 	attention_requested;
 
-	public static ChatAction getChatAction(Presence presence) {
-		if (presence.getType() == Type.unavailable)
+	public static ChatAction getChatAction(StatusMode statusMode) {
+		if (statusMode == StatusMode.unavailable)
 			return ChatAction.unavailable;
-		Mode mode = presence.getMode();
-		if (mode == Mode.away)
+		else if (statusMode == StatusMode.available)
+			return ChatAction.available;
+		else if (statusMode == StatusMode.away)
 			return ChatAction.away;
-		else if (mode == Mode.chat)
+		else if (statusMode == StatusMode.chat)
 			return ChatAction.chat;
-		else if (mode == Mode.dnd)
+		else if (statusMode == StatusMode.dnd)
 			return ChatAction.dnd;
-		else if (mode == Mode.xa)
+		else if (statusMode == StatusMode.xa)
 			return ChatAction.xa;
 		else
-			return ChatAction.available;
+			throw new IllegalStateException();
 	}
 
 	/**

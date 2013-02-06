@@ -53,19 +53,11 @@ public class AbstractContact extends BaseEntity {
 	}
 
 	public StatusMode getStatusMode() {
-		ResourceItem resourceItem = PresenceManager.getInstance()
-				.getResourceItem(account, user);
-		if (resourceItem == null)
-			return StatusMode.unavailable;
-		return resourceItem.getStatusMode();
+		return PresenceManager.getInstance().getStatusMode(account, user);
 	}
 
 	public String getStatusText() {
-		ResourceItem resourceItem = PresenceManager.getInstance()
-				.getResourceItem(account, user);
-		if (resourceItem == null)
-			return "";
-		return resourceItem.getStatusText();
+		return PresenceManager.getInstance().getStatusText(account, user);
 	}
 
 	public ClientSoftware getClientSoftware() {

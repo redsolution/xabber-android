@@ -25,9 +25,7 @@ import org.jivesoftware.smackx.packet.MUCUser;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
@@ -50,21 +48,9 @@ public class RegularChat extends AbstractChat {
 	 */
 	private String resource;
 
-	/**
-	 * Previous status text.
-	 */
-	private String statusText;
-
-	/**
-	 * Previous status mode.
-	 */
-	private StatusMode statusMode;
-
 	RegularChat(String account, String user) {
 		super(account, user);
 		resource = null;
-		statusMode = null;
-		statusText = null;
 	}
 
 	public String getResource() {
@@ -139,28 +125,6 @@ public class RegularChat extends AbstractChat {
 					&& presence.getType() == Presence.Type.unavailable
 					&& this.resource.equals(resource))
 				this.resource = null;
-			if (presence.getType() == Presence.Type.error)
-				return true;
-			StatusMode mode = StatusMode.createStatusMode(presence);
-			String status = presence.getStatus();
-			ChatAction action;
-			boolean skip = statusText == null;
-			if (status == null)
-				status = "";
-			if (mode == statusMode && status.equals(statusText))
-				return true;
-			if (mode != statusMode) {
-				statusMode = mode;
-				action = ChatAction.getChatAction(presence);
-			} else {
-				action = ChatAction.status;
-			}
-			statusText = status;
-			if (skip || !active)
-				return true;
-			if (SettingsManager.chatsShowStatusChange() != ChatsShowStatusChange.always)
-				return true;
-			newAction(resource, status, action);
 		} else if (packet instanceof Message) {
 			final Message message = (Message) packet;
 			if (message.getType() == Message.Type.error)

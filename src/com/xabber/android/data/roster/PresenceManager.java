@@ -207,6 +207,20 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 		return container.getResourceItems();
 	}
 
+	public StatusMode getStatusMode(String account, String bareAddress) {
+		ResourceItem resourceItem = getResourceItem(account, bareAddress);
+		if (resourceItem == null)
+			return StatusMode.unavailable;
+		return resourceItem.getStatusMode();
+	}
+
+	public String getStatusText(String account, String bareAddress) {
+		ResourceItem resourceItem = getResourceItem(account, bareAddress);
+		if (resourceItem == null)
+			return "";
+		return resourceItem.getStatusText();
+	}
+
 	@Override
 	public void onPacket(ConnectionItem connection, String bareAddress,
 			Packet packet) {
@@ -241,7 +255,10 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 				resourceItem = null;
 			else
 				resourceItem = resourceContainer.get(resource);
+			StatusMode previousStatusMode = getStatusMode(account, bareAddress);
+			String previousStatusText = getStatusText(account, bareAddress);
 			if (presence.getType() == Type.available) {
+				StatusMode statusMode = StatusMode.createStatusMode(presence);
 				String statusText = presence.getStatus();
 				int priority = presence.getPriority();
 				if (statusText == null)
@@ -255,13 +272,11 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 								resourceContainer);
 					}
 					resourceContainer.put(resource, new ResourceItem(verbose,
-							StatusMode.createStatusMode(presence), statusText,
-							priority));
+							statusMode, statusText, priority));
 					resourceContainer.updateBest();
 				} else {
 					resourceItem.setVerbose(verbose);
-					resourceItem.setStatusMode(StatusMode
-							.createStatusMode(presence));
+					resourceItem.setStatusMode(statusMode);
 					resourceItem.setStatusText(statusText);
 					resourceItem.setPriority(priority);
 					resourceContainer.updateBest();
@@ -276,6 +291,22 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 					resourceContainer.updateBest();
 				}
 			}
+
+			// Notify about changes
+			StatusMode newStatusMode = getStatusMode(account, bareAddress);
+			String newStatusText = getStatusText(account, bareAddress);
+			if (previousStatusMode != newStatusMode
+					|| !previousStatusText.equals(newStatusText))
+				for (OnStatusChangeListener listener : Application
+						.getInstance()
+						.getManagers(OnStatusChangeListener.class))
+					if (previousStatusMode == newStatusMode)
+						listener.onStatusChanged(account, bareAddress,
+								resource, newStatusText);
+					else
+						listener.onStatusChanged(account, bareAddress,
+								resource, newStatusMode, newStatusText);
+
 			RosterContact rosterContact = RosterManager.getInstance()
 					.getRosterContact(account, bareAddress);
 			if (rosterContact != null) {
@@ -286,6 +317,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 								OnRosterChangedListener.class))
 					listener.onPresenceChanged(rosterContacts);
 			}
+
 			RosterManager.getInstance().onContactChanged(account, bareAddress);
 		} else if (packet instanceof RosterPacket
 				&& ((RosterPacket) packet).getType() != IQ.Type.ERROR) {
