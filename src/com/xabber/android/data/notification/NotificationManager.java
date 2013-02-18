@@ -394,7 +394,7 @@ public class NotificationManager implements OnInitializedListener,
 			if (Application.SDK_INT >= 14 && SettingsManager.eventsPersistent()) {
 				// Ongoing icons are in the left side, so hide this one.
 				notification.icon = R.drawable.ic_placeholder;
-				notification.when = Long.MIN_VALUE;
+				notification.when = 0;
 			} else {
 				// Ongoing icons are in the right side, so show this one.
 				updateNotification(notification, ticker);
@@ -450,11 +450,10 @@ public class NotificationManager implements OnInitializedListener,
 				updateNotification(persistentNotification, ticker);
 			} else {
 				persistentNotification.icon = R.drawable.ic_placeholder;
-				persistentNotification.when = Application.SDK_INT >= 9 ? -Long.MAX_VALUE
-						: Long.MAX_VALUE;
+				persistentNotification.when = 0;
 			}
 		}
-
+		
 		if (SettingsManager.eventsPersistent()) {
 			notify(PERSISTENT_NOTIFICATION_ID, persistentNotification);
 		} else {
