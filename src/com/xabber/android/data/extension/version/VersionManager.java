@@ -50,9 +50,7 @@ public class VersionManager implements OnPacketListener {
 		return instance;
 	}
 	
-	private VersionManager() {
-		super();
-	}
+	private VersionManager() {}
 	
 	@Override
 	public void onPacket(ConnectionItem connection, String bareAddress,
