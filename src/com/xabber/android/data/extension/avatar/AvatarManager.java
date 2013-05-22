@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
@@ -479,9 +480,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
 	}
 
 	private int getLauncherLargeIconSize() {
-		if (Application.SDK_INT < 9)
+		if (Build.VERSION.SDK_INT < 9)
 			return BaseShortcutHelper.getLauncherLargeIconSize();
-		else if (Application.SDK_INT < 11)
+		else if (Build.VERSION.SDK_INT < 11)
 			return GingerbreadShortcutHelper.getLauncherLargeIconSize();
 		else
 			return HoneycombShortcutHelper.getLauncherLargeIconSize();

@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.widget.RemoteViews;
@@ -391,7 +392,8 @@ public class NotificationManager implements OnInitializedListener,
 			chatViews.setTextViewText(R.id.text, status);
 
 			Notification notification = new Notification();
-			if (Application.SDK_INT >= 14 && SettingsManager.eventsPersistent()) {
+			if (Build.VERSION.SDK_INT >= 14
+					&& SettingsManager.eventsPersistent()) {
 				// Ongoing icons are in the left side, so hide this one.
 				notification.icon = R.drawable.ic_placeholder;
 				notification.when = 0;
@@ -429,7 +431,7 @@ public class NotificationManager implements OnInitializedListener,
 		persistentNotification.defaults = 0;
 		persistentNotification.sound = null;
 		persistentNotification.tickerText = null;
-		if (Application.SDK_INT >= 14 && SettingsManager.eventsPersistent()) {
+		if (Build.VERSION.SDK_INT >= 14 && SettingsManager.eventsPersistent()) {
 			// Ongoing icons are in the left side, so always use it.
 			persistentNotification.when = startTime;
 			if (messageNotifications.isEmpty()) {
@@ -453,7 +455,7 @@ public class NotificationManager implements OnInitializedListener,
 				persistentNotification.when = 0;
 			}
 		}
-		
+
 		if (SettingsManager.eventsPersistent()) {
 			notify(PERSISTENT_NOTIFICATION_ID, persistentNotification);
 		} else {

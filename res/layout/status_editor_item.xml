@@ -14,7 +14,7 @@
 -->
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:padding="4dip">
@@ -25,7 +25,7 @@
 		android:src="@drawable/ic_status" />
     <TextView
         android:id="@+id/name"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
     	android:layout_height="42dip"
         android:layout_marginLeft="6dip"
         android:singleLine="true"

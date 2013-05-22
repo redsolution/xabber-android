@@ -15,16 +15,16 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
     <include layout="@layout/contact_title" />
 
 	<ScrollView
 	    android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
 	    android:paddingTop="8dip"
 	    android:paddingBottom="4dip"
 	    android:paddingLeft="2dip"
@@ -33,50 +33,50 @@
 
 		<LinearLayout
 		    android:orientation="vertical"
-		    android:layout_width="fill_parent"
-		    android:layout_height="fill_parent"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
 		    >
 
 		    <TextView
 		        android:text="@string/otr_question_description"
-		        android:layout_width="fill_parent"
+		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        android:paddingBottom="8dip"
 		        />
 
 		    <TextView
 		        android:text="@string/otr_question"
-		        android:layout_width="fill_parent"
+		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        />
 
 		    <EditText
 		        android:id="@+id/question"
-		        android:layout_width="fill_parent"
+		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        />
 
 		    <TextView
 		        android:text="@string/otr_answer"
-		        android:layout_width="fill_parent"
+		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        />
 
 		    <EditText
 		        android:id="@+id/answer"
-		        android:layout_width="fill_parent"
+		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
 		        />
 
 			<LinearLayout
 			    android:orientation="horizontal"
-			    android:layout_width="fill_parent"
-			    android:layout_height="fill_parent"
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent"
 			    >
 
 			    <Button
 			        android:id="@+id/send"
-			        android:layout_width="fill_parent"
+			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:layout_weight="1"
 			        android:text="@string/chat_send"
@@ -84,7 +84,7 @@
 
 			    <Button
 			        android:id="@+id/cancel"
-			        android:layout_width="fill_parent"
+			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:layout_weight="1"
 			        android:text="@android:string/cancel"

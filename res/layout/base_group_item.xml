@@ -14,7 +14,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/expander_height"
     android:gravity="center_vertical|left"
     android:background="@drawable/expander_background_dark"
@@ -29,7 +29,7 @@
         />
     <TextView
         android:id="@+id/name"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/expander_height"
         android:gravity="center_vertical"
         android:layout_marginRight="@dimen/expander_text_margin_right"

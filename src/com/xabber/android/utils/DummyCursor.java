@@ -209,4 +209,9 @@ public class DummyCursor implements Cursor {
 		return null;
 	}
 
+	@Override
+	public int getType(int arg0) {
+		return 0;
+	}
+
 }
