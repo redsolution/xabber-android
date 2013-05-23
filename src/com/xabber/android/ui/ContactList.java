@@ -80,10 +80,13 @@ import com.xabber.android.ui.adapter.AccountToggleAdapter;
 import com.xabber.android.ui.adapter.ContactListAdapter;
 import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.dialog.AccountChooseDialogBuilder;
-import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
+import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
+import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.DialogBuilder;
+import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
+import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -150,10 +153,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_NORMAL_ID = 0x42;
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_NEVER_ID = 0x43;
 
-	private static final int DIALOG_DELETE_CONTACT_ID = 0x50;
-	private static final int DIALOG_DELETE_GROUP_ID = 0x51;
-	private static final int DIALOG_START_AT_BOOT_ID = 0x53;
-	private static final int DIALOG_CONTACT_INTEGRATION_ID = 0x54;
 	private static final int DIALOG_OPEN_WITH_ACCOUNT_ID = 0x55;
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
@@ -388,13 +387,15 @@ public class ContactList extends ManagedListActivity implements
 			if (SettingsManager.bootCount() > 2
 					&& !SettingsManager.connectionStartAtBoot()
 					&& !SettingsManager.startAtBootSuggested())
-				showDialog(DIALOG_START_AT_BOOT_ID);
+				StartAtBootDialogFragment.newInstance().show(
+						getSupportFragmentManager(), "START_AT_BOOT");
 			if (!SettingsManager.contactIntegrationSuggested()
 					&& Application.getInstance().isContactsSupported()) {
 				if (AccountManager.getInstance().getAllAccounts().isEmpty())
 					SettingsManager.setContactIntegrationSuggested();
 				else
-					showDialog(DIALOG_CONTACT_INTEGRATION_ID);
+					ContactIntegrationDialogFragment.newInstance().show(
+							getSupportFragmentManager(), "CONTACT_INTEGRATION");
 			}
 		}
 	}
@@ -653,7 +654,10 @@ public class ContactList extends ManagedListActivity implements
 					actionWithUser));
 			return true;
 		case CONTEXT_MENU_DELETE_CONTACT_ID:
-			showDialog(DIALOG_DELETE_CONTACT_ID);
+			ContactDeleteDialogFragment.newInstance(
+					actionWithAccount == GroupManager.NO_ACCOUNT ? null
+							: actionWithAccount, actionWithUser).show(
+					getSupportFragmentManager(), "CONTACT_DELETE");
 			return true;
 		case CONTEXT_MENU_EDIT_ROOM_ID:
 			startActivity(MUCEditor.createIntent(this, actionWithAccount,
@@ -716,7 +720,10 @@ public class ContactList extends ManagedListActivity implements
 					getSupportFragmentManager(), "GROUP_RENAME");
 			return true;
 		case CONTEXT_MENU_GROUP_DELETE_ID:
-			showDialog(DIALOG_DELETE_GROUP_ID);
+			GroupDeleteDialogFragment.newInstance(
+					actionWithAccount == GroupManager.NO_ACCOUNT ? null
+							: actionWithAccount, actionWithGroup).show(
+					getSupportFragmentManager(), "GROUP_DELETE");
 			return true;
 
 			// Account
@@ -776,34 +783,6 @@ public class ContactList extends ManagedListActivity implements
 	protected Dialog onCreateDialog(int id) {
 		super.onCreateDialog(id);
 		switch (id) {
-		case DIALOG_DELETE_CONTACT_ID:
-			int resource;
-			if (MUCManager.getInstance().hasRoom(actionWithAccount,
-					actionWithUser))
-				resource = R.string.muc_delete_confirm;
-			else
-				resource = R.string.contact_delete_confirm;
-			return new ConfirmDialogBuilder(this, DIALOG_DELETE_CONTACT_ID,
-					this).setMessage(
-					getString(
-							resource,
-							RosterManager.getInstance().getName(
-									actionWithAccount, actionWithUser),
-							AccountManager.getInstance().getVerboseName(
-									actionWithAccount))).create();
-		case DIALOG_DELETE_GROUP_ID:
-			return new ConfirmDialogBuilder(this, DIALOG_DELETE_GROUP_ID, this)
-					.setMessage(
-							getString(R.string.group_remove_confirm,
-									actionWithGroup)).create();
-		case DIALOG_START_AT_BOOT_ID:
-			return new ConfirmDialogBuilder(this, DIALOG_START_AT_BOOT_ID, this)
-					.setMessage(getString(R.string.start_at_boot_suggest))
-					.create();
-		case DIALOG_CONTACT_INTEGRATION_ID:
-			return new ConfirmDialogBuilder(this,
-					DIALOG_CONTACT_INTEGRATION_ID, this).setMessage(
-					getString(R.string.contact_integration_suggest)).create();
 		case DIALOG_OPEN_WITH_ACCOUNT_ID:
 			return new AccountChooseDialogBuilder(this,
 					DIALOG_OPEN_WITH_ACCOUNT_ID, this, openDialogUser).create();
@@ -1020,43 +999,6 @@ public class ContactList extends ManagedListActivity implements
 	@Override
 	public void onAccept(DialogBuilder dialogBuilder) {
 		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_DELETE_CONTACT_ID:
-			if (MUCManager.getInstance().hasRoom(actionWithAccount,
-					actionWithUser)) {
-				MUCManager.getInstance().removeRoom(actionWithAccount,
-						actionWithUser);
-				MessageManager.getInstance().closeChat(actionWithAccount,
-						actionWithUser);
-				NotificationManager.getInstance().removeMessageNotification(
-						actionWithAccount, actionWithUser);
-			} else
-				try {
-					RosterManager.getInstance().removeContact(
-							actionWithAccount, actionWithUser);
-				} catch (NetworkException e) {
-					Application.getInstance().onError(e);
-				}
-			break;
-		case DIALOG_DELETE_GROUP_ID:
-			try {
-				if (actionWithAccount == GroupManager.NO_ACCOUNT)
-					RosterManager.getInstance().removeGroup(actionWithGroup);
-				else
-					RosterManager.getInstance().removeGroup(actionWithAccount,
-							actionWithGroup);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			break;
-		case DIALOG_START_AT_BOOT_ID:
-			SettingsManager.setStartAtBootSuggested();
-			SettingsManager.setConnectionStartAtBoot(true);
-			break;
-		case DIALOG_CONTACT_INTEGRATION_ID:
-			SettingsManager.setContactIntegrationSuggested();
-			for (String account : AccountManager.getInstance().getAllAccounts())
-				AccountManager.getInstance().setSyncable(account, true);
-			break;
 		case DIALOG_OPEN_WITH_ACCOUNT_ID:
 			BaseEntity baseEntity = new BaseEntity(
 					((AccountChooseDialogBuilder) dialogBuilder).getSelected(),
@@ -1068,14 +1010,6 @@ public class ContactList extends ManagedListActivity implements
 
 	@Override
 	public void onDecline(DialogBuilder dialogBuilder) {
-		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_START_AT_BOOT_ID:
-			SettingsManager.setStartAtBootSuggested();
-			break;
-		case DIALOG_CONTACT_INTEGRATION_ID:
-			SettingsManager.setContactIntegrationSuggested();
-			break;
-		}
 	}
 
 	@Override
