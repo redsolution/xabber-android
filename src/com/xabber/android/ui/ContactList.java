@@ -83,7 +83,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
-import com.xabber.android.ui.dialog.GroupRenameDialogBuilder;
+import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -152,7 +152,6 @@ public class ContactList extends ManagedListActivity implements
 
 	private static final int DIALOG_DELETE_CONTACT_ID = 0x50;
 	private static final int DIALOG_DELETE_GROUP_ID = 0x51;
-	private static final int DIALOG_RENAME_GROUP_ID = 0x52;
 	private static final int DIALOG_START_AT_BOOT_ID = 0x53;
 	private static final int DIALOG_CONTACT_INTEGRATION_ID = 0x54;
 	private static final int DIALOG_OPEN_WITH_ACCOUNT_ID = 0x55;
@@ -709,7 +708,12 @@ public class ContactList extends ManagedListActivity implements
 
 			// Group
 		case CONTEXT_MENU_GROUP_RENAME_ID:
-			showDialog(DIALOG_RENAME_GROUP_ID);
+			GroupRenameDialogFragment.newInstance(
+					actionWithAccount == GroupManager.NO_ACCOUNT ? null
+							: actionWithAccount,
+					actionWithGroup == GroupManager.NO_GROUP ? null
+							: actionWithGroup).show(
+					getSupportFragmentManager(), "GROUP_RENAME");
 			return true;
 		case CONTEXT_MENU_GROUP_DELETE_ID:
 			showDialog(DIALOG_DELETE_GROUP_ID);
@@ -792,10 +796,6 @@ public class ContactList extends ManagedListActivity implements
 					.setMessage(
 							getString(R.string.group_remove_confirm,
 									actionWithGroup)).create();
-		case DIALOG_RENAME_GROUP_ID:
-			return new GroupRenameDialogBuilder(this, DIALOG_RENAME_GROUP_ID,
-					this, actionWithGroup == GroupManager.NO_GROUP ? ""
-							: actionWithGroup).create();
 		case DIALOG_START_AT_BOOT_ID:
 			return new ConfirmDialogBuilder(this, DIALOG_START_AT_BOOT_ID, this)
 					.setMessage(getString(R.string.start_at_boot_suggest))
@@ -1044,20 +1044,6 @@ public class ContactList extends ManagedListActivity implements
 				else
 					RosterManager.getInstance().removeGroup(actionWithAccount,
 							actionWithGroup);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			break;
-		case DIALOG_RENAME_GROUP_ID:
-			String name = ((GroupRenameDialogBuilder) dialogBuilder).getName();
-			String source = actionWithGroup == GroupManager.NO_GROUP ? null
-					: actionWithGroup;
-			try {
-				if (actionWithAccount == GroupManager.NO_ACCOUNT)
-					RosterManager.getInstance().renameGroup(source, name);
-				else
-					RosterManager.getInstance().renameGroup(actionWithAccount,
-							source, name);
 			} catch (NetworkException e) {
 				Application.getInstance().onError(e);
 			}
