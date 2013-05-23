@@ -14,9 +14,11 @@
  */
 package com.xabber.android.ui.helper;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.xabber.android.data.ActivityManager;
 
@@ -28,7 +30,7 @@ import com.xabber.android.data.ActivityManager;
  * @author alexander.ivanov
  * 
  */
-public abstract class ManagedListActivity extends ListActivity {
+public abstract class ManagedListActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,14 @@ public abstract class ManagedListActivity extends ListActivity {
 	public void startActivityForResult(Intent intent, int requestCode) {
 		ActivityManager.getInstance().updateIntent(this, intent);
 		super.startActivityForResult(intent, requestCode);
+	}
+
+	public ListView getListView() {
+		return (ListView) findViewById(android.R.id.list);
+	}
+
+	public void setListAdapter(ListAdapter adapter) {
+		getListView().setAdapter(adapter);
 	}
 
 }

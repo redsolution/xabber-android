@@ -52,7 +52,7 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 
 	private T actionWith;
 
-	private BaseListEditorAdapter<T> adapter;
+	protected BaseListEditorAdapter<T> adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

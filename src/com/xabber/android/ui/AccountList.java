@@ -28,7 +28,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
-import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.BaseListEditor;
 import com.xabber.androiddev.R;
 
@@ -119,7 +118,7 @@ public class AccountList extends BaseListEditor<String> implements
 
 	@Override
 	public void onAccountsChanged(Collection<String> accounts) {
-		((UpdatableAdapter) getListAdapter()).onChange();
+		adapter.onChange();
 	}
 
 	@Override
