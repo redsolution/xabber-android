@@ -79,7 +79,8 @@ import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.AccountToggleAdapter;
 import com.xabber.android.ui.adapter.ContactListAdapter;
 import com.xabber.android.ui.adapter.GroupConfiguration;
-import com.xabber.android.ui.dialog.AccountChooseDialogBuilder;
+import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
+import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
@@ -101,7 +102,7 @@ import com.xabber.xmpp.uri.XMPPUri;
 public class ContactList extends ManagedListActivity implements
 		OnContactChangedListener, OnAccountChangedListener,
 		OnChatChangedListener, View.OnClickListener, ConfirmDialogListener,
-		OnItemClickListener, OnLongClickListener {
+		OnItemClickListener, OnLongClickListener, OnChoosedListener {
 
 	/**
 	 * Select contact to be invited to the room was requested.
@@ -115,8 +116,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final String SAVED_ACTION_WITH_GROUP = "com.xabber.android.ui.ContactList.SAVED_ACTION_WITH_GROUP";
 	private static final String SAVED_ACTION_WITH_USER = "com.xabber.android.ui.ContactList.SAVED_ACTION_WITH_USER";
 	private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
-	private static final String SAVED_OPEN_DIALOG_USER = "com.xabber.android.ui.ContactList.SAVED_OPEN_DIALOG_USER";
-	private static final String SAVED_OPEN_DIALOG_TEXT = "com.xabber.android.ui.ContactList.SAVED_OPEN_DIALOG_TEXT";
 
 	private static final int OPTION_MENU_ADD_CONTACT_ID = 0x02;
 	private static final int OPTION_MENU_STATUS_EDITOR_ID = 0x04;
@@ -153,7 +152,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_NORMAL_ID = 0x42;
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_NEVER_ID = 0x43;
 
-	private static final int DIALOG_OPEN_WITH_ACCOUNT_ID = 0x55;
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
 	/**
@@ -178,8 +176,6 @@ public class ContactList extends ManagedListActivity implements
 	private String actionWithGroup;
 	private String actionWithUser;
 	private String sendText;
-	private String openDialogUser;
-	private String openDialogText;
 
 	/**
 	 * Title view.
@@ -240,18 +236,12 @@ public class ContactList extends ManagedListActivity implements
 			actionWithUser = savedInstanceState
 					.getString(SAVED_ACTION_WITH_USER);
 			sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
-			openDialogUser = savedInstanceState
-					.getString(SAVED_OPEN_DIALOG_USER);
-			openDialogText = savedInstanceState
-					.getString(SAVED_OPEN_DIALOG_TEXT);
 			action = savedInstanceState.getString(SAVED_ACTION);
 		} else {
 			actionWithAccount = null;
 			actionWithGroup = null;
 			actionWithUser = null;
 			sendText = null;
-			openDialogUser = null;
-			openDialogText = null;
 			action = getIntent().getAction();
 		}
 		getIntent().setAction(null);
@@ -273,8 +263,6 @@ public class ContactList extends ManagedListActivity implements
 		outState.putString(SAVED_ACTION_WITH_GROUP, actionWithGroup);
 		outState.putString(SAVED_ACTION_WITH_USER, actionWithUser);
 		outState.putString(SAVED_SEND_TEXT, sendText);
-		outState.putString(SAVED_OPEN_DIALOG_USER, openDialogUser);
-		outState.putString(SAVED_OPEN_DIALOG_TEXT, openDialogText);
 	}
 
 	/**
@@ -313,9 +301,8 @@ public class ContactList extends ManagedListActivity implements
 					text);
 			return;
 		}
-		openDialogUser = bareAddress;
-		openDialogText = text;
-		showDialog(DIALOG_OPEN_WITH_ACCOUNT_ID);
+		AccountChooseDialogFragment.newInstance(bareAddress, text).show(
+				getSupportFragmentManager(), "OPEN_WITH_ACCOUNT");
 	}
 
 	/**
@@ -783,9 +770,6 @@ public class ContactList extends ManagedListActivity implements
 	protected Dialog onCreateDialog(int id) {
 		super.onCreateDialog(id);
 		switch (id) {
-		case DIALOG_OPEN_WITH_ACCOUNT_ID:
-			return new AccountChooseDialogBuilder(this,
-					DIALOG_OPEN_WITH_ACCOUNT_ID, this, openDialogUser).create();
 		case DIALOG_CLOSE_APPLICATION_ID:
 			ProgressDialog progressDialog = new ProgressDialog(this);
 			progressDialog
@@ -997,15 +981,12 @@ public class ContactList extends ManagedListActivity implements
 	}
 
 	@Override
+	public void onChoosed(String account, String user, String text) {
+		openChat(new BaseEntity(account, user), text);
+	}
+
+	@Override
 	public void onAccept(DialogBuilder dialogBuilder) {
-		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_OPEN_WITH_ACCOUNT_ID:
-			BaseEntity baseEntity = new BaseEntity(
-					((AccountChooseDialogBuilder) dialogBuilder).getSelected(),
-					openDialogUser);
-			openChat(baseEntity, openDialogText);
-			break;
-		}
 	}
 
 	@Override
