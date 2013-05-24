@@ -205,7 +205,6 @@ public class ContactAdd extends GroupListActivity implements
 
 	@Override
 	public void onAccept(DialogBuilder dialogBuilder) {
-		super.onAccept(dialogBuilder);
 		switch (dialogBuilder.getDialogId()) {
 		case DIALOG_SUBSCRIPTION_REQUEST_ID:
 			try {
@@ -222,7 +221,6 @@ public class ContactAdd extends GroupListActivity implements
 
 	@Override
 	public void onDecline(DialogBuilder dialogBuilder) {
-		super.onDecline(dialogBuilder);
 		switch (dialogBuilder.getDialogId()) {
 		case DIALOG_SUBSCRIPTION_REQUEST_ID:
 			try {
@@ -239,7 +237,6 @@ public class ContactAdd extends GroupListActivity implements
 
 	@Override
 	public void onCancel(DialogBuilder dialogBuilder) {
-		super.onCancel(dialogBuilder);
 		switch (dialogBuilder.getDialogId()) {
 		case DIALOG_SUBSCRIPTION_REQUEST_ID:
 			finish();

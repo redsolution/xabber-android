@@ -14,6 +14,8 @@
  */
 package com.xabber.android.ui.dialog;
 
+import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -42,6 +44,12 @@ public abstract class AbstractDialogFragment extends DialogFragment {
 
 	protected AbstractDialogFragment putAgrument(String key, String value) {
 		initArguments().putString(key, value);
+		return this;
+	}
+
+	protected AbstractDialogFragment putAgrument(String key,
+			ArrayList<String> value) {
+		initArguments().putStringArrayList(key, value);
 		return this;
 	}
 

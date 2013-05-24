@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,9 +29,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.xabber.android.ui.dialog.ConfirmDialogListener;
-import com.xabber.android.ui.dialog.DialogBuilder;
-import com.xabber.android.ui.dialog.GroupAddDialogBuilder;
+import com.xabber.android.ui.dialog.GroupAddDialogFragment;
+import com.xabber.android.ui.dialog.GroupAddDialogFragment.OnGroupAddConfirmed;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
@@ -43,14 +41,12 @@ import com.xabber.androiddev.R;
  * 
  */
 public abstract class GroupListActivity extends ManagedListActivity implements
-		ConfirmDialogListener, OnItemClickListener {
+		OnItemClickListener, OnGroupAddConfirmed {
 
 	private static final String SAVED_GROUPS = "com.xabber.android.ui.ContactList.SAVED_GROUPS";
 	private static final String SAVED_SELECTED = "com.xabber.android.ui.ContactList.SAVED_SELECTED";
 
 	static final int OPTION_MENU_ADD_GROUP_ID = 1;
-
-	static final int DIALOG_ADD_GROUP_ID = 0x10;
 
 	private ArrayAdapter<String> arrayAdapter;
 
@@ -148,29 +144,22 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case OPTION_MENU_ADD_GROUP_ID:
-			showDialog(DIALOG_ADD_GROUP_ID);
+			showGroupAddDialog();
 			return true;
 		}
 		return false;
 	}
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		super.onCreateDialog(id);
-		switch (id) {
-		case DIALOG_ADD_GROUP_ID:
-			return new GroupAddDialogBuilder(this, DIALOG_ADD_GROUP_ID, this,
-					getGroups()).create();
-		default:
-			return null;
-		}
+	private void showGroupAddDialog() {
+		GroupAddDialogFragment.newInstance(getGroups()).show(
+				getSupportFragmentManager(), "GROUP-ADD");
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		if (listView.getItemAtPosition(position) == null) // Footer
-			showDialog(DIALOG_ADD_GROUP_ID);
+			showGroupAddDialog();
 	}
 
 	/**
@@ -192,24 +181,12 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 	}
 
 	@Override
-	public void onAccept(DialogBuilder dialog) {
-		switch (dialog.getDialogId()) {
-		case DIALOG_ADD_GROUP_ID:
-			String group = ((GroupAddDialogBuilder) dialog).getName();
-			ArrayList<String> groups = getGroups();
-			groups.add(group);
-			ArrayList<String> selected = getSelected();
-			selected.add(group);
-			setGroups(groups, selected);
-		}
-	}
-
-	@Override
-	public void onDecline(DialogBuilder dialog) {
-	}
-
-	@Override
-	public void onCancel(DialogBuilder dialog) {
+	public void onGroupAddConfirmed(String group) {
+		ArrayList<String> groups = getGroups();
+		groups.add(group);
+		ArrayList<String> selected = getSelected();
+		selected.add(group);
+		setGroups(groups, selected);
 	}
 
 }
