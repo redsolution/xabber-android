@@ -20,7 +20,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.ContactAdd;
+import com.xabber.android.ui.ContactSubscription;
 import com.xabber.androiddev.R;
 
 public class SubscriptionRequest extends BaseEntity implements
@@ -32,7 +32,7 @@ public class SubscriptionRequest extends BaseEntity implements
 
 	@Override
 	public Intent getIntent() {
-		return ContactAdd.createSubscriptionIntent(Application.getInstance(),
+		return ContactSubscription.createIntent(Application.getInstance(),
 				account, user);
 	}
 

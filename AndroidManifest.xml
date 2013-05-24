@@ -171,6 +171,9 @@
             android:theme="@style/Theme.NoTitleBar"
             />
         <activity
+            android:name="com.xabber.android.ui.ContactSubscription"
+            />
+        <activity
             android:name="com.xabber.android.ui.CertificateConfirmation"
             />
         <activity
