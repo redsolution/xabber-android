@@ -14,14 +14,10 @@
  */
 package com.xabber.android.ui;
 
-import java.io.File;
 import java.util.Collection;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.ClipboardManager;
 import android.view.ContextMenu;
@@ -38,7 +34,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
@@ -67,9 +62,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.adapter.OnTextChangedListener;
-import com.xabber.android.ui.dialog.ConfirmDialogListener;
-import com.xabber.android.ui.dialog.DialogBuilder;
-import com.xabber.android.ui.dialog.ExportChatDialogBuilder;
+import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.widget.PageSwitcher;
 import com.xabber.android.ui.widget.PageSwitcher.OnSelectListener;
@@ -87,8 +80,7 @@ import com.xabber.androiddev.R;
 public class ChatViewer extends ManagedActivity implements
 		View.OnClickListener, View.OnKeyListener, OnSelectListener,
 		OnChatChangedListener, OnContactChangedListener,
-		OnAccountChangedListener, OnEditorActionListener,
-		ConfirmDialogListener, OnTextChangedListener {
+		OnAccountChangedListener, OnEditorActionListener, OnTextChangedListener {
 
 	/**
 	 * Attention request.
@@ -132,8 +124,6 @@ public class ChatViewer extends ManagedActivity implements
 	private static final int CONTEXT_MENU_REPEAT_ID = 0x101;
 	private static final int CONTEXT_MENU_COPY_ID = 0x102;
 	private static final int CONTEXT_MENU_REMOVE_ID = 0x103;
-
-	private static final int DIALOG_EXPORT_CHAT_ID = 0x200;
 
 	private ChatViewerAdapter chatViewerAdapter;
 	private PageSwitcher pageSwitcher;
@@ -392,7 +382,9 @@ public class ChatViewer extends ManagedActivity implements
 					.setText("");
 			return true;
 		case OPTION_MENU_EXPORT_CHAT_ID:
-			showDialog(DIALOG_EXPORT_CHAT_ID);
+			ChatExportDialogFragment.newInstance(actionWithAccount,
+					actionWithUser).show(getSupportFragmentManager(),
+					"CHAT_EXPORT");
 			return true;
 		case OPTION_MENU_CALL_ATTENTION_ID:
 			try {
@@ -538,18 +530,6 @@ public class ChatViewer extends ManagedActivity implements
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		super.onCreateDialog(id);
-		switch (id) {
-		case DIALOG_EXPORT_CHAT_ID:
-			return new ExportChatDialogBuilder(this, DIALOG_EXPORT_CHAT_ID,
-					this, actionWithAccount, actionWithUser).create();
-		default:
-			return null;
-		}
 	}
 
 	@Override
@@ -739,66 +719,6 @@ public class ChatViewer extends ManagedActivity implements
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	public void onAccept(DialogBuilder dialogBuilder) {
-		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_EXPORT_CHAT_ID:
-			ExportChatDialogBuilder builder = (ExportChatDialogBuilder) dialogBuilder;
-			exportChat(builder);
-		}
-	}
-	
-	private void exportChat(ExportChatDialogBuilder dialogBuilder) {
-		//TODO: retain AsyncTask via retained fragment
-		new ChatExportAsyncTask(dialogBuilder).execute();
-	}
-	
-	private class ChatExportAsyncTask extends AsyncTask<Void, Void, File> {
-		private ExportChatDialogBuilder builder;
-		
-		public ChatExportAsyncTask(ExportChatDialogBuilder builder) {
-			this.builder = builder;
-		}
-		
-		@Override
-		protected File doInBackground(Void... params) {
-			File file = null;
-			try {
-				file = MessageManager.getInstance().exportChat(
-						actionWithAccount, actionWithUser, builder.getName());
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return file;
-		}
-		
-		@Override
-		public void onPostExecute(File result) {
-			if (result != null) {
-				if (builder.isSendChecked()) {
-					Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-					intent.setType("text/plain");
-					Uri uri = Uri.fromFile(result);
-					intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
-					startActivity(Intent.createChooser(intent,
-							getString(R.string.export_chat)));
-				} else {
-					Toast.makeText(ChatViewer.this, R.string.export_chat_done,
-							Toast.LENGTH_LONG).show();
-				}
-			}
-		}
-		
-	}
-
-	@Override
-	public void onDecline(DialogBuilder dialogBuilder) {
-	}
-
-	@Override
-	public void onCancel(DialogBuilder dialogBuilder) {
 	}
 
 	private boolean selectChat(String account, String user) {
