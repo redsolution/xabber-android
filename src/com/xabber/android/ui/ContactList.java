@@ -141,12 +141,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int CONTEXT_MENU_GROUP_RENAME_ID = 0x31;
 	private static final int CONTEXT_MENU_GROUP_DELETE_ID = 0x32;
 
-	private static final int CONTEXT_MENU_ACCOUNT_EDITOR_ID = 0x33;
-	private static final int CONTEXT_MENU_ACCOUNT_STATUS_ID = 0x34;
-	private static final int CONTEXT_MENU_ACCOUNT_ADD_CONTACT_ID = 0x35;
-	private static final int CONTEXT_MENU_ACCOUNT_RECONNECT_ID = 0x39;
-	private static final int CONTEXT_MENU_ACCOUNT_VCARD_ID = 0x3A;
-
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID = 0x40;
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_ALWAYS_ID = 0x41;
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_NORMAL_ID = 0x42;
@@ -497,8 +491,8 @@ public class ContactList extends ManagedListActivity implements
 			}
 		} else {
 			// Account panel
-			createAccountContextMenu(
-					(String) accountToggleAdapter.getItemForView(view), menu);
+			createAccountContextMenu(accountToggleAdapter.getItemForView(view),
+					menu);
 		}
 	}
 
@@ -568,29 +562,56 @@ public class ContactList extends ManagedListActivity implements
 					createOfflineModeContextMenu(menu);
 	}
 
-	private void createAccountContextMenu(String account, ContextMenu menu) {
-			actionWithAccount = account;
-			actionWithGroup = null;
-			actionWithUser = null;
-			menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(
-					actionWithAccount));
-			AccountItem accountItem = AccountManager.getInstance().getAccount(
-					actionWithAccount);
-			ConnectionState state = accountItem.getState();
-			if (state == ConnectionState.waiting)
-				menu.add(0, CONTEXT_MENU_ACCOUNT_RECONNECT_ID, 0,
-						getText(R.string.account_reconnect));
-			menu.add(0, CONTEXT_MENU_ACCOUNT_STATUS_ID, 0,
-					getText(R.string.status_editor));
-			menu.add(0, CONTEXT_MENU_ACCOUNT_EDITOR_ID, 0,
-					getText(R.string.account_editor));
-			if (state.isConnected()) {
-				menu.add(0, CONTEXT_MENU_ACCOUNT_VCARD_ID, 0,
-						getText(R.string.contact_viewer));
-				menu.add(0, CONTEXT_MENU_ACCOUNT_ADD_CONTACT_ID, 0,
-						getText(R.string.contact_add));
-			}
-			createOfflineModeContextMenu(menu);
+	private void createAccountContextMenu(final String account, ContextMenu menu) {
+		actionWithAccount = account;
+		actionWithGroup = null;
+		actionWithUser = null;
+		menu.setHeaderTitle(AccountManager.getInstance()
+				.getVerboseName(account));
+		AccountItem accountItem = AccountManager.getInstance().getAccount(
+				account);
+		ConnectionState state = accountItem.getState();
+		if (state == ConnectionState.waiting)
+			menu.add(R.string.account_reconnect).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							if (AccountManager.getInstance()
+									.getAccount(account).updateConnection(true))
+								AccountManager.getInstance().onAccountChanged(
+										account);
+							return true;
+						}
+
+					});
+		menu.add(R.string.status_editor).setIntent(
+				StatusEditor.createIntent(this, account));
+		menu.add(R.string.account_editor).setIntent(
+				AccountEditor.createIntent(this, account));
+		if (state.isConnected()) {
+			menu.add(R.string.contact_viewer).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							String user = AccountManager.getInstance()
+									.getAccount(account).getRealJid();
+							if (user == null)
+								Application.getInstance().onError(
+										R.string.NOT_CONNECTED);
+							else {
+								startActivity(ContactViewer.createIntent(
+										ContactList.this, account, user));
+							}
+							return true;
+						}
+
+					});
+			menu.add(R.string.contact_add).setIntent(
+					ContactAdd.createIntent(this, account));
+		}
+		createOfflineModeContextMenu(menu);
 	}
 
 	private void createOfflineModeContextMenu(ContextMenu menu) {
@@ -717,33 +738,6 @@ public class ContactList extends ManagedListActivity implements
 					getSupportFragmentManager(), "GROUP_DELETE");
 			return true;
 
-			// Account
-		case CONTEXT_MENU_ACCOUNT_RECONNECT_ID:
-			if (AccountManager.getInstance().getAccount(actionWithAccount)
-					.updateConnection(true))
-				AccountManager.getInstance()
-						.onAccountChanged(actionWithAccount);
-			return true;
-		case CONTEXT_MENU_ACCOUNT_VCARD_ID:
-			String user = AccountManager.getInstance()
-					.getAccount(actionWithAccount).getRealJid();
-			if (user == null)
-				Application.getInstance().onError(R.string.NOT_CONNECTED);
-			else {
-				startActivity(ContactViewer.createIntent(this,
-						actionWithAccount, user));
-			}
-			return true;
-		case CONTEXT_MENU_ACCOUNT_EDITOR_ID:
-			startActivity(AccountEditor.createIntent(this, actionWithAccount));
-			return true;
-		case CONTEXT_MENU_ACCOUNT_STATUS_ID:
-			startActivity(StatusEditor.createIntent(this, actionWithAccount));
-			return true;
-		case CONTEXT_MENU_ACCOUNT_ADD_CONTACT_ID:
-			startActivity(ContactAdd.createIntent(this, actionWithAccount));
-			return true;
-
 			// Groups or account
 		case CONTEXT_MENU_SHOW_OFFLINE_ALWAYS_ID:
 			GroupManager.getInstance().setShowOfflineMode(
@@ -840,7 +834,7 @@ public class ContactList extends ManagedListActivity implements
 			scrollUp();
 			break;
 		default:
-			String account = (String) accountToggleAdapter.getItemForView(view);
+			String account = accountToggleAdapter.getItemForView(view);
 			if (account == null) // Check for tap on account in the title
 				break;
 			ListView listView = getListView();
