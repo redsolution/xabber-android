@@ -18,7 +18,6 @@ import java.util.Collection;
 
 import org.jivesoftware.smack.util.StringUtils;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,7 +30,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
@@ -40,26 +38,14 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
-import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
-import com.xabber.android.ui.dialog.ConfirmDialogListener;
-import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
 public class MUCEditor extends ManagedActivity implements View.OnClickListener,
-		OnItemSelectedListener, ConfirmDialogListener {
-
-	/**
-	 * Action for MUC invitation to be show.
-	 * 
-	 * Clear action on dialog dismiss.
-	 */
-	private static final String ACTION_MUC_INVITE = "com.xabber.android.data.MUC_INVITE";
+		OnItemSelectedListener {
 
 	private static final String SAVED_ACCOUNT = "com.xabber.android.ui.MUCEditor.SAVED_ACCOUNT";
 	private static final String SAVED_ROOM = "com.xabber.android.ui.MUCEditor.SAVED_ROOM";
-
-	private static final int DIALOG_MUC_INVITE_ID = 100;
 
 	private String account;
 	private String room;
@@ -68,11 +54,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 	 * Last selected account.
 	 */
 	private int selectedAccount;
-
-	/**
-	 * Invite intent.
-	 */
-	private RoomInvite roomInvite;
 
 	/**
 	 * Views.
@@ -117,8 +98,15 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 						.removeAuthorizationError(account, room);
 				nickView.setText(MUCManager.getInstance().getNickname(account,
 						room));
-				passwordView.setText(MUCManager.getInstance().getPassword(
-						account, room));
+				String password;
+				RoomInvite roomInvite = MUCManager.getInstance().getInvite(
+						account, room);
+				if (roomInvite != null)
+					password = roomInvite.getPassword();
+				else
+					password = MUCManager.getInstance().getPassword(account,
+							room);
+				passwordView.setText(password);
 			}
 		}
 		if (account == null) {
@@ -137,17 +125,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 		if ("".equals(nickView.getText().toString()))
 			nickView.setText(getNickname(((String) accountView
 					.getSelectedItem())));
-		if (ACTION_MUC_INVITE.equals(intent.getAction())) {
-			roomInvite = MUCManager.getInstance().getInvite(account, room);
-			if (roomInvite == null) {
-				Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
-				finish();
-				return;
-			}
-			passwordView.setText(roomInvite.getPassword());
-		} else {
-			roomInvite = null;
-		}
 	}
 
 	@Override
@@ -162,8 +139,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 	protected void onResume() {
 		super.onResume();
 		selectedAccount = accountView.getSelectedItemPosition();
-		if (roomInvite != null)
-			showDialog(DIALOG_MUC_INVITE_ID);
 	}
 
 	@Override
@@ -199,14 +174,15 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 			room = room + "@" + server;
 			if (this.account != null && this.room != null)
 				if (!account.equals(this.account) || !room.equals(this.room)) {
-					MUCManager.getInstance().removeRoom(this.account, this.room);
+					MUCManager.getInstance()
+							.removeRoom(this.account, this.room);
 					MessageManager.getInstance().closeChat(this.account,
 							this.room);
 					NotificationManager.getInstance()
 							.removeMessageNotification(this.account, this.room);
 				}
-			MUCManager.getInstance()
-					.createRoom(account, room, nick, password, join);
+			MUCManager.getInstance().createRoom(account, room, nick, password,
+					join);
 			finish();
 			break;
 		default:
@@ -230,18 +206,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 	}
 
 	@Override
-	protected Dialog onCreateDialog(int id) {
-		super.onCreateDialog(id);
-		switch (id) {
-		case DIALOG_MUC_INVITE_ID:
-			return new ConfirmDialogBuilder(this, DIALOG_MUC_INVITE_ID, this)
-					.setMessage(roomInvite.getConfirmation()).create();
-		default:
-			return null;
-		}
-	}
-
-	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		String current = nickView.getText().toString();
@@ -261,37 +225,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 		selectedAccount = accountView.getSelectedItemPosition();
 	}
 
-	@Override
-	public void onAccept(DialogBuilder dialogBuilder) {
-		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_MUC_INVITE_ID:
-			MUCManager.getInstance().removeInvite(roomInvite);
-			getIntent().setAction(null);
-			account = null;
-			room = null;
-			break;
-		}
-	}
-
-	@Override
-	public void onDecline(DialogBuilder dialogBuilder) {
-		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_MUC_INVITE_ID:
-			MUCManager.getInstance().removeInvite(roomInvite);
-			finish();
-			break;
-		}
-	}
-
-	@Override
-	public void onCancel(DialogBuilder dialogBuilder) {
-		switch (dialogBuilder.getDialogId()) {
-		case DIALOG_MUC_INVITE_ID:
-			finish();
-			break;
-		}
-	}
-
 	public static Intent createIntent(Context context) {
 		return MUCEditor.createIntent(context, null, null);
 	}
@@ -300,13 +233,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 			String room) {
 		return new EntityIntentBuilder(context, MUCEditor.class)
 				.setAccount(account).setUser(room).build();
-	}
-
-	public static Intent createInviteIntent(Context context, String account,
-			String user) {
-		Intent intent = createIntent(context, account, user);
-		intent.setAction(ACTION_MUC_INVITE);
-		return intent;
 	}
 
 	private static String getAccount(Intent intent) {
