@@ -87,6 +87,7 @@ import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
+import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
@@ -485,11 +486,9 @@ public class ContactList extends ManagedListActivity implements
 
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							ContactDeleteDialogFragment.newInstance(
-									account == GroupManager.NO_ACCOUNT ? null
-											: account, user).show(
-									getSupportFragmentManager(),
-									"CONTACT_DELETE");
+							MUCDeleteDialogFragment.newInstance(account, user)
+									.show(getSupportFragmentManager(),
+											"MUC_DELETE");
 							return true;
 						}
 
@@ -534,10 +533,8 @@ public class ContactList extends ManagedListActivity implements
 
 						@Override
 						public boolean onMenuItemClick(MenuItem item) {
-							ContactDeleteDialogFragment.newInstance(
-									account == GroupManager.NO_ACCOUNT ? null
-											: account, user).show(
-									getSupportFragmentManager(),
+							ContactDeleteDialogFragment.newInstance(account,
+									user).show(getSupportFragmentManager(),
 									"CONTACT_DELETE");
 							return true;
 						}
