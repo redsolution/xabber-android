@@ -142,9 +142,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int CONTEXT_MENU_GROUP_DELETE_ID = 0x32;
 
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID = 0x40;
-	private static final int CONTEXT_MENU_SHOW_OFFLINE_ALWAYS_ID = 0x41;
-	private static final int CONTEXT_MENU_SHOW_OFFLINE_NORMAL_ID = 0x42;
-	private static final int CONTEXT_MENU_SHOW_OFFLINE_NEVER_ID = 0x43;
 
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
@@ -559,7 +556,7 @@ public class ContactList extends ManagedListActivity implements
 							menu.add(0, CONTEXT_MENU_GROUP_DELETE_ID, 0,
 									getText(R.string.group_remove));
 					}
-					createOfflineModeContextMenu(menu);
+					createOfflineModeContextMenu(account, group, menu);
 	}
 
 	private void createAccountContextMenu(final String account, ContextMenu menu) {
@@ -611,39 +608,43 @@ public class ContactList extends ManagedListActivity implements
 			menu.add(R.string.contact_add).setIntent(
 					ContactAdd.createIntent(this, account));
 		}
-		createOfflineModeContextMenu(menu);
+		if (SettingsManager.contactsShowAccounts())
+			createOfflineModeContextMenu(account, null, menu);
 	}
 
-	private void createOfflineModeContextMenu(ContextMenu menu) {
-		if (actionWithGroup != null || SettingsManager.contactsShowAccounts()) {
-			SubMenu mapMode = menu.addSubMenu(getResources().getText(
-					R.string.show_offline_settings));
-			mapMode.setHeaderTitle(R.string.show_offline_settings);
-			MenuItem always = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID,
-					CONTEXT_MENU_SHOW_OFFLINE_ALWAYS_ID, 0, getResources()
-							.getText(R.string.show_offline_always));
-			MenuItem normal = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID,
-					CONTEXT_MENU_SHOW_OFFLINE_NORMAL_ID, 0, getResources()
-							.getText(R.string.show_offline_normal));
-			MenuItem never = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID,
-					CONTEXT_MENU_SHOW_OFFLINE_NEVER_ID, 0, getResources()
-							.getText(R.string.show_offline_never));
-			mapMode.setGroupCheckable(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, true,
-					true);
-			ShowOfflineMode showOfflineMode = GroupManager.getInstance()
-					.getShowOfflineMode(
-							actionWithAccount,
-							actionWithGroup == null ? GroupManager.IS_ACCOUNT
-									: actionWithGroup);
-			if (showOfflineMode == ShowOfflineMode.always)
-				always.setChecked(true);
-			else if (showOfflineMode == ShowOfflineMode.normal)
-				normal.setChecked(true);
-			else if (showOfflineMode == ShowOfflineMode.never)
-				never.setChecked(true);
-			else
-				throw new IllegalStateException();
-		}
+	private void createOfflineModeContextMenu(String account, String group,
+			ContextMenu menu) {
+		SubMenu mapMode = menu.addSubMenu(getResources().getText(
+				R.string.show_offline_settings));
+		mapMode.setHeaderTitle(R.string.show_offline_settings);
+		MenuItem always = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, 0, 0,
+				getText(R.string.show_offline_always))
+				.setOnMenuItemClickListener(
+						new OfflineModeClickListener(account, group,
+								ShowOfflineMode.always));
+		MenuItem normal = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, 0, 0,
+				getText(R.string.show_offline_normal))
+				.setOnMenuItemClickListener(
+						new OfflineModeClickListener(account, group,
+								ShowOfflineMode.normal));
+		MenuItem never = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, 0, 0,
+				getText(R.string.show_offline_never))
+				.setOnMenuItemClickListener(
+						new OfflineModeClickListener(account, group,
+								ShowOfflineMode.never));
+		mapMode.setGroupCheckable(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, true,
+				true);
+		ShowOfflineMode showOfflineMode = GroupManager.getInstance()
+				.getShowOfflineMode(account,
+						group == null ? GroupManager.IS_ACCOUNT : group);
+		if (showOfflineMode == ShowOfflineMode.always)
+			always.setChecked(true);
+		else if (showOfflineMode == ShowOfflineMode.normal)
+			normal.setChecked(true);
+		else if (showOfflineMode == ShowOfflineMode.never)
+			never.setChecked(true);
+		else
+			throw new IllegalStateException();
 	}
 
 	@Override
@@ -736,29 +737,6 @@ public class ContactList extends ManagedListActivity implements
 					actionWithAccount == GroupManager.NO_ACCOUNT ? null
 							: actionWithAccount, actionWithGroup).show(
 					getSupportFragmentManager(), "GROUP_DELETE");
-			return true;
-
-			// Groups or account
-		case CONTEXT_MENU_SHOW_OFFLINE_ALWAYS_ID:
-			GroupManager.getInstance().setShowOfflineMode(
-					actionWithAccount,
-					actionWithGroup == null ? GroupManager.IS_ACCOUNT
-							: actionWithGroup, ShowOfflineMode.always);
-			contactListAdapter.onChange();
-			return true;
-		case CONTEXT_MENU_SHOW_OFFLINE_NORMAL_ID:
-			GroupManager.getInstance().setShowOfflineMode(
-					actionWithAccount,
-					actionWithGroup == null ? GroupManager.IS_ACCOUNT
-							: actionWithGroup, ShowOfflineMode.normal);
-			contactListAdapter.onChange();
-			return true;
-		case CONTEXT_MENU_SHOW_OFFLINE_NEVER_ID:
-			GroupManager.getInstance().setShowOfflineMode(
-					actionWithAccount,
-					actionWithGroup == null ? GroupManager.IS_ACCOUNT
-							: actionWithGroup, ShowOfflineMode.never);
-			contactListAdapter.onChange();
 			return true;
 		}
 		return false;
@@ -1023,6 +1001,31 @@ public class ContactList extends ManagedListActivity implements
 		if (inputMethodManager != null)
 			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
 					0);
+	}
+
+	private class OfflineModeClickListener implements
+			MenuItem.OnMenuItemClickListener {
+
+		private final String account;
+		private final String group;
+		private final ShowOfflineMode mode;
+
+		public OfflineModeClickListener(String account, String group,
+				ShowOfflineMode mode) {
+			super();
+			this.account = account;
+			this.group = group;
+			this.mode = mode;
+		}
+
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			GroupManager.getInstance().setShowOfflineMode(account,
+					group == null ? GroupManager.IS_ACCOUNT : group, mode);
+			contactListAdapter.onChange();
+			return true;
+		}
+
 	}
 
 	public static Intent createPersistentIntent(Context context) {
