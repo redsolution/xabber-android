@@ -138,9 +138,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int CONTEXT_MENU_EDIT_ROOM_ID = 0x1B;
 	private static final int CONTEXT_MENU_VIEW_CONTACT_ID = 0x1C;
 
-	private static final int CONTEXT_MENU_GROUP_RENAME_ID = 0x31;
-	private static final int CONTEXT_MENU_GROUP_DELETE_ID = 0x32;
-
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID = 0x40;
 
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
@@ -541,22 +538,46 @@ public class ContactList extends ManagedListActivity implements
 				}
 	}
 
-	private void createGroupContextMenu(String account, String group,
-			ContextMenu menu) {
-					actionWithAccount = account;
-					actionWithGroup = group;
-					actionWithUser = null;
-					menu.setHeaderTitle(GroupManager.getInstance()
-							.getGroupName(actionWithAccount, actionWithGroup));
-					if (actionWithGroup != GroupManager.ACTIVE_CHATS
-							&& actionWithGroup != GroupManager.IS_ROOM) {
-						menu.add(0, CONTEXT_MENU_GROUP_RENAME_ID, 0,
-								getText(R.string.group_rename));
-						if (actionWithGroup != GroupManager.NO_GROUP)
-							menu.add(0, CONTEXT_MENU_GROUP_DELETE_ID, 0,
-									getText(R.string.group_remove));
-					}
-					createOfflineModeContextMenu(account, group, menu);
+	private void createGroupContextMenu(final String account,
+			final String group, ContextMenu menu) {
+		actionWithAccount = account;
+		actionWithGroup = group;
+		actionWithUser = null;
+		menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account,
+				group));
+		if (group != GroupManager.ACTIVE_CHATS && group != GroupManager.IS_ROOM) {
+			menu.add(R.string.group_rename).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							GroupRenameDialogFragment.newInstance(
+									account == GroupManager.NO_ACCOUNT ? null
+											: account,
+									group == GroupManager.NO_GROUP ? null
+											: group)
+									.show(getSupportFragmentManager(),
+											"GROUP_RENAME");
+							return true;
+						}
+					});
+			if (group != GroupManager.NO_GROUP)
+				menu.add(R.string.group_remove).setOnMenuItemClickListener(
+						new MenuItem.OnMenuItemClickListener() {
+
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								GroupDeleteDialogFragment
+										.newInstance(
+												account == GroupManager.NO_ACCOUNT ? null
+														: account, group).show(
+												getSupportFragmentManager(),
+												"GROUP_DELETE");
+								return true;
+							}
+						});
+		}
+		createOfflineModeContextMenu(account, group, menu);
 	}
 
 	private void createAccountContextMenu(final String account, ContextMenu menu) {
@@ -721,22 +742,6 @@ public class ContactList extends ManagedListActivity implements
 			} catch (NetworkException e) {
 				Application.getInstance().onError(e);
 			}
-			return true;
-
-			// Group
-		case CONTEXT_MENU_GROUP_RENAME_ID:
-			GroupRenameDialogFragment.newInstance(
-					actionWithAccount == GroupManager.NO_ACCOUNT ? null
-							: actionWithAccount,
-					actionWithGroup == GroupManager.NO_GROUP ? null
-							: actionWithGroup).show(
-					getSupportFragmentManager(), "GROUP_RENAME");
-			return true;
-		case CONTEXT_MENU_GROUP_DELETE_ID:
-			GroupDeleteDialogFragment.newInstance(
-					actionWithAccount == GroupManager.NO_ACCOUNT ? null
-							: actionWithAccount, actionWithGroup).show(
-					getSupportFragmentManager(), "GROUP_DELETE");
 			return true;
 		}
 		return false;
