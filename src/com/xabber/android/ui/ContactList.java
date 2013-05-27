@@ -488,11 +488,25 @@ public class ContactList extends ManagedListActivity implements
 				// Account toggler
 				return;
 			if (baseEntity instanceof AbstractContact) {
-				// Contact
-				actionWithAccount = baseEntity.getAccount();
+				createContactContextMenu((AbstractContact) baseEntity, menu);
+			} else if (baseEntity instanceof AccountConfiguration) {
+				createAccountContextMenu(baseEntity.getAccount(), menu);
+			} else if (baseEntity instanceof GroupConfiguration) {
+				createGroupContextMenu(baseEntity.getAccount(),
+						baseEntity.getUser(), menu);
+			}
+		} else {
+			// Account panel
+			createAccountContextMenu(
+					(String) accountToggleAdapter.getItemForView(view), menu);
+		}
+	}
+
+	private void createContactContextMenu(AbstractContact abstractContact,
+			ContextMenu menu) {
+				actionWithAccount = abstractContact.getAccount();
 				actionWithGroup = null;
-				actionWithUser = baseEntity.getUser();
-				AbstractContact abstractContact = (AbstractContact) baseEntity;
+				actionWithUser = abstractContact.getUser();
 				menu.setHeaderTitle(abstractContact.getName());
 				menu.add(0, CONTEXT_MENU_VIEW_CHAT_ID, 0, getResources()
 						.getText(R.string.chat_viewer));
@@ -534,17 +548,13 @@ public class ContactList extends ManagedListActivity implements
 					menu.add(0, CONTEXT_MENU_DISCARD_SUBSCRIPTION_ID, 0,
 							getText(R.string.discard_subscription));
 				}
-				return;
-			} else if (baseEntity instanceof GroupConfiguration) {
-				// Group or account in contact list
-				actionWithAccount = baseEntity.getAccount();
-				actionWithGroup = baseEntity.getUser();
-				actionWithUser = null;
+	}
 
-				if (baseEntity instanceof AccountConfiguration) {
-					actionWithGroup = null;
-				} else {
-					// Group
+	private void createGroupContextMenu(String account, String group,
+			ContextMenu menu) {
+					actionWithAccount = account;
+					actionWithGroup = group;
+					actionWithUser = null;
 					menu.setHeaderTitle(GroupManager.getInstance()
 							.getGroupName(actionWithAccount, actionWithGroup));
 					if (actionWithGroup != GroupManager.ACTIVE_CHATS
@@ -555,21 +565,13 @@ public class ContactList extends ManagedListActivity implements
 							menu.add(0, CONTEXT_MENU_GROUP_DELETE_ID, 0,
 									getText(R.string.group_remove));
 					}
-				}
-			} else {
-				return;
-			}
-		} else {
-			// Account panel
-			actionWithAccount = (String) accountToggleAdapter
-					.getItemForView(view);
+					createOfflineModeContextMenu(menu);
+	}
+
+	private void createAccountContextMenu(String account, ContextMenu menu) {
+			actionWithAccount = account;
 			actionWithGroup = null;
 			actionWithUser = null;
-		}
-		// Group or account
-
-		if (actionWithGroup == null) {
-			// Account
 			menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(
 					actionWithAccount));
 			AccountItem accountItem = AccountManager.getInstance().getAccount(
@@ -588,8 +590,10 @@ public class ContactList extends ManagedListActivity implements
 				menu.add(0, CONTEXT_MENU_ACCOUNT_ADD_CONTACT_ID, 0,
 						getText(R.string.contact_add));
 			}
-		}
+			createOfflineModeContextMenu(menu);
+	}
 
+	private void createOfflineModeContextMenu(ContextMenu menu) {
 		if (actionWithGroup != null || SettingsManager.contactsShowAccounts()) {
 			SubMenu mapMode = menu.addSubMenu(getResources().getText(
 					R.string.show_offline_settings));
