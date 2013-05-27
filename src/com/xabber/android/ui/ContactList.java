@@ -112,9 +112,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
 	private static final String SAVED_ACTION = "com.xabber.android.ui.ContactList.SAVED_ACTION";
-	private static final String SAVED_ACTION_WITH_ACCOUNT = "com.xabber.android.ui.ContactList.SAVED_ACTION_WITH_ACCOUNT";
-	private static final String SAVED_ACTION_WITH_GROUP = "com.xabber.android.ui.ContactList.SAVED_ACTION_WITH_GROUP";
-	private static final String SAVED_ACTION_WITH_USER = "com.xabber.android.ui.ContactList.SAVED_ACTION_WITH_USER";
 	private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
 
 	private static final int OPTION_MENU_ADD_CONTACT_ID = 0x02;
@@ -125,18 +122,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int OPTION_MENU_EXIT_ID = 0x08;
 	private static final int OPTION_MENU_SEARCH_ID = 0x0A;
 	private static final int OPTION_MENU_CLOSE_CHATS_ID = 0x0B;
-
-	private static final int CONTEXT_MENU_VIEW_CHAT_ID = 0x12;
-	private static final int CONTEXT_MENU_EDIT_CONTACT_ID = 0x13;
-	private static final int CONTEXT_MENU_DELETE_CONTACT_ID = 0x14;
-	private static final int CONTEXT_MENU_CLOSE_CHAT_ID = 0x15;
-	private static final int CONTEXT_MENU_REQUEST_SUBSCRIPTION_ID = 0x16;
-	private static final int CONTEXT_MENU_ACCEPT_SUBSCRIPTION_ID = 0x17;
-	private static final int CONTEXT_MENU_DISCARD_SUBSCRIPTION_ID = 0x18;
-	private static final int CONTEXT_MENU_LEAVE_ROOM_ID = 0x19;
-	private static final int CONTEXT_MENU_JOIN_ROOM_ID = 0x1A;
-	private static final int CONTEXT_MENU_EDIT_ROOM_ID = 0x1B;
-	private static final int CONTEXT_MENU_VIEW_CONTACT_ID = 0x1C;
 
 	private static final int CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID = 0x40;
 
@@ -160,9 +145,6 @@ public class ContactList extends ManagedListActivity implements
 	/**
 	 * Dialog related values.
 	 */
-	private String actionWithAccount;
-	private String actionWithGroup;
-	private String actionWithUser;
 	private String sendText;
 
 	/**
@@ -217,18 +199,9 @@ public class ContactList extends ManagedListActivity implements
 		findViewById(R.id.back_button).setOnClickListener(this);
 
 		if (savedInstanceState != null) {
-			actionWithAccount = savedInstanceState
-					.getString(SAVED_ACTION_WITH_ACCOUNT);
-			actionWithGroup = savedInstanceState
-					.getString(SAVED_ACTION_WITH_GROUP);
-			actionWithUser = savedInstanceState
-					.getString(SAVED_ACTION_WITH_USER);
 			sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
 			action = savedInstanceState.getString(SAVED_ACTION);
 		} else {
-			actionWithAccount = null;
-			actionWithGroup = null;
-			actionWithUser = null;
 			sendText = null;
 			action = getIntent().getAction();
 		}
@@ -247,9 +220,6 @@ public class ContactList extends ManagedListActivity implements
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putString(SAVED_ACTION, action);
-		outState.putString(SAVED_ACTION_WITH_ACCOUNT, actionWithAccount);
-		outState.putString(SAVED_ACTION_WITH_GROUP, actionWithGroup);
-		outState.putString(SAVED_ACTION_WITH_USER, actionWithUser);
 		outState.putString(SAVED_SEND_TEXT, sendText);
 	}
 
@@ -492,57 +462,161 @@ public class ContactList extends ManagedListActivity implements
 
 	private void createContactContextMenu(AbstractContact abstractContact,
 			ContextMenu menu) {
-				actionWithAccount = abstractContact.getAccount();
-				actionWithGroup = null;
-				actionWithUser = abstractContact.getUser();
-				menu.setHeaderTitle(abstractContact.getName());
-				menu.add(0, CONTEXT_MENU_VIEW_CHAT_ID, 0, getResources()
-						.getText(R.string.chat_viewer));
-				if (MUCManager.getInstance().hasRoom(actionWithAccount,
-						actionWithUser)) {
-					if (!MUCManager.getInstance().inUse(actionWithAccount,
-							actionWithUser))
-						menu.add(0, CONTEXT_MENU_EDIT_ROOM_ID, 0,
-								getResources().getText(R.string.muc_edit));
-					menu.add(0, CONTEXT_MENU_DELETE_CONTACT_ID, 0,
-							getResources().getText(R.string.muc_delete));
-					if (MUCManager.getInstance().isDisabled(actionWithAccount,
-							actionWithUser))
-						menu.add(0, CONTEXT_MENU_JOIN_ROOM_ID, 0,
-								getResources().getText(R.string.muc_join));
-					else
-						menu.add(0, CONTEXT_MENU_LEAVE_ROOM_ID, 0,
-								getResources().getText(R.string.muc_leave));
-				} else {
-					menu.add(0, CONTEXT_MENU_VIEW_CONTACT_ID, 0, getResources()
-							.getText(R.string.contact_viewer));
-					menu.add(0, CONTEXT_MENU_EDIT_CONTACT_ID, 0, getResources()
-							.getText(R.string.contact_editor));
-					menu.add(0, CONTEXT_MENU_DELETE_CONTACT_ID, 0,
-							getResources().getText(R.string.contact_delete));
-					if (MessageManager.getInstance().hasActiveChat(
-							actionWithAccount, actionWithUser))
-						menu.add(0, CONTEXT_MENU_CLOSE_CHAT_ID, 0,
-								getResources().getText(R.string.close_chat));
-					if (abstractContact.getStatusMode() == StatusMode.unsubscribed)
-						menu.add(0, CONTEXT_MENU_REQUEST_SUBSCRIPTION_ID, 0,
-								getText(R.string.request_subscription));
-				}
-				if (PresenceManager.getInstance().hasSubscriptionRequest(
-						actionWithAccount, actionWithUser)) {
-					menu.add(0, CONTEXT_MENU_ACCEPT_SUBSCRIPTION_ID, 0,
-							getResources()
-									.getText(R.string.accept_subscription));
-					menu.add(0, CONTEXT_MENU_DISCARD_SUBSCRIPTION_ID, 0,
-							getText(R.string.discard_subscription));
-				}
+		final String account = abstractContact.getAccount();
+		final String user = abstractContact.getUser();
+		menu.setHeaderTitle(abstractContact.getName());
+		menu.add(R.string.chat_viewer).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						MessageManager.getInstance().openChat(account, user);
+						startActivity(ChatViewer.createIntent(ContactList.this,
+								account, user));
+						return true;
+					}
+				});
+		if (MUCManager.getInstance().hasRoom(account, user)) {
+			if (!MUCManager.getInstance().inUse(account, user))
+				menu.add(R.string.muc_edit).setIntent(
+						MUCEditor.createIntent(this, account, user));
+			menu.add(R.string.muc_delete).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							ContactDeleteDialogFragment.newInstance(
+									account == GroupManager.NO_ACCOUNT ? null
+											: account, user).show(
+									getSupportFragmentManager(),
+									"CONTACT_DELETE");
+							return true;
+						}
+
+					});
+			if (MUCManager.getInstance().isDisabled(account, user))
+				menu.add(R.string.muc_join).setOnMenuItemClickListener(
+						new MenuItem.OnMenuItemClickListener() {
+
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								MUCManager.getInstance().joinRoom(account,
+										user, true);
+								return true;
+							}
+
+						});
+			else
+				menu.add(R.string.muc_leave).setOnMenuItemClickListener(
+						new MenuItem.OnMenuItemClickListener() {
+
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								MUCManager.getInstance().leaveRoom(account,
+										user);
+								MessageManager.getInstance().closeChat(account,
+										user);
+								NotificationManager.getInstance()
+										.removeMessageNotification(account,
+												user);
+								contactListAdapter.onChange();
+								return true;
+							}
+
+						});
+		} else {
+			menu.add(R.string.contact_viewer).setIntent(
+					ContactViewer.createIntent(this, account, user));
+			menu.add(R.string.contact_editor).setIntent(
+					ContactEditor.createIntent(this, account, user));
+			menu.add(R.string.contact_delete).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							ContactDeleteDialogFragment.newInstance(
+									account == GroupManager.NO_ACCOUNT ? null
+											: account, user).show(
+									getSupportFragmentManager(),
+									"CONTACT_DELETE");
+							return true;
+						}
+
+					});
+			if (MessageManager.getInstance().hasActiveChat(account, user))
+				menu.add(R.string.close_chat).setOnMenuItemClickListener(
+						new MenuItem.OnMenuItemClickListener() {
+
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								MessageManager.getInstance().closeChat(account,
+										user);
+								NotificationManager.getInstance()
+										.removeMessageNotification(account,
+												user);
+								contactListAdapter.onChange();
+								return true;
+							}
+
+						});
+			if (abstractContact.getStatusMode() == StatusMode.unsubscribed)
+				menu.add(R.string.request_subscription)
+						.setOnMenuItemClickListener(
+								new MenuItem.OnMenuItemClickListener() {
+
+									@Override
+									public boolean onMenuItemClick(MenuItem item) {
+										try {
+											PresenceManager.getInstance()
+													.requestSubscription(
+															account, user);
+										} catch (NetworkException e) {
+											Application.getInstance()
+													.onError(e);
+										}
+										return true;
+									}
+
+								});
+		}
+		if (PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
+			menu.add(R.string.accept_subscription).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							try {
+								PresenceManager.getInstance()
+										.acceptSubscription(account, user);
+							} catch (NetworkException e) {
+								Application.getInstance().onError(e);
+							}
+							startActivity(ContactEditor.createIntent(
+									ContactList.this, account, user));
+							return true;
+						}
+
+					});
+			menu.add(R.string.discard_subscription).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							try {
+								PresenceManager.getInstance()
+										.discardSubscription(account, user);
+							} catch (NetworkException e) {
+								Application.getInstance().onError(e);
+							}
+							return true;
+						}
+
+					});
+		}
 	}
 
 	private void createGroupContextMenu(final String account,
 			final String group, ContextMenu menu) {
-		actionWithAccount = account;
-		actionWithGroup = group;
-		actionWithUser = null;
 		menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account,
 				group));
 		if (group != GroupManager.ACTIVE_CHATS && group != GroupManager.IS_ROOM) {
@@ -581,9 +655,6 @@ public class ContactList extends ManagedListActivity implements
 	}
 
 	private void createAccountContextMenu(final String account, ContextMenu menu) {
-		actionWithAccount = account;
-		actionWithGroup = null;
-		actionWithUser = null;
 		menu.setHeaderTitle(AccountManager.getInstance()
 				.getVerboseName(account));
 		AccountItem accountItem = AccountManager.getInstance().getAccount(
@@ -666,85 +737,6 @@ public class ContactList extends ManagedListActivity implements
 			never.setChecked(true);
 		else
 			throw new IllegalStateException();
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		super.onContextItemSelected(item);
-		switch (item.getItemId()) {
-		// Contact
-		case CONTEXT_MENU_VIEW_CHAT_ID:
-			MessageManager.getInstance().openChat(actionWithAccount,
-					actionWithUser);
-			startActivity(ChatViewer.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case CONTEXT_MENU_VIEW_CONTACT_ID:
-			startActivity(ContactViewer.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case CONTEXT_MENU_EDIT_CONTACT_ID:
-			startActivity(ContactEditor.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case CONTEXT_MENU_DELETE_CONTACT_ID:
-			ContactDeleteDialogFragment.newInstance(
-					actionWithAccount == GroupManager.NO_ACCOUNT ? null
-							: actionWithAccount, actionWithUser).show(
-					getSupportFragmentManager(), "CONTACT_DELETE");
-			return true;
-		case CONTEXT_MENU_EDIT_ROOM_ID:
-			startActivity(MUCEditor.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case CONTEXT_MENU_JOIN_ROOM_ID:
-			MUCManager.getInstance().joinRoom(actionWithAccount,
-					actionWithUser, true);
-			return true;
-		case CONTEXT_MENU_LEAVE_ROOM_ID:
-			MUCManager.getInstance().leaveRoom(actionWithAccount,
-					actionWithUser);
-			MessageManager.getInstance().closeChat(actionWithAccount,
-					actionWithUser);
-			NotificationManager.getInstance().removeMessageNotification(
-					actionWithAccount, actionWithUser);
-			contactListAdapter.onChange();
-			return true;
-		case CONTEXT_MENU_CLOSE_CHAT_ID:
-			MessageManager.getInstance().closeChat(actionWithAccount,
-					actionWithUser);
-			NotificationManager.getInstance().removeMessageNotification(
-					actionWithAccount, actionWithUser);
-			contactListAdapter.onChange();
-			return true;
-		case CONTEXT_MENU_REQUEST_SUBSCRIPTION_ID:
-			try {
-				PresenceManager.getInstance().requestSubscription(
-						actionWithAccount, actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return true;
-		case CONTEXT_MENU_ACCEPT_SUBSCRIPTION_ID:
-			try {
-				PresenceManager.getInstance().acceptSubscription(
-						actionWithAccount, actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			startActivity(ContactEditor.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case CONTEXT_MENU_DISCARD_SUBSCRIPTION_ID:
-			try {
-				PresenceManager.getInstance().discardSubscription(
-						actionWithAccount, actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@Override
