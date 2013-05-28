@@ -162,7 +162,7 @@ public class ContactList extends ManagedListActivity implements
 		listView.setItemsCanFocus(true);
 
 		registerForContextMenu(listView);
-		contactListAdapter = new ContactListAdapter(this);
+		contactListAdapter = new ContactListAdapter(this, listView);
 		setListAdapter(contactListAdapter);
 		accountToggleAdapter = new AccountToggleAdapter(this, this,
 				(LinearLayout) findViewById(R.id.account_list));
@@ -498,36 +498,51 @@ public class ContactList extends ManagedListActivity implements
 			String account = accountToggleAdapter.getItemForView(view);
 			if (account == null) // Check for tap on account in the title
 				break;
-			ListView listView = getListView();
 			if (!SettingsManager.contactsShowAccounts()) {
-				if (AccountManager.getInstance().getAccounts().size() < 2) {
+				if (AccountManager.getInstance().getAccounts().size() < 2)
 					scrollUp();
-				} else {
-					if (account.equals(AccountManager.getInstance()
-							.getSelectedAccount()))
-						SettingsManager.setContactsSelectedAccount("");
-					else
-						SettingsManager.setContactsSelectedAccount(account);
-					rebuildAccountToggler();
-					contactListAdapter.onChange();
-					stopMovement();
-				}
-			} else {
-				long count = listView.getCount();
-				for (int position = 0; position < (int) count; position++) {
-					BaseEntity baseEntity = (BaseEntity) listView
-							.getItemAtPosition(position);
-					if (baseEntity != null
-							&& baseEntity instanceof AccountConfiguration
-							&& baseEntity.getAccount().equals(account)) {
-						listView.setSelection(position);
-						stopMovement();
-						break;
-					}
-				}
-			}
+				else
+					setSelectedAccount(account);
+			} else
+				scrollTo(account);
 			break;
 		}
+	}
+
+	/**
+	 * Scroll contact list to specified account.
+	 * 
+	 * @param account
+	 */
+	private void scrollTo(String account) {
+		ListView listView = getListView();
+		long count = listView.getCount();
+		for (int position = 0; position < (int) count; position++) {
+			BaseEntity baseEntity = (BaseEntity) listView
+					.getItemAtPosition(position);
+			if (baseEntity != null
+					&& baseEntity instanceof AccountConfiguration
+					&& baseEntity.getAccount().equals(account)) {
+				listView.setSelection(position);
+				stopMovement();
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Filter out contact list for selected account.
+	 * 
+	 * @param account
+	 */
+	private void setSelectedAccount(String account) {
+		if (account.equals(AccountManager.getInstance().getSelectedAccount()))
+			SettingsManager.setContactsSelectedAccount("");
+		else
+			SettingsManager.setContactsSelectedAccount(account);
+		rebuildAccountToggler();
+		contactListAdapter.onChange();
+		stopMovement();
 	}
 
 	/**
@@ -567,58 +582,59 @@ public class ContactList extends ManagedListActivity implements
 		if (object == null) {
 			// Account toggler
 		} else if (object instanceof AbstractContact) {
-			AbstractContact abstractContact = (AbstractContact) object;
-			if (ACTION_ROOM_INVITE.equals(action)) {
-				action = null;
-				Intent intent = getIntent();
-				String account = getRoomInviteAccount(intent);
-				String user = getRoomInviteUser(intent);
-				if (account != null && user != null)
-					try {
-						MUCManager.getInstance().invite(account, user,
-								abstractContact.getUser());
-					} catch (NetworkException e) {
-						Application.getInstance().onError(e);
-					}
-				finish();
-			} else if (Intent.ACTION_SEND.equals(action)) {
-				action = null;
-				startActivity(ChatViewer.createSendIntent(this,
-						abstractContact.getAccount(),
-						abstractContact.getUser(), sendText));
-				finish();
-			} else if (Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
-				Intent intent = new Intent();
-				intent.putExtra(
-						Intent.EXTRA_SHORTCUT_INTENT,
-						ChatViewer.createClearTopIntent(this,
-								abstractContact.getAccount(),
-								abstractContact.getUser()));
-				intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
-						abstractContact.getName());
-				Bitmap bitmap;
-				if (MUCManager.getInstance()
-						.hasRoom(abstractContact.getAccount(),
-								abstractContact.getUser()))
-					bitmap = AvatarManager.getInstance().getRoomBitmap(
-							abstractContact.getUser());
-				else
-					bitmap = AvatarManager.getInstance().getUserBitmap(
-							abstractContact.getUser());
-				intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, AvatarManager
-						.getInstance().createShortcutBitmap(bitmap));
-				setResult(RESULT_OK, intent);
-				finish();
-			} else {
-				startActivity(ChatViewer
-						.createIntent(this, abstractContact.getAccount(),
-								abstractContact.getUser()));
-			}
+			onContactClick((AbstractContact) object);
 		} else if (object instanceof GroupConfiguration) {
 			GroupConfiguration groupConfiguration = (GroupConfiguration) object;
 			contactListAdapter.setExpanded(groupConfiguration.getAccount(),
 					groupConfiguration.getUser(),
 					!groupConfiguration.isExpanded());
+		}
+	}
+
+	private void onContactClick(AbstractContact abstractContact) {
+		if (ACTION_ROOM_INVITE.equals(action)) {
+			action = null;
+			Intent intent = getIntent();
+			String account = getRoomInviteAccount(intent);
+			String user = getRoomInviteUser(intent);
+			if (account != null && user != null)
+				try {
+					MUCManager.getInstance().invite(account, user,
+							abstractContact.getUser());
+				} catch (NetworkException e) {
+					Application.getInstance().onError(e);
+				}
+			finish();
+		} else if (Intent.ACTION_SEND.equals(action)) {
+			action = null;
+			startActivity(ChatViewer.createSendIntent(this,
+					abstractContact.getAccount(), abstractContact.getUser(),
+					sendText));
+			finish();
+		} else if (Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
+			Intent intent = new Intent();
+			intent.putExtra(
+					Intent.EXTRA_SHORTCUT_INTENT,
+					ChatViewer.createClearTopIntent(this,
+							abstractContact.getAccount(),
+							abstractContact.getUser()));
+			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
+					abstractContact.getName());
+			Bitmap bitmap;
+			if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(),
+					abstractContact.getUser()))
+				bitmap = AvatarManager.getInstance().getRoomBitmap(
+						abstractContact.getUser());
+			else
+				bitmap = AvatarManager.getInstance().getUserBitmap(
+						abstractContact.getUser());
+			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, AvatarManager
+					.getInstance().createShortcutBitmap(bitmap));
+			setResult(RESULT_OK, intent);
+			finish();
+		} else {
+			startActivity(ChatViewer.createIntent(this,
+					abstractContact.getAccount(), abstractContact.getUser()));
 		}
 	}
 

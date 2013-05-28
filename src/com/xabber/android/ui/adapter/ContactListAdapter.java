@@ -22,12 +22,14 @@ import java.util.Date;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
@@ -47,7 +49,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.AccountAdd;
 import com.xabber.android.ui.AccountList;
 import com.xabber.android.ui.ContactAdd;
-import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
 /**
@@ -120,9 +121,9 @@ public class ContactListAdapter extends
 	 */
 	private Date nextRefresh;
 
-	public ContactListAdapter(ManagedListActivity activity) {
-		super(activity, activity.getListView(), new ChatContactInflater(
-				activity), GroupManager.getInstance());
+	public ContactListAdapter(Activity activity, ListView listView) {
+		super(activity, listView, new ChatContactInflater(activity),
+				GroupManager.getInstance());
 		infoView = activity.findViewById(R.id.info);
 		if (infoView != null) {
 			connectedView = infoView.findViewById(R.id.connected);
