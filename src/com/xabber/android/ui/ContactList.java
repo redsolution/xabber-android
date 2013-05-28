@@ -31,14 +31,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -55,12 +53,10 @@ import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -70,27 +66,20 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.AccountToggleAdapter;
 import com.xabber.android.ui.adapter.ContactListAdapter;
 import com.xabber.android.ui.adapter.GroupConfiguration;
-import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
-import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.DialogBuilder;
-import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
-import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
-import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
+import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -125,8 +114,6 @@ public class ContactList extends ManagedListActivity implements
 	private static final int OPTION_MENU_EXIT_ID = 0x08;
 	private static final int OPTION_MENU_SEARCH_ID = 0x0A;
 	private static final int OPTION_MENU_CLOSE_CHATS_ID = 0x0B;
-
-	private static final int CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID = 0x40;
 
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
@@ -449,297 +436,22 @@ public class ContactList extends ManagedListActivity implements
 				// Account toggler
 				return;
 			if (baseEntity instanceof AbstractContact) {
-				createContactContextMenu(this, contactListAdapter,
-						(AbstractContact) baseEntity, menu);
+				ContextMenuHelper.createContactContextMenu(this,
+						contactListAdapter, (AbstractContact) baseEntity, menu);
 			} else if (baseEntity instanceof AccountConfiguration) {
-				createAccountContextMenu(this, contactListAdapter,
-						baseEntity.getAccount(), menu);
+				ContextMenuHelper.createAccountContextMenu(this,
+						contactListAdapter, baseEntity.getAccount(), menu);
 			} else if (baseEntity instanceof GroupConfiguration) {
-				createGroupContextMenu(this, contactListAdapter,
-						baseEntity.getAccount(), baseEntity.getUser(), menu);
+				ContextMenuHelper.createGroupContextMenu(this,
+						contactListAdapter, baseEntity.getAccount(),
+						baseEntity.getUser(), menu);
 			}
 		} else {
 			// Account panel
-			createAccountContextMenu(this, contactListAdapter,
+			ContextMenuHelper.createAccountContextMenu(this,
+					contactListAdapter,
 					accountToggleAdapter.getItemForView(view), menu);
 		}
-	}
-
-	private static void createContactContextMenu(
-			final FragmentActivity activity, final UpdatableAdapter adapter,
-			AbstractContact abstractContact, ContextMenu menu) {
-		final String account = abstractContact.getAccount();
-		final String user = abstractContact.getUser();
-		menu.setHeaderTitle(abstractContact.getName());
-		menu.add(R.string.chat_viewer).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
-
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						MessageManager.getInstance().openChat(account, user);
-						activity.startActivity(ChatViewer.createIntent(
-								activity, account, user));
-						return true;
-					}
-				});
-		if (MUCManager.getInstance().hasRoom(account, user)) {
-			if (!MUCManager.getInstance().inUse(account, user))
-				menu.add(R.string.muc_edit).setIntent(
-						MUCEditor.createIntent(activity, account, user));
-			menu.add(R.string.muc_delete).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							MUCDeleteDialogFragment.newInstance(account, user)
-									.show(activity.getSupportFragmentManager(),
-											"MUC_DELETE");
-							return true;
-						}
-
-					});
-			if (MUCManager.getInstance().isDisabled(account, user))
-				menu.add(R.string.muc_join).setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
-
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								MUCManager.getInstance().joinRoom(account,
-										user, true);
-								return true;
-							}
-
-						});
-			else
-				menu.add(R.string.muc_leave).setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
-
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								MUCManager.getInstance().leaveRoom(account,
-										user);
-								MessageManager.getInstance().closeChat(account,
-										user);
-								NotificationManager.getInstance()
-										.removeMessageNotification(account,
-												user);
-								adapter.onChange();
-								return true;
-							}
-
-						});
-		} else {
-			menu.add(R.string.contact_viewer).setIntent(
-					ContactViewer.createIntent(activity, account, user));
-			menu.add(R.string.contact_editor).setIntent(
-					ContactEditor.createIntent(activity, account, user));
-			menu.add(R.string.contact_delete).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							ContactDeleteDialogFragment.newInstance(account,
-									user).show(
-									activity.getSupportFragmentManager(),
-									"CONTACT_DELETE");
-							return true;
-						}
-
-					});
-			if (MessageManager.getInstance().hasActiveChat(account, user))
-				menu.add(R.string.close_chat).setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
-
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								MessageManager.getInstance().closeChat(account,
-										user);
-								NotificationManager.getInstance()
-										.removeMessageNotification(account,
-												user);
-								adapter.onChange();
-								return true;
-							}
-
-						});
-			if (abstractContact.getStatusMode() == StatusMode.unsubscribed)
-				menu.add(R.string.request_subscription)
-						.setOnMenuItemClickListener(
-								new MenuItem.OnMenuItemClickListener() {
-
-									@Override
-									public boolean onMenuItemClick(MenuItem item) {
-										try {
-											PresenceManager.getInstance()
-													.requestSubscription(
-															account, user);
-										} catch (NetworkException e) {
-											Application.getInstance()
-													.onError(e);
-										}
-										return true;
-									}
-
-								});
-		}
-		if (PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
-			menu.add(R.string.accept_subscription).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							try {
-								PresenceManager.getInstance()
-										.acceptSubscription(account, user);
-							} catch (NetworkException e) {
-								Application.getInstance().onError(e);
-							}
-							activity.startActivity(ContactEditor.createIntent(
-									activity, account, user));
-							return true;
-						}
-
-					});
-			menu.add(R.string.discard_subscription).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							try {
-								PresenceManager.getInstance()
-										.discardSubscription(account, user);
-							} catch (NetworkException e) {
-								Application.getInstance().onError(e);
-							}
-							return true;
-						}
-
-					});
-		}
-	}
-
-	private static void createGroupContextMenu(final FragmentActivity activity,
-			UpdatableAdapter adapter, final String account, final String group,
-			ContextMenu menu) {
-		menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account,
-				group));
-		if (group != GroupManager.ACTIVE_CHATS && group != GroupManager.IS_ROOM) {
-			menu.add(R.string.group_rename).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							GroupRenameDialogFragment.newInstance(
-									account == GroupManager.NO_ACCOUNT ? null
-											: account,
-									group == GroupManager.NO_GROUP ? null
-											: group).show(
-									activity.getSupportFragmentManager(),
-									"GROUP_RENAME");
-							return true;
-						}
-					});
-			if (group != GroupManager.NO_GROUP)
-				menu.add(R.string.group_remove).setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
-
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								GroupDeleteDialogFragment
-										.newInstance(
-												account == GroupManager.NO_ACCOUNT ? null
-														: account, group)
-										.show(activity
-												.getSupportFragmentManager(),
-												"GROUP_DELETE");
-								return true;
-							}
-						});
-		}
-		createOfflineModeContextMenu(adapter, account, group, menu);
-	}
-
-	private static void createAccountContextMenu(
-			final FragmentActivity activity, UpdatableAdapter adapter,
-			final String account, ContextMenu menu) {
-		menu.setHeaderTitle(AccountManager.getInstance()
-				.getVerboseName(account));
-		AccountItem accountItem = AccountManager.getInstance().getAccount(
-				account);
-		ConnectionState state = accountItem.getState();
-		if (state == ConnectionState.waiting)
-			menu.add(R.string.account_reconnect).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							if (AccountManager.getInstance()
-									.getAccount(account).updateConnection(true))
-								AccountManager.getInstance().onAccountChanged(
-										account);
-							return true;
-						}
-
-					});
-		menu.add(R.string.status_editor).setIntent(
-				StatusEditor.createIntent(activity, account));
-		menu.add(R.string.account_editor).setIntent(
-				AccountEditor.createIntent(activity, account));
-		if (state.isConnected()) {
-			menu.add(R.string.contact_viewer).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							String user = AccountManager.getInstance()
-									.getAccount(account).getRealJid();
-							if (user == null)
-								Application.getInstance().onError(
-										R.string.NOT_CONNECTED);
-							else {
-								activity.startActivity(ContactViewer
-										.createIntent(activity, account, user));
-							}
-							return true;
-						}
-
-					});
-			menu.add(R.string.contact_add).setIntent(
-					ContactAdd.createIntent(activity, account));
-		}
-		if (SettingsManager.contactsShowAccounts())
-			createOfflineModeContextMenu(adapter, account, null, menu);
-	}
-
-	private static void createOfflineModeContextMenu(UpdatableAdapter adapter,
-			String account, String group, ContextMenu menu) {
-		SubMenu mapMode = menu.addSubMenu(R.string.show_offline_settings);
-		mapMode.setHeaderTitle(R.string.show_offline_settings);
-		MenuItem always = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, 0, 0,
-				R.string.show_offline_always).setOnMenuItemClickListener(
-				new OfflineModeClickListener(adapter, account, group,
-						ShowOfflineMode.always));
-		MenuItem normal = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, 0, 0,
-				R.string.show_offline_normal).setOnMenuItemClickListener(
-				new OfflineModeClickListener(adapter, account, group,
-						ShowOfflineMode.normal));
-		MenuItem never = mapMode.add(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, 0, 0,
-				R.string.show_offline_never).setOnMenuItemClickListener(
-				new OfflineModeClickListener(adapter, account, group,
-						ShowOfflineMode.never));
-		mapMode.setGroupCheckable(CONTEXT_MENU_SHOW_OFFLINE_GROUP_ID, true,
-				true);
-		ShowOfflineMode showOfflineMode = GroupManager.getInstance()
-				.getShowOfflineMode(account,
-						group == null ? GroupManager.IS_ACCOUNT : group);
-		if (showOfflineMode == ShowOfflineMode.always)
-			always.setChecked(true);
-		else if (showOfflineMode == ShowOfflineMode.normal)
-			normal.setChecked(true);
-		else if (showOfflineMode == ShowOfflineMode.never)
-			never.setChecked(true);
-		else
-			throw new IllegalStateException();
 	}
 
 	@Override
@@ -1001,33 +713,6 @@ public class ContactList extends ManagedListActivity implements
 		if (inputMethodManager != null)
 			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
 					0);
-	}
-
-	private static class OfflineModeClickListener implements
-			MenuItem.OnMenuItemClickListener {
-
-		private final UpdatableAdapter adapter;
-		private final String account;
-		private final String group;
-		private final ShowOfflineMode mode;
-
-		public OfflineModeClickListener(UpdatableAdapter adapter,
-				String account, String group, ShowOfflineMode mode) {
-			super();
-			this.adapter = adapter;
-			this.account = account;
-			this.group = group;
-			this.mode = mode;
-		}
-
-		@Override
-		public boolean onMenuItemClick(MenuItem item) {
-			GroupManager.getInstance().setShowOfflineMode(account,
-					group == null ? GroupManager.IS_ACCOUNT : group, mode);
-			adapter.onChange();
-			return true;
-		}
-
 	}
 
 	public static Intent createPersistentIntent(Context context) {
