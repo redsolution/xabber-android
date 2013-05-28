@@ -56,7 +56,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -185,7 +184,6 @@ public class ContactList extends ManagedListActivity implements
 		commonStatusMode.setOnClickListener(this);
 		commonStatusText.setOnClickListener(this);
 		titleView.setOnClickListener(this);
-		findViewById(R.id.button).setOnClickListener(this);
 		findViewById(R.id.back_button).setOnClickListener(this);
 
 		if (savedInstanceState != null) {
@@ -490,33 +488,6 @@ public class ContactList extends ManagedListActivity implements
 		switch (view.getId()) {
 		case R.id.common_status_mode:
 			startActivity(StatusEditor.createIntent(this));
-			break;
-		case R.id.button: // Hint button
-			switch ((Integer) view.getTag()) {
-			case R.string.application_action_no_online:
-				SettingsManager.setContactsShowOffline(true);
-				contactListAdapter.onChange();
-				break;
-			case R.string.application_action_no_contacts:
-				startActivity(ContactAdd.createIntent(this));
-				break;
-			case R.string.application_action_waiting:
-				ConnectionManager.getInstance().updateConnections(true);
-				break;
-			case R.string.application_action_offline:
-				AccountManager.getInstance().setStatus(StatusMode.available,
-						null);
-				break;
-			case R.string.application_action_disabled:
-				startActivity(AccountList.createIntent(this));
-				break;
-			case R.string.application_action_empty:
-				startActivity(AccountAdd.createIntent(this));
-				break;
-			default:
-				break;
-			}
-			updateStatusBar();
 			break;
 		case R.id.back_button: // Xabber icon button
 		case R.id.common_status_text:

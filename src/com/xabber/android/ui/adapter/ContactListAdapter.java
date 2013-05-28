@@ -24,6 +24,7 @@ import java.util.TreeMap;
 
 import android.os.Handler;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -32,6 +33,8 @@ import android.widget.TextView;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -41,6 +44,9 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.AccountAdd;
+import com.xabber.android.ui.AccountList;
+import com.xabber.android.ui.ContactAdd;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
@@ -429,6 +435,7 @@ public class ContactListAdapter extends
 				final int text;
 				final int button;
 				final ContactListState state;
+				final OnClickListener listener;
 				if (filterString != null) {
 					if (commonState == CommonState.online)
 						state = ContactListState.online;
@@ -439,38 +446,95 @@ public class ContactListAdapter extends
 						state = ContactListState.offline;
 					text = R.string.application_state_no_online;
 					button = 0;
+					listener = null;
 				} else if (hasContact) {
 					state = ContactListState.online;
 					text = R.string.application_state_no_online;
 					button = R.string.application_action_no_online;
+					listener = new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+							SettingsManager.setContactsShowOffline(true);
+							onChange();
+						}
+
+					};
 				} else if (commonState == CommonState.online) {
 					state = ContactListState.online;
 					text = R.string.application_state_no_contacts;
 					button = R.string.application_action_no_contacts;
+					listener = new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+							activity.startActivity(ContactAdd
+									.createIntent(activity));
+						}
+
+					};
 				} else if (commonState == CommonState.roster) {
 					state = ContactListState.connecting;
 					text = R.string.application_state_roster;
 					button = 0;
+					listener = null;
 				} else if (commonState == CommonState.connecting) {
 					state = ContactListState.connecting;
 					text = R.string.application_state_connecting;
 					button = 0;
+					listener = null;
 				} else if (commonState == CommonState.waiting) {
 					state = ContactListState.offline;
 					text = R.string.application_state_waiting;
 					button = R.string.application_action_waiting;
+					listener = new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+							ConnectionManager.getInstance().updateConnections(
+									true);
+						}
+
+					};
 				} else if (commonState == CommonState.offline) {
 					state = ContactListState.offline;
 					text = R.string.application_state_offline;
 					button = R.string.application_action_offline;
+					listener = new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+							AccountManager.getInstance().setStatus(
+									StatusMode.available, null);
+						}
+
+					};
 				} else if (commonState == CommonState.disabled) {
 					state = ContactListState.offline;
 					text = R.string.application_state_disabled;
 					button = R.string.application_action_disabled;
+					listener = new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+							activity.startActivity(AccountList
+									.createIntent(activity));
+						}
+
+					};
 				} else if (commonState == CommonState.empty) {
 					state = ContactListState.offline;
 					text = R.string.application_state_empty;
 					button = R.string.application_action_empty;
+					listener = new OnClickListener() {
+
+						@Override
+						public void onClick(View view) {
+							activity.startActivity(AccountAdd
+									.createIntent(activity));
+						}
+
+					};
 				} else {
 					throw new IllegalStateException();
 				}
@@ -494,8 +558,8 @@ public class ContactListAdapter extends
 				} else {
 					buttonView.setVisibility(View.VISIBLE);
 					buttonView.setText(button);
-					buttonView.setTag(Integer.valueOf(button));
 				}
+				buttonView.setOnClickListener(listener);
 			}
 		}
 
