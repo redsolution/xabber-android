@@ -121,10 +121,11 @@ public class ContactListAdapter extends
 	 */
 	private Date nextRefresh;
 
-	public ContactListAdapter(Activity activity, ListView listView) {
+	public ContactListAdapter(Activity activity, ListView listView,
+			View infoView) {
 		super(activity, listView, new ChatContactInflater(activity),
 				GroupManager.getInstance());
-		infoView = activity.findViewById(R.id.info);
+		this.infoView = infoView;
 		if (infoView != null) {
 			connectedView = infoView.findViewById(R.id.connected);
 			disconnectedView = infoView.findViewById(R.id.disconnected);

@@ -30,22 +30,17 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,24 +57,18 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.adapter.AccountConfiguration;
+import com.xabber.android.ui.ContactListFragment.OnContactClickListener;
 import com.xabber.android.ui.adapter.AccountToggleAdapter;
-import com.xabber.android.ui.adapter.ContactListAdapter;
-import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
-import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
-import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.helper.ContextMenuHelper;
-import com.xabber.android.ui.helper.ManagedListActivity;
+import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -90,10 +79,9 @@ import com.xabber.xmpp.uri.XMPPUri;
  * @author alexander.ivanov
  * 
  */
-public class ContactList extends ManagedListActivity implements
-		OnContactChangedListener, OnAccountChangedListener,
-		OnChatChangedListener, View.OnClickListener, ConfirmDialogListener,
-		OnItemClickListener, OnLongClickListener, OnChoosedListener {
+public class ContactList extends ManagedActivity implements
+		OnAccountChangedListener, View.OnClickListener, OnLongClickListener,
+		OnChoosedListener, OnContactClickListener {
 
 	/**
 	 * Select contact to be invited to the room was requested.
@@ -116,10 +104,7 @@ public class ContactList extends ManagedListActivity implements
 
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
-	/**
-	 * Adapter for contact list.
-	 */
-	private ContactListAdapter contactListAdapter;
+	private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
 
 	/**
 	 * Adapter for account list.
@@ -154,16 +139,14 @@ public class ContactList extends ManagedListActivity implements
 			return;
 
 		setContentView(R.layout.contact_list);
-
 		titleView = findViewById(android.R.id.title);
 
-		ListView listView = getListView();
-		listView.setOnItemClickListener(this);
-		listView.setItemsCanFocus(true);
+		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
+				.beginTransaction();
+		fragmentTransaction.add(R.id.container, new ContactListFragment(),
+				CONTACT_LIST_TAG);
+		fragmentTransaction.commit();
 
-		registerForContextMenu(listView);
-		contactListAdapter = new ContactListAdapter(this, listView);
-		setListAdapter(contactListAdapter);
 		accountToggleAdapter = new AccountToggleAdapter(this, this,
 				(LinearLayout) findViewById(R.id.account_list));
 
@@ -273,15 +256,8 @@ public class ContactList extends ManagedListActivity implements
 		super.onResume();
 		updateStatusBar();
 		rebuildAccountToggler();
-
 		Application.getInstance().addUIListener(OnAccountChangedListener.class,
 				this);
-		Application.getInstance().addUIListener(OnContactChangedListener.class,
-				this);
-		Application.getInstance().addUIListener(OnChatChangedListener.class,
-				this);
-		contactListAdapter.onChange();
-
 		if (ContactList.ACTION_ROOM_INVITE.equals(action)
 				|| Intent.ACTION_SEND.equals(action)
 				|| Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
@@ -336,17 +312,8 @@ public class ContactList extends ManagedListActivity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		unregisterListeners();
-	}
-
-	private void unregisterListeners() {
 		Application.getInstance().removeUIListener(
 				OnAccountChangedListener.class, this);
-		Application.getInstance().removeUIListener(
-				OnContactChangedListener.class, this);
-		Application.getInstance().removeUIListener(OnChatChangedListener.class,
-				this);
-		contactListAdapter.removeRefreshRequests();
 	}
 
 	@Override
@@ -396,7 +363,7 @@ public class ContactList extends ManagedListActivity implements
 		case OPTION_MENU_EXIT_ID:
 			Application.getInstance().requestToClose();
 			showDialog(DIALOG_CLOSE_APPLICATION_ID);
-			unregisterListeners();
+			getContactListFragment().unregisterListeners();
 			new Handler().postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -416,40 +383,24 @@ public class ContactList extends ManagedListActivity implements
 				NotificationManager.getInstance().removeMessageNotification(
 						chat.getAccount(), chat.getUser());
 			}
-			contactListAdapter.onChange();
+			getContactListFragment().getAdapter().onChange();
 			return true;
 		}
 		return false;
+	}
+
+	private ContactListFragment getContactListFragment() {
+		return (ContactListFragment) getSupportFragmentManager()
+				.findFragmentByTag(CONTACT_LIST_TAG);
 	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, view, menuInfo);
-		if (view == getListView()) {
-			final AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-			BaseEntity baseEntity = (BaseEntity) getListView()
-					.getItemAtPosition(info.position);
-			if (baseEntity == null)
-				// Account toggler
-				return;
-			if (baseEntity instanceof AbstractContact) {
-				ContextMenuHelper.createContactContextMenu(this,
-						contactListAdapter, (AbstractContact) baseEntity, menu);
-			} else if (baseEntity instanceof AccountConfiguration) {
-				ContextMenuHelper.createAccountContextMenu(this,
-						contactListAdapter, baseEntity.getAccount(), menu);
-			} else if (baseEntity instanceof GroupConfiguration) {
-				ContextMenuHelper.createGroupContextMenu(this,
-						contactListAdapter, baseEntity.getAccount(),
-						baseEntity.getUser(), menu);
-			}
-		} else {
-			// Account panel
-			ContextMenuHelper.createAccountContextMenu(this,
-					contactListAdapter,
-					accountToggleAdapter.getItemForView(view), menu);
-		}
+		ContextMenuHelper.createAccountContextMenu(this,
+				getContactListFragment().getAdapter(),
+				accountToggleAdapter.getItemForView(view), menu);
 	}
 
 	@Override
@@ -492,7 +443,7 @@ public class ContactList extends ManagedListActivity implements
 		case R.id.back_button: // Xabber icon button
 		case R.id.common_status_text:
 		case android.R.id.title:
-			scrollUp();
+			getContactListFragment().scrollUp();
 			break;
 		default:
 			String account = accountToggleAdapter.getItemForView(view);
@@ -500,69 +451,15 @@ public class ContactList extends ManagedListActivity implements
 				break;
 			if (!SettingsManager.contactsShowAccounts()) {
 				if (AccountManager.getInstance().getAccounts().size() < 2)
-					scrollUp();
-				else
-					setSelectedAccount(account);
+					getContactListFragment().scrollUp();
+				else {
+					getContactListFragment().setSelectedAccount(account);
+					rebuildAccountToggler();
+				}
 			} else
-				scrollTo(account);
+				getContactListFragment().scrollTo(account);
 			break;
 		}
-	}
-
-	/**
-	 * Scroll contact list to specified account.
-	 * 
-	 * @param account
-	 */
-	private void scrollTo(String account) {
-		ListView listView = getListView();
-		long count = listView.getCount();
-		for (int position = 0; position < (int) count; position++) {
-			BaseEntity baseEntity = (BaseEntity) listView
-					.getItemAtPosition(position);
-			if (baseEntity != null
-					&& baseEntity instanceof AccountConfiguration
-					&& baseEntity.getAccount().equals(account)) {
-				listView.setSelection(position);
-				stopMovement();
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Filter out contact list for selected account.
-	 * 
-	 * @param account
-	 */
-	private void setSelectedAccount(String account) {
-		if (account.equals(AccountManager.getInstance().getSelectedAccount()))
-			SettingsManager.setContactsSelectedAccount("");
-		else
-			SettingsManager.setContactsSelectedAccount(account);
-		rebuildAccountToggler();
-		contactListAdapter.onChange();
-		stopMovement();
-	}
-
-	/**
-	 * Stop fling scrolling.
-	 */
-	private void stopMovement() {
-		getListView().onTouchEvent(
-				MotionEvent.obtain(SystemClock.uptimeMillis(),
-						SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL,
-						0, 0, 0));
-	}
-
-	/**
-	 * Scroll to the top of contact list.
-	 */
-	private void scrollUp() {
-		ListView listView = getListView();
-		if (listView.getCount() > 0)
-			listView.setSelection(0);
-		stopMovement();
 	}
 
 	@Override
@@ -576,22 +473,7 @@ public class ContactList extends ManagedListActivity implements
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		Object object = parent.getAdapter().getItem(position);
-		if (object == null) {
-			// Account toggler
-		} else if (object instanceof AbstractContact) {
-			onContactClick((AbstractContact) object);
-		} else if (object instanceof GroupConfiguration) {
-			GroupConfiguration groupConfiguration = (GroupConfiguration) object;
-			contactListAdapter.setExpanded(groupConfiguration.getAccount(),
-					groupConfiguration.getUser(),
-					!groupConfiguration.isExpanded());
-		}
-	}
-
-	private void onContactClick(AbstractContact abstractContact) {
+	public void onContactClick(AbstractContact abstractContact) {
 		if (ACTION_ROOM_INVITE.equals(action)) {
 			action = null;
 			Intent intent = getIntent();
@@ -639,37 +521,13 @@ public class ContactList extends ManagedListActivity implements
 	}
 
 	@Override
-	public void onContactsChanged(Collection<BaseEntity> addresses) {
-		contactListAdapter.refreshRequest();
-	}
-
-	@Override
 	public void onAccountsChanged(Collection<String> accounts) {
 		accountToggleAdapter.onChange();
-		contactListAdapter.refreshRequest();
-	}
-
-	@Override
-	public void onChatChanged(String account, String user, boolean incoming) {
-		if (incoming)
-			contactListAdapter.refreshRequest();
 	}
 
 	@Override
 	public void onChoosed(String account, String user, String text) {
 		openChat(new BaseEntity(account, user), text);
-	}
-
-	@Override
-	public void onAccept(DialogBuilder dialogBuilder) {
-	}
-
-	@Override
-	public void onDecline(DialogBuilder dialogBuilder) {
-	}
-
-	@Override
-	public void onCancel(DialogBuilder dialogBuilder) {
 	}
 
 	private void updateStatusBar() {
