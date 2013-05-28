@@ -10,22 +10,32 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.ContactListAdapter;
+import com.xabber.android.ui.adapter.ContactListAdapter.OnContactListChangedListener;
+import com.xabber.android.ui.adapter.ContactListState;
 import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -33,10 +43,42 @@ import com.xabber.androiddev.R;
 
 public class ContactListFragment extends Fragment implements
 		OnAccountChangedListener, OnContactChangedListener,
-		OnChatChangedListener, OnItemClickListener {
+		OnChatChangedListener, OnItemClickListener,
+		OnContactListChangedListener {
 
 	private ContactListAdapter adapter;
+
 	private ListView listView;
+
+	/**
+	 * View with information shown on empty contact list.
+	 */
+	private View infoView;
+
+	/**
+	 * Image view with connected icon.
+	 */
+	private View connectedView;
+
+	/**
+	 * Image view with disconnected icon.
+	 */
+	private View disconnectedView;
+
+	/**
+	 * View with help text.
+	 */
+	private TextView textView;
+
+	/**
+	 * Button to apply help text.
+	 */
+	private Button buttonView;
+
+	/**
+	 * Animation for disconnected view.
+	 */
+	private Animation animation;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,9 +89,15 @@ public class ContactListFragment extends Fragment implements
 		listView.setOnItemClickListener(this);
 		listView.setItemsCanFocus(true);
 		registerForContextMenu(listView);
-		adapter = new ContactListAdapter(getActivity(), listView,
-				view.findViewById(R.id.info));
+		adapter = new ContactListAdapter(getActivity(), listView, this);
 		listView.setAdapter(adapter);
+		infoView = view.findViewById(R.id.info);
+		connectedView = infoView.findViewById(R.id.connected);
+		disconnectedView = infoView.findViewById(R.id.disconnected);
+		textView = (TextView) infoView.findViewById(R.id.text);
+		buttonView = (Button) infoView.findViewById(R.id.button);
+		animation = AnimationUtils.loadAnimation(getActivity(),
+				R.anim.connection);
 		return view;
 	}
 
@@ -120,6 +168,142 @@ public class ContactListFragment extends Fragment implements
 	public void onChatChanged(String account, String user, boolean incoming) {
 		if (incoming)
 			adapter.refreshRequest();
+	}
+
+	@Override
+	public void onContactListChanged(CommonState commonState,
+			boolean hasContacts, boolean hasVisibleContacts,
+			boolean isFilterEnabled) {
+		if (hasVisibleContacts) {
+			infoView.setVisibility(View.GONE);
+			disconnectedView.clearAnimation();
+			return;
+		}
+		infoView.setVisibility(View.VISIBLE);
+		final int text;
+		final int button;
+		final ContactListState state;
+		final OnClickListener listener;
+		if (isFilterEnabled) {
+			if (commonState == CommonState.online)
+				state = ContactListState.online;
+			else if (commonState == CommonState.roster
+					|| commonState == CommonState.connecting)
+				state = ContactListState.connecting;
+			else
+				state = ContactListState.offline;
+			text = R.string.application_state_no_online;
+			button = 0;
+			listener = null;
+		} else if (hasContacts) {
+			state = ContactListState.online;
+			text = R.string.application_state_no_online;
+			button = R.string.application_action_no_online;
+			listener = new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					SettingsManager.setContactsShowOffline(true);
+					adapter.onChange();
+				}
+
+			};
+		} else if (commonState == CommonState.online) {
+			state = ContactListState.online;
+			text = R.string.application_state_no_contacts;
+			button = R.string.application_action_no_contacts;
+			listener = new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					startActivity(ContactAdd.createIntent(getActivity()));
+				}
+
+			};
+		} else if (commonState == CommonState.roster) {
+			state = ContactListState.connecting;
+			text = R.string.application_state_roster;
+			button = 0;
+			listener = null;
+		} else if (commonState == CommonState.connecting) {
+			state = ContactListState.connecting;
+			text = R.string.application_state_connecting;
+			button = 0;
+			listener = null;
+		} else if (commonState == CommonState.waiting) {
+			state = ContactListState.offline;
+			text = R.string.application_state_waiting;
+			button = R.string.application_action_waiting;
+			listener = new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					ConnectionManager.getInstance().updateConnections(true);
+				}
+
+			};
+		} else if (commonState == CommonState.offline) {
+			state = ContactListState.offline;
+			text = R.string.application_state_offline;
+			button = R.string.application_action_offline;
+			listener = new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					AccountManager.getInstance().setStatus(
+							StatusMode.available, null);
+				}
+
+			};
+		} else if (commonState == CommonState.disabled) {
+			state = ContactListState.offline;
+			text = R.string.application_state_disabled;
+			button = R.string.application_action_disabled;
+			listener = new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					startActivity(AccountList.createIntent(getActivity()));
+				}
+
+			};
+		} else if (commonState == CommonState.empty) {
+			state = ContactListState.offline;
+			text = R.string.application_state_empty;
+			button = R.string.application_action_empty;
+			listener = new OnClickListener() {
+
+				@Override
+				public void onClick(View view) {
+					startActivity(AccountAdd.createIntent(getActivity()));
+				}
+
+			};
+		} else {
+			throw new IllegalStateException();
+		}
+		if (state == ContactListState.offline) {
+			connectedView.setVisibility(View.INVISIBLE);
+			disconnectedView.setVisibility(View.VISIBLE);
+			disconnectedView.clearAnimation();
+		} else if (state == ContactListState.connecting) {
+			connectedView.setVisibility(View.VISIBLE);
+			disconnectedView.setVisibility(View.VISIBLE);
+			if (disconnectedView.getAnimation() == null)
+				disconnectedView.startAnimation(animation);
+		} else if (state == ContactListState.online) {
+			connectedView.setVisibility(View.VISIBLE);
+			disconnectedView.setVisibility(View.INVISIBLE);
+			disconnectedView.clearAnimation();
+		}
+		textView.setText(text);
+		if (button == 0) {
+			buttonView.setVisibility(View.GONE);
+		} else {
+			buttonView.setVisibility(View.VISIBLE);
+			buttonView.setText(button);
+		}
+		buttonView.setOnClickListener(listener);
 	}
 
 	/**
