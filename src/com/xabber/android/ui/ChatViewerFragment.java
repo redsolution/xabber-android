@@ -1,21 +1,30 @@
 package com.xabber.android.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,15 +35,18 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.SettingsManager.ChatsHideKeyboard;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -42,14 +54,13 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
-import com.xabber.android.ui.adapter.OnTextChangedListener;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AbstractAvatarInflaterHelper;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.widget.PageSwitcher;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment {
+public class ChatViewerFragment implements OnCreateContextMenuListener {
 
 	/**
 	 * Minimum number of new messages to be requested from the server side
@@ -118,6 +129,10 @@ public class ChatViewerFragment {
 		return activity.getString(resId, formatArgs);
 	}
 
+	private void registerForContextMenu(View view) {
+		view.setOnCreateContextMenuListener(this);
+	}
+
 	public View getView() {
 		return view;
 	}
@@ -162,11 +177,51 @@ public class ChatViewerFragment {
 
 		listView.setAdapter(chatMessageAdapter);
 		view.findViewById(R.id.chat_send).setOnClickListener(
-				(OnClickListener) getActivity());
-		titleView.setOnClickListener((OnClickListener) getActivity());
-		inputView.setOnKeyListener((OnKeyListener) getActivity());
-		inputView
-				.setOnEditorActionListener((OnEditorActionListener) getActivity());
+				new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						sendMessage();
+					}
+
+				});
+		titleView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				int size = listView.getCount();
+				if (size > 0)
+					listView.setSelection(size - 1);
+			}
+
+		});
+		inputView.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(View view, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN
+						&& keyCode == KeyEvent.KEYCODE_ENTER
+						&& SettingsManager.chatsSendByEnter()) {
+					sendMessage();
+					return true;
+				}
+				return false;
+			}
+
+		});
+		inputView.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int actionId,
+					KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					sendMessage();
+					return true;
+				}
+				return false;
+			}
+
+		});
 		inputView.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -180,15 +235,16 @@ public class ChatViewerFragment {
 			}
 
 			@Override
-			public void afterTextChanged(Editable s) {
+			public void afterTextChanged(Editable text) {
 				if (skipOnTextChanges)
 					return;
-				((OnTextChangedListener) getActivity()).onTextChanged(
-						inputView, s);
+				String account = chatMessageAdapter.getAccount();
+				String user = chatMessageAdapter.getUser();
+				ChatStateManager.getInstance().onComposing(account, user, text);
 			}
 
 		});
-		listView.setOnCreateContextMenuListener(getActivity());
+		registerForContextMenu(listView);
 		return view;
 	}
 
@@ -432,6 +488,63 @@ public class ChatViewerFragment {
 		return true;
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View view,
+			ContextMenuInfo menuInfo) {
+		// super.onCreateContextMenu(menu, view, menuInfo);
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+
+		final MessageItem message = (MessageItem) listView.getAdapter()
+				.getItem(info.position);
+		if (message != null && message.getAction() != null)
+			return;
+		if (message.isError()) {
+			menu.add(R.string.message_repeat).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							sendMessage(message.getText());
+							return true;
+						}
+
+					});
+		}
+		menu.add(R.string.message_quote).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						insertText("> " + message.getText() + "\n");
+						return true;
+					}
+
+				});
+		menu.add(R.string.message_copy).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						((ClipboardManager) getActivity().getSystemService(
+								Context.CLIPBOARD_SERVICE)).setText(message
+								.getSpannable());
+						return true;
+					}
+
+				});
+		menu.add(R.string.message_remove).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						MessageManager.getInstance().removeMessage(message);
+						onChatChange(false);
+						return true;
+					}
+
+				});
+	}
+
 	public void setChat(AbstractChat chat) {
 		final String account = chat.getAccount();
 		final String user = chat.getUser();
@@ -517,6 +630,60 @@ public class ChatViewerFragment {
 			return;
 		pagesShown = false;
 		handler.postDelayed(pagesHideRunnable, PAGES_HIDDER_DELAY);
+	}
+
+	/**
+	 * Insert additional text to the input.
+	 * 
+	 * @param additional
+	 */
+	public void insertText(String additional) {
+		String source = inputView.getText().toString();
+		int selection = inputView.getSelectionEnd();
+		if (selection == -1)
+			selection = source.length();
+		else if (selection > source.length())
+			selection = source.length();
+		String before = source.substring(0, selection);
+		String after = source.substring(selection);
+		if (before.length() > 0 && !before.endsWith("\n"))
+			additional = "\n" + additional;
+		inputView.setText(before + additional + after);
+		inputView.setSelection(selection + additional.length());
+	}
+
+	private void sendMessage() {
+		String text = inputView.getText().toString();
+		int start = 0;
+		int end = text.length();
+		while (start < end
+				&& (text.charAt(start) == ' ' || text.charAt(start) == '\n'))
+			start += 1;
+		while (start < end
+				&& (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n'))
+			end -= 1;
+		text = text.substring(start, end);
+		if ("".equals(text))
+			return;
+		skipOnTextChanges = true;
+		inputView.setText("");
+		skipOnTextChanges = false;
+		sendMessage(text);
+		((ChatViewer) getActivity()).onSent();
+		if (SettingsManager.chatsHideKeyboard() == ChatsHideKeyboard.always
+				|| (getActivity().getResources().getBoolean(R.bool.landscape) && SettingsManager
+						.chatsHideKeyboard() == ChatsHideKeyboard.landscape)) {
+			InputMethodManager imm = (InputMethodManager) getActivity()
+					.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
+		}
+	}
+
+	private void sendMessage(String text) {
+		final String account = chatMessageAdapter.getAccount();
+		final String user = chatMessageAdapter.getUser();
+		MessageManager.getInstance().sendMessage(account, user, text);
+		onChatChange(false);
 	}
 
 }

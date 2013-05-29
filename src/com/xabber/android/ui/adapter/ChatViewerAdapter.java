@@ -128,6 +128,10 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 		((ChatViewerFragment) view.getTag()).onPrepareOptionsMenu(menu);
 	}
 
+	public void insertText(View view, String text) {
+		((ChatViewerFragment) view.getTag()).insertText(text);
+	}
+
 	@Override
 	public void onChange() {
 		activeChats = new ArrayList<AbstractChat>(MessageManager.getInstance()

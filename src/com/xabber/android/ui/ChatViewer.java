@@ -19,39 +19,23 @@ import java.util.Collection;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.ClipboardManager;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.SettingsManager.ChatsHideKeyboard;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
-import com.xabber.android.ui.adapter.OnTextChangedListener;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.widget.PageSwitcher;
 import com.xabber.android.ui.widget.PageSwitcher.OnSelectListener;
@@ -66,10 +50,9 @@ import com.xabber.androiddev.R;
  * @author alexander.ivanov
  * 
  */
-public class ChatViewer extends ManagedActivity implements
-		View.OnClickListener, View.OnKeyListener, OnSelectListener,
+public class ChatViewer extends ManagedActivity implements OnSelectListener,
 		OnChatChangedListener, OnContactChangedListener,
-		OnAccountChangedListener, OnEditorActionListener, OnTextChangedListener {
+		OnAccountChangedListener {
 
 	/**
 	 * Attention request.
@@ -90,8 +73,6 @@ public class ChatViewer extends ManagedActivity implements
 	private boolean exitOnSend;
 
 	private boolean isVisible;
-
-	private boolean skipOnTextChanges;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -154,7 +135,7 @@ public class ChatViewer extends ManagedActivity implements
 				intent.removeExtra(Intent.EXTRA_TEXT);
 				exitOnSend = true;
 				if (actionWithView != null)
-					insertText(additional);
+					chatViewerAdapter.insertText(actionWithView, additional);
 			}
 		}
 		isVisible = true;
@@ -215,115 +196,6 @@ public class ChatViewer extends ManagedActivity implements
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View view,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, view, menuInfo);
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		pageSwitcher.stopMovement();
-
-		ListView listView = (ListView) actionWithView
-				.findViewById(android.R.id.list);
-		final MessageItem message = (MessageItem) listView.getAdapter()
-				.getItem(info.position);
-		if (message != null && message.getAction() != null)
-			return;
-		if (message.isError()) {
-			menu.add(R.string.message_repeat).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
-
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							sendMessage(message.getText());
-							return true;
-						}
-
-					});
-		}
-		menu.add(R.string.message_quote).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
-
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						insertText("> " + message.getText() + "\n");
-						return true;
-					}
-
-				});
-		menu.add(R.string.message_copy).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
-
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
-								.setText(message.getSpannable());
-						return true;
-					}
-
-				});
-		menu.add(R.string.message_remove).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
-
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						MessageManager.getInstance().removeMessage(message);
-						chatViewerAdapter.onChatChange(actionWithView, false);
-						return true;
-					}
-
-				});
-	}
-
-	/**
-	 * Insert additional text to the input.
-	 * 
-	 * @param additional
-	 */
-	private void insertText(String additional) {
-		EditText editView = (EditText) actionWithView
-				.findViewById(R.id.chat_input);
-		String source = editView.getText().toString();
-		int selection = editView.getSelectionEnd();
-		if (selection == -1)
-			selection = source.length();
-		else if (selection > source.length())
-			selection = source.length();
-		String before = source.substring(0, selection);
-		String after = source.substring(selection);
-		if (before.length() > 0 && !before.endsWith("\n"))
-			additional = "\n" + additional;
-		editView.setText(before + additional + after);
-		editView.setSelection(selection + additional.length());
-	}
-
-	@Override
-	public void onClick(View view) {
-		switch (view.getId()) {
-		case R.id.chat_send:
-			sendMessage();
-			break;
-		case R.id.title:
-			ListView listView = (ListView) actionWithView
-					.findViewById(android.R.id.list);
-			int size = listView.getCount();
-			if (size > 0)
-				listView.setSelection(size - 1);
-		default:
-			break;
-		}
-	}
-
-	@Override
-	public boolean onKey(View view, int keyCode, KeyEvent event) {
-		if (event.getAction() == KeyEvent.ACTION_DOWN
-				&& keyCode == KeyEvent.KEYCODE_ENTER
-				&& SettingsManager.chatsSendByEnter()) {
-			sendMessage();
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
@@ -342,12 +214,9 @@ public class ChatViewer extends ManagedActivity implements
 		}
 	}
 
-	@Override
-	public void onTextChanged(EditText editText, CharSequence text) {
-		if (skipOnTextChanges)
-			return;
-		ChatStateManager.getInstance().onComposing(actionWithAccount,
-				actionWithUser, text);
+	void onSent() {
+		if (exitOnSend)
+			close();
 	}
 
 	@Override
@@ -380,43 +249,6 @@ public class ChatViewer extends ManagedActivity implements
 		actionWithView = null;
 		if (PageSwitcher.LOG)
 			LogManager.i(this, "onUnselect");
-	}
-
-	private void sendMessage() {
-		if (actionWithView == null)
-			return;
-		EditText editView = (EditText) actionWithView
-				.findViewById(R.id.chat_input);
-		String text = editView.getText().toString();
-		int start = 0;
-		int end = text.length();
-		while (start < end
-				&& (text.charAt(start) == ' ' || text.charAt(start) == '\n'))
-			start += 1;
-		while (start < end
-				&& (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n'))
-			end -= 1;
-		text = text.substring(start, end);
-		if ("".equals(text))
-			return;
-		skipOnTextChanges = true;
-		editView.setText("");
-		skipOnTextChanges = false;
-		sendMessage(text);
-		if (exitOnSend)
-			close();
-		if (SettingsManager.chatsHideKeyboard() == ChatsHideKeyboard.always
-				|| (getResources().getBoolean(R.bool.landscape) && SettingsManager
-						.chatsHideKeyboard() == ChatsHideKeyboard.landscape)) {
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(editView.getWindowToken(), 0);
-		}
-	}
-
-	private void sendMessage(String text) {
-		MessageManager.getInstance().sendMessage(actionWithAccount,
-				actionWithUser, text);
-		chatViewerAdapter.onChatChange(actionWithView, false);
 	}
 
 	@Override
@@ -473,15 +305,6 @@ public class ChatViewer extends ManagedActivity implements
 			chatViewerAdapter.onChange();
 			return;
 		}
-	}
-
-	@Override
-	public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-		if (actionId == EditorInfo.IME_ACTION_SEND) {
-			sendMessage();
-			return true;
-		}
-		return false;
 	}
 
 	private boolean selectChat(String account, String user) {
