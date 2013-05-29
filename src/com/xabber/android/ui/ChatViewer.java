@@ -25,7 +25,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -38,31 +37,21 @@ import android.widget.TextView.OnEditorActionListener;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsHideKeyboard;
-import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomState;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
-import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.adapter.OnTextChangedListener;
-import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.widget.PageSwitcher;
 import com.xabber.android.ui.widget.PageSwitcher.OnSelectListener;
@@ -87,38 +76,9 @@ public class ChatViewer extends ManagedActivity implements
 	 */
 	private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
 
-	/**
-	 * Minimum number of new messages to be requested from the server side
-	 * archive.
-	 */
-	private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
-
 	private static final String SAVED_ACCOUNT = "com.xabber.android.ui.ChatViewer.SAVED_ACCOUNT";
 	private static final String SAVED_USER = "com.xabber.android.ui.ChatViewer.SAVED_USER";
 	private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.ChatViewer.EXIT_ON_SEND";
-
-	private static final int OPTION_MENU_VIEW_CONTACT_ID = 0x02;
-	private static final int OPTION_MENU_CHAT_LIST_ID = 0x03;
-	private static final int OPTION_MENU_CLOSE_CHAT_ID = 0x04;
-	private static final int OPTION_MENU_SHOW_HISTORY_ID = 0x05;
-	private static final int OPTION_MENU_SETTINGS_ID = 0x08;
-	private static final int OPTION_MENU_CLEAR_HISTORY_ID = 0x09;
-	private static final int OPTION_MENU_CLEAR_MESSAGE_ID = 0x0a;
-	private static final int OPTION_MENU_EXPORT_CHAT_ID = 0x0c;
-	private static final int OPTION_MENU_CALL_ATTENTION_ID = 0x0d;
-
-	private static final int OPTION_MENU_LEAVE_ROOM_ID = 0x10;
-	private static final int OPTION_MENU_JOIN_ROOM_ID = 0x11;
-	private static final int OPTION_MENU_MUC_INVITE_ID = 0x12;
-	private static final int OPTION_MENU_EDIT_ROOM_ID = 0x13;
-	private static final int OPTION_MENU_OCCUPANT_LIST_ID = 0x14;
-
-	private static final int OPTION_MENU_START_OTR_ID = 0x20;
-	private static final int OPTION_MENU_END_OTR_ID = 0x21;
-	private static final int OPTION_MENU_VERIFY_FINGERPRINT_ID = 0x22;
-	private static final int OPTION_MENU_VERIFY_QUESTION_ID = 0x23;
-	private static final int OPTION_MENU_VERIFY_SECRET_ID = 0x24;
-	private static final int OPTION_MENU_REFRESH_OTR_ID = 0x25;
 
 	private ChatViewerAdapter chatViewerAdapter;
 	private PageSwitcher pageSwitcher;
@@ -250,203 +210,8 @@ public class ChatViewer extends ManagedActivity implements
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		menu.clear();
-		AbstractChat abstractChat = MessageManager.getInstance().getChat(
-				actionWithAccount, actionWithUser);
-		if (abstractChat != null && abstractChat instanceof RoomChat) {
-			if (((RoomChat) abstractChat).getState() == RoomState.unavailable)
-				menu.add(0, OPTION_MENU_JOIN_ROOM_ID, 0,
-						getResources().getText(R.string.muc_join)).setIcon(
-						android.R.drawable.ic_menu_add);
-			else
-				menu.add(0, OPTION_MENU_MUC_INVITE_ID, 0,
-						getResources().getText(R.string.muc_invite)).setIcon(
-						android.R.drawable.ic_menu_add);
-		} else {
-			menu.add(0, OPTION_MENU_VIEW_CONTACT_ID, 0,
-					getResources().getText(R.string.contact_editor)).setIcon(
-					android.R.drawable.ic_menu_edit);
-		}
-		menu.add(0, OPTION_MENU_CHAT_LIST_ID, 0, getText(R.string.chat_list))
-				.setIcon(R.drawable.ic_menu_friendslist);
-		menu.add(0, OPTION_MENU_SETTINGS_ID, 0, getText(R.string.chat_settings))
-				.setIcon(android.R.drawable.ic_menu_preferences);
-		menu.add(0, OPTION_MENU_SHOW_HISTORY_ID, 0,
-				getText(R.string.show_history)).setIcon(
-				R.drawable.ic_menu_archive);
-		if (abstractChat != null
-				&& abstractChat instanceof RoomChat
-				&& ((RoomChat) abstractChat).getState() != RoomState.unavailable) {
-			if (((RoomChat) abstractChat).getState() == RoomState.error)
-				menu.add(0, OPTION_MENU_EDIT_ROOM_ID, 0,
-						getResources().getText(R.string.muc_edit)).setIcon(
-						android.R.drawable.ic_menu_edit);
-			else
-				menu.add(0, OPTION_MENU_LEAVE_ROOM_ID, 0,
-						getResources().getText(R.string.muc_leave)).setIcon(
-						android.R.drawable.ic_menu_close_clear_cancel);
-		} else {
-			menu.add(0, OPTION_MENU_CLOSE_CHAT_ID, 0,
-					getResources().getText(R.string.close_chat)).setIcon(
-					android.R.drawable.ic_menu_close_clear_cancel);
-		}
-		menu.add(0, OPTION_MENU_CLEAR_MESSAGE_ID, 0,
-				getResources().getText(R.string.clear_message)).setIcon(
-				R.drawable.ic_menu_stop);
-		menu.add(0, OPTION_MENU_CLEAR_HISTORY_ID, 0,
-				getText(R.string.clear_history));
-		menu.add(0, OPTION_MENU_EXPORT_CHAT_ID, 0,
-				getText(R.string.export_chat));
-		if (abstractChat != null && abstractChat instanceof RegularChat) {
-			menu.add(0, OPTION_MENU_CALL_ATTENTION_ID, 0,
-					getText(R.string.call_attention));
-			SecurityLevel securityLevel = OTRManager.getInstance()
-					.getSecurityLevel(abstractChat.getAccount(),
-							abstractChat.getUser());
-			SubMenu otrMenu = menu.addSubMenu(getText(R.string.otr_encryption));
-			otrMenu.setHeaderTitle(R.string.otr_encryption);
-			if (securityLevel == SecurityLevel.plain)
-				otrMenu.add(0, OPTION_MENU_START_OTR_ID, 0,
-						getText(R.string.otr_start))
-						.setEnabled(
-								SettingsManager.securityOtrMode() != SecurityOtrMode.disabled);
-			else
-				otrMenu.add(0, OPTION_MENU_REFRESH_OTR_ID, 0,
-						getText(R.string.otr_refresh));
-			otrMenu.add(0, OPTION_MENU_END_OTR_ID, 0, getText(R.string.otr_end))
-					.setEnabled(securityLevel != SecurityLevel.plain);
-			otrMenu.add(0, OPTION_MENU_VERIFY_FINGERPRINT_ID, 0,
-					getText(R.string.otr_verify_fingerprint)).setEnabled(
-					securityLevel != SecurityLevel.plain);
-			otrMenu.add(0, OPTION_MENU_VERIFY_QUESTION_ID, 0,
-					getText(R.string.otr_verify_question)).setEnabled(
-					securityLevel != SecurityLevel.plain);
-			otrMenu.add(0, OPTION_MENU_VERIFY_SECRET_ID, 0,
-					getText(R.string.otr_verify_secret)).setEnabled(
-					securityLevel != SecurityLevel.plain);
-		}
-		if (abstractChat != null && abstractChat instanceof RoomChat
-				&& ((RoomChat) abstractChat).getState() == RoomState.available)
-			menu.add(0, OPTION_MENU_OCCUPANT_LIST_ID, 0, getResources()
-					.getText(R.string.occupant_list));
+		chatViewerAdapter.onPrepareOptionsMenu(actionWithView, menu);
 		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
-		switch (item.getItemId()) {
-		case OPTION_MENU_VIEW_CONTACT_ID:
-			startActivity(ContactEditor.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case OPTION_MENU_CHAT_LIST_ID:
-			startActivity(ChatList.createIntent(this));
-			return true;
-		case OPTION_MENU_CLOSE_CHAT_ID:
-			MessageManager.getInstance().closeChat(actionWithAccount,
-					actionWithUser);
-			NotificationManager.getInstance().removeMessageNotification(
-					actionWithAccount, actionWithUser);
-			close();
-			return true;
-		case OPTION_MENU_CLEAR_HISTORY_ID:
-			MessageManager.getInstance().clearHistory(actionWithAccount,
-					actionWithUser);
-			chatViewerAdapter.onChatChange(actionWithView, false);
-			return true;
-		case OPTION_MENU_SHOW_HISTORY_ID:
-			MessageManager.getInstance().requestToLoadLocalHistory(
-					actionWithAccount, actionWithUser);
-			MessageArchiveManager.getInstance().requestHistory(
-					actionWithAccount, actionWithUser,
-					MINIMUM_MESSAGES_TO_LOAD, 0);
-			chatViewerAdapter.onChange();
-			chatViewerAdapter.onChatChange(actionWithView, false);
-			return true;
-		case OPTION_MENU_SETTINGS_ID:
-			startActivity(ChatEditor.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case OPTION_MENU_CLEAR_MESSAGE_ID:
-			((EditText) actionWithView.findViewById(R.id.chat_input))
-					.setText("");
-			return true;
-		case OPTION_MENU_EXPORT_CHAT_ID:
-			ChatExportDialogFragment.newInstance(actionWithAccount,
-					actionWithUser).show(getSupportFragmentManager(),
-					"CHAT_EXPORT");
-			return true;
-		case OPTION_MENU_CALL_ATTENTION_ID:
-			try {
-				AttentionManager.getInstance().sendAttention(actionWithAccount,
-						actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return true;
-		case OPTION_MENU_JOIN_ROOM_ID:
-			MUCManager.getInstance().joinRoom(actionWithAccount,
-					actionWithUser, true);
-			return true;
-		case OPTION_MENU_LEAVE_ROOM_ID:
-			MUCManager.getInstance().leaveRoom(actionWithAccount,
-					actionWithUser);
-			MessageManager.getInstance().closeChat(actionWithAccount,
-					actionWithUser);
-			NotificationManager.getInstance().removeMessageNotification(
-					actionWithAccount, actionWithUser);
-			close();
-			return true;
-		case OPTION_MENU_MUC_INVITE_ID:
-			startActivity(ContactList.createRoomInviteIntent(this,
-					actionWithAccount, actionWithUser));
-			return true;
-		case OPTION_MENU_EDIT_ROOM_ID:
-			startActivity(MUCEditor.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case OPTION_MENU_OCCUPANT_LIST_ID:
-			startActivity(OccupantList.createIntent(this, actionWithAccount,
-					actionWithUser));
-			return true;
-		case OPTION_MENU_START_OTR_ID:
-			try {
-				OTRManager.getInstance().startSession(actionWithAccount,
-						actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return true;
-		case OPTION_MENU_REFRESH_OTR_ID:
-			try {
-				OTRManager.getInstance().refreshSession(actionWithAccount,
-						actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return true;
-		case OPTION_MENU_END_OTR_ID:
-			try {
-				OTRManager.getInstance().endSession(actionWithAccount,
-						actionWithUser);
-			} catch (NetworkException e) {
-				Application.getInstance().onError(e);
-			}
-			return true;
-		case OPTION_MENU_VERIFY_FINGERPRINT_ID:
-			startActivity(FingerprintViewer.createIntent(this,
-					actionWithAccount, actionWithUser));
-			return true;
-		case OPTION_MENU_VERIFY_QUESTION_ID:
-			startActivity(QuestionViewer.createIntent(this, actionWithAccount,
-					actionWithUser, true, false, null));
-			return true;
-		case OPTION_MENU_VERIFY_SECRET_ID:
-			startActivity(QuestionViewer.createIntent(this, actionWithAccount,
-					actionWithUser, false, false, null));
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -568,7 +333,7 @@ public class ChatViewer extends ManagedActivity implements
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private void close() {
+	void close() {
 		finish();
 		if (!Intent.ACTION_SEND.equals(getIntent().getAction())) {
 			ActivityManager.getInstance().clearStack(false);

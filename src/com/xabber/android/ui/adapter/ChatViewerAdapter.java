@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -118,6 +119,13 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 	 */
 	public void onChatChange(View view, boolean incomingMessage) {
 		((ChatViewerFragment) view.getTag()).onChatChange(incomingMessage);
+	}
+
+	/**
+	 * Must be called on changes in chat (message sent, received, etc.).
+	 */
+	public void onPrepareOptionsMenu(View view, Menu menu) {
+		((ChatViewerFragment) view.getTag()).onPrepareOptionsMenu(menu);
 	}
 
 	@Override
