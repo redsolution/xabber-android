@@ -735,6 +735,14 @@ public class ChatViewer extends ManagedActivity implements
 		return false;
 	}
 
+	public int getChatCount() {
+		return chatViewerAdapter.getCount();
+	}
+
+	public int getChatPosition(String account, String user) {
+		return chatViewerAdapter.getPosition(account, user);
+	}
+
 	public static Intent createIntent(Context context, String account,
 			String user) {
 		return new EntityIntentBuilder(context, ChatViewer.class)
