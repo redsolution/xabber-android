@@ -370,8 +370,10 @@ public class ContactListFragment extends Fragment implements
 	 * Stop fling scrolling.
 	 */
 	private void stopMovement() {
-		listView.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-				SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0));
+		MotionEvent event = MotionEvent.obtain(SystemClock.uptimeMillis(),
+				SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0);
+		listView.onTouchEvent(event);
+		event.recycle();
 	}
 
 	public interface OnContactClickListener {
