@@ -120,18 +120,12 @@ public class ChatViewer extends ManagedActivity implements
 	private static final int OPTION_MENU_VERIFY_SECRET_ID = 0x24;
 	private static final int OPTION_MENU_REFRESH_OTR_ID = 0x25;
 
-	private static final int CONTEXT_MENU_QUOTE_ID = 0x100;
-	private static final int CONTEXT_MENU_REPEAT_ID = 0x101;
-	private static final int CONTEXT_MENU_COPY_ID = 0x102;
-	private static final int CONTEXT_MENU_REMOVE_ID = 0x103;
-
 	private ChatViewerAdapter chatViewerAdapter;
 	private PageSwitcher pageSwitcher;
 
 	private String actionWithAccount;
 	private String actionWithUser;
 	private View actionWithView;
-	private MessageItem actionWithMessage;
 
 	private boolean exitOnSend;
 
@@ -159,7 +153,6 @@ public class ChatViewer extends ManagedActivity implements
 		actionWithAccount = null;
 		actionWithUser = null;
 		actionWithView = null;
-		actionWithMessage = null;
 
 		setContentView(R.layout.chat_viewer);
 		chatViewerAdapter = new ChatViewerAdapter(this, account, user);
@@ -468,22 +461,54 @@ public class ChatViewer extends ManagedActivity implements
 
 		ListView listView = (ListView) actionWithView
 				.findViewById(android.R.id.list);
-		actionWithMessage = (MessageItem) listView.getAdapter().getItem(
-				info.position);
-		if (actionWithMessage != null && actionWithMessage.getAction() != null)
-			actionWithMessage = null; // Skip action message
-		if (actionWithMessage == null)
+		final MessageItem message = (MessageItem) listView.getAdapter()
+				.getItem(info.position);
+		if (message != null && message.getAction() != null)
 			return;
-		if (actionWithMessage.isError()) {
-			menu.add(0, CONTEXT_MENU_REPEAT_ID, 0,
-					getResources().getText(R.string.message_repeat));
+		if (message.isError()) {
+			menu.add(R.string.message_repeat).setOnMenuItemClickListener(
+					new MenuItem.OnMenuItemClickListener() {
+
+						@Override
+						public boolean onMenuItemClick(MenuItem item) {
+							sendMessage(message.getText());
+							return true;
+						}
+
+					});
 		}
-		menu.add(0, CONTEXT_MENU_QUOTE_ID, 0,
-				getResources().getText(R.string.message_quote));
-		menu.add(0, CONTEXT_MENU_COPY_ID, 0,
-				getResources().getText(R.string.message_copy));
-		menu.add(0, CONTEXT_MENU_REMOVE_ID, 0,
-				getResources().getText(R.string.message_remove));
+		menu.add(R.string.message_quote).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						insertText("> " + message.getText() + "\n");
+						return true;
+					}
+
+				});
+		menu.add(R.string.message_copy).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
+								.setText(message.getSpannable());
+						return true;
+					}
+
+				});
+		menu.add(R.string.message_remove).setOnMenuItemClickListener(
+				new MenuItem.OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						MessageManager.getInstance().removeMessage(message);
+						chatViewerAdapter.onChatChange(actionWithView, false);
+						return true;
+					}
+
+				});
 	}
 
 	/**
@@ -506,30 +531,6 @@ public class ChatViewer extends ManagedActivity implements
 			additional = "\n" + additional;
 		editView.setText(before + additional + after);
 		editView.setSelection(selection + additional.length());
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		if (actionWithMessage == null)
-			return false;
-		super.onContextItemSelected(item);
-		switch (item.getItemId()) {
-		case CONTEXT_MENU_QUOTE_ID:
-			insertText("> " + actionWithMessage.getText() + "\n");
-			return true;
-		case CONTEXT_MENU_REPEAT_ID:
-			sendMessage(actionWithMessage.getText());
-			return true;
-		case CONTEXT_MENU_COPY_ID:
-			((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
-					.setText(actionWithMessage.getSpannable());
-			return true;
-		case CONTEXT_MENU_REMOVE_ID:
-			MessageManager.getInstance().removeMessage(actionWithMessage);
-			chatViewerAdapter.onChatChange(actionWithView, false);
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -594,7 +595,6 @@ public class ChatViewer extends ManagedActivity implements
 			LogManager.i(this, "onSelect: " + actionWithAccount + ":"
 					+ actionWithUser);
 		actionWithView = pageSwitcher.getSelectedView();
-		actionWithMessage = null;
 		if (isVisible)
 			MessageManager.getInstance().setVisibleChat(actionWithAccount,
 					actionWithUser);
@@ -614,7 +614,6 @@ public class ChatViewer extends ManagedActivity implements
 		actionWithAccount = null;
 		actionWithUser = null;
 		actionWithView = null;
-		actionWithMessage = null;
 		if (PageSwitcher.LOG)
 			LogManager.i(this, "onUnselect");
 	}
