@@ -22,7 +22,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -74,34 +73,11 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 
 	private ArrayList<AbstractChat> activeChats;
 
-	/**
-	 * Listener for click on title bar and send button.
-	 */
-	private OnClickListener onClickListener;
-
-	/**
-	 * Listener for key press in edit view.
-	 */
-	private OnKeyListener onKeyListener;
-
-	/**
-	 * Listener for actions in edit view.
-	 */
-	private OnEditorActionListener onEditorActionListener;
-
-	/**
-	 * Listener for context menu in message list.
-	 */
-	private OnCreateContextMenuListener onCreateContextMenuListener;
-
-	/**
-	 * Listen for text to be changed.
-	 */
-	private OnTextChangedListener onTextChangedListener;
-
 	private final AbstractAvatarInflaterHelper avatarInflaterHelper;
 
 	private final Animation shake;
+
+	private boolean skipOnTextChanges;
 
 	public ChatViewerAdapter(Activity activity, String account, String user) {
 		this.activity = activity;
@@ -116,56 +92,8 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 			intentPosition = -1;
 		else
 			intentPosition = activeChats.size();
-		onClickListener = null;
-		onKeyListener = null;
-		onEditorActionListener = null;
-		onCreateContextMenuListener = null;
-		onTextChangedListener = null;
 		shake = AnimationUtils.loadAnimation(activity, R.anim.shake);
 		onChange();
-	}
-
-	public OnClickListener getOnClickListener() {
-		return onClickListener;
-	}
-
-	public void setOnClickListener(OnClickListener onClickListener) {
-		this.onClickListener = onClickListener;
-	}
-
-	public OnKeyListener getOnKeyListener() {
-		return onKeyListener;
-	}
-
-	public void setOnKeyListener(OnKeyListener onKeyListener) {
-		this.onKeyListener = onKeyListener;
-	}
-
-	public OnEditorActionListener getOnEditorActionListener() {
-		return onEditorActionListener;
-	}
-
-	public void setOnEditorActionListener(
-			OnEditorActionListener onEditorActionListener) {
-		this.onEditorActionListener = onEditorActionListener;
-	}
-
-	public OnCreateContextMenuListener getOnCreateContextMenuListener() {
-		return onCreateContextMenuListener;
-	}
-
-	public void setOnCreateContextMenuListener(
-			OnCreateContextMenuListener onCreateContextMenuListener) {
-		this.onCreateContextMenuListener = onCreateContextMenuListener;
-	}
-
-	public OnTextChangedListener getOnTextChangedListener() {
-		return onTextChangedListener;
-	}
-
-	public void setOnTextChangedListener(
-			OnTextChangedListener onTextChangedListener) {
-		this.onTextChangedListener = onTextChangedListener;
 	}
 
 	@Override
@@ -195,11 +123,11 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 					activity);
 			chatViewHolder = new ChatViewHolder(view, chatMessageAdapter);
 			chatViewHolder.list.setAdapter(chatViewHolder.chatMessageAdapter);
-			chatViewHolder.send.setOnClickListener(onClickListener);
-			chatViewHolder.title.setOnClickListener(onClickListener);
-			chatViewHolder.input.setOnKeyListener(onKeyListener);
+			chatViewHolder.send.setOnClickListener((OnClickListener) activity);
+			chatViewHolder.title.setOnClickListener((OnClickListener) activity);
+			chatViewHolder.input.setOnKeyListener((OnKeyListener) activity);
 			chatViewHolder.input
-					.setOnEditorActionListener(onEditorActionListener);
+					.setOnEditorActionListener((OnEditorActionListener) activity);
 			chatViewHolder.input.addTextChangedListener(new TextWatcher() {
 
 				@Override
@@ -214,14 +142,14 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					if (onTextChangedListener != null)
-						onTextChangedListener.onTextChanged(
-								chatViewHolder.input, s);
+					if (skipOnTextChanges)
+						return;
+					((OnTextChangedListener) activity).onTextChanged(
+							chatViewHolder.input, s);
 				}
 
 			});
-			chatViewHolder.list
-					.setOnCreateContextMenuListener(onCreateContextMenuListener);
+			chatViewHolder.list.setOnCreateContextMenuListener(activity);
 			view.setTag(chatViewHolder);
 		} else {
 			view = convertView;
@@ -243,21 +171,21 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 				LogManager.i(this, "Load " + view + " for "
 						+ chatViewHolder.chatMessageAdapter.getUser() + " in "
 						+ chatViewHolder.chatMessageAdapter.getAccount());
-			OnTextChangedListener temp = onTextChangedListener;
-			onTextChangedListener = null;
+			skipOnTextChanges = true;
 			chatViewHolder.input.setText(ChatManager.getInstance()
 					.getTypedMessage(account, user));
 			chatViewHolder.input.setSelection(ChatManager.getInstance()
 					.getSelectionStart(account, user), ChatManager
 					.getInstance().getSelectionEnd(account, user));
-			onTextChangedListener = temp;
+			skipOnTextChanges = false;
 			chatViewHolder.chatMessageAdapter.setChat(account, user);
 			chatViewHolder.list.setAdapter(chatViewHolder.list.getAdapter());
 		}
 
 		chatViewHolder.page.setText(activity.getString(R.string.chat_page,
 				position + 1, getCount()));
-		ContactTitleInflater.updateTitle(chatViewHolder.title, activity, abstractContact);
+		ContactTitleInflater.updateTitle(chatViewHolder.title, activity,
+				abstractContact);
 		avatarInflaterHelper.updateAvatar(chatViewHolder.avatar,
 				abstractContact);
 		SecurityLevel securityLevel = OTRManager.getInstance()

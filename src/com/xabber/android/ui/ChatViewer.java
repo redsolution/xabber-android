@@ -131,6 +131,8 @@ public class ChatViewer extends ManagedActivity implements
 
 	private boolean isVisible;
 
+	private boolean skipOnTextChanges;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -156,11 +158,6 @@ public class ChatViewer extends ManagedActivity implements
 
 		setContentView(R.layout.chat_viewer);
 		chatViewerAdapter = new ChatViewerAdapter(this, account, user);
-		chatViewerAdapter.setOnClickListener(this);
-		chatViewerAdapter.setOnKeyListener(this);
-		chatViewerAdapter.setOnEditorActionListener(this);
-		chatViewerAdapter.setOnCreateContextMenuListener(this);
-		chatViewerAdapter.setOnTextChangedListener(this);
 		pageSwitcher = (PageSwitcher) findViewById(R.id.switcher);
 		pageSwitcher.setAdapter(chatViewerAdapter);
 		pageSwitcher.setOnSelectListener(this);
@@ -582,6 +579,8 @@ public class ChatViewer extends ManagedActivity implements
 
 	@Override
 	public void onTextChanged(EditText editText, CharSequence text) {
+		if (skipOnTextChanges)
+			return;
 		ChatStateManager.getInstance().onComposing(actionWithAccount,
 				actionWithUser, text);
 	}
@@ -635,9 +634,9 @@ public class ChatViewer extends ManagedActivity implements
 		text = text.substring(start, end);
 		if ("".equals(text))
 			return;
-		chatViewerAdapter.setOnTextChangedListener(null);
+		skipOnTextChanges = true;
 		editView.setText("");
-		chatViewerAdapter.setOnTextChangedListener(this);
+		skipOnTextChanges = false;
 		sendMessage(text);
 		if (exitOnSend)
 			close();
