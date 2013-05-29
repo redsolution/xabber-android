@@ -103,6 +103,16 @@ public class ChatViewerAdapter extends BaseAdapter implements SaveStateAdapter,
 		((ChatViewerFragment) view.getTag()).saveState();
 	}
 
+	@Override
+	public void hidePages(View view) {
+		((ChatViewerFragment) view.getTag()).hidePages();
+	}
+
+	@Override
+	public void showPages(View view) {
+		((ChatViewerFragment) view.getTag()).showPages();
+	}
+
 	/**
 	 * Must be called on changes in chat (message sent, received, etc.).
 	 */

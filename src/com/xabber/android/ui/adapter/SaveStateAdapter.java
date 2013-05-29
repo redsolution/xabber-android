@@ -36,4 +36,18 @@ public interface SaveStateAdapter extends Adapter {
 	 */
 	void saveState(View view);
 
+	/**
+	 * Requests to hide pages indicator.
+	 * 
+	 * @param view
+	 */
+	void hidePages(View view);
+
+	/**
+	 * Show pages indicator.
+	 * 
+	 * @param view
+	 */
+	void showPages(View view);
+
 }

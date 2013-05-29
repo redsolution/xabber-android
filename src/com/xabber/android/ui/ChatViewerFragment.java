@@ -1,6 +1,7 @@
 package com.xabber.android.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,6 +37,11 @@ import com.xabber.androiddev.R;
 
 public class ChatViewerFragment {
 
+	/**
+	 * Delay before hide pages.
+	 */
+	private static final long PAGES_HIDDER_DELAY = 1000;
+
 	private AbstractAvatarInflaterHelper avatarInflaterHelper;
 
 	private Animation shake;
@@ -42,6 +49,29 @@ public class ChatViewerFragment {
 	private boolean skipOnTextChanges;
 
 	private ChatViewHolder chatViewHolder;
+
+	/**
+	 * Whether pages are shown.
+	 */
+	private boolean pagesShown;
+
+	private Handler handler;
+
+	/**
+	 * Animation used to hide pages.
+	 */
+	private Animation pagesHideAnimation;
+
+	/**
+	 * Runnable called to hide pages.
+	 */
+	private final Runnable pagesHideRunnable = new Runnable() {
+		@Override
+		public void run() {
+			handler.removeCallbacks(this);
+			chatViewHolder.page.startAnimation(pagesHideAnimation);
+		}
+	};
 
 	private final FragmentActivity activity;
 
@@ -69,11 +99,31 @@ public class ChatViewerFragment {
 		// super.onCreate(savedInstanceState);
 		avatarInflaterHelper = AbstractAvatarInflaterHelper
 				.createAbstractContactInflaterHelper();
+		handler = new Handler();
+		pagesShown = false;
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		shake = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+		pagesHideAnimation = AnimationUtils.loadAnimation(getActivity(),
+				R.anim.chat_page_out);
+		pagesHideAnimation.setAnimationListener(new AnimationListener() {
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				chatViewHolder.page.setVisibility(View.GONE);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+		});
 		View view = inflater.inflate(R.layout.chat_viewer_item, container,
 				false);
 		ChatMessageAdapter chatMessageAdapter = new ChatMessageAdapter(
@@ -183,6 +233,28 @@ public class ChatViewerFragment {
 		if (incomingMessage)
 			chatViewHolder.nameHolder.startAnimation(shake);
 		chatViewHolder.chatMessageAdapter.onChange();
+	}
+
+	/**
+	 * Show pages.
+	 */
+	public void showPages() {
+		if (pagesShown)
+			return;
+		pagesShown = true;
+		handler.removeCallbacks(pagesHideRunnable);
+		chatViewHolder.page.clearAnimation();
+		chatViewHolder.page.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Requests pages to be hiden in future.
+	 */
+	public void hidePages() {
+		if (!pagesShown)
+			return;
+		pagesShown = false;
+		handler.postDelayed(pagesHideRunnable, PAGES_HIDDER_DELAY);
 	}
 
 	private static class ChatViewHolder {
