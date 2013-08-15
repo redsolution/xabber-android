@@ -25,6 +25,8 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_gtalk">username for gmail.com or Google Apps domain</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_wapp">Telephone number (with prefix)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_livejournal">username for livejournal.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_qip">username for qip.ru</string>
@@ -39,6 +41,8 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_gtalk">If you don\'t have Google account you may create one at http://mail.google.com\nAlso you can use your_user_name@your_google_domain</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_wapp">You need an already existing WhatsApp account. TODO: Add references on how to create/get password</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_livejournal">If you don\'t have Livejournal account you may create one at http://livejournal.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_qip">If you don\'t have QIP account you may create one at http://qip.ru</string>
@@ -52,6 +56,8 @@
     <string name="account_type_names_facebook">Facebook</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_gtalk">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_wapp">WhatsApp</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_livejournal">LiveJournal</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -100,6 +106,8 @@
     <string name="account_oauth_summary">OAuth settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_gtalk.png -->
     <string name="account_protocol_gtalk_title">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_protocol_wapp_title">WhatsApp</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->

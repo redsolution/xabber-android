@@ -16,6 +16,7 @@
     <string name="account_protocol_xmpp">xmpp</string>
     <string name="account_protocol_gtalk">gtalk</string>
     <string name="account_protocol_wlm">wlm</string>
+    <string name="account_protocol_wapp">wapp</string>
 
     <!--
     <array name="account_type_name">
@@ -72,6 +73,19 @@
         <item>5222</item>
         <item>True</item>
         <item>messenger.live.com</item>
+    </array>
+    
+    <array name="account_type_wapp">
+        <item>@string/account_protocol_wapp</item>
+        <item>@string/account_type_names_wapp</item>
+        <item>@string/account_type_hints_wapp</item>
+        <item>@string/account_type_helps_wapp</item>
+        <item>@drawable/ic_type_wlm</item>
+        <item>True</item>
+        <item>c3.whatsapp.net</item>
+        <item>443</item>
+        <item>False</item>
+        <item>c3.whatsapp.net</item>
     </array>
 
     <array name="account_type_facebook">
@@ -157,6 +171,7 @@
         <item>@array/account_type_xmpp</item>
         <item>@array/account_type_gtalk</item>
         <item>@array/account_type_wlm</item>
+        <item>@array/account_type_wapp</item>
         <item>@array/account_type_facebook</item>
         <item>@array/account_type_vkontakte</item>
         <item>@array/account_type_qip</item>
