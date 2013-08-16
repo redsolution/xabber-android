@@ -226,6 +226,10 @@ public abstract class Connection {
     public String getServiceName() {
         return config.getServiceName();
     }
+    
+    public boolean isAlive() {
+    	return true;
+    }
 
     /**
      * Returns the host name of the server where the XMPP server is running. This would be the

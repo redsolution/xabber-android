@@ -106,7 +106,7 @@ public class MiscUtil {
 	public static String getDecoded(int n) {
 		return new String(dictionary[n & 255]);
 	}
-	int lookupDecoded(String value) {
+	public static int lookupDecoded(String value) {
 		for (int i = 0; i < 256; i++) {
 			if (dictionary[i].equals(value))
 				return i;

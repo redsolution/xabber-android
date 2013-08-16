@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLException;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
@@ -67,7 +68,7 @@ public class ConnectionThread implements
 	/**
 	 * SMACK connection.
 	 */
-	private XMPPConnection xmppConnection;
+	private Connection xmppConnection;
 
 	/**
 	 * Thread holder for this connection.
@@ -144,7 +145,7 @@ public class ConnectionThread implements
 		started = false;
 	}
 
-	public XMPPConnection getXMPPConnection() {
+	public Connection getXMPPConnection() {
 		return xmppConnection;
 	}
 

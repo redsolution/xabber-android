@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
@@ -279,7 +280,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 	 */
 	public void joinRoom(final String account, final String room,
 			boolean requested) {
-		final XMPPConnection xmppConnection;
+		final Connection xmppConnection;
 		final RoomChat roomChat;
 		final String nickname;
 		final String password;

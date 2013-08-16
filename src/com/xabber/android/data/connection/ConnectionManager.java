@@ -25,7 +25,7 @@ import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Packet;
@@ -181,7 +181,7 @@ public class ConnectionManager implements OnInitializedListener,
 				|| !connectionThread.getConnectionItem().getState()
 						.isConnected())
 			throw new NetworkException(R.string.NOT_CONNECTED);
-		XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+		Connection xmppConnection = connectionThread.getXMPPConnection();
 		try {
 			xmppConnection.sendPacket(packet);
 		} catch (IllegalStateException e) {

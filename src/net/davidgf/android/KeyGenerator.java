@@ -1,8 +1,20 @@
 
 import java.security.*;
 import java.util.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
 
 public class KeyGenerator {
+
+	public static byte [] PKCS5_PBKDF2_HMAC_SHA1(byte [] pass, byte [] salt) throws Exception {
+		char [] password = new char[pass.length];
+		for (int i = 0; i < pass.length; i++)
+			password[i] = (char)(pass[i]&0xFF);
+		SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		PBEKeySpec ks = new PBEKeySpec(password,salt,16,20);
+		SecretKey s = f.generateSecret(ks);
+		return s.getEncoded();
+	}
 
 	private static byte [] hexmap = new byte[]{ '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
 
@@ -18,7 +30,7 @@ public class KeyGenerator {
 				hashhex[2*i+1] = hexmap[hash[i]&0xF];
 			}
 		
-			//PKCS5_PBKDF2_HMAC_SHA1 (hashhex,32,(unsigned char*)salt,saltlen,16,20,(unsigned char*)out);
+			return PKCS5_PBKDF2_HMAC_SHA1 (hashhex,salt);
 		}
 		catch (Exception e) {
 			return new byte[0];
@@ -28,7 +40,7 @@ public class KeyGenerator {
 		try {
 			byte [] decpass = MiscUtil.base64_decode(pw.getBytes());
 		
-			//PKCS5_PBKDF2_HMAC_SHA1 (dec.c_str(),20,(unsigned char*)salt,saltlen,16,20,(unsigned char*)out);
+			return PKCS5_PBKDF2_HMAC_SHA1 (decpass,salt);
 		}
 		catch (Exception e) {
 			return new byte[0];
@@ -46,7 +58,7 @@ public class KeyGenerator {
 				hashhex[2*i+1] = hexmap[hash[i]&0xF];
 			}
 		
-			//PKCS5_PBKDF2_HMAC_SHA1 (hashhex,32,(unsigned char*)salt,saltlen,16,20,(unsigned char*)out);
+			return PKCS5_PBKDF2_HMAC_SHA1 (hashhex,salt);
 		}
 		catch (Exception e) {
 			return new byte[0];

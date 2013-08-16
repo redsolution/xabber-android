@@ -40,22 +40,28 @@ public class DataBuffer {
 		return ret;
 	}
 	DataBuffer decodedBuffer(RC4Decoder decoder, int clength, boolean dout) {
-		DataBuffer deco = new DataBuffer(copyOfRange(this.buffer,0,clength));
-		if (dout) decoder.cipher(&deco->buffer[0],clength-4);
-		else      decoder.cipher(&deco->buffer[4],clength-4);
+		DataBuffer deco = new DataBuffer(Arrays.copyOfRange(this.buffer,0,clength));
+		if (dout) decoder.cipher(Arrays.copyOfRange(deco.buffer,0,clength-4));
+		else      decoder.cipher(Arrays.copyOfRange(deco.buffer,4,clength-4));
 		return deco;
 	}
 	DataBuffer encodedBuffer(RC4Decoder decoder, byte [] key, boolean dout) {
-		DataBuffer deco = *this;
-		decoder->cipher(&deco.buffer[0],blen);
-		unsigned char hmacint[4]; DataBuffer hmac;
-		KeyGenerator::calc_hmac(deco.buffer,blen,key,(unsigned char*)&hmacint);
-		hmac.addData(hmacint,4);
+		DataBuffer deco = new DataBuffer(Arrays.copyOfRange(this.buffer,0,this.buffer.length));
 		
-		if (dout) deco = deco + hmac;
-		else      deco = hmac + deco;
+		decoder.cipher(deco.buffer);
+		byte [] hmacint = KeyGenerator.calc_hmac(deco.buffer,key);
+		DataBuffer hmac = new DataBuffer(hmacint);
 		
-		return deco;
+		DataBuffer res = new DataBuffer();
+		if (dout) {
+			res.addBuf(deco);
+			res.addBuf(hmac);
+		}else{
+			res.addBuf(hmac);
+			res.addBuf(deco);
+		}
+		
+		return res;
 	}
 	byte [] getPtr() {
 		return buffer;
@@ -93,7 +99,7 @@ public class DataBuffer {
 		int ret = 0;
 		for (int i = 0; i < nbytes; i++) {
 			ret <<= 8;
-			ret |= (int)(buffer[i+offset]0xFF);
+			ret |= (int)(buffer[i+offset] & 0xFF);
 		}
 		return ret;
 	}
@@ -102,7 +108,7 @@ public class DataBuffer {
 		
 		byte [] out = new byte[nbytes];
 		for (int i = 0; i < nbytes; i++) {
-			out[nbytes-i-1] = (byte)(value>>(i<<3))&0xFF;
+			out[nbytes-i-1] = (byte)((value>>(i<<3)) & 0xFF);
 		}
 		this.addData(out);
 	}
@@ -157,7 +163,7 @@ public class DataBuffer {
 		//	throw 0;
 		int type = readInt(1);
 		if (type > 4 && type < 0xf5) {
-			return getDecoded(type);
+			return MiscUtil.getDecoded(type);
 		}
 		else if (type == 0) {
 			return "";
@@ -171,7 +177,7 @@ public class DataBuffer {
 			return readRawString(slen);
 		}
 		else if (type == 0xfe) {
-			return getDecoded(readInt(1)+0xf5);
+			return MiscUtil.getDecoded(readInt(1)+0xf5);
 		}
 		else if (type == 0xfa) {
 			String u = readString();
@@ -198,7 +204,7 @@ public class DataBuffer {
 		}
 	}
 	void putString(String s) {
-		int lu = lookupDecoded(s);
+		int lu = MiscUtil.lookupDecoded(s);
 		if (lu > 4 && lu < 0xf5) {
 			putInt(lu,1);
 		}
@@ -226,7 +232,7 @@ public class DataBuffer {
 		return (buffer[0] == 248 || buffer[0] == 0 || buffer[0] == 249);
 	}
 	Vector <Tree> readList(WhatsappConnection c) {
-		Vector <Tree> l;
+		Vector <Tree> l = new Vector<Tree>();
 		int size = readListSize();
 		while (size-- > 0) {
 			l.add(c.read_tree(this));

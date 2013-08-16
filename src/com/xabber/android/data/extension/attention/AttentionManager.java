@@ -18,7 +18,7 @@ import java.util.Iterator;
 
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
@@ -112,7 +112,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 						.getConnectionThread();
 				if (connectionThread == null)
 					continue;
-				XMPPConnection xmppConnection = connectionThread
+				Connection xmppConnection = connectionThread
 						.getXMPPConnection();
 				if (xmppConnection == null)
 					continue;
