@@ -40,10 +40,21 @@ public class DataBuffer {
 		return ret;
 	}
 	DataBuffer decodedBuffer(RC4Decoder decoder, int clength, boolean dout) {
-		DataBuffer deco = new DataBuffer(Arrays.copyOfRange(this.buffer,0,clength));
-		if (dout) decoder.cipher(Arrays.copyOfRange(deco.buffer,0,clength-4));
-		else      decoder.cipher(Arrays.copyOfRange(deco.buffer,4,clength-4));
-		return deco;
+		byte [] carray, array4;
+		if (dout) {
+			carray = decoder.cipher(Arrays.copyOfRange(this.buffer,0,clength-4));
+			array4 = Arrays.copyOfRange(this.buffer,clength-4,clength);
+			DataBuffer deco = new DataBuffer(carray);
+			DataBuffer extra = new DataBuffer(array4);
+			return deco.addBuf(extra);
+		}
+		else {
+			carray = decoder.cipher(Arrays.copyOfRange(this.buffer,4,clength));
+			array4 = Arrays.copyOfRange(this.buffer,0,4);
+			DataBuffer deco = new DataBuffer(carray);
+			DataBuffer extra = new DataBuffer(array4);
+			return extra.addBuf(deco);
+		}
 	}
 	DataBuffer encodedBuffer(RC4Decoder decoder, byte [] key, boolean dout) {
 		DataBuffer deco = new DataBuffer(Arrays.copyOfRange(this.buffer,0,this.buffer.length));
@@ -52,16 +63,11 @@ public class DataBuffer {
 		byte [] hmacint = KeyGenerator.calc_hmac(deco.buffer,key);
 		DataBuffer hmac = new DataBuffer(hmacint);
 		
-		DataBuffer res = new DataBuffer();
-		if (dout) {
-			res.addBuf(deco);
-			res.addBuf(hmac);
-		}else{
-			res.addBuf(hmac);
-			res.addBuf(deco);
-		}
-		
-		return res;
+		DataBuffer res;
+		if (dout)
+			return deco.addBuf(hmac);
+		else
+			return hmac.addBuf(deco);
 	}
 	byte [] getPtr() {
 		return buffer;
