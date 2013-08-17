@@ -9,6 +9,8 @@
  *
  */
 
+package net.davidgf.android;
+
 import java.util.*;
 
 public class Tree {

@@ -8,6 +8,8 @@
  * Share and enjoy!
  *
  */
+ 
+package net.davidgf.android;
 
 public class RC4Decoder {
 	public int [] s;

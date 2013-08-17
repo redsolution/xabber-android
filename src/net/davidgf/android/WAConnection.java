@@ -16,6 +16,9 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smack.packet.Message;
+
+import net.davidgf.android.WhatsappConnection;
 
 import org.apache.harmony.javax.security.auth.callback.Callback;
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
@@ -63,6 +66,9 @@ public class WAConnection extends Connection {
     private Thread writerThread, readerThread;
     
     byte [] inbuffer, outbuffer;
+    WhatsappConnection waconnection;
+    
+    int msgid;
 
     Roster roster = null;
 
@@ -201,6 +207,11 @@ public class WAConnection extends Connection {
         if (config.isDebuggerEnabled() && debugger != null) {
             debugger.userHasLogged(user);
         }
+        
+	// Create WA connection API object                
+        // FIXME: Set proper nickname
+        msgid = 0;
+        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), config.getUsername());
     }
 
     @Override
@@ -305,6 +316,8 @@ public class WAConnection extends Connection {
         ostream = null;
         writerThread = null;
         readerThread = null;
+        outbuffer = null;
+        inbuffer = null;
 
 	// Set status
         authenticated = false;
@@ -332,7 +345,20 @@ public class WAConnection extends Connection {
     }
 
     public void sendPacket(Packet packet) {
-    	// 
+    	// If the packet if a Message, serialize and send it!
+	//return WhatsappConnection.serializeMessage(getTo(),getMessageBody().message);
+	if (packet instanceof Message) {
+		Message m = (Message)packet;
+		synchronized (outbuffer) {
+			msgid++;
+			byte [] msg = waconnection.serializeMessage(m.getTo(), m.getBody(null), msgid);
+
+			// Put data in the output buffer
+    			outbuffer = Arrays.copyOf(outbuffer, outbuffer.length + msg.length);
+    			System.arraycopy(msg,0, outbuffer,outbuffer.length-msg.length, msg.length);
+		}
+		outbuffer.notify();
+	}
     }
 
     /**
@@ -421,6 +447,8 @@ public class WAConnection extends Connection {
     private void initConnection() throws XMPPException {
         // Set the stream reader/writer
         initReaderAndWriter();
+        outbuffer = new byte[0];
+        inbuffer = new byte[0];
         
         // Spawn reader and writer threads
         writerThread = new Thread() {
@@ -471,7 +499,24 @@ public class WAConnection extends Connection {
     }
     
     private void writePackets(Thread thisThread, OutputStream ostream) {
-    	
+	try {
+	while (outbuffer != null) {
+		outbuffer.wait();
+		if (outbuffer.length > 0) {
+			// Try to write the whole buffer
+			byte [] t;
+			synchronized (outbuffer) {
+				t = Arrays.copyOf(outbuffer,outbuffer.length);
+			}
+			ostream.write(t,0,t.length);
+			synchronized (outbuffer) {
+				// Pop the written data (the outbuffer may grow while writing t
+				outbuffer = Arrays.copyOfRange(outbuffer,t.length,outbuffer.length);
+			}
+		}
+	}
+	}catch (Exception e) {
+	}
     }
     
     private void readPackets(Thread thisThread, InputStream istream) {
@@ -484,7 +529,6 @@ public class WAConnection extends Connection {
 		    		synchronized (inbuffer) {
 		    			// Extend the array size and add the new bytes
 		    			inbuffer = Arrays.copyOf(inbuffer, inbuffer.length + r);
-		    			Arrays.copyOfRange(inbuffer,inbuffer.length-r,r);
 		    			System.arraycopy(buf,0, inbuffer,inbuffer.length-r, r);
 		    		}
 		    	}

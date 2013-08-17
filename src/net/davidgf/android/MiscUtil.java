@@ -1,4 +1,6 @@
 
+package net.davidgf.android;
+
 public class MiscUtil {
 
 	private static byte [] base64_chars = new byte []{'A','B','C','D','E','F','G','H','I','J','K','L',

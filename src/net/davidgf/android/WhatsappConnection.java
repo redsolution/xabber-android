@@ -9,12 +9,11 @@
  *
  */
 
+package net.davidgf.android;
 
 import java.util.*;
 
 public class WhatsappConnection {
-
-
 	private RC4Decoder in, out;
 	private byte session_key[];
 	private DataBuffer outbuffer;
@@ -23,8 +22,8 @@ public class WhatsappConnection {
 	private SessionStatus conn_status;
 	
 	private String phone, password;
-	private String whatsappserver;
-	private String whatsappservergroup;
+	private static String whatsappserver = "s.whatsapp.net";
+	private static String whatsappservergroup = "g.us";
 
 
 	public WhatsappConnection(String phone, String password, String nick) {
@@ -33,8 +32,6 @@ public class WhatsappConnection {
 		this.phone = phone;
 		this.password = password.trim();
 		this.conn_status = SessionStatus.SessionNone;
-		this.whatsappserver = "s.whatsapp.net";
-		this.whatsappservergroup = "g.us";
 	}
 
 	public Tree read_tree(DataBuffer data) {
@@ -171,6 +168,34 @@ public class WhatsappConnection {
 	
 		conn_status = SessionStatus.SessionWaitingChallenge;
 		outbuffer = first;
+	}
+	
+	// Helper for Message class
+	public byte [] serializeMessage(final String to, String message, int id) {
+		try {
+		Tree request = new Tree ("request",new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
+		Tree notify  = new Tree ("notify", new HashMap < String,String >() {{ put("xmlns","urn:xmpp:whatsapp"); put("name",to); }} );
+		Tree xhash   = new Tree ("x",      new HashMap < String,String >() {{ put("xmlns","jabber:x:event"); }} );
+		xhash.addChild(new Tree("server"));
+		Tree tbody = new Tree("body");
+		tbody.setData(message.getBytes("UTF-8"));
+		
+		long epoch = System.currentTimeMillis()/1000;
+		String stime = String.valueOf(epoch);
+		Map < String,String > attrs = new HashMap <String,String>();
+		attrs.put("to",to+"@"+whatsappserver);
+		attrs.put("type","chat");
+		attrs.put("id",stime+"-"+String.valueOf(id));
+		attrs.put("t",stime);
+		
+		Tree mes = new Tree("message",attrs);
+		mes.addChild(xhash); mes.addChild(notify);
+		mes.addChild(request); mes.addChild(tbody);
+		
+		return serialize_tree(mes,true).getPtr();
+		}catch (Exception e) {
+		return new byte[0];
+		}
 	}
 }
 
