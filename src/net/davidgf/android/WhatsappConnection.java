@@ -1,4 +1,15 @@
 
+/*
+ * Java WhatsApp API implementation.
+ * Written by David Guillen Fandos (david@davidgf.net) based 
+ * on the sources of WhatsAPI PHP implementation and whatsapp
+ * for libpurple.
+ *
+ * Share and enjoy!
+ *
+ */
+
+
 import java.util.*;
 
 public class WhatsappConnection {
