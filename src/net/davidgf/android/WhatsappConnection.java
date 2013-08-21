@@ -17,6 +17,7 @@ public class WhatsappConnection {
 	private RC4Decoder in, out;
 	private byte session_key[];
 	private DataBuffer outbuffer;
+	private byte []challenge_data;
 	
 	private enum SessionStatus { SessionNone, SessionConnecting, SessionWaitingChallenge, SessionWaitingAuthOK, SessionConnected };
 	private SessionStatus conn_status;
@@ -38,6 +39,7 @@ public class WhatsappConnection {
 	public Tree read_tree(DataBuffer data) {
 		int lsize = data.readListSize();
 		int type = data.getInt(1,0);
+		System.out.println("lsize: " + String.valueOf(lsize) + " type: " + String.valueOf(type) + "\n");
 		if (type == 1) {
 			data.popData(1);
 			Tree t = new Tree("start");
@@ -71,6 +73,7 @@ public class WhatsappConnection {
 			return new Tree("treeerr");  // Next message incomplete, return consumed data
 		}
 		data.popData(3);
+		System.out.println("Reading tree size " + String.valueOf(bsize) + " flag " + String.valueOf(bflag) + "\n");
 
 		if ((bflag & 0x8) != 0) {
 			// Decode data, buffer conversion
@@ -93,22 +96,75 @@ public class WhatsappConnection {
 	}
 	
 	public int pushIncomingData(byte [] data) {
-		Vector <Tree> treelist = new Vector <Tree>();
 		if (data.length < 3) return 0;
 		
 		DataBuffer db = new DataBuffer(data);
+		System.out.println("We have " + String.valueOf(db.size()) + " bytes of data\n");
 		
 		Tree t;
 		do {
 			t = this.parse_tree(db);
 			if (t.getTag() != "treeerr")
-				treelist.add(t);
+				this.processPacket(t);
+			System.out.println("We have " + String.valueOf(db.size()) + " bytes of data\n");
 				
 			System.out.println("Received tree!\n");
 			System.out.println(t.toString(0));
 		} while (t.getTag() != "treeerr" && db.size() >= 3);
 		
 		return data.length - db.size();
+	}
+	
+	private void processPacket(Tree t) {
+		// Now process the tree list!
+		if (t.getTag().equals("challenge")) {
+			// Generate a session key using the challege & the password
+			assert(conn_status == SessionStatus.SessionWaitingChallenge);
+			
+			if (password.length() == 15) {
+				KeyGenerator.generateKeyImei(password,t.getData());
+			}
+			else if (password.contains(":")) {
+				KeyGenerator.generateKeyMAC(password,t.getData());
+			}
+			else {
+				KeyGenerator.generateKeyV2(password,t.getData());
+			}
+			
+			this.in  = new RC4Decoder(session_key, 256);
+			this.out = new RC4Decoder(session_key, 256);
+			
+			conn_status = SessionStatus.SessionWaitingAuthOK;
+			challenge_data = t.getData();
+			
+			this.sendAuthResponse();
+		}
+/*		else if (treelist[i].getTag() == "success") {
+			// Notifies the success of the auth
+			conn_status = SessionConnected;
+			if (treelist[i].hasAttribute("status"))
+				this->account_status = treelist[i].getAttributes()["status"];
+			if (treelist[i].hasAttribute("kind"))
+				this->account_type = treelist[i].getAttributes()["kind"];
+			if (treelist[i].hasAttribute("expiration"))
+				this->account_expiration = treelist[i].getAttributes()["expiration"];
+			if (treelist[i].hasAttribute("creation"))
+				this->account_creation = treelist[i].getAttributes()["creation"];
+				
+			this->notifyMyPresence();
+			this->sendInitial();
+			this->updateGroups();
+			
+			//std::cout << "Logged in!!!" << std::endl;
+			//std::cout << "Account " << phone << " status: " << account_status << " kind: " << account_type <<
+			//	" expires: " << account_expiration << " creation: " << account_creation << std::endl;
+		}
+		else if (treelist[i].getTag() == "failure") {
+			if (conn_status == SessionWaitingAuthOK)
+				this->notifyError(errorAuth);
+			else
+				this->notifyError(errorUnknown);
+		}*/
 	}
 	
 	public DataBuffer write_tree(Tree tree) {
@@ -120,7 +176,7 @@ public class WhatsappConnection {
 		if (tree.getData().length != 0 || tree.forcedData()) len++;
 	
 		bout.writeListSize(len);
-		if (tree.getTag() == "start") bout.putInt(1,1);
+		if (tree.getTag().equals("start")) bout.putInt(1,1);
 		else bout.putString(tree.getTag());
 		tree.writeAttributes(bout);
 	
@@ -190,8 +246,27 @@ public class WhatsappConnection {
 		outbuffer = first;
 	}
 	
+	void sendAuthResponse() {
+		Tree t = new Tree("response",new HashMap < String,String >() {{ put("xmlns","urn:ietf:params:xml:ns:xmpp-sasl"); }});
+	
+		long epoch = System.currentTimeMillis()/1000;
+		String stime = String.valueOf(epoch);
+		DataBuffer eresponse = new DataBuffer();
+		eresponse.addData(phone.getBytes());
+		eresponse.addData(challenge_data);
+		eresponse.addData(stime.getBytes());
+		
+		eresponse = eresponse.encodedBuffer(this.out,this.session_key,false);
+		t.setData(eresponse.getPtr());
+
+		System.out.println("Challenge reply\n");
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(t,false)));
+	}
+
+	
 	public byte [] getWriteData() {
 		byte [] r = outbuffer.getPtr();
+		System.out.println("retrieveing data to send " + String.valueOf(r.length));
 		outbuffer = new DataBuffer();
 		return r;
 	}

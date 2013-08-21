@@ -85,11 +85,7 @@ public class DataBuffer {
 	}
 	void popData(int size) {
 		if (buffer.length >= size) {
-			byte [] newbuf = new byte[buffer.length - size];
-			for (int c = 0; c < newbuf.length; c++)
-				newbuf[c] = buffer[c+size];
-			
-			this.buffer = newbuf;
+			buffer = Arrays.copyOfRange(buffer,size,buffer.length);
 		}
 	}
 	void crunchData(int size) {
@@ -131,11 +127,12 @@ public class DataBuffer {
 		//if (blen == 0)
 		//	throw 0;
 		int ret;
-		if (buffer[0] == 0xf8 || buffer[0] == 0xf3) {
+		System.out.println("byte   " + String.valueOf((int)buffer[0])+ "\n");
+		if (buffer[0] == (byte)0xf8 || buffer[0] == (byte)0xf3) {
 			ret = (int)buffer[1];
 			popData(2);
 		}
-		else if (buffer[0] == 0xf9) {
+		else if (buffer[0] == (byte)0xf9) {
 			ret = getInt(2,1);
 			popData(3);
 		}
@@ -170,6 +167,7 @@ public class DataBuffer {
 		//if (blen == 0)
 		//	throw 0;
 		int type = readInt(1);
+		System.out.println("readstr " + String.valueOf(type) + "\n");
 		if (type > 4 && type < 0xf5) {
 			return MiscUtil.getDecoded(type);
 		}
@@ -237,7 +235,7 @@ public class DataBuffer {
 	boolean isList() {
 		//if (blen == 0)
 		//	throw 0;
-		return (buffer[0] == 248 || buffer[0] == 0 || buffer[0] == 249);
+		return (buffer[0] == (byte)248 || buffer[0] == (byte)0 || buffer[0] == (byte)249);
 	}
 	Vector <Tree> readList(WhatsappConnection c) {
 		Vector <Tree> l = new Vector<Tree>();

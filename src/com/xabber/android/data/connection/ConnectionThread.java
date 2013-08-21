@@ -325,7 +325,7 @@ public class ConnectionThread implements
 		AccountProtocol proto = connectionItem.getConnectionSettings().getProtocol();
 		if (proto == AccountProtocol.wapp) {
 			System.out.println("Creating WA connection...\n");
-			xmppConnection = new WAConnection(connectionConfiguration);
+			xmppConnection = new WAConnection(this, connectionConfiguration);
 		}else{
 			xmppConnection = new XMPPConnection(connectionConfiguration);
 			System.out.println("Creating WA connection...\n");

@@ -17,6 +17,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.packet.Message;
+import com.xabber.android.data.connection.ConnectionThread;
 
 import net.davidgf.android.WhatsappConnection;
 
@@ -43,6 +44,7 @@ import java.util.concurrent.Semaphore;
  */
 public class WAConnection extends Connection {
 
+    private ConnectionThread cthread;
     /**
      * The socket which is used for this connection.
      */
@@ -91,13 +93,16 @@ public class WAConnection extends Connection {
      * @param serviceName the name of the WA server to connect to; e.g. <tt>example.com</tt>.
      * @param callbackHandler ignored and should be set to null
      */
-    public WAConnection(String serviceName, CallbackHandler callbackHandler) {
+    public WAConnection(ConnectionThread ct, String serviceName, CallbackHandler callbackHandler) {
         // Create the configuration for this new connection
         super(new ConnectionConfiguration(serviceName));
         config.setCompressionEnabled(false);
         config.setSASLAuthenticationEnabled(true);
         config.setDebuggerEnabled(DEBUG_ENABLED);
         outbuffer_mutex = new byte[1];
+        readwait = new Semaphore(0);
+        writewait = new Semaphore(0);
+        this.cthread = ct;
     }
 
     /**
@@ -106,7 +111,7 @@ public class WAConnection extends Connection {
      *
      * @param serviceName the name of the WA server to connect to; e.g. <tt>example.com</tt>.
      */
-    public WAConnection(String serviceName) {
+    public WAConnection(ConnectionThread ct, String serviceName) {
         // Create the configuration for this new connection
         super(new ConnectionConfiguration(serviceName));
         config.setCompressionEnabled(false);
@@ -115,6 +120,7 @@ public class WAConnection extends Connection {
         outbuffer_mutex = new byte[1];
         readwait = new Semaphore(0);
         writewait = new Semaphore(0);
+        this.cthread = ct;
     }
 
     /**
@@ -123,19 +129,21 @@ public class WAConnection extends Connection {
      *
      * @param config the connection configuration.
      */
-    public WAConnection(ConnectionConfiguration config) {
+    public WAConnection(ConnectionThread ct, ConnectionConfiguration config) {
         super(config);
         outbuffer_mutex = new byte[1];
         readwait = new Semaphore(0);
         writewait = new Semaphore(0);
+        this.cthread = ct;
     }
 
-    public WAConnection(ConnectionConfiguration config, CallbackHandler callbackHandler) {
+    public WAConnection(ConnectionThread ct, ConnectionConfiguration config, CallbackHandler callbackHandler) {
         super(config);
         config.setCallbackHandler(callbackHandler);
         outbuffer_mutex = new byte[1];
         readwait = new Semaphore(0);
         writewait = new Semaphore(0);
+        this.cthread = ct;
     }
 
     public String getConnectionID() {
@@ -505,7 +513,7 @@ public class WAConnection extends Connection {
     
     private void writePackets(Thread thisThread, OutputStream ostream) {
 	try {
-	while (outbuffer != null) {
+	while (outbuffer != null && ostream == this.ostream) {
 		if (outbuffer.length > 0) {
 			// Try to write the whole buffer
 			System.out.println("Writing packets...\n");
@@ -550,11 +558,16 @@ public class WAConnection extends Connection {
 		    			inbuffer = Arrays.copyOf(inbuffer, inbuffer.length - used);
 		    		}
 		    	}
+		    	
+		    	this.popWriteData();  // Ready data might be waiting ...
 	    	} while (r >= 0);
 	}catch (IOException e) {
 		System.out.println("Error!\n" + e.toString());
 	}
 	System.out.println("Exiting readpackets thread (WA)\n");
+	disconnect(new Presence(Presence.Type.unavailable));
+	// Signal the writer thread so it can also end
+	writewait.release();
     }
 
     /**
