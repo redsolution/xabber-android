@@ -96,6 +96,33 @@
         android:key="@string/account_compression_key"
         />
     <ListPreference
+        android:title="@string/account_proxy_type"
+        android:key="@string/account_proxy_type_key"
+        android:entries="@array/account_proxy_type_entries"
+        android:entryValues="@array/account_proxy_type_entryvalues"
+        />
+    <EditTextPreference
+        android:key="@string/account_proxy_host_key"
+        android:title="@string/account_proxy_host"
+        android:singleLine="true"
+        />
+    <EditTextPreference
+        android:key="@string/account_proxy_port_key"
+        android:title="@string/account_proxy_port"
+        android:singleLine="true"
+        />
+    <EditTextPreference
+        android:key="@string/account_proxy_user_key"
+        android:title="@string/account_proxy_user"
+        android:singleLine="true"
+        />
+    <EditTextPreference
+        android:key="@string/account_proxy_password_key"
+        android:title="@string/account_proxy_password"
+        android:password="true"
+        android:singleLine="true"
+        />
+    <ListPreference
         android:title="@string/account_archive_mode"
         android:key="@string/account_archive_mode_key"
         android:entries="@array/account_archive_mode_entries"

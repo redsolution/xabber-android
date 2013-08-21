@@ -19,6 +19,7 @@ import java.util.Date;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
 
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -106,10 +107,13 @@ public class AccountItem extends ConnectionItem {
 			boolean storePassword, String password, int colorIndex,
 			int priority, StatusMode statusMode, String statusText,
 			boolean enabled, boolean saslEnabled, TLSMode tlsMode,
-			boolean compression, boolean syncable, KeyPair keyPair,
-			Date lastSync, ArchiveMode archiveMode) {
+			boolean compression, ProxyType proxyType, String proxyHost,
+			int proxyPort, String proxyUser, String proxyPassword,
+			boolean syncable, KeyPair keyPair, Date lastSync,
+			ArchiveMode archiveMode) {
 		super(protocol, custom, host, port, serverName, userName, resource,
-				storePassword, password, saslEnabled, tlsMode, compression);
+				storePassword, password, saslEnabled, tlsMode, compression,
+				proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
 		this.id = null;
 		this.account = userName + "@" + serverName + "/" + resource;
 		this.colorIndex = colorIndex;
@@ -334,9 +338,11 @@ public class AccountItem extends ConnectionItem {
 	 */
 	void updateConnectionSettings(boolean custom, String host, int port,
 			String password, boolean saslEnabled, TLSMode tlsMode,
-			boolean compression) {
+			boolean compression, ProxyType proxyType, String proxyHost,
+			int proxyPort, String proxyUser, String proxyPassword) {
 		getConnectionSettings().update(custom, host, port, password,
-				saslEnabled, tlsMode, compression);
+				saslEnabled, tlsMode, compression, proxyType, proxyHost,
+				proxyPort, proxyUser, proxyPassword);
 		passwordRequested = false;
 		AccountManager.getInstance().removePasswordRequest(account);
 	}

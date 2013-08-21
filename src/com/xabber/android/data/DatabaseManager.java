@@ -38,7 +38,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 		OnLoadListener, OnClearListener {
 
 	private static final String DATABASE_NAME = "xabber.db";
-	private static final int DATABASE_VERSION = 65;
+	private static final int DATABASE_VERSION = 66;
 
 	private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
 			"Database file was deleted");

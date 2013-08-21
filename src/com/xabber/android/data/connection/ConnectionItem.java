@@ -15,6 +15,7 @@
 package com.xabber.android.data.connection;
 
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -57,10 +58,13 @@ public abstract class ConnectionItem {
 	public ConnectionItem(AccountProtocol protocol, boolean custom,
 			String host, int port, String serverName, String userName,
 			String resource, boolean storePassword, String password,
-			boolean saslEnabled, TLSMode tlsMode, boolean compression) {
+			boolean saslEnabled, TLSMode tlsMode, boolean compression,
+			ProxyType proxyType, String proxyHost, int proxyPort,
+			String proxyUser, String proxyPassword) {
 		connectionSettings = new ConnectionSettings(protocol, userName,
 				serverName, resource, custom, host, port, password,
-				saslEnabled, tlsMode, compression);
+				saslEnabled, tlsMode, compression, proxyType, proxyHost,
+				proxyPort, proxyUser, proxyPassword);
 		connectionRequest = false;
 		disconnectionRequested = false;
 		connectionThread = null;

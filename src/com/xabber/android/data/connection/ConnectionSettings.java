@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection;
 
+import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
+
 import com.xabber.android.data.account.AccountProtocol;
 
 /**
@@ -79,10 +81,21 @@ public class ConnectionSettings {
 	 */
 	private boolean compression;
 
+	private ProxyType proxyType;
+
+	private String proxyHost;
+
+	private int proxyPort;
+
+	private String proxyUser;
+
+	private String proxyPassword;
+
 	public ConnectionSettings(AccountProtocol protocol, String userName,
 			String serverName, String resource, boolean custom, String host,
 			int port, String password, boolean saslEnabled, TLSMode tlsMode,
-			boolean compression) {
+			boolean compression, ProxyType proxyType, String proxyHost,
+			int proxyPort, String proxyUser, String proxyPassword) {
 		super();
 		this.protocol = protocol;
 		this.userName = userName;
@@ -95,6 +108,11 @@ public class ConnectionSettings {
 		this.saslEnabled = saslEnabled;
 		this.tlsMode = tlsMode;
 		this.compression = compression;
+		this.proxyType = proxyType;
+		this.proxyHost = proxyHost;
+		this.proxyPort = proxyPort;
+		this.proxyUser = proxyUser;
+		this.proxyPassword = proxyPassword;
 	}
 
 	public AccountProtocol getProtocol() {
@@ -162,6 +180,26 @@ public class ConnectionSettings {
 		return compression;
 	}
 
+	public ProxyType getProxyType() {
+		return proxyType;
+	}
+
+	public String getProxyHost() {
+		return proxyHost;
+	}
+
+	public int getProxyPort() {
+		return proxyPort;
+	}
+
+	public String getProxyUser() {
+		return proxyUser;
+	}
+
+	public String getProxyPassword() {
+		return proxyPassword;
+	}
+
 	/**
 	 * Updates options.
 	 * 
@@ -174,7 +212,9 @@ public class ConnectionSettings {
 	 * @param compression
 	 */
 	public void update(boolean custom, String host, int port, String password,
-			boolean saslEnabled, TLSMode tlsMode, boolean compression) {
+			boolean saslEnabled, TLSMode tlsMode, boolean compression,
+			ProxyType proxyType, String proxyHost, int proxyPort,
+			String proxyUser, String proxyPassword) {
 		this.custom = custom;
 		this.host = host;
 		this.port = port;
@@ -182,6 +222,11 @@ public class ConnectionSettings {
 		this.saslEnabled = saslEnabled;
 		this.tlsMode = tlsMode;
 		this.compression = compression;
+		this.proxyType = proxyType;
+		this.proxyHost = proxyHost;
+		this.proxyPort = proxyPort;
+		this.proxyUser = proxyUser;
+		this.proxyPassword = proxyPassword;
 	}
 
 	/**

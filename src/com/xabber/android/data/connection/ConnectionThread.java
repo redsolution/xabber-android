@@ -30,6 +30,8 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.StreamError;
+import org.jivesoftware.smack.proxy.ProxyInfo;
+import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
 import org.xbill.DNS.Record;
 
 import com.xabber.android.data.Application;
@@ -92,6 +94,16 @@ public class ConnectionThread implements
 
 	private final boolean compression;
 
+	private final ProxyType proxyType;
+
+	private final String proxyHost;
+
+	private final int proxyPort;
+
+	private final String proxyUser;
+
+	private final String proxyPassword;
+
 	private boolean started;
 
 	public ConnectionThread(final ConnectionItem connectionItem) {
@@ -125,6 +137,11 @@ public class ConnectionThread implements
 					+ connectionSettings.getServerName();
 		else
 			login = connectionSettings.getUserName();
+		proxyType = connectionSettings.getProxyType();
+		proxyHost = connectionSettings.getProxyHost();
+		proxyPort = connectionSettings.getProxyPort();
+		proxyUser = connectionSettings.getProxyUser();
+		proxyPassword = connectionSettings.getProxyPassword();
 		started = false;
 	}
 
@@ -262,8 +279,10 @@ public class ConnectionThread implements
 	 */
 	private void onReady(final InetAddress address, final int port) {
 		LogManager.i(this, "Use " + address);
+		ProxyInfo proxy = new ProxyInfo(proxyType, proxyHost, proxyPort,
+				proxyUser, proxyPassword);
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-				address.getHostAddress(), port, serverName);
+				address.getHostAddress(), port, serverName, proxy);
 		if (Application.SDK_INT >= 14) {
 			connectionConfiguration.setTruststoreType("AndroidCAStore");
 			connectionConfiguration.setTruststorePassword(null);

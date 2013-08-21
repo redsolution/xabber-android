@@ -390,6 +390,11 @@
     <string name="account_sasl_key">account_sasl</string>
     <string name="account_tls_mode_key">account_tls_mode</string>
     <string name="account_compression_key">account_compression</string>
+    <string name="account_proxy_type_key">account_proxy_type</string>
+    <string name="account_proxy_host_key">account_proxy_host</string>
+    <string name="account_proxy_port_key">account_proxy_port</string>
+    <string name="account_proxy_user_key">account_proxy_user</string>
+    <string name="account_proxy_password_key">account_proxy_password</string>
     <string name="account_custom_key">account_custom</string>
     <string name="account_archive_mode_key">account_archive_mode</string>
 
@@ -402,6 +407,19 @@
         <item>@string/account_tls_enable_summary</item>
         <item>@string/account_tls_require_summary</item>
         <item>@string/account_tls_legacy_summary</item>
+    </string-array>
+
+    <string-array name="account_proxy_type_entries">
+        <item>@string/account_proxy_type_none</item>
+        <item>@string/account_proxy_type_http</item>
+        <item>@string/account_proxy_type_socks4</item>
+        <item>@string/account_proxy_type_socks5</item>
+    </string-array>
+    <string-array name="account_proxy_type_entryvalues">
+        <item>@string/account_proxy_type_none</item>
+        <item>@string/account_proxy_type_http</item>
+        <item>@string/account_proxy_type_socks4</item>
+        <item>@string/account_proxy_type_socks5</item>
     </string-array>
 
     <string-array name="account_archive_mode_entries">

@@ -17,6 +17,8 @@ package com.xabber.android.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -129,13 +131,30 @@ public class AccountEditor extends BaseSettingsActivity implements
 		if (getString(R.string.account_tls_mode_key)
 				.equals(preference.getKey())
 				|| getString(R.string.account_archive_mode_key).equals(
+						preference.getKey())
+				|| getString(R.string.account_proxy_type_key).equals(
 						preference.getKey()))
 			preference.setSummary((String) newValue);
 		else if (!getString(R.string.account_password_key).equals(
 				preference.getKey())
+				&& !getString(R.string.account_proxy_password_key).equals(
+						preference.getKey())
 				&& !getString(R.string.account_priority_key).equals(
 						preference.getKey()))
 			super.onPreferenceChange(preference, newValue);
+		if (getString(R.string.account_proxy_type_key).equals(
+				preference.getKey())) {
+			boolean enabled = !getString(R.string.account_proxy_type_none)
+					.equals(newValue);
+			for (int id : new Integer[] { R.string.account_proxy_host_key,
+					R.string.account_proxy_port_key,
+					R.string.account_proxy_user_key,
+					R.string.account_proxy_password_key, }) {
+				Preference proxyPreference = findPreference(getString(id));
+				if (proxyPreference != null)
+					proxyPreference.setEnabled(enabled);
+			}
+		}
 		return true;
 	}
 
@@ -190,6 +209,19 @@ public class AccountEditor extends BaseSettingsActivity implements
 						.getTlsMode().ordinal()));
 		putValue(source, R.string.account_compression_key, accountItem
 				.getConnectionSettings().useCompression());
+		putValue(
+				source,
+				R.string.account_proxy_type_key,
+				Integer.valueOf(accountItem.getConnectionSettings()
+						.getProxyType().ordinal()));
+		putValue(source, R.string.account_proxy_host_key, accountItem
+				.getConnectionSettings().getProxyHost());
+		putValue(source, R.string.account_proxy_port_key, accountItem
+				.getConnectionSettings().getProxyPort());
+		putValue(source, R.string.account_proxy_user_key, accountItem
+				.getConnectionSettings().getProxyUser());
+		putValue(source, R.string.account_proxy_password_key, accountItem
+				.getConnectionSettings().getProxyPassword());
 		putValue(source, R.string.account_syncable_key,
 				accountItem.isSyncable());
 		putValue(source, R.string.account_archive_mode_key,
@@ -226,6 +258,12 @@ public class AccountEditor extends BaseSettingsActivity implements
 						TLSMode.values()[getInt(result,
 								R.string.account_tls_mode_key)],
 						getBoolean(result, R.string.account_compression_key),
+						ProxyType.values()[getInt(result,
+								R.string.account_proxy_type_key)],
+						getString(result, R.string.account_proxy_host_key),
+						getInt(result, R.string.account_proxy_port_key),
+						getString(result, R.string.account_proxy_user_key),
+						getString(result, R.string.account_proxy_password_key),
 						getBoolean(result, R.string.account_syncable_key),
 						ArchiveMode.values()[getInt(result,
 								R.string.account_archive_mode_key)]);

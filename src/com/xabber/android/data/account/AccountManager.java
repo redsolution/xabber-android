@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
 import org.jivesoftware.smack.util.StringUtils;
 
 import android.content.res.TypedArray;
@@ -192,6 +193,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 							AccountTable.isSaslEnabled(cursor),
 							AccountTable.getTLSMode(cursor),
 							AccountTable.isCompression(cursor),
+							AccountTable.getProxyType(cursor),
+							AccountTable.getProxyHost(cursor),
+							AccountTable.getProxyPort(cursor),
+							AccountTable.getProxyUser(cursor),
+							AccountTable.getProxyPassword(cursor),
 							AccountTable.isSyncable(cursor),
 							AccountTable.getKeyPair(cursor),
 							AccountTable.getLastSync(cursor),
@@ -300,6 +306,16 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				.getTlsMode();
 		final boolean compression = accountItem.getConnectionSettings()
 				.useCompression();
+		final ProxyType proxyType = accountItem.getConnectionSettings()
+				.getProxyType();
+		final String proxyHost = accountItem.getConnectionSettings()
+				.getProxyHost();
+		final int proxyPort = accountItem.getConnectionSettings()
+				.getProxyPort();
+		final String proxyUser = accountItem.getConnectionSettings()
+				.getProxyUser();
+		final String proxyPassword = accountItem.getConnectionSettings()
+				.getProxyPassword();
 		final boolean syncable = accountItem.isSyncable();
 		final KeyPair keyPair = accountItem.getKeyPair();
 		final Date lastSync = accountItem.getLastSync();
@@ -311,8 +327,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 						accountItem.getId(), protocol, custom, host, port,
 						serverName, userName, resource, storePassword,
 						password, colorIndex, priority, statusMode, statusText,
-						enabled, saslEnabled, tlsMode, compression, syncable,
-						keyPair, lastSync, archiveMode));
+						enabled, saslEnabled, tlsMode, compression, proxyType,
+						proxyHost, proxyPort, proxyUser, proxyPassword,
+						syncable, keyPair, lastSync, archiveMode));
 			}
 		});
 	}
@@ -325,12 +342,16 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 			boolean storePassword, String password, String resource, int color,
 			int priority, StatusMode statusMode, String statusText,
 			boolean enabled, boolean saslEnabled, TLSMode tlsMode,
-			boolean compression, boolean syncable, KeyPair keyPair,
-			Date lastSync, ArchiveMode archiveMode) {
+			boolean compression, ProxyType proxyType, String proxyHost,
+			int proxyPort, String proxyUser, String proxyPassword,
+			boolean syncable, KeyPair keyPair, Date lastSync,
+			ArchiveMode archiveMode) {
 		AccountItem accountItem = new AccountItem(protocol, custom, host, port,
 				serverName, userName, resource, storePassword, password, color,
 				priority, statusMode, statusText, enabled, saslEnabled,
-				tlsMode, compression, syncable, keyPair, lastSync, archiveMode);
+				tlsMode, compression, proxyType, proxyHost, proxyPort,
+				proxyUser, proxyPassword, syncable, keyPair, lastSync,
+				archiveMode);
 		requestToWriteAccount(accountItem);
 		addAccount(accountItem);
 		accountItem.updateConnection(true);
@@ -425,7 +446,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				getNextColorIndex(), 0, StatusMode.available,
 				SettingsManager.statusText(), true, true,
 				tlsRequired ? TLSMode.required : TLSMode.enabled, false,
-				syncable, null, null, ArchiveMode.available);
+				ProxyType.NONE, "localhost", 8080, "", "", syncable, null,
+				null, ArchiveMode.available);
 		onAccountChanged(accountItem.getAccount());
 		if (accountItems.size() > 1
 				&& SettingsManager.contactsEnableShowAccounts())
@@ -500,8 +522,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 			int port, String serverName, String userName,
 			boolean storePassword, String password, String resource,
 			int priority, boolean enabled, boolean saslEnabled,
-			TLSMode tlsMode, boolean compression, boolean syncable,
-			ArchiveMode archiveMode) {
+			TLSMode tlsMode, boolean compression, ProxyType proxyType,
+			String proxyHost, int proxyPort, String proxyUser,
+			String proxyPassword, boolean syncable, ArchiveMode archiveMode) {
 		AccountItem result;
 		AccountItem accountItem = getAccount(account);
 		if (accountItem.getConnectionSettings().getServerName()
@@ -520,9 +543,18 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 							.equals(password)
 					|| accountItem.getConnectionSettings().getTlsMode() != tlsMode
 					|| accountItem.getConnectionSettings().isSaslEnabled() != saslEnabled
-					|| accountItem.getConnectionSettings().useCompression() != compression) {
+					|| accountItem.getConnectionSettings().useCompression() != compression
+					|| accountItem.getConnectionSettings().getProxyType() != proxyType
+					|| !accountItem.getConnectionSettings().getProxyHost()
+							.equals(proxyHost)
+					|| accountItem.getConnectionSettings().getProxyPort() != proxyPort
+					|| !accountItem.getConnectionSettings().getProxyUser()
+							.equals(proxyUser)
+					|| !accountItem.getConnectionSettings().getProxyPassword()
+							.equals(proxyPassword)) {
 				result.updateConnectionSettings(custom, host, port, password,
-						saslEnabled, tlsMode, compression);
+						saslEnabled, tlsMode, compression, proxyType,
+						proxyHost, proxyPort, proxyUser, proxyPassword);
 				reconnect = true;
 			}
 			if (result.isSyncable() != syncable) {
@@ -577,7 +609,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 			result = addAccount(protocol, custom, host, port, serverName,
 					userName, storePassword, password, resource, colorIndex,
 					priority, statusMode, statusText, enabled, saslEnabled,
-					tlsMode, compression, syncable, keyPair, lastSync,
+					tlsMode, compression, proxyType, proxyHost, proxyPort,
+					proxyUser, proxyPassword, syncable, keyPair, lastSync,
 					archiveMode);
 		}
 		onAccountChanged(result.getAccount());
@@ -608,7 +641,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				accountItem.getPriority(), accountItem.isEnabled(), accountItem
 						.getConnectionSettings().isSaslEnabled(), accountItem
 						.getConnectionSettings().getTlsMode(), accountItem
-						.getConnectionSettings().useCompression(), syncable,
+						.getConnectionSettings().useCompression(), accountItem
+						.getConnectionSettings().getProxyType(), accountItem
+						.getConnectionSettings().getProxyHost(), accountItem
+						.getConnectionSettings().getProxyPort(), accountItem
+						.getConnectionSettings().getProxyUser(), accountItem
+						.getConnectionSettings().getProxyPassword(), syncable,
 				accountItem.getArchiveMode());
 	}
 
@@ -624,7 +662,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				accountItem.getPriority(), accountItem.isEnabled(), accountItem
 						.getConnectionSettings().isSaslEnabled(), accountItem
 						.getConnectionSettings().getTlsMode(), accountItem
-						.getConnectionSettings().useCompression(),
+						.getConnectionSettings().useCompression(), accountItem
+						.getConnectionSettings().getProxyType(), accountItem
+						.getConnectionSettings().getProxyHost(), accountItem
+						.getConnectionSettings().getProxyPort(), accountItem
+						.getConnectionSettings().getProxyUser(), accountItem
+						.getConnectionSettings().getProxyPassword(),
 				accountItem.isSyncable(), accountItem.getArchiveMode());
 	}
 
@@ -644,6 +687,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				accountItem.getConnectionSettings().isSaslEnabled(),
 				accountItem.getConnectionSettings().getTlsMode(),
 				accountItem.getConnectionSettings().useCompression(),
+				accountItem.getConnectionSettings().getProxyType(),
+				accountItem.getConnectionSettings().getProxyHost(),
+				accountItem.getConnectionSettings().getProxyPort(),
+				accountItem.getConnectionSettings().getProxyUser(),
+				accountItem.getConnectionSettings().getProxyPassword(),
 				accountItem.isSyncable(), archiveMode);
 	}
 
