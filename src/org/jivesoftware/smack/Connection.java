@@ -333,6 +333,10 @@ public abstract class Connection {
      * @throws XMPPException if an error occurs while trying to establish the connection.
      */
     public abstract void connect() throws XMPPException;
+    
+    public void connect(final String user, final String pass, final String res) throws XMPPException {
+    	connect();
+    }
 
     /**
      * Logs in to the server using the strongest authentication mode supported by

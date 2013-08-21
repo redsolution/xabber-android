@@ -24,12 +24,15 @@ public class Tree {
 		this.tag = tag;
 		this.forcedata=false;
 		this.data = new byte[0];
+		children = new Vector < Tree > ();
+		attributes = new HashMap < String, String > ();
 	}
 	public Tree(String tag, Map < String,String > attributes) {
 		this.tag = tag;
 		this.attributes = attributes;
 		this.forcedata = false;
 		this.data = new byte[0];
+		children = new Vector < Tree > ();
 	}
 	public void forceDataWrite() {
 		forcedata=true;

@@ -26,12 +26,13 @@ public class WhatsappConnection {
 	private static String whatsappservergroup = "g.us";
 
 
-	public WhatsappConnection(String phone, String password, String nick) {
+	public WhatsappConnection(String phone, String pass, String nick) {
 		session_key = new byte[20];
 		
 		this.phone = phone;
-		this.password = password.trim();
+		this.password = pass.trim();
 		this.conn_status = SessionStatus.SessionNone;
+		outbuffer = new DataBuffer();
 	}
 
 	public Tree read_tree(DataBuffer data) {
@@ -89,6 +90,25 @@ public class WhatsappConnection {
 		}else{
 			return read_tree(data);
 		}
+	}
+	
+	public int pushIncomingData(byte [] data) {
+		Vector <Tree> treelist = new Vector <Tree>();
+		if (data.length < 3) return 0;
+		
+		DataBuffer db = new DataBuffer(data);
+		
+		Tree t;
+		do {
+			t = this.parse_tree(db);
+			if (t.getTag() != "treeerr")
+				treelist.add(t);
+				
+			System.out.println("Received tree!\n");
+			System.out.println(t.toString(0));
+		} while (t.getTag() != "treeerr" && db.size() >= 3);
+		
+		return data.length - db.size();
 	}
 	
 	public DataBuffer write_tree(Tree tree) {
@@ -168,6 +188,12 @@ public class WhatsappConnection {
 	
 		conn_status = SessionStatus.SessionWaitingChallenge;
 		outbuffer = first;
+	}
+	
+	public byte [] getWriteData() {
+		byte [] r = outbuffer.getPtr();
+		outbuffer = new DataBuffer();
+		return r;
 	}
 	
 	// Helper for Message class

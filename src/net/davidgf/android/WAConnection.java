@@ -33,6 +33,7 @@ import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
 /**
  * Creates a socket connection to a WA server.
@@ -54,21 +55,22 @@ public class WAConnection extends Connection {
      * Flag that indicates if the user is currently authenticated with the server.
      */
     private boolean authenticated = false;
-    /**
-     * Flag that indicates if the user was authenticated with the server when the connection
-     * to the server was closed (abruptly or not).
-     */
-    private boolean wasAuthenticated = false;
 
     private OutputStream ostream;
     private InputStream istream;
     
     private Thread writerThread, readerThread;
     
-    byte [] inbuffer, outbuffer;
+    byte [] inbuffer;
+    byte [] outbuffer;
+    byte [] outbuffer_mutex;
     WhatsappConnection waconnection;
     
+    Semaphore readwait,writewait;
+    
     int msgid;
+    
+    private static final String waUA = "WhatsApp/2.10.750 Android/4.2.1 Device/GalaxyS3";
 
     Roster roster = null;
 
@@ -95,6 +97,7 @@ public class WAConnection extends Connection {
         config.setCompressionEnabled(false);
         config.setSASLAuthenticationEnabled(true);
         config.setDebuggerEnabled(DEBUG_ENABLED);
+        outbuffer_mutex = new byte[1];
     }
 
     /**
@@ -109,6 +112,9 @@ public class WAConnection extends Connection {
         config.setCompressionEnabled(false);
         config.setSASLAuthenticationEnabled(true);
         config.setDebuggerEnabled(DEBUG_ENABLED);
+        outbuffer_mutex = new byte[1];
+        readwait = new Semaphore(0);
+        writewait = new Semaphore(0);
     }
 
     /**
@@ -119,11 +125,17 @@ public class WAConnection extends Connection {
      */
     public WAConnection(ConnectionConfiguration config) {
         super(config);
+        outbuffer_mutex = new byte[1];
+        readwait = new Semaphore(0);
+        writewait = new Semaphore(0);
     }
 
     public WAConnection(ConnectionConfiguration config, CallbackHandler callbackHandler) {
         super(config);
         config.setCallbackHandler(callbackHandler);
+        outbuffer_mutex = new byte[1];
+        readwait = new Semaphore(0);
+        writewait = new Semaphore(0);
     }
 
     public String getConnectionID() {
@@ -151,35 +163,8 @@ public class WAConnection extends Connection {
         // Do partial version of nameprep on the username.
         username = username.toLowerCase().trim();
 
-        String response;
-        if (config.isSASLAuthenticationEnabled() &&
-                saslAuthentication.hasNonAnonymousAuthentication()) {
-            // Authenticate using SASL
-            if (password != null) {
-                response = saslAuthentication.authenticate(username, password, resource);
-            }
-            else {
-                response = saslAuthentication
-                        .authenticate(username, resource, config.getCallbackHandler());
-            }
-        }
-        else {
-            // Authenticate using Non-SASL
-            response = new NonSASLAuthentication(this).authenticate(username, password, resource);
-        }
-
-        // Set the user.
-        if (response != null) {
-            this.user = response;
-            // Update the serviceName with the one returned by the server
-            config.setServiceName(StringUtils.parseServer(response));
-        }
-        else {
-            this.user = username + "@" + getServiceName();
-            if (resource != null) {
-                this.user += "/" + resource;
-            }
-        }
+        this.user = username + "@" + getServiceName();
+        this.user += "/" + resource;
 
         // Indicate that we're now authenticated.
         authenticated = true;
@@ -197,9 +182,6 @@ public class WAConnection extends Connection {
             this.roster.reload();
         }
 
-        // Stores the authentication for future reconnection
-        config.setLoginInfo(username, password, resource);
-
         // If debugging is enabled, change the the debug window title to include the
         // name we are now logged-in as.
         // If DEBUG_ENABLED was set to true AFTER the connection was created the debugger
@@ -208,10 +190,11 @@ public class WAConnection extends Connection {
             debugger.userHasLogged(user);
         }
         
-	// Create WA connection API object                
-        // FIXME: Set proper nickname
-        msgid = 0;
-        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), config.getUsername());
+        // Start login!
+        synchronized (waconnection) {
+	        waconnection.doLogin(waUA);
+	}
+        popWriteData();
     }
 
     @Override
@@ -341,7 +324,6 @@ public class WAConnection extends Connection {
             roster.cleanup();
             roster = null;
         }
-        wasAuthenticated = false;
     }
 
     public void sendPacket(Packet packet) {
@@ -349,15 +331,28 @@ public class WAConnection extends Connection {
 	//return WhatsappConnection.serializeMessage(getTo(),getMessageBody().message);
 	if (packet instanceof Message) {
 		Message m = (Message)packet;
-		synchronized (outbuffer) {
+		synchronized (outbuffer_mutex) {
 			msgid++;
 			byte [] msg = waconnection.serializeMessage(m.getTo(), m.getBody(null), msgid);
 
 			// Put data in the output buffer
     			outbuffer = Arrays.copyOf(outbuffer, outbuffer.length + msg.length);
     			System.arraycopy(msg,0, outbuffer,outbuffer.length-msg.length, msg.length);
+			writewait.release();
 		}
-		outbuffer.notify();
+	}
+    }
+    
+    private void popWriteData() {
+    	// Fill outbuffer with fresh data ready to be written
+    	byte [] data;
+    	synchronized (waconnection) {
+	    	data = waconnection.getWriteData();
+    	}
+	synchronized (outbuffer_mutex) {
+		outbuffer = Arrays.copyOf(outbuffer, outbuffer.length + data.length);
+		System.arraycopy(data,0, outbuffer,outbuffer.length-data.length, data.length);
+		writewait.release();
 	}
     }
 
@@ -415,6 +410,14 @@ public class WAConnection extends Connection {
     private void connectUsingConfiguration(ConnectionConfiguration config) throws XMPPException {
         String host = config.getHost();
         int port = config.getPort();
+
+    	System.out.println("Connecting! User: "+config.getUsername() + " pass: "+config.getPassword()+"\n");
+    	System.out.println("Connecting! Host: "+host + " Port: "+String.valueOf(port)+"\n");
+	// Create WA connection API object                
+        // FIXME: Set proper nickname
+        msgid = 0;
+        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), config.getUsername());
+
         try {
             if (config.getSocketFactory() == null) {
                 this.socket = new Socket(host, port);
@@ -436,6 +439,9 @@ public class WAConnection extends Connection {
                     XMPPError.Condition.remote_server_error, errorMessage), ioe);
         }
         initConnection();
+        connected = true;
+        
+        System.out.println("Connected!\n");
     }
 
     /**
@@ -458,6 +464,7 @@ public class WAConnection extends Connection {
         };
         writerThread.setName("Socket data writer");
         writerThread.setDaemon(true);
+        writerThread.start();
 
         readerThread = new Thread() {
             public void run() {
@@ -466,6 +473,7 @@ public class WAConnection extends Connection {
         };
         readerThread.setName("Socket data reader");
         readerThread.setDaemon(true);
+        readerThread.start();
 
         // Make note of the fact that we're now connected.
         connected = true;
@@ -488,10 +496,7 @@ public class WAConnection extends Connection {
                     ioe);
         }
 
-        // If debugging is enabled, we open a window and write out all network traffic.
-        initDebugger();
-
-	reader = new AliveReader(reader);
+	//reader = new AliveReader(reader);
     }
 
     public boolean isUsingCompression() {
@@ -501,28 +506,33 @@ public class WAConnection extends Connection {
     private void writePackets(Thread thisThread, OutputStream ostream) {
 	try {
 	while (outbuffer != null) {
-		outbuffer.wait();
 		if (outbuffer.length > 0) {
 			// Try to write the whole buffer
+			System.out.println("Writing packets...\n");
 			byte [] t;
-			synchronized (outbuffer) {
+			synchronized (outbuffer_mutex) {
 				t = Arrays.copyOf(outbuffer,outbuffer.length);
 			}
 			ostream.write(t,0,t.length);
-			synchronized (outbuffer) {
+			synchronized (outbuffer_mutex) {
 				// Pop the written data (the outbuffer may grow while writing t
 				outbuffer = Arrays.copyOfRange(outbuffer,t.length,outbuffer.length);
 			}
 		}
+		System.out.println("Sleeping while no packets are availbles...\n");
+		writewait.acquire();
 	}
 	}catch (Exception e) {
+		System.out.println("Error!\n" + e.toString());
 	}
+	System.out.println("Exiting writepackets thread (WA)\n");
     }
     
     private void readPackets(Thread thisThread, InputStream istream) {
     	try {
     		int r;
 	    	do {
+	    		System.out.println("Reading packets...\n");
 	    		byte [] buf = new byte[1024];
 	    		r = istream.read(buf,0,buf.length);
 	    		if (r > 0) {
@@ -532,10 +542,19 @@ public class WAConnection extends Connection {
 		    			System.arraycopy(buf,0, inbuffer,inbuffer.length-r, r);
 		    		}
 		    	}
+		    	
+		    	// Proceed to push data to underlying connection class
+		    	synchronized ( waconnection ) {
+		    		synchronized (inbuffer) {
+		    			int used = waconnection.pushIncomingData(inbuffer);
+		    			inbuffer = Arrays.copyOf(inbuffer, inbuffer.length - used);
+		    		}
+		    	}
 	    	} while (r >= 0);
 	}catch (IOException e) {
-		//
+		System.out.println("Error!\n" + e.toString());
 	}
+	System.out.println("Exiting readpackets thread (WA)\n");
     }
 
     /**
@@ -552,12 +571,20 @@ public class WAConnection extends Connection {
      *      502). The error codes and wrapped exceptions can be used to present more
      *      appropiate error messages to end-users.
      */
+     
+     // Specify pass at connect time
+    @Override
+    public void connect(final String user, final String pass, final String res) throws XMPPException {
+        config.setLoginInfo(user, pass, res);
+    	connect();
+    }
+
     public void connect() throws XMPPException {
         // Stablishes the connection, readers and writers
         connectUsingConfiguration(config);
         // Automatically makes the login if the user was previouslly connected successfully
         // to the server and the connection was terminated abruptly
-        if (connected && wasAuthenticated) {
+        if (connected) {
             // Make the login
             try {
                 login(config.getUsername(), config.getPassword(), config.getResource());
@@ -565,17 +592,6 @@ public class WAConnection extends Connection {
             catch (XMPPException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    /**
-     * Sets whether the connection has already logged in the server.
-     *
-     * @param wasAuthenticated true if the connection has already been authenticated.
-     */
-    private void setWasAuthenticated(boolean wasAuthenticated) {
-        if (!this.wasAuthenticated) {
-            this.wasAuthenticated = wasAuthenticated;
         }
     }
 

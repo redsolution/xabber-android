@@ -22,6 +22,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jivesoftware.smack.WAConnection;
+
 import javax.net.ssl.SSLException;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -319,13 +321,22 @@ public class ConnectionThread implements
 		connectionConfiguration.setSecurityMode(tlsMode.getSecurityMode());
 		connectionConfiguration.setCompressionEnabled(compression);
 
-		xmppConnection = new XMPPConnection(connectionConfiguration);
+		// Create different underlying classes depending on the protocol
+		AccountProtocol proto = connectionItem.getConnectionSettings().getProtocol();
+		if (proto == AccountProtocol.wapp) {
+			System.out.println("Creating WA connection...\n");
+			xmppConnection = new WAConnection(connectionConfiguration);
+		}else{
+			xmppConnection = new XMPPConnection(connectionConfiguration);
+			System.out.println("Creating WA connection...\n");
+		}
 		xmppConnection.addPacketListener(this, ACCEPT_ALL);
 		xmppConnection.forceAddConnectionListener(this);
 		connectionItem.onSRVResolved(this);
 		final String password = OAuthManager.getInstance().getPassword(
 				protocol, token);
 		if (password != null) {
+			System.out.println("Connection pass "+password+"\n");
 			runOnConnectionThread(new Runnable() {
 				@Override
 				public void run() {
@@ -417,7 +428,8 @@ public class ConnectionThread implements
 	 */
 	private void connect(final String password) {
 		try {
-			xmppConnection.connect();
+			ConnectionSettings connectionSettings = connectionItem.getConnectionSettings();
+			xmppConnection.connect(connectionSettings.getUserName(), password, connectionSettings.getResource());
 		} catch (XMPPException e) {
 			checkForCertificateError(e);
 			if (!checkForSeeOtherHost(e)) {
