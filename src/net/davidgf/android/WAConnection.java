@@ -53,6 +53,7 @@ public class WAConnection extends Connection {
     String connectionID = null;
     private String user = null;
     private boolean connected = false;
+    private boolean waconnected = false;
     /**
      * Flag that indicates if the user is currently authenticated with the server.
      */
@@ -313,6 +314,7 @@ public class WAConnection extends Connection {
 	// Set status
         authenticated = false;
         connected = false;
+        waconnected = false;
         
 	// Socket close
         try {
@@ -560,12 +562,17 @@ public class WAConnection extends Connection {
 		    	}
 		    	
 		    	this.popWriteData();  // Ready data might be waiting ...
+		    	if (waconnection.isConnected() && !waconnected) {
+		    		connectionOK();  // Notify the connection status
+		    		waconnected = true;
+		    	}
 	    	} while (r >= 0);
 	}catch (IOException e) {
 		System.out.println("Error!\n" + e.toString());
 	}
 	System.out.println("Exiting readpackets thread (WA)\n");
 	disconnect(new Presence(Presence.Type.unavailable));
+	cthread.connectionClosed();
 	// Signal the writer thread so it can also end
 	writewait.release();
     }
@@ -603,6 +610,20 @@ public class WAConnection extends Connection {
                 login(config.getUsername(), config.getPassword(), config.getResource());
             }
             catch (XMPPException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public void connectionOK() {
+    	System.out.println("Connected OK!\n");
+        for (ConnectionListener listener : getConnectionListeners()) {
+            try {
+                listener.reconnectionSuccessful();
+            }
+            catch (Exception e) {
+                // Catch and print any exception so we can recover
+                // from a faulty listener
                 e.printStackTrace();
             }
         }

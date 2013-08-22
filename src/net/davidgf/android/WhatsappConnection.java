@@ -25,6 +25,8 @@ public class WhatsappConnection {
 	private String phone, password;
 	private static String whatsappserver = "s.whatsapp.net";
 	private static String whatsappservergroup = "g.us";
+	
+	private String account_type, account_status, account_expiration, account_creation;
 
 
 	public WhatsappConnection(String phone, String pass, String nick) {
@@ -60,7 +62,7 @@ public class WhatsappConnection {
 		if (data.isList()) {
 			t.setChildren(data.readList(this));
 		}else{
-			t.setData(data.readString().getBytes());
+			t.setData(data.readByteString());
 		}
 	
 		return t;
@@ -115,6 +117,10 @@ public class WhatsappConnection {
 		return data.length - db.size();
 	}
 	
+	public boolean isConnected() {
+		return conn_status == SessionStatus.SessionConnected;
+	}
+	
 	private void processPacket(Tree t) {
 		// Now process the tree list!
 		if (t.getTag().equals("challenge")) {
@@ -122,14 +128,21 @@ public class WhatsappConnection {
 			assert(conn_status == SessionStatus.SessionWaitingChallenge);
 			
 			if (password.length() == 15) {
-				KeyGenerator.generateKeyImei(password,t.getData());
+				session_key = KeyGenerator.generateKeyImei(password,t.getData());
 			}
 			else if (password.contains(":")) {
-				KeyGenerator.generateKeyMAC(password,t.getData());
+				session_key = KeyGenerator.generateKeyMAC(password,t.getData());
 			}
 			else {
-				KeyGenerator.generateKeyV2(password,t.getData());
+				session_key = KeyGenerator.generateKeyV2(password,t.getData());
 			}
+			
+			System.out.print("SESSION KEY:\n");
+			for (int i = 0; i < session_key.length; i++) {
+				System.out.print(session_key[i]);
+				System.out.print(" ");
+			}
+			System.out.print("\n");
 			
 			this.in  = new RC4Decoder(session_key, 256);
 			this.out = new RC4Decoder(session_key, 256);
@@ -139,27 +152,27 @@ public class WhatsappConnection {
 			
 			this.sendAuthResponse();
 		}
-/*		else if (treelist[i].getTag() == "success") {
+		else if (t.getTag().equals("success")) {
 			// Notifies the success of the auth
-			conn_status = SessionConnected;
-			if (treelist[i].hasAttribute("status"))
-				this->account_status = treelist[i].getAttributes()["status"];
-			if (treelist[i].hasAttribute("kind"))
-				this->account_type = treelist[i].getAttributes()["kind"];
-			if (treelist[i].hasAttribute("expiration"))
-				this->account_expiration = treelist[i].getAttributes()["expiration"];
-			if (treelist[i].hasAttribute("creation"))
-				this->account_creation = treelist[i].getAttributes()["creation"];
+			conn_status = SessionStatus.SessionConnected;
+			if (t.hasAttribute("status"))
+				this.account_status = t.getAttributes().get("status");
+			if (t.hasAttribute("kind"))
+				this.account_type = t.getAttributes().get("kind");
+			if (t.hasAttribute("expiration"))
+				this.account_expiration = t.getAttributes().get("expiration");
+			if (t.hasAttribute("creation"))
+				this.account_creation = t.getAttributes().get("creation");
 				
-			this->notifyMyPresence();
-			this->sendInitial();
-			this->updateGroups();
+			//this->notifyMyPresence();
+			//this->sendInitial();
+			//this->updateGroups();
 			
 			//std::cout << "Logged in!!!" << std::endl;
 			//std::cout << "Account " << phone << " status: " << account_status << " kind: " << account_type <<
 			//	" expires: " << account_expiration << " creation: " << account_creation << std::endl;
 		}
-		else if (treelist[i].getTag() == "failure") {
+		/*else if (treelist[i].getTag() == "failure") {
 			if (conn_status == SessionWaitingAuthOK)
 				this->notifyError(errorAuth);
 			else

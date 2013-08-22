@@ -12,9 +12,25 @@ public class KeyGenerator {
 		char [] password = new char[pass.length];
 		for (int i = 0; i < pass.length; i++)
 			password[i] = (char)(pass[i]&0xFF);
+			
+			System.out.println("KEY V2 -- \n");
+			for (int i = 0; i < password.length; i++) {
+				System.out.print((int)password[i]);
+				System.out.print(" ");
+			}
+			System.out.println("SALT V2 -- \n");
+			for (int i = 0; i < salt.length; i++) {
+				System.out.print((int)salt[i]);
+				System.out.print(" ");
+			}
+		
+
 		SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		PBEKeySpec ks = new PBEKeySpec(password,salt,16,20);
+		PBEKeySpec ks = new PBEKeySpec(password,salt,16,20*8);
 		SecretKey s = f.generateSecret(ks);
+		
+		System.out.println("Result from PKCS5 key len: " + String.valueOf(s.getEncoded().length) + "\n");
+		
 		return s.getEncoded();
 	}
 
@@ -41,7 +57,7 @@ public class KeyGenerator {
 	public static byte[] generateKeyV2(String pw, byte [] salt) {
 		try {
 			byte [] decpass = MiscUtil.base64_decode(pw.getBytes());
-		
+			
 			return PKCS5_PBKDF2_HMAC_SHA1 (decpass,salt);
 		}
 		catch (Exception e) {
@@ -74,7 +90,7 @@ public class KeyGenerator {
 		return ret;
 	}
 	
-	private	static byte [] HMAC_SHA1(byte [] text, byte [] key) {
+	/*private static byte [] HMAC_SHA1(byte [] text, byte [] key) {
 		try {
 			byte [] AppendBuf1 = new byte [text.length+64];
 
@@ -123,7 +139,20 @@ public class KeyGenerator {
 		catch (Exception e) {
 			return new byte[0];
 		}
+	}*/
+	
+	private static byte [] HMAC_SHA1(byte [] text, byte [] key) {
+		try {
+			SecretKeySpec signingKey = new SecretKeySpec(key, "HmacSHA1");
+			Mac mac = Mac.getInstance("HmacSHA1");
+			mac.init(signingKey);
+			// Compute the hmac on input data bytes
+			return mac.doFinal(text);
+		} catch (Exception e) {
+			return new byte[0];
+		}
 	}
+	
 };
 
 

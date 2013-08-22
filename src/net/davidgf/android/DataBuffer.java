@@ -61,7 +61,7 @@ public class DataBuffer {
 	DataBuffer encodedBuffer(RC4Decoder decoder, byte [] key, boolean dout) {
 		DataBuffer deco = new DataBuffer(Arrays.copyOfRange(this.buffer,0,this.buffer.length));
 		
-		decoder.cipher(deco.buffer);
+		deco.buffer = decoder.cipher(deco.buffer);
 		byte [] hmacint = KeyGenerator.calc_hmac(deco.buffer,key);
 		DataBuffer hmac = new DataBuffer(hmacint);
 		
@@ -163,11 +163,42 @@ public class DataBuffer {
 		popData(size);
 		return s;
 	}
+	byte [] readRawByteString(int size) {
+		byte [] r = Arrays.copyOf(buffer,size);
+		popData(size);
+		return r;
+	}
+	byte [] readByteString() {
+		int type = readInt(1);
+		if (type > 4 && type < 0xf5) {
+			return MiscUtil.getDecoded(type).getBytes();
+		}
+		else if (type == 0xfc) {
+			int slen = readInt(1);
+			return readRawByteString(slen);
+		}
+		else if (type == 0xfd) {
+			int slen = readInt(3);
+			return readRawByteString(slen);
+		}
+		else if (type == 0xfe) {
+			return MiscUtil.getDecoded(readInt(1)+0xf5).getBytes();
+		}
+		else if (type == 0xfa) {
+			String u = readString();
+			String s = readString();
+			
+			if (u.length() > 0 && s.length() > 0)
+				return (u + "@" + s).getBytes();
+			else if (s.length() > 0)
+				return s.getBytes();
+		}
+		return new byte [0];
+	}
 	String readString() {
 		//if (blen == 0)
 		//	throw 0;
 		int type = readInt(1);
-		System.out.println("readstr " + String.valueOf(type) + "\n");
 		if (type > 4 && type < 0xf5) {
 			return MiscUtil.getDecoded(type);
 		}
