@@ -127,7 +127,6 @@ public class DataBuffer {
 		//if (blen == 0)
 		//	throw 0;
 		int ret;
-		System.out.println("byte   " + String.valueOf((int)buffer[0])+ "\n");
 		if (buffer[0] == (byte)0xf8 || buffer[0] == (byte)0xf3) {
 			ret = (int)buffer[1];
 			popData(2);

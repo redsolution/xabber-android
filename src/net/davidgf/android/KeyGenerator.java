@@ -12,24 +12,10 @@ public class KeyGenerator {
 		char [] password = new char[pass.length];
 		for (int i = 0; i < pass.length; i++)
 			password[i] = (char)(pass[i]&0xFF);
-			
-			System.out.println("KEY V2 -- \n");
-			for (int i = 0; i < password.length; i++) {
-				System.out.print((int)password[i]);
-				System.out.print(" ");
-			}
-			System.out.println("SALT V2 -- \n");
-			for (int i = 0; i < salt.length; i++) {
-				System.out.print((int)salt[i]);
-				System.out.print(" ");
-			}
 		
-
 		SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		PBEKeySpec ks = new PBEKeySpec(password,salt,16,20*8);
 		SecretKey s = f.generateSecret(ks);
-		
-		System.out.println("Result from PKCS5 key len: " + String.valueOf(s.getEncoded().length) + "\n");
 		
 		return s.getEncoded();
 	}
@@ -89,57 +75,6 @@ public class KeyGenerator {
 			ret[i] = hash[i];
 		return ret;
 	}
-	
-	/*private static byte [] HMAC_SHA1(byte [] text, byte [] key) {
-		try {
-			byte [] AppendBuf1 = new byte [text.length+64];
-
-			byte [] SHA1_Key = new byte[4096];
-			for (int i = 0; i < 4096; i++)
-				SHA1_Key[i] = 0;
-		
-			byte [] m_ipad = new byte[64];
-			byte [] m_opad = new byte[64];
-			for (int i = 0; i < 64; i++) {
-				m_ipad[i] = 0x36;
-				m_opad[i] = 0x5c;
-			}
-		
-			if (key.length > 64) {
-				byte [] t = MessageDigest.getInstance("SHA").digest(key);
-				for (int i = 0; i < t.length; i++)
-					SHA1_Key[i] = t[i];
-			}
-			else {
-				for (int i = 0; i < key.length; i++)
-					SHA1_Key[i] = key[i];
-			}
-
-			for (int i = 0; i < 64; i++)
-				m_ipad[i] ^= SHA1_Key[i];              
-
-			for (int i = 0; i < 64; i++)
-				AppendBuf1[i] = m_ipad[i];
-			for (int i = 0; i < text.length; i++)
-				AppendBuf1[i+64] = text[i];
-
-			byte [] szReport = MessageDigest.getInstance("SHA").digest(AppendBuf1);
-
-			for (int j = 0; j < 64; j++)
-				m_opad[j] ^= SHA1_Key[j];
-
-			byte [] AppendBuf2 = new byte [4096];
-			for (int i = 0; i < 64; i++)
-				AppendBuf2[i] = m_opad[i];
-			for (int i = 0; i < szReport.length; i++)
-				AppendBuf2[i+64] = szReport[i];
-
-			return MessageDigest.getInstance("SHA").digest(AppendBuf2);
-		}
-		catch (Exception e) {
-			return new byte[0];
-		}
-	}*/
 	
 	private static byte [] HMAC_SHA1(byte [] text, byte [] key) {
 		try {
