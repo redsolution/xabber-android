@@ -17,6 +17,8 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Registration;
+import org.jivesoftware.smack.packet.RosterPacket;
 import com.xabber.android.data.connection.ConnectionThread;
 
 import net.davidgf.android.WhatsappConnection;
@@ -337,8 +339,9 @@ public class WAConnection extends Connection {
     }
 
     public void sendPacket(Packet packet) {
+        this.firePacketInterceptors(packet);
+            
     	// If the packet if a Message, serialize and send it!
-	//return WhatsappConnection.serializeMessage(getTo(),getMessageBody().message);
 	if (packet instanceof Message) {
 		Message m = (Message)packet;
 		synchronized (outbuffer_mutex) {
@@ -351,6 +354,17 @@ public class WAConnection extends Connection {
 			writewait.release();
 		}
 	}
+	if (packet instanceof Registration) {
+		Registration r = (Registration)packet;
+		System.out.println(r.getChildElementXML());
+	}
+	if (packet instanceof RosterPacket) {
+		RosterPacket r = (RosterPacket)packet;
+		System.out.println(r.toXML());
+	}
+
+	// Notify others
+	this.firePacketSendingListeners(packet);
     }
     
     private void popWriteData() {
@@ -421,8 +435,6 @@ public class WAConnection extends Connection {
         String host = config.getHost();
         int port = config.getPort();
 
-    	System.out.println("Connecting! User: "+config.getUsername() + " pass: "+config.getPassword()+"\n");
-    	System.out.println("Connecting! Host: "+host + " Port: "+String.valueOf(port)+"\n");
 	// Create WA connection API object                
         // FIXME: Set proper nickname
         msgid = 0;
@@ -450,8 +462,6 @@ public class WAConnection extends Connection {
         }
         initConnection();
         connected = true;
-        
-        System.out.println("Connected!\n");
     }
 
     /**
@@ -604,19 +614,9 @@ public class WAConnection extends Connection {
         connectUsingConfiguration(config);
         // Automatically makes the login if the user was previouslly connected successfully
         // to the server and the connection was terminated abruptly
-        if (connected) {
-            // Make the login
-            try {
-                login(config.getUsername(), config.getPassword(), config.getResource());
-            }
-            catch (XMPPException e) {
-                e.printStackTrace();
-            }
-        }
     }
     
     public void connectionOK() {
-    	System.out.println("Connected OK!\n");
         for (ConnectionListener listener : getConnectionListeners()) {
             try {
                 listener.reconnectionSuccessful();

@@ -88,7 +88,7 @@ public class Tree {
 	}
 	public boolean hasAttributeValue(String at, String val) {
 		if (hasAttribute(at)) {
-			return (attributes.get(at) == val);
+			return (attributes.get(at).equals(val));
 		}
 		return false;
 	}
@@ -103,7 +103,7 @@ public class Tree {
 	
 	public Tree getChild(String tag) {
 		for (int i = 0; i < children.size(); i++) {
-			if (children.get(i).getTag() == tag)
+			if (children.get(i).getTag().equals(tag))
 				return children.get(i);
 			Tree t = children.get(i).getChild(tag);
 			if (t == null)
@@ -113,7 +113,7 @@ public class Tree {
 	}
 	public boolean hasChild(String tag) {
 		for (int i = 0; i < children.size(); i++) {
-			if (children.get(i).getTag() == tag)
+			if (children.get(i).getTag().equals(tag))
 				return true;
 			if (children.get(i).hasChild(tag))
 				return true;

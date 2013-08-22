@@ -328,7 +328,7 @@ public class ConnectionThread implements
 			xmppConnection = new WAConnection(this, connectionConfiguration);
 		}else{
 			xmppConnection = new XMPPConnection(connectionConfiguration);
-			System.out.println("Creating WA connection...\n");
+			System.out.println("Creating XMPP connection...\n");
 		}
 		xmppConnection.addPacketListener(this, ACCEPT_ALL);
 		xmppConnection.forceAddConnectionListener(this);
@@ -499,6 +499,7 @@ public class ConnectionThread implements
 	 * @param password
 	 */
 	private void onConnected(final String password) {
+		System.out.println("onConnected!\n");
 		connectionItem.onConnected(this);
 		ConnectionManager.getInstance().onConnected(this);
 		runOnConnectionThread(new Runnable() {
@@ -515,6 +516,7 @@ public class ConnectionThread implements
 	 * @param password
 	 */
 	private void authorization(String password) {
+		System.out.println("authoriation!\n");
 		try {
 			xmppConnection.login(login, password, resource);
 		} catch (IllegalStateException e) {
@@ -550,6 +552,7 @@ public class ConnectionThread implements
 			xmppConnection.disconnect();
 			return;
 		}
+		System.out.println("Now run on UI\n");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -562,6 +565,8 @@ public class ConnectionThread implements
 	 * Authorization passed.
 	 */
 	private void onAuthorized() {
+		(new Exception()).printStackTrace();
+		System.out.println("onAuthorized!\n");
 		connectionItem.onAuthorized(this);
 		ConnectionManager.getInstance().onAuthorized(this);
 		if (connectionItem instanceof AccountItem)

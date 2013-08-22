@@ -165,6 +165,7 @@ public class WhatsappConnection {
 		}
 		else if (t.getTag().equals("iq")) {
 			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("ping")) {
+				System.out.println("Received PING!\n");
 				this.doPong(t.getAttribute("id"),t.getAttribute("from"));
 			}
 		}
