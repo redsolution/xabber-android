@@ -19,6 +19,7 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Registration;
 import org.jivesoftware.smack.packet.RosterPacket;
+import org.jivesoftware.smack.packet.IQ;
 import com.xabber.android.data.connection.ConnectionThread;
 
 import net.davidgf.android.WhatsappConnection;
@@ -36,7 +37,7 @@ import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.*;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 
 /**
  * Creates a socket connection to a WA server.
@@ -70,8 +71,9 @@ public class WAConnection extends Connection {
     byte [] outbuffer;
     byte [] outbuffer_mutex;
     WhatsappConnection waconnection;
-    
     Semaphore readwait,writewait;
+    
+    private ExecutorService listenerExecutor;
     
     int msgid;
     
@@ -106,6 +108,16 @@ public class WAConnection extends Connection {
         readwait = new Semaphore(0);
         writewait = new Semaphore(0);
         this.cthread = ct;
+        
+	listenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+		public Thread newThread(Runnable runnable) {
+			Thread thread = new Thread(runnable,
+			"WA Listener Processor");
+			thread.setDaemon(true);
+			return thread;
+		}
+	});
+
     }
 
     /**
@@ -360,6 +372,21 @@ public class WAConnection extends Connection {
 	}
 	if (packet instanceof RosterPacket) {
 		RosterPacket r = (RosterPacket)packet;
+		// Check Add/Remove Contact/Group:
+		if (r.getType() == IQ.Type.SET) {
+			Collection<RosterPacket.Item> items = r.getRosterItems();
+			if (items.size() == 1) {
+				RosterPacket.Item it = ((RosterPacket.Item)(items.toArray()[0]));
+				if (it.getItemType() == RosterPacket.ItemType.remove) {
+					System.out.println("Remove contact!\n");
+				}else{
+					// Adding contact, notify underlying connection for status query
+					//waconnection.addContact(it.getUser());
+					System.out.println("Add contact!\n");
+				}
+			}
+		}
+		
 		System.out.println(r.toXML());
 	}
 
@@ -571,11 +598,22 @@ public class WAConnection extends Connection {
 		    		}
 		    	}
 		    	
+		    	// Process stuff
 		    	this.popWriteData();  // Ready data might be waiting ...
+		    	
 		    	if (waconnection.isConnected() && !waconnected) {
 		    		connectionOK();  // Notify the connection status
 		    		waconnected = true;
 		    	}
+		    	
+		    	Packet p = waconnection.getNextPacket();
+			while (p != null) {
+				for (PacketCollector collector: getPacketCollectors()) {
+					collector.processPacket(p);
+				}
+				listenerExecutor.submit(new ListenerNotification(p));
+				p = waconnection.getNextPacket();
+			}
 	    	} while (r >= 0);
 	}catch (IOException e) {
 		System.out.println("Error!\n" + e.toString());
@@ -711,5 +749,30 @@ public class WAConnection extends Connection {
 			wrappedReader.reset();
 		}
 	}
+	
+	
+	
+	    /**
+     * A runnable to notify all listeners of a packet.
+     */
+    private class ListenerNotification implements Runnable {
+
+        private Packet packet;
+
+        public ListenerNotification(Packet packet) {
+            this.packet = packet;
+        }
+
+        public void run() {
+            for (ListenerWrapper listenerWrapper : recvListeners.values()) {
+                try {
+                    listenerWrapper.notifyListener(packet);
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }
 

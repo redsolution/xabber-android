@@ -10,6 +10,8 @@
  */
 
 package net.davidgf.android;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 
 import java.util.*;
 
@@ -28,6 +30,8 @@ public class WhatsappConnection {
 	
 	private String account_type, account_status, account_expiration, account_creation;
 	private String mypresence;
+	
+	private Vector <Packet> received_packets;
 
 	public WhatsappConnection(String phone, String pass, String nick) {
 		session_key = new byte[20];
@@ -38,6 +42,7 @@ public class WhatsappConnection {
 		this.nickname = nick;
 		this.mypresence = "available";
 		outbuffer = new DataBuffer();
+		received_packets = new Vector <Packet>();
 	}
 
 	public Tree read_tree(DataBuffer data) {
@@ -169,12 +174,59 @@ public class WhatsappConnection {
 				this.doPong(t.getAttribute("id"),t.getAttribute("from"));
 			}
 		}
+		else if (t.getTag().equals("message")) {
+			if (t.hasAttributeValue("type","chat") && t.hasAttribute("from")) {
+				long time = 0;
+				if (t.hasAttribute("t"))
+					time = Integer.parseInt(t.getAttribute("t"));
+				String from = t.getAttribute("from");
+				String id = t.getAttribute("id");
+				String author = t.getAttribute("author");
+				
+				Tree tb = t.getChild("body");
+				if (tb != null) {
+					this.receiveMessage(
+					 	new ChatMessage(from,time,id,MiscUtil.bytesToUTF8(tb.getData()),author));
+				}
+			}
+			
+			// Received ACK
+			if (t.hasAttribute("type") && t.hasAttribute("from") && !t.hasChild("received")) {
+				DataBuffer reply = generateResponse(t.getAttribute("from"),
+									t.getAttribute("type"),
+									t.getAttribute("id"));
+				outbuffer = outbuffer.addBuf(reply);
+
+			}
+		}
 		/*else if (treelist[i].getTag() == "failure") {
 			if (conn_status == SessionWaitingAuthOK)
 				this->notifyError(errorAuth);
 			else
 				this->notifyError(errorUnknown);
 		}*/
+	}
+	
+	private DataBuffer generateResponse(final String from, final String type, final String id) {
+		Tree received = new Tree("received",new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
+		Tree mes = new Tree("message",new HashMap < String,String >() {{ 
+			put("to",from); put("type",type); put("id",id); }} );
+		mes.addChild(received);
+		return serialize_tree(mes,true);
+	}
+
+	
+	private void receiveMessage(AbstractMessage msg) {
+		received_packets.add(msg.serializePacket());
+	}
+	
+	public Packet getNextPacket() {
+		if (received_packets.size() == 0)
+			return null;
+		Packet r = received_packets.get(0);
+		received_packets.remove(0);
+		
+		return r;
 	}
 	
 	private void notifyMyPresence() {
@@ -317,6 +369,38 @@ public class WhatsappConnection {
 		return serialize_tree(mes,true).getPtr();
 		}catch (Exception e) {
 		return new byte[0];
+		}
+	}
+	
+	public abstract class AbstractMessage {
+		protected String from, id, author;
+		protected long time;
+		
+		public AbstractMessage(String from, long time, String id, String author) {
+			this.from = from;
+			this.id = id;
+			this.author = author;
+			this.time = time;
+		}
+		
+		public abstract Packet serializePacket();
+	}
+	
+	public class ChatMessage extends AbstractMessage {
+		private String message;
+		public ChatMessage(String from, long time, String id, String message, String author) {
+			super(from, time, id, author);
+			this.message = message;
+		}
+		
+		public Packet serializePacket() {
+			Message message = new Message();
+			message.setTo(this.from);
+			message.setFrom("");
+			message.setType(Message.Type.chat);
+			message.setBody(this.message);
+			
+			return message;
 		}
 	}
 }

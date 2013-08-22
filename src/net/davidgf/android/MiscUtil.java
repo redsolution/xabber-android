@@ -115,6 +115,15 @@ public class MiscUtil {
 		}
 		return 0;
 	}
+	
+	public static String bytesToUTF8(byte [] ba) {
+		try {
+			return new String(ba, "UTF-8");
+		}
+		catch (Exception e) {
+			return new String();
+		}
+	}
 
 }
 
