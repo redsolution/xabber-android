@@ -124,6 +124,10 @@ public class MiscUtil {
 			return new String();
 		}
 	}
+	
+	public static String getUser(String user) {
+		return user.split("@")[0];
+	}
 
 }
 

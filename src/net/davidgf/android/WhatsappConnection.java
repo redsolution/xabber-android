@@ -12,6 +12,7 @@
 package net.davidgf.android;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
 
 import java.util.*;
 
@@ -32,6 +33,7 @@ public class WhatsappConnection {
 	private String mypresence;
 	
 	private Vector <Packet> received_packets;
+	private Vector <Contact> contacts;
 
 	public WhatsappConnection(String phone, String pass, String nick) {
 		session_key = new byte[20];
@@ -43,6 +45,7 @@ public class WhatsappConnection {
 		this.mypresence = "available";
 		outbuffer = new DataBuffer();
 		received_packets = new Vector <Packet>();
+		contacts = new Vector <Contact> ();
 	}
 
 	public Tree read_tree(DataBuffer data) {
@@ -55,6 +58,7 @@ public class WhatsappConnection {
 			return t;
 		}else if (type == 2) {
 			data.popData(1);
+			System.out.println("NO data in this tree\n");
 			return new Tree("treeerr"); // No data in this tree...
 		}
 	
@@ -78,6 +82,7 @@ public class WhatsappConnection {
 		int bflag = (data.getInt(1,0) & 0xF0)>>4;
 		int bsize = data.getInt(2,1);
 		if (bsize > data.size()-3) {
+			System.out.println("NO data enough\n");
 			return new Tree("treeerr");  // Next message incomplete, return consumed data
 		}
 		data.popData(3);
@@ -110,12 +115,12 @@ public class WhatsappConnection {
 		Tree t;
 		do {
 			t = this.parse_tree(db);
-			if (t.getTag() != "treeerr")
+			if (!t.getTag().equals("treeerr"))
 				this.processPacket(t);
 				
 			System.out.println("Received tree!\n");
 			System.out.println(t.toString(0));
-		} while (t.getTag() != "treeerr" && db.size() >= 3);
+		} while (!t.getTag().equals("treeerr") && db.size() >= 3);
 		
 		return data.length - db.size();
 	}
@@ -167,6 +172,20 @@ public class WhatsappConnection {
 			//std::cout << "Logged in!!!" << std::endl;
 			//std::cout << "Account " << phone << " status: " << account_status << " kind: " << account_type <<
 			//	" expires: " << account_expiration << " creation: " << account_creation << std::endl;
+		}
+		else if (t.getTag().equals("presence")) {
+			// Receives the presence of the user
+			if ( t.hasAttribute("from") && t.hasAttribute("type") ) {
+				Presence.Mode mode = Presence.Mode.away;
+				if (t.getAttribute("type").equals("available"))
+					mode = Presence.Mode.available;
+				
+				Presence presp = new Presence(Presence.Type.available);
+				presp.setMode(mode);
+				presp.setFrom(MiscUtil.getUser(t.getAttribute("from")));
+				presp.setTo(MiscUtil.getUser(phone));
+				received_packets.add(presp);
+			}
 		}
 		else if (t.getTag().equals("iq")) {
 			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("ping")) {
@@ -336,6 +355,27 @@ public class WhatsappConnection {
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(t,false)));
 	}
 
+	public void addContact(String user, boolean user_request) {
+		user = MiscUtil.getUser(user);
+		
+		for (int i = 0; i < contacts.size(); i++)
+			if (contacts.get(i).phone.equals(user))
+				return;
+		
+		Contact c = new Contact(user, user_request);
+		contacts.add(c);
+		
+		subscribePresence(user);
+	}
+	
+	public void subscribePresence(String user) {
+		final String username = MiscUtil.getUser(user);
+		Tree request = new Tree("presence",
+			new HashMap < String,String >() {{ put("type","subscribe"); put("to",username); }} );
+		
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(request,false)));
+	}
+
 	
 	public byte [] getWriteData() {
 		byte [] r = outbuffer.getPtr();
@@ -395,14 +435,34 @@ public class WhatsappConnection {
 		
 		public Packet serializePacket() {
 			Message message = new Message();
-			message.setTo(this.from);
-			message.setFrom("");
+			message.setTo(MiscUtil.getUser(phone));
+			message.setFrom(MiscUtil.getUser(this.from));
 			message.setType(Message.Type.chat);
 			message.setBody(this.message);
 			
 			return message;
 		}
 	}
+	
+	
+	public class Contact {
+		String phone, name;
+		String presence, typing;
+		String status;
+		long last_seen, last_status;
+		boolean mycontact;
+		String ppprev, pppicture;
+		boolean subscribed;
+
+		Contact(String phone, boolean myc) {
+			this.phone = phone;
+			this.mycontact = myc;
+			this.last_seen = 0;
+			this.subscribed = false;
+			this.typing = "paused";
+			this.status = "";
+		}
+	};
 }
 
 

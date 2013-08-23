@@ -106,7 +106,7 @@ public class Tree {
 			if (children.get(i).getTag().equals(tag))
 				return children.get(i);
 			Tree t = children.get(i).getChild(tag);
-			if (t == null)
+			if (t != null)
 				return t;
 		}
 		return null;
@@ -124,13 +124,13 @@ public class Tree {
 	String toString(int sp) {
 		String ret = "";
 		String spacing = "";
-		for (int i = 0; i < sp; i++)
+		for (int i = 0; i < sp*3; i++)
 			spacing += " ";
 		ret += spacing+"Tag: "+tag+"\n";
 		for (String key: attributes.keySet()) {
 			ret += spacing+"at["+key+"]="+attributes.get(key)+"\n";
 		}
-		ret += spacing+"Data: "+data+"\n";
+		ret += spacing+"Data: "+MiscUtil.bytesToUTF8(data)+"\n";
 		
 		for (int i = 0; i < children.size(); i++) {
 			ret += children.get(i).toString(sp+1);

@@ -74,7 +74,6 @@ public class WAConnection extends Connection {
     Semaphore readwait,writewait;
     
     private ExecutorService listenerExecutor;
-    
     int msgid;
     
     private static final String waUA = "WhatsApp/2.10.750 Android/4.2.1 Device/GalaxyS3";
@@ -104,20 +103,8 @@ public class WAConnection extends Connection {
         config.setCompressionEnabled(false);
         config.setSASLAuthenticationEnabled(true);
         config.setDebuggerEnabled(DEBUG_ENABLED);
-        outbuffer_mutex = new byte[1];
-        readwait = new Semaphore(0);
-        writewait = new Semaphore(0);
         this.cthread = ct;
-        
-	listenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-		public Thread newThread(Runnable runnable) {
-			Thread thread = new Thread(runnable,
-			"WA Listener Processor");
-			thread.setDaemon(true);
-			return thread;
-		}
-	});
-
+        commonInit();
     }
 
     /**
@@ -132,10 +119,8 @@ public class WAConnection extends Connection {
         config.setCompressionEnabled(false);
         config.setSASLAuthenticationEnabled(true);
         config.setDebuggerEnabled(DEBUG_ENABLED);
-        outbuffer_mutex = new byte[1];
-        readwait = new Semaphore(0);
-        writewait = new Semaphore(0);
         this.cthread = ct;
+        commonInit();
     }
 
     /**
@@ -146,19 +131,30 @@ public class WAConnection extends Connection {
      */
     public WAConnection(ConnectionThread ct, ConnectionConfiguration config) {
         super(config);
-        outbuffer_mutex = new byte[1];
-        readwait = new Semaphore(0);
-        writewait = new Semaphore(0);
         this.cthread = ct;
+        commonInit();
     }
 
     public WAConnection(ConnectionThread ct, ConnectionConfiguration config, CallbackHandler callbackHandler) {
         super(config);
         config.setCallbackHandler(callbackHandler);
+        this.cthread = ct;
+        commonInit();
+    }
+    
+    private void commonInit() {
         outbuffer_mutex = new byte[1];
         readwait = new Semaphore(0);
         writewait = new Semaphore(0);
-        this.cthread = ct;
+        
+	this.listenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+		public Thread newThread(Runnable runnable) {
+			Thread thread = new Thread(runnable,
+			"WA Listener Processor");
+			thread.setDaemon(true);
+			return thread;
+		}
+	});
     }
 
     public String getConnectionID() {
@@ -381,7 +377,7 @@ public class WAConnection extends Connection {
 					System.out.println("Remove contact!\n");
 				}else{
 					// Adding contact, notify underlying connection for status query
-					//waconnection.addContact(it.getUser());
+					waconnection.addContact(it.getUser(),true);
 					System.out.println("Add contact!\n");
 				}
 			}
@@ -512,7 +508,7 @@ public class WAConnection extends Connection {
         writerThread.setName("Socket data writer");
         writerThread.setDaemon(true);
         writerThread.start();
-
+        
         readerThread = new Thread() {
             public void run() {
                 readPackets(this,istream);
@@ -594,7 +590,7 @@ public class WAConnection extends Connection {
 		    	synchronized ( waconnection ) {
 		    		synchronized (inbuffer) {
 		    			int used = waconnection.pushIncomingData(inbuffer);
-		    			inbuffer = Arrays.copyOf(inbuffer, inbuffer.length - used);
+		    			inbuffer = Arrays.copyOfRange(inbuffer, used, inbuffer.length);
 		    		}
 		    	}
 		    	
@@ -606,8 +602,13 @@ public class WAConnection extends Connection {
 		    		waconnected = true;
 		    	}
 		    	
+			if (listenerExecutor == null) {
+				System.out.println("Null!!! Shit\n");
+			}
+		    	
 		    	Packet p = waconnection.getNextPacket();
 			while (p != null) {
+				System.out.println("Received message!\n");
 				for (PacketCollector collector: getPacketCollectors()) {
 					collector.processPacket(p);
 				}
