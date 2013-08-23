@@ -27,7 +27,6 @@
     <EditTextPreference
         android:key="@string/account_username_key"
         android:title="@string/account_user_name"
-        android:dialogTitle="@string/account_user_name"
         android:singleLine="true"
         />
     <CheckBoxPreference
@@ -38,14 +37,12 @@
     <EditTextPreference
         android:key="@string/account_password_key"
         android:title="@string/account_password"
-        android:dialogTitle="@string/account_password"
         android:password="true"
         android:singleLine="true"
         />
     <EditTextPreference
         android:key="@string/account_server_key"
         android:title="@string/account_server_name"
-        android:dialogTitle="@string/account_server_name"
         android:singleLine="true"
         />
     <CheckBoxPreference
@@ -56,27 +53,23 @@
     <EditTextPreference
         android:key="@string/account_host_key"
         android:title="@string/account_host"
-        android:dialogTitle="@string/account_host"
         android:singleLine="true"
         android:dependency="@string/account_custom_key"
         />
     <EditTextPreference
         android:key="@string/account_port_key"
         android:title="@string/account_port"
-        android:dialogTitle="@string/account_host"
         android:singleLine="true"
         android:dependency="@string/account_custom_key"
         />
     <EditTextPreference
         android:key="@string/account_resource_key"
         android:title="@string/account_resource"
-        android:dialogTitle="@string/account_resource"
         android:singleLine="true"
         />
     <com.xabber.android.ui.widget.PriorityPreference
         android:key="@string/account_priority_key"
         android:title="@string/account_priority"
-        android:dialogTitle="@string/account_priority"
         android:singleLine="true"
         />
     <CheckBoxPreference

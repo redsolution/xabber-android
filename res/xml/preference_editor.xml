@@ -111,7 +111,6 @@
             <ListPreference
                 android:title="@string/chats_show_status_change"
                 android:summary="@string/chats_show_status_change"
-                android:dialogTitle="@string/chats_show_status_change"
                 android:key="@string/chats_show_status_change_key"
                 android:entries="@array/chats_show_status_change_entries"
                 android:entryValues="@array/chats_show_status_change_entryvalues"
@@ -119,7 +118,6 @@
                 />
             <ListPreference
                 android:title="@string/chats_hide_keyboard"
-                android:dialogTitle="@string/chats_hide_keyboard"
                 android:key="@string/chats_hide_keyboard_key"
                 android:entries="@array/chats_hide_keyboard_entries"
                 android:entryValues="@array/chats_hide_keyboard_entryvalues"
@@ -127,7 +125,6 @@
                 />
             <ListPreference
                 android:title="@string/chats_font_size"
-                android:dialogTitle="@string/chats_font_size"
                 android:key="@string/chats_font_size_key"
                 android:entries="@array/chats_font_size_entries"
                 android:entryValues="@array/chats_font_size_entryvalues"
@@ -135,7 +132,6 @@
                 />
             <ListPreference
                 android:title="@string/chats_divide"
-                android:dialogTitle="@string/chats_divide"
                 android:key="@string/chats_divide_key"
                 android:entries="@array/chats_divide_entries"
                 android:entryValues="@array/chats_divide_entryvalues"
@@ -232,7 +228,6 @@
                 />
             <ListPreference
                 android:title="@string/connection_go_away"
-                android:dialogTitle="@string/connection_go_away"
                 android:key="@string/connection_go_away_key"
                 android:entries="@array/connection_go_away_entries"
                 android:entryValues="@array/connection_go_away_entryvalues"
@@ -240,7 +235,6 @@
                 />
             <ListPreference
                 android:title="@string/connection_go_xa"
-                android:dialogTitle="@string/connection_go_xa"
                 android:key="@string/connection_go_xa_key"
                 android:entries="@array/connection_go_xa_entries"
                 android:entryValues="@array/connection_go_xa_entryvalues"

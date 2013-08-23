@@ -32,13 +32,11 @@
     <EditTextPreference
         android:key="@string/account_resource_key"
         android:title="@string/account_resource"
-        android:dialogTitle="@string/account_resource"
         android:singleLine="true"
         />
     <EditTextPreference
         android:key="@string/account_priority_key"
         android:title="@string/account_priority"
-        android:dialogTitle="@string/account_priority"
         android:singleLine="true"
         />
     <ListPreference
