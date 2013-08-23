@@ -31,7 +31,6 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.proxy.ProxyInfo;
-import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
 import org.xbill.DNS.Record;
 
 import com.xabber.android.data.Application;
@@ -279,7 +278,7 @@ public class ConnectionThread implements
 	 */
 	private void onReady(final InetAddress address, final int port) {
 		LogManager.i(this, "Use " + address);
-		ProxyInfo proxy = new ProxyInfo(proxyType, proxyHost, proxyPort,
+		ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort,
 				proxyUser, proxyPassword);
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
 				address.getHostAddress(), port, serverName, proxy);

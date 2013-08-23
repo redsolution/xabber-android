@@ -17,8 +17,7 @@ package com.xabber.android.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
-
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +30,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.ArchiveMode;
+import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.helper.BaseSettingsActivity;
@@ -145,7 +145,9 @@ public class AccountEditor extends BaseSettingsActivity implements
 		if (getString(R.string.account_proxy_type_key).equals(
 				preference.getKey())) {
 			boolean enabled = !getString(R.string.account_proxy_type_none)
-					.equals(newValue);
+					.equals(newValue)
+					&& !getString(R.string.account_proxy_type_orbot).equals(
+							newValue);
 			for (int id : new Integer[] { R.string.account_proxy_host_key,
 					R.string.account_proxy_port_key,
 					R.string.account_proxy_user_key,

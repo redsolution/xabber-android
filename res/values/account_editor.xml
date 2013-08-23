@@ -109,6 +109,7 @@
     <string name="account_proxy_type_http">HTTP</string>
     <string name="account_proxy_type_socks4">SOCKS4</string>
     <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
     <string name="account_proxy_host">Proxy host</string>
     <string name="account_proxy_port">Proxy port</string>
     <string name="account_proxy_user">Proxy user</string>

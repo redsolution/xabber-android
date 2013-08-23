@@ -414,12 +414,14 @@
         <item>@string/account_proxy_type_http</item>
         <item>@string/account_proxy_type_socks4</item>
         <item>@string/account_proxy_type_socks5</item>
+        <item>@string/account_proxy_type_orbot</item>
     </string-array>
     <string-array name="account_proxy_type_entryvalues">
         <item>@string/account_proxy_type_none</item>
         <item>@string/account_proxy_type_http</item>
         <item>@string/account_proxy_type_socks4</item>
         <item>@string/account_proxy_type_socks5</item>
+        <item>@string/account_proxy_type_orbot</item>
     </string-array>
 
     <string-array name="account_archive_mode_entries">

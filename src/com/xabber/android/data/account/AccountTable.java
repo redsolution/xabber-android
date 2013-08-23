@@ -24,8 +24,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 
-import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
-
 import android.content.ContentValues;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -36,6 +34,7 @@ import android.provider.BaseColumns;
 import com.xabber.android.data.AbstractTable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.androiddev.R;
 
@@ -289,7 +288,7 @@ class AccountTable extends AbstractTable {
 			sql = "ALTER TABLE accounts ADD COLUMN proxy_password TEXT;";
 			DatabaseManager.execSQL(db, sql);
 			sql = "UPDATE accounts SET proxy_type = "
-					+ ProxyType.NONE.ordinal() + ", "
+					+ ProxyType.none.ordinal() + ", "
 					+ "proxy_host = \"localhost\", " + "proxy_port = 8080, "
 					+ "proxy_user = \"\", " + "proxy_password = \"\" "
 					+ "WHERE proxy_type IS NULL;";

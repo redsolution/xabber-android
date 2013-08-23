@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.connection;
 
-import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
-
 import com.xabber.android.data.account.AccountProtocol;
 
 /**

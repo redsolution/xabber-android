@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.jivesoftware.smack.proxy.ProxyInfo.ProxyType;
 import org.jivesoftware.smack.util.StringUtils;
 
 import android.content.res.TypedArray;
@@ -36,6 +35,7 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnWipeListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
@@ -446,7 +446,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				getNextColorIndex(), 0, StatusMode.available,
 				SettingsManager.statusText(), true, true,
 				tlsRequired ? TLSMode.required : TLSMode.enabled, false,
-				ProxyType.NONE, "localhost", 8080, "", "", syncable, null,
+				ProxyType.none, "localhost", 8080, "", "", syncable, null,
 				null, ArchiveMode.available);
 		onAccountChanged(accountItem.getAccount());
 		if (accountItems.size() > 1
