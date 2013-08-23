@@ -13,6 +13,7 @@ package net.davidgf.android;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.packet.MessageEvent;
 
 import java.util.*;
 
@@ -204,9 +205,17 @@ public class WhatsappConnection {
 				
 				Tree tb = t.getChild("body");
 				if (tb != null) {
+					// TODO: Add user here and at UI in case we don't have it
 					this.receiveMessage(
 					 	new ChatMessage(from,time,id,MiscUtil.bytesToUTF8(tb.getData()),author));
+					addContact(from,false);
 				}
+			}
+			if (t.hasChild("composing")) {
+				gotTyping(t.getAttribute("from"),true);
+			}
+			if (t.hasChild("paused")) {
+				gotTyping(t.getAttribute("from"),false);
 			}
 			
 			// Received ACK
@@ -237,6 +246,19 @@ public class WhatsappConnection {
 	
 	private void receiveMessage(AbstractMessage msg) {
 		received_packets.add(msg.serializePacket());
+	}
+	
+	private void gotTyping(final String user, boolean typing) {
+	        Message msg = new Message();
+		msg.setTo(MiscUtil.getUser(phone));
+		msg.setFrom(MiscUtil.getUser(user));
+
+		// Create a MessageEvent Package and add it to the message
+	        MessageEvent messageEvent = new MessageEvent();
+	        messageEvent.setComposing(true);
+        	msg.addExtension(messageEvent);
+	        // Send the packet
+        	received_packets.add(msg);
 	}
 	
 	public Packet getNextPacket() {
@@ -373,7 +395,7 @@ public class WhatsappConnection {
 		Tree request = new Tree("presence",
 			new HashMap < String,String >() {{ put("type","subscribe"); put("to",username); }} );
 		
-		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(request,false)));
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(request,true)));
 	}
 
 	

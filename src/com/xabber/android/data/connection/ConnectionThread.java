@@ -324,11 +324,9 @@ public class ConnectionThread implements
 		// Create different underlying classes depending on the protocol
 		AccountProtocol proto = connectionItem.getConnectionSettings().getProtocol();
 		if (proto == AccountProtocol.wapp) {
-			System.out.println("Creating WA connection...\n");
 			xmppConnection = new WAConnection(this, connectionConfiguration);
 		}else{
 			xmppConnection = new XMPPConnection(connectionConfiguration);
-			System.out.println("Creating XMPP connection...\n");
 		}
 		xmppConnection.addPacketListener(this, ACCEPT_ALL);
 		xmppConnection.forceAddConnectionListener(this);
@@ -336,7 +334,6 @@ public class ConnectionThread implements
 		final String password = OAuthManager.getInstance().getPassword(
 				protocol, token);
 		if (password != null) {
-			System.out.println("Connection pass "+password+"\n");
 			runOnConnectionThread(new Runnable() {
 				@Override
 				public void run() {
@@ -499,7 +496,6 @@ public class ConnectionThread implements
 	 * @param password
 	 */
 	private void onConnected(final String password) {
-		System.out.println("onConnected!\n");
 		connectionItem.onConnected(this);
 		ConnectionManager.getInstance().onConnected(this);
 		runOnConnectionThread(new Runnable() {
@@ -516,7 +512,6 @@ public class ConnectionThread implements
 	 * @param password
 	 */
 	private void authorization(String password) {
-		System.out.println("authoriation!\n");
 		try {
 			xmppConnection.login(login, password, resource);
 		} catch (IllegalStateException e) {
@@ -552,7 +547,6 @@ public class ConnectionThread implements
 			xmppConnection.disconnect();
 			return;
 		}
-		System.out.println("Now run on UI\n");
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -565,8 +559,6 @@ public class ConnectionThread implements
 	 * Authorization passed.
 	 */
 	private void onAuthorized() {
-		(new Exception()).printStackTrace();
-		System.out.println("onAuthorized!\n");
 		connectionItem.onAuthorized(this);
 		ConnectionManager.getInstance().onAuthorized(this);
 		if (connectionItem instanceof AccountItem)
