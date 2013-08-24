@@ -210,6 +210,15 @@ public class WhatsappConnection {
 					 	new ChatMessage(from,time,id,MiscUtil.bytesToUTF8(tb.getData()),author));
 					addContact(from,false);
 				}
+				
+				tb = t.getChild("media");
+				if (tb != null) {
+					// Photo/audio
+					if (tb.hasAttributeValue("type","image")) {
+						this.receiveMessage(
+							new ImageMessage(from,time,id,tb.getAttribute("url"),tb.getData(),author));
+					}
+				}
 			}
 			if (t.hasChild("composing")) {
 				gotTyping(t.getAttribute("from"),true);
@@ -219,10 +228,14 @@ public class WhatsappConnection {
 			}
 			
 			// Received ACK
-			if (t.hasAttribute("type") && t.hasAttribute("from") && !t.hasChild("received")) {
+			if (t.hasAttribute("type") && t.hasAttribute("from")) {
+				String answer = "received";
+				if (t.hasChild("received"))
+					answer = "ack";
 				DataBuffer reply = generateResponse(t.getAttribute("from"),
 									t.getAttribute("type"),
-									t.getAttribute("id"));
+									t.getAttribute("id"),
+									answer);
 				outbuffer = outbuffer.addBuf(reply);
 
 			}
@@ -235,14 +248,13 @@ public class WhatsappConnection {
 		}*/
 	}
 	
-	private DataBuffer generateResponse(final String from, final String type, final String id) {
-		Tree received = new Tree("received",new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
+	private DataBuffer generateResponse(final String from, final String type, final String id, final String ans) {
+		Tree received = new Tree(ans,new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
 		Tree mes = new Tree("message",new HashMap < String,String >() {{ 
 			put("to",from); put("type",type); put("id",id); }} );
 		mes.addChild(received);
 		return serialize_tree(mes,true);
 	}
-
 	
 	private void receiveMessage(AbstractMessage msg) {
 		received_packets.add(msg.serializePacket());
@@ -461,6 +473,25 @@ public class WhatsappConnection {
 			message.setFrom(MiscUtil.getUser(this.from));
 			message.setType(Message.Type.chat);
 			message.setBody(this.message);
+			
+			return message;
+		}
+	}
+	public class ImageMessage extends AbstractMessage {
+		private String url;
+		private byte [] preview;
+		public ImageMessage(String from, long time, String id, String url, byte [] prev, String author) {
+			super(from, time, id, author);
+			this.url = url;
+			this.preview = prev;
+		}
+		
+		public Packet serializePacket() {
+			Message message = new Message();
+			message.setTo(MiscUtil.getUser(phone));
+			message.setFrom(MiscUtil.getUser(this.from));
+			message.setType(Message.Type.chat);
+			message.setBody(url);
 			
 			return message;
 		}

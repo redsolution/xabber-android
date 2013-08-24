@@ -382,6 +382,11 @@ public class WAConnection extends Connection {
 				}
 			}
 		}
+		// Query contacts!
+		if (r.getType() == IQ.Type.GET) {
+			RosterPacket rr = new RosterPacket();
+			submitPacket(rr);
+		}
 		
 		System.out.println(r.toXML());
 	}
@@ -571,6 +576,14 @@ public class WAConnection extends Connection {
 	System.out.println("Exiting writepackets thread (WA)\n");
     }
     
+    private void submitPacket(Packet p) {
+	System.out.println("Received message!\n");
+	for (PacketCollector collector: getPacketCollectors()) {
+		collector.processPacket(p);
+	}
+	listenerExecutor.submit(new ListenerNotification(p));
+    }
+    
     private void readPackets(Thread thisThread, InputStream istream) {
     	try {
     		int r;
@@ -608,11 +621,7 @@ public class WAConnection extends Connection {
 		    	
 		    	Packet p = waconnection.getNextPacket();
 			while (p != null) {
-				System.out.println("Received message!\n");
-				for (PacketCollector collector: getPacketCollectors()) {
-					collector.processPacket(p);
-				}
-				listenerExecutor.submit(new ListenerNotification(p));
+				submitPacket(p);
 				p = waconnection.getNextPacket();
 			}
 	    	} while (r >= 0);
