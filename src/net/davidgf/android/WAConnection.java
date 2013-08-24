@@ -23,6 +23,7 @@ import org.jivesoftware.smack.packet.IQ;
 import com.xabber.android.data.connection.ConnectionThread;
 
 import net.davidgf.android.WhatsappConnection;
+import net.davidgf.android.WAContacts;
 
 import org.apache.harmony.javax.security.auth.callback.Callback;
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
@@ -374,17 +375,37 @@ public class WAConnection extends Connection {
 			if (items.size() == 1) {
 				RosterPacket.Item it = ((RosterPacket.Item)(items.toArray()[0]));
 				if (it.getItemType() == RosterPacket.ItemType.remove) {
-					System.out.println("Remove contact!\n");
+					// Bypasss roster send/rcv for WA, as we do not store them in the server
+					submitPacket(r);
+					// Remove fromm storage
+					WAContacts.getInstance().removeContact(config.getUsername(), it.getUser());
 				}else{
 					// Adding contact, notify underlying connection for status query
 					waconnection.addContact(it.getUser(),true);
-					System.out.println("Add contact!\n");
+					// Bypasss roster send/rcv for WA, as we do not store them in the server
+					submitPacket(r);
+					// Add the contact to the storage
+					WAContacts.getInstance().addContact(config.getUsername(), it.getUser(), it.getName());
 				}
 			}
 		}
 		// Query contacts!
 		if (r.getType() == IQ.Type.GET) {
 			RosterPacket rr = new RosterPacket();
+			rr.setType(IQ.Type.SET);
+			
+			// Add saved contacts!
+			Vector < Vector < String > > saved_contacts = WAContacts.getInstance().getContacts(config.getUsername());
+			for (int i = 0; i < saved_contacts.size(); i++) {
+				String user = saved_contacts.get(i).get(0);
+				String name = saved_contacts.get(i).get(1);
+				rr.addRosterItem(new RosterPacket.Item(user, name));
+				// Subscribe presence
+				// FIXME: addContact fails when not connected, should
+				// add a fallback to a queue or something...
+				//waconnection.addContact(user,true);
+			}
+
 			submitPacket(rr);
 		}
 		

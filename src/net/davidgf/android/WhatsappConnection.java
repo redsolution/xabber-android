@@ -59,7 +59,6 @@ public class WhatsappConnection {
 			return t;
 		}else if (type == 2) {
 			data.popData(1);
-			System.out.println("NO data in this tree\n");
 			return new Tree("treeerr"); // No data in this tree...
 		}
 	
@@ -83,7 +82,6 @@ public class WhatsappConnection {
 		int bflag = (data.getInt(1,0) & 0xF0)>>4;
 		int bsize = data.getInt(2,1);
 		if (bsize > data.size()-3) {
-			System.out.println("NO data enough\n");
 			return new Tree("treeerr");  // Next message incomplete, return consumed data
 		}
 		data.popData(3);
@@ -119,7 +117,6 @@ public class WhatsappConnection {
 			if (!t.getTag().equals("treeerr"))
 				this.processPacket(t);
 				
-			System.out.println("Received tree!\n");
 			System.out.println(t.toString(0));
 		} while (!t.getTag().equals("treeerr") && db.size() >= 3);
 		
@@ -190,7 +187,6 @@ public class WhatsappConnection {
 		}
 		else if (t.getTag().equals("iq")) {
 			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("ping")) {
-				System.out.println("Received PING!\n");
 				this.doPong(t.getAttribute("id"),t.getAttribute("from"));
 			}
 		}
@@ -217,6 +213,7 @@ public class WhatsappConnection {
 					if (tb.hasAttributeValue("type","image")) {
 						this.receiveMessage(
 							new ImageMessage(from,time,id,tb.getAttribute("url"),tb.getData(),author));
+						addContact(from,false);
 					}
 				}
 			}
@@ -408,12 +405,20 @@ public class WhatsappConnection {
 			new HashMap < String,String >() {{ put("type","subscribe"); put("to",username); }} );
 		
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(request,true)));
+		
+		// Meanwhile add the user presence...
+		Presence.Mode mode = Presence.Mode.away;
+		Presence presp = new Presence(Presence.Type.available);
+		presp.setMode(mode);
+		presp.setFrom(MiscUtil.getUser(user));
+		presp.setTo(MiscUtil.getUser(phone));
+		received_packets.add(presp);
 	}
 
 	
 	public byte [] getWriteData() {
 		byte [] r = outbuffer.getPtr();
-		System.out.println("retrieveing data to send " + String.valueOf(r.length));
+		System.out.println("Sending some bytes ... " + String.valueOf(r.length));
 		outbuffer = new DataBuffer();
 		return r;
 	}
