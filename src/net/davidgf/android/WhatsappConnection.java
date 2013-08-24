@@ -167,6 +167,10 @@ public class WhatsappConnection {
 			//this->sendInitial();
 			//this->updateGroups();
 			
+			// Resend contact status query (for already added contacts)
+			for (int i = 0; i < contacts.size(); i++)
+				subscribePresence(contacts.get(i).phone);
+			
 			//std::cout << "Logged in!!!" << std::endl;
 			//std::cout << "Account " << phone << " status: " << account_status << " kind: " << account_type <<
 			//	" expires: " << account_expiration << " creation: " << account_creation << std::endl;
@@ -389,14 +393,21 @@ public class WhatsappConnection {
 	public void addContact(String user, boolean user_request) {
 		user = MiscUtil.getUser(user);
 		
+		boolean found = false;
 		for (int i = 0; i < contacts.size(); i++)
-			if (contacts.get(i).phone.equals(user))
+			if (contacts.get(i).phone.equals(user)) {
+				found = true;
 				return;
+			}
 		
-		Contact c = new Contact(user, user_request);
-		contacts.add(c);
+		if (!found) {
+			Contact c = new Contact(user, user_request);
+			contacts.add(c);
+		}
 		
-		subscribePresence(user);
+		if (conn_status == SessionStatus.SessionConnected) {
+			subscribePresence(user);
+		}
 	}
 	
 	public void subscribePresence(String user) {

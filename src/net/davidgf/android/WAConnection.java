@@ -401,9 +401,7 @@ public class WAConnection extends Connection {
 				String name = saved_contacts.get(i).get(1);
 				rr.addRosterItem(new RosterPacket.Item(user, name));
 				// Subscribe presence
-				// FIXME: addContact fails when not connected, should
-				// add a fallback to a queue or something...
-				//waconnection.addContact(user,true);
+				waconnection.addContact(user,true);
 			}
 
 			submitPacket(rr);
