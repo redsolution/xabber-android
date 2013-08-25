@@ -76,6 +76,13 @@
             android:checked="true"
             android:text="@string/account_syncable" />
 
+        <CheckBox
+            android:id="@+id/use_orbot"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/account_use_orbot" />
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"

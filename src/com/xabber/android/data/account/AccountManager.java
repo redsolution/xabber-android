@@ -368,13 +368,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 	 *            xmpp account type can be replaced depend on server part.
 	 * @param syncable
 	 * @param storePassword
+	 * @param useOrbot
 	 * @return assigned account name.
 	 * @throws NetworkException
 	 *             if user or server part are invalid.
 	 */
 	public String addAccount(String user, String password,
-			AccountType accountType, boolean syncable, boolean storePassword)
-			throws NetworkException {
+			AccountType accountType, boolean syncable, boolean storePassword,
+			boolean useOrbot) throws NetworkException {
 		if (accountType.getProtocol().isOAuth()) {
 			int index = 1;
 			while (true) {
@@ -410,6 +411,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 		String host = accountType.getHost();
 		int port = accountType.getPort();
 		boolean tlsRequired = accountType.isTLSRequired();
+		if (useOrbot)
+			tlsRequired = true;
 
 		if ("".equals(serverName)) {
 			throw new NetworkException(R.string.EMPTY_SERVER_NAME);
@@ -446,8 +449,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 				getNextColorIndex(), 0, StatusMode.available,
 				SettingsManager.statusText(), true, true,
 				tlsRequired ? TLSMode.required : TLSMode.enabled, false,
-				ProxyType.none, "localhost", 8080, "", "", syncable, null,
-				null, ArchiveMode.available);
+				useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
+				"", "", syncable, null, null, ArchiveMode.available);
 		onAccountChanged(accountItem.getAccount());
 		if (accountItems.size() > 1
 				&& SettingsManager.contactsEnableShowAccounts())

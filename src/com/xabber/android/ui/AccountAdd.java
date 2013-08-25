@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,7 +34,9 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountType;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.AccountTypeAdapter;
+import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.helper.OrbotHelper;
 import com.xabber.androiddev.R;
 
 public class AccountAdd extends ManagedActivity implements
@@ -43,7 +46,10 @@ public class AccountAdd extends ManagedActivity implements
 
 	private static final int OAUTH_WML_REQUEST_CODE = 1;
 
+	private static final int ORBOT_DIALOG_ID = 9050;
+
 	private CheckBox storePasswordView;
+	private CheckBox useOrbotView;
 	private CheckBox syncableView;
 	private Spinner accountTypeView;
 
@@ -56,6 +62,7 @@ public class AccountAdd extends ManagedActivity implements
 		setContentView(R.layout.account_add);
 
 		storePasswordView = (CheckBox) findViewById(R.id.store_password);
+		useOrbotView = (CheckBox) findViewById(R.id.use_orbot);
 		syncableView = (CheckBox) findViewById(R.id.syncable);
 		if (!Application.getInstance().isContactsSupported()) {
 			syncableView.setVisibility(View.GONE);
@@ -111,7 +118,8 @@ public class AccountAdd extends ManagedActivity implements
 										(AccountType) accountTypeView
 												.getSelectedItem(),
 										syncableView.isChecked(),
-										storePasswordView.isChecked());
+										storePasswordView.isChecked(),
+										useOrbotView.isChecked());
 					} catch (NetworkException e) {
 						Application.getInstance().onError(e);
 						return;
@@ -128,6 +136,10 @@ public class AccountAdd extends ManagedActivity implements
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.ok:
+			if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
+				showDialog(ORBOT_DIALOG_ID);
+				return;
+			}
 			AccountType accountType = (AccountType) accountTypeView
 					.getSelectedItem();
 			if (accountType.getProtocol().isOAuth()) {
@@ -144,7 +156,8 @@ public class AccountAdd extends ManagedActivity implements
 							userView.getText().toString(),
 							passwordView.getText().toString(), accountType,
 							syncableView.isChecked(),
-							storePasswordView.isChecked());
+							storePasswordView.isChecked(),
+							useOrbotView.isChecked());
 				} catch (NetworkException e) {
 					Application.getInstance().onError(e);
 					return;
@@ -176,6 +189,15 @@ public class AccountAdd extends ManagedActivity implements
 	@Override
 	public void onNothingSelected(AdapterView<?> adapterView) {
 		accountTypeView.setSelection(0);
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		if (id == ORBOT_DIALOG_ID) {
+			return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID)
+					.create();
+		}
+		return super.onCreateDialog(id);
 	}
 
 	public static Intent createIntent(Context context) {
