@@ -33,7 +33,9 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.BaseSettingsActivity;
+import com.xabber.android.ui.helper.OrbotHelper;
 import com.xabber.androiddev.R;
 
 public class AccountEditor extends BaseSettingsActivity implements
@@ -44,6 +46,8 @@ public class AccountEditor extends BaseSettingsActivity implements
 	private static final String SAVED_TOKEN = "com.xabber.android.ui.AccountEditor.TOKEN";
 
 	private static final String INVALIDATED_TOKEN = "com.xabber.android.ui.AccountEditor.INVALIDATED";
+
+	private static final int ORBOT_DIALOG_ID = 9050;
 
 	private String account;
 	private AccountItem accountItem;
@@ -242,6 +246,12 @@ public class AccountEditor extends BaseSettingsActivity implements
 	@Override
 	protected boolean setValues(Map<String, Object> source,
 			Map<String, Object> result) {
+		ProxyType proxyType = ProxyType.values()[getInt(result,
+				R.string.account_proxy_type_key)];
+		if (proxyType == ProxyType.orbot && !OrbotHelper.isOrbotInstalled()) {
+			showDialog(ORBOT_DIALOG_ID);
+			return false;
+		}
 		AccountManager
 				.getInstance()
 				.updateAccount(
@@ -260,8 +270,7 @@ public class AccountEditor extends BaseSettingsActivity implements
 						TLSMode.values()[getInt(result,
 								R.string.account_tls_mode_key)],
 						getBoolean(result, R.string.account_compression_key),
-						ProxyType.values()[getInt(result,
-								R.string.account_proxy_type_key)],
+						proxyType,
 						getString(result, R.string.account_proxy_host_key),
 						getInt(result, R.string.account_proxy_port_key),
 						getString(result, R.string.account_proxy_user_key),
@@ -270,6 +279,15 @@ public class AccountEditor extends BaseSettingsActivity implements
 						ArchiveMode.values()[getInt(result,
 								R.string.account_archive_mode_key)]);
 		return true;
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		if (id == ORBOT_DIALOG_ID) {
+			return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID)
+					.create();
+		}
+		return super.onCreateDialog(id);
 	}
 
 	private static String getAccount(Intent intent) {
