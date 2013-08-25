@@ -13,7 +13,10 @@ package net.davidgf.android;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smackx.packet.MessageEvent;
+import com.xabber.xmpp.vcard.VCard;
+import com.xabber.xmpp.avatar.VCardUpdate;
 
 import java.util.*;
 
@@ -35,6 +38,8 @@ public class WhatsappConnection {
 	
 	private Vector <Packet> received_packets;
 	private Vector <Contact> contacts;
+	
+	private int iqid;
 
 	public WhatsappConnection(String phone, String pass, String nick) {
 		session_key = new byte[20];
@@ -47,6 +52,7 @@ public class WhatsappConnection {
 		outbuffer = new DataBuffer();
 		received_packets = new Vector <Packet>();
 		contacts = new Vector <Contact> ();
+		iqid = 0;
 	}
 
 	public Tree read_tree(DataBuffer data) {
@@ -168,8 +174,11 @@ public class WhatsappConnection {
 			//this->updateGroups();
 			
 			// Resend contact status query (for already added contacts)
-			for (int i = 0; i < contacts.size(); i++)
+			System.out.println("SUbscribe delayed\n");
+			for (int i = 0; i < contacts.size(); i++) {
 				subscribePresence(contacts.get(i).phone);
+				queryPreview(contacts.get(i).phone);
+			}
 			
 			//std::cout << "Logged in!!!" << std::endl;
 			//std::cout << "Account " << phone << " status: " << account_status << " kind: " << account_type <<
@@ -192,6 +201,14 @@ public class WhatsappConnection {
 		else if (t.getTag().equals("iq")) {
 			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("ping")) {
 				this.doPong(t.getAttribute("id"),t.getAttribute("from"));
+			}
+			
+			if (t.hasAttributeValue("type","result") && t.hasAttribute("from")) {
+				Tree tb = t.getChild("picture");
+				if (tb != null) {
+					if (tb.hasAttributeValue("type","preview"))
+						this.addPreviewPicture(t.getAttribute("from"),tb.getData());
+				}
 			}
 		}
 		else if (t.getTag().equals("message")) {
@@ -255,6 +272,51 @@ public class WhatsappConnection {
 			put("to",from); put("type",type); put("id",id); }} );
 		mes.addChild(received);
 		return serialize_tree(mes,true);
+	}
+	
+	private void queryPreview(final String user) {
+		final String fuser = user+"@"+whatsappserver;
+		final String reqid = String.valueOf(++iqid);
+		Tree pic = new Tree ("picture", 
+			new HashMap < String,String >() {{ put("xmlns","w:profile:picture"); put("type","preview"); }} );
+		Tree req = new Tree("iq", 
+			new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to",fuser); }} );
+
+		req.addChild(pic);
+		
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+	}
+	
+	public byte[] getUserAvatar(String user) {
+		// Look for preview 
+		user = MiscUtil.getUser(user);
+		for (int i = 0; i < contacts.size(); i++) {
+			if (contacts.get(i).phone.equals(user)) {
+				return contacts.get(i).ppprev;
+			}
+		}
+		return new byte[0];
+	}
+
+	private void addPreviewPicture(String user, byte [] picture) {
+		System.out.println("Received preview...\n");
+		user = MiscUtil.getUser(user);
+		
+		// Save preview 
+		for (int i = 0; i < contacts.size(); i++) {
+			if (contacts.get(i).phone.equals(user)) {
+				contacts.get(i).ppprev = picture;
+				break;
+			}
+		}
+		
+		VCardUpdate vc = new VCardUpdate();
+		vc.setPhotoHash(MiscUtil.getEncodedSha1Sum(picture));
+		Presence p = new Presence(Presence.Type.subscribed);
+		p.setTo(phone);
+		p.setFrom(user);
+		p.addExtension(vc);
+		received_packets.add(p);
 	}
 	
 	private void receiveMessage(AbstractMessage msg) {
@@ -407,11 +469,12 @@ public class WhatsappConnection {
 		
 		if (conn_status == SessionStatus.SessionConnected) {
 			subscribePresence(user);
+			queryPreview(user);
 		}
 	}
 	
 	public void subscribePresence(String user) {
-		final String username = MiscUtil.getUser(user);
+		final String username = MiscUtil.getUser(user)+"@"+whatsappserver;
 		Tree request = new Tree("presence",
 			new HashMap < String,String >() {{ put("type","subscribe"); put("to",username); }} );
 		
@@ -520,7 +583,7 @@ public class WhatsappConnection {
 		String status;
 		long last_seen, last_status;
 		boolean mycontact;
-		String ppprev, pppicture;
+		byte[] ppprev, pppicture;
 		boolean subscribed;
 
 		Contact(String phone, boolean myc) {

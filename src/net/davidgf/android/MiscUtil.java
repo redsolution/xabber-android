@@ -1,6 +1,9 @@
 
 package net.davidgf.android;
 
+import java.security.MessageDigest;
+import java.math.BigInteger;
+
 public class MiscUtil {
 
 	private static byte [] base64_chars = new byte []{'A','B','C','D','E','F','G','H','I','J','K','L',
@@ -129,6 +132,16 @@ public class MiscUtil {
 		return user.split("@")[0];
 	}
 
+	public static String getEncodedSha1Sum( byte [] data ) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA1");
+			md.update(data);
+			return new BigInteger(1, md.digest()).toString(16);
+		}
+		catch (Exception e) {
+			return new String("");
+		}
+	}
 }
 
 

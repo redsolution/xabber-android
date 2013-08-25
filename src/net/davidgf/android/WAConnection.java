@@ -20,6 +20,8 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Registration;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.IQ;
+import com.xabber.xmpp.vcard.VCard;
+import com.xabber.xmpp.vcard.BinaryPhoto;
 import com.xabber.android.data.connection.ConnectionThread;
 
 import net.davidgf.android.WhatsappConnection;
@@ -367,6 +369,16 @@ public class WAConnection extends Connection {
 		Registration r = (Registration)packet;
 		System.out.println(r.getChildElementXML());
 	}
+	if (packet instanceof VCard) {
+		// The request for a VCard has been queued,  now we should provide the Avatar!
+		packet.setFrom(packet.getTo());
+		VCard vc = (VCard)packet;
+
+		BinaryPhoto bp = new BinaryPhoto();
+		bp.setData(waconnection.getUserAvatar(packet.getFrom()));
+		vc.getPhotos().add(bp);
+		submitPacket(packet);
+	}
 	if (packet instanceof RosterPacket) {
 		RosterPacket r = (RosterPacket)packet;
 		// Check Add/Remove Contact/Group:
@@ -412,6 +424,9 @@ public class WAConnection extends Connection {
 
 	// Notify others
 	this.firePacketSendingListeners(packet);
+	
+	// DO stuff again
+	processLoop();
     }
     
     private void popWriteData() {
@@ -618,31 +633,7 @@ public class WAConnection extends Connection {
 		    		}
 		    	}
 		    	
-		    	// Proceed to push data to underlying connection class
-		    	synchronized ( waconnection ) {
-		    		synchronized (inbuffer) {
-		    			int used = waconnection.pushIncomingData(inbuffer);
-		    			inbuffer = Arrays.copyOfRange(inbuffer, used, inbuffer.length);
-		    		}
-		    	}
-		    	
-		    	// Process stuff
-		    	this.popWriteData();  // Ready data might be waiting ...
-		    	
-		    	if (waconnection.isConnected() && !waconnected) {
-		    		connectionOK();  // Notify the connection status
-		    		waconnected = true;
-		    	}
-		    	
-			if (listenerExecutor == null) {
-				System.out.println("Null!!! Shit\n");
-			}
-		    	
-		    	Packet p = waconnection.getNextPacket();
-			while (p != null) {
-				submitPacket(p);
-				p = waconnection.getNextPacket();
-			}
+		    	processLoop();
 	    	} while (r >= 0);
 	}catch (IOException e) {
 		System.out.println("Error!\n" + e.toString());
@@ -653,6 +644,34 @@ public class WAConnection extends Connection {
 	// Signal the writer thread so it can also end
 	writewait.release();
     }
+    
+    private void processLoop() {
+    	// Proceed to push data to underlying connection class
+    	synchronized ( waconnection ) {
+    		synchronized (inbuffer) {
+    			int used = waconnection.pushIncomingData(inbuffer);
+    			inbuffer = Arrays.copyOfRange(inbuffer, used, inbuffer.length);
+    		}
+    	}
+    	
+    	// Process stuff
+    	this.popWriteData();  // Ready data might be waiting ...
+    	
+    	if (waconnection.isConnected() && !waconnected) {
+    		connectionOK();  // Notify the connection status
+    		waconnected = true;
+    	}
+    	
+	if (listenerExecutor == null) {
+		System.out.println("Null!!! Shit\n");
+	}
+    	
+    	Packet p = waconnection.getNextPacket();
+	while (p != null) {
+		submitPacket(p);
+		p = waconnection.getNextPacket();
+	}
+	}
 
     /**
      * Establishes a connection to the XMPP server and performs an automatic login
