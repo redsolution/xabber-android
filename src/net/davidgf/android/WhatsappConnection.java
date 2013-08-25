@@ -123,7 +123,7 @@ public class WhatsappConnection {
 			if (!t.getTag().equals("treeerr"))
 				this.processPacket(t);
 				
-			System.out.println(t.toString(0));
+			//System.out.println(t.toString(0));
 		} while (!t.getTag().equals("treeerr") && db.size() >= 3);
 		
 		return data.length - db.size();
