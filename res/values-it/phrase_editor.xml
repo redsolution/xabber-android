@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="events_phrases_title">Frasi chiave</string>
+    <string name="phrase_add">Aggiungi frase</string>
+    <string name="phrase_delete">Cancella frase</string>
+    <string name="phrase_delete_confirm">Vuoi cancellare veramente la frase: %s?</string>
+    <string name="phrase_empty">&lt; Qualsiasi testo &gt;</string>
+    <string name="phrase_group">Parte del gruppo del contatto</string>
+    <string name="phrase_regexp">Espressione regolare</string>
+    <string name="phrase_sound">Suono \nScegli il suono di notifica</string>
+    <string name="phrase_text">Testo da cercare</string>
+    <string name="phrase_user">Parte ID del contatto Jabber</string>
+</resources>

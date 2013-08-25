@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="accept_subscription">Прийняти контакт</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="account_reconnect">Перепідключитись</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_disabled">Керування обліковими записами</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_empty">Додати обліковий запис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_contacts">Додати контакт</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_online">Показувати контакти не в мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_offline">Підключитись</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_waiting">Перепідключитись</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_connecting">Підключення...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_state_disabled">Обліковий запис вимкнено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_empty">Ви не маєте жодного облікового запису</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_contacts">Ви не маєте контактів</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_online">Жодного в мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_offline">Облікові записи не підключені</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_roster">Підключено.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
+    <string name="application_state_starting">Запуск додатку... </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_waiting">Очікування підключення...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
+    <string name="chat_list">Перелік чатів</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="chat_list_is_empty">Відсутні активні чати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="chat_viewer">Балачка</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="close_chat">Закрити балачку</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="CONNECTION_FAILED">Помилка підключення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="contact_add">Додати контакт</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_delete">Стерти</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
+    <string name="contact_delete_confirm">Ви дійсно бажаєте вилучити контакт %1$s з облікового запису %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_editor">Редагувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="contact_list">Перелік контактів</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="discard_subscription">Відхилити контакт</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="exit">Вийти</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_active_chat">Активні чати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_none">Поза групами</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_remove">Вилучити групу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
+    <string name="group_remove_confirm">Ви дійсно бажаєте вилучити групу %s? Користувачі із групи лишаться в переліку контактів.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_rename">Перейменувати групу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NO_SUCH_ACCOUNT">Обліковий запис не знайдено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">Запросити підпис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="XMPP_EXCEPTION">Помилка з\'єднання</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
+    <string name="application_state_closing">Збереження змін...\nДодаток скоро закриється.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_confirmation">%1$s\nВи довіряєте сертифікату із цифровим відбитком:\n%2$s?\nНе сповіщати надалі о подібних проблемах з даним сертифікатом?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
+    <string name="certificate_details">\n\nКому виданий:\nІм\'я (CN): %1$s\nОрганізація (O): %2$s\nПідрозділ (OU): %3$s\nСерійний номер: %4$s\n\nКим виданий:\nІм\'я (CN): %5$s\nОрганізація (O): %6$s\nПідрозділ (OU): %7$s\n\nСтрок дії:\nНабуває чинності: %8$s\nСпливає: %9$s.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_chane">Помилка під час перевірки ланцюга підписів</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_self_signed">Само-підписаний сертифікат</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_show_details">Докладніше ...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="close_chats">Закрити всі чати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_room">Конференції</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="OTR_ERROR">Помилка OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
+    <string name="select_contact">Оберіть потрібний контакт</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_always">Завжди показувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_never">Завжди приховувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="show_offline_settings">Показ контактів поза мережею</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
+    <string name="start_at_boot_suggest">Бажаєте запускати Xabber під час запуску пристрою?\nЦе можна змінити в "Налаштування" → "Параметри підключення" → "Запускати при завантажені Android"</string>
+</resources>

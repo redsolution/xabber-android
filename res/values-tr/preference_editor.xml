@@ -80,8 +80,12 @@
     <string name="chats_show_status_change">Durum degişimlerini göster\nDurum değişimleri mesajlarını göster</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
     <string name="chats_show_status_change_muc">Konferanslarda</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_state_notification">Yazma işaretini göster\nYazmakta olduğunu gösterir</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_adjust_priority">Önceliği ayarla\nÖnceliği, seçilen duruma göre ayarla. Hesabın önceliği dikkate alınmaz.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">Ekran kilidinden hemen sonra</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Öncelik ayarları</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
@@ -90,6 +94,10 @@
     <string name="connection_wake_lock">Uyku durumunu önle\nPil ömrünü azaltır</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wifi_lock">Kablosuz baglantıyı açık tut\nBeklemede kablosuz baglantıyı açık tutar. Pil ömrünü azaltır</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">Çevrim dışı ayarları sıfırla\nGruplar ve hesaplar için kişisel ayarları sil</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">Gruplar ve hesaplar için kişisel ayarları silmeyi gerçekten istiyor musunuz?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_first_only">İlk mesajda uyar\nSohbette sadece ilk mesajda uyar</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
@@ -102,6 +110,8 @@
     <string name="events_message_chat_and_muc">Sohbetler ve konferanslar</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
     <string name="events_message_none">Uyarma</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_show_text">Mesajı uyarı alanında göster\nMesaj metnini uyarı alanında göster</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
     <string name="negative_priotiry_summary">%s (Hiçbir sohbetten mesaj alınmaz)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->

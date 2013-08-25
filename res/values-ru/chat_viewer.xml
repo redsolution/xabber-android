@@ -40,6 +40,8 @@
     <string name="save_history">Сохранять локальную историю сообщений\nХранить историю переписки на устройстве</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="show_history">Показать историю сообщений</string>
+    <string name="action_attention_called">Сообщение для привлечения внимания было отправлено</string>
+    <string name="action_attention_requested">Вас окликнули</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_ban">%1$s был забанен</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->

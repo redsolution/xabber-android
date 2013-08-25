@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
+    <string name="account_delete_confirm">آیا میخواهید حسابِ %s را از برنامه پاک کنید؟</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_add">افزودن حساب</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_delete">حذف حساب</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_editor">ویرایش حساب</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_authentication">در حال مجوز دهی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connected">آنلاین</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connecting">در حال اتصال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_disconnecting">در حال قطع اتصال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_offline">آفلاین</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_waiting">در انتظار اتصال مجدد</string>
+</resources>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="cache_clear">پاک سازی حافظه‌ى نهانى‌(کَش)\nپاک سازی کل داده های محلی.ممکن است باعث آزادسازی مقداری فضا شود.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
+    <string name="cache_clear_warning">آیا میخواهید تاریخچه چت و داده های محلی را پاک کنید؟\nحساب و roster تغییری نخوهند کرد.برنامه بسته خواهد شد.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_send_by_enter">ارسال با فشردن کلید enter\nپیام شما با فشردن کلید enter ارسال خواهد شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_away">Auto-away\nوضعیت با خاموش شدن صفحه به طور اتوماتیک به غایب تغییر خواهد کرد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">مرتب کردن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">براساس حروف الفبا</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">بر اساس وضعیت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_active_chats">چت های فعال در بالا\nچت های فعال در بالای لیست مخاطبین نشان داده خواهند شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_avatars">نمایش آواتار ها\nآواتار کاربران در لیست مخاطبین نشان داده خواهد شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">نشان دادن گروپ های خالی \nگروپ های بدون کاربر را نشان بده </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">نشان دادن گروه ها \nگروه ها را در لیست مخاطبین نشان بده</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">مخاطبین آفلاین را نشان بده</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_panel">نمایش پنل حساب\nنشان دادن پنل و آواتار حساب در ابتدای لیست مخاطبین</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_stay_active_chats">دوپلیکیت کردن چت های فعال\nچت های فعال را هم در بالای لیست مخاطبین وهم در بالای لیست گروه ها خانگی نشان بده</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="debug_log">ثبت اشکال ها\nنوشتن پیام ها در لیست اشکال زدایی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">چراغ نشانگر\nچشمک زدن LED هنگام دریافت آگهداد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_persistent">آیکن نوار وظیفه\nنمایش دائم آگهداد،این گزینه از خارج کردن برنامه از حافظه جلوگیری خواهد کرد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_sound">هشدار صوتی \nآگهداد صوتی را انتخاب کنید</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_vibro">ویبره\nویبره هنگام دریافت آگهداد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_theme">تِم\nتنظیمات ظاهر و تِم</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_dark">تیره</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_light">روشن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_normal">پیش‌فرض</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_smiles">شکلک ها\nتنظیمات شکلک ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_android">شکلک های اندروید</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_none">شکلک های ساده</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_connection">تنظیمات اتصال\nتنظیمات اتصال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_contacts">لیست مخاطبین \nظاهر لیست مخاطبین را سفارشی کنید</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_debug">اشکال زدایی\nاعلام اشکالات برنامه برای کمک به توسعه دهنده برنامه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="preference_editor">تنظیمات</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_events">آگهدادها \nتنظیمات آگهدادها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_interface">تنظیمات تِم \nتنظیمات ظاهر برنامه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_status_change">نمایش تغییرات وضعیت ها\nپیامی در رابطه با تغییر وضعیت نشان داده خواهد شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_message">تنظیمات آگهداد\nتنظیمات آگهداد برای پیام های ورودی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat">فقط چت ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat_and_muc">چت ها و چت روم ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_none">اطلاع نده</string>
+</resources>

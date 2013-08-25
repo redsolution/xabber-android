@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="available">Дасяжны</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="away">Адсутнічаю</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="chat">Вольны</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="clear_statuses">Выдаліць статусы, якія зараз захаваныя</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="dnd">Не турбаваць</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="edit_status">Рэдагаваць статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="empty_status">&lt;Бяз тэкста&gt;</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="invisible">Хаваюся</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="remove_status">Выдаліць статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="select_status">Усталяваць статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor">Зьмяніць статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor_for">Зьмяніць статус для %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unavailable">Недасяжны</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unsubscribed">Не аўтарызаваны</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="xa">Адстунічаю працяглы час</string>
+</resources>

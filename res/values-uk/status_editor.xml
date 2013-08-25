@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="available">Доступний</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="away">Відійшов</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="chat">Готовий до спілкування!</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="clear_statuses">Вилучити збережені статуси</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="dnd">Не турбувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="edit_status">Редагувати статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="empty_status">&lt;Пустий статус&gt;</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="invisible">Прихований</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="remove_status">Очистити статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="select_status">Встановити статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor">Змінити статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor_for">Зміна статусу для %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_text_hint">Введіть статус</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unavailable">Не в мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unsubscribed">Не авторизований</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="xa">Відійшов на довго</string>
+</resources>

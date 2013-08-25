@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_ADD_TO_GROUP">Помилка під час додавання до групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_CREATE_CONTACT">Помилка під час додавання контакту</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_CONTACT">Помилка під час вилучення контакту</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_FROM_GROUP">Помилка під час видалення групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_GROUP">Помилка під час вилучення групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_RENAME_GROUP">Помилка перейменування групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_account">Обліковий запис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="contact_editor_title">Редагування %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="contact_group">Оберіть групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_name">Псевдонім (не обов\'язково)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add_confirm.png -->
+    <string name="contact_subscribe_confirm">Дозволити контакту %1$s бачити статус вашого облікового статусу %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_user">Ім\'я співрозмовника</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="ENTRY_IS_NOT_FOUND">Контакт не знайдено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="group_add">Створити групу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="group_default">Друзі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="group_exists">Група з таким іменем вже існує</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="group_is_empty">Вкажіть ім\'я групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/group_add.png -->
+    <string name="group_name">Ім\'я групи</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="choose_account">Оберіть обліковий запис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="EMPTY_ACCOUNT">Будь-ласка, оберіть обліковий запис</string>
+</resources>

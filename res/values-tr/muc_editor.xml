@@ -20,6 +20,8 @@
     <string name="muc_server">Çok kullanıcılı sohbet sunucusu</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_server_hint">conference.jabber.org</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="NICK_ALREADY_USED">Bu takma ad kullanılıyor</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_add">Konferansa katıl</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->

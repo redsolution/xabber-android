@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text">%1$s وضعیت خود را به %2$s تغییر داد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text_none">%1$s متن وضعیت خود را حذف کرد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join">%1$s به چت روم ملحق شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick">%1$s کیک شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
+    <string name="account_is_offline">در حال حاضر آفلاین هستید،به محض اینکه آنلاین شوید پیام شما ارسال خواهد شد.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_delay">پیام در ساعت %s ارسال شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_input_hint">متن خود را در اینجا وارد کنید</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
+    <string name="chat_page">%1$d چت از %2$d پنجره چت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_send">ارسال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_history">پاکسازی تاریخچه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_message">پاک کردن متن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
+    <string name="contact_is_offline">گیرنده آفلاین است،پس از آنلاین شدن پیام شما برای او ارسال خواهد شد.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ENTRY_IS_NOT_AVAILABLE">مخاطب در دسترس نیست</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="FILE_NOT_FOUND">فایل یافت نشد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_copy">کپی کردن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_quote">نقل قول کردن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_remove">حذف از تاریخچه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_repeat">سعی مجدد برای ارسال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
+    <string name="save_history">ذخیره تاریخچه محلی\nذخیره کردن پیام ها بصورت محلی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="show_history">نمایش تاریخچه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban">%1$s از ورود به روم منع شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban_by">%1$s بوسیله %2$s از ورود به چت روم منع شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_error">%s دعوت را دریافت نکرد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_sent">دعوت برای %s ارسال شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete">شما به عنوان %1$s به چت روم وارد شدید</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete_to">شما به چت %1$s پیوستید</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick_by">%1$s بوسیله %2$s اخراج شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_leave">%1$s پمجره چت را ترک کرد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_nickname">%1$s نام مستعار خود را به %2$s تغییر داد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_available">%1$s آنلاین شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_away">%1$s غایب شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_chat">%1$s آماده چت کردن است</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_subject">%1$s موضوع را به %2$s تغییر داد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
+    <string name="muc_invite">دعوت کردن به چت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
+    <string name="muc_is_unavailable">پیام شما تحویل داده نخواهد شد.لطفا به چت بپیونید</string>
+</resources>

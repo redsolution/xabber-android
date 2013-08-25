@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text">%1$s встановив статус: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join">%1$s підключився</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick">%1$s був випханий</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
+    <string name="account_is_offline">Повідомлення будуть доставлені після підключення до мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_input_hint">Введіть повідомлення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
+    <string name="chat_page">Чат %1$d із %2$d</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_send">Надіслати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_history">Очистити історію</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_message">Очистити текст</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
+    <string name="contact_is_offline">Повідомлення доставлено на сервер отримувача і можуть бути прочитані ним після підключення до мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступний</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="FILE_NOT_FOUND">Файл не знайдено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_copy">Копіювати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_quote">Цитувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_remove">Вилучити з історії</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
+    <string name="save_history">Зберегти локальну історію\nЗберігати історію повідомлень локально</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="show_history">Показати історію</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban">%1$s був заблокований</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban_by">%2$s заблокував %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_error">Запрошення не було отримано %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_sent">Запрошення було відправлено %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete">Ви підключились до конференції, Ваш псевдонім %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete_to">Ви під\'єднались до конференції %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick_by">%2$s викинув %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_leave">%1$s покинув чат</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_nickname">%1$s змінив нік на %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_encryption">Шифрування було включено, але особистість співрозмовника не була перевірена. Ви можете обрати метод перевірки в меню OTR шифрування</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_error">Помилка OTR: %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finish">Співрозмовник завершив шифровану співбесіду, ви повинні зробити теж саме, або почати нову співбесіду знову.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_plain">Ви завершили шифровану бесіду</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_cheated">Співрозмовник намагався обійти систему перевірки особистості</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_failed">Не вдалося перевірити особистість співрозмовника</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_not_approved">Ваша відповідь була успішно перевірена. Вам також слід задати питання співрозмовнику чи перевірити секретний ключ.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_verified">Перевірка особистості успішно завершено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_unreadable">Неможливо прочитати отримане зашифроване повідомлення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_verified">Шифрування було увімкнено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_available">%1$s тепер в мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_away">%1$s відійшов</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_chat">%1$s готовий до спілкування</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_dnd">%1$s просить не турбувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_unavailable">%1$s від\'єднався</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_subject">%1$s змінив(ла) тему: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ATTENTION_IS_NOT_SUPPORTED">Контакт не підтримує можливість звернути свою увагу, або відключив дану функцію.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
+    <string name="chat_state_composing">Набирає повідомлення ...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
+    <string name="chat_state_paused">Ввів текст...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="export_chat">Зберегти чат</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
+    <string name="export_chat_done">Історія збережена на SD-картці</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_title">Вкажіть ім\'я файлу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
+    <string name="muc_invite">Запросити до конференції</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
+    <string name="muc_is_unavailable">Повідомлення не можуть бути доставлені. Будь-ласка, приєднайтесь до конференції</string>
+    <string name="occupant_list">Перелік учасників</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="otr_encryption">OTR шифрування</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_end">Зупинити шифрування</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_refresh">Почати шифрування спочатку</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_request">Співрозмовник відправив запит на OTR шифрування розмови, але у Вас не встановлено додаток, який його підтримує. Використайте Pidgin чи Adium для PC/Mac та Xabber чи GibberBot для Android. Завітайте на http://otr.cypherpunks.ca/ для отримання більш детальної інформації.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
+    <string name="otr_start">Почати шифрування</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unencrypted_message">Це повідомлення не було зашифровано</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unreadable_message">Зашифроване повідомлення, відправлено Вами, неможливо прочитати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification">Перевірка особистості OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_fingerprint">Перевірка цифровим відбитком</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_question">Перевірка питанням</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_secret">Перевірка секретним ключем</string>
+</resources>

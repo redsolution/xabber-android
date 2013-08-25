@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="accept_subscription">Аўтарызаваць суразмоўцу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="account_reconnect">Перападлучыцца</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_disabled">Кіраваньне рахункамі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_empty">Дадаць рахунак</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_contacts">Дадаць суразмоўцу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_online">Паказаць суразмоўцаў, якія зараз офлайн</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_offline">Падлучыцца</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_waiting">Перападлучыцца</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_connecting">Падлучаюся...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_state_disabled">Акаўнты выключаныя</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_empty">У вас няма рахункаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_contacts">Вам няма з кім паразмаўляць?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_online">Ўсе офлайн</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_offline">Акаўнты не падлучаныя</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_roster">Падлучана...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
+    <string name="application_state_starting">Праграма запускаецца... </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_waiting">Чакаю на падлучэньне...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
+    <string name="chat_list">Сьпіс гутарак</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="chat_list_is_empty">Няма актыўных гутарак</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="chat_viewer">Пагутарыць</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="close_chat">Закрыць гутарку</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="CONNECTION_FAILED">Пры падлучэньні ўзьнікла памылка</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="contact_add">Дадаць суразмоўцу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_delete">Выдаліць</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
+    <string name="contact_delete_confirm">Ці насамрэч Вы жадаеце выдаліць суразмоўцу %1$s з акаўнту %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_editor">Рэдагаваць</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="contact_list">Сьпіс суразмоўцаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="discard_subscription">Адмовіць ў аўтарызацыі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="exit">Выйсьці</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_active_chat">Актыўныя гутаркі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_none">Па-за групамі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_remove">Выдаліць групу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
+    <string name="group_remove_confirm">Ці насамрэч Вы хочаце выдаліць групу %s? Суразмоўцы з гэтай групы застануцца ў вашым сьпісе.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_rename">Зьмяніць назву групы</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NO_SUCH_ACCOUNT">Такі рахунак ня знойдзены</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NOT_CONNECTED">Злучэньне не ўсталяванае</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">Запытаць аўтарызацыю</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="XMPP_EXCEPTION">Памылка падлучэньня (XMPP exception)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_room">Канфэрэнцыі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
+    <string name="select_contact">Абярыце патрэбнага суразмоўцу</string>
+</resources>

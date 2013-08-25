@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
+    <string name="account_delete_confirm">Ви дійсно бажаєте вилучити обліковий запис %s?\n(Він буде вилучений тільки із Xabber, а не із серверу)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_add">Додати обліковий запис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_delete">Видалити обліковий запис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_editor">Редагувати обліковий запис</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_authentication">Авторизація</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connected">У мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connecting">Підключення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_disconnecting">Відключення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_offline">Не у мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_waiting">Очікування підключення</string>
+</resources>

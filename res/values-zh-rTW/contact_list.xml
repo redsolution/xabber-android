@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="accept_subscription">接受訂閱請求</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="account_reconnect">重連</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_disabled">管理帳號</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_empty">新增帳號</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_contacts">新增聯絡人</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_online">顯示離線聯絡人</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_offline">上線</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_waiting">重新連線</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_connecting">連線中…</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_state_disabled">該帳號已停用</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_empty">你沒有任何帳號</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_contacts">您沒有聯絡人</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_online">無人在線上</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_offline">沒有帳號在線上</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_roster">已連線</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
+    <string name="application_state_starting">啟動程式…</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_waiting">等待連線…</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
+    <string name="chat_list">聊天清單</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="chat_list_is_empty">沒有進行中的聊天</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="chat_viewer">聊天</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="close_chat">結束聊天</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="CONNECTION_FAILED">連線錯誤</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="contact_add">新增聯絡人</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_delete">刪除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
+    <string name="contact_delete_confirm">您確定要從帳號%2$s中刪除聯絡人%1$s嗎？</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_editor">編輯</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="contact_list">聯絡人清單</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="discard_subscription">拒絕訂閱請求</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="exit">結束</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_active_chat">進行中的聊天</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_none">未分組</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_remove">刪除群組</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
+    <string name="group_remove_confirm">你確要刪除群組%s？群組中的聯絡人仍會留在聯絡人清單中。</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_rename">變更群組名稱</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NO_SUCH_ACCOUNT">無法找到該帳號</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NOT_CONNECTED">無法建立連線</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">訂閱請求</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="XMPP_EXCEPTION">串流錯誤</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
+    <string name="application_state_closing">正在保存設定…\n應用程式很快將關閉。</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_confirmation">%1$s。\n您真的信任具有SHA-1指紋%2$s的證書嗎？您是否希望不再被通知關於此證書的驗證。</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
+    <string name="certificate_details">\n\n頒發給：\n通用名（CN）：%1$s\n組織（O）：%2$s\n組織單位（OU）：%3$s\n序列號：%4$s\n\n頒發者：\n通用名（CN）：%5$s\n組織（O）：%6$s\n組織單位（OU）：%7$s\n\n有效期：\n有效起始日期：%8$s\n有效終止日期：%9$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_chane">簽名鏈驗證失敗</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_target">目標驗證失敗</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_self_signed">自簽名證書</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_show_details">詳情…</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="close_chats">關閉所有聊天</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
+    <string name="contact_integration_suggest">您希望將Xabber整合進系統的聯絡人嗎？\n可在「設定」→「XMPP帳號」→您的帳號→「聯絡人與系統整合」處修改。\n註：系統聯絡人可能會有幾分鐘變得遲緩</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_room">會議</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="OTR_ERROR">OTR錯誤</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
+    <string name="select_contact">點選以選擇聯絡人</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_always">總是顯示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_never">總不顯示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_normal">使用一般設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="show_offline_settings">顯示離線聯絡人</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
+    <string name="start_at_boot_suggest">希望在系統啟動時執行Xabber？\n可在「設定」→「連線設定」→「於Android啟動時執行」處修改</string>
+</resources>

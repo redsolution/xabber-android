@@ -61,7 +61,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_nickname">%1$s zmenil/a prezývku na %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="action_otr_encryption">Šifrovanie bolo zapnuté, ale oponent nie je overený. Môžete ho overiť z menu OTR šifrovania</string>
+    <string name="action_otr_encryption">Šifrovanie bolo zapnuté, ale tento kontakt nie je overený. Môžete ho overiť z menu OTR šifrovania</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_error">Chyba OTR: %1$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

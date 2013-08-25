@@ -97,7 +97,17 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
     <string name="account_tls_enable">TLS etkin</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_enable_summary">Sunucuya bağlanmak için mümkünse TLS şifrelemesi kullan</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_legacy">Eski SSL</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_legacy_summary">Sunucuya bağlanırken eski SSL şifrelemesi kullan.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_tls_mode">TLS/SSL kullanımı</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_require">TLS zorunlu</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_require_summary">Sunucuya bağlanırken TLS şifreleme zorunlu</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_wlm">Kullanıcı adı ve parola girişi için http://live.com\'a yönlendirileceksiniz.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->

@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Can be used for Google Play promotion -->
+    <string name="production_promo">Cliente XMPP (Jabber) multi-contas.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="production_title">Xabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="development_title">Xabber Versão de Desenvolvimento</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="vip_description">Versão VIP do Xabber — o grande cliente open source Jabber (XMPP) com suporte à múltiplas contas e interface limpa e simples. Xabber é desenvolvido para ser o melhor cliente Jabber para Android.\n\nEssa versão VIP do Xabber não é de modo algum melhor que as versões regulares do Xabber, uma moeda de ouro no ícone da aplicação é a única característica diferente. Ela é muito útil para mostrar quão maravilhoso você é quando compra alguma coisa que qualquer um pode obter gratuitamente.\n\n...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="vip_title">Xabber VIP</string>
 </resources>

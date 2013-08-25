@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="cache_clear">Ачысьціць кэш\nЗьнішчыць ўсе дадзеныя, якія захоўваюцца лякальна. Гэта дазваляе зьменшыць мейсца, якое займае праграма.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_send_by_enter">Дасылаць па Enter\nПаведамленьне будзе дасланае, калі вы націсьніце Enter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">Сартаваць суразмоўцаў\nДазваляе зьмяніць парадак, паводле якога паказваюцца суразмоўцы</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">Па альфабэце</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">Па статусе</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">Групаваць па рахунках\nДазваляе паказваць суразмоўцаў, адсартаваных па тых рахунках, да якіх яны дададзеныя</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_active_chats">Паказваць актыўныя гутаркі спачатку\nПаказваць распачатыя гутаркі ў самым пачатку сьпісу суразмоўцаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_avatars">Паказваць аватары\nДазваляе бачыць аватары ў сьпісе суразмоўцаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">Паказваць пустыя групы\nПаказваць групы, нават калі ў іх няма суразмоўцаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">Паказваць групы\nДазваляе групаваць суразмоўцаў па групах</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">Паказваць офлайн суразмоўцаў\nПаказвае суразмоўцаў, якія зараз не падлучаныя</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_panel">Паказваць панэль акаўнтаў\nДазваляе бачыць панэль з выявамі акаўнтаў уверсе сьпіса кантактаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_stay_active_chats">Дубляваць актыўныя гутаркі\nПаказваць суразмоўваў, зь якімі ідзе гутарка, не толькі ў пачатку сьпісу кантактаў, але і ў асноўным сьпісе</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="debug_log">Журнал ладкаваньня\nЗаписваць сістэмныя паведамленьні ў журнал ладкаваньня (трэба перазапусціць праграму, каб пачало працаваць)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">Індыкацыя сьвятлом\nМіргаць сьветадыёдам для абвяшчэньня</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_sound">Абвесткі гукам\nАбярыце гук для абвестак</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_vibro">Вібрацыя\nВібраваць для абвяшчэньня</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_theme">Каляровая тэма аздабленьня\nНаладкі каляровай тэмы аздабленьня</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_dark">Цёмная</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_light">Сьветлая</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_normal">Стандартная</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_smiles">Смайлы\nНаладкі смайлаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_android">Стандартныя смайлы</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_none">Адключыць графічныя смайлы</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_connection">Наладкі падлучэньня\nНаладкі варыянтаў падлучэньня</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_contacts">Сьпіс суразмоўцаў\nНаладкі выгляду сьпісу суразмоўцаў</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_debug">Наладкі ладкаваньня\nАбярыце гэты пункт, калі хочаце дапамагчы распрацоўшчыкам зрабіць Xabber яшчэ лепей!</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="preference_editor">Наладкі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_events">Абвесткі\nНаладкі абвестак</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_interface">Тэмы\nНаладкі зьнешняга выгляду</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_status_change">Паказваць зьмену статусаў\nПаказваць паведамленьні пра зьмену статуса суразмоўцам</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat">Толькі ў гутарках</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat_and_muc">У гутарках і канфэрэнцыях</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_none">Не паведамляць</string>
+</resources>

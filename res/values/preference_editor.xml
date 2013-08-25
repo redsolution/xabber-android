@@ -105,7 +105,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Priority settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_start_at_boot">Start when Android boots\nStart the application when Android boots. Doesn\'t work when Xabber is installed on SDCard.</string>
+    <string name="connection_start_at_boot">Start when Android boots\nStart the application when Android boots. This doesn\'t work when Xabber is installed on SDCard.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wake_lock">Prevent sleep mode\nWill reduce battery life</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
@@ -117,7 +117,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_first_only">Alert on first message\nNotify only on first message in the chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
-    <string name="events_ignore_system_vibro">Ignore system vibro settings\nUse this option if system vibro does not work</string>
+    <string name="events_ignore_system_vibro">Ignore system vibration settings\nUse this option if system vibration does not work</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_message">Notification settings\nConfigure notifications about incoming messages</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="events_phrases_title">關鍵詞</string>
+    <string name="phrase_add">添加關鍵詞</string>
+    <string name="phrase_delete">刪除關鍵詞</string>
+    <string name="phrase_delete_confirm">你真的要刪除關鍵詞：%s？</string>
+    <string name="phrase_empty">&lt; 文字 ></string>
+    <string name="phrase_group">聯絡人分組部分</string>
+    <string name="phrase_regexp">正規式</string>
+    <string name="phrase_sound">聲音\n選擇通知提示音</string>
+    <string name="phrase_text">搜尋條件</string>
+    <string name="phrase_user">聯絡人的Jabber ID部分</string>
+</resources>

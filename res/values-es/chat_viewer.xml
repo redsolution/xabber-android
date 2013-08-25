@@ -121,7 +121,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
     <string name="export_chat_title">Nombre de archivo:</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
-    <string name="muc_invite">Invitar a chatear&#8230;</string>
+    <string name="muc_invite">Invitar a chatear…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
     <string name="muc_is_unavailable">Debes unirte al chat para que tus mensajes sean entregados</string>
     <string name="occupant_list">Lista de ocupantes</string>

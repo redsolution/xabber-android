@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">Je kan je naam (bijv. masha.v.kontakte) of ID (bijv. id123456) gebruiken.\nJe kan niet inloggen bij VKontakte chat met je e-mailadres. Om chat in te stellen dien je je VKontakte.ru gebruikersnaam en wachtwoord te gebruiken. Ga naar http://vk.com/help.php?page=jabber voor meer info.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Ga naar http://xwpp.org voor meer info over XMPP (Jabber)\nOm een nieuw account te registreren ga je naar https://register.jabber.org of andere Jabberservers.</string>
+    <string name="account_type_helps_xmpp">Ga naar http://xmpp.org voor meer info over XMPP (Jabber)\nOm een nieuw account te registreren ga je naar https://register.jabber.org of andere Jabberservers.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Als je niet over een Ya.Online account beschikt kan je dit aanmaken op http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->

@@ -23,7 +23,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="clear_message">Clear text</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
-    <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when he comes back online.</string>
+    <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -61,7 +61,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_nickname">%1$s changed nickname to %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="action_otr_encryption">Encryption has been enabled but opponent is not verified. You can verify it from OTR encryption menu.</string>
+    <string name="action_otr_encryption">Encryption has been enabled but this contact has not been verified. You can verify it from the OTR encryption menu.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_error">OTR error: %1$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

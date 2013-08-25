@@ -8,4 +8,5 @@
     <string name="about_site">http://www.xabber.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
     <string name="about_version">Version: %s</string>
+    <string name="about_license">Lizenz: GNU GPLv3 \n<a href="https://github.com/redsolution/xabber-android">Open Source Software</a></string>
 </resources>

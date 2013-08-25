@@ -57,7 +57,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_connection">Verbindungseinstellungen\nVerbindungseinstellungen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
-    <string name="preference_contacts">Kontaktliste\nAussehen der Kontaktliste einstellen</string>
+    <string name="preference_contacts">Kontaktliste\nAussehen der Kontaktliste anpassen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="preference_debug">Debugging-Einstellungen\nEinstellungen, um den Entwicklern zu helfen, Xabber zu verbessern.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->

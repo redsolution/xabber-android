@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="events_phrases_title">Ключові фрази</string>
+    <string name="phrase_add">Додати фразу</string>
+    <string name="phrase_delete">Вилучити фразу</string>
+    <string name="phrase_delete_confirm">Вилучити фразу: %s?</string>
+    <string name="phrase_empty">&lt; Будь-який текст &gt;</string>
+    <string name="phrase_group">Частина назви групи контактів</string>
+    <string name="phrase_regexp">Реґулярний вираз</string>
+    <string name="phrase_sound">Звук\nВибрати звук сповіщення</string>
+    <string name="phrase_text">Текст для пошуку</string>
+    <string name="phrase_user">Частина Jabber ID контакту</string>
+</resources>

@@ -59,7 +59,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_nickname">%1$s hat den Spitznamen geändert in %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="action_otr_encryption">Verschlüsselung wurde aktiviert, aber der Chatpartner noch nicht überprüft. Die Überprüfung kann im OTR Menü aktiviert werden.</string>
+    <string name="action_otr_encryption">Verschlüsselung wurde aktiviert, aber der Chatpartner noch nicht verifiziert. Die Verifizierung kann im OTR Menü aktiviert werden.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_error">OTR Fehler: %1$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
@@ -96,6 +96,10 @@
     <string name="action_status_xa">%1$s längere Zeit abwesend</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_subject">%1$s hat das Thema zu %2$s geändert.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ATTENTION_IS_NOT_SUPPORTED">Von Chatpartner nicht unterstützt oder deaktiviert</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="call_attention">Aufmerksam machen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="chat_settings">Chateinstellungen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->

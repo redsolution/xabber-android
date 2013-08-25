@@ -79,17 +79,17 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
     <string name="application_state_closing">Einstellungen werden gespeichert...\nDie Anwendung wird beendet.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_confirmation">%1$s.\nVertraust du dem Zertifikat mit folgendem SHA1 Fingerabdruck: %2$s vollständig?\nMöchtest du über jedes Problem mit diesem Zeritifikat informiert werden?</string>
+    <string name="certificate_confirmation">%1$s.\nVertraust du dem Zertifikat mit folgendem SHA1 Fingerabdruck: %2$s vollständig?\nMöchtest du nicht über jedes Problem mit diesem Zeritifikat informiert werden?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
     <string name="certificate_details">\n\nAusgestellt an:\nCommon Name (CN): %1$s\nOrganisation (O): %2$s\nOrganisationseinheit (OU): %3$s\nSeriennummer: %4$s\n\nErstellt durch:\nCommon Name (CN): %5$s\nOrganisation (O): %6$s\nOrganisationseinheit (OU): %7$s\n\nGültigkeit:\nErstellt am: %8$s\nAuflaufdatum: %9$s.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_invalid_chane">Verifikation der Signaturkette fehlgeschlagen</string>
+    <string name="certificate_invalid_chane">Verifizierung der Signaturkette fehlgeschlagen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_invalid_target">Ziel konnte nicht verifiziert werden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_self_signed">Selbst-signiertes Zertifikat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_show_details">Details:</string>
+    <string name="certificate_show_details">Details</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="close_chats">Alle Chats beenden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
