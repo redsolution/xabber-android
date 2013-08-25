@@ -14,7 +14,7 @@
 -->
 <resources>
   <string name="application_name">@string/development_title</string>
-  <string name="application_version">@string/development_versions_78</string>
+  <string name="application_version">@string/development_versions_79</string>
   <string name="application_package">com.xabber.androiddev</string>
   <string name="client_name">Xabber</string>
 
@@ -96,6 +96,7 @@
   <string name="development_versions_76">0.9.28d</string>
   <string name="development_versions_77">0.9.29</string>
   <string name="development_versions_78">0.9.29a</string>
+  <string name="development_versions_79">0.9.30</string>
 
   <string name="production_versions_1">0.3.0 Alpha</string>
   <string name="production_versions_2">0.3.1 Alpha</string>
