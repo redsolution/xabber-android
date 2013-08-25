@@ -25,6 +25,7 @@ import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Packet;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -464,6 +465,13 @@ public class MessageArchiveManager implements OnPacketListener,
 			return;
 		ChatStorage chatStorage = chatStorages.get(account, chat.getWith(),
 				chat.getStartString());
+		if (chatStorage == null) {
+			LogManager.w(this, "Unexpected chat " + chat.getStartString()
+					+ " recevied by " + account + " from " + chat.getWith());
+			chatStorage = new ChatStorage(chat.getStart());
+			chatStorages.put(account, chat.getWith(), chat.getStartString(),
+					chatStorage);
+		}
 		String bareAddress = Jid.getBareAddress(chat.getWith());
 		HeaderSequence sequence;
 		if (modification)
