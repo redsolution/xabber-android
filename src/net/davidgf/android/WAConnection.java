@@ -379,6 +379,15 @@ public class WAConnection extends Connection {
 		vc.getPhotos().add(bp);
 		submitPacket(packet);
 	}
+	if (packet instanceof Presence) {
+		// Sending our presence :) 
+		String status = "unavailable";
+		Presence pres = (Presence)packet;
+		if (pres.getMode() == Presence.Mode.chat || pres.getMode() == Presence.Mode.available)
+			status = "available";
+			
+		waconnection.setMyPresence(status);
+	}
 	if (packet instanceof RosterPacket) {
 		RosterPacket r = (RosterPacket)packet;
 		// Check Add/Remove Contact/Group:

@@ -346,6 +346,11 @@ public class WhatsappConnection {
 		return r;
 	}
 	
+	public void setMyPresence(String pres) {
+		mypresence = pres;
+		notifyMyPresence();
+	}
+	
 	private void notifyMyPresence() {
 		// Send the nickname and the current status
 		Tree pres = new Tree("presence", new HashMap < String,String >() {{ put("name",nickname); put("type",mypresence); }} );
