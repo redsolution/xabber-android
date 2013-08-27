@@ -41,6 +41,7 @@ public class WhatsappConnection {
 	private Vector <Contact> contacts;
 	
 	private int iqid;
+	private String mymessage = "";
 
 	public WhatsappConnection(String phone, String pass, String nick) {
 		session_key = new byte[20];
@@ -346,16 +347,29 @@ public class WhatsappConnection {
 		return r;
 	}
 	
-	public void setMyPresence(String pres) {
+	public void setMyPresence(String pres, String msg) {
 		mypresence = pres;
+		mymessage = msg;
 		notifyMyPresence();
 	}
 	
 	private void notifyMyPresence() {
 		// Send the nickname and the current status
 		Tree pres = new Tree("presence", new HashMap < String,String >() {{ put("name",nickname); put("type",mypresence); }} );
-	
+		
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(pres,true)));
+		
+		Tree xhash = new Tree("x", new HashMap < String,String >() {{ put("xmlns","jabber:x:event"); }} );
+		xhash.addChild(new Tree("server"));
+		Tree tbody = new Tree ("body"); tbody.setData(MiscUtil.UTF8ToBytes(this.mymessage));
+		
+		String stime = String.valueOf(System.currentTimeMillis()/1000);
+		final String iqtime_id = stime + "-" + String.valueOf(++iqid);
+		Tree mes = new Tree("message", new HashMap < String,String >() {{ 
+			put("to","s.us"); put("type","chat"); put("id",iqtime_id); }} );
+		mes.addChild(xhash); mes.addChild(tbody);
+
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(mes,true)));
 	}
 
 	void doPong(final String id, final String from) {

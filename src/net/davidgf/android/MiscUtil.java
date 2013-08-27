@@ -128,6 +128,15 @@ public class MiscUtil {
 		}
 	}
 	
+	public static byte [] UTF8ToBytes(String st) {
+		try {
+			return st.getBytes("UTF-8");
+		}
+		catch (Exception e) {
+			return new byte [0];
+		}
+	}
+	
 	public static String getUser(String user) {
 		return user.split("@")[0];
 	}

@@ -386,7 +386,7 @@ public class WAConnection extends Connection {
 		if (pres.getMode() == Presence.Mode.chat || pres.getMode() == Presence.Mode.available)
 			status = "available";
 			
-		waconnection.setMyPresence(status);
+		waconnection.setMyPresence(status, pres.getStatus());
 	}
 	if (packet instanceof RosterPacket) {
 		RosterPacket r = (RosterPacket)packet;
