@@ -15,6 +15,7 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smackx.packet.MessageEvent;
+import org.jivesoftware.smackx.packet.DelayInformation;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
@@ -553,6 +554,13 @@ public class WhatsappConnection {
 			message.setType(Message.Type.chat);
 			message.setBody(this.message);
 			
+			// XXX: Criteria for adding Delay info is
+			// if the timestamp and the current time differ in more than 10 seconds
+			DelayInformation d = new DelayInformation(new Date(time*1000));
+			long epoch = System.currentTimeMillis()/1000;
+			if (Math.abs(time - epoch) > 10)
+				message.addExtension(d);
+			
 			return message;
 		}
 	}
@@ -571,6 +579,13 @@ public class WhatsappConnection {
 			message.setFrom(MiscUtil.getUser(this.from));
 			message.setType(Message.Type.chat);
 			message.setBody(url);
+			
+			// XXX: Criteria for adding Delay info is
+			// if the timestamp and the current time differ in more than 10 seconds
+			DelayInformation d = new DelayInformation(new Date(time*1000));
+			long epoch = System.currentTimeMillis()/1000;
+			if (Math.abs(time - epoch) > 10)
+				message.addExtension(d);
 			
 			return message;
 		}
