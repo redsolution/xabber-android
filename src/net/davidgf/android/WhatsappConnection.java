@@ -350,7 +350,8 @@ public class WhatsappConnection {
 	public void setMyPresence(String pres, String msg) {
 		mypresence = pres;
 		mymessage = msg;
-		notifyMyPresence();
+		if (conn_status == SessionStatus.SessionConnected)
+			notifyMyPresence();
 	}
 	
 	private void notifyMyPresence() {
