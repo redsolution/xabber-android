@@ -84,6 +84,7 @@ public class WAConnection extends Connection {
     
     private static final String waUA = "WhatsApp/2.10.750 Android/4.2.1 Device/GalaxyS3";
 
+    private String nickname = "";
     Roster roster = null;
 
     /**
@@ -165,6 +166,8 @@ public class WAConnection extends Connection {
 	ConnectionItem citem = cthread.getConnectionItem();
 	AccountItem aitem = ((AccountItem)citem);
 	account_name = aitem.getAccount();
+	
+	nickname = aitem.getConnectionSettings().getResource();
     }
 
     public String getConnectionID() {
@@ -517,7 +520,7 @@ public class WAConnection extends Connection {
 	// Create WA connection API object                
         // FIXME: Set proper nickname
         msgid = 0;
-        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), config.getUsername(), account_name);
+        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), this.nickname, account_name);
 
         try {
             if (config.getSocketFactory() == null) {

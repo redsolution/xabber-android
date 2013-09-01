@@ -566,7 +566,7 @@ public class WhatsappConnection {
 	public DataBuffer write_tree(Tree tree) {
 		DataBuffer bout = new DataBuffer();
 		int len = 1;
-	
+		
 		if (tree.getAttributes().size() != 0) len += tree.getAttributes().size()*2;
 		if (tree.getChildren().size() != 0) len++;
 		if (tree.getData().length != 0 || tree.forcedData()) len++;
@@ -708,7 +708,7 @@ public class WhatsappConnection {
 	public byte [] serializeMessage(final String to, String message, int id) {
 		try {
 		Tree request = new Tree ("request",new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
-		Tree notify  = new Tree ("notify", new HashMap < String,String >() {{ put("xmlns","urn:xmpp:whatsapp"); put("name",to); }} );
+		Tree notify  = new Tree ("notify", new HashMap < String,String >() {{ put("xmlns","urn:xmpp:whatsapp"); put("name",nickname); }} );
 		Tree xhash   = new Tree ("x",      new HashMap < String,String >() {{ put("xmlns","jabber:x:event"); }} );
 		xhash.addChild(new Tree("server"));
 		Tree tbody = new Tree("body");

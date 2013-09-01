@@ -42,6 +42,12 @@
         android:password="true"
         android:singleLine="true"
         />
+    <EditTextPreference
+        android:key="@string/account_resource_key"
+        android:title="@string/account_resource"
+        android:dialogTitle="@string/account_resource"
+        android:singleLine="true"
+        />
     <ListPreference
         android:title="@string/account_archive_mode"
         android:key="@string/account_archive_mode_key"
