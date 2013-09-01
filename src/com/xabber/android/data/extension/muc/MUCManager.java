@@ -130,7 +130,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 	 * @param room
 	 * @return <code>null</code> if does not exists.
 	 */
-	private RoomChat getRoomChat(String account, String room) {
+	public RoomChat getRoomChat(String account, String room) {
 		AbstractChat chat = MessageManager.getInstance().getChat(account, room);
 		if (chat != null && chat instanceof RoomChat)
 			return (RoomChat) chat;
@@ -220,19 +220,20 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 	 * @param password
 	 */
 	public void createRoom(String account, String room, String nickname,
-			String password, boolean join) {
+			String password, boolean join, String subject) {
 		removeInvite(getInvite(account, room));
 		AbstractChat chat = MessageManager.getInstance().getChat(account, room);
 		RoomChat roomChat;
 		if (chat == null || !(chat instanceof RoomChat)) {
 			if (chat != null)
 				MessageManager.getInstance().removeChat(chat);
-			roomChat = new RoomChat(account, room, nickname, password);
+			roomChat = new RoomChat(account, room, nickname, password, subject);
 			MessageManager.getInstance().addChat(roomChat);
 		} else {
 			roomChat = (RoomChat) chat;
 			roomChat.setNickname(nickname);
 			roomChat.setPassword(password);
+			roomChat.setSubject(subject);
 		}
 		requestToWriteRoom(account, room, nickname, password, join);
 		if (join)

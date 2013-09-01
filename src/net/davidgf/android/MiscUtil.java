@@ -140,6 +140,11 @@ public class MiscUtil {
 	public static String getUser(String user) {
 		return user.split("@")[0];
 	}
+	
+	public static String getUserAndResource(String user) {
+		String [] re = user.split("/");
+		return user.split("@")[0] + "/" + re[re.length-1];
+	}
 
 	public static String getEncodedSha1Sum( byte [] data ) {
 		try {

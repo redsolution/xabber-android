@@ -23,6 +23,8 @@ import org.jivesoftware.smack.packet.IQ;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.BinaryPhoto;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.connection.ConnectionItem;
 
 import net.davidgf.android.WhatsappConnection;
 import net.davidgf.android.WAContacts;
@@ -60,6 +62,7 @@ public class WAConnection extends Connection {
     private String user = null;
     private boolean connected = false;
     private boolean waconnected = false;
+    private String account_name = null;
     /**
      * Flag that indicates if the user is currently authenticated with the server.
      */
@@ -158,6 +161,10 @@ public class WAConnection extends Connection {
 			return thread;
 		}
 	});
+	
+	ConnectionItem citem = cthread.getConnectionItem();
+	AccountItem aitem = ((AccountItem)citem);
+	account_name = aitem.getAccount();
     }
 
     public String getConnectionID() {
@@ -426,6 +433,7 @@ public class WAConnection extends Connection {
 			}
 
 			submitPacket(rr);
+			waconnection.pushGroupUpdate();
 		}
 		
 		System.out.println(r.toXML());
@@ -509,7 +517,7 @@ public class WAConnection extends Connection {
 	// Create WA connection API object                
         // FIXME: Set proper nickname
         msgid = 0;
-        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), config.getUsername());
+        waconnection = new WhatsappConnection(config.getUsername(), config.getPassword(), config.getUsername(), account_name);
 
         try {
             if (config.getSocketFactory() == null) {
@@ -656,6 +664,8 @@ public class WAConnection extends Connection {
     
     private void processLoop() {
     	// Proceed to push data to underlying connection class
+    	if (inbuffer == null) return;
+    	
     	synchronized ( waconnection ) {
     		synchronized (inbuffer) {
     			int used = waconnection.pushIncomingData(inbuffer);
@@ -675,12 +685,17 @@ public class WAConnection extends Connection {
 		System.out.println("Null!!! Shit\n");
 	}
     	
-    	Packet p = waconnection.getNextPacket();
+    	Packet p;
+    	synchronized (waconnection) {
+	    	p = waconnection.getNextPacket();
+	}
 	while (p != null) {
 		submitPacket(p);
-		p = waconnection.getNextPacket();
+		synchronized (waconnection) {
+			p = waconnection.getNextPacket();
+		}
 	}
-	}
+    }
 
     /**
      * Establishes a connection to the XMPP server and performs an automatic login

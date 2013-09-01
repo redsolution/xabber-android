@@ -14,8 +14,13 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.RosterPacket;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smackx.packet.MessageEvent;
+import org.jivesoftware.smackx.packet.Nick;
+import org.jivesoftware.smackx.packet.MUCUser;
 import org.jivesoftware.smackx.packet.DelayInformation;
+import org.jivesoftware.smackx.packet.MUCInitialPresence;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
@@ -39,11 +44,16 @@ public class WhatsappConnection {
 	
 	private Vector <Packet> received_packets;
 	private Vector <Contact> contacts;
+	private Map <String,Group> groups;
+	boolean groups_updated;
+	int gq_stat;
+	int gw1,gw2;
 	
 	private int iqid;
 	private String mymessage = "";
+	private String account_name = null;
 
-	public WhatsappConnection(String phone, String pass, String nick) {
+	public WhatsappConnection(String phone, String pass, String nick, String aname) {
 		session_key = new byte[20];
 		
 		this.phone = phone;
@@ -55,6 +65,13 @@ public class WhatsappConnection {
 		received_packets = new Vector <Packet>();
 		contacts = new Vector <Contact> ();
 		iqid = 0;
+		
+		groups = new HashMap <String,Group> ();
+		groups_updated = false;
+		gq_stat = 0;
+		gw1 = gw2 = 0;
+		
+		account_name = aname;
 	}
 
 	public Tree read_tree(DataBuffer data) {
@@ -125,7 +142,7 @@ public class WhatsappConnection {
 			if (!t.getTag().equals("treeerr"))
 				this.processPacket(t);
 				
-			//System.out.println(t.toString(0));
+			System.out.println(t.toString(0));
 		} while (!t.getTag().equals("treeerr") && db.size() >= 3);
 		
 		return data.length - db.size();
@@ -173,18 +190,13 @@ public class WhatsappConnection {
 				
 			this.notifyMyPresence();
 			//this->sendInitial();
-			//this->updateGroups();
+			this.updateGroups();
 			
 			// Resend contact status query (for already added contacts)
-			System.out.println("SUbscribe delayed\n");
 			for (int i = 0; i < contacts.size(); i++) {
 				subscribePresence(contacts.get(i).phone);
 				queryPreview(contacts.get(i).phone);
 			}
-			
-			//std::cout << "Logged in!!!" << std::endl;
-			//std::cout << "Account " << phone << " status: " << account_status << " kind: " << account_type <<
-			//	" expires: " << account_expiration << " creation: " << account_creation << std::endl;
 		}
 		else if (t.getTag().equals("presence")) {
 			// Receives the presence of the user
@@ -201,16 +213,66 @@ public class WhatsappConnection {
 			}
 		}
 		else if (t.getTag().equals("iq")) {
+			// PING
 			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("ping")) {
 				this.doPong(t.getAttribute("id"),t.getAttribute("from"));
 			}
 			
+			// Preview query
 			if (t.hasAttributeValue("type","result") && t.hasAttribute("from")) {
 				Tree tb = t.getChild("picture");
 				if (tb != null) {
 					if (tb.hasAttributeValue("type","preview"))
 						this.addPreviewPicture(t.getAttribute("from"),tb.getData());
 				}
+			}
+			
+			// Group stuff
+			Vector <Tree> childs = t.getChildren();
+			int acc = 0;
+			for (int j = 0; j < childs.size(); j++) {
+				if (childs.get(j).getTag().equals("group")) {
+					boolean rep = groups.containsKey(MiscUtil.getUser(childs.get(j).getAttribute("id")));
+					if (!rep) {
+						groups.put(
+							MiscUtil.getUser(childs.get(j).getAttribute("id")),
+							new Group(	MiscUtil.getUser(childs.get(j).getAttribute("id")),
+									childs.get(j).getAttribute("subject"),
+									MiscUtil.getUser(childs.get(j).getAttribute("owner")) )  );
+
+						// Query group participants
+						final String iid = String.valueOf(++iqid);
+						final String pid = childs.get(j).getAttribute("id");
+						final String subj = childs.get(j).getAttribute("subject");
+						Tree iq = new Tree("list",new HashMap < String,String >(){{put("xmlns","w:g");}});
+						Tree req = new Tree("iq", 
+							new HashMap < String,String >(){{
+								put("id",iid);
+								put("type","get");
+								put("to",pid+"@g.us");
+								}});
+						req.addChild(iq);
+						outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+						
+						// Add group as a contact
+						pushGroupUpdate();
+					}
+				}
+				else if (childs.get(j).getTag().equals("participant")) {
+					String gid = MiscUtil.getUser(t.getAttribute("from"));
+					String pt = MiscUtil.getUser(childs.get(j).getAttribute("jid"));
+					if (groups.containsKey(gid)) {
+						groups.get(gid).participants.add(pt);
+						
+						pushGroupUpdate();
+					}
+				}
+			}
+			
+			Tree tb = t.getChild("group");
+			if (tb != null) {
+				if (tb.hasAttributeValue("type","preview"))
+					this.addPreviewPicture(t.getAttribute("from"),t.getData());
 			}
 		}
 		else if (t.getTag().equals("message")) {
@@ -221,6 +283,12 @@ public class WhatsappConnection {
 				String from = t.getAttribute("from");
 				String id = t.getAttribute("id");
 				String author = t.getAttribute("author");
+				
+				// Group nickname
+				if (from.contains("@g.us") && t.hasChild("notify")) {
+					author = t.getChild("notify").getAttribute("name");
+					from = from + "/" + author;
+				}
 				
 				Tree tb = t.getChild("body");
 				if (tb != null) {
@@ -268,6 +336,64 @@ public class WhatsappConnection {
 		}*/
 	}
 	
+	public void pushGroupUpdate() {
+		for (Map.Entry <String, Group> entry : groups.entrySet()) {
+			// Create room
+			MUCManager.getInstance().createRoom(
+				account_name, entry.getValue().id, phone, "", false, entry.getValue().subject);
+			
+			// Send the room status (chek MultiUserChat.java),matched the filter
+			/*Presence.Mode mode = Presence.Mode.chat;
+			Presence presp = new Presence(Presence.Type.available);
+			presp.setMode(mode);
+			presp.setFrom(entry.getValue().id + "/" + phone);
+			presp.setTo(MiscUtil.getUser(phone));
+			// Add MUC User
+			MUCUser user = new MUCUser();
+			user.setItem(new MUCUser.Item("member","participant"));
+			presp.addExtension(user);
+			received_packets.add(presp);*/
+			
+			for (int i = 0; i < entry.getValue().participants.size(); i++) {
+				// Send the room status (chek MultiUserChat.java),matched the filter
+				Presence.Mode mode = Presence.Mode.chat;
+				Presence presp = new Presence(Presence.Type.available);
+				presp.setMode(mode);
+				presp.setFrom(entry.getValue().id + "/" + entry.getValue().participants.get(i));
+				presp.setTo(MiscUtil.getUser(phone));
+				// Add MUC User
+				MUCUser user = new MUCUser();
+				user.setItem(new MUCUser.Item("member","participant"));
+				presp.addExtension(user);
+				received_packets.add(presp);
+			}
+			
+			//rr.addRosterItem(new RosterPacket.Item(, entry.getValue().subject));
+		}
+
+/*		// Add group as a contact
+		RosterPacket rr = new RosterPacket();
+		rr.setType(IQ.Type.SET);
+		for (Map.Entry <String, Group> entry : groups.entrySet()) {
+			rr.addRosterItem(new RosterPacket.Item(entry.getValue().id, entry.getValue().subject));
+		}
+		received_packets.add(rr);
+		
+		// Set group presence to "Chat"
+		for (Map.Entry <String, Group> entry : groups.entrySet()) {
+			Presence.Mode mode = Presence.Mode.chat;
+			Presence presp = new Presence(Presence.Type.available);
+			presp.setMode(mode);
+			presp.setFrom(entry.getValue().id);
+			presp.setTo(MiscUtil.getUser(phone));
+			
+			// MUC
+			presp.addExtension(new MUCInitialPresence());
+			
+			received_packets.add(presp);
+		}*/
+	}
+	
 	private DataBuffer generateResponse(final String from, final String type, final String id, final String ans) {
 		Tree received = new Tree(ans,new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
 		Tree mes = new Tree("message",new HashMap < String,String >() {{ 
@@ -289,6 +415,66 @@ public class WhatsappConnection {
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
 	}
 	
+	private void updateGroups() {
+		groups.clear();
+		{
+			final String reqid = String.valueOf(++iqid);
+			gw1 = iqid;
+			Tree iq = new Tree("list",new HashMap < String,String >() {{ put("xmlns","w:g"); put("type","owning");}} );
+			Tree req = new Tree("iq",
+				new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to","g.us");}} );
+			
+			req.addChild(iq);
+			outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+		}
+		{
+			final String reqid = String.valueOf(++iqid);
+			gw2 = iqid;
+			Tree iq = new Tree("list",
+				new HashMap < String,String >() {{ put("xmlns","w:g"); put("type","participating");}} );
+			Tree req = new Tree("iq",
+				new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to","g.us");}} );
+			req.addChild(iq);
+			outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+		}
+		gq_stat = 1;  // Queried the groups
+	}
+
+	private void manageParticipant(final String group, final String participant, final String command) {
+		Tree part = new Tree("participant",new HashMap < String,String >() {{ put("jid",participant); }} );
+		Tree iq = new Tree(command,new HashMap < String,String >() {{ put("xmlns","w:g"); }} );
+		iq.addChild(part);
+		final String reqid = String.valueOf(++iqid);
+		Tree req = new Tree("iq",
+			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to",group+"@g.us");}} );
+		req.addChild(iq);
+	
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+	}
+	
+	private void leaveGroup(final String group) {
+		Tree gr = new Tree("group", new HashMap < String,String >() {{ put("id",group+"@g.us"); }} );
+		Tree iq = new Tree("leave", new HashMap < String,String >() {{ put("xmlns","w:g"); }} );
+		iq.addChild(gr);
+		final String reqid = String.valueOf(++iqid);
+		Tree req = new Tree("iq",
+			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to","g.us");}} );
+		req.addChild(iq);
+	
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+	}
+
+	void addGroup(final String subject) {
+		Tree gr = new Tree("group", 
+			new HashMap < String,String >() {{ put("xmlns","w:g"); put("action","create"); put("subject",subject);}} );
+		final String reqid = String.valueOf(++iqid);
+		Tree req = new Tree("iq",
+			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to","g.us");}} );
+		req.addChild(gr);
+	
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+	}
+
 	public byte[] getUserAvatar(String user) {
 		// Look for preview 
 		user = MiscUtil.getUser(user);
@@ -301,7 +487,6 @@ public class WhatsappConnection {
 	}
 
 	private void addPreviewPicture(String user, byte [] picture) {
-		System.out.println("Received preview...\n");
 		user = MiscUtil.getUser(user);
 		
 		// Save preview 
@@ -370,7 +555,7 @@ public class WhatsappConnection {
 			put("to","s.us"); put("type","chat"); put("id",iqtime_id); }} );
 		mes.addChild(xhash); mes.addChild(tbody);
 
-		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(mes,true)));
+		//outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(mes,true)));
 	}
 
 	void doPong(final String id, final String from) {
@@ -475,6 +660,7 @@ public class WhatsappConnection {
 
 	public void addContact(String user, boolean user_request) {
 		user = MiscUtil.getUser(user);
+		if (user.contains("-")) return; // Do not add groups as contacts
 		
 		boolean found = false;
 		for (int i = 0; i < contacts.size(); i++)
@@ -531,7 +717,8 @@ public class WhatsappConnection {
 		long epoch = System.currentTimeMillis()/1000;
 		String stime = String.valueOf(epoch);
 		Map < String,String > attrs = new HashMap <String,String>();
-		attrs.put("to",to+"@"+whatsappserver);
+		String full_to = to + "@" + (to.contains("-") ? whatsappservergroup : whatsappserver);
+		attrs.put("to",full_to);
 		attrs.put("type","chat");
 		attrs.put("id",stime+"-"+String.valueOf(id));
 		attrs.put("t",stime);
@@ -570,7 +757,7 @@ public class WhatsappConnection {
 		public Packet serializePacket() {
 			Message message = new Message();
 			message.setTo(MiscUtil.getUser(phone));
-			message.setFrom(MiscUtil.getUser(this.from));
+			message.setFrom(MiscUtil.getUserAndResource(this.from));
 			message.setType(Message.Type.chat);
 			message.setBody(this.message);
 			
@@ -596,9 +783,12 @@ public class WhatsappConnection {
 		public Packet serializePacket() {
 			Message message = new Message();
 			message.setTo(MiscUtil.getUser(phone));
-			message.setFrom(MiscUtil.getUser(this.from));
+			message.setFrom(MiscUtil.getUserAndResource(this.from));
 			message.setType(Message.Type.chat);
 			message.setBody(url);
+			
+			if (author != null && author.length() != 0)
+				message.addExtension(new Nick(author));
 			
 			// XXX: Criteria for adding Delay info is
 			// if the timestamp and the current time differ in more than 10 seconds
@@ -630,6 +820,19 @@ public class WhatsappConnection {
 			this.status = "";
 		}
 	};
+
+	public class Group {
+		String id, subject, owner;
+		Vector <String> participants;
+
+		Group(String id, String subject, String owner) {
+			this.id = id;
+			this.subject = subject;
+			this.owner = owner;
+			participants = new Vector <String> ();
+		}
+	};
+
 }
 
 
