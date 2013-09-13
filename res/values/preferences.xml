@@ -179,6 +179,9 @@
 
     <string name="events_show_text_key">events_show_text</string>
     <bool name="events_show_text_default">true</bool>
+    
+    <string name="events_show_pebble_key">events_show_pebble</string>
+    <bool name="events_show_pebble_default">true</bool>
 
     <string name="events_message_key">events_message</string>
     <string name="events_message_none_value">none</string>
