@@ -196,6 +196,7 @@ public class WhatsappConnection {
 			for (int i = 0; i < contacts.size(); i++) {
 				subscribePresence(contacts.get(i).phone);
 				queryPreview(contacts.get(i).phone);
+				getLastSeen(contacts.get(i).phone);
 			}
 		}
 		else if (t.getTag().equals("presence")) {
@@ -210,6 +211,9 @@ public class WhatsappConnection {
 				presp.setFrom(MiscUtil.getUser(t.getAttribute("from")));
 				presp.setTo(MiscUtil.getUser(phone));
 				received_packets.add(presp);
+				
+				// Schedule the last seen querying
+				getLastSeen(t.getAttribute("from"));
 			}
 		}
 		else if (t.getTag().equals("iq")) {
@@ -224,6 +228,12 @@ public class WhatsappConnection {
 				if (tb != null) {
 					if (tb.hasAttributeValue("type","preview"))
 						this.addPreviewPicture(t.getAttribute("from"),tb.getData());
+				}
+				tb = t.getChild("query");
+				if (tb != null) {
+					if (tb.hasAttributeValue("xmlns","jabber:iq:last") && tb.hasAttribute("seconds")) {
+						this.notifyLastSeen(t.getAttribute("from"),tb.getAttribute("seconds"));
+					}
 				}
 			}
 			
@@ -334,6 +344,48 @@ public class WhatsappConnection {
 			else
 				this->notifyError(errorUnknown);
 		}*/
+	}
+	
+	private String last_seen_text(long t) {
+		if (t < 60)
+			return String.valueOf(t) + " seconds ago";
+		else if (t < 60*60)
+			return String.valueOf(t/60) + " minute(s) ago";
+		else if (t < 60*60*24)
+			return String.valueOf(t/60/60) + " hour(s) ago";
+		else if (t < 48*60*60)
+			return "yesterday";
+		else
+			return String.valueOf(t/60/60/24) + " day(s) ago";
+	}
+	
+	private void notifyLastSeen(final String from, final String seconds) {
+		final String u = MiscUtil.getUser(from);
+		final long sec = Integer.parseInt(seconds);
+		
+		// Save last seen time
+		for (int i = 0; i < contacts.size(); i++) {
+			if (contacts.get(i).phone.equals(u)) {
+				contacts.get(i).last_seen = sec;
+				break;
+			}
+		}
+		
+		requestVCardUpdate(u);
+	}
+	
+	public String getNotes(String u) {
+		u = MiscUtil.getUser(u);
+		
+		String note = "";
+		for (int i = 0; i < contacts.size(); i++) {
+			if (contacts.get(i).phone.equals(u)) {
+				note = "Last seen: " + last_seen_text(contacts.get(i).last_seen);
+				break;
+			}
+		}
+		
+		return note;
 	}
 	
 	public void pushGroupUpdate() {
@@ -461,13 +513,24 @@ public class WhatsappConnection {
 			}
 		}
 		
-		VCardUpdate vc = new VCardUpdate();
-		vc.setPhotoHash(MiscUtil.getEncodedSha1Sum(picture));
-		Presence p = new Presence(Presence.Type.subscribed);
-		p.setTo(phone);
-		p.setFrom(user);
-		p.addExtension(vc);
-		received_packets.add(p);
+		requestVCardUpdate(user);
+	}
+	
+	private void requestVCardUpdate(String user) {
+		user = MiscUtil.getUser(user);
+		
+		for (int i = 0; i < contacts.size(); i++) {
+			if (contacts.get(i).phone.equals(user)) {
+				VCardUpdate vc = new VCardUpdate();
+				vc.setPhotoHash(MiscUtil.getEncodedSha1Sum(contacts.get(i).ppprev));
+				Presence p = new Presence(Presence.Type.subscribed);
+				p.setTo(phone);
+				p.setFrom(user);
+				p.addExtension(vc);
+				received_packets.add(p);
+				break;
+			}
+		}
 	}
 	
 	private void receiveMessage(AbstractMessage msg) {
@@ -641,6 +704,7 @@ public class WhatsappConnection {
 		if (conn_status == SessionStatus.SessionConnected) {
 			subscribePresence(user);
 			queryPreview(user);
+			getLastSeen(user);
 		}
 	}
 	
@@ -660,6 +724,16 @@ public class WhatsappConnection {
 		received_packets.add(presp);
 	}
 
+	private void getLastSeen(final String user) {
+		final String id = String.valueOf(++iqid);
+		final String fuser = MiscUtil.getUser(user)+"@"+whatsappserver;
+		Tree iq = new Tree("iq",
+			new HashMap < String,String >() {{ put("id",id); put("type","get"); put("to",fuser); }} );
+		Tree req = new Tree("query", new HashMap < String,String >() {{ put("xmlns","jabber:iq:last"); }} );
+		iq.addChild(req);
+		
+		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(iq,true)));
+	}
 	
 	public byte [] getWriteData() {
 		byte [] r = outbuffer.getPtr();

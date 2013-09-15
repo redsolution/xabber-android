@@ -21,6 +21,7 @@ import org.jivesoftware.smack.packet.Registration;
 import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.packet.IQ;
 import com.xabber.xmpp.vcard.VCard;
+import com.xabber.xmpp.vcard.VCardProperty;
 import com.xabber.xmpp.vcard.BinaryPhoto;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.account.AccountItem;
@@ -383,6 +384,9 @@ public class WAConnection extends Connection {
 		// The request for a VCard has been queued,  now we should provide the Avatar!
 		packet.setFrom(packet.getTo());
 		VCard vc = (VCard)packet;
+		
+		// Last seen at notes
+		vc.getProperties().put(VCardProperty.NOTE,waconnection.getNotes(packet.getFrom()));
 
 		BinaryPhoto bp = new BinaryPhoto();
 		bp.setData(waconnection.getUserAvatar(packet.getFrom()));
