@@ -470,6 +470,7 @@ public class Message extends Packet {
         return buf.toString();
     }
 
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
