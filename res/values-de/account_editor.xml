@@ -37,17 +37,17 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_facebook">Du kannst dich nicht mit deiner E-Mail zum Facebook-Chat anmelden. Zum Einrichten des Facebook-Chats musst du deinen Facebook-Benutzernamen und dein Passwort eingeben.\nDetails unter http://www.facebook.com/sitetour/chat.php</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_gtalk">Wenn du kein Google Konto hast, kannst du unter http://mail.google.com eines erstellen.</string>
+    <string name="account_type_helps_gtalk">Wenn du kein Google-Konto hast, kannst du unter http://mail.google.com eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_livejournal">Wenn du kein LiveJournal Konto hast, kannst du unter http://livejournal.com eines erstellen.</string>
+    <string name="account_type_helps_livejournal">Wenn du kein LiveJournal-Konto hast, kannst du unter http://livejournal.com eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_qip">Wenn du kein QIP Konto hast, kannst du unter http://qip.ru eines erstellen.</string>
+    <string name="account_type_helps_qip">Wenn du kein QIP-Konto hast, kannst du unter http://qip.ru eines erstellen.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">Bitte Benutzernamen (z. B. masha.v.kontakte) oder die ID (z. B. id123456) angeben. Der Login bei VKontakte ist nicht mit der E-Mail-Adresse möglich.\nZur Einrichtung sind Benutzername und Passwort nötig. Details unter http://vk.com/help.php?page=jabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_xmpp">Weitere Informationen zu XMPP (Jabber) gibt es unter http://xmpp.org\nEin neues XMPP Konto kannst du unter https://register.jabber.org oder auf jedem anderen XMPP-Server registrieren.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_ya">Wenn du kein Ya.Online Konto hast, kannst du eins unter http://yandex.com einrichten.</string>
+    <string name="account_type_helps_ya">Wenn du kein Ya.Online-Konto hast, kannst du eins unter http://yandex.com einrichten.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_facebook">Facebook</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -117,7 +117,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
     <string name="account_tls_enable">TLS verwenden</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
-    <string name="account_tls_enable_summary">TLS Verschlüsselung verwenden (falls möglich)</string>
+    <string name="account_tls_enable_summary">TLS-Verschlüsselung verwenden (falls möglich)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
     <string name="account_tls_legacy">Herkömmliches SSL</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
