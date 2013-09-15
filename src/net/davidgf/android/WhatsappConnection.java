@@ -341,19 +341,7 @@ public class WhatsappConnection {
 			// Create room
 			MUCManager.getInstance().createRoom(
 				account_name, entry.getValue().id, phone, "", false, entry.getValue().subject);
-			
-			// Send the room status (chek MultiUserChat.java),matched the filter
-			/*Presence.Mode mode = Presence.Mode.chat;
-			Presence presp = new Presence(Presence.Type.available);
-			presp.setMode(mode);
-			presp.setFrom(entry.getValue().id + "/" + phone);
-			presp.setTo(MiscUtil.getUser(phone));
-			// Add MUC User
-			MUCUser user = new MUCUser();
-			user.setItem(new MUCUser.Item("member","participant"));
-			presp.addExtension(user);
-			received_packets.add(presp);*/
-			
+
 			for (int i = 0; i < entry.getValue().participants.size(); i++) {
 				// Send the room status (chek MultiUserChat.java),matched the filter
 				Presence.Mode mode = Presence.Mode.chat;
@@ -367,31 +355,7 @@ public class WhatsappConnection {
 				presp.addExtension(user);
 				received_packets.add(presp);
 			}
-			
-			//rr.addRosterItem(new RosterPacket.Item(, entry.getValue().subject));
 		}
-
-/*		// Add group as a contact
-		RosterPacket rr = new RosterPacket();
-		rr.setType(IQ.Type.SET);
-		for (Map.Entry <String, Group> entry : groups.entrySet()) {
-			rr.addRosterItem(new RosterPacket.Item(entry.getValue().id, entry.getValue().subject));
-		}
-		received_packets.add(rr);
-		
-		// Set group presence to "Chat"
-		for (Map.Entry <String, Group> entry : groups.entrySet()) {
-			Presence.Mode mode = Presence.Mode.chat;
-			Presence presp = new Presence(Presence.Type.available);
-			presp.setMode(mode);
-			presp.setFrom(entry.getValue().id);
-			presp.setTo(MiscUtil.getUser(phone));
-			
-			// MUC
-			presp.addExtension(new MUCInitialPresence());
-			
-			received_packets.add(presp);
-		}*/
 	}
 	
 	private DataBuffer generateResponse(final String from, final String type, final String id, final String ans) {

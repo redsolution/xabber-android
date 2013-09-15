@@ -764,70 +764,8 @@ public class WAConnection extends Connection {
 		return true;
 	}
 
-	/**
-	 * Wrapper for server keep alive.
-	 * 
-	 * @author alexander.ivanov
-	 * 
-	 */
-	private class AliveReader extends Reader {
-		final Reader wrappedReader;
-
-		public AliveReader(Reader wrappedReader) {
-			this.wrappedReader = wrappedReader;
-		}
-
-		private void onRead() {
-			//packetWriter.responseReceived();
-		}
-
-		@Override
-		public int read(char[] buf, int offset, int count) throws IOException {
-			final int result = wrappedReader.read(buf, offset, count);
-			onRead();
-			return result;
-		}
-
-		public void close() throws IOException {
-			wrappedReader.close();
-		}
-
-		public int read() throws IOException {
-			final int result = wrappedReader.read();
-			onRead();
-			return result;
-		}
-
-		public int read(char buf[]) throws IOException {
-			final int result = wrappedReader.read(buf);
-			onRead();
-			return result;
-		}
-
-		public long skip(long n) throws IOException {
-			return wrappedReader.skip(n);
-		}
-
-		public boolean ready() throws IOException {
-			return wrappedReader.ready();
-		}
-
-		public boolean markSupported() {
-			return wrappedReader.markSupported();
-		}
-
-		public void mark(int readAheadLimit) throws IOException {
-			wrappedReader.mark(readAheadLimit);
-		}
-
-		public void reset() throws IOException {
-			wrappedReader.reset();
-		}
-	}
 	
-	
-	
-	    /**
+    /**
      * A runnable to notify all listeners of a packet.
      */
     private class ListenerNotification implements Runnable {
