@@ -1095,6 +1095,7 @@ public class XMPPConnection extends Connection {
 	 * 
 	 * @return <code>false</code> if timeout occur.
 	 */
+	@Override
 	public boolean isAlive() {
 		PacketWriter packetWriter = this.packetWriter;
 		return packetWriter == null || packetWriter.isAlive();

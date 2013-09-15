@@ -75,6 +75,8 @@ public class AccountEditor extends BaseSettingsActivity implements
 			addPreferencesFromResource(R.xml.account_editor_xmpp);
 		else if (protocol == AccountProtocol.gtalk)
 			addPreferencesFromResource(R.xml.account_editor_xmpp);
+		else if (protocol == AccountProtocol.wapp)
+			addPreferencesFromResource(R.xml.account_editor_wapp);
 		else if (protocol == AccountProtocol.wlm)
 			addPreferencesFromResource(R.xml.account_editor_oauth);
 		else

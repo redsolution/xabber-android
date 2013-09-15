@@ -22,9 +22,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jivesoftware.smack.WAConnection;
+
 import javax.net.ssl.SSLException;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
@@ -67,7 +70,7 @@ public class ConnectionThread implements
 	/**
 	 * SMACK connection.
 	 */
-	private XMPPConnection xmppConnection;
+	private Connection xmppConnection;
 
 	/**
 	 * Thread holder for this connection.
@@ -144,7 +147,7 @@ public class ConnectionThread implements
 		started = false;
 	}
 
-	public XMPPConnection getXMPPConnection() {
+	public Connection getXMPPConnection() {
 		return xmppConnection;
 	}
 
@@ -318,7 +321,13 @@ public class ConnectionThread implements
 		connectionConfiguration.setSecurityMode(tlsMode.getSecurityMode());
 		connectionConfiguration.setCompressionEnabled(compression);
 
-		xmppConnection = new XMPPConnection(connectionConfiguration);
+		// Create different underlying classes depending on the protocol
+		AccountProtocol proto = connectionItem.getConnectionSettings().getProtocol();
+		if (proto == AccountProtocol.wapp) {
+			xmppConnection = new WAConnection(this, connectionConfiguration);
+		}else{
+			xmppConnection = new XMPPConnection(connectionConfiguration);
+		}
 		xmppConnection.addPacketListener(this, ACCEPT_ALL);
 		xmppConnection.forceAddConnectionListener(this);
 		connectionItem.onSRVResolved(this);
@@ -416,7 +425,8 @@ public class ConnectionThread implements
 	 */
 	private void connect(final String password) {
 		try {
-			xmppConnection.connect();
+			ConnectionSettings connectionSettings = connectionItem.getConnectionSettings();
+			xmppConnection.connect(connectionSettings.getUserName(), password, connectionSettings.getResource());
 		} catch (XMPPException e) {
 			checkForCertificateError(e);
 			if (!checkForSeeOtherHost(e)) {

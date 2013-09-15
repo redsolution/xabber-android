@@ -33,6 +33,11 @@ public enum AccountProtocol {
 	 * GTalk.
 	 */
 	gtalk,
+	
+	/**
+	 * WhatsApp.
+	 */
+	wapp,
 
 	/**
 	 * Windows Live Messenger.
@@ -54,6 +59,8 @@ public enum AccountProtocol {
 			return R.string.account_type_names_xmpp;
 		else if (this == gtalk)
 			return R.string.account_type_names_gtalk;
+		else if (this == wapp)
+			return R.string.account_type_names_wapp;
 		else if (this == wlm)
 			return R.string.account_type_names_wlm;
 		else
@@ -68,6 +75,8 @@ public enum AccountProtocol {
 			return R.string.account_protocol_xmpp_title;
 		else if (this == gtalk)
 			return R.string.account_protocol_gtalk_title;
+		else if (this == wapp)
+			return R.string.account_protocol_wapp_title;
 		else if (this == wlm)
 			return R.string.account_protocol_wlm_title;
 		else

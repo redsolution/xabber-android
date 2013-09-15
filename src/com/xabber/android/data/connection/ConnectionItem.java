@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.connection;
 
-import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.Connection;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -99,7 +99,7 @@ public abstract class ConnectionItem {
 		ConnectionThread connectionThread = getConnectionThread();
 		if (connectionThread == null)
 			return null;
-		XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+		Connection xmppConnection = connectionThread.getXMPPConnection();
 		if (xmppConnection == null)
 			return null;
 		String user = xmppConnection.getUser();
@@ -188,7 +188,7 @@ public abstract class ConnectionItem {
 		Thread thread = new Thread("Disconnection thread for " + this) {
 			@Override
 			public void run() {
-				XMPPConnection xmppConnection = connectionThread
+				Connection xmppConnection = connectionThread
 						.getXMPPConnection();
 				if (xmppConnection != null)
 					try {
@@ -261,7 +261,7 @@ public abstract class ConnectionItem {
 	 * @return <code>true</code> if connection thread was managed.
 	 */
 	private boolean onDisconnect(ConnectionThread connectionThread) {
-		XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+		Connection xmppConnection = connectionThread.getXMPPConnection();
 		boolean acceptable = isManaged(connectionThread);
 		if (xmppConnection == null)
 			LogManager.i(this, "onClose " + acceptable);

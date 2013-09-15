@@ -206,7 +206,7 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 							.removeMessageNotification(this.account, this.room);
 				}
 			MUCManager.getInstance()
-					.createRoom(account, room, nick, password, join);
+					.createRoom(account, room, nick, password, join, "");
 			finish();
 			break;
 		default:

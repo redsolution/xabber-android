@@ -82,6 +82,18 @@ public class RoomChat extends AbstractChat {
 	 * Invited user for the sent packet ID.
 	 */
 	private final Map<String, String> invites;
+	
+	RoomChat(String account, String user, String nickname, String password, String subject) {
+		super(account, user);
+		this.nickname = nickname;
+		this.password = password;
+		requested = false;
+		state = RoomState.unavailable;
+		this.subject = subject;
+		multiUserChat = null;
+		occupants = new HashMap<String, Occupant>();
+		invites = new HashMap<String, String>();
+	}
 
 	RoomChat(String account, String user, String nickname, String password) {
 		super(account, user);
@@ -154,6 +166,10 @@ public class RoomChat extends AbstractChat {
 
 	String getSubject() {
 		return subject;
+	}
+
+	void setSubject(String s) {
+		this.subject = s;
 	}
 
 	MultiUserChat getMultiUserChat() {
