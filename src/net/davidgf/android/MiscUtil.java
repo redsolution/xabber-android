@@ -3,6 +3,7 @@ package net.davidgf.android;
 
 import java.security.MessageDigest;
 import java.math.BigInteger;
+import java.util.*;
 
 public class MiscUtil {
 
@@ -32,6 +33,12 @@ public class MiscUtil {
 		bb[array.length] = c;
 		
 		return bb;
+	}
+	
+	public static byte [] concat(byte [] array, byte [] array2) {
+		byte [] ret = Arrays.copyOf(array, array.length + array2.length);
+		System.arraycopy(array2,0, ret,ret.length, array2.length);
+		return ret;
 	}
 	
 	public static byte [] base64_decode(byte [] encoded_string) {
@@ -156,6 +163,29 @@ public class MiscUtil {
 			return new String("");
 		}
 	}
+
+	public static byte [] md5raw( byte [] data ) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(data);
+			return md.digest();
+		}
+		catch (Exception e) {
+			return new byte[0];
+		}
+	}
+	public static String md5hex( byte [] data ) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(data);
+			return new BigInteger(1, md.digest()).toString(16);
+		}
+		catch (Exception e) {
+			return new String("");
+		}
+	}
+
+
 }
 
 

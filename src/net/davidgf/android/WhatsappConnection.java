@@ -24,7 +24,9 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
+import java.net.*;
 import java.util.*;
+import java.io.*;
 
 public class WhatsappConnection {
 	private RC4Decoder in, out;
@@ -52,6 +54,10 @@ public class WhatsappConnection {
 	private int iqid;
 	private String mymessage = "";
 	private String account_name = null;
+	
+	// HTTPS interface
+	private String sslnonce = "";
+	private Thread http_thread;
 
 	public WhatsappConnection(String phone, String pass, String nick, String aname) {
 		session_key = new byte[20];
@@ -870,7 +876,73 @@ public class WhatsappConnection {
 			participants = new Vector <String> ();
 		}
 	};
+	
+	private void doSyncAuth() {
+		http_thread = new Thread() {
+			public void run() {
+				performSyncAuth();
+			}
+		};
+		http_thread.setName("Socket data reader");
+		http_thread.setDaemon(true);
+		http_thread.start();
+	}
+	private void performSyncAuth() {
+		try {
+			String request = generateHeaders(generateHttpAuth("0"),0);
+			URL address = new URL("https://sro.whatsapp.net/v2/sync/a");
+			HttpURLConnection connection = (HttpURLConnection)address.openConnection();
+			connection.setReadTimeout(10000);
+			connection.setRequestMethod("POST");
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
+			connection.setRequestProperty("charset", "utf-8");
+			connection.setRequestProperty("Content-Length", "" + Integer.toString(request.length()));
+			connection.setUseCaches (false);
+		
+			DataOutputStream wr = new DataOutputStream(connection.getOutputStream ());
+			DataInputStream rr = new DataInputStream(connection.getInputStream ());
+			wr.writeBytes(request);
+			wr.flush();
+			wr.close();
+		} catch (Exception e) {
+		
+		}
+	}
+	
+	String generateHttpAuth(String nonce) {
+		// cnonce is a 10 ascii char random string
+		String cnonce = "";
+		for (int i = 0; i < 10; i++) {
+			char c = 'a';
+			char rn = (char)(new Random()).nextInt(25);
+			c += rn;
+			cnonce += Character.toString(c);
+		}
 
+		String credentials =phone + ":s.whatsapp.net:" + MiscUtil.bytesToUTF8(MiscUtil.base64_decode(password.getBytes()));
+		byte [] cred = MiscUtil.md5raw(credentials.getBytes());
+		cred = MiscUtil.concat(cred,(":"+nonce+":"+cnonce).getBytes());
+		String response = MiscUtil.md5hex(  (MiscUtil.md5hex(cred)+
+					":"+nonce+":00000001:"+cnonce+":auth:"+
+					MiscUtil.md5hex("AUTHENTICATE:WAWA/s.whatsapp.net".getBytes())).getBytes() );
+	
+		return "X-WAWA: username=\"" + phone + "\",digest-uri=\"WAWA/s.whatsapp.net\"" + 
+			",realm=\"s.whatsapp.net\",nonce=\"" + nonce + "\",cnonce=\"" + 
+			cnonce + "\",nc=\"00000001\",qop=\"auth\",digest-uri=\"WAWA/s.whatsapp.net\"," + 
+			"response=\"" + response + "\",charset=\"utf-8\"";
+	}
+	String generateHeaders(String auth, int content_length) {
+		String h = 
+		"User-Agent: WhatsApp/2.4.7 S40Version/14.26 Device/Nokia302\r\n" +
+		"Accept: text/json\r\n" +
+		"Content-Type: application/x-www-form-urlencoded\r\n" +
+		"Authorization: " + auth + "\r\n" +
+		"Accept-Encoding: identity\r\n" +
+		"Content-Length: " + String.valueOf(content_length) + "\r\n";
+		return h;
+	}
 }
 
 
