@@ -17,6 +17,7 @@ package com.xabber.android.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -85,7 +86,21 @@ public class AccountAdd extends ManagedActivity implements
 				accountTypeView.setSelection(position);
 				break;
 			}
-
+		Intent intent = getIntent();
+		Uri data = intent.getData();
+		if (data != null){
+			String username = data.getQueryParameter("username");
+			String password = data.getQueryParameter("password");
+//			String type = data.getQueryParameter("type");
+			
+			TextView _username = (TextView) findViewById( R.id.account_user_name );
+			TextView _password = (TextView) findViewById( R.id.account_password );
+//			TextView _account_type = (TextView) findViewById( R.id.account_type );
+			
+			_username.setText(username);
+			_password.setText(password);
+//			_account_type.setText(type);
+		}
 		((Button) findViewById(R.id.ok)).setOnClickListener(this);
 		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputManager.hideSoftInputFromWindow(findViewById(R.id.ok)
