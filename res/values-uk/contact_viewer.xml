@@ -38,6 +38,8 @@
     <string name="vcard_organization">Організація</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
     <string name="vcard_title">Посада</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_role">Роль</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
     <string name="vcard_other">Інша інформація</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->

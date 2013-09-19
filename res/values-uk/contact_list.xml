@@ -70,6 +70,8 @@
     <string name="group_rename">Перейменувати групу</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="NO_SUCH_ACCOUNT">Обліковий запис не знайдено</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NOT_CONNECTED">Підключення не встановлено</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
     <string name="request_subscription">Запросити підпис</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -88,6 +90,8 @@
     <string name="certificate_show_details">Докладніше ...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="close_chats">Закрити всі чати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
+    <string name="contact_integration_suggest">Бажаєте інтегрувати Xabber із системними контактами?\nЦе можна змінити в "Налаштування" → "XMPP облікові записи" → Ваш обліковий запис → "Інтеграція контактів".\nУвага: Системний список контактів може стати повільнішим на декілька хвилин.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="group_room">Конференції</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -98,6 +102,8 @@
     <string name="show_offline_always">Завжди показувати</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
     <string name="show_offline_never">Завжди приховувати</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_normal">Використати загальні налаштування</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
     <string name="show_offline_settings">Показ контактів поза мережею</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->

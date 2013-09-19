@@ -95,7 +95,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_unavailable">%1$s est désormais indisponible</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
-    <string name="action_status_xa">%1$s est absent depuis certain moment</string>
+    <string name="action_status_xa">%1$s est absent depuis un certain moment</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_subject">%1$s  a changé le sujet en : %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -124,6 +124,7 @@
     <string name="muc_invite">Inviter à discuter</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
     <string name="muc_is_unavailable">Vos messages ne peuvent être délivrés. Rejoignez la discussion s\'il vous plait.</string>
+    <string name="occupant_list">Liste des participants</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="otr_encryption">Chiffrement OTR</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->

@@ -66,6 +66,18 @@
     <string name="EMPTY_SERVER_NAME">O nome do servidor não foi informado</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="EMPTY_USER_NAME">O usuário não foi informado</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
+    <string name="account_archive_mode">Armazenar histórico de mensagem</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_available">No servidor se disponível</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_dont_store">Não armazenar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_local">Localmente no dispositivo</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_server">No servidor</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_unread">Localmente apenas não enviada e não lida</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_compression_summary">Marque para ativar compressão dos dados</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
@@ -78,6 +90,23 @@
     <string name="account_oauth">Autorização</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_oauth_not_authorized.png -->
     <string name="account_oauth_invalidated">Não autorizado</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth_summary">Configurações OAuth</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_gtalk.png -->
+    <string name="account_protocol_gtalk_title">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_protocol_wlm_title">WLM</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_password">Senha do proxy</string>
+    <string name="account_proxy_port">Porta do proxy</string>
+    <string name="account_proxy_type">Tipo de proxy</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Desabilitado</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Usuário do proxy</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Usar autenticação SASL (recomendado)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -90,6 +119,20 @@
     <string name="account_syncable">Integração com os contatos do sistema</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_syncable_summary">Exibir contatos desta conta na lista de contatos do telefone</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_enable">Habilitar TLS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_enable_summary">Use criptografia TLS quando possível para conectar ao servidor</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_legacy">SSL legado</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_legacy_summary">Use criptografia SSL legada quando conectar ao servidor</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_mode">Usar TLS/SSL</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_require">Requerer TLS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_require_summary">Requerer criptografia TLS quando conectar ao servidor</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_odnoklassniki">Você deve usar seu ID como seu nome de usuário (ex. 123456). Você não pode autenticar no bate-papo Odnoklasniki usando seu e-mail, usuário ou número de telefone. Seu ID pode ser encontrado em http://www.odnoklassniki.ru/settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
@@ -102,6 +145,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Conversação via rede anônima TOR e forçar protocolo criptográfico TLS\nNão recomendado para Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
+    <string name="confirm_cancellation">Tem certeza de que deseja descartar todas as mudanças?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Usuário incorreto. Selecione o texto de ajuda abaixo para detalhes.</string>
+    <string name="orbot_required_message">Para usar o TOR você deve possuir o Orbot instalado e ativado para tráfego de proxy nele. Você gostaria de instalá-lo pelo Google Play?</string>
+    <string name="orbot_required_title">Instalar Orbot?</string>
 </resources>

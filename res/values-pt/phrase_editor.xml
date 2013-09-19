@@ -1,3 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="phrase_regexp">Expressão regular</string>
+    <string name="phrase_sound">Som\nEscolha um som para notificação</string>
 </resources>

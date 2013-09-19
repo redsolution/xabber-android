@@ -3,11 +3,15 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_text">%1$s встановив статус: %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text_none">%1$s очистив текст статусу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_join">%1$s підключився</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_kick">%1$s був випханий</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
     <string name="account_is_offline">Повідомлення будуть доставлені після підключення до мережі</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_delay">Повідомлення відправлено о %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_input_hint">Введіть повідомлення</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
@@ -30,6 +34,8 @@
     <string name="message_quote">Цитувати</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
     <string name="message_remove">Вилучити з історії</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_repeat">Повторити надсилання</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
     <string name="save_history">Зберегти локальну історію\nЗберігати історію повідомлень локально</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
@@ -83,17 +89,27 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_unavailable">%1$s від\'єднався</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_xa">%1$s відійшов на довго</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_subject">%1$s змінив(ла) тему: %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="ATTENTION_IS_NOT_SUPPORTED">Контакт не підтримує можливість звернути свою увагу, або відключив дану функцію.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="chat_settings">Налаштування</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
     <string name="chat_state_composing">Набирає повідомлення ...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
     <string name="chat_state_paused">Ввів текст...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_typed">Повідомлення введено о %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="export_chat">Зберегти чат</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
     <string name="export_chat_done">Історія збережена на SD-картці</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_mask">%2$s для %1$s.html</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_send">Надіслати після експорту</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
     <string name="export_chat_title">Вкажіть ім\'я файлу</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->

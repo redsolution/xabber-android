@@ -104,6 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Вузол проксі</string>
+    <string name="account_proxy_password">Пароль</string>
+    <string name="account_proxy_port">Порт проксі</string>
+    <string name="account_proxy_type">Тип проксі</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Вимкнено</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Ім’я користувача</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Використовувати SASL авторизацію (рекомендовано)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -136,12 +146,17 @@
     <string name="account_type_helps_wlm">Вас буде перенаправлено на http://live.com для вводу імені користувача і пароля.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_odnoklassniki">Номер (ID) на сайті Однокласники (не ім’я користувача чи e-mail)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_wlm">-</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_odnoklassniki">Однокласники</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Вести балачку через анонімну мережу TOR використовуючи TLS протокол шифрування\nНе рекомендується для Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Ви впевнені, що бажаєте скасувати всі не збережені зміни?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Неправильне ім’я користувача. Перегляньте підказку в нижній частині екрану</string>
+    <string name="orbot_required_message">Для використання TOR має бути встановлений Orbot і використаний як проксі сервер. Бажаєте встановити його із Google Play?</string>
+    <string name="orbot_required_title">Встановити Orbot?</string>
 </resources>

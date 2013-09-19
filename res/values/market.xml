@@ -7,7 +7,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="production_title">Xabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market_new.png -->
-    <string name="development_changes">+ Czech translations\n+ Call attention feature\n+ Notifications based on key phrase\n+ Option to disable message delivery receipts\n+ List of occupants in a chat room (view only)\n* Multiple minor fixes\n* Multiple translations fixed\nThank you folks!</string>
+    <string name="development_changes">+ TOR support using Orbot\n+ Proxy support\n+ Belarusian, Persian, Italian, Portuguese, Ukrainian, Chinese - China, Chinese - Taiwan translations\n* Notification in Android 4+ fixed\n* Server side history fixed\n* Exit from Xabber fixed\n* Translations fixed\n* Minor fixes\nThank you folks!</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="development_description">Experimental (possibly UNSTABLE) version of Xabber - open source Jabber (XMPP) client with multi-account support and clean interface.\n\nYou can install this version if you want to help us test and develop Xabber. Stability is not guaranteed, so if you are not feeling adventurous, use regular version. But if you ARE a risk-taker, you will get new features first!\n\nSource code of Xabber is available at https://github.com/redsolution/xabber-android under the GNU GPLv3 license.\n\nFor more information visit our website http://xabber.com or follow @xabber_xmpp at twitter.\n\nIf you have any bugs or bright ideas to report, please mail to: info+devel@xabber.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->

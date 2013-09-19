@@ -111,7 +111,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_x400">X400</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="please_wait">Attendere prego...</string>
+    <string name="please_wait">Attendere prego…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="unknown">Sconosciuto</string>
 </resources>

@@ -17,7 +17,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
     <string name="application_action_waiting">Riconnessione</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
-    <string name="application_state_connecting">Connessione...</string>
+    <string name="application_state_connecting">Connessione…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
     <string name="application_state_disabled">Account disabilitato</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
@@ -31,9 +31,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
     <string name="application_state_roster">Connesso.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
-    <string name="application_state_starting">Avvio applicazione... </string>
+    <string name="application_state_starting">Avvio applicazione… </string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
-    <string name="application_state_waiting">In attesa di connessione...</string>
+    <string name="application_state_waiting">In attesa di connessione…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
     <string name="chat_list">Elenco chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
@@ -77,7 +77,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="XMPP_EXCEPTION">Errore di sistema</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
-    <string name="application_state_closing">Salvataggio cambiamenti...\nL\'applicazione verrà chiusa a breve.</string>
+    <string name="application_state_closing">Salvataggio cambiamenti…\nL\'applicazione verrà chiusa a breve.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_confirmation">%1$s. \nVuoi fidarti di un certificato con impronta digitale sha1: %2$s? Vuoi non essere più avvisato di questo problema con questo certificato?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
@@ -89,11 +89,11 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_self_signed">Certificato auto firmato</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_show_details">Dettagli ...</string>
+    <string name="certificate_show_details">Dettagli…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="close_chats">Chiudi tutte le chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
-    <string name="contact_integration_suggest">Vuoi che Xabber si integri con i contatti di sistema?\nImpostazione modificabile in "Impostazioni" → "Account XMPP" → Tuo account → "Integrazione contatti".\nNB: La lista dei contatti di sistema potrebbe subire dei rallentamenti per alcuni minuti.</string>
+    <string name="contact_integration_suggest">Vuoi che Xabber si integri con i contatti di sistema?\nQuesto può essere cambiato in "Impostazioni" → "Account XMPP" → Tuo account → "Integrazione contatti".\nNB: la lista dei contatti di sistema potrebbe subire dei rallentamenti per alcuni minuti.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="group_room">Conferenze</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->

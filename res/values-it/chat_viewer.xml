@@ -105,9 +105,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="chat_settings">Impostazioni chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
-    <string name="chat_state_composing">Sta scrivendo ...</string>
+    <string name="chat_state_composing">Sta scrivendo…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
-    <string name="chat_state_paused">Ha Inserito del testo ...</string>
+    <string name="chat_state_paused">Ha inserito del testo…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_typed">Messaggio scritto alle %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
@@ -132,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Riavvia crittografia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">È stata richiesta una conversazione privata ma tu non hai alcun plugin di supporto. Usa Pidgin o Adium per PC/Mac e Xabber o GibberBot per Android. Vai su http://otr.cypherpunks.ca/ per maggiori informazioni.</string>
+    <string name="otr_request">È stata richiesta una conversazione privata ma tu non hai alcun plugin di supporto. Utilizza Pidgin o Adium per PC/Mac e Xabber o GibberBot per Android. Visita http://otr.cypherpunks.ca/ per maggiori informazioni.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Avvia crittografia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

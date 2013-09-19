@@ -40,6 +40,8 @@
     <string name="save_history">Salvar histórico local\nArmazenar mensagem no histórico localmente</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="show_history">Exibir histórico</string>
+    <string name="action_attention_called">Chamada de atenção foi enviada</string>
+    <string name="action_attention_requested">Atenção solicitada</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_ban">%1$s foi banido</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -58,6 +60,28 @@
     <string name="action_leave">%1$s deixou o chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_nickname">%1$s mudou o apelido para %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_encryption">Criptografia foi habilitada mas este contato não foi verificado. Você pode verificá-lo no menu Criptografia OTR.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_error">Erro no OTR: %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finish">Interlocutor deixou a conversa. Você deveria fazer o mesmo ou reiniciar a conversa.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finished_session">Sua mensagem não foi enviada. Deixe a conversa ou a reinicie.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_plain">Você saiu da conversa criptografada</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_failed">A verificação falhou</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_not_approved">Sua resposta para a pergunta secreta foi verificada. Você deve perguntar ao seu interlocutor também ou checar o segredo compartilhado.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_unverified">A verificação falhou</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_verified">A verificação foi concluída com sucesso</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_unreadable">A mensagem criptografada recebida está ilegível</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_verified">Criptografia habilitada</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_available">%1$s está conectado agora</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -72,6 +96,18 @@
     <string name="action_status_xa">%1$s está ausente por um longo período</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_subject">%1$s mudou o assunto para: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ATTENTION_IS_NOT_SUPPORTED">Contato não suporta ou disabilitou atenção</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="call_attention">Chamar atenção</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="chat_settings">Configurações de conversação</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
+    <string name="chat_state_composing">Digitando...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
+    <string name="chat_state_paused">Texto digitado...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_typed">Mensagem foi escrita às %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="export_chat">Exportar bate-papo</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
@@ -86,4 +122,27 @@
     <string name="muc_invite">Convidar para bate-papo</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
     <string name="muc_is_unavailable">Suas mensagens não puderam se entregues. Por favor entre no bate papo</string>
+    <string name="occupant_list">Lista de ocupantes</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="otr_encryption">Criptografia OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_end">Parar criptografia</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_refresh">Reiniciar criptografia</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_request">Uma conversa privada Off-the-Record foi solicitada, mas você não tem suporte. Use o Pidgin ou Adium para PC/Mac e Xabber ou GibberBot para Android. Vá em http://otr.cypherpunks.ca/ para mais informações.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
+    <string name="otr_start">Iniciar criptografia</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unencrypted_message">Esta mensagem não está criptografada</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unreadable_message">A mensagem criptografada recebida está ilegível</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification">Verificação OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_fingerprint">Verificar com impressão digital</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_question">Verificar com pergunta</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_secret">Verificar com segredo compartilhado</string>
 </resources>

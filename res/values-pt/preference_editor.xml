@@ -68,6 +68,12 @@
     <string name="preference_interface">Opções do tema\nOpções de aparência</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="about_viewer">Sobre</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_divide">Mensagem em nova linha\nExibe a mensagem em uma nova linha</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
+    <string name="chats_divide_portrait">Em modo retrato</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_font_size">Tamanho da fonte\nTamanho do texto na mensagem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
     <string name="chats_font_size_large">Grande</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
@@ -80,20 +86,32 @@
     <string name="chats_hide_keyboard">Omitir teclado\nOmite o teclado após o envio da mensagem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
     <string name="chats_hide_keyboard_landscape">Em modo paisagem</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
+    <string name="chats_receipt">Avisos de entrega de mensagem\nEnviar e recebe avisos de entrega de mensagem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_show_avatars">Avatares nas mensagens\nExibe avatares em cada mensagem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_show_status_change">Exibir modificações de estado\nExibir mensagens sobre modificações de estado</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
     <string name="chats_show_status_change_muc">Em conferências</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_state_notification">Exibir notificação de digitação\nNotificar quando você está digitando</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_adjust_priority">Ajustar prioridade\nDefine a prioridade de acordo com o estado selecionado. Prioridade de conta serão sobrescritas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
     <string name="connection_go_away_immediately">Imediatamente quando bloquear a tela</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_xa">"Ausente por longo período" quando inativo\nDefinir "Ausente por longo período" ao bloquear a tela</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_priority">Configurações de prioridade</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_start_at_boot">Iniciar junto com o Android\nInicia a aplicação quando o Android iniciar. Não funciona quando o Xabber está instalado no SDCard.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wake_lock">Previnir modo em espera\nReduzirá a carga da bateria</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wifi_lock">Manter WiFi ativado\nMantém o WiFi ativado enquanto estiver em modo de espera. Reduz a carga da bateria</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">Redefinir as configurações offline\nLimpar configurações individuais para grupos e contas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
     <string name="contacts_reset_offline_warning">Você deseja realmente limpar as configurações individuais para grupos e contas?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
@@ -112,6 +130,8 @@
     <string name="events_show_text">Exibir mensagem na notificação\nExibir mensagem de texto na área de notificação</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_visible_chat">Notificação no bate-papo atual\nNotificar mensagens entregues no bate-papo atual</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
+    <string name="negative_priotiry_summary">%s (você não receberá mensagens de nenhuma conversação)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_accounts">Contas XMPP\nGerencie sua contas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
@@ -124,4 +144,9 @@
     <string name="security_otr_history">Armazenar histórico\nArmazenar quando estiver na sessão do OTR</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
     <string name="security_otr_mode">Modo OTR</string>
+    <string name="chats_attention">Atenção\nReagir a recebimentos de pedidos de atenção</string>
+    <string name="chats_attention_sound">Som de atenção\nEscolha um toque</string>
+    <string name="connection_load_vcard">Carregar vCard\nCarrega e atualiza informação pessoa e o avatar. Disabilitar para reduzir o tráfego de rede.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
+    <string name="security_clear_certificate_warning">Você deseja realmente remover todos os certificados ignorados?</string>
 </resources>

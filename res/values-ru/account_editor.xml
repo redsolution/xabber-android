@@ -104,6 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Хост для прокси</string>
+    <string name="account_proxy_password">Пароль для прокси</string>
+    <string name="account_proxy_port">Порт для прокси</string>
+    <string name="account_proxy_type">Тип прокси</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Отключено</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Имя пользователя для прокси</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Использовать SASL аутентификацию (рекомендуется)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -142,8 +152,11 @@
     <string name="account_type_names_odnoklassniki">Одноклассники</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Использовать анонимное соединения через TOR и требовать TLS шифрования\nНе рекомендуется для Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Вы уверены, что хотите отменить все не сохраненные изменения?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Неправильное имя пользователя. Просмотрите подсказку внизу экрана</string>
+    <string name="orbot_required_message">Для использования TOR необходимо установить приложение Orbot и активировать в нём передачу данных. Вы хотите установить его из Google Play?</string>
+    <string name="orbot_required_title">Установить Orbot?</string>
 </resources>
