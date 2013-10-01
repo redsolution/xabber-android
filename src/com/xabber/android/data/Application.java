@@ -32,6 +32,7 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Handler;
 
+import com.xabber.android.data.PRNGFixes;
 import com.xabber.android.service.XabberService;
 import com.xabber.androiddev.R;
 
@@ -262,6 +263,8 @@ public class Application extends android.app.Application {
 	public void onCreate() {
 		super.onCreate();
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+
+		PRNGFixes.apply();
 
 		ArrayList<String> contactManager = new ArrayList<String>();
 		TypedArray contactManagerClasses = getResources().obtainTypedArray(
