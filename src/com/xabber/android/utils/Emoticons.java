@@ -43,42 +43,42 @@ public class Emoticons {
 			.getInstance();
 
 	static {
-		addPattern(ANDROID_EMOTICONS, ":)", R.drawable.emo_im_happy);
-		addPattern(ANDROID_EMOTICONS, ":-)", R.drawable.emo_im_happy);
-		addPattern(ANDROID_EMOTICONS, ":(", R.drawable.emo_im_sad);
-		addPattern(ANDROID_EMOTICONS, ":-(", R.drawable.emo_im_sad);
-		addPattern(ANDROID_EMOTICONS, ";)", R.drawable.emo_im_winking);
-		addPattern(ANDROID_EMOTICONS, ";-)", R.drawable.emo_im_winking);
-		addPattern(ANDROID_EMOTICONS, ":P",
-				R.drawable.emo_im_tongue_sticking_out);
-		addPattern(ANDROID_EMOTICONS, ":-P",
-				R.drawable.emo_im_tongue_sticking_out);
-		addPattern(ANDROID_EMOTICONS, "=-O", R.drawable.emo_im_surprised);
-		addPattern(ANDROID_EMOTICONS, ":*", R.drawable.emo_im_kissing);
-		addPattern(ANDROID_EMOTICONS, ":-*", R.drawable.emo_im_kissing);
-		addPattern(ANDROID_EMOTICONS, ":O", R.drawable.emo_im_wtf);
-		addPattern(ANDROID_EMOTICONS, ":-O", R.drawable.emo_im_wtf);
-		addPattern(ANDROID_EMOTICONS, "B)", R.drawable.emo_im_cool);
-		addPattern(ANDROID_EMOTICONS, "B-)", R.drawable.emo_im_cool);
-		addPattern(ANDROID_EMOTICONS, "8)", R.drawable.emo_im_cool);
-		addPattern(ANDROID_EMOTICONS, "8-)", R.drawable.emo_im_cool);
-		addPattern(ANDROID_EMOTICONS, ":$", R.drawable.emo_im_money_mouth);
-		addPattern(ANDROID_EMOTICONS, ":-$", R.drawable.emo_im_money_mouth);
-		addPattern(ANDROID_EMOTICONS, ":-!", R.drawable.emo_im_foot_in_mouth);
-		addPattern(ANDROID_EMOTICONS, ":-[", R.drawable.emo_im_embarrassed);
-		addPattern(ANDROID_EMOTICONS, "O:)", R.drawable.emo_im_angel);
-		addPattern(ANDROID_EMOTICONS, "O:-)", R.drawable.emo_im_angel);
-		addPattern(ANDROID_EMOTICONS, ":\\", R.drawable.emo_im_undecided);
-		addPattern(ANDROID_EMOTICONS, ":-\\", R.drawable.emo_im_undecided);
-		addPattern(ANDROID_EMOTICONS, ":'(", R.drawable.emo_im_crying);
-		addPattern(ANDROID_EMOTICONS, ":D", R.drawable.emo_im_laughing);
-		addPattern(ANDROID_EMOTICONS, ":-D", R.drawable.emo_im_laughing);
-		addPattern(ANDROID_EMOTICONS, "O_o", R.drawable.emo_im_wtf);
-		addPattern(ANDROID_EMOTICONS, "o_O", R.drawable.emo_im_wtf);
-		addPattern(ANDROID_EMOTICONS, ">:O", R.drawable.emo_im_yelling);
-		addPattern(ANDROID_EMOTICONS, ">:0", R.drawable.emo_im_yelling);
-		addPattern(ANDROID_EMOTICONS, ":S", R.drawable.emo_im_lips_are_sealed);
-		addPattern(ANDROID_EMOTICONS, ":-S", R.drawable.emo_im_lips_are_sealed);
+		addPattern(ANDROID_EMOTICONS, ":mad:", R.drawable.mad);
+		addPattern(ANDROID_EMOTICONS, ";)", R.drawable.wink);
+		addPattern(ANDROID_EMOTICONS, ":o", R.drawable.redface);
+		addPattern(ANDROID_EMOTICONS, ":(", R.drawable.frown);
+		addPattern(ANDROID_EMOTICONS, ":rolleyes:", R.drawable.rolleyes);
+		addPattern(ANDROID_EMOTICONS, ":eek:", R.drawable.eek);
+		addPattern(ANDROID_EMOTICONS, ":p", R.drawable.tongue);
+		addPattern(ANDROID_EMOTICONS, ":D", R.drawable.biggrin);
+		addPattern(ANDROID_EMOTICONS, ":)", R.drawable.smile);
+		addPattern(ANDROID_EMOTICONS, ":confused:", R.drawable.confused);
+		addPattern(ANDROID_EMOTICONS, ":cool:", R.drawable.cool);
+		addPattern(ANDROID_EMOTICONS, ":comp:", R.drawable.comp);
+		addPattern(ANDROID_EMOTICONS, ":think:", R.drawable.think);
+		addPattern(ANDROID_EMOTICONS, ":psmoke:", R.drawable.porvarismoke);
+		addPattern(ANDROID_EMOTICONS, ":eat1:", R.drawable.eat);
+		addPattern(ANDROID_EMOTICONS, ":kahvi:", R.drawable.kahvi3);
+		addPattern(ANDROID_EMOTICONS, ":kippis:", R.drawable.kippis);
+		addPattern(ANDROID_EMOTICONS, ":smoke:", R.drawable.smoker);
+		addPattern(ANDROID_EMOTICONS, ":hammer:", R.drawable.hammer);
+		addPattern(ANDROID_EMOTICONS, ":hammer2:", R.drawable.hammer2);
+		addPattern(ANDROID_EMOTICONS, ":hammer3:", R.drawable.hammer3);
+		addPattern(ANDROID_EMOTICONS, ":facepalm:", R.drawable.facepalm);
+		addPattern(ANDROID_EMOTICONS, ":mad2:", R.drawable.mad2);
+		addPattern(ANDROID_EMOTICONS, ":comp2:", R.drawable.comp2);
+		addPattern(ANDROID_EMOTICONS, ":conf:", R.drawable.conf);
+		addPattern(ANDROID_EMOTICONS, ":gadne:", R.drawable.gadne);
+		addPattern(ANDROID_EMOTICONS, ":gcomp:", R.drawable.gcomp);
+		addPattern(ANDROID_EMOTICONS, ":gwalk:", R.drawable.gwalk);
+		addPattern(ANDROID_EMOTICONS, ":gkippis:", R.drawable.gkippis);
+		addPattern(ANDROID_EMOTICONS, ":ghammer:", R.drawable.ghammer);
+		addPattern(ANDROID_EMOTICONS, ":ghammer3:", R.drawable.ghammer3);
+		addPattern(ANDROID_EMOTICONS, ":gthink:", R.drawable.gthink);
+		addPattern(ANDROID_EMOTICONS, ":apple:", R.drawable.apple);
+		addPattern(ANDROID_EMOTICONS, ":play:", R.drawable.play);
+		addPattern(ANDROID_EMOTICONS, ":thumb:", R.drawable.thumb);
+		addPattern(ANDROID_EMOTICONS, ":laihduta:", R.drawable.laihduta);
 	}
 
 	private static void addPattern(Map<Pattern, Integer> map, String smile,

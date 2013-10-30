@@ -1,8 +1,10 @@
-Xabber - XMPP client for Android
+gXabber - XMPP client for Android
 ================================
 
 Open source Jabber (XMPP) client with multi-account support, clean and simple interface.
 Being both free (as in freedom!) and ad-free, Xabber is designed to be the best Jabber client for Android.
+
+gXabber adds custom emoticons from MuroBBS to the original project.
 
 Supported protocols
 ===================
