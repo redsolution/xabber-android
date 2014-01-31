@@ -377,7 +377,7 @@ public class NotificationManager implements OnInitializedListener,
 			chatViews.setTextViewText(R.id.text2,
 					Emoticons.getSmiledText(application, text));
 			chatViews.setTextViewText(R.id.time,
-					StringUtils.getSmartTimeText(message.getTimestamp()));
+					StringUtils.getSmartTimeText(message.getTimestamp(), application.getApplicationContext()));
 
 			String messageText = StringUtils.getQuantityString(
 					application.getResources(), R.array.chat_message_quantity,

@@ -195,7 +195,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 		TextView textView = (TextView) view.findViewById(R.id.text);
 		ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
 		ChatAction action = messageItem.getAction();
-		String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());
+		String time = StringUtils.getSmartTimeText(messageItem.getTimestamp(), activity.getApplicationContext());
 		SpannableStringBuilder builder = new SpannableStringBuilder();
 		if (action == null) {
 			int messageResource = R.drawable.ic_message_delivered;
@@ -222,7 +222,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 			if (timeStamp != null) {
 				String delay = activity.getString(
 						incoming ? R.string.chat_delay : R.string.chat_typed,
-						StringUtils.getSmartTimeText(timeStamp));
+						StringUtils.getSmartTimeText(timeStamp, this.activity.getApplicationContext()));
 				append(builder, delay, new TextAppearanceSpan(activity,
 						R.style.ChatHeader_Delay));
 				append(builder, divider, new TextAppearanceSpan(activity,
