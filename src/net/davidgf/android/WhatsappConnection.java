@@ -30,9 +30,10 @@ import java.io.*;
 
 public class WhatsappConnection {
 	private RC4Decoder in, out;
-	private byte session_key[];
+	private byte session_key[][];
 	private DataBuffer outbuffer;
 	private byte []challenge_data;
+	private int frame_seq;
 	
 	private enum SessionStatus { SessionNone, SessionConnecting, SessionWaitingChallenge, SessionWaitingAuthOK, SessionConnected };
 	private SessionStatus conn_status;
@@ -60,7 +61,7 @@ public class WhatsappConnection {
 	private Thread http_thread;
 
 	public WhatsappConnection(String phone, String pass, String nick, String aname) {
-		session_key = new byte[20];
+		session_key = new byte[4][20];
 		
 		this.phone = phone;
 		this.password = pass.trim();
@@ -120,14 +121,16 @@ public class WhatsappConnection {
 		if ((bflag & 0x8) != 0) {
 			// Decode data, buffer conversion
 			if (this.in != null) {
-				DataBuffer decoded_data = data.decodedBuffer(this.in,bsize,false);
-			
+				DataBuffer decoded_data = data.decodedBuffer(this.in,bsize);
+				
+				Tree tt = read_tree(decoded_data);
+				
+				data.popData(bsize); // Pop data unencrypted for next parsing!
+				
 				// Remove hash
 				decoded_data.popData(4);
-			
-				// Call recursive
-				data.popData(bsize); // Pop data unencrypted for next parsing!
-				return read_tree(decoded_data);
+				
+				return tt;
 			}else{
 				data.popData(bsize);
 				return new Tree("treeerr");
@@ -164,18 +167,12 @@ public class WhatsappConnection {
 			// Generate a session key using the challege & the password
 			assert(conn_status == SessionStatus.SessionWaitingChallenge);
 			
-			if (password.length() == 15) {
-				session_key = KeyGenerator.generateKeyImei(password,t.getData());
-			}
-			else if (password.contains(":")) {
-				session_key = KeyGenerator.generateKeyMAC(password,t.getData());
-			}
-			else {
-				session_key = KeyGenerator.generateKeyV2(password,t.getData());
-			}
+			// Update key generation to V1.4
+			session_key = KeyGenerator.generateKeyV14(password,t.getData());
+			System.out.println(password);
 			
-			this.in  = new RC4Decoder(session_key, 256);
-			this.out = new RC4Decoder(session_key, 256);
+			this.in  = new RC4Decoder(session_key[2], 768);
+			this.out = new RC4Decoder(session_key[0], 768);
 			
 			conn_status = SessionStatus.SessionWaitingAuthOK;
 			challenge_data = t.getData();
@@ -205,12 +202,19 @@ public class WhatsappConnection {
 				getLastSeen(contacts.get(i).phone);
 			}
 		}
+		else if (t.getTag().equals("notification")) {
+			DataBuffer reply = generateResponse(t.getAttribute("from"),
+						t.getAttribute("type"),
+						t.getAttribute("id"));
+			outbuffer = outbuffer.addBuf(reply);
+		}
 		else if (t.getTag().equals("presence")) {
 			// Receives the presence of the user
-			if ( t.hasAttribute("from") && t.hasAttribute("type") ) {
-				Presence.Mode mode = Presence.Mode.away;
-				if (t.getAttribute("type").equals("available"))
-					mode = Presence.Mode.available;
+			if ( t.hasAttribute("from") ) {
+				Presence.Mode mode = Presence.Mode.available;
+				if (t.hasAttribute("type"))
+					if (t.getAttribute("type").equals("unavailable"))
+						mode = Presence.Mode.away;
 				
 				Presence presp = new Presence(Presence.Type.available);
 				presp.setMode(mode);
@@ -224,7 +228,7 @@ public class WhatsappConnection {
 		}
 		else if (t.getTag().equals("iq")) {
 			// PING
-			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("ping")) {
+			if (t.hasAttribute("from") && t.hasAttribute("id") && t.hasChild("urn:xmpp:ping")) {
 				this.doPong(t.getAttribute("id"),t.getAttribute("from"));
 			}
 			
@@ -237,9 +241,18 @@ public class WhatsappConnection {
 				}
 				tb = t.getChild("query");
 				if (tb != null) {
-					if (tb.hasAttributeValue("xmlns","jabber:iq:last") && tb.hasAttribute("seconds")) {
+					if (tb.hasAttribute("seconds")) {
 						this.notifyLastSeen(t.getAttribute("from"),tb.getAttribute("seconds"));
 					}
+				}
+			}
+			
+			// Status message
+			if (t.hasChild("status")) {
+				Vector <Tree> childs = t.getChildren();
+				for (int j = 0; j < childs.size(); j++) {
+					if (childs.get(j).getTag().equals("user"))
+						this.notifyStatus(childs.get(j).getAttribute("jid"),MiscUtil.bytesToUTF8(childs.get(j).getData()));
 				}
 			}
 			
@@ -260,12 +273,13 @@ public class WhatsappConnection {
 						final String iid = String.valueOf(++iqid);
 						final String pid = childs.get(j).getAttribute("id");
 						final String subj = childs.get(j).getAttribute("subject");
-						Tree iq = new Tree("list",new HashMap < String,String >(){{put("xmlns","w:g");}});
+						Tree iq = new Tree("list");
 						Tree req = new Tree("iq", 
 							new HashMap < String,String >(){{
 								put("id",iid);
 								put("type","get");
 								put("to",pid+"@g.us");
+								put("xmlns","w:g");
 								}});
 						req.addChild(iq);
 						outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
@@ -292,13 +306,14 @@ public class WhatsappConnection {
 			}
 		}
 		else if (t.getTag().equals("message")) {
-			if (t.hasAttributeValue("type","chat") && t.hasAttribute("from")) {
+			if (t.hasAttribute("from") &&
+				(t.hasAttributeValue("type","text") || t.hasAttributeValue("type","media")) ) {
 				long time = 0;
 				if (t.hasAttribute("t"))
 					time = Integer.parseInt(t.getAttribute("t"));
 				String from = t.getAttribute("from");
 				String id = t.getAttribute("id");
-				String author = t.getAttribute("author");
+				String author = t.getAttribute("participant");
 				
 				// Group nickname
 				if (from.contains("@g.us") && t.hasChild("notify")) {
@@ -317,33 +332,52 @@ public class WhatsappConnection {
 				tb = t.getChild("media");
 				if (tb != null) {
 					// Photo/audio
-					if (tb.hasAttributeValue("type","image")) {
+					if (tb.hasAttributeValue("type","image") ||
+						tb.hasAttributeValue("type","audio") ||
+						tb.hasAttributeValue("type","video")) {
+						
 						this.receiveMessage(
 							new ImageMessage(from,time,id,tb.getAttribute("url"),tb.getData(),author));
 						addContact(from,false);
 					}
 				}
 			}
+			else if (t.hasAttributeValue("type", "notification") && t.hasAttribute("from")) {
+				/* If the nofitication comes from a group, assume we have to reload groups ;) */
+				updateGroups();
+			}
+			
+			// Received ACK
+			if (t.hasAttribute("type") && t.hasAttribute("from")) {
+				DataBuffer reply = generateResponse(t.getAttribute("from"),
+									t.getAttribute("type"),
+									t.getAttribute("id"));
+				outbuffer = outbuffer.addBuf(reply);
+
+			}
+		}
+		else if (t.getTag().equals("chatstate")) {
 			if (t.hasChild("composing")) {
 				gotTyping(t.getAttribute("from"),true);
 			}
 			if (t.hasChild("paused")) {
 				gotTyping(t.getAttribute("from"),false);
 			}
-			
-			// Received ACK
-			if (t.hasAttribute("type") && t.hasAttribute("from")) {
-				String answer = "received";
-				if (t.hasChild("received"))
-					answer = "ack";
-				DataBuffer reply = generateResponse(t.getAttribute("from"),
-									t.getAttribute("type"),
-									t.getAttribute("id"),
-									answer);
-				outbuffer = outbuffer.addBuf(reply);
-
-			}
 		}
+		else if (t.getTag().equals("receipt")) {
+			final String pid = t.getAttribute("id");
+			final String typed = t.getAttribute("type");
+			final String typef = (typed.equals("") ? "delivery" : typed);
+			Tree req = new Tree("ack", 
+				new HashMap < String,String >(){{
+					put("id",pid);
+					put("type",typef);
+					put("class","receipt");
+					}});
+			outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
+		}
+		
+
 		/*else if (treelist[i].getTag() == "failure") {
 			if (conn_status == SessionWaitingAuthOK)
 				this->notifyError(errorAuth);
@@ -373,6 +407,20 @@ public class WhatsappConnection {
 		for (int i = 0; i < contacts.size(); i++) {
 			if (contacts.get(i).phone.equals(u)) {
 				contacts.get(i).last_seen = sec;
+				break;
+			}
+		}
+		
+		requestVCardUpdate(u);
+	}
+
+	private void notifyStatus(final String from, final String status) {
+		final String u = MiscUtil.getUser(from);
+		
+		// Save last seen time
+		for (int i = 0; i < contacts.size(); i++) {
+			if (contacts.get(i).phone.equals(u)) {
+				contacts.get(i).status = status;
 				break;
 			}
 		}
@@ -416,11 +464,9 @@ public class WhatsappConnection {
 		}
 	}
 	
-	private DataBuffer generateResponse(final String from, final String type, final String id, final String ans) {
-		Tree received = new Tree(ans,new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
-		Tree mes = new Tree("message",new HashMap < String,String >() {{ 
-			put("to",from); put("type",type); put("id",id); }} );
-		mes.addChild(received);
+	private DataBuffer generateResponse(final String from, final String type, final String id) {
+		Tree mes = new Tree("receipt",new HashMap < String,String >() {{ 
+			put("to",from); put("id",id); }} );
 		return serialize_tree(mes,true);
 	}
 	
@@ -428,9 +474,15 @@ public class WhatsappConnection {
 		final String fuser = user+"@"+whatsappserver;
 		final String reqid = String.valueOf(++iqid);
 		Tree pic = new Tree ("picture", 
-			new HashMap < String,String >() {{ put("xmlns","w:profile:picture"); put("type","preview"); }} );
+			new HashMap < String,String >() {{ put("type","preview"); }} );
 		Tree req = new Tree("iq", 
-			new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to",fuser); }} );
+			new HashMap < String,String >() {{
+				put("id",reqid); 
+				put("type","get"); 
+				put("to",fuser); 
+				put("xmlns","w:profile:picture");
+			}}
+		);
 
 		req.addChild(pic);
 		
@@ -442,9 +494,9 @@ public class WhatsappConnection {
 		{
 			final String reqid = String.valueOf(++iqid);
 			gw1 = iqid;
-			Tree iq = new Tree("list",new HashMap < String,String >() {{ put("xmlns","w:g"); put("type","owning");}} );
+			Tree iq = new Tree("list",new HashMap < String,String >() {{ put("type","owning");}} );
 			Tree req = new Tree("iq",
-				new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to","g.us");}} );
+				new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to","g.us"); put("xmlns","w:g"); }} );
 			
 			req.addChild(iq);
 			outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
@@ -453,9 +505,9 @@ public class WhatsappConnection {
 			final String reqid = String.valueOf(++iqid);
 			gw2 = iqid;
 			Tree iq = new Tree("list",
-				new HashMap < String,String >() {{ put("xmlns","w:g"); put("type","participating");}} );
+				new HashMap < String,String >() {{ put("type","participating");}} );
 			Tree req = new Tree("iq",
-				new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to","g.us");}} );
+				new HashMap < String,String >() {{ put("id",reqid); put("type","get"); put("to","g.us"); put("xmlns","w:g"); }} );
 			req.addChild(iq);
 			outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
 		}
@@ -464,11 +516,14 @@ public class WhatsappConnection {
 
 	private void manageParticipant(final String group, final String participant, final String command) {
 		Tree part = new Tree("participant",new HashMap < String,String >() {{ put("jid",participant); }} );
-		Tree iq = new Tree(command,new HashMap < String,String >() {{ put("xmlns","w:g"); }} );
+		Tree iq = new Tree(command);
 		iq.addChild(part);
 		final String reqid = String.valueOf(++iqid);
 		Tree req = new Tree("iq",
-			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to",group+"@g.us");}} );
+			new HashMap < String,String >() {{ 
+				put("id",reqid); put("type","set"); put("to",group+"@g.us"); put("xmlns","w:g");
+			}}
+		);
 		req.addChild(iq);
 	
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
@@ -476,11 +531,11 @@ public class WhatsappConnection {
 	
 	private void leaveGroup(final String group) {
 		Tree gr = new Tree("group", new HashMap < String,String >() {{ put("id",group+"@g.us"); }} );
-		Tree iq = new Tree("leave", new HashMap < String,String >() {{ put("xmlns","w:g"); }} );
+		Tree iq = new Tree("leave");
 		iq.addChild(gr);
 		final String reqid = String.valueOf(++iqid);
 		Tree req = new Tree("iq",
-			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to","g.us");}} );
+			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to","g.us"); put("xmlns","w:g"); }} );
 		req.addChild(iq);
 	
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
@@ -488,10 +543,10 @@ public class WhatsappConnection {
 
 	void addGroup(final String subject) {
 		Tree gr = new Tree("group", 
-			new HashMap < String,String >() {{ put("xmlns","w:g"); put("action","create"); put("subject",subject);}} );
+			new HashMap < String,String >() {{ put("action","create"); put("subject",subject);}} );
 		final String reqid = String.valueOf(++iqid);
 		Tree req = new Tree("iq",
-			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to","g.us");}} );
+			new HashMap < String,String >() {{ put("id",reqid); put("type","set"); put("to","g.us"); put("xmlns","w:g"); }} );
 		req.addChild(gr);
 	
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(req,true)));
@@ -544,7 +599,7 @@ public class WhatsappConnection {
 	}
 	
 	private void gotTyping(final String user, boolean typing) {
-	        Message msg = new Message();
+		Message msg = new Message();
 		msg.setTo(MiscUtil.getUser(phone));
 		msg.setFrom(MiscUtil.getUser(user));
 
@@ -577,18 +632,6 @@ public class WhatsappConnection {
 		Tree pres = new Tree("presence", new HashMap < String,String >() {{ put("name",nickname); put("type",mypresence); }} );
 		
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(pres,true)));
-		
-		Tree xhash = new Tree("x", new HashMap < String,String >() {{ put("xmlns","jabber:x:event"); }} );
-		xhash.addChild(new Tree("server"));
-		Tree tbody = new Tree ("body"); tbody.setData(MiscUtil.UTF8ToBytes(this.mymessage));
-		
-		String stime = String.valueOf(System.currentTimeMillis()/1000);
-		final String iqtime_id = stime + "-" + String.valueOf(++iqid);
-		Tree mes = new Tree("message", new HashMap < String,String >() {{ 
-			put("to","s.us"); put("type","chat"); put("id",iqtime_id); }} );
-		mes.addChild(xhash); mes.addChild(tbody);
-
-		//outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(mes,true)));
 	}
 
 	void doPong(final String id, final String from) {
@@ -623,12 +666,18 @@ public class WhatsappConnection {
 	}
 	
 	public DataBuffer serialize_tree(Tree tree, boolean crypt) {
+	
+		System.out.println("OUT");
+		System.out.println(tree.toString(0));
+	
 		DataBuffer data = write_tree(tree);
 		int flag = 0;
 		if (crypt) {
-			data = data.encodedBuffer(this.out,this.session_key,true);
-			flag = 0x10;
+			data = data.encodedBuffer(this.out,this.session_key[1],true,frame_seq++);
+			flag = 0x80;
 		}
+		
+		System.out.println("OUTDONE");
 		
 		DataBuffer ret = new DataBuffer();
 		ret.putInt(flag,1);
@@ -645,26 +694,20 @@ public class WhatsappConnection {
 		auth.put("resource", useragent);
 		auth.put("to", whatsappserver);
 		Tree t = new Tree("start",auth);
-		first.addData( new byte [] {'W','A',1,2} );
+		first.addData( new byte [] {'W','A',1,4} );
 		first = first.addBuf(serialize_tree(t,false));
 		}
 
 		// Send features
 		{
 		Tree p = new Tree("stream:features");
-		p.addChild(new Tree("receipt_acks"));
-		p.addChild(new Tree("w:profile:picture",new HashMap < String,String >() {{ put("type","all"); }} ));
-		p.addChild(new Tree("w:profile:picture",new HashMap < String,String >() {{ put("type","group"); }} ));
-		p.addChild(new Tree("notification",new HashMap < String,String >() {{ put("type","participant"); }} ));
-		p.addChild(new Tree("status"));
 		first = first.addBuf(serialize_tree(p,false));
 		}
 		
 		// Send auth request
 		{
 		Map < String,String > auth = new HashMap <String,String>();
-		auth.put("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl");
-		auth.put("mechanism", "WAUTH-1");
+		auth.put("mechanism", "WAUTH-2");
 		auth.put("user", phone);
 		Tree t = new Tree("auth",auth);
 		t.forceDataWrite();
@@ -676,7 +719,7 @@ public class WhatsappConnection {
 	}
 	
 	void sendAuthResponse() {
-		Tree t = new Tree("response",new HashMap < String,String >() {{ put("xmlns","urn:ietf:params:xml:ns:xmpp-sasl"); }});
+		Tree t = new Tree("response");
 	
 		long epoch = System.currentTimeMillis()/1000;
 		String stime = String.valueOf(epoch);
@@ -685,7 +728,7 @@ public class WhatsappConnection {
 		eresponse.addData(challenge_data);
 		eresponse.addData(stime.getBytes());
 		
-		eresponse = eresponse.encodedBuffer(this.out,this.session_key,false);
+		eresponse = eresponse.encodedBuffer(this.out,this.session_key[1],false, frame_seq++);
 		t.setData(eresponse.getPtr());
 
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(t,false)));
@@ -734,9 +777,11 @@ public class WhatsappConnection {
 		final String id = String.valueOf(++iqid);
 		final String fuser = MiscUtil.getUser(user)+"@"+whatsappserver;
 		Tree iq = new Tree("iq",
-			new HashMap < String,String >() {{ put("id",id); put("type","get"); put("to",fuser); }} );
-		Tree req = new Tree("query", new HashMap < String,String >() {{ put("xmlns","jabber:iq:last"); }} );
-		iq.addChild(req);
+			new HashMap < String,String >() {{ 
+				put("id",id); put("type","get"); put("to",fuser); put("xmlns","jabber:iq:last");
+			}}
+		);
+		iq.addChild(new Tree("query"));
 		
 		outbuffer = outbuffer.addBuf(new DataBuffer(serialize_tree(iq,true)));
 	}
@@ -751,10 +796,6 @@ public class WhatsappConnection {
 	// Helper for Message class
 	public byte [] serializeMessage(final String to, String message, int id) {
 		try {
-		Tree request = new Tree ("request",new HashMap < String,String >() {{ put("xmlns","urn:xmpp:receipts"); }} );
-		Tree notify  = new Tree ("notify", new HashMap < String,String >() {{ put("xmlns","urn:xmpp:whatsapp"); put("name",nickname); }} );
-		Tree xhash   = new Tree ("x",      new HashMap < String,String >() {{ put("xmlns","jabber:x:event"); }} );
-		xhash.addChild(new Tree("server"));
 		Tree tbody = new Tree("body");
 		tbody.setData(message.getBytes("UTF-8"));
 		
@@ -768,8 +809,7 @@ public class WhatsappConnection {
 		attrs.put("t",stime);
 		
 		Tree mes = new Tree("message",attrs);
-		mes.addChild(xhash); mes.addChild(notify);
-		mes.addChild(request); mes.addChild(tbody);
+		mes.addChild(tbody);
 		
 		return serialize_tree(mes,true).getPtr();
 		}catch (Exception e) {
@@ -876,73 +916,7 @@ public class WhatsappConnection {
 			participants = new Vector <String> ();
 		}
 	};
-	
-	private void doSyncAuth() {
-		http_thread = new Thread() {
-			public void run() {
-				performSyncAuth();
-			}
-		};
-		http_thread.setName("Socket data reader");
-		http_thread.setDaemon(true);
-		http_thread.start();
-	}
-	private void performSyncAuth() {
-		try {
-			String request = generateHeaders(generateHttpAuth("0"),0);
-			URL address = new URL("https://sro.whatsapp.net/v2/sync/a");
-			HttpURLConnection connection = (HttpURLConnection)address.openConnection();
-			connection.setReadTimeout(10000);
-			connection.setRequestMethod("POST");
-			connection.setDoOutput(true);
-			connection.setDoInput(true);
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
-			connection.setRequestProperty("charset", "utf-8");
-			connection.setRequestProperty("Content-Length", "" + Integer.toString(request.length()));
-			connection.setUseCaches (false);
-		
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream ());
-			DataInputStream rr = new DataInputStream(connection.getInputStream ());
-			wr.writeBytes(request);
-			wr.flush();
-			wr.close();
-		} catch (Exception e) {
-		
-		}
-	}
-	
-	String generateHttpAuth(String nonce) {
-		// cnonce is a 10 ascii char random string
-		String cnonce = "";
-		for (int i = 0; i < 10; i++) {
-			char c = 'a';
-			char rn = (char)(new Random()).nextInt(25);
-			c += rn;
-			cnonce += Character.toString(c);
-		}
 
-		String credentials =phone + ":s.whatsapp.net:" + MiscUtil.bytesToUTF8(MiscUtil.base64_decode(password.getBytes()));
-		byte [] cred = MiscUtil.md5raw(credentials.getBytes());
-		cred = MiscUtil.concat(cred,(":"+nonce+":"+cnonce).getBytes());
-		String response = MiscUtil.md5hex(  (MiscUtil.md5hex(cred)+
-					":"+nonce+":00000001:"+cnonce+":auth:"+
-					MiscUtil.md5hex("AUTHENTICATE:WAWA/s.whatsapp.net".getBytes())).getBytes() );
-	
-		return "X-WAWA: username=\"" + phone + "\",digest-uri=\"WAWA/s.whatsapp.net\"" + 
-			",realm=\"s.whatsapp.net\",nonce=\"" + nonce + "\",cnonce=\"" + 
-			cnonce + "\",nc=\"00000001\",qop=\"auth\",digest-uri=\"WAWA/s.whatsapp.net\"," + 
-			"response=\"" + response + "\",charset=\"utf-8\"";
-	}
-	String generateHeaders(String auth, int content_length) {
-		String h = 
-		"User-Agent: WhatsApp/2.4.7 S40Version/14.26 Device/Nokia302\r\n" +
-		"Accept: text/json\r\n" +
-		"Content-Type: application/x-www-form-urlencoded\r\n" +
-		"Authorization: " + auth + "\r\n" +
-		"Accept-Encoding: identity\r\n" +
-		"Content-Length: " + String.valueOf(content_length) + "\r\n";
-		return h;
-	}
 }
 
 

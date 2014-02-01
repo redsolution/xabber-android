@@ -32,7 +32,8 @@ public class RC4Decoder {
 		i = j = 0;
 		
 		byte [] temp = new byte[drop];
-		for (int k = 0; k < drop; k++) temp[k] = (byte)(k & 0xFF);
+		for (int k = 0; k < drop; k++)
+			temp[k] = (byte)0;
 		cipher(temp);
 	}
 	

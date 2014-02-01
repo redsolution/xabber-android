@@ -83,7 +83,7 @@ public class WAConnection extends Connection {
     private ExecutorService listenerExecutor;
     int msgid;
     
-    private static final String waUA = "WhatsApp/2.10.750 Android/4.2.1 Device/GalaxyS3";
+    private static final String waUA = "Android-2.11.151-443";
 
     private String nickname = "";
     Roster roster = null;
@@ -225,7 +225,12 @@ public class WAConnection extends Connection {
         
         // Start login!
         synchronized (waconnection) {
-	        waconnection.doLogin(waUA);
+        	try {
+		        waconnection.doLogin(waUA);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
         popWriteData();
     }
@@ -546,6 +551,7 @@ public class WAConnection extends Connection {
             throw new XMPPException(errorMessage, new XMPPError(
                     XMPPError.Condition.remote_server_error, errorMessage), ioe);
         }
+        System.out.println("Connected to " + host + " " + String.valueOf(port));
         initConnection();
         connected = true;
     }

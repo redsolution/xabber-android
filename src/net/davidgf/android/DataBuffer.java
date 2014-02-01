@@ -4,6 +4,7 @@
  * Written by David Guillen Fandos (david@davidgf.net) based 
  * on the sources of WhatsAPI PHP implementation and whatsapp
  * for libpurple.
+ * Updated to WA protocol v1.4
  *
  * Share and enjoy!
  *
@@ -41,28 +42,19 @@ public class DataBuffer {
 			
 		return ret;
 	}
-	DataBuffer decodedBuffer(RC4Decoder decoder, int clength, boolean dout) {
+	DataBuffer decodedBuffer(RC4Decoder decoder, int clength) {
 		byte [] carray, array4;
-		if (dout) {
-			carray = decoder.cipher(Arrays.copyOfRange(this.buffer,0,clength-4));
-			array4 = Arrays.copyOfRange(this.buffer,clength-4,clength);
-			DataBuffer deco = new DataBuffer(carray);
-			DataBuffer extra = new DataBuffer(array4);
-			return deco.addBuf(extra);
-		}
-		else {
-			carray = decoder.cipher(Arrays.copyOfRange(this.buffer,4,clength));
-			array4 = Arrays.copyOfRange(this.buffer,0,4);
-			DataBuffer deco = new DataBuffer(carray);
-			DataBuffer extra = new DataBuffer(array4);
-			return extra.addBuf(deco);
-		}
+		carray = decoder.cipher(Arrays.copyOfRange(this.buffer,0,clength-4));
+		array4 = Arrays.copyOfRange(this.buffer,clength-4,clength);
+		DataBuffer deco = new DataBuffer(carray);
+		DataBuffer extra = new DataBuffer(array4);
+		return deco.addBuf(extra);
 	}
-	DataBuffer encodedBuffer(RC4Decoder decoder, byte [] key, boolean dout) {
+	DataBuffer encodedBuffer(RC4Decoder decoder, byte [] key, boolean dout, int seq) {
 		DataBuffer deco = new DataBuffer(Arrays.copyOfRange(this.buffer,0,this.buffer.length));
 		
 		deco.buffer = decoder.cipher(deco.buffer);
-		byte [] hmacint = KeyGenerator.calc_hmac(deco.buffer,key);
+		byte [] hmacint = KeyGenerator.calc_hmac(deco.buffer,key,seq);
 		DataBuffer hmac = new DataBuffer(hmacint);
 		
 		DataBuffer res;
@@ -169,21 +161,21 @@ public class DataBuffer {
 	}
 	byte [] readByteString() {
 		int type = readInt(1);
-		if (type > 4 && type < 0xf5) {
-			return MiscUtil.getDecoded(type).getBytes();
+		if (type > 2 && type <= 236) {
+			String ret = MiscUtil.getDecoded(type);
+			if (ret == null)
+				ret = MiscUtil.getDecodedExt(type, readInt(1));
+			return ret.getBytes();
 		}
-		else if (type == 0xfc) {
+		else if (type == 252) {
 			int slen = readInt(1);
 			return readRawByteString(slen);
 		}
-		else if (type == 0xfd) {
+		else if (type == 253) {
 			int slen = readInt(3);
 			return readRawByteString(slen);
 		}
-		else if (type == 0xfe) {
-			return MiscUtil.getDecoded(readInt(1)+0xf5).getBytes();
-		}
-		else if (type == 0xfa) {
+		else if (type == 250) {
 			String u = readString();
 			String s = readString();
 			
@@ -198,24 +190,24 @@ public class DataBuffer {
 		//if (blen == 0)
 		//	throw 0;
 		int type = readInt(1);
-		if (type > 4 && type < 0xf5) {
-			return MiscUtil.getDecoded(type);
+		if (type > 2 && type <= 236) {
+			String ret = MiscUtil.getDecoded(type);
+			if (ret == null)
+				ret = MiscUtil.getDecodedExt(type, readInt(1));
+			return ret;
 		}
 		else if (type == 0) {
 			return "";
 		}
-		else if (type == 0xfc) {
+		else if (type == 252) {
 			int slen = readInt(1);
 			return readRawString(slen);
 		}
-		else if (type == 0xfd) {
+		else if (type == 253) {
 			int slen = readInt(3);
 			return readRawString(slen);
 		}
-		else if (type == 0xfe) {
-			return MiscUtil.getDecoded(readInt(1)+0xf5);
-		}
-		else if (type == 0xfa) {
+		else if (type == 250) {
 			String u = readString();
 			String s = readString();
 			
@@ -241,7 +233,12 @@ public class DataBuffer {
 	}
 	void putString(String s) {
 		int lu = MiscUtil.lookupDecoded(s);
-		if (lu > 4 && lu < 0xf5) {
+		int sub_dict = (lu >> 8);
+		
+		if (sub_dict != 0)
+			putInt(sub_dict + 236 - 1, 1);   // Put dict byte first!
+		
+		if (lu != 0) {
 			putInt(lu,1);
 		}
 		else if (s.indexOf('@') >= 0) {
