@@ -10,22 +10,23 @@ Supported protocols
 * RFC-3920: Core
 * RFC-3921: Instant Messaging and Presence
 * XEP-0030: Service Discovery
-* XEP-0128: Service Discovery Extensions
-* XEP-0115: Entity Capabilities
-* XEP-0054: vcard-temp
-* XEP-0153: vCard-Based Avatars
 * XEP-0045: Multi-User Chat (incompletely)
-* XEP-0078: Non-SASL Authentication
-* XEP-0138: Stream Compression
-* XEP-0203: Delayed Delivery
-* XEP-0091: Legacy Delayed Delivery
-* XEP-0199: XMPP Ping
-* XEP-0147: XMPP URI Scheme Query Components
-* XEP-0085: Chat State Notifications
-* XEP-0184: Message Delivery Receipts
-* XEP-0155: Stanza Session Negotiation
+* XEP-0054: vcard-temp
 * XEP-0059: Result Set Management
+* XEP-0078: Non-SASL Authentication
+* XEP-0085: Chat State Notifications
+* XEP-0091: Legacy Delayed Delivery
+* XEP-0092: Software Version
+* XEP-0115: Entity Capabilities
+* XEP-0128: Service Discovery Extensions
 * XEP-0136: Message Archiving
+* XEP-0138: Stream Compression
+* XEP-0147: XMPP URI Scheme Query Components
+* XEP-0153: vCard-Based Avatars
+* XEP-0155: Stanza Session Negotiation
+* XEP-0184: Message Delivery Receipts
+* XEP-0199: XMPP Ping
+* XEP-0203: Delayed Delivery
 * XEP-0224: Attention
 
 Translations
