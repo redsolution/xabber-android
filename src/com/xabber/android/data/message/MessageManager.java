@@ -247,6 +247,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 		AbstractChat chat = getChat(account, user);
 		if (chat == null)
 			return;
+		if (chat instanceof RegularChat)
+			((RegularChat) chat).clearResource();
 		chat.closeChat();
 	}
 

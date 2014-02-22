@@ -57,6 +57,10 @@ public class RegularChat extends AbstractChat {
 		return resource;
 	}
 
+	public void clearResource() {
+		resource = null;
+	}
+
 	@Override
 	public String getTo() {
 		if (resource == null)
