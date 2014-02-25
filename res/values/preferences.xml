@@ -50,6 +50,7 @@
         <item>com.xabber.android.data.extension.capability.ServerInfoManager</item>
         <item>com.xabber.android.data.extension.time.TimeManager</item>
         <item>com.xabber.android.data.extension.attention.AttentionManager</item>
+        <item>com.xabber.android.data.extension.version.VersionManager</item>
     </string-array>
 
     <string-array name="contact_managers">
@@ -179,6 +180,9 @@
 
     <string name="events_show_text_key">events_show_text</string>
     <bool name="events_show_text_default">true</bool>
+    
+    <string name="events_show_pebble_key">events_show_pebble</string>
+    <bool name="events_show_pebble_default">false</bool>
 
     <string name="events_message_key">events_message</string>
     <string name="events_message_none_value">none</string>

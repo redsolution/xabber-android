@@ -3,3 +3,4 @@ gen/*
 *.orig
 .pydevproject
 .settings
+local.properties

@@ -195,6 +195,11 @@
                 android:key="@string/events_show_text_key"
                 android:defaultValue="@bool/events_show_text_default"
                 />
+            <CheckBoxPreference
+                android:title="@string/events_show_pebble"
+                android:key="@string/events_show_pebble_key"
+                android:defaultValue="@bool/events_show_pebble_default"
+                />
             <ListPreference
                 android:title="@string/events_message"
                 android:key="@string/events_message_key"

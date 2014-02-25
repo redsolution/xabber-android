@@ -128,6 +128,7 @@
     <string name="events_message_none">Nicht benachrichtigen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_show_text">Nachricht in der Statusleiste anzeigen\nNachricht in der Statusleiste anzeigen</string>
+    <string name="events_show_pebble">Pebble Smartwatch Nachrichten\nNachrichten auf der Pebble Smartwatch anzeigen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_visible_chat">Benachrichtigung bei offenem Chat\nBenachrichtigung bei eingehender Nachricht im offenen Chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->

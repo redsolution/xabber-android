@@ -211,8 +211,6 @@ public class RoomChat extends AbstractChat {
 			final String subject = message.getSubject();
 			if (text == null && subject == null)
 				return true;
-			if (isSelf(resource)) // Own message
-				return true;
 			if (subject != null) {
 				if (this.subject.equals(subject))
 					return true;

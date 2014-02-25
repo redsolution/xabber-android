@@ -246,5 +246,12 @@
         <namespace>urn:xmpp:attention:0</namespace>
         <className>com.xabber.xmpp.attention.AttentionProvider</className>
     </extensionProvider>
+    
+    <!-- Software Version -->
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>jabber:iq:version</namespace>
+        <className>com.xabber.xmpp.version.VersionProvider</className>
+    </iqProvider>
 
 </smackProviders>

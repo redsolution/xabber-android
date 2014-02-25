@@ -128,6 +128,7 @@
     <string name="events_message_none">Don\'t notify</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_show_text">Show message in notification\nShow message text in notification area</string>
+    <string name="events_show_pebble">Pebble Smartwatch notifications\nShow message notifications on your watch</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_visible_chat">Notify in current chat\nNotify on incoming messages in current chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->

@@ -17,8 +17,10 @@ package com.xabber.android.data.notification;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -59,6 +61,9 @@ import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * Manage notifications about message, subscription and authentication.
  * 
@@ -74,6 +79,7 @@ public class NotificationManager implements OnInitializedListener,
 
 	private static final long VIBRATION_DURATION = 500;
 	private static final int MAX_NOTIFICATION_TEXT = 80;
+	private static final int MAX_NOTIFICATION_TEXT_PEBBLE = 150;
 	private final long startTime;
 	private final Application application;
 	private final android.app.NotificationManager notificationManager;
@@ -377,7 +383,7 @@ public class NotificationManager implements OnInitializedListener,
 			chatViews.setTextViewText(R.id.text2,
 					Emoticons.getSmiledText(application, text));
 			chatViews.setTextViewText(R.id.time,
-					StringUtils.getSmartTimeText(message.getTimestamp()));
+					StringUtils.getSmartTimeText(message.getTimestamp(), application.getApplicationContext()));
 
 			String messageText = StringUtils.getQuantityString(
 					application.getResources(), R.array.chat_message_quantity,
@@ -416,6 +422,40 @@ public class NotificationManager implements OnInitializedListener,
 				chatViews.setImageViewResource(R.id.icon,
 						R.drawable.ic_placeholder);
 				notify(CHAT_NOTIFICATION_ID, notification);
+			}
+
+			// Push the notification to Pebble Clock if enabled in options menu
+			if (SettingsManager.eventsShowOnPebble()) {
+
+				String[] pebbleTextParts = splitTextPebble(message.getText());
+
+				if (pebbleTextParts != null) {
+					for (int i = pebbleTextParts.length - 1; i >= 0; i--) {
+						String pebbleCaption = RosterManager.getInstance()
+								.getName(message.getAccount(),
+										message.getUser());
+
+						if (pebbleTextParts.length > 1) {
+							pebbleCaption = pebbleCaption + " [" + (i + 1)
+									+ "/" + (pebbleTextParts.length) + "]";
+						}
+
+						final Intent intent = new Intent(
+								"com.getpebble.action.SEND_NOTIFICATION");
+						final Map data = new HashMap();
+						data.put("title", pebbleCaption);
+						data.put("body", pebbleTextParts[i]);
+						final JSONObject jsonData = new JSONObject(data);
+						final String notificationData = new JSONArray().put(
+								jsonData).toString();
+
+						intent.putExtra("messageType", "PEBBLE_ALERT");
+						intent.putExtra("sender", "Xabber");
+						intent.putExtra("notificationData", notificationData);
+						Application.getInstance().getApplicationContext()
+								.sendBroadcast(intent);
+					}
+				}
 			}
 		}
 
@@ -650,4 +690,25 @@ public class NotificationManager implements OnInitializedListener,
 
 	}
 
+	/**
+	 * @param text
+	 * @return String array of text split in multiple parts. Null if empty.
+	 */
+	private static String[] splitTextPebble(final String text) {
+		if (text == null || text.length() == 0) {
+			return null;
+		} else {
+			int nrParts = (int) Math.ceil((double) text.length()
+					/ MAX_NOTIFICATION_TEXT_PEBBLE);
+			String[] textParts = new String[nrParts];
+
+			for (int i = 0; i < nrParts; i++) {
+				int start = i * MAX_NOTIFICATION_TEXT_PEBBLE;
+				int end = Math.min((i + 1) * MAX_NOTIFICATION_TEXT_PEBBLE,
+						text.length());
+				textParts[i] = text.substring(start, end);
+			}
+			return textParts;
+		}
+	}
 }
