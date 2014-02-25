@@ -4,7 +4,10 @@
     <string name="phrase_add">Ajouter une expression</string>
     <string name="phrase_delete">Supprimer une expression</string>
     <string name="phrase_delete_confirm">Voulez vous réellement supprimer cette expression: %s ?</string>
+    <string name="phrase_empty">&lt; Du texte &gt;</string>
+    <string name="phrase_group">Partie du groupe de contact</string>
     <string name="phrase_regexp">Expression régulière</string>
     <string name="phrase_sound">Son\nChoisir le son de notification</string>
     <string name="phrase_text">Texte à rechercher</string>
+    <string name="phrase_user">Partie du JID</string>
 </resources>

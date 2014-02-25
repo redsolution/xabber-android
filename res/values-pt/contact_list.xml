@@ -72,16 +72,28 @@
     <string name="NO_SUCH_ACCOUNT">A conta não foi encontrada</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="NOT_CONNECTED">Conexão não foi estabelecida</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">Soliticitar autorização de inscrição</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="XMPP_EXCEPTION">Erro de fluxo de dados</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
     <string name="application_state_closing">Salvando alterações...\nA aplicação será fechada em breve.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_confirmation">%1$s.\nVocê confia absolutamente em um certificado com impressão digital SHA1: %2$s? Você gostaria de não ser notificado sobre esta questão deste certificado?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
+    <string name="certificate_details">\n\nExpedido para:\nNome Comum (CN): %1$s\nEmpresa (O): %2$s\nUnidade Organizacional (OU): %3$s\nNúmero de Série: %4$s\n\nExpedido por:\nNome Comum (CN): %5$s\nEmpresa (O): %6$s\nUnidade Organizacional (OU): %7$s\n\nValidade:\nExpedido em: %8$s\nVálido até: %9$s.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_self_signed">Certificado auto-assinado</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_show_details">Detalhes...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="close_chats">Fechar todos os bate-papos</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
     <string name="contact_integration_suggest">Você deseja que o Xabber seja integrado aos seus contatos do sistema?\nIsso pode ser alterado em "Configurações" →"Contas XMPP" → Sua conta →"Integração de contatos"</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="group_room">Conferências</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="OTR_ERROR">Erro no OTR</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
     <string name="select_contact">Por favor clique para selecionar o contato</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->

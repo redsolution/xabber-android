@@ -6,8 +6,6 @@
     <string name="production_promo">Çoklu hesap XMPP (Jabber) istemcisi</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="production_title">Xabber</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market_new.png -->
-    <string name="development_changes">+ Çekce çeviriler\n+ Çağrı belirtme özelliği\n+ Anahtar kelimelere dayalı uyarılar\n+ Mesaj teslim bilgisini iptal etme özelliği\n+ Sohbet odasında bulunanlar listesi(salt okunur)\n* Çeşiti ufak düzeltmeler\n* Çevirilerde çeşitli düzeltmeler\n\nTeşekkürler!</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="development_description">Xabber\'in geliştirilme aşamasındaki sürümü - çoklu hesap destegi ve basit arayüzü ile açık kaynak kodlu Jabber (XMPP) istemcisi.\n\nXabber\'in geliştirilme ve denenmesine yardımcı olmak isterseniz bu sürümü kullanabilirsiniz. Sorunsuz çalışma garantisi yoktur. Kendinizi maceracı hissetmiyorsanız normal sürümü kullanın. Risk almaktan HOŞLANIYORSANIZ, yeni özelliklerden önce sizin haberiniz olacak!\n\nXabber\'ın GNU GPLv3 lisanslı kaynak kodlarına, https://github.com/redsolution/xabber-android adresinden ulaşabilirsiniz.\n\nDaha fazla bilgi için web sayfamızı, http://xabber.com, ziyaret edin veya bizi twitterda, @xabber_xmpp, takip edin\n\nİletmek isteyeceğiniz hata raporları yada parlak düşünceleriniz için lütfen \ninfo+devel@xabber.com adresine eposta gönderin.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->

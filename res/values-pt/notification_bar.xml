@@ -48,10 +48,19 @@
     <string name="connection_state_waiting_5">-</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
     <string name="connection_state_offline">%1$d %2$s desconectada(s)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/message_archive.png -->
+    <string name="archive_available_request_message">Você deseja armazenar histórico de mensagem no servidor?\nHabilita o Xabber a carregar histórico de mensagem de todos os seus dispositivos usando esta conta.\nEstá funcionalidade tomará mais tráfego da sua rede e reduzirá a velocidade de sua conexão.\nATENÇÃO: Todo o seu histórico local será removido.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_archive.png -->
+    <string name="archive_available_request_title">Ativar arquivamento de mensagem?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_certificate.png -->
+    <string name="INVALID_CERTIFICATE">Certificado inválido</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_invite.png -->
     <string name="muc_invite_message">Você quer entrar na conferência?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification_in_progress">Clique aqui para abortar.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_password.png -->
     <string name="PASSWORD_REQUIRED">Senha obrigatória</string>
+    <string name="pay_attention">Atenção</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_subscription.png -->
     <string name="subscription_request_message">Pedido de autorização</string>
 </resources>

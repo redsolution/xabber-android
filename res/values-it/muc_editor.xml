@@ -21,7 +21,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_server_hint">conference.jabber.org</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
-    <string name="NICK_ALREADY_USED">Nickname in uso</string>
+    <string name="NICK_ALREADY_USED">Nickname già in uso</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
     <string name="ALREADY_IN_PROGRESS">Già in corso</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->

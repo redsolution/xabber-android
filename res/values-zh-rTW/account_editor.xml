@@ -104,6 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">代理主機</string>
+    <string name="account_proxy_password">代理密碼</string>
+    <string name="account_proxy_port">代理埠</string>
+    <string name="account_proxy_type">代理型別</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">禁用</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">代理用戶</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">使用SASL認證（推薦）</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -142,8 +152,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">透過TOR匿名網路聊天並要求TLS加密\n不推薦應用於Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">您確定要放棄所有修改嗎？</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">錯誤的使用者名稱，請參考下方的說明。</string>
+    <string name="orbot_required_message">要使用TOR，您必須安裝並啟用Orbot。想要從Google Play安裝嗎？</string>
+    <string name="orbot_required_title">安裝Orbot？</string>
 </resources>

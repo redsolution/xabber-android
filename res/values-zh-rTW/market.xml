@@ -7,7 +7,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="production_title">Xabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market_new.png -->
-    <string name="development_changes">+ 捷克語 (Czech translations)\n+ 呼叫提醒(Call attention feature)\n+ 基於關鍵詞的通知 (Notifications based on key phrase)\n+ 可取消訊息收件回執(Option to disable message delivery receipts) \n+ 聊天室中的管理員清單 (List of occupants in a chat room (view only))\n* 修正些許錯誤 (Multiple minor fixes)\n* 修正部分翻譯 (Multiple translations fixed)\nThank you folks!</string>
+    <string name="development_changes">+ 使用Orbot實作的TOR支援\n+ 代理伺服器支援\n+ 白俄羅斯語、波斯語、義大利語、葡萄牙語、烏克蘭語、中文（中國）、中文（台灣）翻譯\n* 修復了Android 4+上的通知\n* 修復了伺服器側聊天記錄\n* 修復了結束時的行為\n* 修復了翻譯\n* 小修復\n謝謝你們！</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="development_description">Xabber測試（可能不穩定）版——自由軟體的Jabber（XMPP）客戶端，支援多帳號，界面乾淨簡單。\n\n您可以安裝此版本來幫助我們測試和開發Xabber。我們不保證穩定性，所以如果您不怎麼有冒險精神，請使用一般版。但如果您確實敢於冒險，您會最早看到新功能！\n\nXabber原始碼位於https://github.com/redsolution/xabber-android，在GNU GPLv3協議下釋出。 \n \n如要獲取更多訊息，請參觀我們的網站http://xabber.com，或Twitter上的@xabber_xmpp。\n\n如果您遇到了bug或有新點子，請發送電子郵件到：info+devel@xabber.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->

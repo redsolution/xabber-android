@@ -17,7 +17,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_accounts">Raggruppa per account \nRaggruppa i contatti nella lista dei contatti per account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_show_active_chats">Le chat attive in testa \nVisualizza le chat attive in testa alla lista dei contatti</string>
+    <string name="contacts_show_active_chats">Chat attive in cima \nVisualizza le chat attive in cima alla lista dei contatti</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_avatars">Mostra avatar \nMostra gli avatar degli utenti nella lista dei contatti</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
@@ -29,7 +29,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_panel">Mostra il pannello degli account \nMostra il pannello con gli avatar degli account all\'inizio della lista dei contatti</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_stay_active_chats">Duplica le chat attive \nLe chat attive appaiono sia in alto della lista dei contatti che nella schermata principale dei gruppi</string>
+    <string name="contacts_stay_active_chats">Duplica le chat attive \nLe chat attive appaiono sia in cima alla lista dei contatti sia nella schermata principale dei gruppi</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="debug_log">Log debug \nScrive messaggi di debug nel log (riavviare l\'applicazione per applicare i cambiamenti)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
@@ -107,7 +107,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_start_at_boot">Avvia all\'accensione\nAvvia l\'applicazione all\'accensione del dispositivo. Non funziona se Xabber è installato sulla scheda SD.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_wake_lock">Previene modalità di sospensione \nRidurrà la durata della batteria</string>
+    <string name="connection_wake_lock">Impedire modalità sospensione \nRidurrà la durata della batteria</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wifi_lock">Mantieni la WiFi attiva \nMantieni la WiFi attiva durante la sospensione. Questo ridurrà la durata della batteria</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
@@ -149,5 +149,5 @@
     <string name="connection_load_vcard">Carica vCard\nCarica ed aggiorna le informazioni personali di contatto e l\'avatar. Disabilita per ridurre l\'utilizzo del traffico.</string>
     <string name="events_phrases">Frase chiave \nNotifiche sonore personalizzare per messaggi contenenti frasi chiave</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
-    <string name="security_clear_certificate_warning">Vuoi cancellare davvero tutti i certificati ignorati?</string>
+    <string name="security_clear_certificate_warning">Vuoi davvero cancellare tutti i certificati ignorati?</string>
 </resources>

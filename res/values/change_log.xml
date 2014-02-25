@@ -59,6 +59,9 @@
     <string name="development_changes_76">+ Slovak translation (thank you, Dominik!)\n* Server certificate validation fixed\n* Minor fixes</string>
     <string name="development_changes_77">+ Czech translations\n+ Call attention feature\n+ Notifications based on key phrase\n+ Option to disable typing notifications\n+ List of occupants in a chat room (view only)\n* Multiple minor fixes\n* Multiple translations fixed\nThank you folks!</string>
     <string name="development_changes_78">+ Source Codes of Xabber are now available on GitHub\n* Multiple minor fixes</string>
+    <string name="development_changes_79">+ TOR support using Orbot\n+ Proxy support\n+ Belarusian, Persian, Italian, Portuguese, Ukrainian, Chinese - China, Chinese - Taiwan translations\n* Notification in Android 4+ fixed\n* Server side history fixed\n* Exit from Xabber fixed\n* Translations fixed\n* Minor fixes\nThank you folks!</string>
+    <string name="development_changes_80">* Icon updated</string>
+    <string name="development_changes_81">* Translations updated</string>
     <string name="production_changes_1">Initial release</string>
     <string name="production_changes_2">First update</string>
     <string name="production_changes_3">+ Status saved between sessions</string>

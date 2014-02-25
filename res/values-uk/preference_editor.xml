@@ -33,6 +33,10 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="debug_log">Журнал зневадження\nВиводити повідомлення для для зневадження в окремий журнал\n(перезапустіть додаток, для набуття чинності параметру)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">Світлова індикація\nБлимати LED індикатором при сповіщеннях</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_persistent">Значок в області задач\nПоказувати сповіщення стану. Цей параметр запобігає вивантаженню програми із пам\'яті Android.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_sound">Звукові сповіщення\nОберіть звукове сповіщення</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_vibro">Вібрація\nВикористовувати вібрацію для сповіщення</string>
@@ -64,6 +68,8 @@
     <string name="preference_interface">Теми\nПараметри зовнішнього вигляду</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="about_viewer">Інформація</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_divide">Повідомлення з нової строки\nПоказувати повідомлення з нової строки</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
     <string name="chats_divide_portrait">В портретному режимі</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
@@ -78,6 +84,8 @@
     <string name="chats_font_size_xlarge">Збільшений</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_hide_keyboard">Приховувати клавіатуру\nПриховувати екрану клавіатуру після відправлення повідомлення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
+    <string name="chats_hide_keyboard_landscape">В ландшафтному режимі</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
     <string name="chats_receipt">Сповіщення про доставку повідомлення\nВідправляти і отримувати сповіщення про доставку повідомлення</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
@@ -90,6 +98,8 @@
     <string name="chats_state_notification">Сповіщення о наборі тексту\nСповіщати співрозмовника коли ви набираєте текст</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_adjust_priority">Зміна пріоритету\nВстановіть пріоритет відповідно до статусу. Параметр перекриває пріоритет облікового статусу.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">Одразу після блокування екрану</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Параметри пріоритету</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
@@ -98,6 +108,10 @@
     <string name="connection_wake_lock">Запобігати переходу процесора в сплячий режим\nЗменшує час роботи від акумулятора</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wifi_lock">Лишати WiFi активним\nЛишати WiFi активним в режимі очікування. Зменшує час роботи від батареї.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">Скинути поза мережеві параметри\nОчистити індивідуальні параметри для груп і облікових записів</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">Ви дійсно хочете очистити індивідуальні налаштування для груп і облікових записів?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_first_only">Сповіщати тільки про перше повідомлення\nСповіщати тільки про перше вхідне повідомлення в чаті</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
@@ -114,6 +128,8 @@
     <string name="events_show_text">Повідомлення в сповіщеннях\nПоказувати текст повідомлення в області сповіщень</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_visible_chat">Сповіщення в поточному чаті\nСповіщати о вхідних повідомлення в поточному чаті</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
+    <string name="negative_priotiry_summary">%s (Ви не зможете отримувати повідомлення із будь-яких балачок)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_accounts">XMPP облікові записи\nКерування Вашими обліковими записами</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->

@@ -104,19 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Proxy host</string>
+    <string name="account_proxy_password">Proxy password</string>
+    <string name="account_proxy_port">Proxy port</string>
     <string name="account_proxy_type">Proxy type</string>
-    <string name="account_proxy_type_none">Disabled</string>
     <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Disabled</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
     <string name="account_proxy_type_socks4">SOCKS4</string>
     <string name="account_proxy_type_socks5">SOCKS5</string>
-    <string name="account_proxy_type_orbot">Orbot</string>
-    <string name="account_proxy_host">Proxy host</string>
-    <string name="account_proxy_port">Proxy port</string>
     <string name="account_proxy_user">Proxy user</string>
-    <string name="account_proxy_password">Proxy password</string>
-    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol\nNot recommended for Google Talk</string>
-    <string name="orbot_required_title">Install Orbot?</string>
-    <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Use SASL Authentication (recommended)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -155,8 +152,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol\nNot recommended for Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Are you sure you want to discard all the changes?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
+    <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
+    <string name="orbot_required_title">Install Orbot?</string>
 </resources>

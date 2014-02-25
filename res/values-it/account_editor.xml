@@ -35,7 +35,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_ya">nome utente per yandex.ru (non l\'email)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_facebook">Non puoi fare il login alla chat di Facebook usando la mail. Per configurare la chat di Facebook devi usare il tuo nome utente Facebook. Vai su http://www.facebook.com/sitetour/chat.php per maggiori dettagli.</string>
+    <string name="account_type_helps_facebook">Non puoi fare il login alla chat di Facebook usando la mail. Per configurare la chat di Facebook devi usare il tuo nome utente Facebook. Visita http://www.facebook.com/sitetour/chat.php per maggiori dettagli.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_gtalk">Se non hai nessun account Google puoi crearne uno su http://mail.google.com \nPuoi anche usare tuo_nome_utente@tuo_dominio_google</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
@@ -43,9 +43,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_qip">Se non hai nessun account QIP puoi crearne uno su http://qip.ru</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_vkontakte">Puoi inserire o il tuo nome (es. nome.v.kontakte) o l\'id (es. id123456). Non puoi fare il login alla chat usando la tua email. Per impostare la chat devi fornire le tue credenziali Vkontakte.ru. Controlla http://vk.com/help.php?page=jabber per maggiori dettagli.</string>
+    <string name="account_type_helps_vkontakte">Puoi inserire o il tuo nome (es. nome.v.kontakte) o l\'id (es. id123456). Non puoi fare il login alla chat usando la tua email. Per impostare la chat devi fornire le tue credenziali Vkontakte.ru. Visita http://vk.com/help.php?page=jabber per maggiori dettagli.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Se vuoi saperne di più riguardo XMPP (Jabber), vai qui: http://xmpp.org \nPer registrare un nuovo account XMPP vai su https://register.jabber.org, oppure registrati su un\'altra chat Jabber.</string>
+    <string name="account_type_helps_xmpp">Se vuoi saperne di più riguardo XMPP (Jabber), vai qui: http://xmpp.org \nPer registrare un nuovo account XMPP visita https://register.jabber.org, oppure registrati su un altro server Jabber.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Se non hai nessun account Ya.Online puoi crearne uno su http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -104,6 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Host del proxy</string>
+    <string name="account_proxy_password">Password del proxy</string>
+    <string name="account_proxy_port">Porta del proxy</string>
+    <string name="account_proxy_type">Tipo di proxy</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Disabilitato</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Utente del proxy</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Usa autenticazione SASL (raccomandato)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -142,8 +152,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Chatta utilizzando la rete di navigazione anonima TOR e forza il protocollo di crittografia TLS \nNon consigliato per Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Sei sicuro di voler ignorare tutte le modifiche?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Nome utente sbagliato. Controlla il testo di aiuto sottostante per maggiori dettagli.</string>
+    <string name="orbot_required_message">Per poter utilizzare TOR occorre installare ed attivare Orbot come proxy per il traffico. Si desidera installarlo tramite Google Play?</string>
+    <string name="orbot_required_title">Installare Orbot?</string>
 </resources>

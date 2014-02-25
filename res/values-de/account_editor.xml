@@ -102,6 +102,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Proxy-Host</string>
+    <string name="account_proxy_password">Proxy-Passwort</string>
+    <string name="account_proxy_port">Proxy-Port</string>
+    <string name="account_proxy_type">Proxy-Typ</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Deaktiviert</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Proxy-Benutzer</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">SASL-Authentifizierung nutzen (empfohlen)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -140,8 +150,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Chat über das anonyme Netzwerk Tor und erzwinge TLS Verschlüsselung\nFür Google Talk nicht empfohlen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Willst du wirklich alle Änderungen verwerfen?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Falscher Benutzername. Siehe Hilfe unten!</string>
+    <string name="orbot_required_message">Für die Nutzung von Tor muss Orbot installiert sein und die Proxy-Verbindung darüber laufen. Möchten Sie die App von Google Play herunterladen?</string>
+    <string name="orbot_required_title">Soll Orbot installiert werden?</string>
 </resources>

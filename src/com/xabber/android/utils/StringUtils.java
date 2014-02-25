@@ -17,6 +17,8 @@ package com.xabber.android.utils;
 import java.text.DateFormat;
 import java.util.Date;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.res.Resources;
 
 /**
@@ -28,7 +30,7 @@ import android.content.res.Resources;
 public class StringUtils {
 
 	private static final DateFormat DATE_TIME;
-	private static final DateFormat TIME;
+	private static DateFormat TIME;
 
 	static {
 		DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
@@ -124,6 +126,20 @@ public class StringUtils {
 	public static String getSmartTimeText(Date timeStamp) {
 		if (timeStamp == null)
 			return "";
+		Date date = new Date();
+		long delta = date.getTime() - timeStamp.getTime();
+		if (delta < 20 * 60 * 60 * 1000)
+			synchronized (TIME) {
+				return TIME.format(timeStamp);
+			}
+		else
+			return getDateTimeText(timeStamp);
+	}
+
+	public static String getSmartTimeText(Date timeStamp, Context context) {
+		if (timeStamp == null || context == null)
+			return "";
+		TIME = android.text.format.DateFormat.getTimeFormat(context); 
 		Date date = new Date();
 		long delta = date.getTime() - timeStamp.getTime();
 		if (delta < 20 * 60 * 60 * 1000)

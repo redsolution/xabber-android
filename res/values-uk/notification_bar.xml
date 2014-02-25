@@ -32,10 +32,20 @@
     <string name="connection_state_connected_1">%1$d з %2$d %3$s в мережі</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
     <string name="connection_state_connected_2">%1$d з %2$d %3$s в мережі</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="connection_state_connected_5">-</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->
     <string name="connection_state_connecting_1">%1$d із %2$d %3$s підключається</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->
     <string name="connection_state_connecting_2">%1$d із %2$d %3$s підключається</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->
+    <string name="connection_state_connecting_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_waiting.png -->
+    <string name="connection_state_waiting_1">%1$d із %2$d %3$s очікує на підключення</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_waiting.png -->
+    <string name="connection_state_waiting_2">%1$d із %2$d %3$s очікує на підключення</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_waiting.png -->
+    <string name="connection_state_waiting_5">-</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
     <string name="connection_state_offline">%1$d %2$s поза мережею</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/message_archive.png -->
