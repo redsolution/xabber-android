@@ -28,6 +28,7 @@ import org.jivesoftware.smack.util.StringUtils;
 
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.os.Build;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -134,7 +135,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 			TypedArray values = application.getResources().obtainTypedArray(id);
 			AccountProtocol protocol = AccountProtocol.valueOf(values
 					.getString(0));
-			if (Application.SDK_INT < 8 && protocol == AccountProtocol.wlm) {
+			if (Build.VERSION.SDK_INT < 8 && protocol == AccountProtocol.wlm) {
 				values.recycle();
 				continue;
 			}
