@@ -18,6 +18,7 @@
     android:versionName="@string/application_version"
     android:installLocation="auto"
     >
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="10" />
     <application
         android:debuggable="true"
         android:label="@string/application_name"
@@ -235,7 +236,6 @@
         <receiver android:name="com.xabber.android.receiver.GoXaReceiver" />
         <receiver android:name="com.xabber.android.receiver.ComposingPausedReceiver" />
     </application>
-    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="9" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
