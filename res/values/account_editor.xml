@@ -159,4 +159,5 @@
     <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
+    <string name="ACCOUNT_CREATE_FAILED">Failed to create account on the server.</string>
 </resources>

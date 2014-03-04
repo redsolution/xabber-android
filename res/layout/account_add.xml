@@ -83,6 +83,13 @@
             android:checked="false"
             android:text="@string/account_use_orbot" />
 
+        <CheckBox
+            android:id="@+id/create_account"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/account_create" />
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"

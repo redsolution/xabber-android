@@ -105,6 +105,8 @@ public class ConnectionThread implements
 
 	private boolean started;
 
+  private boolean createNewAccount;
+
 	public ConnectionThread(final ConnectionItem connectionItem) {
 		this.connectionItem = connectionItem;
 		executorService = Executors
@@ -488,12 +490,57 @@ public class ConnectionThread implements
 	private void onConnected(final String password) {
 		connectionItem.onConnected(this);
 		ConnectionManager.getInstance().onConnected(this);
-		runOnConnectionThread(new Runnable() {
+    if(createNewAccount) {
+			runOnConnectionThread(new Runnable() {
+				@Override
+				public void run() {
+					createAccount(password);
+				}
+			});
+    }
+    else {
+			runOnConnectionThread(new Runnable() {
+				@Override
+				public void run() {
+					authorization(password);
+				}
+			});
+    }
+	}
+
+	/**
+	 * Create new account.
+	 * 
+	 * @param password
+	 */
+	private void createAccount(final String password) {
+    try {
+      xmppConnection.getAccountManager().createAccount(login, password);
+    }
+    catch (XMPPException e) {
+			LogManager.exception(connectionItem, e);
+			connectionClosedOnError(e);
+			// Server will destroy connection, but we can speedup
+			// it.
+			xmppConnection.disconnect();
+			return;
+    }
+		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				authorization(password);
+				onAccountCreated();
 			}
 		});
+  }
+
+	/**
+	 * New account has been created on the server.
+	 * 
+	 * @param password
+	 */
+	private void onAccountCreated() {
+		connectionItem.onAccountCreated(this);
+		shutdown();
 	}
 
 	/**
@@ -624,10 +671,11 @@ public class ConnectionThread implements
 	 *            Whether SRV lookup should be used.
 	 */
 	synchronized void start(final String fqdn, final int port,
-			final boolean useSRVLookup) {
+			final boolean useSRVLookup, final boolean createNewAccount) {
 		if (started)
 			throw new IllegalStateException();
 		started = true;
+    this.createNewAccount = createNewAccount;
 		runOnConnectionThread(new Runnable() {
 			@Override
 			public void run() {
