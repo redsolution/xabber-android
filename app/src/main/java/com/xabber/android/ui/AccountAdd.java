@@ -51,6 +51,7 @@ public class AccountAdd extends ManagedActivity implements
     private CheckBox storePasswordView;
     private CheckBox useOrbotView;
     private CheckBox syncableView;
+    private CheckBox createAccount;
     private Spinner accountTypeView;
 
     @Override
@@ -68,6 +69,7 @@ public class AccountAdd extends ManagedActivity implements
             syncableView.setVisibility(View.GONE);
             syncableView.setChecked(false);
         }
+        createAccount = (CheckBox) findViewById(R.id.register_account);
 
         accountTypeView = (Spinner) findViewById(R.id.account_type);
         accountTypeView.setAdapter(new AccountTypeAdapter(this));
@@ -121,7 +123,8 @@ public class AccountAdd extends ManagedActivity implements
                                                 .getSelectedItem(),
                                         syncableView.isChecked(),
                                         storePasswordView.isChecked(),
-                                        useOrbotView.isChecked());
+                                        useOrbotView.isChecked(),
+                                        false);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                         return;
@@ -159,7 +162,8 @@ public class AccountAdd extends ManagedActivity implements
                                 passwordView.getText().toString(), accountType,
                                 syncableView.isChecked(),
                                 storePasswordView.isChecked(),
-                                useOrbotView.isChecked());
+                                useOrbotView.isChecked(),
+                                createAccount.isChecked());
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                         return;
