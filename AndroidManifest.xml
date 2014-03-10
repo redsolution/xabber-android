@@ -48,6 +48,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:debuggable="true"
         android:name="com.xabber.android.data.Application"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
