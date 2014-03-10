@@ -209,4 +209,9 @@ public class DummyCursor implements Cursor {
 		return null;
 	}
 
+	@Override
+	public int getType(int columnIndex) {
+		return 0;
+	}
+
 }
