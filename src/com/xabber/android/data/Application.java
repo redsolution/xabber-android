@@ -42,7 +42,7 @@ import com.xabber.androiddev.R;
  */
 public class Application extends android.app.Application {
 
-	public static final int SDK_INT = Integer.valueOf(Build.VERSION.SDK);
+	public static final int SDK_INT = Integer.valueOf(Build.VERSION.SDK_INT);
 
 	private static Application instance;
 
