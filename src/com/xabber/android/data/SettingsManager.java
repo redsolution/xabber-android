@@ -41,6 +41,7 @@ import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.androiddev.R;
+import com.xabber.xmpp.carbon.CarbonManager;
 
 /**
  * Manage operations with common settings.
@@ -559,6 +560,11 @@ public class SettingsManager implements OnInitializedListener,
 		return getBoolean(R.string.connection_load_vcard_key,
 				R.bool.connection_load_vcard_default);
 	}
+	
+	public static boolean connectionUseCarbons() {
+		return getBoolean(R.string.connection_use_carbons_key,
+				R.bool.connection_use_carbons_default);
+	}
 
 	public static boolean connectionAdjustPriority() {
 		return getBoolean(R.string.connection_adjust_priority_key,
@@ -768,6 +774,9 @@ public class SettingsManager implements OnInitializedListener,
 				R.string.connection_wifi_lock_key))) {
 			NetworkManager.getInstance().onWifiLockSettingsChanged();
 		} else if (key.equals(Application.getInstance().getString(
+				R.string.connection_use_carbons_key))) {
+			CarbonManager.getInstance().onUseCarbonsSettingsChanged();
+		} else if (key.equals(Application.getInstance().getString(
 				R.string.events_show_text_key))) {
 			NotificationManager.getInstance().onMessageNotification();
 		} else if (key.equals(Application.getInstance().getString(
@@ -776,7 +785,7 @@ public class SettingsManager implements OnInitializedListener,
 		} else if (key.equals(Application.getInstance().getString(
 				R.string.security_otr_mode_key))) {
 			OTRManager.getInstance().onSettingsChanged();
-		}
+		} 
 	}
 
 }

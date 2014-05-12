@@ -50,6 +50,7 @@
         <item>com.xabber.android.data.extension.capability.ServerInfoManager</item>
         <item>com.xabber.android.data.extension.time.TimeManager</item>
         <item>com.xabber.android.data.extension.attention.AttentionManager</item>
+		<item>com.xabber.xmpp.carbon.CarbonManager</item>
     </string-array>
 
     <string-array name="contact_managers">
@@ -361,6 +362,9 @@
 
     <string name="connection_load_vcard_key">connection_load_vcard</string>
     <bool name="connection_load_vcard_default">true</bool>
+	
+	<string name="connection_use_carbons_key">connection_use_carbons</string>
+    <bool name="connection_use_carbons_default">true</bool>
 
 <!-- preference_cache -->
     <string name="cache_clear_key">cache_clear</string>

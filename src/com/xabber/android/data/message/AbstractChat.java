@@ -44,6 +44,7 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.archive.SaveMode;
+import com.xabber.xmpp.carbon.CarbonManager;
 
 /**
  * Chat instance.
@@ -589,6 +590,8 @@ public abstract class AbstractChat extends BaseEntity {
 						message);
 				ReceiptManager.getInstance().updateOutgoingMessage(this,
 						message, messageItem);
+				CarbonManager.getInstance().updateOutgoingMessage(this, 
+				                message, messageItem);
 				if (messageItem != intent)
 					message.addExtension(new DelayInformation(messageItem
 							.getTimestamp()));
