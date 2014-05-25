@@ -12,7 +12,7 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<ImageView
+<QuickContactBadge
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/avatar"
     android:layout_width="36dip"
