@@ -495,7 +495,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 			return;
 		}
 		
-		String companion = message.getFrom();		
+		String companion = Jid.getBareAddress(message.getFrom());		
 		boolean processed = false;
 		for (AbstractChat chat : chats.getNested(account).values()) {
 			if (chat.onPacket(companion, message)) {
