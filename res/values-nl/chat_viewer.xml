@@ -40,6 +40,8 @@
     <string name="save_history">Bewaar lokale geschiedenis\nBewaar berichtengeschiedenis lokaal</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="show_history">Toon geschiedenis</string>
+    <string name="action_attention_called">Vraag om aandacht is verzonden</string>
+    <string name="action_attention_requested">Aandacht gevraagd</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_ban">%1$s werd verbannen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -122,6 +124,7 @@
     <string name="muc_invite">Inviteer voor chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
     <string name="muc_is_unavailable">Bericht kan niet afgeleverd worden. Word lid van chat</string>
+    <string name="occupant_list">Deelnemerslijst</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="otr_encryption">OTR encryptie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
@@ -129,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Herbegin encryptie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Off-the-Record private conversatie werd verzocht maar je hebt de vereiste plugin niet. Gebruik Pidgin of Adium voor PC/Mac en Xabber of GibberBot voor Android. Ga naar http://otr.cypherpunks.ca/ voor meer informatie.</string>
+    <string name="otr_request">Off-the-Record private conversatie werd verzocht maar je hebt de vereiste plugin niet. Gebruik Pidgin, Gajim of Adium voor PC/Mac en Xabber of ChatSecure voor Android. Ga naar http://otr.cypherpunks.ca/ voor meer informatie.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Start encryptie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

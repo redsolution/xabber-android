@@ -3,7 +3,7 @@
     <string name="events_phrases_title">Key phrases</string>
     <string name="phrase_add">Add phrase</string>
     <string name="phrase_delete">Delete phrase</string>
-    <string name="phrase_delete_confirm">Do you realy want to delete phrase: %s?</string>
+    <string name="phrase_delete_confirm">Do you really want to delete phrase: %s?</string>
     <string name="phrase_empty">&lt; Any text &gt;</string>
     <string name="phrase_group">Part of the contact group</string>
     <string name="phrase_regexp">Regular expression</string>

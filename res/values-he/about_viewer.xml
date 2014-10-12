@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
+    <string name="about_version">גירסה: %s</string>
+    <string name="about_license">רשיון: GNU GPLv3\n<a href="https://github.com/redsolution/xabber-android">תכנת קוד פתוח</a></string>
+</resources>

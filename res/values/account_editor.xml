@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">You can enter you name (e.g. masha.v.kontakte) or id (e.g. id123456). You can not login to VKontakte chat using your email. To set up chat you have to provide your Vkontakte.ru username and password. Check http://vk.com/help.php?page=jabber for details.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: http://xmpp.org\nTo register new XMPP account please go to https://register.jabber.org, or any other Jabber server.</string>
+    <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org\nTo register new XMPP account please go to https://register.jabber.org, or any other Jabber server.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">If you don\'t have Ya.Online account you may create one at http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -123,7 +123,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_store_password_summary">Disable this option to request password each time you go online</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
-    <string name="account_syncable">Integration into system contacts</string>
+    <string name="account_syncable">Integrate into system contacts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_syncable_summary">Show contacts from this account in phone`s contact list</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->

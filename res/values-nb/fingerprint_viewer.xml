@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">Ditt fingeravtrykk:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">Din motparts fingeravtrykk:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">Skann QR-kode med motpartens fingeravtrykk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">Vis fingeravtrykket ditt som en QR-kode</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">Det er ingen Google Play installert. Vennligst installer Barcode Scanner manuelt.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">Denne applikasjonen krever Barcode Scanner. Vil du installere den?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">Kopier fingeravtrykket ditt til utklippstavlen</string>
+</resources>

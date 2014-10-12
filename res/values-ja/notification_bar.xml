@@ -1,3 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="account_quantity_1">アカウント</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="account_quantity_2">アカウント</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="account_quantity_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
+    <string name="account_quantity_offline_1">アカウント</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
+    <string name="account_quantity_offline_2">アカウント</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
+    <string name="account_quantity_offline_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_authorization.png -->
+    <string name="AUTHENTICATION_FAILED">認証エラー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_contact_quantity_1">連絡先</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_contact_quantity_2">連絡先</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_contact_quantity_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_message_quantity_1">メッセージ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_message_quantity_2">メッセージ</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_message_quantity_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
+    <string name="chat_status">%3$d %4$s から %1$d %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="connection_state_connected_1">%1$d / %2$d %3$s オンライン</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="connection_state_connected_2">%1$d / %2$d %3$s オンライン</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
+    <string name="connection_state_connected_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->
+    <string name="connection_state_connecting_1">%1$d / %2$d %3$s 接続中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->
+    <string name="connection_state_connecting_2">%1$d / %2$d %3$s 接続中</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->
+    <string name="connection_state_connecting_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_waiting.png -->
+    <string name="connection_state_waiting_1">%1$d / %2$d %3$s 接続待機中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_waiting.png -->
+    <string name="connection_state_waiting_2">%1$d / %2$d %3$s 接続待機中</string>
+    <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_waiting.png -->
+    <string name="connection_state_waiting_5">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
+    <string name="connection_state_offline">%1$d %2$s オフライン</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/message_archive.png -->
+    <string name="archive_available_request_message">サーバーにメッセージの履歴を保存しますか?\nこのアカウントを使用するすべてのデバイスで Xabber がメッセージの履歴をロードすることができるようになります.\nこの機能は追加の通信が発生し,　接続速度が少し低下することがあります.\n警告: ローカルの履歴はすべて削除されます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_archive.png -->
+    <string name="archive_available_request_title">メッセージのアーカイブを有効にしますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_certificate.png -->
+    <string name="INVALID_CERTIFICATE">証明書が正しくありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_invite.png -->
+    <string name="muc_invite_message">会議に入りますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification_in_progress">中断するにはここをクリックしてください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_password.png -->
+    <string name="PASSWORD_REQUIRED">パスワードが必要</string>
+    <string name="pay_attention">ご注意ください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_subscription.png -->
+    <string name="subscription_request_message">認証を要求</string>
 </resources>

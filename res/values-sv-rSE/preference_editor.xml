@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="cache_clear">Rensa cache \nTa bort all lokalt sparad data. Ger mer fritt utrymme.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
+    <string name="cache_clear_warning">Vill du verkligen radera chatthistorik och lokalt sparade data?\nDitt konto och kontaktlista påverkas inte. Applikationen kommer att avslutas.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_send_by_enter">Skicka vid tryck på retur \nMeddelanden kan skickas när du trycker på retur</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_away">Automatisk frånvaro \nStäll in frånvaro automatiskt vid låst skärm</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">Sortera kontakter\nAnge hur kontakter ska sorteras</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">Alfabetisk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">Status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">Gruppera med konto\nGruppera kontakter i kontaktlistan per konto</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_active_chats">Aktiva konversationer överst\nVisa aktiva konversationer ovanför kontaktlistan</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_avatars">Visa profilbilder \nVisa användares profilbilder i kontaktlistan</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">Visa tomma grupper\nVisa grupper även om de inte innehåller några kontakter som är online </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">Visa grupper \nVisa grupper i kontaktlistan</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">Visa offlinekontakter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_panel">Visa kontopanel\nVisa panel med kontots avatarer överst i kontaktlistor </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_stay_active_chats">Visa aktiva chattar överallt \nAktiva chattar visas ovanför kontaktlistan och i grupper</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="debug_log">Debug-logg\nSkriv meddelanden till debugloggen (starta om för att aktivera denna inställning)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">Ljusindikator \nBlinka vid notifiering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_persistent">Ikon i taskbar \nVisa alltid notifiering. Detta val förhindrar att Android tar bort applikationen från minnet.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_sound">Notifieringsljud \nVälj ljud för notifieringar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_vibro">Vibrera \nVibrera vid notifiering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_theme">Tema \nInställningar för tema</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_dark">Mörk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_light">Ljus</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_normal">Förval</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_smiles">Emoticon \nInställningar för emoticon (tidigare kallat smileys)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_android">Androidemoticons</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_none">Inga grafiska emoticons</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_connection">Anslutningsinställningar \nAnslutningsinställningar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_contacts">Kontaktlista \nAnpassa kontaktlistans utseende</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_debug">Debuginställningar \nInställningar för att utvecklare ska kunna förbättra Xabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="preference_editor">Inställningar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_events">Notifieringar \nInställning för notifieringar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_interface">Inställningar för tema\nUtseende</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="about_viewer">Om</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_divide">Meddelanden på ny rad\nVisa meddelande på ny rad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
+    <string name="chats_divide_portrait">I porträttläge</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_font_size">Textstorlek\nTextstorlek i meddelande</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_large">Stor</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_normal">Normal</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_small">Liten</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_xlarge">Extra stor</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_hide_keyboard">Dölj tangentbord \nDölj tangentbord när meddelande skickats</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
+    <string name="chats_hide_keyboard_landscape">I landskapsläge</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
+    <string name="chats_receipt">Leveranskvitto\nSkicka och ta emot leveranskvitton för meddelanden</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_avatars">Profilbilder i meddelanden \nVisa profilbilder i varje meddelande</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_status_change">Visa statusförändringar \nVisa meddelanden om statusförändringar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="chats_show_status_change_muc">I konferenser</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_state_notification">Visa skrivnotifiering\nMeddela när du skriver ett meddelande</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_adjust_priority">Ändra prioritet\nAnge prioritet baserat på vald status. Kontots prioritet används ej.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">Direkt vid skärmlås</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_xa">Utökad frånvaro vid inaktivitet\nSätt "Utökad frånvaro" vid skärmlås</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_priority">Inställningar för prioritet</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_start_at_boot">Starta när Android startar\nStarta applikationen när Android startar. Detta fungerar inte när Xabber är installerat på ett minneskort.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wake_lock">Förhindra strömsparläge \nDetta kommer påverka batteritided</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wifi_lock">Håll WiFi igång \nBehåll WiFi vid standby. Kommer påverka batteritid.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">Återställ offlineinställningar\nRensa individuella inställningar för grupper och konton</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">Vill du verkligen rensa individuella inställningar för grupper och konton?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_first_only">Notifiering vid första meddelande\nNotifiera enbart vid första meddelandet i chatten</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_ignore_system_vibro">Ignorera systemets inställning för vibration \nAnvänd denna inställning om systemets vibration inte fungerar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_message">Inställningar för notifieringar\nAnpassa inställningar för inkommande meddelanden</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat">Bara chattar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat_and_muc">Chattar och konferenser</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_none">Meddela inte</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_show_text">Visa meddelande i notifiering\nVisa meddelandet i notifieringen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_visible_chat">Meddela i pågående chatt \nVisa notifiering för inkommande meddelanden i pågående chatt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
+    <string name="negative_priotiry_summary">%s (du kommer inte ta emot några meddelanden från någon chatt)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_accounts">XMPP-konton \nHantera din konton</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_security">Säkerhet \nSäkerhetsinställningar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_check_certificate">Kontrollera servercertifikat\nMeddela certifikatproblem för krypterade sessioner</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_clear_certificate">Rensa certifikat \nRensa listan av ignorerade certifikat</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_history">Spara historik\nSpara meddelanden i OTR-sessioner</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_mode">OTR-läge</string>
+    <string name="chats_attention">Begäran om uppmärksamhet\nHantera inkommande begäran om uppmärksamhet</string>
+    <string name="chats_attention_sound">Ljud - notifiering\nVälj ljud</string>
+    <string name="connection_load_vcard">Ladda in vCard \nHämta och uppdatera kontaktens information och profilbild. Avmarkera för att minska datatrafik.</string>
+    <string name="events_phrases">Nyckelfraser\nAnpassade ljud vid meddelanden som innehåller vissa fraser</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
+    <string name="security_clear_certificate_warning">Vill du verkligen radera alla ignorerade certifikat?</string>
+</resources>

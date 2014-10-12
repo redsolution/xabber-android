@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="available">Tillgänglig</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="away">Borta</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="chat">Tillgänglig för chatt!</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="clear_statuses">Radera sparade statusmeddelanden</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="dnd">Stör ej</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="edit_status">Redigera status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="empty_status">&lt;Tom status&gt;</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="invisible">Osynlig</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="remove_status">Radera status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="select_status">Ange status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor">Ändra status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor_for">Ändra status för %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_text_hint">Ange din status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unavailable">Offline</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unsubscribed">Inte auktoriserad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="xa">Borta längre tid</string>
+</resources>

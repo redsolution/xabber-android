@@ -149,5 +149,5 @@
     <string name="connection_load_vcard">Cargar vCard\nCargar y actualizar la información personal y avatar del contacto. Desactivar para reducir el uso de red.</string>
     <string name="events_phrases">Frases clave\nNotificaciones sonoras para mensajes con frases clave</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
-    <string name="security_clear_certificate_warning">¿Realmente quieres eliminar todos los certificados ignorados?</string>
+    <string name="security_clear_certificate_warning">¿Realmente quiere eliminar todos los certificados ignorados?</string>
 </resources>

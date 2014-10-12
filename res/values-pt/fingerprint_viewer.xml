@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
-    <string name="otr_fingerprint_description">Seu interlocutor pode prover a impressão digital dele para você comparar com a especificada aqui e ter certeza que ele é quem você pensa que é. Vocẽ não deve usar a conversação XMPP para este propósito.</string>
+    <string name="otr_fingerprint_description">Seu interlocutor pode prover a impressão digital dele para você comparar com a especificada aqui e ter certeza que ele é quem você pensa que é. Você não deve usar a conversa XMPP para este propósito.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
     <string name="otr_is_verified">Este contato é confiável</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->

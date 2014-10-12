@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">Puoi inserire o il tuo nome (es. nome.v.kontakte) o l\'id (es. id123456). Non puoi fare il login alla chat usando la tua email. Per impostare la chat devi fornire le tue credenziali Vkontakte.ru. Visita http://vk.com/help.php?page=jabber per maggiori dettagli.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Se vuoi saperne di più riguardo XMPP (Jabber), vai qui: http://xmpp.org \nPer registrare un nuovo account XMPP visita https://register.jabber.org, oppure registrati su un altro server Jabber.</string>
+    <string name="account_type_helps_xmpp">Se vuoi saperne di più riguardo XMPP (Jabber), vai qui: https://xmpp.org \nPer registrare un nuovo account XMPP visita https://register.jabber.org, oppure registrati su un altro server Jabber.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Se non hai nessun account Ya.Online puoi crearne uno su http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->

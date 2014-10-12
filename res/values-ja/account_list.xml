@@ -1,3 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
+    <string name="account_delete_confirm">アカウント %s を削除してよろしいですか?\n(Xabber から削除しますが, サーバーからは削除されません)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_add">アカウントを追加</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_delete">アカウントを削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_editor">アカウントを編集</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_authentication">認証中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connected">オンライン</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connecting">接続中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_disconnecting">切断中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_offline">オフライン</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_waiting">再接続の待機中</string>
 </resources>

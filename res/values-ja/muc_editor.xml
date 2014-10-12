@@ -1,3 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_NICK_NAME">ニックネームが指定されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_ROOM_NAME">会議が指定されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_join">会議に参加</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_nick">ﾆｯｸﾈｰﾑ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_nick_hint">あなたの会議でのニックネーム</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password">パスワード</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password_hint">パスワードは必須ではありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_room">会議</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server">マルチ ユーザー チャット サーバー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server_hint">conference.jabber.org</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="NICK_ALREADY_USED">ニックネームはすでに使用されています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_IN_PROGRESS">すでに実行中です</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_JOINED">すでに参加しています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_add">会議に参加</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_delete">会議を削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_confirm.png -->
+    <string name="muc_delete_confirm">アカウント %2$s から会議 %1$s を削除してもよろしいですか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_edit">認証設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_invite.png -->
+    <string name="muc_invite_confirm">%2$s があなたを会議 %3$s に参加するように招待しています. アカウント %1$s から参加しますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_invite.png -->
+    <string name="muc_invite_confirm_reason">%2$s があなたを会議 %3$s に参加するように招待しています: %4$s. アカウント %1$s から参加しますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_leave">会議を離れる</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_save">会議を保存</string>
 </resources>

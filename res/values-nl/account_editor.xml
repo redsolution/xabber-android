@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">Je kan je naam (bijv. masha.v.kontakte) of ID (bijv. id123456) gebruiken.\nJe kan niet inloggen bij VKontakte chat met je e-mailadres. Om chat in te stellen dien je je VKontakte.ru gebruikersnaam en wachtwoord te gebruiken. Ga naar http://vk.com/help.php?page=jabber voor meer info.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Ga naar http://xmpp.org voor meer info over XMPP (Jabber)\nOm een nieuw account te registreren ga je naar https://register.jabber.org of andere Jabberservers.</string>
+    <string name="account_type_helps_xmpp">Ga naar https://xmpp.org voor meer info over XMPP (Jabber)\nOm een nieuw account te registreren ga je naar https://register.jabber.org of andere Jabberservers.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Als je niet over een Ya.Online account beschikt kan je dit aanmaken op http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -72,6 +72,8 @@
     <string name="account_archive_mode">Sla geschiedenis op</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
     <string name="account_archive_mode_available">Op server indien beschikbaar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_dont_store">Sla niet op</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
     <string name="account_archive_mode_local">Lokaal op apparaat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
@@ -102,6 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Proxy-host</string>
+    <string name="account_proxy_password">Proxy-wachtwoord</string>
+    <string name="account_proxy_port">Proxy-poort</string>
+    <string name="account_proxy_type">Proxy type</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Gedeactiveerd</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Proxy-gebruiker</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Gebruik SASL Authenticatie (aanbevolen)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -140,8 +152,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Chat via het anonieme TOR-netwerk en forceer het gebruik van TLS-versleuteling.\nWordt afgeraden voor Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Alle wijzigingen negeren?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Gebruikersnaam niet correct. Raadpleeg help voor details.</string>
+    <string name="orbot_required_message">Om TOR te kunnen gebruiken moet Orbot geïnstalleerd zijn, en moet het verkeer hier doorheen lopen. Wil je Orbot installeren vanaf Google Play?</string>
+    <string name="orbot_required_title">Installeer Orbot?</string>
 </resources>

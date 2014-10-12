@@ -1,3 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in10m">Za 10 minut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in15m">Z 15 minut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in1h">Za 1 hodinu</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in1m">Za 1 minutu</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in2m">Za 2 minuty</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in30m">Za 30 minut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in5m">Za 5 minut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="always">Vždy</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="disabled">Zakázáno</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="manual">Manuálně</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="never">Nikdy</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="required">Požadováno</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="auto">Automaticky</string>
 </resources>

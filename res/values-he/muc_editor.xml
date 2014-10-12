@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_NICK_NAME">שם כינוי לא צוין</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_ROOM_NAME">ועידה לא צוינה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_join">הצטרף אל ועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_nick">כינוי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_nick_hint">הכינוי שלך בתוך ועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password">סיסמה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password_hint">סיסמה אינה מחייבת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_room">ועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server">שרת שיחה מרובת משתמשים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="NICK_ALREADY_USED">כינוי כבר מצוי תחת שימוש</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_IN_PROGRESS">כבר בתהליך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_JOINED">כבר הצטרפת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_add">הצטרף אל ועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_delete">הסר ועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_confirm.png -->
+    <string name="muc_delete_confirm">האם אכן ברצונך להסיר ועידת %1$s מתוך חשבון %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_edit">הגדרות הרשאה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_invite.png -->
+    <string name="muc_invite_confirm">הוזמנת על ידי %2$s להצטרף לועידת %3$s. להצטרף מתוך חשבון %1$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_invite.png -->
+    <string name="muc_invite_confirm_reason">הוזמנת על ידי %2$s להצטרף לועידת %3$s: %4$s. להצטרף מתוך חשבון %1$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_leave">עזוב ועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_save">שמור ועידה</string>
+</resources>

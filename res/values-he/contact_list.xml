@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="accept_subscription">קבל איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="account_reconnect">התחבר מחדש</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_disabled">נהל חשבונות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_empty">הוסף איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_contacts">הוסף איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_online">הצג אנשי קשר בלתי מקוונים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_offline">התחבר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_waiting">התחבר מחדש</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_connecting">כעת מתחבר...‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_state_disabled">חשבונות מנוטרלים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_empty">אין לך שום חשבונות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_contacts">אין לך אנשי קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_online">אף אחד לא מקוון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_offline">אין חשבונות מקוונים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_roster">מחובר.‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
+    <string name="application_state_starting">כעת משגר אפליקציה... </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_waiting">כעת ממתין לחיבור...‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
+    <string name="chat_list">רשימת שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="chat_list_is_empty">אין שיחות פעילות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="chat_viewer">שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="close_chat">סגור שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="CONNECTION_FAILED">שגיאת חיבור</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="contact_add">הוסף איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_delete">מחק</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
+    <string name="contact_delete_confirm">האם אכן ברצונך למחוק את איש קשר %1$s מתוך חשבון %2$s?‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_editor">ערוך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="contact_list">רשימת קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="discard_subscription">דחה איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="exit">יציאה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_active_chat">שיחות פעילות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_none">אין קבוצות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_remove">מחק קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
+    <string name="group_remove_confirm">האם אכן ברצונך למחוק את קבוצה %s? משתמשים מתוך קבוצה זו יוותרו בתוך רשימת קשר.‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_rename">שנה שם קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NO_SUCH_ACCOUNT">חשבון לא נמצא</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NOT_CONNECTED">חיבור לא התבסס</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">בקש הרשמה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="XMPP_EXCEPTION">שגיאת זרם</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
+    <string name="application_state_closing">כעת שומר שינויים...\nאפליקציה תיסגר בקרוב. ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_confirmation">%1$s.\nהאם אתה בהחלט סומך על תעודה עם טביעת אצבע sha1&amp;rlm;: %2$s? האם אתה רוצה לקבל התראה אודות בעיה זו עם תעודה זו? ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
+    <string name="certificate_details">\n\nהונפקה למען:\nשם כללי (CN)&amp;rlm;: %1$s\nארגון (O)&amp;rlm;: %2$s\nיחידת ארגון (OU)&amp;rlm;: %3$s\nמספר סידורי: %4$s\n\nהונפקה על ידי:\nשם כללי (CN)&amp;rlm;: %5$s\nארגון (O)&amp;rlm;: %6$s\nיחידת ארגון (OU)&amp;rlm;: %7$s\n\nתקפות:\nהונפקה ביום: %8$s\nפוקעת ביום: %9$s.               ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_chane">אימות שרשרת חתימה נכשל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_target">אימות יעד נכשל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_self_signed">תעודה חתומה באופן עצמי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_show_details">פרטים ...‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="close_chats">סגור את כל השיחות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
+    <string name="contact_integration_suggest">האם ברצונך כי Xabber ישתלב אל תוך אנשי קשר של מערכת?\nזו ניתנת לשינוי בתוך "הגדרות" ← "חשבונות XMPP" ← החשבון שלך ← "שילוב איש קשר".\nהערה: רשימת קשר של מערכת יכולה לתפקד בצורה איטית יותר למשך כמה דקות.  ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_room">ועידות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="OTR_ERROR">שגיאת OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
+    <string name="select_contact">אנא לחץ כדי לברור איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_always">הצג תמיד</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_never">אף פעם אל תציג</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_normal">השתמש בהגדרות כלליות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="show_offline_settings">הצג אנשי קשר בלתי מקוונים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
+    <string name="start_at_boot_suggest">האם ברצונך להריץ את Xabber בעת הפעלה?\nזו יכולה להשתנות בתוך "הגדרות" ← "הגדרות חיבור" ← "הרץ הפעלה" ‎</string>
+</resources>

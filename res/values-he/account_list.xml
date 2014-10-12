@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
+    <string name="account_delete_confirm">האם אכן ברצונך למחוק את חשבון %s?\n(זה לא יימחק מתוך שרת, רק מתוך Xabber)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_add">הוסף חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_delete">מחק חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_editor">ערוך חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_authentication">כעת מעניק הרשאה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connected">מקוון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connecting">כעת מתחבר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_disconnecting">כעת מתנתק</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_offline">בלתי מקוון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_waiting">כעת ממתין להתחברות מחודשת</string>
+</resources>

@@ -3,7 +3,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="cache_clear">Limpar cache\nLimpar todos os dados locais. Isso pode liberar algum espaço.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
-    <string name="cache_clear_warning">Você deseja realmente apagar seu histórico de bate-papo e outros dados locais?\nDados da conta e lista não são afetados. A aplicação será fechada.</string>
+    <string name="cache_clear_warning">Você deseja realmente apagar seu histórico de conversa e outros dados locais?\nDados da conta e lista não são afetados. A aplicação será fechada.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_send_by_enter">Enviar com Enter\nMensagem pode ser enviada pela tecla Enter</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
@@ -17,7 +17,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_accounts">Agrupar por conta\nAgrupa os contatos na lista de contatos por conta</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_show_active_chats">Bate-papos ativos no topo\nExibir os bate-papos ativos no topo da lista de contatos</string>
+    <string name="contacts_show_active_chats">Conversas ativas no topo\nExibir as conversas ativas no topo da lista de contatos</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_avatars">Exibir avatares\nExibir os avatares dos usuários na lista de contatos</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
@@ -29,7 +29,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_panel">Exibir painel da conta\nExibe um painel com o avatar da sua conta no início da lista de contatos</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_stay_active_chats">Duplicar bate-papos ativos\nBate-papos ativos aparecem tanto no topo da lista de contatos quanto em grupos nativos</string>
+    <string name="contacts_stay_active_chats">Duplicar conversas ativas\nConversas ativas aparecem tanto no topo da lista de contatos quanto em grupos nativos</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="debug_log">Log de depuração\nEscrever mensagens para o log de depuração (reinicie a aplicação para aplicar esta mudança)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
@@ -115,23 +115,23 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
     <string name="contacts_reset_offline_warning">Você deseja realmente limpar as configurações individuais para grupos e contas?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
-    <string name="events_first_only">Alerta na primeira mensagem\nNotificar apenas na primeira mensagem no bate-papo</string>
+    <string name="events_first_only">Alerta na primeira mensagem\nNotificar apenas na primeira mensagem na conversa</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_ignore_system_vibro">Ignorar opções de vibração do sistema\nUse esta opção se a vibração do sistema não funciona</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_message">Opções de notificação\nConfigure notificações sobre mensagens recebidas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
-    <string name="events_message_chat">Apenas bate-papos</string>
+    <string name="events_message_chat">Apenas conversas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
-    <string name="events_message_chat_and_muc">Bate-papos e conferências</string>
+    <string name="events_message_chat_and_muc">Conversas e conferências</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
     <string name="events_message_none">Não avisar</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_show_text">Exibir mensagem na notificação\nExibir mensagem de texto na área de notificação</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
-    <string name="events_visible_chat">Notificação no bate-papo atual\nNotificar mensagens entregues no bate-papo atual</string>
+    <string name="events_visible_chat">Notificação na conversa atual\nNotificar mensagens entregues na conversa atual</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
-    <string name="negative_priotiry_summary">%s (você não receberá mensagens de nenhuma conversação)</string>
+    <string name="negative_priotiry_summary">%s (você não receberá mensagens de nenhuma conversa)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_accounts">Contas XMPP\nGerencie sua contas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->

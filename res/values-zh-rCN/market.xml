@@ -12,7 +12,7 @@
     <string name="development_description">Xabber测试（可能不稳定）版——开源的Jabber（XMPP）客户端，支持多账户，界面干净简单。\n\n你可以安装此版本来帮助我们测试和开发Xabber。我们不保证稳定性，所以如果你不怎么有冒险精神，请使用常规版。但如果你确实敢于冒险，你会最早看到新功能！\n\nXabber源代码位于https://github.com/redsolution/xabber-android，在GNU GPLv3协议下释出。 \n \n要获取更多信息，请访问我们的网站http://xabber.com，或Twitter上的@xabber_xmpp。\n\n如果你遇到了bug或有新点子，请发送电子邮件到：info+devel@xabber.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="development_title">Xabber开发版本</string>
-    <string name="production_changes">+ Xabber 源始码可在GitHub取得\n+ 捷克语 (Czech translations) \n+ 呼叫提醒(Call attention feature) \n+ 基於关键词的通知 (Notifications based on key phrase) \n+ 可取消讯息收件回执(Option to disable message delivery receipts)  \n+ 聊天室中的管理员清单 (List of occupants in a chat room (view only)) \n* 修正些许错误 (Multiple minor fixes) \n* 修正部分翻译 (Multiple translations fixed)\nThank you folks!</string>
+    <string name="production_changes">+ 使用Orbot实现的TOR支持\n+ 代理服务器支持\n+ 白俄罗斯语、波斯语、意大利语、葡萄牙语、乌克兰语、中文（中国）、中文（台湾）翻译\n* 修复了Android 4+上的通知\n* 修复了服务器侧聊天记录\n* 修复了退出时的行为\n* 修复了翻译\n* 小修复\n谢谢你们！</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="vip_description">Xabber VIP版——开源的Jabber（XMPP）客户端，支持多账户，界面干净简单。免费且无广告，Xabber的设计目标是Android平台上最好的Jabber客户端。 \n\nVIP版并不比普通版好在哪里：程序图标中的金币是唯一的功能。你可以向他人炫耀你买了任何人都可以免费获得的东西。\n\n...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->

@@ -1,3 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_ADD_TO_GROUP">エラー: グループに追加できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_CREATE_CONTACT">エラー: 連絡先を追加できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_CONTACT">エラー: 連絡先を削除できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_FROM_GROUP">エラー: グループから削除できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_GROUP">エラー: グループを削除できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_RENAME_GROUP">エラー: グループの名前を変更できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_account">アカウント</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="contact_editor_title">%s を編集中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="contact_group">グループを選択</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_name">エイリアス (オプション)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add_confirm.png -->
+    <string name="contact_subscribe_confirm">あなたの %2$s アカウントステータスを %1$s と共有しますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_user">連絡先ユーザー名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="ENTRY_IS_NOT_FOUND">連絡先が見つかりません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="group_add">新しいグループを作成</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="group_default">友達</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="group_exists">この名前のグループはすでに存在します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="group_is_empty">グループ名を設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/group_add.png -->
+    <string name="group_name">グループ名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="choose_account">アカウントを選択</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="EMPTY_ACCOUNT">アカウントを選択してください</string>
 </resources>

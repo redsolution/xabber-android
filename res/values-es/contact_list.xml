@@ -79,7 +79,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
     <string name="application_state_closing">Guardando cambios...\nLa aplicación se cerrará a continuación</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
-    <string name="certificate_confirmation">%1$s.\n¿Confías totalmente en el certificado con huella sha1: %2$s y quieres que no se te notifique sobre este problema?</string>
+    <string name="certificate_confirmation">%1$s.\n¿Confía totalmente en el certificado con huella sha1: %2$s? ¿Quiere que no se le notifique sobre este problema?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
     <string name="certificate_details">\n\n\nEmitido para:\nNombre (CN): %1$s\nOrganización (O): %2$s\nUnidad organizativa (OU): %3$s\nNúmero de serie: %4$s\n\nEmitido por:\nNombre (CN): %5$s\nOrganización (O): %6$s\nUnidad organizativa (OU): %7$s\n\nValidez:\nEmitido: %8$s\nExpira: %9$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
@@ -93,7 +93,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="close_chats">Cerrar todas las conversaciones</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
-    <string name="contact_integration_suggest">¿Quieres integrar Xabber con los contactos del sistema?\nEsto se puede configurar en "Opciones" → "Cuentas XMPP" → Tu cuenta → "Integración con los contactos del sistema".\nNota: Los contactos del sistema pueden ir más lentos durante unos minutos.</string>
+    <string name="contact_integration_suggest">¿Quiere integrar Xabber con los contactos del sistema?\nEsto se puede configurar en "Opciones" → "Cuentas XMPP" → Tu cuenta → "Integración con los contactos del sistema".\nNota: Los contactos del sistema pueden ir más lentos durante unos minutos.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="group_room">Conferencias</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_NICK_NAME">Není zadaná přezdívka</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_ROOM_NAME">Není zadané jméno místnosti</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
     <string name="muc_join">Připojit se do konference</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
@@ -9,7 +13,23 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_password">Heslo</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password_hint">Heslo není vyžadováno</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_room">Konference</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server">Server chatu</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="NICK_ALREADY_USED">Přezdívka je již používaná</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_JOINED">Již připojen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_add">Připojit k chatu</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_delete">Odstranit chat</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_confirm.png -->
+    <string name="muc_delete_confirm">Opravdu si přejete odstranit chat %1$s z účtu %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_edit">Nastavení autorizace</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
     <string name="muc_leave">Odejít z konference</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->

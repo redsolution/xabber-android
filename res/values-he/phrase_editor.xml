@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="events_phrases_title">מימרות מפתח</string>
+    <string name="phrase_add">הוסף מימרה</string>
+    <string name="phrase_delete">מחק מימרה</string>
+    <string name="phrase_delete_confirm">האם אכן ברצונך למחוק מימרה: %s?</string>
+    <string name="phrase_empty">&lt; כל תמליל &gt;</string>
+    <string name="phrase_regexp">ביטוי רגולרי</string>
+    <string name="phrase_sound">צליל\nבחירת צליל התראה ‎</string>
+    <string name="phrase_text">תמליל לחיפוש</string>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="available">זמין</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="away">נעדר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="chat">מוכן לשיחה!</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="clear_statuses">מחק הודעות מצב שמורות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="dnd">אל נא להפריע</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="edit_status">ערוך מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="empty_status">&lt;מצב ריק&gt;‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="invisible">בלתי נראה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="remove_status">מחק מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="select_status">קבע מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor">שנה מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor_for">שנה מצב עבור %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_text_hint">קבע את מצבך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unavailable">לא מקוון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unsubscribed">לא מורשה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="xa">נעדר למשך זמן ארוך</string>
+</resources>

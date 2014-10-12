@@ -13,7 +13,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
     <string name="edit_status">Bewerk status</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
-    <string name="empty_status">&lt;Empty status&gt;</string>
+    <string name="empty_status">&lt;Lege status&gt;</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="invisible">Onzichtbaar</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->

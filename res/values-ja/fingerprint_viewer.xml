@@ -1,3 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_fingerprint_description">相手が提供するフィンガープリントを比較し, 相手が誰であるかを確認することができます. この目的のために XMPP チャットを使用するべきではありません.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_is_verified">この連絡先は信頼されました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">あなたのフィンガープリント:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">相手のフィンガープリント:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">相手のフィンガープリントで QR コードをスキャン</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">あなたのフィンガープリントで QR コードを表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">Google Play がインストールされていません. バーコード・スキャナーを手動でインストールしてください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">このアプリケーションはバーコード・スキャナーが必要です. インストールしますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">あなたのフィンガープリントをクリップボードにコピー</string>
 </resources>

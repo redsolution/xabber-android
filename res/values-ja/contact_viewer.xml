@@ -1,3 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_viewer">情報を表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_for">%s についての情報を表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_xmpp">XMPP</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_jid">Jabber ID</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_name">Jabber 名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resources">リソース</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resource_summary">リソース: %1$s\n優先度: %2$d\nクライアント: %3$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_client_info">%1$s, 種類: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_person">個人情報</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_nick_name">ニックネーム</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_formatted_name">正式名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_prefix_name">接頭辞(敬称)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_given_name">名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_middle_name">ミドル名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_family_name">姓</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_suffix_name">接尾辞(敬称)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_birth_date">誕生日</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_url">Web サイト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_organization">所属</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_title">肩書, 役職</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_role">役割</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_other">その他の情報</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_categories">カテゴリー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_decsription">説明</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_note">注釈</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address">住所</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pobox">私書箱</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_extadr">追加の住所</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_street">番地</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_locality">市区町村</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_region">都道府県</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pcode">郵便番号</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_ctry">国</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_telephone">電話</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_email">メール</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type">ラベル</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_home">自宅</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_work">会社</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_postal">郵便</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_parcel">小包</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_dom">国内</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_intl">国際</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pref">通常使用</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_voice">音声</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_fax">Fax</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pager">ポケットベル</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_cell">携帯</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_video">ビデオ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_bbs">BBS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_modem">モデム</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_msg">ボイスメッセージ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_isdn">ISDN</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pcs">PCS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_internet">インターネット</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_x400">X400</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="please_wait">しばらくお待ちください...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="unknown">不明</string>
 </resources>

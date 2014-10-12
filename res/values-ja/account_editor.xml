@@ -1,3 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_compression">圧縮を使用</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_editor_title">%1$s アカウント %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_enabled">有効</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_host">ホスト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_password">パスワード</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_port">ポート</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_priority">優先度</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_resource">リソース</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_server_name">サーバー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type">アカウントの種類</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_facebook">facebook.com 用のユーザー名(e-mail ではない)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_gtalk">gmail.com または Google Apps ドメイン用のユーザー名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_livejournal">livejournal.com 用のユーザー名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_qip">qip.ru 用のユーザー名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_vkontakte">vkontakte.ru 用のユーザー名または id (e-mail ではない)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_xmpp">name@example.com</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_ya">yandex.ru 用のユーザー名 (e-mail ではない)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_facebook">Facebook チャットにはメール・アドレスを使用してログインできません. Facebook チャットを設定するには Facebook のユーザー名とパスワードを入力する必要があります. 詳細は http://www.facebook.com/sitetour/chat.php を確認してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_gtalk">Google のアカウントを持っていなければ http://mail.google.com で作成することができます\nyour_user_name@your_google_domain を使用することもできます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_livejournal">Livejournal のアカウントを持っていなければ http://livejournal.com で作成することができます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_qip">QIP のアカウントを持っていなければ http://qip.ru で作成することができます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_vkontakte">あなたの名前 (例 masha.v.kontakte) または id (例 id123456) を入力してください. VKontakte チャットにメールアドレスを使用してログインすることはできません. チャットを設定するには Vkontakte.ru のユーザー名とパスワードを入力する必要があります. 詳細は http://vk.com/help.php?page=jabber を確認してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_xmpp">XMPP (Jabber) についてさらに詳しい情報は https://xmpp.org を参照してください\n新しい XMPP アカウントを登録するには https://register.jabber.org か, 他の Jabber サーバーを参照してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_ya">Ya.Online アカウントを持っていなければ http://yandex.com で作成することができます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_facebook">Facebook</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_gtalk">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_livejournal">LiveJournal</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_qip">QIP</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_vkontakte">VKontakte</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_xmpp">XMPP</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_ya">Ya.Online</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_user_name">ユーザー名</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="EMPTY_SERVER_NAME">サーバー名が指定されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="EMPTY_USER_NAME">ユーザー名が指定されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
+    <string name="account_archive_mode">メッセージの履歴を保存</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_available">利用可能な場合、サーバーで</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_dont_store">保存しない</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_local">デバイスのローカルで</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_server">サーバーで</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_unread">未送信および未読のみローカルで</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_compression_summary">チェックするとデータ圧縮を有効にします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_custom">カスタム･ホスト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_custom_summary">SRV レコードの代わりにカスタム・ホスト設定を使用します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_enabled_summary">チェックするとアカウントを有効にします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
+    <string name="account_invalid_port">ポートは数字で入力してください (デフォルト: 5222)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
+    <string name="account_invalid_priority">優先度の値は -128 から 128 の間の数字で入力してください (デフォルト: 10)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth">認証</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_oauth_not_authorized.png -->
+    <string name="account_oauth_invalidated">認証されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth_summary">OAuth 設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_gtalk.png -->
+    <string name="account_protocol_gtalk_title">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_protocol_wlm_title">WLM</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">プロキシ・ホスト</string>
+    <string name="account_proxy_password">プロキシ・パスワード</string>
+    <string name="account_proxy_port">プロキシ・ポート</string>
+    <string name="account_proxy_type">プロキシの種類</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">なし</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">プロキシ・ユーザー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_sasl">SASL 認証を使用 (推奨)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_sasl_summary">古いサーバーでは無効にしてください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_store_password">パスワードを保存</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_store_password_summary">このオプションを無効にすると、毎回オンラインにするたびにパスワードを要求します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_syncable">システムの連絡先に統合</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_syncable_summary">電話の連絡先リストのアカウントから連絡先を表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_enable">TLS を有効</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_enable_summary">サーバーに接続時に、可能であれば TLS 暗号化を使用します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_legacy">レガシー SSL</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_legacy_summary">サーバーに接続時、レガシー SSL 暗号化を使用します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_mode">TLS/SSL 使用方法</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_require">TLS が必要</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_require_summary">サーバーに接続時 TLS 暗号化を必要とします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_odnoklassniki">ユーザー名としてあなたの ID を使用する必要があります (例 123456). Odnoklasniki チャットにメールアドレス, ログイン, または電話番号を使用してログインすることはできません. あなたの ID はここ http://www.odnoklassniki.ru/settings で確認することができます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_wlm">ユーザー名とパスワードを入力するため http://live.com にリダイクトされます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_odnoklassniki">odnoklassniki.ru の id (ログインやメールアドレスではありません)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_wlm">-</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">TOR 匿名ネットワークでチャットし, TLS 暗号プロトコルを強制的に使用します\nGoogle Talk では推奨しません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
+    <string name="confirm_cancellation">すべての変更を取り消してもよろしいですか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="INCORRECT_USER_NAME">ユーザー名が正しくありません. 詳細は下部のヘルプテキストを確認してください.</string>
+    <string name="orbot_required_message">TOR を使用して処理するには Orbot をインストールし proxy のトラフィックを有効にする必要があります. Google Play からインストールしますか?</string>
+    <string name="orbot_required_title">Orbot をインストールしますか?</string>
 </resources>

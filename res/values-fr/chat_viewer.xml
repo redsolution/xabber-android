@@ -132,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Relancer le chiffrement</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Une conversation privée OTR (Off-The-Record) a été demandée mais vous n\'avez pas le plugin requis. Utilisez Pidgin ou Adium pour PC / Mac et Xabber ou GibberBot pour Android. Aller à la page http://otr.cypherpunks.ca/ pour plus d\'informations.</string>
+    <string name="otr_request">Une conversation privée OTR (Off-The-Record) a été demandée mais vous n\'avez pas le plugin requis. Utilisez Pidgin, Gajim ou Adium pour PC / Mac et Xabber ou ChatSecure pour Android. Aller à la page http://otr.cypherpunks.ca/ pour plus d\'informations.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Démarrer le chiffrement</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

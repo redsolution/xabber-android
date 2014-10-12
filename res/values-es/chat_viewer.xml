@@ -55,7 +55,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_join_complete_to">Te has unido al chat %1$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
-    <string name="action_kick_by">%1$s fue pateado por %2$s</string>
+    <string name="action_kick_by">%1$s fue echado por %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_leave">%1$s abandonó el chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -132,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Reiniciar la encriptación</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Se ha pedido una conversación privada OTR (Off-the-Record) pero no tienes el plugin que lo implementa. Use Pidgin o Adium para PC/Mac y Xabber o GibberBot para Android. Vaya a http://otr.cypherpunks.ca/ para más información.</string>
+    <string name="otr_request">Se ha pedido una conversación privada OTR (Off-the-Record) pero no tienes el plugin que lo implementa. Use Pidgin, Gajim o Adium para PC/Mac y Xabber o ChatSecure para Android. Vaya a http://otr.cypherpunks.ca/ para más información.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Iniciar encriptación</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

@@ -129,7 +129,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Verschlüsselung aktualisieren</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Es wurde eine private Unterhaltung durch Off-the-Record angefordert, du hast das benötigte Plugin jedoch nicht installiert. Bitte benutze Pidgin oder Adium für PC/Mac und Xabber oder GibberBot für Android. Weitere Informationen findest du unter http://otr.cypherpunks.ca/</string>
+    <string name="otr_request">Es wurde eine private Unterhaltung durch Off-the-Record angefordert, du hast das benötigte Plugin jedoch nicht installiert. Bitte benutze Pidgin, Gajim oder Adium für PC/Mac und Xabber oder ChatSecure für Android. Weitere Informationen findest du unter http://otr.cypherpunks.ca/</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Verschlüsselung starten</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

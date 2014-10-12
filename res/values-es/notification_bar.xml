@@ -49,13 +49,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_offline.png -->
     <string name="connection_state_offline">%1$d %2$s desconectado</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/message_archive.png -->
-    <string name="archive_available_request_message">¿Quieres almacenar el histórico de mensaje en el servidor?\nEsto permite a Xabber cargar el historial desde todos los dispositivos que usen esta cuenta.\nEsta funcionalidad usará algo de tráfico adicional y reducirá ligeramente la velocidad de conexión.\nATENCIÓN: Todo tu historial local se eliminará.</string>
+    <string name="archive_available_request_message">¿Quiere almacenar el histórico de mensaje en el servidor?\nEsto permite a Xabber cargar el historial desde todos los dispositivos que usen esta cuenta.\nEsta funcionalidad usará algo de tráfico adicional y reducirá ligeramente la velocidad de conexión.\nATENCIÓN: Todo su historial local será eliminado.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_archive.png -->
     <string name="archive_available_request_title">¿Activar archivado de mensajes?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_certificate.png -->
     <string name="INVALID_CERTIFICATE">Certificado inválido</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_invite.png -->
-    <string name="muc_invite_message">Quieres entrar a la conferencia?</string>
+    <string name="muc_invite_message">¿Quiere entrar a la conferencia?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
     <string name="otr_verification_in_progress">Pulse aquí para cancelarla.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_password.png -->

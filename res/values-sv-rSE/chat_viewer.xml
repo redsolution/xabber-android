@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text">%1$s ändrade status: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text_none">%1$s rensade statustext</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join">%1$s anslöt till konferens</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick">%1$s sparkades ut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
+    <string name="account_is_offline">Du är offline. Meddelanden du skickar levereras när du är ansluten igen.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_delay">Meddelandet skickades %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_input_hint">Skriv meddelande här</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
+    <string name="chat_page">Chatt %1$d av %2$d</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_send">Skicka</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_history">Rensa historik</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_message">Rensa text</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
+    <string name="contact_is_offline">Mottagaren är offline. Meddelande du skickar levereras när mottagaren är online igen.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ENTRY_IS_NOT_AVAILABLE">Kontakten är inte tillgänglig</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="FILE_NOT_FOUND">Filen hittades inte</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_copy">Kopiera</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_quote">Citat</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_remove">Ta bort från historik</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_repeat">Försök skicka igen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
+    <string name="save_history">Spara historik lokalt\nLagra meddelandehistorik lokalt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="show_history">Visa historik</string>
+    <string name="action_attention_called">Begäran om uppmärksamhet skickades</string>
+    <string name="action_attention_requested">Begäran om uppmärksamhet skickades</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban">%1$s bannlystes</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban_by">%1$s bannlystes av %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_error">Inbjudan skickades till %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_sent">Inbjudan skickades till %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete">Du har anslutit som %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete_to">Du har anslutit till chatt %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick_by">%1$s sparkades ut av %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_leave">%1$s lämnade chatten</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_nickname">%1$s ändrade smeknamn till %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_encryption">Kryptering har aktiverats men denna kontakt har inte verifierats. Du kan verifiera den från menyn OTR-kryptering.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_error">OTR-fel: %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finish">Din motpart har lämnat konversationen. Du borde också göra det eller starta om den.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finished_session">Ditt meddelande har inte skickats. Lämna konversationen eller starta om den.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_plain">Du har lämnat den krypterade konversationen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_cheated">Motparten försökte fuska vid verifieringen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_failed">Verifiering misslyckades</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_not_approved">Ditt svar på den hemliga frågan verifierades. Du bör fråga din motpart också eller använda en delad helighet.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_unverified">Verifiering misslyckades</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_verified">Verifiering lyckades</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_unreadable">Det mottagna krypterade meddelandet kunde inte läsas</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_verified">Kryptering aktiverad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_available">%1$s är nu online</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_away">%1$s är nu frånvarande</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_chat">%1$s är ledig för chatt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_dnd">%1$s vill inte bli störd</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_unavailable">%1$s är nu otillgänglig</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_xa">%1$s är borta en längre tid</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_subject">%1$s har ändrat rubriken till: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ATTENTION_IS_NOT_SUPPORTED">Kontakten stödjer inte begäran om uppmärksamhet eller har stängt av funktionen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="call_attention">Begär uppmärksamhet</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="chat_settings">Chattinställningar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
+    <string name="chat_state_composing">Skriver...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
+    <string name="chat_state_paused">Skrev text...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_typed">Meddelandet skapades %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="export_chat">Exportera chatt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
+    <string name="export_chat_done">Historik har exporterats till minneskort</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_mask">%2$s för %1$s.html</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_send">Skicka efter export</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_title">Ange filnamn</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
+    <string name="muc_invite">Bjud in till chatt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
+    <string name="muc_is_unavailable">Dina meddelanden kunde inte levereras. Vänligen anslut till charr</string>
+    <string name="occupant_list">Lista på deltagare</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="otr_encryption">OTR-kryptering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_end">Avsluta kryptering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_refresh">Starta om kryptering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_request">Off-the-record-konversation har begärts men du saknar en plugin för det. Använd Pidgin, Gajim eller Adium för PC/Mac och Xabber eller ChatSecure för Android. Besök http://otr.cypherpunks.ca/ för mer information.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
+    <string name="otr_start">Starta kryptering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unencrypted_message">Meddelandet har inte krypterats</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unreadable_message">Det krypterade meddelandet du skickade kunde inte läsas</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification">OTR-verifiering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_fingerprint">Verifiera med fingeravtryck</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_question">Verifiera med fråga</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_secret">Verifiera med delad hemlighet</string>
+</resources>

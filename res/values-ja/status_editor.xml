@@ -1,3 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="available">利用可能</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="away">不在</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="chat">チャットが開始できます!</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="clear_statuses">保存したステータス・メッセージを削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="dnd">取り込み中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="edit_status">ステータスを編集</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="empty_status">&lt;ステータスなし&gt;</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="invisible">不可視</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="remove_status">ステータスを削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
+    <string name="select_status">ステータスを設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor">ステータスを変更</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_editor_for">ステータスを %s に変更</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
+    <string name="status_text_hint">ステータスを設定してください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unavailable">オフライン</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="unsubscribed">認証されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
+    <string name="xa">長時間不在</string>
 </resources>

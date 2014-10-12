@@ -124,7 +124,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Почати шифрування спочатку</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Співрозмовник відправив запит на OTR шифрування розмови, але у Вас не встановлено додаток, який його підтримує. Використайте Pidgin чи Adium для PC/Mac та Xabber чи GibberBot для Android. Завітайте на http://otr.cypherpunks.ca/ для отримання більш детальної інформації.</string>
+    <string name="otr_request">Співрозмовник відправив запит на OTR шифрування розмови, але у Вас не встановлено додаток, який його підтримує. Використайте Pidgin, Gajim чи Adium для PC/Mac та Xabber чи ChatSecure для Android. Завітайте на http://otr.cypherpunks.ca/ для отримання більш детальної інформації.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Почати шифрування</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

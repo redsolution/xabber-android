@@ -8,4 +8,5 @@
     <string name="about_site"></string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
     <string name="about_version">نگارش: %s</string>
+    <string name="about_license">تحت لیسانس: GNU GPLv3 \n<a href="https://github.com/redsolution/xabber-android"> نرم افزار متن باز </a></string>
 </resources>

@@ -43,7 +43,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">Você pode digitar seu nome (ex. fulano.da.silva) ou id (ex. id123456). Você não pode autenticar no bate-papo VKontakte usando seu e-mail. Para configurar o bate-papo você tem que informar seu usuário e senha no Vkontakte.ru. Visite http://vk.com/help.php?page=jabber para detalhes.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Se você quer aprender mais sobre o XMPP (Jabber) acesse aqui:\nhttp://xmpp.org\nPara criar um novo registro por favor acesse https://register.jabber.org, ou qualquer outro servidor Jabber.</string>
+    <string name="account_type_helps_xmpp">Se você quer aprender mais sobre o XMPP (Jabber) acesse aqui:\nhttps://xmpp.org\nPara criar um novo registro por favor acesse https://register.jabber.org, ou qualquer outro servidor Jabber.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Se você não possui uma conta no Ya.Online, você deve criar uma em http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -145,7 +145,7 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
-    <string name="account_use_orbot">Conversação via rede anônima TOR e forçar protocolo criptográfico TLS\nNão recomendado para Google Talk</string>
+    <string name="account_use_orbot">Conversar via rede anônima TOR e forçar protocolo criptográfico TLS\nNão recomendado para Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Tem certeza de que deseja descartar todas as mudanças?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->

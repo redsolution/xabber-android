@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">Puede indicar su nombre (ej. masha.v.kontakte) o su id (ej. id123456). No puede iniciar sesión en el chat de VKontakte usando su correo electrónico. Para iniciar sesión tiene que indicar su usuario y contraseña de VKontakte.ru. Para más información consulte Check http://vk.com/help.php?page=jabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">Si desea conocer más a cerca de XMPP (Jabber) puede entrar aquí: http://xmpp.org\n\nPara registrar una nueva cuenta XMPP por favor dirijase a https://register.jabber.org o cualquier otro servidor de Jabber.</string>
+    <string name="account_type_helps_xmpp">Si desea conocer más a cerca de XMPP (Jabber) puede entrar aquí: https://xmpp.org\nPara registrar una nueva cuenta XMPP por favor dirijase a https://register.jabber.org o cualquier otro servidor de Jabber.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">Si no dispone de una cuenta Ya.Online puede crear una en http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -104,6 +104,7 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_type_none">Desactivado</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Usar autentificación SASL (recomendado)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->

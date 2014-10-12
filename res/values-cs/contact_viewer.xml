@@ -1,21 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_viewer">Zobrazit informace</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_for">Informace o %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_xmpp">XMPP</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_jid">Jabber ID</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_name">Jabber jméno</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resources">Zdroje</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resource_summary">Zdroj: %1$s\nPriorita: %2$d\nKlient: %3$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_client_info">%1$s, typ: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_person">Osobní údaje</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_nick_name">Přezdívka</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_formatted_name">Skutečné jméno</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_prefix_name">Titul před jménem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
     <string name="vcard_given_name">Jméno</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_middle_name">Prostřední jméno</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
     <string name="vcard_family_name">Příjmení</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_suffix_name">Titul za jménem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
     <string name="vcard_birth_date">Narozeniny</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_url">Webová stránka</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
     <string name="vcard_organization">Organizace</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_title">Název pozice, funkce</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_role">Postavení</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_other">Ostatní informace</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
     <string name="vcard_categories">Kategorie</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_decsription">Popis</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_note">Poznámka</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_address">Adresa</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pobox">P.O. Box</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_street">Ulice</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_locality">Kraj</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pcode">PSČ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_ctry">Země</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_telephone">Telefon</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_email">E-mail</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type">Popis</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_home">Domů</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="please_wait">Prosím čekejte...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="unknown">Neznámý</string>
 </resources>

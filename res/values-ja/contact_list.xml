@@ -1,3 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="accept_subscription">連絡先を承諾</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="account_reconnect">再接続</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_disabled">アカウントを管理</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_empty">アカウントを追加</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_contacts">連絡先を追加</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_online">オフラインの連絡先を表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_offline">オンラインにする</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_waiting">再接続</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_connecting">接続中...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_state_disabled">アカウントが無効にされました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_empty">アカウントはありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_contacts">連絡先はありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_online">オンラインの人はいません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_offline">オンラインのアカウントはありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_roster">接続しました.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
+    <string name="application_state_starting">アプリケーション起動中... </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_waiting">接続待機中...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
+    <string name="chat_list">チャットリスト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="chat_list_is_empty">アクティブなチャットはありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="chat_viewer">チャット</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="close_chat">チャットを閉じる</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="CONNECTION_FAILED">接続エラー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="contact_add">連絡先を追加</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_delete">削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
+    <string name="contact_delete_confirm">連絡先 %1$s をアカウント %2$s から削除してもよろしいですか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_editor">編集</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="contact_list">連絡先リスト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="discard_subscription">連絡先を否認</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="exit">終了</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_active_chat">アクティブなチャット</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_none">グループはありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_remove">グループを削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
+    <string name="group_remove_confirm">グループ %s を削除してもよろしいですか? グループのユーザーは連絡先リストに残ります.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_rename">グループの名前を変更</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NO_SUCH_ACCOUNT">アカウントが見つかりません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NOT_CONNECTED">接続できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">サブスクリプションを要求</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="XMPP_EXCEPTION">ストリーム・エラー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
+    <string name="application_state_closing">変更を保存中...\nアプリケーションはすぐに終了します.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_confirmation">%1$s.\nsha1 フィンガープリントの証明書を常に信頼しますか: %2$s? この証明書の問題について通知されないようにしますか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
+    <string name="certificate_details">\n\n問題報告先:\n共通名 (CN): %1$s\n組織 (O): %2$s\n組織単位 (OU): %3$s\nシリアル番号: %4$s\n\n問題報告元:\n共通名 (CN): %5$s\n組織 (O): %6$s\n組織単位 (OU): %7$s\n\n妥当性:\n問題報告: %8$s\n有効期限: %9$s.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_chane">署名チェーンの確認に失敗しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_target">対象の確認に失敗しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_self_signed">自己署名証明書</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_show_details">詳細 ...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="close_chats">すべてのチャットを閉じる</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
+    <string name="contact_integration_suggest">Xabber をシステムの連絡先に統合しますか?\nこれは "設定" → "XMPP アカウント" → Your account → "連絡先の統合" で変更することができます.\n注: システムの連絡先リストは数分間遅くなることがあります.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_room">会議</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="OTR_ERROR">オフレコ・エラー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
+    <string name="select_contact">クリックして連絡先を選択してください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_always">常に表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_never">表示しない</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_normal">全般設定を使用</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="show_offline_settings">オフラインの連絡先を表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
+    <string name="start_at_boot_suggest">起動時に Xabber を実行しますか?\nこれは "設定" → "接続設定" → "起動時に実行" で変更することができます</string>
 </resources>

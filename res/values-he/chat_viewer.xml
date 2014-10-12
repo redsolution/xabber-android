@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text">%1$s המיר(ה) מצב: %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text_none">%1$s טיהר(ה) תמליל מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join">%1$s נכנס(ה) לועידה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick">%1$s נבעט(ה)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
+    <string name="account_is_offline">אינך מקוון כעת. הודעות אשר תשלח יימסרו בפעם הבאה בה תתחבר.‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_delay">הודעה נשלחה בשעה %s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_input_hint">הקלד את הודעתך כאן</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
+    <string name="chat_page">שיחה %1$d מתוך %2$d‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_send">שלח</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_history">טהר היסטוריה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_message">טהר תמליל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
+    <string name="contact_is_offline">הנמען אינו מקוון. הודעות אשר תשלח יימסרו כאשר הם יעלו בחזרה לרשת.‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ENTRY_IS_NOT_AVAILABLE">איש קשר אינו זמין</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="FILE_NOT_FOUND">קובץ לא נמצא</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_copy">העתק</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_quote">צטט</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_remove">הסר מתוך היסטוריה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_repeat">נסה לשלוח שוב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
+    <string name="save_history">שמור היסטוריה מקומית\nאחסון מקומי של הודעות היסטוריה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="show_history">הצג היסטוריה</string>
+    <string name="action_attention_called">קריאת הקשב נשלחה</string>
+    <string name="action_attention_requested">קריאת הקשב נתבקשה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban">%1$s נאסר(ה)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban_by">%1$s נאסר(ה) על ידי %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_error">הזמנה לא התקבלה לידי %s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_sent">הזמנה נשלחה לכבוד %s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete">הצטרפת אל השיחה בתור %1$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete_to">הצטרפת אל השיחה %1$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick_by">%1$s נבעט(ה) על ידי %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_leave">%1$s עזב(ה) שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_nickname">%1$s המיר(ה) שם כינוי אל %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_encryption">הצפנה אופשרה אולם איש קשר זה טרם אומת. באפשרותך לאמת את זה מתוך תפריט ההצפנה של OTR.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_error">שגיאת OTR&amp;rlm;: %1$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finish">היריב עזב דיון. עליך לעשות את אותו הדבר או לאתחל אותו.‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finished_session">הודעתך לא נשלחה. עזוב את הדיון או אתחל אותו.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_plain">נטשת את הדיון המוצפן</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_cheated">היריב ניסה לרמות בשעת אימות‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_failed">אימות נכשל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_not_approved">תשובתך לשאלה הסודית אומתה. עליך לשאול גם את היריב שלך או לבדוק סוד משותף.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_unverified">אימות נכשל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_verified">אימות עבר בהצלחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_unreadable">ההודעה המוצפנת אשר התקבלה אינה קריאה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_verified">הצפנה מאופשרת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_available">%1$s מחובר(ת) כעת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_away">%1$s נעדר(ת) כעת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_chat">%1$s חופשי(ה) לשיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_dnd">%1$s מבקש(ת) להימנע מהפרעות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_unavailable">%1$s לא בנמצא</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_xa">%1$s נעדר(ת) למשך זמן ארוך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_subject">%1$s המיר(ה) את הנושא אל: %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ATTENTION_IS_NOT_SUPPORTED">איש קשר לא תומך או ניטרל הקשב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="call_attention">קרא הקשב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="chat_settings">הגדרות שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
+    <string name="chat_state_composing">כעת מקליד(ה) ...‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
+    <string name="chat_state_paused">רשם(ה) תמליל ...‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_typed">הודעה נרשמה בשעה %s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="export_chat">יצא שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
+    <string name="export_chat_done">היסטוריה יוצאה אל כרטיס SD Card‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_mask">%2$s עבור %1$s.html‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_send">שלח עובר ייצוא</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_title">הזן שם קובץ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
+    <string name="muc_invite">הזמן אל שיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
+    <string name="muc_is_unavailable">הודעתך לא יכולה להימסר. אנא הצטרף אל שיחה</string>
+    <string name="occupant_list">רשימה של נוכחים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="otr_encryption">הצפנת OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_end">הפסק הצפנה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_refresh">חדש הצפנה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
+    <string name="otr_start">הפעל הצפנה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unencrypted_message">הודעה זו לא הוצפנה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unreadable_message">ההודעה המוצפנת אשר התקבלה אינה קריאה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification">אימות OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_fingerprint">אמת בעזרת טביעת אצבע</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_question">אמת בעזרת שאלה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_secret">אמת בעזרת סוד משותף</string>
+</resources>

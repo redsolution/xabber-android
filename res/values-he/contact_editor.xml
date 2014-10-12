@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_ADD_TO_GROUP">שגיאה: אין אפשרות להוסיף לתוך קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_CREATE_CONTACT">שגיאה: אין אפשרות להוסיף איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_CONTACT">שגיאה: אין אפשרות למחוק איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_FROM_GROUP">שגיאה: אין אפשרות להסיר מתוך קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_REMOVE_GROUP">שגיאה: אין אפשרות למחוק קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="CANNOT_RENAME_GROUP">שגיאה: אין אפשרות לשנות שם קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_account">חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="contact_editor_title">עריכת %s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="contact_group">בחר קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_name">כינוי (רשות)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
+    <string name="contact_user">שם משתמש של איש קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="ENTRY_IS_NOT_FOUND">איש קשר לא נמצא</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="group_add">צור קבוצה חדשה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor.png -->
+    <string name="group_default">מכרים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="group_exists">קבוצה עם שם זה כבר קיימת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="group_is_empty">קבע שם קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/group_add.png -->
+    <string name="group_name">שם קבוצה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="choose_account">בחר חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
+    <string name="EMPTY_ACCOUNT">אנא בחר חשבון</string>
+</resources>

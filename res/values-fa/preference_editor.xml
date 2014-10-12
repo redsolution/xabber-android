@@ -14,6 +14,8 @@
     <string name="contacts_order_alphabet">براساس حروف الفبا</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
     <string name="contacts_order_status">بر اساس وضعیت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">گروه بندی بر اساس حساب ها \nگروه بندی ایست مخاطبین بر اساس حساب</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
     <string name="contacts_show_active_chats">چت های فعال در بالا\nچت های فعال در بالای لیست مخاطبین نشان داده خواهند شد</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
@@ -65,7 +67,41 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_interface">تنظیمات تِم \nتنظیمات ظاهر برنامه</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_font_size">سایز متن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_large">بزرگ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_normal">متوسط</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_small">ریز</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_xlarge">خیلی بزرگ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_hide_keyboard">پنهان کردن صفحه کلید\nپس از ارسال پیام صفحه کلید مخفی میشود</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
+    <string name="chats_hide_keyboard_landscape">در حالت افقی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_avatars">نمایش آوتار به همراه پیام\nدر هر پیام آواتار هم نشان داده میشود</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_show_status_change">نمایش تغییرات وضعیت ها\nپیامی در رابطه با تغییر وضعیت نشان داده خواهد شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="chats_show_status_change_muc">در چت روم</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">به محض قفل شدن صفحه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_start_at_boot">شروع با بالا آمدن گوشی \nبا روشن شدن دستگاه برنامه اجرا میشود.در صورتی که برنامه را روی کارت حافظه نصب کرده باشد عمل نمیکند.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wake_lock">جلوگیری از حالت خواب \nباعث کاهش عمر باتری میشود</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wifi_lock">فعال نگه داشتن WiFi\nWiFi در حالت آماده به کار فعال خواهد بود.باعث کاهش عمر باتری میشود</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">تنظیم مجدد تنظیمات آفلاین\nپاک سازی تنظیمات شخصی موجود برای گروه ها و حساب ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">آیا مطمئنید میخواهید تنظیمات شخصی برای گروه ها و حساب ها را پاک نمایید؟</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_first_only">هشدار در اولین پیام\nفقط در اولین پیام شما را آگاه میکند</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_ignore_system_vibro">نادیده انگاری تنظیمات ویبره دستگاه \nدر صورتی که لرزش کار نمیکند از این گزینه استفاده کنید</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_message">تنظیمات آگهداد\nتنظیمات آگهداد برای پیام های ورودی</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
@@ -74,4 +110,10 @@
     <string name="events_message_chat_and_muc">چت ها و چت روم ها</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
     <string name="events_message_none">اطلاع نده</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_show_text">نمایش پیام در نوتیفیکیشن \nپیام ها در نوتیفیکیشن بار نشان داده خواهند شد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_visible_chat">باخبر سازی در پنجره چت جاری \nباخبر سازی از پیام ورودی در پنجره چت جاری</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_accounts">حساب XMPP \nحساب های خود را مدیریت کنید</string>
 </resources>

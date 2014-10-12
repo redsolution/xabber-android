@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="cache_clear">טהר מטמון\nטיהור כל המידע המקומי. זו יכולה לשחרר נפח מסוים.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
+    <string name="cache_clear_warning">האם אכן ברצונך להסיר היסטוריית שיחה ונתונים מקומיים אחרים?\nנתוני חשבון ורשימה אינם מושפעים. אפליקציה תיסגר.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_send_by_enter">שלח בלחיצת Enter\nהודעה יכולה להישלח על ידי לחיצה על לחצן Enter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_away">נעדר-אוטומטית\nקביעת מצב נעדר אוטומטית בנעילת מסך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">מיין אנשי קשר\nאפשרות זו מאפשרת קביעת סדר אנשי קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">אלפבתית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">לפי מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">קבץ לפי חשבון\nקיבוץ אנשי קשר בתוך רשימת קשר לפי חשבון ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_active_chats">שיחות פעילות בשיא\nהצגת שיחות פעילות בשיא רשימת קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_avatars">הצג אווטארים\nהצג אווטארים של משתמשים ברשימת קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">הצג קבוצות ריקות\nהצגת קבוצות ריקות ללא חברים מקוונים </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">הצג קבוצות\nהצגת קבוצות בתוך רשימת קשר ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">הצג אנשי קשר בלתי מקוונים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_panel">הצג לוח חשבון\nהצגת לוח עם אווטארים של חשבון בראשית רשימת קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_stay_active_chats">הכפל שיחות פעילות\nשיחות פעילות מופיעות הן בשיא רשימת קשר והן בקבוצות בית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="debug_log">יומן Debug\nרישום הודעות ליומן debug (עליך להתחיל מחדש אפליקציה כדי להחיל שינויים)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">מחוון אור\nהבהוב LED על התראה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_persistent">צלמית שורת משימות\nהצגת התראה מתמדת. אפשרות זו מונעת את Android מפריקת אפליקציה מתוך זיכרון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_sound">צפצוף אודיו\nבחירת צליל התראה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_vibro">רטט\nרטט בעת התראה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_theme">מוטיב\nהגדרות מוטיב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_dark">אפל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_light">מואר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_normal">ברירת מחדל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_smiles">רגשונים\nהגדרות רגשונים (מוכר בעבר בתור סמיילים)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_android">רגשוני Android</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_none">בלי רגשונים גרפיים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_connection">הגדרות חיבור\nהגדרות חיבור</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_contacts">רשימת אנשי קשר\nהתאמת הופעת רשימת קשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_debug">הגדרות Debug\nהגדרות לשם עזרה למפתחים לשפר את Xabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="preference_editor">הגדרות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_events">התראות\nהגדרות התראה ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_interface">הגדרות מוטיב\nהגדרות הופעה ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="about_viewer">אודות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_divide">הודעה על השורה החדשה\nהצגת הודעה על שורה חדשה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
+    <string name="chats_divide_portrait">בתצוגה אנכית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_font_size">גודל גופן\nגודל תמליל בתוך הודעה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_large">גדול</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_normal">רגיל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_small">קטן</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_xlarge">ענק</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_hide_keyboard">הסתר מקלדת\nהסתרת מקלדת תוכנה עובר שליחת הודעה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
+    <string name="chats_hide_keyboard_landscape">בתצוגה רוחבית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
+    <string name="chats_receipt">קבלות מסירת הודעה\nשליחת וקבלת קבלות מסירת הודעה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_avatars">אווטארים בתוך הודעות\nהצגת אווטארים בתוך כל הודעה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_status_change">הצג שינויי מצב\nהצגת הודעות אודות שינויי מצב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="chats_show_status_change_muc">בתוך ועידות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_state_notification">הצג התראות הקלדה\nהתראה על פעולת הקלדה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_adjust_priority">התאם עדיפות\nקביעת עדיפות בהתאם למצב נבחר. עדיפות חשבון תבוטל.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">מיד בנעילת מסך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_xa">"נעדרות ממושכת" כאשר עצל\nקביעת "נעדרות ממושכת" בנעילת מסך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_priority">הגדרות עדיפות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_start_at_boot">הפעל כאשר Android עולה\nהתחלת האפליקציה כאשר Android נדלק. זו לא עובדת כאשר Xabber הינו מותקן על גבי כרטיס SDCard.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wake_lock">מנע מצב שינה\nאפשרות זו תפחית חיות סוללה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wifi_lock">שמור על WiFi מפוקח\nשמירת WiFi פעיל בעת המתנה. זו תפחית חיות סוללה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">אפס הגדרות בלתי מקוונות\nטיהור הגדרות פרטניות עבור קבוצות וחשבונות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">האם אכן ברצונך לטהר הגדרות פרטניות עבור קבוצות וחשבונות?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_first_only">צפצף בהודעה ראשונה\nהתראה רק על הודעה ראשונה בשיחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_ignore_system_vibro">התעלם מהגדרות רטט מערכת\nנצל את אפשרות זו רק אם רטט מערכת לא פועל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_message">הגדרות התראה\nהתאמת התראות על הודעות נכנסות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat">שיחות בלבד</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat_and_muc">שיחות וגם ועידות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_none">אל תתריע</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_show_text">הצג הודעה בתוך התראה\nהצגת הודעת טקסט בתוך אזור התראה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_visible_chat">צפצף בתוך שיחה נוכחית\nהתראה על הודעות נכנסות בתוך שיחה נוכחית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
+    <string name="negative_priotiry_summary">%s (אתה לא תקבל הודעות משום שיחה)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_accounts">חשבונות XMPP\nניהול החשבונות שלך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_security">אבטחה\nהגדרות אבטחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_check_certificate">בדוק תעודת שרת\nהתראה על בעיות תעודה במהלך חיבור מוצפן</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_clear_certificate">הסר תעודות\nהסרת רשימת תעודות מנוכרות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_history">אחסן היסטוריה\nאחסון היסטוריה במהלך סשן OTR</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_mode">מצב OTR</string>
+    <string name="chats_attention">הקשב\nהיענות עבור בקשות הקשב נכנסות</string>
+    <string name="chats_attention_sound">צליל הקשב\nבחירת צלצול</string>
+    <string name="connection_load_vcard">הטען vCard\nהטענת ועדכון מידע אישי ואווטאר של איש קשר. אפשר לנטרל כדי לחסוך בשימוש תעבורה.</string>
+    <string name="events_phrases">מימרות מפתח\nהתראות צליל מותאמות על מסרים עם מימרות קבועות מראש</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
+    <string name="security_clear_certificate_warning">האם אכן ברצונך להסיר את כל התעודות המנוכרות?</string>
+</resources>

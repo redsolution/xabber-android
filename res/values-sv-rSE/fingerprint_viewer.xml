@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_fingerprint_description">Din motpart kan tillhandahålla sitt fingeravtryck som du kan jämföra med informationen nedan. Ni bör inte skicka denna information i chatt.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_is_verified">Lita på denna kontakt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">Ditt fingeravtryck:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">Din motparts fingeravtryck:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">Skanna QR-kod med motpartens fingeravtryck</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">Visa QR-kod med ditt fingeravtryck</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">Google Play är inte installerat. Du måste installera Barcode Scanner manuellt.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">Den här applikationen kräver Barcode Scanner. Vill du installera Barcode Scanner?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">Kopiera fingeravtryck till urklipp</string>
+</resources>

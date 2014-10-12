@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_fingerprint_description">היריב שלך יכול לספק את טביעת האצבע שלו אשר באפשרותך להשוות עם זו המצוינת כאן כדי להסיר ספק כי הוא הינו מי שאתה חושב שהוא. אתה לא אמור להשתמש בשיחת XMPP לשם מטרה זו.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_is_verified">איש קשר זה הינו מהימן</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">טביעת האצבע שלך:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">טביעת האצבע של היריב שלך:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">סרוק קוד QR עם טביעת האצבע של היריב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">הצג קוד QR עם טביעת האצבע שלך</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">אין Google Play מותקן. אנא התקן סורק ברקוד באופן ידני.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">אפליקציה זו מצריכה סורק ברקוד. האם ברצונך להתקין כזה?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">העתק את טביעת האצבע שלך לתוך לוח גזירה</string>
+</resources>

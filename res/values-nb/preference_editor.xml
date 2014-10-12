@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">Sortere kontakter\nLar deg sette kontaktenes rekkefølge</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">Alfabetisk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">Etter status</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">Gruppere etter konto\nGruppere kontakter i kontaktlisten etter konto</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">Vis tomme grupper\nVis grupper med ingen påloggede kontakter </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">Vis grupper\nVis grupper i kontaktlisten</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">Vis frakoblede kontakter</string>
+</resources>

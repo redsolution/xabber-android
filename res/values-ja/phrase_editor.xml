@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="events_phrases_title">キーフレーズ</string>
+    <string name="phrase_add">フレーズを追加</string>
+    <string name="phrase_delete">フレーズを削除</string>
+    <string name="phrase_delete_confirm">フレーズを削除してもよろしいですか: %s?</string>
+    <string name="phrase_empty">&lt; 任意のテキスト &gt;</string>
+    <string name="phrase_group">連絡先グループの項目</string>
+    <string name="phrase_regexp">正規表現</string>
+    <string name="phrase_sound">サウンド\n通知サウンドを選択してください</string>
+    <string name="phrase_text">検索するテキスト</string>
+    <string name="phrase_user">連絡先の Jabber ID 項目</string>
 </resources>

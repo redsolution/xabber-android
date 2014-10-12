@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="accept_subscription">Godkänn kontakt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="account_reconnect">Återanslut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_disabled">Hantera konton</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_action_empty">Lägg till konto</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_contacts">Lägg till kontakt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_no_online">Visa offlinekontakter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_offline">Anslut</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_action_waiting">Anslut igen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_connecting">Ansluter...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_add_account.png -->
+    <string name="application_state_disabled">Konton inaktiverade</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_empty">Du har inga konton</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_contacts">Du har inga kontakter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_no_online">Ingen är online</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_offline">Inga konton online</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_roster">Ansluten.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_loading.png -->
+    <string name="application_state_starting">Startar applikation... </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
+    <string name="application_state_waiting">Väntar på anslutning...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
+    <string name="chat_list">Chattlista</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="chat_list_is_empty">Inga aktiva chattar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="chat_viewer">Chatt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="close_chat">Stäng chatt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="CONNECTION_FAILED">Anslutningsfel</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="contact_add">Lägg till kontakt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_delete">Radera</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
+    <string name="contact_delete_confirm">Vill du verkligen radera kontakt %1$s från konto %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_editor">Redigera</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="contact_list">Kontaktlista</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="discard_subscription">Avvisa kontakt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="exit">Avsluta</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_active_chat">Aktiva chattar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_none">Inga grupper</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_remove">Radera grupp</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_confirm.png -->
+    <string name="group_remove_confirm">Vill du verkligen radera gruppen %s? Användarna från gruppen blir kvar i kontaktlistan.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="group_rename">Byt namn på grupp</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NO_SUCH_ACCOUNT">Kontot hittades ej</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="NOT_CONNECTED">Anslutning inte upprättad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="request_subscription">Begär prenumeration</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="XMPP_EXCEPTION">Fel i XMPP-stream</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_closing.png -->
+    <string name="application_state_closing">Sparar inställningar...\nApplikationen avslutas snart.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_confirmation">%1$s. \nLitar du på certifikatet med sha1-fingeravtryck: %2$s? Vill du slippa bli störd av meddelanden om detta?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check_details.png -->
+    <string name="certificate_details">\n \nUtfärdad till: \nCommon Name (CN): %1$s \nOrganization (O): %2$s \nOrganizational Unit (OU): %3$s \nSerienummer: %4$s \n \nUtfärdad av: \nCommon Name (CN): %5$s \nOrganization (O): %6$s \nOrganizational Unit (OU): %7$s \n \nGiltighet: \nUtfärdad: %8$s \nGiltigt till: %9$s.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_chane">Misslyckades med att verifiera certifikatkedja</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_invalid_target">Verifiering misslyckades</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_self_signed">Självsignerat certifikat</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
+    <string name="certificate_show_details">Detaljer...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="close_chats">Stäng alla chattar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
+    <string name="contact_integration_suggest">Vill du att Xabber ska vara integrerat med kontaktboken?\nDetta kan ändras i "Inställningar" → "XMPP-konton" → Ditt konto → "Kontaktintegration". \nOBS: Kontaktlistan på din telefon kan uppträdda långsamt under ett par minuter.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
+    <string name="group_room">Konferenser</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="OTR_ERROR">OTR-fel</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_invite.png -->
+    <string name="select_contact">Klicka för att välja kontakt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_always">Visa alltid</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_never">Visa aldrig</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
+    <string name="show_offline_normal">Använd allmänna inställningar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
+    <string name="show_offline_settings">Visa offlinekontakter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
+    <string name="start_at_boot_suggest">Vill du starta Xabber när telefonen startar?  \nDu kan ändra i "Inställningar" → "Anslutningsinställningar" → "Starta"</string>
+</resources>

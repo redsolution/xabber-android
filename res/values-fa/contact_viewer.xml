@@ -1,3 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_viewer">مشاهده اطلاعات</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_xmpp">jabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_jid">شناسه jabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_name">نام شناسه Jabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resources">منابع</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resource_summary">منابع: %1$s \nاولویت: %2$d \nکلاینت: %3$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_client_info">%1$s, نوع: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_person">اطلاعات شخصی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_nick_name">نام مستعار</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_formatted_name">قالب اسم</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_prefix_name">پیشوند</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_given_name">اسم کچک</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_middle_name">نام پدر</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_family_name">نام خانوادگی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_suffix_name">پسوند</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_birth_date">تولد</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_url">وبسایت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_organization">سازمان</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_title">عنوان شغل،وظیفه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_role">نقش</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_other">معلومات دیگر</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_categories">دسته‌ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_decsription">شرح</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_note">یادداشت ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address">آدرس</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pobox">صندوق پستی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_extadr">آدرس کامل</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_street">خیابان</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_locality">محله</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_region">ناحیه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pcode">کد پستی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_ctry">نام کشور</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_telephone">تلفن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_email">ایمیل</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type">برچسب‌ها</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_home">منزل</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_work">کار</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_postal">کارت پستال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_parcel">بسته</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_dom">خانگی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_intl">بین‌المللی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pref">ارجح</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_voice">صدا</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_fax">فکس</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pager">پیجر</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_video">ویدیو</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_bbs"></string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_modem">مودم</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_msg">پیام رسانی صوتی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_isdn">ISDN</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pcs">PCS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_internet">اینترنت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_x400">X400</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="please_wait">لطفا منتظر بمانید ...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="unknown">نامعلوم</string>
 </resources>

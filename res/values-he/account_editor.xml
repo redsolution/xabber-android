@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_compression">השתמש בדחיסה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_editor_title">חשבון %1$s &amp;rlm; %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_enabled">מאופשר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_host">מארח</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_password">סיסמה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_port">פורט</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_priority">עדיפות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_resource">משאב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_server_name">שרת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type">טיפוס חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_facebook">שם משתמש עבור facebook.com (לא דוא״ל)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_gtalk">שם משתמש עבור gmail.com או מתחם Google Apps</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_livejournal">שם משתמש עבור livejournal.com‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_qip">שם משתמש עבור qip.ru‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_vkontakte">שם משתמש או מזהה עבור vkontakte.ru (לא דוא״ל)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_ya">שם משתמש עבור yandex.ru (לא דוא״ל)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_facebook">באפשרותך להתחבר אל Facebook צא׳ט באמצעות הדוא״ל שלך. כדי לפתוח את Facebook צ׳אט עליך לספק שם משתמש וסיסמה של Facebook. לפרטים, ראה http://www.facebook.com/sitetour/chat.php.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_gtalk">במידה ואין לך חשבון מוגל באפשרותך ליצור כזה באתר http://mail.google.com\nאפשר גם כן להשתמש ב your_user_name@your_google_domain ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_livejournal">במידה ואין לך חשבון Livejournal באפשרותך ליצור כזה באתר http://livejournal.com‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_qip">במידה ואין לך חשבון QIP באפשרותך ליצור כזה באתר http://qip.ru‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_vkontakte">באפשרותך לרשום את שמך (למשל masha.v.kontakte) או מזהה (למשל id123456). באפשרותך להתחבר אל VKontakte צ׳אט באמצעות הדוא״ל שלך. כדי לפתוח צ׳אט עליך לספק שם משתמש וסיסמה של Vkontakte.ru. לפרטים, ראה http://vk.com/help.php?page=jabber.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_xmpp">במידה וברצונך ללמוד עוד אודות XMPP &amp;rlm;(Jabber) ראה: https://xmpp.org\nכדי לרשום חשבון XMPP אנא המשך אל https://register.jabber.org, או אל כל שרת Jabber. </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_ya">במידה ואין לך חשבון Ya.Online באפשרותך ליצור כזה באתר http://yandex.com‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_user_name">שם משתמש</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="EMPTY_SERVER_NAME">שם שרת אינו מצוין</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="EMPTY_USER_NAME">שם משתמש אינו מצוין</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
+    <string name="account_archive_mode">אחסן היסטוריית הודעה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_available">על שרת כאשר זמין</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_dont_store">אל תאחסן</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_local">באופן מקומי על מכשיר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_server">על שרת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_unread">באופן מקומי רק עבור הודעות אשר לא נקראו או אשר לא נשלחו</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_compression_summary">סמן כדי לאפשר דחיסת נתונים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_custom">מארח מותאם</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_custom_summary">השתמש בהגדרות שרת מותאמות במקום ברשומת SRV</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_enabled_summary">סמן כדי לאפשר חשבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
+    <string name="account_invalid_port">על פורט להיות מספר (ברירת מחדל: 5222)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
+    <string name="account_invalid_priority">על ערך עדיפות להיות מספר בין 128- לבין 128 (ברירת מחדל: 10)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth">הרשאה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_oauth_not_authorized.png -->
+    <string name="account_oauth_invalidated">לא מורשה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth_summary">הגדרות OAuth</string>
+    <string name="account_proxy_host">מארח ציר</string>
+    <string name="account_proxy_password">סיסמת ציר</string>
+    <string name="account_proxy_port">פורט ציר</string>
+    <string name="account_proxy_type">טיפוס ציר</string>
+    <string name="account_proxy_type_none">מנוטרל</string>
+    <string name="account_proxy_user">משתמש ציר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_sasl">השתמש באישור SASL (מומלץ)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_sasl_summary">נטרל עבור שרת ישן מאור</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_store_password">אחסן סיסמה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_store_password_summary">נטרל את אפשרות זו כדי להתבקש עבור סיסמה בכל עת בה אתה עולה לרשת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_syncable">שלב לתוך רשימת אנשי קשר של מערכת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_syncable_summary">הצג אנשי קשר מתוך חשבון זה בתוך רשימת אנשי קשר טלפונית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_enable">אפשר TLS‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_enable_summary">השתמש בהצפנת נחלת TLS כאשר ניתן כדי להתחבר אל שרת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_legacy">נחלת SSL‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_legacy_summary">השתמש בהצפנת נחלת SSL בעת התחברות אל שרת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_mode">שימוש TLS/SSL</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_require">דרוש TLS‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_require_summary">דרוש הצפנת TLS בעת התחברות אל שרת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_odnoklassniki">עליך להזין את המזהה שלך (למשל 123456). באפשרותך להתחבר אל Odnoklasniki צ׳אט באמצעות הדוא״ל שלך, שם כניסה או מספר טלפון. המזהה של יכול להימצא כאן http://www.odnoklassniki.ru/settings‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_wlm">אתה תכוון אל http://live.com על מנת להזין שם משתמש וסיסמה.‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_odnoklassniki">מזהה עבור odnoklassniki.ru (לא שם כניסה או דוא״ל)‎</string>
+    <string name="account_use_orbot">שוחח מבעד לרשת אלמוניות TOR ואכוף פרוטוקול כתב-סתרים TLS\nלא מומלץ עבורGoogle Talk ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
+    <string name="confirm_cancellation">האם אתה בטוח כי ברצונך לסלק את כל השינויים?‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="INCORRECT_USER_NAME">שם משתמש לא מדויק. בדוק תמליל עזרה מטה לפרטים</string>
+    <string name="orbot_required_message">על מנת להתקדם באמצעות TOR על המכשיר שלך חייב להיות Orbot מותקן ופועל כדי לתעל תעבורה מבעד אליו. האם ברצונך להתקינו מתוך Google Play?</string>
+    <string name="orbot_required_title">האם להתקין Orbot?</string>
+</resources>

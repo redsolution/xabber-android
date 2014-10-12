@@ -9,13 +9,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_kick">%1$s foi expulso</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
-    <string name="account_is_offline">Você está atualmente desconectado. A mensagens que você enviar serão enviadas quando você estiver conectado.</string>
+    <string name="account_is_offline">Você está atualmente desconectado. As mensagens que você enviar serão entregues quando você estiver conectado.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_delay">Mensagem foi enviada às %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_input_hint">Escreva aqui a sua mensagem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
-    <string name="chat_page">Bate-papo %1$d de %2$d</string>
+    <string name="chat_page">Conversa %1$d de %2$d</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_send">Enviar</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
@@ -51,7 +51,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_invite_sent">Convite foi enviado para %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
-    <string name="action_join_complete">Você entrou no bate-papo como %1$s</string>
+    <string name="action_join_complete">Você entrou na conversa como %1$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_join_complete_to">Você entrou no chat %1$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
@@ -101,7 +101,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="call_attention">Chamar atenção</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
-    <string name="chat_settings">Configurações de conversação</string>
+    <string name="chat_settings">Configurações de conversa</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
     <string name="chat_state_composing">Digitando...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
@@ -109,7 +109,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_typed">Mensagem foi escrita às %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
-    <string name="export_chat">Exportar bate-papo</string>
+    <string name="export_chat">Exportar conversa</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
     <string name="export_chat_done">Histórico foi exportado para o SD Card</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
@@ -119,7 +119,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
     <string name="export_chat_title">Digite o nome para o arquivo</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
-    <string name="muc_invite">Convidar para bate-papo</string>
+    <string name="muc_invite">Convidar para conversa</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
     <string name="muc_is_unavailable">Suas mensagens não puderam se entregues. Por favor entre no bate papo</string>
     <string name="occupant_list">Lista de ocupantes</string>
@@ -130,7 +130,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Reiniciar criptografia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Uma conversa privada Off-the-Record foi solicitada, mas você não tem suporte. Use o Pidgin ou Adium para PC/Mac e Xabber ou GibberBot para Android. Vá em http://otr.cypherpunks.ca/ para mais informações.</string>
+    <string name="otr_request">Uma conversa privada Off-the-Record foi solicitada, mas você não tem suporte. Use o Pidgin, Gajim ou Adium para PC/Mac e Xabber ou ChatSecure para Android. Vá em http://otr.cypherpunks.ca/ para mais informações.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Iniciar criptografia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

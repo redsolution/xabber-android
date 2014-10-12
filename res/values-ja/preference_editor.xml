@@ -1,3 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="cache_clear">キャッシュをクリア\n全てのローカルデータをクリアします. これによりスペースを開放します.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
+    <string name="cache_clear_warning">チャット履歴および他のローカルデータを削除してもよろしいですか?\nアカウントおよび名簿データは影響ありません. アプリケーションはクローズされます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_send_by_enter">Enter で送信\nEnter ボタンでメッセージが送信されます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_away">自動不在\n画面がロックされると自動的に不在のステータスに設定します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">連絡先のソート\n連絡先の順序を設定することができます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">アルファベット順</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">ステータス順</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">アカウントでグループ\n連絡先リストの連絡先をアカウントでグループ化します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_active_chats">ｱｸﾃｨﾌﾞなﾁｬｯﾄを先頭にする\nアクティブなチャットを連絡先リストの先頭に表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_avatars">アバターを表示\nユーザーのアバターを連絡先リストに表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">空のグループを表示\nオンラインの連絡先がないグループを表示します </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">グループを表示\n連絡先リストにグループを表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">ｵﾌﾗｲﾝの連絡先を表示</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_panel">ｱｶｳﾝﾄのﾊﾟﾈﾙを表示\n連絡先リストの最初にアカウントのアバターのあるパネルを表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_stay_active_chats">ｱｸﾃｨﾌﾞなﾁｬｯﾄを複製\nアクティブなチャットが連絡先リストの先頭とホームのグループの両方に表示されます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="debug_log">デバッグ・ログ\nメッセージをデバッグ･ログに書き込む (変更を適用するにはアプリケーションを再起動してください)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">ライト通知\n通知時に LED を点滅します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_persistent">タスクバー・アイコン\n永続通知を表示します. このオプションにより Android がメモリからアプリケーションをアンロードすることを防止します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_sound">オーディオ・アラート\n通知サウンドを選択してください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_vibro">バイブレート\n通知時にバイブレートします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_theme">テーマ\nテーマ設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_dark">ダーク</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_light">ライト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_normal">デフォルト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_smiles">顔文字\n顔文字設定 (以前はスマイルと言われていました)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_android">Android 顔文字</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_none">グラフィカルな顔文字なし</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_connection">接続設定\n接続設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_contacts">連絡先リスト\n連絡先リストの外観をカスタマイズします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_debug">デバッグ設定\n開発者が Xabber の改善を補助するための設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="preference_editor">設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_events">通知\n通知設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_interface">テーマ設定\n外観の設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="about_viewer">Xabber について</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_divide">改行してメッセージを表示\nメッセージを改行して表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
+    <string name="chats_divide_portrait">縦置き(ポートレート)モード</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_font_size">フォント・サイズ\nメッセージ中のテキストのサイズ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_large">大</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_normal">通常</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_small">小</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_xlarge">特大</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_hide_keyboard">キーボードを隠す\nメッセージの送信後にソフトウェア・キーボードを隠します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
+    <string name="chats_hide_keyboard_landscape">横置き(ランドスケープ)モード</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
+    <string name="chats_receipt">メッセージ配送確認\n送信および受信メッセージの配送確認</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_avatars">メッセージのアバター\n各メッセージ中にアバターを表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_status_change">ステータス変更を表示\nステータス変更についてメッセージを表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="chats_show_status_change_muc">会議中</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_state_notification">入力中通知を表示\nあなたが入力中に通知します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_adjust_priority">優先度を調整\n選択されたステータスにしたがって優先度を設定します. アカウントの優先度は上書きされます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">すぐに画面をロック</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_xa">アイドル時に "長時間不在"\n画面ロック時に "長時間不在" を設定します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_priority">優先度設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_start_at_boot">Android 起動時に開始\nAndroid 起動時にアプリケーションを開始します. Xabber が SD カードにインストールされている時は動作しません.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wake_lock">スリープ・モードの防止\nバッテリーの消耗が早くなります</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wifi_lock">WiFi をキープ\nスタンバイの間 WiFi をアクティブにキープします. バッテリーの消耗が早くなります</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">オフライン設定をリセット\nグループおよびアカウントに対する個々の設定をクリアします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">グループおよびアカウントに対する個々の設定をクリアしてもよろしいですか?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_first_only">最初のメッセージでアラート\nチャットの最初のメッセージでのみ通知します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_ignore_system_vibro">システムのバイブレーション設定を無視\nシステムのバイブレーション設定が動作しない場合にこのオプションを使用してください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_message">通知設定\n届いたメッセージについての通知を設定します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat">チャットのみ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat_and_muc">チャットおよび会議</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_none">通知しない</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_show_text">通知にメッセージを表示\n通知エリアにメッセージのテキストを表示します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_visible_chat">現在のチャットに通知\n届いたメッセージを現在のチャットに通知します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
+    <string name="negative_priotiry_summary">%s (チャットからメッセージを受け取りません)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_accounts">XMPP アカウント\nあなたのアカウントを管理します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_security">セキュリティ\nセキュリティ設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_check_certificate">サーバーの証明書を確認\n暗号化された接続で証明書の問題を通知します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_clear_certificate">証明書を削除\n無視された証明書のリストをクリアします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_history">履歴を保存\nオフレコ・セッションの履歴を保存します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_mode">オフレコ・モード</string>
+    <string name="chats_attention">アテンション\n届いたアテンション要求に対して反応します</string>
+    <string name="chats_attention_sound">アテンション･サウンド\n着信音を選択してください</string>
+    <string name="connection_load_vcard">vCard をロード\n連絡先の個人情報およびアバターをロードして更新します. 無効にすると通信の使用量が減ります.</string>
+    <string name="events_phrases">キーフレーズ\nメッセージのサウンド通知をプリセットのフレーズでカスタマイズします</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
+    <string name="security_clear_certificate_warning">無視された証明書をすべて削除してもよろしいですか?</string>
 </resources>

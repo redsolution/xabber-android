@@ -35,13 +35,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->
     <string name="application_state_waiting">Aguardando conexão...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu_extra.png -->
-    <string name="chat_list">Lista de bate-papos</string>
+    <string name="chat_list">Lista de conversas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
-    <string name="chat_list_is_empty">Nenhum bate-papo ativos</string>
+    <string name="chat_list_is_empty">Nenhuma conversa aberta</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
-    <string name="chat_viewer">Bate-papo</string>
+    <string name="chat_viewer">Conversa</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
-    <string name="close_chat">Fechar bate-papo</string>
+    <string name="close_chat">Fechar conversa</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="CONNECTION_FAILED">Erro de conexão</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
@@ -59,7 +59,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="exit">Sair</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
-    <string name="group_active_chat">Bate-papos ativos</string>
+    <string name="group_active_chat">Conversas abertas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="group_none">Sem grupos</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
@@ -87,7 +87,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/certificate_check.png -->
     <string name="certificate_show_details">Detalhes...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
-    <string name="close_chats">Fechar todos os bate-papos</string>
+    <string name="close_chats">Fechar todas as conversas</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_integration.png -->
     <string name="contact_integration_suggest">Você deseja que o Xabber seja integrado aos seus contatos do sistema?\nIsso pode ser alterado em "Configurações" →"Contas XMPP" → Sua conta →"Integração de contatos"</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
@@ -103,7 +103,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_show_offline.png -->
     <string name="show_offline_normal">Usar opções gerais</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
-    <string name="show_offline_settings">Exiber contatos desconectados</string>
+    <string name="show_offline_settings">Exibir contatos desconectados</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
     <string name="start_at_boot_suggest">Você que executar o Xabber ao iniciar o sistema?\nIsso pode ser alterado em "Opções" → "Oções de conexão" → "Executar ao iniciar sistema"</string>
 </resources>

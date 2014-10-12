@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">شما میتوانید نام یا آیدی خود را واردکنید.با استفاده از ایمیل قادر به متصل شدن به Vkontakte نیستید.برای متصل شدن نیاز به آیدی و پسوردِ VKontakte خود دارید.برای جزئیات بیشتر به آدرس زیر مراجعه کنید:\nhttp://vk.com/help.php?page=jabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">برای کسب اطلاعات بیشتر درمورد jabber به  http://xmpp.org مراجعه فرمایید.\nبرای بازکردن حساب jabber به آدرس https://register.jabber.org مراجعه کنید.</string>
+    <string name="account_type_helps_xmpp">برای کسب اطلاعات بیشتر درمورد jabber به  https://xmpp.org مراجعه فرمایید.\nبرای بازکردن حساب jabber به آدرس https://register.jabber.org مراجعه کنید.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">اگر حساب Ya.Online ندارید میتوانید از آدرس http://yandex.com اقدام به ساخت کنید.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->

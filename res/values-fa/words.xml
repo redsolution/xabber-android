@@ -1,3 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in10m">ظرف 10 دقیقه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in15m">ظرف 15 دقیقه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in1h">طی 1 ساعت</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in1m">ظرف 1 دقیقه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in2m">ظرف 2 دقیقه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in30m">ظرف 30 دقیقه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="in5m">ظرف 5 دقیقه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="always">همیشه</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="disabled">غیر فعال</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="manual">دستی</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="never">هرگز</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="required">در صورت لزوم</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="auto">بطور خودکار</string>
 </resources>

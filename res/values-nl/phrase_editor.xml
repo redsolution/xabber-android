@@ -4,7 +4,10 @@
     <string name="phrase_add">Voeg zin toe</string>
     <string name="phrase_delete">Verwijder zin</string>
     <string name="phrase_delete_confirm">Wil je echt verwijderen: "%s"?</string>
+    <string name="phrase_empty">&lt; Tekst &gt;</string>
+    <string name="phrase_group">Deel van de contacten-groep</string>
     <string name="phrase_regexp">Regular expression</string>
     <string name="phrase_sound">Geluid\nKies meldingsgeluid</string>
     <string name="phrase_text">Tekst om te zoeken</string>
+    <string name="phrase_user">Jabber-ID van contact</string>
 </resources>

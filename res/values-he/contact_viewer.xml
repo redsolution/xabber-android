@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
+    <string name="contact_viewer">צפה במידע</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_for">צפיה במידע אודות %s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_jid">מזהה Jabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_name">שם Jabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resources">משאבים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_resource_summary">משאב: %1$s\nעדיפות: %2$d\nלקוח: %3$s  ‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_client_info">%1$s, טיפוס: %2$s‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_person">מידע אישי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_nick_name">שם כינוי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_formatted_name">שם דפוס</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_prefix_name">תחילית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_given_name">שם פרטי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_middle_name">שם אמצעי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_family_name">שם משפחה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
+    <string name="vcard_suffix_name">שם סיומת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_birth_date">יום הולדת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_url">אתר רשת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_organization">ארגון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_title">תואר משרה, תפקוד</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
+    <string name="vcard_role">תפקיד</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_other">מידע אחר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_categories">קטגוריות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_decsription">תיאור</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
+    <string name="vcard_note">הערות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address">כתובת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pobox">תא דואר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_extadr">כתובת מורחבת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_street">רחוב</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_locality">מקומיות</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_region">אזור</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_pcode">מיקוד דואר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_address_ctry">שם ארץ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_telephone">טלפון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_email">דוא״ל</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type">סיווגים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_home">בית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_work">עבודה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_postal">תיבת דואר</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_dom">ביתי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_intl">בינלאומי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pref">מועדף</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_voice">משיבון</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_fax">פקס</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pager">איתורית</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_cell">סלולרי</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_video">וידאו</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_modem">מודם</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_msg">מסרים קוליים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_internet">מרשתת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="please_wait">אנא המתן...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="unknown">לא מוכר</string>
+</resources>

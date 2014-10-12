@@ -29,9 +29,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
     <string name="chat_status">%1$d %2$s de %3$d %4$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
-    <string name="connection_state_connected_1">%1$d de %2$d %3$s conectado(s)</string>
+    <string name="connection_state_connected_1">%1$d de %2$d %3$s conectada(s)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
-    <string name="connection_state_connected_2">%1$d of %2$d %3$s conectado(s)</string>
+    <string name="connection_state_connected_2">%1$d of %2$d %3$s conectada(s)</string>
     <!-- Used for plural form in russian. http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
     <string name="connection_state_connected_5">-</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connecting.png -->

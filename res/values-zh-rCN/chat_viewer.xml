@@ -132,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">重启加密</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Off-the-Record私人对话已被请求，但你没有支持此功能的组件。在PC/Mac上请使用Pidgin或Adium，在Android上请使用Xabber或GibberBot。请参见http://otr.cypherpunks.ca/</string>
+    <string name="otr_request">Off-the-Record私人对话已被请求，但你没有支持此功能的组件。在PC/Mac上请使用Pidgin，Gajim或Adium，在Android上请使用Xabber或ChatSecure。请参见http://otr.cypherpunks.ca/</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">开始加密</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

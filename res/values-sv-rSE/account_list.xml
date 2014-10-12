@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
+    <string name="account_delete_confirm">Vill du verkligen radera kontot %s?\n(det kommer inte raderas från servern, bara från Xabber)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_add">Lägg till konto</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_delete">Ta bort konto</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
+    <string name="account_editor">Redigera konto</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_authentication">Auktoriserar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connected">Online</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_connecting">Ansluter</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_disconnecting">Kopplar ner</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_offline">Offline</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
+    <string name="account_state_waiting">Väntar på att ansluta igen</string>
+</resources>

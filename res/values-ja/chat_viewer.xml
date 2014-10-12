@@ -1,3 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text">%1$s のステータスが変更されました: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_text_none">%1$s がステータスのテキストをクリアしました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join">%1$s が会議に参加しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick">%1$s が蹴られました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
+    <string name="account_is_offline">あなたは現在オフラインです. 送信したメッセージは次回接続時に配送されます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_delay">メッセージを %s に送信しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_input_hint">メッセージをここに入力してください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
+    <string name="chat_page">チャット %1$d / %2$d</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_send">送信</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_history">履歴をクリア</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="clear_message">テキストをクリア</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
+    <string name="contact_is_offline">送信先はオフラインです. あなたが送信したメッセージは次回送信先がオンラインに戻った時に配送されます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ENTRY_IS_NOT_AVAILABLE">連絡先が利用可能ではありません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="FILE_NOT_FOUND">ファイルが見つかりません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_copy">コピー</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_quote">引用</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_remove">履歴から削除</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
+    <string name="message_repeat">送信をリトライ</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
+    <string name="save_history">ローカルの履歴を保存\nメッセージの履歴をローカルに保存します</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="show_history">履歴を表示</string>
+    <string name="action_attention_called">アテンション呼び出しが送信されました</string>
+    <string name="action_attention_requested">アテンションが要求されました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban">%1$s は禁止されました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_ban_by">%1$s は %2$s によって禁止されました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_error">%s は招待状を受け取っていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_invite_sent">%s に招待状を送信しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete">あなたは %1$s としてチャットに参加しています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_join_complete_to">あなたはチャット %1$s に参加しています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_kick_by">%1$s は %2$s によって蹴られました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_leave">%1$s がチャットを離れました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_nickname">%1$s がニックネームを %2$s に変更しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_encryption">暗号化は有効にされていますがこの連絡先は確認されていません. オフレコ暗号化メニューから確認できます.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_error">オフレコエラー: %1$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finish">相手は会話が残っています. 同じようにするか再開してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_finished_session">あなたのメッセージはまだ送信されていません. 会話から離れるか再開してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_plain">暗号化されたあなたの会話が残っています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_cheated">相手は確認中に騙そうとしています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_failed">確認に失敗しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_not_approved">あなたの秘密の質問の答えが確認できました. あなたも相手に質問するか共有の秘密を確認してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_unverified">確認に失敗しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_smp_verified">確認に成功しました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_unreadable">受信した暗号化されたメッセージは読むことができません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="action_otr_verified">暗号化が有効</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_available">%1$s がオンラインになりました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_away">%1$s は現在不在です</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_chat">%1$s はチャットできます</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_dnd">%1$s は取り込み中です</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_unavailable">%1$s は現在できません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_status_xa">%1$s は長時間不在中です</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
+    <string name="action_subject">%1$s が話題を変更しました: %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
+    <string name="ATTENTION_IS_NOT_SUPPORTED">連絡先はアテンションをサポートしていないか無効になっています</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="call_attention">アテンション呼び出し</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
+    <string name="chat_settings">チャット設定</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
+    <string name="chat_state_composing">入力中 ...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
+    <string name="chat_state_paused">入力したテキスト ...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
+    <string name="chat_typed">メッセージが入力されました %s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="export_chat">チャットをエクスポート</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
+    <string name="export_chat_done">履歴が SD カードにエクスポートされました</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_mask">%1$s.html の %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_send">エクスポート後に送信</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
+    <string name="export_chat_title">ファイル名を入力してください</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
+    <string name="muc_invite">チャットに招待する</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
+    <string name="muc_is_unavailable">あなたのメッセージは配送できません. チャットに参加してください</string>
+    <string name="occupant_list">相手先リスト</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
+    <string name="otr_encryption">オフレコ暗号化</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_end">暗号化を停止</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_refresh">暗号化を再開</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_request">オフレコのプライベートな会話が要求されましたが, サポートするプラグインありません. PC/Mac では Pidgin, Gajim か Adium を, Android では Xabber か ChatSecure を使用してください. さらに詳細な情報は http://otr.cypherpunks.ca/ を参照してください.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
+    <string name="otr_start">暗号化を開始</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unencrypted_message">このメッセージは暗号化されていません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_unreadable_message">送信した暗号化されたメッセージは読むことができません</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
+    <string name="otr_verification">オフレコ確認</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_fingerprint">フィンガープリントで確認</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_question">質問で確認</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
+    <string name="otr_verify_secret">共有の秘密で確認</string>
 </resources>

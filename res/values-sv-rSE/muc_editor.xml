@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_NICK_NAME">Smeknamn ej angett</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="EMPTY_ROOM_NAME">Konferens ej angiven</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_join">Anslut till konferens</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_nick">Smeknamn</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_nick_hint">Smeknamn i konferensen</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password">Lösenord</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_password_hint">lösenord behövs inte</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_room">Konferens</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server">Multiuser Chattserver</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server_hint">conference.jabber.org</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="NICK_ALREADY_USED">Smeknamnet är upptaget</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_IN_PROGRESS">Pågår redan</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
+    <string name="ALREADY_JOINED">Redan ansluten</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_add">Anslut till konferens</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_delete">Ta bort konferens</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_confirm.png -->
+    <string name="muc_delete_confirm">Vill du verkligen ta bort konferensen %1$s från %2$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_edit">Inställningar för autenticering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_invite.png -->
+    <string name="muc_invite_confirm">%2$s bjuder in dig att ansluta till konferens %3$s. Anslut med konto %1$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_invite.png -->
+    <string name="muc_invite_confirm_reason">%2$s bjuder in dig att ansluta till konferens %3$s: %4$s. Anslut med konto %1$s?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_conference_context_menu.png -->
+    <string name="muc_leave">Lämna konferens</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_save">Spara konferens</string>
+</resources>

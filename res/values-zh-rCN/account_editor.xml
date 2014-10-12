@@ -45,7 +45,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">你可输入名字（如masha.v.kontakte）或ID（id123456），你不能用电子邮箱登录VKontakte聊天，请提供你的Vkontakte.ru用户名和密码。请参阅http://vk.com/help.php?page=jabber。</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">要了解更多XMPP（Jabber）信息，请访问http://xmpp.org\n要注册新XMPP账户，请访问https://register.jabber.org，或任一Jabber服务器。</string>
+    <string name="account_type_helps_xmpp">要了解更多XMPP（Jabber）信息，请访问https://xmpp.org\n要注册新XMPP账户，请访问https://register.jabber.org，或任一Jabber服务器。</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">如果你没有Ya.Online账户，你可在http://yandex.com创建</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->

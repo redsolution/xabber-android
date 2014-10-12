@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="events_phrases_title">Nyckelfraser</string>
+    <string name="phrase_add">Lägg till fras</string>
+    <string name="phrase_delete">Radera fras</string>
+    <string name="phrase_delete_confirm">Vill du verkligen radera frasen: %s?</string>
+    <string name="phrase_empty">&lt; Valfri text &gt;</string>
+    <string name="phrase_group">Del av kontakgrupp</string>
+    <string name="phrase_regexp">Reguljärt uttryck</string>
+    <string name="phrase_sound">Ljud \nVälj notifieringsljud</string>
+    <string name="phrase_text">Sök efter</string>
+    <string name="phrase_user">Kontaktens Jabber-ID del</string>
+</resources>

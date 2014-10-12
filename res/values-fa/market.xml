@@ -6,4 +6,6 @@
     <string name="production_promo">jabber کلاینت:</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="production_title">Xabber</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="vip_title">Xabber VIP</string>
 </resources>

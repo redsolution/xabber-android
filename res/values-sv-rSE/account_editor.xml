@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_compression">Använd komprimering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_editor_title">%1$s konto %2$s</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_enabled">Aktiverad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_host">Värd</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_password">Lösenord</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_port">Port</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_priority">Prioritet</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_resource">Resurs</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_server_name">Server</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type">Kontotyp</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_facebook">användarnamn för facebook.com (inte e-post)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_gtalk">användarnamn för gmail.com eller Google Apps domän</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_livejournal">användarnamn för livejournal.com</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_qip">användarnamn för qip.ru</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_vkontakte">användarnamn eller id för vkontakte.ru (inte e-post)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_xmpp">namn@example.com</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_ya">användarnamn för yandex.ru (inte e-post)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_facebook">Du kan inte logga in på Facebook chatt med din e-postadress. Du måste ange ditt Facebookanvändarnamn och lösenord. Se http://www.facebook.com/sitetour/chat.php för mer information.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_gtalk">Om du saknar ett Google-konto kan du skapa ett på http://mail.google.com \nDu kan även använda your_user_name@your_google_domain</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_livejournal">Om du saknar ett konto på Livejournal kan du skapa ett på http://livejournal.com</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_qip">Om du saknar ett konto på QIP kan du skapa ett på http://qip.ru</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_vkontakte">Du kan ange namn (t.ex. masha.v.kontakte) eller id (t.ex. id123456). Du kan inte logga in till VKontakte chatt med din e-postadress. För att konfigurera behöver du ange ditt VKontakte.ru användarnamn och lösenord. Se http://vk.com/help.php?page=jabber  för mer information.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_xmpp">Om du vill lära sig mer om XMPP (Jabber) se här: \nhttps://xmpp.org \nFör att skapa ett nytt XMPP-konto besök https://register.jabber.org eller valfri annan Jabberserver.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_ya">Om du inte har ett Ya.Online-konto kan du skapa ett på http://yandex.com</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_facebook">Facebook</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_gtalk">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_livejournal">LiveJournal</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_qip">QIP</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_vkontakte">VKontakte</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_xmpp">XMPP</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_ya">Ya.Online</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_user_name">Användarnamn</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="EMPTY_SERVER_NAME">Servernamn har inte angetts</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="EMPTY_USER_NAME">Användarnamn saknas</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
+    <string name="account_archive_mode">Lagra meddelandehistorik</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_available">På server om möjligt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_dont_store">Lagra inte</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_local">Lokalt på enheten</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_server">På server</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
+    <string name="account_archive_mode_unread">Lokalt men bara ej skickade och olästa</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_compression_summary">Markera för att aktivera datakomprimering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_custom">Anpassat värdnamn</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_custom_summary">Ange anpassat värdnamn istället för SRV-poster</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_enabled_summary">Markera för att aktivera kontot</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
+    <string name="account_invalid_port">Port måste anges som en siffra (default: 5222)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_error.png -->
+    <string name="account_invalid_priority">Prioritet måste anges som en siffra mellan -128 och 128 (default: 10)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth">Auktorisering</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_oauth_not_authorized.png -->
+    <string name="account_oauth_invalidated">Ej auktoriserad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_oauth_summary">Inställningar för OAuth</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_gtalk.png -->
+    <string name="account_protocol_gtalk_title">Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
+    <string name="account_protocol_wlm_title">WLM</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Proxyserver</string>
+    <string name="account_proxy_password">Lösenord för proxy</string>
+    <string name="account_proxy_port">Proxyport</string>
+    <string name="account_proxy_type">Proxytyp</string>
+    <string name="account_proxy_type_http">HTTP</string>
+    <string name="account_proxy_type_none">Avaktiverad</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Proxyanvändare</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_sasl">Använd SASL-autentisering (rekommenderas)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_sasl_summary">Avaktivera på gamla servrar</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_store_password">Spara lösenord</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_store_password_summary">Avmarkera denna för att få fråga om lösenord varje gång du loggar in</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_syncable">Integrera med din enhets kontaktbok</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
+    <string name="account_syncable_summary">Visa kontakter från detta konto i telefonens kontaktbok</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_enable">Använd TLS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_enable_summary">Använd TLS-kryptering när det är möjligt för att ansluta till server</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_legacy">Äldre SSL</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_legacy_summary">Använd SSL-kryptering för att ansluta till server</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_mode">TLS/SSL-användning</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_tls.png -->
+    <string name="account_tls_require">Kräv TLS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
+    <string name="account_tls_require_summary">Kräv TLS vid anslutning till server</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_odnoklassniki">Du måste använda ditt ID som användarnamn (t.ex. 123456). Du kan inte logga in på  Odnoklasniki chatt med din e-postadress, loginnamn eller telefonnummer. Du hittar ditt ID här http://www.odnoklassniki.ru/settings</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_helps_wlm">Du kommer omdirigeras till http://live.com för att ange ditt användarnamn och lösenord.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_odnoklassniki">id för odnoklassniki.ru (inte login eller e-post)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
+    <string name="account_type_hints_wlm"></string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
+    <string name="account_type_names_wlm">Windows Live Messenger</string>
+    <string name="account_use_orbot">Chatta via anonymiseringstjänsten TOR och tvinga kryptering med TLS.\nRekommenderas inte för Google Talk</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
+    <string name="confirm_cancellation">Är du säker på att du vill slänga alla ändringar?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
+    <string name="INCORRECT_USER_NAME">Felaktigt användarnamn. Kolla hjälptexten nedan för detaljer.</string>
+    <string name="orbot_required_message">För att kunna använda TOR måste du ha Orbot installerad och aktiverad. Vill du installera Orbot från Google Play?</string>
+    <string name="orbot_required_title">Installera Orbot?</string>
+</resources>

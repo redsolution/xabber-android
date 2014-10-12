@@ -132,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Riavvia crittografia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">È stata richiesta una conversazione privata ma tu non hai alcun plugin di supporto. Utilizza Pidgin o Adium per PC/Mac e Xabber o GibberBot per Android. Visita http://otr.cypherpunks.ca/ per maggiori informazioni.</string>
+    <string name="otr_request">È stata richiesta una conversazione privata ma tu non hai alcun plugin di supporto. Utilizza Pidgin, Gajim o Adium per PC/Mac e Xabber o ChatSecure per Android. Visita http://otr.cypherpunks.ca/ per maggiori informazioni.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Avvia crittografia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

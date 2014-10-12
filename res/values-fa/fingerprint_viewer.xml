@@ -1,3 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_fingerprint_description">فرد مقابل شما میتواند انگشت نگاره خود را فراهم کند تا شما باید مقایسه آن با نگاره مشخص شده از هویت او مطمئن شوید.در این باره از XMPP استفاده نکنید.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_is_verified">این مخاطب مورد اطمینان است</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">انگشت نگاره شما:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">انگشت نگاره فرد مقابل:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">کد QR را با انگشت نگاره فرد مقابل مقایسه کن</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">کد QR مربوط به انگشت نگاره مرا نشان بده</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">گوگل پلی نصب نیست.لطفا بارکد اسکنر را بصورت دستی نصب کنید.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">این برنامه نیاز به بارکد اسکنر دارد.آیا مایل به نصب آن هستید؟</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">انگشت نگاره مرا در کلیپ بورد ذخیره کن</string>
 </resources>

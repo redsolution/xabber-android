@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="always">Alltid</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="disabled">Deaktivert</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="manual">Manuelt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="never">Aldri</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="required">Påkrevd</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
+    <string name="auto">Automatisk</string>
+</resources>

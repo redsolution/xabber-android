@@ -132,7 +132,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Reštartovať šifrovanie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Privátna konverzácia mimo záznam bola požadovaná, ale nemáte potrebné rozšírenie. Použite Pidgin alebo Adium pre PC/Mac a Xabber alebo GibberBot pre Android. Navštívte http://otr.cypherpunks.ca/ pre viac informácií.</string>
+    <string name="otr_request">Privátna konverzácia mimo záznam bola požadovaná, ale nemáte potrebné rozšírenie. Použite Pidgin, Gajim alebo Adium pre PC/Mac a Xabber alebo ChatSecure pre Android. Navštívte http://otr.cypherpunks.ca/ pre viac informácií.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Spustiť šifrovanie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

@@ -113,7 +113,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
-    <string name="contacts_reset_offline_warning">Do you realy want to clear individual settings for groups and accounts?</string>
+    <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_first_only">Alert on first message\nNotify only on first message in the chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->

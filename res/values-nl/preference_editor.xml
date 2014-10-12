@@ -57,7 +57,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_connection">Verbindingsinstellingen\nVerbindingsinstellingen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
-    <string name="preference_contacts">Contactenlijst\nPas weergave aan</string>
+    <string name="preference_contacts">Contactenlijst\nPas weergave contactenlijst aan</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="preference_debug">Instellingen foutopsporing\nInstellingen die helpen om Xabber te verbeteren</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
@@ -105,7 +105,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Prioriteitsinstellingen</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_start_at_boot">Starten wanneer Android opstart\nStart de applicatie wanneer Android opstart. Werkt niet wanneer Xabber werd geïnstalleerd op de SD kaart.</string>
+    <string name="connection_start_at_boot">Starten wanneer Android start\nStart de applicatie wanneer Android start. Dit werkt niet wanneer Xabber op SD-kaart geïnstalleerd is.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wake_lock">Voorkom slaapmodus\nNadelig voor batterijverbruik</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
@@ -117,7 +117,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_first_only">Melding bij eerste bericht\nMelding enkel bij eerste bericht in chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
-    <string name="events_ignore_system_vibro">Negeer trilinstellingen van systeem.\nGebruik deze optie wanneer trillen niet werkt</string>
+    <string name="events_ignore_system_vibro">Negeer trilinstellingen van het systeem.\nGebruik deze optie wanneer trillen niet werkt</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
     <string name="events_message">Meldingsinstellingen\nStel meldingen van inkomende berichten in</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->

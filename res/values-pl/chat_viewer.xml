@@ -131,7 +131,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Zrestartuj szyfrowanie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Prywatna rozmowa Off-the-Record została zażądana, ale nie posiadasz odpowiedniej wtyczki. Użyj Pidgina lub Adium dla PC/Mac albo Xabbera lub GibberBota dla Androida. Wejdź na stronę http://otr.cypherpunks.ca/ by uzyskać więcej informacji.</string>
+    <string name="otr_request">Prywatna rozmowa Off-the-Record została zażądana, ale nie posiadasz odpowiedniej wtyczki. Użyj Pidgina, Gajim lub Adium dla PC/Mac albo Xabbera lub ChatSecure dla Androida. Wejdź na stronę http://otr.cypherpunks.ca/ by uzyskać więcej informacji.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">Rozpocznij szyfrowanie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
