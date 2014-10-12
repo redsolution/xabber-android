@@ -145,6 +145,7 @@
   <string name="production_versions_45">0.9.28c</string>
   <string name="production_versions_46">0.9.28d</string>
   <string name="production_versions_47">0.9.29a</string>
+  <string name="production_versions_48">0.9.30b</string>
 
   <string-array name="development_changes">
     <item>@string/development_changes_1</item>

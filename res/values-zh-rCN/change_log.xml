@@ -3,4 +3,5 @@
     <string name="development_changes_77">+ 捷克语 (Czech translations)\n+ 呼叫提醒(Call attention feature)\n+ 基於关键词的通知 (Notifications based on key phrase)\n+ 可取消讯息收件回执(Option to disable message delivery receipts) \n+ 聊天室中的管理员清单 (List of occupants in a chat room (view only))\n* 修正些许错误 (Multiple minor fixes)\n* 修正部分翻译 (Multiple translations fixed)\nThank you folks!</string>
     <string name="development_changes_79">+ 使用Orbot实现的TOR支持\n+ 代理服务器支持\n+ 白俄罗斯语、波斯语、意大利语、葡萄牙语、乌克兰语、中文（中国）、中文（台湾）翻译\n* 修复了Android 4+上的通知\n* 修复了服务器侧聊天记录\n* 修复了退出时的行为\n* 修复了翻译\n* 小修复\n谢谢你们！</string>
     <string name="production_changes_47">+ Xabber 源始码可在GitHub取得\n+ 捷克语 (Czech translations) \n+ 呼叫提醒(Call attention feature) \n+ 基於关键词的通知 (Notifications based on key phrase) \n+ 可取消讯息收件回执(Option to disable message delivery receipts)  \n+ 聊天室中的管理员清单 (List of occupants in a chat room (view only)) \n* 修正些许错误 (Multiple minor fixes) \n* 修正部分翻译 (Multiple translations fixed)\nThank you folks!</string>
+    <string name="production_changes_48">+ 使用Orbot实现的TOR支持\n+ 代理服务器支持\n+ 白俄罗斯语、波斯语、意大利语、葡萄牙语、乌克兰语、中文（中国）、中文（台湾）翻译\n* 修复了Android 4+上的通知\n* 修复了服务器侧聊天记录\n* 修复了退出时的行为\n* 修复了翻译\n* 小修复\n谢谢你们！</string>
 </resources>

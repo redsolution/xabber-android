@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="development_changes_79">+ Orbot を使用した TOR サポート\n+ Proxy サポート\n+ ベラルーシ語, ペルシア語, イタリア語, ポルトガル語, ウクライナ語, 中国語 - 中国, 中国語 - 台湾の翻訳\n* Android 4+ での通知の修正\n* サーバー・サイドの履歴の修正\n* Xabber の終了時の修正\n* 翻訳の修正\n* 小規模の修正\n皆様ありがとうございます!</string>
+    <string name="production_changes_48">+ Orbot を使用した TOR サポート \n+ Proxy サポート \n+ ベラルーシ語, ペルシア語, イタリア語, ポルトガル語, ウクライナ語, 中国語 - 中国, 中国語 - 台湾の翻訳 \n* Android 4+ での通知の修正 \n* サーバー・サイドの履歴の修正 \n* Xabber の終了時の修正 \n* 翻訳の修正 \n* 小規模の修正 \n皆様ありがとうございます!</string>
+</resources>

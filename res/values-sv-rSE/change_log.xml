@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="development_changes_79">+ Stöd för TOR med Orbot \n+ Proxystöd \n+ Översättningar till Vitryska, Persiska, Italienska, Portugisiska, Ukrainska, Kinesiska - Kina, Kinesiska - Taiwan \n* Notifieringar i Adroid 4+ fixat \n* Meddelandehistorik på servern fixat\n* Avsluta program fixat\n* Översättningar fixade\n* Diverse småfixar\nTack!</string>
+    <string name="production_changes_48">+ Stöd för TOR med Orbot  \n+ Proxystöd  \n+ Översättningar till Vitryska, Persiska, Italienska, Portugisiska, Ukrainska, Kinesiska - Kina, Kinesiska - Taiwan  \n* Notifieringar i Adroid 4+ fixat  \n* Meddelandehistorik på servern fixat \n* Avsluta program fixat \n* Översättningar fixade \n* Diverse småfixar \nTack!</string>
+</resources>

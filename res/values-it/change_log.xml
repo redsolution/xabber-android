@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="production_changes_47">+ Il codice sorgente di Xabber è ora disponibile su GitHub\n+ Traduzioni in lingua ceca \n+ Richiamo d\'attenzione \n+ Notifiche in base a frasi chiave\n+ Opzioni per disabilitare ricevute di invio messaggi\n+ Lista degli occupanti in una stanza di chat (solo visualizzazione)\n* Svariati fix minori\n* Svariati fix di traduzione\nQuesto è tutto!</string>
+    <string name="production_changes_48">+ Supporto a TOR utilizzando Orbot \n+ Supporto ai Proxy \n+ Traduzioni in bielorusso, persiano, italiano, portoghese, ucraino, cinese (Cina), cinese (Taiwan) \n* Corrette le notifiche in Android 4+ \n* Corretta la cronologia lato server \n* Corretta l\'uscita da Xabber \n* Corrette le traduzioni \n* Correzioni minori \nQuesto è tutto!</string>
+</resources>
