@@ -33,6 +33,8 @@ import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.xbill.DNS.Record;
 
+import android.os.Build;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -282,7 +284,7 @@ public class ConnectionThread implements
 				proxyUser, proxyPassword);
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
 				address.getHostAddress(), port, serverName, proxy);
-		if (Application.SDK_INT >= 14) {
+		if (Build.VERSION.SDK_INT >= 14) {
 			connectionConfiguration.setTruststoreType("AndroidCAStore");
 			connectionConfiguration.setTruststorePassword(null);
 			connectionConfiguration.setTruststorePath(null);

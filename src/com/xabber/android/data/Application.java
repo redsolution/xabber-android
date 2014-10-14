@@ -42,8 +42,6 @@ import com.xabber.androiddev.R;
  */
 public class Application extends android.app.Application {
 
-	public static final int SDK_INT = Integer.valueOf(Build.VERSION.SDK);
-
 	private static Application instance;
 
 	public static Application getInstance() {
@@ -254,7 +252,7 @@ public class Application extends android.app.Application {
 	 * @return
 	 */
 	public boolean isContactsSupported() {
-		return SDK_INT >= 5
+		return Build.VERSION.SDK_INT >= 5
 				&& checkCallingOrSelfPermission("android.permission.READ_CONTACTS") == PackageManager.PERMISSION_GRANTED;
 	}
 

@@ -20,16 +20,20 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.widget.RemoteViews;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -55,7 +59,6 @@ import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ClearNotifications;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.ReconnectionActivity;
-import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 
@@ -68,6 +71,7 @@ public class NotificationManager implements OnInitializedListener,
 		OnAccountChangedListener, OnCloseListener, OnLoadListener, Runnable,
 		OnAccountRemovedListener, OnAccountArchiveModeChangedListener {
 
+	private static final String TAG = "NotificationManager";
 	public static final int PERSISTENT_NOTIFICATION_ID = 1;
 	private static final int CHAT_NOTIFICATION_ID = 2;
 	private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
@@ -97,7 +101,7 @@ public class NotificationManager implements OnInitializedListener,
 	private final List<NotificationProvider<? extends NotificationItem>> providers;
 
 	/**
-	 * List of
+	 * List of message Notification
 	 */
 	private final List<MessageNotification> messageNotifications;
 
@@ -116,13 +120,16 @@ public class NotificationManager implements OnInitializedListener,
 		this.application = Application.getInstance();
 		notificationManager = (android.app.NotificationManager) application
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		persistentNotification = new Notification();
+		startTime = System.currentTimeMillis();
 		handler = new Handler();
 		providers = new ArrayList<NotificationProvider<? extends NotificationItem>>();
+
+		persistentNotification = setUpPersistentNotification();
 		messageNotifications = new ArrayList<MessageNotification>();
-		startTime = System.currentTimeMillis();
+
 		clearNotifications = PendingIntent.getActivity(application, 0,
 				ClearNotifications.createIntent(application), 0);
+
 		stopVibro = new Runnable() {
 			@Override
 			public void run() {
@@ -147,6 +154,32 @@ public class NotificationManager implements OnInitializedListener,
 		};
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN) private Notification setUpPersistentNotification(){
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+				application.getApplicationContext())
+		.setSmallIcon(R.drawable.ic_stat_normal)
+		.setWhen(startTime)
+		.setSound(null)
+		.setDefaults(0)
+		.setContentTitle(application.getString(R.string.application_name))
+		//.setContentText(connectionState)
+		//.setContentIntent(resultPendingIntent)
+		.setTicker(null);
+		
+		if (Build.VERSION.SDK_INT >= 16) {
+			// Make the notification only visible on Dropdown of the notification bar
+			// This is responsible for the different background color on SDK >= 16 as well.
+			mBuilder.setPriority(Notification.PRIORITY_MIN);
+		}
+
+		Notification permNot = mBuilder.build();
+		permNot.flags = Notification.FLAG_ONGOING_EVENT
+				| Notification.FLAG_NO_CLEAR;
+
+		return permNot;
+	}
+	
+	
 	@Override
 	public void onLoad() {
 		final Collection<MessageNotification> messageNotifications = new ArrayList<MessageNotification>();
@@ -228,18 +261,26 @@ public class NotificationManager implements OnInitializedListener,
 				ticker = top.getTitle();
 			}
 			Intent intent = top.getIntent();
-			Notification notification = new Notification(provider.getIcon(),
-					ticker, System.currentTimeMillis());
-			if (!provider.canClearNotifications())
-				notification.flags |= Notification.FLAG_NO_CLEAR;
-			notification.setLatestEventInfo(application, top.getTitle(), top
-					.getText(), PendingIntent.getActivity(application, 0,
-					intent, PendingIntent.FLAG_UPDATE_CURRENT));
+
+			Context ctx = application.getApplicationContext();
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(
+					application, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+					ctx).setSmallIcon(provider.getIcon())
+					.setContentTitle(top.getTitle())
+					.setContentText(top.getText())
+					.setWhen(System.currentTimeMillis())
+					.setDeleteIntent(clearNotifications)
+					.setContentIntent(resultPendingIntent);
+			Notification notification = mBuilder.build();
 			if (ticker != null)
 				setNotificationDefaults(notification,
 						SettingsManager.eventsVibro(), provider.getSound(),
 						provider.getStreamType());
-			notification.deleteIntent = clearNotifications;
+			
+			if (!provider.canClearNotifications()) {
+				notification.flags |= Notification.FLAG_NO_CLEAR;
+			}
 			notify(id, notification);
 		}
 	}
@@ -281,7 +322,8 @@ public class NotificationManager implements OnInitializedListener,
 	 *            message to be shown.
 	 * @return
 	 */
-	private void updateMessageNotification(MessageItem ticker) {
+	@SuppressWarnings("deprecation")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN) private void updateMessageNotification(MessageItem ticker) {
 		Collection<String> accountList = AccountManager.getInstance()
 				.getAccounts();
 		int accountCount = accountList.size();
@@ -339,129 +381,164 @@ public class NotificationManager implements OnInitializedListener,
 					accountQuantity);
 		}
 
-		final Intent persistentIntent;
-		if (waiting > 0 && started)
-			persistentIntent = ReconnectionActivity.createIntent(application);
-		else
-			persistentIntent = ContactList.createPersistentIntent(application);
-
 		if (messageNotifications.isEmpty()) {
 			notificationManager.cancel(CHAT_NOTIFICATION_ID);
 		} else {
 			int messageCount = 0;
 			for (MessageNotification messageNotification : messageNotifications)
 				messageCount += messageNotification.getCount();
+			// TODO: Grab text of older messages here
 			MessageNotification message = messageNotifications
 					.get(messageNotifications.size() - 1);
 
-			RemoteViews chatViews = new RemoteViews(
-					application.getPackageName(), R.layout.chat_notification);
+			Context ctx = application.getApplicationContext();
+
+			Bitmap largeIcon;
+			if (MUCManager.getInstance().hasRoom(message.getAccount(),
+					message.getUser())) {
+				largeIcon = AvatarManager.getInstance().getRoomBitmap(
+						message.getUser());
+			} else {
+				largeIcon = AvatarManager.getInstance().getUserBitmap(
+						message.getUser());
+			}
+			int smallIconId = (connected > 0) ? R.drawable.ic_stat_message
+					: R.drawable.ic_stat_message_offline;
 
 			Intent chatIntent = ChatViewer.createClearTopIntent(application,
 					message.getAccount(), message.getUser());
-			if (MUCManager.getInstance().hasRoom(message.getAccount(),
-					message.getUser()))
-				chatViews.setImageViewBitmap(R.id.icon, AvatarManager
-						.getInstance().getRoomBitmap(message.getUser()));
-			else
-				chatViews.setImageViewBitmap(R.id.icon, AvatarManager
-						.getInstance().getUserBitmap(message.getUser()));
-			chatViews.setTextViewText(R.id.title, RosterManager.getInstance()
-					.getName(message.getAccount(), message.getUser()));
-			String text;
+			PendingIntent resultPendingIntent = PendingIntent.getActivity(
+					application, 0, chatIntent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			String title = RosterManager.getInstance().getName(
+					message.getAccount(), message.getUser());
+			String messageText;
 			if (ChatManager.getInstance().isShowText(message.getAccount(),
-					message.getUser()))
-				text = trimText(message.getText());
-			else
-				text = "";
-			chatViews.setTextViewText(R.id.text2,
-					Emoticons.getSmiledText(application, text));
-			chatViews.setTextViewText(R.id.time,
-					StringUtils.getSmartTimeText(message.getTimestamp()));
-
-			String messageText = StringUtils.getQuantityString(
+					message.getUser())) {
+				messageText = trimText(message.getText());
+				// TODO: Do not trim, make Notification expandable.
+			} else {
+				messageText = "";
+			}
+			String tickerText = title + ": " + messageText;
+			// TODO: Emoticons are currently NOT represented as graphics in the
+			// notification, regardless of user setting.
+			String statusTextPartMessage = StringUtils.getQuantityString(
 					application.getResources(), R.array.chat_message_quantity,
 					messageCount);
-			String contactText = StringUtils.getQuantityString(
+			String statusTextPartContact = StringUtils.getQuantityString(
 					application.getResources(), R.array.chat_contact_quantity,
 					messageNotifications.size());
-			String status = application.getString(R.string.chat_status,
-					messageCount, messageText, messageNotifications.size(),
-					contactText);
-			chatViews.setTextViewText(R.id.text, status);
+			String statusText = application.getString(R.string.chat_status,
+					messageCount, statusTextPartMessage,
+					messageNotifications.size(), statusTextPartContact);
 
-			Notification notification = new Notification();
-			if (Application.SDK_INT >= 14 && SettingsManager.eventsPersistent()) {
-				// Ongoing icons are in the left side, so hide this one.
-				notification.icon = R.drawable.ic_placeholder;
-				notification.when = Long.MIN_VALUE;
-			} else {
-				// Ongoing icons are in the right side, so show this one.
-				updateNotification(notification, ticker);
-				notification.icon = connected > 0 ? R.drawable.ic_stat_message
-						: R.drawable.ic_stat_message_offline;
-				notification.when = System.currentTimeMillis();
+			NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+					ctx)
+					.setSmallIcon(smallIconId)
+					.setLargeIcon(largeIcon)
+					.setContentTitle(title).setContentText(messageText)
+					.setWhen(message.getTimestamp().getTime())
+					.setDeleteIntent(clearNotifications)
+					.setContentIntent(resultPendingIntent)
+					.setSubText(statusText)
+					.setNumber(messageCount)
+					.setTicker(tickerText);
+			
+			if (Build.VERSION.SDK_INT >= 16) {
+				mBuilder.setPriority(Notification.PRIORITY_HIGH);
 			}
-			notification.contentView = chatViews;
-			notification.contentIntent = PendingIntent.getActivity(application,
-					0, chatIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-			notification.deleteIntent = clearNotifications;
 
+			Notification notification = mBuilder.build();
+			
 			try {
 				notify(CHAT_NOTIFICATION_ID, notification);
 			} catch (RuntimeException e) {
 				LogManager.exception(this, e);
-				// Try to remove avatar in order to avoid
-				// OutOfMemoryError on the Android system side.
-				chatViews.setImageViewResource(R.id.icon,
-						R.drawable.ic_placeholder);
-				notify(CHAT_NOTIFICATION_ID, notification);
 			}
 		}
 
-		persistentNotification.icon = R.drawable.ic_stat_normal;
+		final Intent persistentIntent;
+		if (waiting > 0 && started)
+			persistentIntent = ReconnectionActivity.createIntent(application);
+		else
+			persistentIntent = ContactList.createPersistentIntent(application);
+		
+		Log.d(TAG, "Updating persistent Notification, text: " + connectionState);
+		
+		// TODO: Only update this on connection status changes, not on every new message
+		persistentNotification.icon = (connected > 0) ? R.drawable.ic_stat_normal
+				: R.drawable.ic_stat_offline;
 		persistentNotification.setLatestEventInfo(application, application
 				.getString(R.string.application_name), connectionState,
 				PendingIntent.getActivity(application, 0, persistentIntent,
 						PendingIntent.FLAG_UPDATE_CURRENT));
-		persistentNotification.flags = Notification.FLAG_ONGOING_EVENT
-				| Notification.FLAG_NO_CLEAR;
-		persistentNotification.defaults = 0;
-		persistentNotification.sound = null;
+		
 		persistentNotification.tickerText = null;
-		if (Application.SDK_INT >= 14 && SettingsManager.eventsPersistent()) {
-			// Ongoing icons are in the left side, so always use it.
-			persistentNotification.when = startTime;
-			if (messageNotifications.isEmpty()) {
-				persistentNotification.icon = connected > 0 ? R.drawable.ic_stat_normal
-						: R.drawable.ic_stat_offline;
-			} else {
-				persistentNotification.icon = connected > 0 ? R.drawable.ic_stat_message
-						: R.drawable.ic_stat_message_offline;
-			}
+		if (messageNotifications.isEmpty()) {
+			// Use this notification to show ticker text
 			updateNotification(persistentNotification, ticker);
-		} else {
-			// Ongoing icons are in the right side, so hide it if necessary.
-			if (messageNotifications.isEmpty()) {
-				persistentNotification.icon = connected > 0 ? R.drawable.ic_stat_normal
-						: R.drawable.ic_stat_offline;
-				persistentNotification.when = startTime;
-				// Show ticker for the messages in active chat.
-				updateNotification(persistentNotification, ticker);
-			} else {
-				persistentNotification.icon = R.drawable.ic_placeholder;
-				persistentNotification.when = Application.SDK_INT >= 9 ? -Long.MAX_VALUE
-						: Long.MAX_VALUE;
-			}
 		}
-
+		
 		if (SettingsManager.eventsPersistent()) {
 			notify(PERSISTENT_NOTIFICATION_ID, persistentNotification);
 		} else {
 			notificationManager.cancel(PERSISTENT_NOTIFICATION_ID);
 		}
+		
+		/*
+		Context ctx = application.getApplicationContext();
+		PendingIntent resultPendingIntent = PendingIntent.getActivity(
+				application, 0, persistentIntent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+
+		int smallIcon = (connected > 0) ? R.drawable.ic_stat_normal : R.drawable.ic_stat_offline;
+		Bitmap largeIcon = BitmapFactory.decodeResource(ctx.getResources(), smallIcon);
+		
+		// Make the item invisible, so that not two Xabber-Icons are shown
+		if (!messageNotifications.isEmpty()) {
+			smallIcon = R.drawable.ic_placeholder;
+			// time = -Long.MAX_VALUE; // Leads to strange date values on Android 4+
+		}
+				
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ctx)
+				.setSmallIcon(smallIcon)
+				.setLargeIcon(largeIcon)
+				.setWhen(startTime)
+				.setSound(null)
+				.setDefaults(0)
+				.setContentTitle(application.getString(R.string.application_name))
+				.setContentText(connectionState)
+				.setContentIntent(resultPendingIntent)
+				.setTicker(null)
+				.setPriority(Notification.PRIORITY_MIN);
+
+		Notification newPersistentNotification = mBuilder.build();
+		
+		newPersistentNotification.flags = Notification.FLAG_ONGOING_EVENT
+				| Notification.FLAG_NO_CLEAR;
+
+		if (messageNotifications.isEmpty()) {
+			// Show ticker for the messages in active chat.
+			updateNotification(newPersistentNotification, ticker);
+			// TODO: Only when not shown by other notifications!
+		}
+		
+		if (SettingsManager.eventsPersistent()) {
+			notify(PERSISTENT_NOTIFICATION_ID, newPersistentNotification);
+		} else {
+			notificationManager.cancel(PERSISTENT_NOTIFICATION_ID);
+		}
+		*/
+		
 	}
 
+	/**
+	 * Pass the Notification to the Android NotificationManager
+	 * 
+	 * @param id
+	 * @param notification
+	 */
 	private void notify(int id, Notification notification) {
 		LogManager.i(this, "Notification: " + id + ", ticker: "
 				+ notification.tickerText + ", sound: " + notification.sound
