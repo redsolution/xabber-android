@@ -87,19 +87,6 @@
         <item>chat.facebook.com</item>
     </array>
 
-    <array name="account_type_vkontakte">
-        <item>@string/account_protocol_xmpp</item>
-        <item>@string/account_type_names_vkontakte</item>
-        <item>@string/account_type_hints_vkontakte</item>
-        <item>@string/account_type_helps_vkontakte</item>
-        <item>@drawable/ic_type_vkontakte</item>
-        <item>False</item>
-        <item>vkmessenger.com</item>
-        <item>5222</item>
-        <item>False</item>
-        <item>vk.com</item>
-    </array>
-
     <array name="account_type_qip">
         <item>@string/account_protocol_xmpp</item>
         <item>@string/account_type_names_qip</item>
@@ -158,7 +145,6 @@
         <item>@array/account_type_gtalk</item>
         <item>@array/account_type_wlm</item>
         <item>@array/account_type_facebook</item>
-        <item>@array/account_type_vkontakte</item>
         <item>@array/account_type_qip</item>
         <item>@array/account_type_ya</item>
         <item>@array/account_type_livejournal</item>
