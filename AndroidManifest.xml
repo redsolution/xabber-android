@@ -19,7 +19,6 @@
     android:installLocation="auto"
     >
     <application
-        android:debuggable="true"
         android:label="@string/application_name"
         android:icon="@drawable/ic_launcher"
         android:name="com.xabber.android.data.Application"
