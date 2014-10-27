@@ -4,6 +4,7 @@
     <string name="account_delete_confirm">Do you really want to delete account %s?\n(it won\'t be deleted from server, just from Xabber)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
     <string name="account_add">Add account</string>
+    <string name="account_create">Create new account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
     <string name="account_delete">Delete account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->

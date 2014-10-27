@@ -54,6 +54,11 @@ public abstract class ConnectionItem {
 	 */
 	private boolean disconnectionRequested;
 
+	/**
+	 * Need to create account on XMPP server.
+	 */
+	private boolean createNewAccount;
+
 	public ConnectionItem(AccountProtocol protocol, boolean custom,
 			String host, int port, String serverName, String userName,
 			String resource, boolean storePassword, String password,
@@ -68,6 +73,20 @@ public abstract class ConnectionItem {
 		disconnectionRequested = false;
 		connectionThread = null;
 		state = ConnectionState.offline;
+	}
+
+	/**
+	 * Create new account on server.
+	 */
+	public void createAccount() {
+		createNewAccount = true;
+	}
+
+	/**
+   * Report if this connection is to create a new account on XMPP server.
+	 */
+	public boolean isCreateAccount() {
+		return(createNewAccount);
 	}
 
 	/**
@@ -155,10 +174,10 @@ public abstract class ConnectionItem {
 				connectionThread = new ConnectionThread(this);
 				if (connectionSettings.isCustom())
 					connectionThread.start(connectionSettings.getHost(),
-							connectionSettings.getPort(), false);
+							connectionSettings.getPort(), false, createNewAccount);
 				else
 					connectionThread.start(connectionSettings.getServerName(),
-							5222, true);
+							5222, true, createNewAccount);
 				return true;
 			} else {
 				return false;
@@ -241,6 +260,12 @@ public abstract class ConnectionItem {
 	}
 
 	/**
+	 * New account has been created on XMPP server.
+	 */
+	protected void onAccountCreated(ConnectionThread connectionThread) {
+	}
+
+	/**
 	 * Authorization failed.
 	 */
 	protected void onAuthFailed() {
@@ -303,7 +328,7 @@ public abstract class ConnectionItem {
 		if (onDisconnect(connectionThread)) {
 			state = ConnectionState.connecting;
 			this.connectionThread = new ConnectionThread(this);
-			this.connectionThread.start(fqdn, port, useSrvLookup);
+			this.connectionThread.start(fqdn, port, useSrvLookup, createNewAccount);
 		}
 	}
 
