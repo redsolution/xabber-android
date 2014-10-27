@@ -38,6 +38,7 @@ public class XabberService extends Service {
 
 	private Method startForeground;
 	private Method stopForeground;
+	private Method setForeground;
 
 	private static XabberService instance;
 
@@ -59,6 +60,14 @@ public class XabberService extends Service {
 					new Class[] { boolean.class });
 		} catch (NoSuchMethodException e) {
 			startForeground = stopForeground = null;
+		}
+
+		// Try to get methods supported in API Level <5
+		try {
+			setForeground = getClass().getMethod("setForeground",
+					new Class[] { int.class, Notification.class });
+		} catch (NoSuchMethodException e) {
+			setForeground = null;
 		}
 
 		changeForeground();
@@ -111,7 +120,15 @@ public class XabberService extends Service {
 				LogManager.w(this, "Unable to invoke startForeground" + e);
 			}
 		} else {
-			setForeground(true);
+			try {
+				setForeground.invoke(this, new Object[] { Boolean.TRUE });
+			} catch (InvocationTargetException e) {
+				// Should not happen.
+				LogManager.w(this, "Unable to invoke setForeground" + e);
+			} catch (IllegalAccessException e) {
+				// Should not happen.
+				LogManager.w(this, "Unable to invoke setForeground" + e);
+			}
 			try {
 				((android.app.NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
 						.notify(NotificationManager.PERSISTENT_NOTIFICATION_ID,
@@ -138,7 +155,15 @@ public class XabberService extends Service {
 				LogManager.w(this, "Unable to invoke stopForeground" + e);
 			}
 		} else {
-			setForeground(false);
+			try {
+				setForeground.invoke(this, new Object[] { Boolean.FALSE });
+			} catch (InvocationTargetException e) {
+				// Should not happen.
+				LogManager.w(this, "Unable to invoke setForeground" + e);
+			} catch (IllegalAccessException e) {
+				// Should not happen.
+				LogManager.w(this, "Unable to invoke setForeground" + e);
+			}
 		}
 	}
 
