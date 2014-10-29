@@ -114,8 +114,14 @@
         <activity
             android:label="@string/account_add"
             android:name="com.xabber.android.ui.AccountAdd"
-            android:theme="@style/Theme"
-            />
+            android:theme="@style/Theme">
+            <intent-filter>
+            	<action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="xmppadd"
+                      android:host="add_account" />   
+            </intent-filter>
+        </activity>
         <activity
             android:label="@string/account_oauth"
             android:name="com.xabber.android.ui.OAuthActivity"
