@@ -194,7 +194,12 @@ public class DummyCursor implements Cursor {
 			Uri paramUri) {
 	}
 
-	@Override
+    @Override
+    public Uri getNotificationUri() {
+        return null;
+    }
+
+    @Override
 	public boolean getWantsAllOnMoveCalls() {
 		return false;
 	}
