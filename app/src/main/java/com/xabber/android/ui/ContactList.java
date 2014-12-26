@@ -14,19 +14,13 @@
  */
 package com.xabber.android.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,11 +31,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.data.ActivityManager;
@@ -49,8 +39,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -62,16 +50,17 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ContactListFragment.OnContactClickListener;
-import com.xabber.android.ui.adapter.AccountToggleAdapter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
-import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Main application activity.
@@ -79,9 +68,7 @@ import com.xabber.xmpp.uri.XMPPUri;
  * @author alexander.ivanov
  * 
  */
-public class ContactList extends ManagedActivity implements
-		OnAccountChangedListener, View.OnClickListener, OnLongClickListener,
-		OnChoosedListener, OnContactClickListener {
+public class ContactList extends ManagedActivity implements OnChoosedListener, OnContactClickListener {
 
 	/**
 	 * Select contact to be invited to the room was requested.
@@ -107,11 +94,6 @@ public class ContactList extends ManagedActivity implements
 	private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
 
 	/**
-	 * Adapter for account list.
-	 */
-	private AccountToggleAdapter accountToggleAdapter;
-
-	/**
 	 * Current action.
 	 */
 	private String action;
@@ -120,11 +102,6 @@ public class ContactList extends ManagedActivity implements
 	 * Dialog related values.
 	 */
 	private String sendText;
-
-	/**
-	 * Title view.
-	 */
-	private View titleView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,35 +116,12 @@ public class ContactList extends ManagedActivity implements
 			return;
 
 		setContentView(R.layout.contact_list);
-		titleView = findViewById(android.R.id.title);
 
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 				.beginTransaction();
 		fragmentTransaction.add(R.id.container, new ContactListFragment(),
 				CONTACT_LIST_TAG);
 		fragmentTransaction.commit();
-
-		accountToggleAdapter = new AccountToggleAdapter(this, this,
-				(LinearLayout) findViewById(R.id.account_list));
-
-		View commonStatusText = findViewById(R.id.common_status_text);
-		View commonStatusMode = findViewById(R.id.common_status_mode);
-
-		TypedArray typedArray = obtainStyledAttributes(R.styleable.ContactList);
-		ColorStateList textColorPrimary = typedArray
-				.getColorStateList(R.styleable.ContactList_textColorPrimaryNoSelected);
-		Drawable titleMainBackground = typedArray
-				.getDrawable(R.styleable.ContactList_titleMainBackground);
-		typedArray.recycle();
-
-		((TextView) commonStatusText).setTextColor(textColorPrimary);
-		titleView.setBackgroundDrawable(titleMainBackground);
-
-		commonStatusText.setOnLongClickListener(this);
-		commonStatusMode.setOnClickListener(this);
-		commonStatusText.setOnClickListener(this);
-		titleView.setOnClickListener(this);
-		findViewById(R.id.back_button).setOnClickListener(this);
 
 		if (savedInstanceState != null) {
 			sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -231,7 +185,7 @@ public class ContactList extends ManagedActivity implements
 			return;
 		}
 		AccountChooseDialogFragment.newInstance(bareAddress, text).show(
-				getSupportFragmentManager(), "OPEN_WITH_ACCOUNT");
+                getSupportFragmentManager(), "OPEN_WITH_ACCOUNT");
 	}
 
 	/**
@@ -254,44 +208,46 @@ public class ContactList extends ManagedActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		updateStatusBar();
-		rebuildAccountToggler();
-		Application.getInstance().addUIListener(OnAccountChangedListener.class,
-				this);
-		if (ContactList.ACTION_ROOM_INVITE.equals(action)
-				|| Intent.ACTION_SEND.equals(action)
-				|| Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
-			if (Intent.ACTION_SEND.equals(action))
-				sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-			Toast.makeText(this, getString(R.string.select_contact),
-					Toast.LENGTH_LONG).show();
-		} else if (Intent.ACTION_VIEW.equals(action)) {
-			action = null;
-			Uri data = getIntent().getData();
-			if (data != null && "xmpp".equals(data.getScheme())) {
-				XMPPUri xmppUri;
-				try {
-					xmppUri = XMPPUri.parse(data);
-				} catch (IllegalArgumentException e) {
-					xmppUri = null;
-				}
-				if (xmppUri != null && "message".equals(xmppUri.getQueryType())) {
-					ArrayList<String> texts = xmppUri.getValues("body");
-					String text = null;
-					if (texts != null && !texts.isEmpty())
-						text = texts.get(0);
-					openChat(xmppUri.getPath(), text);
-				}
-			}
-		} else if (Intent.ACTION_SENDTO.equals(action)) {
-			action = null;
-			Uri data = getIntent().getData();
-			if (data != null) {
-				String path = data.getPath();
-				if (path != null && path.startsWith("/"))
-					openChat(path.substring(1), null);
-			}
-		}
+        switch (action) {
+            case ContactList.ACTION_ROOM_INVITE:
+            case Intent.ACTION_SEND:
+            case Intent.ACTION_CREATE_SHORTCUT:
+                if (Intent.ACTION_SEND.equals(action))
+                    sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+                Toast.makeText(this, getString(R.string.select_contact),
+                        Toast.LENGTH_LONG).show();
+                break;
+            case Intent.ACTION_VIEW: {
+                action = null;
+                Uri data = getIntent().getData();
+                if (data != null && "xmpp".equals(data.getScheme())) {
+                    XMPPUri xmppUri;
+                    try {
+                        xmppUri = XMPPUri.parse(data);
+                    } catch (IllegalArgumentException e) {
+                        xmppUri = null;
+                    }
+                    if (xmppUri != null && "message".equals(xmppUri.getQueryType())) {
+                        ArrayList<String> texts = xmppUri.getValues("body");
+                        String text = null;
+                        if (texts != null && !texts.isEmpty())
+                            text = texts.get(0);
+                        openChat(xmppUri.getPath(), text);
+                    }
+                }
+                break;
+            }
+            case Intent.ACTION_SENDTO: {
+                action = null;
+                Uri data = getIntent().getData();
+                if (data != null) {
+                    String path = data.getPath();
+                    if (path != null && path.startsWith("/"))
+                        openChat(path.substring(1), null);
+                }
+                break;
+            }
+        }
 		if (Application.getInstance().doNotify()) {
 			if (SettingsManager.bootCount() > 2
 					&& !SettingsManager.connectionStartAtBoot()
@@ -312,8 +268,6 @@ public class ContactList extends ManagedActivity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Application.getInstance().removeUIListener(
-				OnAccountChangedListener.class, this);
 	}
 
 	@Override
@@ -398,9 +352,6 @@ public class ContactList extends ManagedActivity implements
 	public void onCreateContextMenu(ContextMenu menu, View view,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, view, menuInfo);
-		ContextMenuHelper.createAccountContextMenu(this,
-				getContactListFragment().getAdapter(),
-				accountToggleAdapter.getItemForView(view), menu);
 	}
 
 	@Override
@@ -432,44 +383,6 @@ public class ContactList extends ManagedActivity implements
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public void onClick(View view) {
-		switch (view.getId()) {
-		case R.id.common_status_mode:
-			startActivity(StatusEditor.createIntent(this));
-			break;
-		case R.id.back_button: // Xabber icon button
-		case R.id.common_status_text:
-		case android.R.id.title:
-			getContactListFragment().scrollUp();
-			break;
-		default:
-			String account = accountToggleAdapter.getItemForView(view);
-			if (account == null) // Check for tap on account in the title
-				break;
-			if (!SettingsManager.contactsShowAccounts()) {
-				if (AccountManager.getInstance().getAccounts().size() < 2)
-					getContactListFragment().scrollUp();
-				else {
-					getContactListFragment().setSelectedAccount(account);
-					rebuildAccountToggler();
-				}
-			} else
-				getContactListFragment().scrollTo(account);
-			break;
-		}
-	}
-
-	@Override
-	public boolean onLongClick(View view) {
-		switch (view.getId()) {
-		case R.id.common_status_text:
-			startActivity(StatusEditor.createIntent(this));
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -521,33 +434,8 @@ public class ContactList extends ManagedActivity implements
 	}
 
 	@Override
-	public void onAccountsChanged(Collection<String> accounts) {
-		accountToggleAdapter.onChange();
-	}
-
-	@Override
 	public void onChoosed(String account, String user, String text) {
 		openChat(new BaseEntity(account, user), text);
-	}
-
-	private void updateStatusBar() {
-		String statusText = SettingsManager.statusText();
-		StatusMode statusMode = SettingsManager.statusMode();
-		if ("".equals(statusText))
-			statusText = getString(statusMode.getStringID());
-		((TextView) findViewById(R.id.common_status_text)).setText(statusText);
-		((ImageView) findViewById(R.id.common_status_mode))
-				.setImageLevel(statusMode.getStatusLevel());
-	}
-
-	private void rebuildAccountToggler() {
-		updateStatusBar();
-		accountToggleAdapter.rebuild();
-		if (SettingsManager.contactsShowPanel()
-				&& accountToggleAdapter.getCount() > 0)
-			titleView.setVisibility(View.VISIBLE);
-		else
-			titleView.setVisibility(View.GONE);
 	}
 
 	/**
