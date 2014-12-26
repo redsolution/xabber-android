@@ -23,11 +23,11 @@
         android:label="@string/application_name"
         android:icon="@drawable/ic_launcher"
         android:name="com.xabber.android.data.Application"
+        android:theme="@style/Theme.Light"
         >
         <activity
             android:label="@string/application_name"
             android:name="com.xabber.android.ui.ContactList"
-            android:theme="@style/Theme.NoTitleBar"
             android:launchMode="singleTop"
             >
             <intent-filter>
@@ -64,37 +64,30 @@
         </activity>
         <activity
             android:name="com.xabber.android.ui.LoadActivity"
-            android:theme="@style/Theme.NoTitleBar"
             />
         <activity
             android:label="@string/about_viewer"
             android:name="com.xabber.android.ui.AboutViewer"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/preference_accounts"
             android:name="com.xabber.android.ui.AccountList"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/account_editor"
             android:name="com.xabber.android.ui.AccountEditor"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/chat_list"
             android:name="com.xabber.android.ui.ChatList"
-            android:theme="@android:style/Theme.Dialog"
             />
         <activity
             android:label="@string/occupant_list"
             android:name="com.xabber.android.ui.OccupantList"
-            android:theme="@android:style/Theme.Dialog"
             />
         <activity
             android:label="@string/chat_viewer"
             android:name="com.xabber.android.ui.ChatViewer"
-            android:theme="@style/Theme.Light.NoTitleBar"
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleTop"
             >
@@ -105,47 +98,38 @@
         <activity
             android:label="@string/contact_editor"
             android:name="com.xabber.android.ui.ContactEditor"
-            android:theme="@style/Theme.NoTitleBar"
             />
         <activity
             android:label="@string/contact_add"
             android:name="com.xabber.android.ui.ContactAdd"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/account_add"
             android:name="com.xabber.android.ui.AccountAdd"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/account_oauth"
             android:name="com.xabber.android.ui.OAuthActivity"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/muc_add"
             android:name="com.xabber.android.ui.MUCEditor"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/status_editor"
             android:name="com.xabber.android.ui.StatusEditor"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/preference_editor"
             android:name="com.xabber.android.ui.PreferenceEditor"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/chat_settings"
             android:name="com.xabber.android.ui.ChatEditor"
-            android:theme="@style/Theme"
             />
         <activity
             android:label="@string/contact_viewer"
             android:name="com.xabber.android.ui.ContactViewer"
-            android:theme="@style/Theme"
             android:icon="@drawable/ic_information"
             >
             <intent-filter>
@@ -159,17 +143,12 @@
         <activity
             android:name="com.xabber.android.ui.FingerprintViewer"
             android:label="@string/otr_verify_fingerprint"
-            android:theme="@style/Theme.NoTitleBar"
             />
         <activity
             android:name="com.xabber.android.ui.QuestionViewer"
             android:label="@string/otr_verify_fingerprint"
-            android:theme="@style/Theme.NoTitleBar"
             />
-        <activity
-            android:name="com.xabber.android.ui.OpenSourceViewer"
-            android:theme="@style/Theme.NoTitleBar"
-            />
+
         <activity
             android:name="com.xabber.android.ui.ContactSubscription"
             />
@@ -187,12 +166,10 @@
             />
         <activity
             android:name="com.xabber.android.ui.PhraseList"
-            android:theme="@style/Theme"
             android:label="@string/events_phrases_title"
             />
         <activity
             android:name="com.xabber.android.ui.PhraseEditor"
-            android:theme="@style/Theme"
             />
         <activity
             android:name="com.xabber.android.ui.ReconnectionActivity"
@@ -205,7 +182,6 @@
             android:noHistory="true"
             android:stateNotNeeded="true"
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.NoDisplay"
             />
         <service android:name="com.xabber.android.service.XabberService" />
         <service
