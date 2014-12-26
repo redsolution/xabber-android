@@ -53,6 +53,8 @@ public class PreferenceEditor extends ManagedPreferenceActivity implements
 		if (isFinishing())
 			return;
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		addPreferencesFromResource(R.xml.preference_editor);
 
 		getPreferenceScreen().findPreference(

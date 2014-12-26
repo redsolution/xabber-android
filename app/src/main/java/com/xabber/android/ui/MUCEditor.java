@@ -72,6 +72,8 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 
 		setContentView(R.layout.muc_editor);
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		accountView = (Spinner) findViewById(R.id.contact_account);
 		serverView = (EditText) findViewById(R.id.muc_server);
 		roomView = (EditText) findViewById(R.id.muc_room);

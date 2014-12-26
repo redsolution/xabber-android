@@ -50,7 +50,13 @@ public class AccountEditor extends BaseSettingsActivity implements
 
 	private Preference oauthPreference;
 
-	@Override
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected void onInflate(Bundle savedInstanceState) {
 		account = AccountEditor.getAccount(getIntent());
 		if (account == null) {

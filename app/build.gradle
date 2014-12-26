@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.xabber.androiddev"
-        minSdkVersion 7
+        minSdkVersion 14
         targetSdkVersion 21
     }
 

@@ -17,7 +17,9 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.text.method.LinkMovementMethod;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.xabber.android.ui.helper.ManagedActivity;
@@ -34,10 +36,23 @@ public class AboutViewer extends ManagedActivity {
 						getString(R.string.application_version)));
 		((TextView) findViewById(R.id.about_license))
 				.setMovementMethod(LinkMovementMethod.getInstance());
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	public static Intent createIntent(Context context) {
 		return new Intent(context, AboutViewer.class);
 	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

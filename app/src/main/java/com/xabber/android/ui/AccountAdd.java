@@ -83,6 +83,8 @@ public class AccountAdd extends ManagedActivity implements
 		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputManager.hideSoftInputFromWindow(findViewById(R.id.ok)
 				.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

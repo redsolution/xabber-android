@@ -37,7 +37,13 @@ public class AccountList extends BaseListEditor<String> implements
 	private static final int CONTEXT_MENU_VIEW_ACCOUNT_ID = 0x20;
 	private static final int CONTEXT_MENU_STATUS_EDITOR_ID = 0x30;
 
-	@Override
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected int getAddTextResourceId() {
 		return R.string.account_add;
 	}
