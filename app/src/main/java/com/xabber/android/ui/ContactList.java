@@ -208,44 +208,46 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
 	@Override
 	protected void onResume() {
 		super.onResume();
-        switch (action) {
-            case ContactList.ACTION_ROOM_INVITE:
-            case Intent.ACTION_SEND:
-            case Intent.ACTION_CREATE_SHORTCUT:
-                if (Intent.ACTION_SEND.equals(action))
-                    sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-                Toast.makeText(this, getString(R.string.select_contact),
-                        Toast.LENGTH_LONG).show();
-                break;
-            case Intent.ACTION_VIEW: {
-                action = null;
-                Uri data = getIntent().getData();
-                if (data != null && "xmpp".equals(data.getScheme())) {
-                    XMPPUri xmppUri;
-                    try {
-                        xmppUri = XMPPUri.parse(data);
-                    } catch (IllegalArgumentException e) {
-                        xmppUri = null;
+        if (action != null) {
+            switch (action) {
+                case ContactList.ACTION_ROOM_INVITE:
+                case Intent.ACTION_SEND:
+                case Intent.ACTION_CREATE_SHORTCUT:
+                    if (Intent.ACTION_SEND.equals(action))
+                        sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+                    Toast.makeText(this, getString(R.string.select_contact),
+                            Toast.LENGTH_LONG).show();
+                    break;
+                case Intent.ACTION_VIEW: {
+                    action = null;
+                    Uri data = getIntent().getData();
+                    if (data != null && "xmpp".equals(data.getScheme())) {
+                        XMPPUri xmppUri;
+                        try {
+                            xmppUri = XMPPUri.parse(data);
+                        } catch (IllegalArgumentException e) {
+                            xmppUri = null;
+                        }
+                        if (xmppUri != null && "message".equals(xmppUri.getQueryType())) {
+                            ArrayList<String> texts = xmppUri.getValues("body");
+                            String text = null;
+                            if (texts != null && !texts.isEmpty())
+                                text = texts.get(0);
+                            openChat(xmppUri.getPath(), text);
+                        }
                     }
-                    if (xmppUri != null && "message".equals(xmppUri.getQueryType())) {
-                        ArrayList<String> texts = xmppUri.getValues("body");
-                        String text = null;
-                        if (texts != null && !texts.isEmpty())
-                            text = texts.get(0);
-                        openChat(xmppUri.getPath(), text);
+                    break;
+                }
+                case Intent.ACTION_SENDTO: {
+                    action = null;
+                    Uri data = getIntent().getData();
+                    if (data != null) {
+                        String path = data.getPath();
+                        if (path != null && path.startsWith("/"))
+                            openChat(path.substring(1), null);
                     }
+                    break;
                 }
-                break;
-            }
-            case Intent.ACTION_SENDTO: {
-                action = null;
-                Uri data = getIntent().getData();
-                if (data != null) {
-                    String path = data.getPath();
-                    if (path != null && path.startsWith("/"))
-                        openChat(path.substring(1), null);
-                }
-                break;
             }
         }
 		if (Application.getInstance().doNotify()) {
