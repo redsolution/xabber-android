@@ -13,15 +13,12 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xabber.androiddev"
-    android:versionCode="78"
-    android:versionName="@string/application_version"
-    android:installLocation="auto"
-    >
+    package="com.xabber.androiddev">
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="development_changes_76">+ Slovenský preklad (ďakujeme, Dominik!)\n* Overenie certifikátu serveru\n* Menšie opravy</string>
-    <string name="development_changes_77">+ České preklady\n+ Možnosť zavolať pozornosť\n+ Upozornenia založené na kľúčovom slove\n+ Možnosť vypnúť správy o doručení\n+ Zoznam ľudí v chatovacej miestnosti (len zobraziť)\n* Viacero malých opráv\n* Viacero prekladov opravených\nĎakujeme Vám!</string>
-    <string name="production_changes_45">Šťastné a veselé!\n+ Dánsky, Slovenský, Turecký, Čínsky preklad\n+ Podpora archívu správ (Prosody je vyžadované od serveru)\n+ Nastavenie histórie viazané na konto\n+ Kopírovanie OTR odtlačku do schránky\n* Opravené overenie serverového certifikátu\n* Redukovaný prenos pri znovu pripojení\n* Opravené upozornenia v notifikáciach\n* Opravený zoznam aktívnych rozhovorov\n* Opravené výpisy o doručení správ\n* Opravné upozornenia "píše"\n* Menšie opravy\n* Opravených viacero prekladov\nĎakujeme Vám!</string>
-    <string name="production_changes_47">+ Zdrojové kódy Xabberu sú dostupné na GitHub\n+ České preklady\n+ Možnosť zavolať pozornosť\n+ Upozornenia založené na kľúčovom slove\n+ Možnosť vypnúť správy o doručení\n+ Zoznam ľudí v chatovacej miestnosti (len zobraziť)\n* Viacero malých opráv\n* Viacero prekladov opravených\nĎakujeme Vám!</string>
-</resources>

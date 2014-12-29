@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="development_changes_76">+ Traducción a eslovaco (¡Gracias Dominik!)\n* Corrección de validación de certificado del servidor\n* Correciones menores</string>
-    <string name="production_changes_45">¡Feliz Navidad!\n+ Traducciones al holandes, eslovaco, turco y chino\n+ Soporte de archivado de mensajes (se recomienda Prosody)\n+ Configuración de historial por cuentas\n+ Copiar huella OTR al portapapeles\n* Corrección de validación de certificados de servidor\n* Menos tráfico en reconexión\n* Notificación en conferencias corregidas\n* Lista de conversaciones activas corregidas\n* Recibos de entrega corregidos\n* Notificaciones de escritura corregidas\n* Correciones menores\n¡Gracias!</string>
-</resources>

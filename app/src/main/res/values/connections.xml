@@ -13,9 +13,9 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources>
-    <string name="account_protocol_xmpp">xmpp</string>
-    <string name="account_protocol_gtalk">gtalk</string>
-    <string name="account_protocol_wlm">wlm</string>
+    <string name="account_protocol_xmpp" translatable="false">xmpp</string>
+    <string name="account_protocol_gtalk" translatable="false">gtalk</string>
+    <string name="account_protocol_wlm" translatable="false">wlm</string>
 
     <!--
     <array name="account_type_name">

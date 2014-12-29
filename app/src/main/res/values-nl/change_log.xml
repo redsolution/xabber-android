@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="development_changes_74">* Client-indicatie van contacten gerepareerd\n* Typ-indicatie gerepareerd\n* OTR verificatie met vraag gerepareerd\n* Enkele kleine reparaties</string>
-    <string name="production_changes_45">+ Nederlandse en Turkse vertaling\n+ Ondersteuning voor berichtenarchief (Prosody-plug-in aanbevolen aan de serverkant)\n+ Per account geschiedenis-instellingen\n+ Kopie OTR vingerafdruk naar het klembord\n* Reduceer dataverkeer bij opnieuw verbinden\n* Meldingen in conferenties gerepareerd\n* Lijst actieve chats gerepareerd\n* Afleverberichten gerepareerd\n* Typ-indicatie gerepareerd\n* Kleine reparaties\n* Vertalingen gerepareerd\nDank, jongelui!</string>
-</resources>
