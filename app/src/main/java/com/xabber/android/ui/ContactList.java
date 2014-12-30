@@ -117,16 +117,14 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
 
 		setContentView(R.layout.contact_list);
 
-		FragmentTransaction fragmentTransaction = getSupportFragmentManager()
-				.beginTransaction();
-		fragmentTransaction.add(R.id.container, new ContactListFragment(),
-				CONTACT_LIST_TAG);
-		fragmentTransaction.commit();
 
 		if (savedInstanceState != null) {
 			sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
 			action = savedInstanceState.getString(SAVED_ACTION);
 		} else {
+            getSupportFragmentManager().beginTransaction().add(R.id.container,
+                    new ContactListFragment(), CONTACT_LIST_TAG).commit();
+
 			sendText = null;
 			action = getIntent().getAction();
 		}
