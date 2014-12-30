@@ -65,8 +65,6 @@ public class ContactTitleInflater {
 		final TextView statusTextView = (TextView) titleView
 				.findViewById(R.id.status_text);
 		final View shadowView = titleView.findViewById(R.id.shadow);
-		final ImageButton backButton = (ImageButton) titleView
-				.findViewById(R.id.back_button);
 		titleView.setBackgroundDrawable(titleAccountBackground);
 		nameView.setText(abstractContact.getName());
 		statusModeView.setImageLevel(abstractContact.getStatusMode()
@@ -95,12 +93,6 @@ public class ContactTitleInflater {
 			shadowView.setVisibility(View.GONE);
 		else
 			shadowView.setVisibility(View.VISIBLE);
-		backButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				activity.finish();
-			}
-		});
 	}
 
 }

@@ -25,13 +25,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         >
-        <ImageButton
-            android:id="@+id/back_button"
-            android:src="@drawable/btn_title_back"
-            android:background="@drawable/title_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +79,6 @@
             android:src="@drawable/ic_status"
             android:paddingLeft="@dimen/active_chat_padding_right"
             android:paddingRight="@dimen/active_chat_padding_right"
-            android:background="@drawable/btn_status_mode"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             />
