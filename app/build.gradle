@@ -1,0 +1,23 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 9
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "com.xabber.androiddev"
+        minSdkVersion 3
+        targetSdkVersion 9
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile files('libs/otr4j.jar')
+}

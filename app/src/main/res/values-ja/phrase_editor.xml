@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="events_phrases_title">キーフレーズ</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_add">フレーズを追加</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete">フレーズを削除</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete_confirm">フレーズを削除してもよろしいですか: %s?</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_empty">&lt; 任意のテキスト &gt;</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_group">連絡先グループの項目</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_regexp">正規表現</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_sound">サウンド\n通知サウンドを選択してください</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_text">検索するテキスト</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_user">連絡先の Jabber ID 項目</string>
+</resources>

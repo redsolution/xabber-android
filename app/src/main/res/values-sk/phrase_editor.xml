@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="events_phrases_title">Kľúčové frázy</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_add">Pridať frázu</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete">Vymazať frázu</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete_confirm">Naozaj chcete vymazať frázu: %s?</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_empty">&lt; Hociaký text &gt;</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_group">Patrí do skupiny</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_regexp">Bežný výraz</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_sound">Zvuk\nVyberte zvuk upozornenia</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_text">Text na hľadanie</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_user">Jabber ID kontaktu</string>
+</resources>

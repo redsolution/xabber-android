@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="production_description">开源的Jabber（XMPP）客户端，支持多账户，界面干净简单。免费且无广告，Xabber的设计目标是Android平台上最好的Jabber客户端。\n\n特点：\n- 多账户\n- 在多个聊天间快速切换\n- 丰富的联系人、分组显示设置\n- 与所有标准XMPP服务器兼容\n- 预设Google Talk、Facebook聊天、Livejournal聊天、Vkontakte、Ya.Online、Google Apps Talk账户\n- 多用户聊天（MUC）\n- 聊天记录\n- 导出记录至SD卡\n- 支持服务器端消息存档\n- 表情\n- 内文超链接支持（网页、YouTube、电子邮件、电话号码、XMPP URI）\n- 头像\n- 查看联系人信息（vCard）\n- 依分组或账户分组联系人\n- 联系人列表管理：添加/移除/编辑联系人、分组、订阅\n- 搜索联系人\n- 整合入电话的联系人列表（在聊天中打电话，在电话的联系人列表中开始聊天）\n- 为每位联系人修改通知设置\n- 基于关键短语的通知\n- 完整Unicode支持，用任何语言聊天\n- 纵向和横向视图\n- 流压缩（并非所有服务器都支持）\n- 资源/优先级\n- OTR加密\n- TLS支持\n- 旧SSL支持\n- SASL支持\n- 检查服务器证书\n- SRV记录和DNS循环支持\n- 联系人列表中显示客户端软件图标（Adium、Empathy、Gajim、Google Talk、iChat、Miranda、Pidgin、Psi、QIP、Xabber、Xabber VIP）\n- 键入状态支持\n- 消息送达通知\n- 于主屏幕链接到聊天\n\n支持（预设）的服务：\n- Google Talk（亦支持Google Apps）\n- Windows Live Messenger / MSN（需Android 2.2或以上）\n- Facebook聊天 \n- Livejournal聊天 \n- VKontakte \n- Ya.Online \n- QIP \n- Odnoklassniki \n \n即将加入：\n- 平板界面\n- 文件传输\n\n支持协议：\nRFC-3920: Core\nRFC-3921: Instant Messaging and Presence\nXEP-0030: Service Discovery\nXEP-0128: Service Discovery Extensions\nXEP-0115: Entity Capabilities\nXEP-0054: vcard-temp\nXEP-0153: vCard-Based Avatars\nXEP-0045: Multi-User Chat (incompletely)\nXEP-0078: Non-SASL Authentication\nXEP-0138: Stream Compression\nXEP-0203: Delayed Delivery\nXEP-0091: Legacy Delayed Delivery\nXEP-0199: XMPP Ping\nXEP-0147: XMPP URI Scheme Query Components\nXEP-0085: Chat State Notifications\nXEP-0184: Message Delivery Receipts\nXEP-0155: Stanza Session Negotiation\nXEP-0059: Result Set Management\nXEP-0136: Message Archiving\nXEP-0224: Attention\n\n查看Xabber开发版本以获得最新功能\n\nXabber源代码位于https://github.com/redsolution/xabber-android，在GNU GPLv3协议下释出。\n\n要获取更多信息，请访问我们的网站http://xabber.com，或Twitter上的@xabber_xmpp。</string>
+    <!-- Can be used for Google Play promotion -->
+    <string name="production_promo">多账户XMPP（Jabber）客户端</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="production_title">Xabber</string>
+    <string name="development_changes">+ 希伯来语、日语、瑞典语翻译\n* 许多翻译更新\n* 小修改\n感谢你们！</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="development_description">Xabber测试（可能不稳定）版——开源的Jabber（XMPP）客户端，支持多账户，界面干净简单。\n\n你可以安装此版本来帮助我们测试和开发Xabber。我们不保证稳定性，所以如果你不怎么有冒险精神，请使用常规版。但如果你确实敢于冒险，你会最早看到新功能！\n\nXabber源代码位于https://github.com/redsolution/xabber-android，在GNU GPLv3协议下释出。\n\n要获取更多信息，请访问我们的网站http://xabber.com，或Twitter上的@xabber_xmpp。\n\n如果你遇到了bug或有新点子，请发送电子邮件到：info+devel@xabber.com</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="development_title">Xabber开发版本</string>
+    <string name="production_changes">+ 使用Orbot实现的TOR支持\n+ 代理服务器支持\n+ 白俄罗斯语、波斯语、意大利语、葡萄牙语、乌克兰语、中文（中国）、中文（台湾）翻译\n* 修复了Android 4+上的通知\n* 修复了服务器侧聊天记录\n* 修复了退出时的行为\n* 修复了翻译\n* 小修复\n谢谢你们！</string>
+    <string name="short_description">开源且支持多账户的的XMPP（Jabber）客户端</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="vip_description">Xabber VIP版——开源的Jabber（XMPP）客户端，支持多账户，界面干净简单。免费且无广告，Xabber的设计目标是Android平台上最好的Jabber客户端。 \n\nVIP版并不比普通版好在哪里：程序图标中的金币是唯一的功能。你可以向他人炫耀你买了任何人都可以免费获得的东西。\n\n...</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
+    <string name="vip_title">Xabber VIP</string>
+</resources>

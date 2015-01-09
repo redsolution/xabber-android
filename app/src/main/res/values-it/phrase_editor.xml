@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="events_phrases_title">Frasi chiave</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_add">Aggiungi frase</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete">Cancella frase</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete_confirm">Vuoi cancellare veramente la frase: %s?</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_empty">&lt; Qualsiasi testo &gt;</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_group">Parte del gruppo del contatto</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_regexp">Espressione regolare</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_sound">Suono \nScegli il suono di notifica</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_text">Testo da cercare</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_user">Parte ID del contatto Jabber</string>
+</resources>
