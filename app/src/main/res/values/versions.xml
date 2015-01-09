@@ -12,7 +12,7 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <string name="application_name">@string/development_title</string>
   <string name="application_version">@string/development_versions_82</string>
   <string name="application_package">com.xabber.androiddev</string>

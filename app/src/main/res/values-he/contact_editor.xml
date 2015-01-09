@@ -20,6 +20,8 @@
     <string name="contact_group">בחר קבוצה</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
     <string name="contact_name">כינוי (רשות)‎</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add_confirm.png -->
+    <string name="contact_subscribe_confirm">לשתף מצב חשבון %2$s עם %1$s?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
     <string name="contact_user">שם משתמש של איש קשר</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->

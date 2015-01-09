@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="development_changes_20">+ Added support for jabber.org and etc.\n- Support for gmail.com disabled</string>
     <string name="development_changes_21">+ Added support for Gtalk, Facebook chat, LiveJournal chat, QIP.ru, Ya.Online, Vkontakte chat.</string>
     <string name="development_changes_22">+ Multiple chat and authorisation fixes.</string>

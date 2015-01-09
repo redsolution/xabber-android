@@ -6,13 +6,13 @@
     <string name="production_promo">マルチ・アカウント XMPP (Jabber) クライアント.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="production_title">Xabber</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market_new.png -->
-    <string name="development_changes">+ Orbot を使用した TOR サポート\n+ Proxy サポート\n+ ベラルーシ語, ペルシア語, イタリア語, ポルトガル語, ウクライナ語, 中国語 - 中国, 中国語 - 台湾の翻訳\n* Android 4+ での通知の修正\n* サーバー・サイドの履歴の修正\n* Xabber の終了時の修正\n* 翻訳の修正\n* 小規模の修正\n皆様ありがとうございます!</string>
+    <string name="development_changes">皆様ありがとうございます!</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="development_description">Xabber の体験 (非安定) バージョン - マルチ・アカウントをサポートし, クリーンなインターフェースのオープンソース Jabber (XMPP) クライアントです.\n\nXabber のテストや開発で私たちをサポートしたい場合にこのバージョンをインストールすることができます. 安定性は保証されていません, あなたが冒険であると感じるのであれば, 通常のバージョンを使用してください. しかしあなたがリスク・テイカーであれば, 新しい機能を最初に使えるでしょう!\n\nXabber のソースコードは https://github.com/redsolution/xabber-android で GNU GPLv3 ライセンスに基づいて利用可能です.\n\nさらに詳しい情報は私たちの web サイト http://xabber.com を参照するか twitter で @xabber_xmpp をフォローしてください.\n\n報告したいバグや良いアイデアがあれば, info+devel@xabber.com にメールしてください</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="development_title">Xabber 開発バージョン</string>
     <string name="production_changes">+ Orbot を使用した TOR サポート \n+ Proxy サポート \n+ ベラルーシ語, ペルシア語, イタリア語, ポルトガル語, ウクライナ語, 中国語 - 中国, 中国語 - 台湾の翻訳 \n* Android 4+ での通知の修正 \n* サーバー・サイドの履歴の修正 \n* Xabber の終了時の修正 \n* 翻訳の修正 \n* 小規模の修正 \n皆様ありがとうございます!</string>
+    <string name="short_description">マルチアカウント サポートのオープンソース XMPP (Jabber) クライアント</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->
     <string name="vip_description">VIP バージョンの Xabber — マルチ・アカウントをサポートし, クリーンでシンプルなインターフェースをもつ, すばらしいオープンソース Jabber (XMPP) クライアントです. Xabber は Android 用のベストな Jabber クライアントとしてデザインされています.\n\nこの VIP バージョンの Xabber は通常バージョンの Xabber と違いはありません, アプリケーション・アイコン上にある金のコインが唯一の違いです. これは, 他の人が無料で手に入れるものをお金を払って買うという, あなたを立派な人に見せるために非常に役立ちます.\n\n...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/market.png -->

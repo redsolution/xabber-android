@@ -18,6 +18,8 @@
     <string name="muc_room">ועידה</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_server">שרת שיחה מרובת משתמשים</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
+    <string name="muc_server_hint">conference.jabber.org</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
     <string name="NICK_ALREADY_USED">כינוי כבר מצוי תחת שימוש</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->

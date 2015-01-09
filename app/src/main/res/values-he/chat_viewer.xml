@@ -131,6 +131,8 @@
     <string name="otr_end">הפסק הצפנה</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">חדש הצפנה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
+    <string name="otr_request">דיון פרטי Off-the-Record התבקש אולם אין ברשותך את התוסף התומך. השתמש בלקוחות כגון Pidgin, Gajim או Adium למחשבי PC/Mac ובלקוח Xabber או ChatSecure לאנדרואיד. ראה http://otr.cypherpunks.ca/ למידע נוסף.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
     <string name="otr_start">הפעל הצפנה</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->

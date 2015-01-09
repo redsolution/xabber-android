@@ -104,7 +104,16 @@
     <string name="account_protocol_wlm_title">WLM</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_protocol_xmpp_title">XMPP</string>
+    <string name="account_proxy_host">Direción del proxy</string>
+    <string name="account_proxy_password">Contraseña del proxy</string>
+    <string name="account_proxy_port">Puerto del proxy</string>
+    <string name="account_proxy_type">Tipo de proxy</string>
+    <string name="account_proxy_type_http">HTTP</string>
     <string name="account_proxy_type_none">Desactivado</string>
+    <string name="account_proxy_type_orbot">Orbot</string>
+    <string name="account_proxy_type_socks4">SOCKS4</string>
+    <string name="account_proxy_type_socks5">SOCKS5</string>
+    <string name="account_proxy_user">Usuario del proxy</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Usar autentificación SASL (recomendado)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -143,8 +152,11 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm"></string>
+    <string name="account_use_orbot">Charlar a través de la red de anonimato TOR y forzar el protocolo criptográfico TLS\nNo recomentado para Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">¿Seguro que quieres abandonar los cambios?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="INCORRECT_USER_NAME">Nombre de usuario incorrecto. Detalles en la ayuda debajo.</string>
+    <string name="orbot_required_message">Para usar TOR debe tener instalado Orbot y activarlo para pasar todo el tráfico a través de él. ¿Quiere instalarlo desde el Google Play?</string>
+    <string name="orbot_required_title">¿Instalar Orbot?</string>
 </resources>

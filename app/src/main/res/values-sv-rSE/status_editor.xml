@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+  <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="available">Tillgänglig</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
@@ -13,7 +13,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
     <string name="edit_status">Redigera status</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
-    <string name="empty_status">&lt;Tom status&gt;</string>
+    <string name="empty_status">&amp;lt;Tom status&amp;gt;</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="invisible">Osynlig</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->

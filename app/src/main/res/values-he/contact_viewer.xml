@@ -5,6 +5,8 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_for">צפיה במידע אודות %s‎</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
+    <string name="contact_viewer_xmpp">XMPP</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_jid">מזהה Jabber</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_name">שם Jabber</string>
@@ -77,6 +79,8 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_postal">תיבת דואר</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_parcel">חבילה</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_dom">ביתי</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_intl">בינלאומי</string>
@@ -93,11 +97,19 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_video">וידאו</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_bbs">BBS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_modem">מודם</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_msg">מסרים קוליים</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_isdn">ISDN</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_pcs">PCS</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_internet">מרשתת</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
+    <string name="vcard_type_x400">X400</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="please_wait">אנא המתן...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->

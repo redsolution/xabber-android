@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+  <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
     <string name="about_copyright">© Redsolution LTD, 2010-2014</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
