@@ -1,5 +1,5 @@
-bin/*
-gen/*
-*.orig
-.pydevproject
-.settings
+local.properties
+*.iml
+.idea
+build
+.gradle
