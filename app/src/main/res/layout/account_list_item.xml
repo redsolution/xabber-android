@@ -14,7 +14,7 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:paddingTop="@dimen/contact_list_item_padding_top"
     android:paddingBottom="@dimen/contact_list_item_padding_bottom"
@@ -34,14 +34,14 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_weight="1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:paddingLeft="4dip"
         android:paddingRight="4dip"
         >
         <TextView
             android:id="@+id/name"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:singleLine="true"
@@ -54,7 +54,7 @@
         <TextView
             android:id="@+id/status"
             android:text="@android:string/cancel"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:singleLine="true"

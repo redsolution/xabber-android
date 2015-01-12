@@ -15,23 +15,23 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <Spinner
 		android:id="@+id/status_mode"
 		android:prompt="@string/status_editor"
-	    android:layout_width="fill_parent"
+	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    />
 	<EditText
 		android:id="@+id/status_text"
-	    android:layout_width="fill_parent"
+	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:hint="@string/status_text_hint"
 	    />
     <Button
         android:id="@+id/ok"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/status_editor"
 		/>

@@ -14,7 +14,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:paddingTop="@dimen/contact_list_item_padding_top"
     android:paddingBottom="@dimen/contact_list_item_padding_bottom"
@@ -28,8 +28,8 @@
     <include layout="@layout/base_contact_avatar" />
     <RelativeLayout
         android:id="@+id/panel"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:paddingLeft="@dimen/active_chat_padding_left"
         android:paddingTop="@dimen/active_chat_padding_top"
         android:paddingRight="@dimen/active_chat_padding_right"
@@ -47,7 +47,7 @@
             />
         <TextView
             android:id="@+id/name"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/contact_name_height_show_status"
             android:layout_marginRight="@dimen/status_icon_width"
             android:gravity="bottom"
@@ -59,7 +59,7 @@
             />
         <TextView
             android:id="@+id/status"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/contact_name_height_show_status"
             android:layout_marginRight="@dimen/status_icon_width"
             android:gravity="top"
@@ -81,7 +81,7 @@
     </RelativeLayout>
 	<ImageView
 	    android:id="@+id/shadow"
-	    android:layout_width="fill_parent"
+	    android:layout_width="match_parent"
 	    android:layout_height="@dimen/contact_list_item_height"
 	    android:background="@drawable/shadow"
 	    />

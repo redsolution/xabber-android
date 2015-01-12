@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 9
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.xabber.androiddev"
-        minSdkVersion 3
-        targetSdkVersion 9
+        minSdkVersion 7
+        targetSdkVersion 21
     }
 
     buildTypes {
@@ -20,4 +20,5 @@ android {
 
 dependencies {
     compile files('libs/otr4j.jar')
+    compile 'com.android.support:support-v4:21.0.3'
 }

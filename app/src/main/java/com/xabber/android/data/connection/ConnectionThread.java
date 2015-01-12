@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection;
 
+import android.os.Build;
+
 import java.net.InetAddress;
 import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutorService;
@@ -282,7 +284,7 @@ public class ConnectionThread implements
 				proxyUser, proxyPassword);
 		ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
 				address.getHostAddress(), port, serverName, proxy);
-		if (Application.SDK_INT >= 14) {
+		if (Build.VERSION.SDK_INT >= 14) {
 			connectionConfiguration.setTruststoreType("AndroidCAStore");
 			connectionConfiguration.setTruststorePassword(null);
 			connectionConfiguration.setTruststorePath(null);

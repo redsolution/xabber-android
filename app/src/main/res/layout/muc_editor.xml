@@ -15,14 +15,14 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         >
 
         <TextView
@@ -32,7 +32,7 @@
             />
         <com.xabber.android.ui.widget.NoDefaultSpinner
             android:id="@+id/contact_account"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:prompt="@string/choose_account"
             />
@@ -44,7 +44,7 @@
             />
         <EditText
             android:id="@+id/muc_server"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/muc_server_hint"
             android:singleLine="true"
@@ -58,7 +58,7 @@
             />
         <EditText
             android:id="@+id/muc_room"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             />
@@ -70,7 +70,7 @@
             />
         <EditText
             android:id="@+id/muc_nick"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:hint="@string/muc_nick_hint"
@@ -78,12 +78,12 @@
 
         <TextView
             android:text="@string/muc_password"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
         <EditText
             android:id="@+id/muc_password"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:password="true"
             android:singleLine="true"
@@ -94,21 +94,21 @@
             android:id="@+id/muc_join"
             android:checked="true"
             android:text="@string/muc_join"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
         
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="center_horizontal|bottom"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             >
 
             <Button
                 android:text="@string/muc_save"
                 android:id="@+id/ok"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
 
