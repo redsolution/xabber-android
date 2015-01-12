@@ -40,7 +40,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
-import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
@@ -61,6 +60,7 @@ public class StatusEditor extends ManagedListActivity implements
 	private EditText statusTextView;
 
 	private SavedStatus actionWithItem;
+	private StatusEditorAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,8 @@ public class StatusEditor extends ManagedListActivity implements
 		listView.addHeaderView(header, null, false);
 		listView.setOnItemClickListener(this);
 		registerForContextMenu(listView);
-		setListAdapter(new StatusEditorAdapter(this));
+		adapter = new StatusEditorAdapter(this);
+		setListAdapter(adapter);
 
 		statusTextView = (EditText) header.findViewById(R.id.status_text);
 		statusModeView = (Spinner) header.findViewById(R.id.status_mode);
@@ -146,7 +147,7 @@ public class StatusEditor extends ManagedListActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		((UpdatableAdapter) getListAdapter()).onChange();
+		adapter.onChange();
 	}
 
 	@Override
@@ -164,7 +165,7 @@ public class StatusEditor extends ManagedListActivity implements
 		switch (item.getItemId()) {
 		case OPTION_MENU_CLEAR_STATUSES_ID:
 			AccountManager.getInstance().clearSavedStatuses();
-			((UpdatableAdapter) getListAdapter()).onChange();
+			adapter.onChange();
 			return true;
 		}
 		return false;
@@ -202,7 +203,7 @@ public class StatusEditor extends ManagedListActivity implements
 			return true;
 		case CONTEXT_MENU_REMOVE_STATUS_ID:
 			AccountManager.getInstance().removeSavedStatus(actionWithItem);
-			((UpdatableAdapter) getListAdapter()).onChange();
+			adapter.onChange();
 			return true;
 		}
 		return false;

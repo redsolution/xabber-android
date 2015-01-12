@@ -16,15 +16,11 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.Adapter;
 import android.widget.ListView;
 import android.widget.Scroller;
@@ -41,14 +37,9 @@ import com.xabber.androiddev.R;
  * @author alexander.ivanov
  * 
  */
-public class PageSwitcher extends ViewGroup implements AnimationListener {
+public class PageSwitcher extends ViewGroup {
 
 	public static final boolean LOG = false;
-
-	/**
-	 * Delay before hide pages.
-	 */
-	private static final long PAGES_HIDDER_DELAY = 1000;
 
 	/**
 	 * Distance a touch can wander before we think the user is scrolling.
@@ -136,38 +127,6 @@ public class PageSwitcher extends ViewGroup implements AnimationListener {
 	 */
 	private Object previousVisibleObject;
 
-	/**
-	 * Animation used to hide pages.
-	 */
-	private final Animation pagesHideAnimation;
-
-	/**
-	 * Runnable called to hide pages.
-	 */
-	private final Runnable pagesHideRunnable = new Runnable() {
-		@Override
-		public void run() {
-			if (LOG)
-				LogManager.i(this, "hide pages");
-			handler.removeCallbacks(this);
-			if (selectedView != null)
-				selectedView.findViewById(R.id.chat_page).startAnimation(
-						pagesHideAnimation);
-			if (visibleView != null) {
-				visibleView.findViewById(R.id.chat_page).setVisibility(
-						View.GONE);
-				visibleView.findViewById(R.id.chat_page).clearAnimation();
-			}
-		}
-	};
-
-	/**
-	 * Whether pages are shown.
-	 */
-	private boolean pagesShown;
-
-	private final Handler handler;
-
 	public PageSwitcher(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
@@ -188,12 +147,6 @@ public class PageSwitcher extends ViewGroup implements AnimationListener {
 		visiblePosition = 0;
 		visibleView = null;
 		previousVisibleObject = null;
-
-		handler = new Handler();
-		pagesHideAnimation = AnimationUtils.loadAnimation(context,
-				R.anim.chat_page_out);
-		pagesHideAnimation.setAnimationListener(this);
-		pagesShown = false;
 	}
 
 	/**
@@ -529,46 +482,22 @@ public class PageSwitcher extends ViewGroup implements AnimationListener {
 		if (scrollX == 0) {
 			if (LOG)
 				LogManager.i(this, "Scroll X == 0");
-			hidePages();
+			if (visibleView != null)
+				adapter.hidePages(visibleView);
+			if (selectedView != null)
+				adapter.hidePages(selectedView);
 		} else {
 			if (LOG)
 				LogManager.i(this, "Scroll X != 0");
-			showPages();
+			if (visibleView != null)
+				adapter.showPages(visibleView);
+			if (selectedView != null)
+				adapter.showPages(selectedView);
 		}
 
 		super.scrollTo(scrollX, 0);
 
 		dataChanged = false;
-	}
-
-	/**
-	 * Show pages.
-	 */
-	private void showPages() {
-		if (pagesShown)
-			return;
-		pagesShown = true;
-		handler.removeCallbacks(pagesHideRunnable);
-		if (selectedView != null) {
-			selectedView.findViewById(R.id.chat_page).clearAnimation();
-			selectedView.findViewById(R.id.chat_page).setVisibility(
-					View.VISIBLE);
-		}
-		if (visibleView != null) {
-			visibleView.findViewById(R.id.chat_page).clearAnimation();
-			visibleView.findViewById(R.id.chat_page)
-					.setVisibility(View.VISIBLE);
-		}
-	}
-
-	/**
-	 * Requests pages to be hiden in future.
-	 */
-	private void hidePages() {
-		if (!pagesShown)
-			return;
-		pagesShown = false;
-		handler.postDelayed(pagesHideRunnable, PAGES_HIDDER_DELAY);
 	}
 
 	/**
@@ -737,20 +666,6 @@ public class PageSwitcher extends ViewGroup implements AnimationListener {
 			LogManager.i(this, "scrollTo: " + x + "," + y);
 		super.scrollTo(x, y);
 		update(false);
-	}
-
-	@Override
-	public void onAnimationStart(Animation animation) {
-	}
-
-	@Override
-	public void onAnimationEnd(Animation animation) {
-		if (selectedView != null)
-			selectedView.findViewById(R.id.chat_page).setVisibility(View.GONE);
-	}
-
-	@Override
-	public void onAnimationRepeat(Animation animation) {
 	}
 
 	public interface OnSelectListener {

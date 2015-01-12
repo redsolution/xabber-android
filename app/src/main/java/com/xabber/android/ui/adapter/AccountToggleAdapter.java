@@ -138,7 +138,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
 	 *            child.
 	 * @return The data for the specified view.
 	 */
-	public Object getItemForView(View view) {
+	public String getItemForView(View view) {
 		if (view.getId() == R.id.status_mode)
 			view = (View) view.getParent();
 		for (int index = 0; index < linearLayout.getChildCount(); index++)

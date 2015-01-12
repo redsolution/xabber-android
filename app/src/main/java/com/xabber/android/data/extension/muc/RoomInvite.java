@@ -21,7 +21,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.MUCEditor;
+import com.xabber.android.ui.MUCInvite;
 import com.xabber.androiddev.R;
 
 /**
@@ -57,8 +57,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
 
 	@Override
 	public Intent getIntent() {
-		return MUCEditor.createInviteIntent(Application.getInstance(), account,
-				user);
+		return MUCInvite.createIntent(Application.getInstance(), account, user);
 	}
 
 	@Override

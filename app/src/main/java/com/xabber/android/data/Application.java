@@ -29,7 +29,6 @@ import java.util.concurrent.ThreadFactory;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.os.Handler;
 
 import com.xabber.android.service.XabberService;
@@ -41,8 +40,6 @@ import com.xabber.androiddev.R;
  * @author alexander.ivanov
  */
 public class Application extends android.app.Application {
-
-	public static final int SDK_INT = Integer.valueOf(Build.VERSION.SDK);
 
 	private static Application instance;
 
@@ -254,8 +251,7 @@ public class Application extends android.app.Application {
 	 * @return
 	 */
 	public boolean isContactsSupported() {
-		return SDK_INT >= 5
-				&& checkCallingOrSelfPermission("android.permission.READ_CONTACTS") == PackageManager.PERMISSION_GRANTED;
+		return checkCallingOrSelfPermission("android.permission.READ_CONTACTS") == PackageManager.PERMISSION_GRANTED;
 	}
 
 	@Override

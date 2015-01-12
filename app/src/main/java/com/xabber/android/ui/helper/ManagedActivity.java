@@ -14,9 +14,9 @@
  */
 package com.xabber.android.ui.helper;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.xabber.android.data.ActivityManager;
 
@@ -28,7 +28,7 @@ import com.xabber.android.data.ActivityManager;
  * @author alexander.ivanov
  * 
  */
-public abstract class ManagedActivity extends Activity {
+public abstract class ManagedActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

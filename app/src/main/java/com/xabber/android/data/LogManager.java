@@ -16,15 +16,11 @@ package com.xabber.android.data;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import org.jivesoftware.smack.Connection;
 import org.xbill.DNS.Options;
 
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 /**
@@ -37,53 +33,11 @@ public class LogManager implements OnLoadListener {
 
 	private static final boolean log;
 	private static final boolean debugable;
-	private static Method _getApplicationInfo;
 
 	static {
-		initCompatibility();
-		debugable = (getApplicationInfo(Application.getInstance()).flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+		debugable = (Application.getInstance().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
 		log = debugable && SettingsManager.debugLog();
 	};
-
-	private static void initCompatibility() {
-		try {
-			_getApplicationInfo = Context.class.getMethod("getApplicationInfo",
-					new Class[] {});
-		} catch (NoSuchMethodException nsme) {
-		}
-	}
-
-	public static ApplicationInfo getApplicationInfo(Context context) {
-		ApplicationInfo applicationInfo;
-		if (_getApplicationInfo != null) {
-			try {
-				applicationInfo = (ApplicationInfo) _getApplicationInfo
-						.invoke(context);
-			} catch (InvocationTargetException e) {
-				Throwable cause = e.getCause();
-				if (cause instanceof RuntimeException) {
-					throw (RuntimeException) cause;
-				} else if (cause instanceof Error) {
-					throw (Error) cause;
-				} else {
-					throw new RuntimeException(e);
-				}
-			} catch (IllegalAccessException ie) {
-				throw new RuntimeException(ie);
-			}
-		} else {
-			try {
-				applicationInfo = context.getPackageManager()
-						.getApplicationInfo(context.getPackageName(), 0);
-			} catch (NameNotFoundException e) {
-				Log.e("LogManager",
-						"I can`t find my package in the system. Debug will be disabled.");
-				applicationInfo = new ApplicationInfo();
-				applicationInfo.flags = 0;
-			}
-		}
-		return applicationInfo;
-	}
 
 	private final static LogManager instance;
 

@@ -22,13 +22,9 @@ import java.util.Date;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.os.Handler;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -42,7 +38,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
 
 /**
  * Adapter for contact list in the main activity.
@@ -58,36 +53,6 @@ public class ContactListAdapter extends
 	 * Number of milliseconds between lazy refreshes.
 	 */
 	private static final long REFRESH_INTERVAL = 1000;
-
-	/**
-	 * View with information shown on empty contact list.
-	 */
-	private final View infoView;
-
-	/**
-	 * Image view with connected icon.
-	 */
-	private View connectedView;
-
-	/**
-	 * Image view with disconnected icon.
-	 */
-	private View disconnectedView;
-
-	/**
-	 * View with help text.
-	 */
-	private TextView textView;
-
-	/**
-	 * Button to apply help text.
-	 */
-	private Button buttonView;
-
-	/**
-	 * Animation for disconnected view.
-	 */
-	private Animation animation;
 
 	/**
 	 * Handler for deferred refresh.
@@ -114,24 +79,13 @@ public class ContactListAdapter extends
 	 */
 	private Date nextRefresh;
 
-	public ContactListAdapter(ListActivity activity) {
-		super(activity, activity.getListView(), new ChatContactInflater(
-				activity), GroupManager.getInstance());
-		infoView = activity.findViewById(R.id.info);
-		if (infoView != null) {
-			connectedView = infoView.findViewById(R.id.connected);
-			disconnectedView = infoView.findViewById(R.id.disconnected);
-			textView = (TextView) infoView.findViewById(R.id.text);
-			buttonView = (Button) infoView.findViewById(R.id.button);
-			animation = AnimationUtils.loadAnimation(activity,
-					R.anim.connection);
-		} else {
-			connectedView = null;
-			disconnectedView = null;
-			textView = null;
-			buttonView = null;
-			animation = null;
-		}
+	private final OnContactListChangedListener listener;
+
+	public ContactListAdapter(Activity activity, ListView listView,
+			OnContactListChangedListener listener) {
+		super(activity, listView, new ChatContactInflater(activity),
+				GroupManager.getInstance());
+		this.listener = listener;
 		handler = new Handler();
 		refreshLock = new Object();
 		refreshRequested = false;
@@ -220,12 +174,12 @@ public class ContactListAdapter extends
 		/**
 		 * Whether there is at least one contact.
 		 */
-		boolean hasContact = false;
+		boolean hasContacts = false;
 
 		/**
 		 * Whether there is at least one visible contact.
 		 */
-		boolean hasVisible = false;
+		boolean hasVisibleContacts = false;
 
 		for (String account : AccountManager.getInstance().getAccounts())
 			accounts.put(account, null);
@@ -274,7 +228,7 @@ public class ContactListAdapter extends
 			for (RosterContact rosterContact : rosterContacts) {
 				if (!rosterContact.isEnabled())
 					continue;
-				hasContact = true;
+				hasContacts = true;
 				final boolean online = rosterContact.getStatusMode().isOnline();
 				final String account = rosterContact.getAccount();
 				final TreeMap<String, AbstractChat> users = abstractChats
@@ -287,7 +241,7 @@ public class ContactListAdapter extends
 				if (showActiveChats && abstractChat != null
 						&& abstractChat.isActive()) {
 					activeChats.setNotEmpty();
-					hasVisible = true;
+					hasVisibleContacts = true;
 					if (activeChats.isExpanded())
 						activeChats.addAbstractContact(rosterContact);
 					activeChats.increment(online);
@@ -298,7 +252,7 @@ public class ContactListAdapter extends
 					continue;
 				if (addContact(rosterContact, online, accounts, groups,
 						contacts, showAccounts, showGroups, showOffline))
-					hasVisible = true;
+					hasVisibleContacts = true;
 			}
 			for (TreeMap<String, AbstractChat> users : abstractChats.values())
 				for (AbstractChat abstractChat : users.values()) {
@@ -310,7 +264,7 @@ public class ContactListAdapter extends
 						abstractContact = new ChatContact(abstractChat);
 					if (showActiveChats && abstractChat.isActive()) {
 						activeChats.setNotEmpty();
-						hasVisible = true;
+						hasVisibleContacts = true;
 						if (activeChats.isExpanded())
 							activeChats.addAbstractContact(abstractContact);
 						activeChats.increment(false);
@@ -330,14 +284,14 @@ public class ContactListAdapter extends
 						group = GroupManager.NO_GROUP;
 						online = false;
 					}
-					hasVisible = true;
+					hasVisibleContacts = true;
 					addContact(abstractContact, group, online, accounts,
 							groups, contacts, showAccounts, showGroups);
 				}
 
 			// Remove empty groups, sort and apply structure.
 			baseEntities.clear();
-			if (hasVisible) {
+			if (hasVisibleContacts) {
 				if (showActiveChats) {
 					if (!activeChats.isEmpty()) {
 						if (showAccounts || showGroups)
@@ -417,89 +371,12 @@ public class ContactListAdapter extends
 			Collections.sort(baseEntities, comparator);
 			this.baseEntities.clear();
 			this.baseEntities.addAll(baseEntities);
-			hasVisible = baseEntities.size() > 0;
-		}
-
-		if (infoView != null) {
-			if (hasVisible) {
-				infoView.setVisibility(View.GONE);
-				disconnectedView.clearAnimation();
-			} else {
-				infoView.setVisibility(View.VISIBLE);
-				final int text;
-				final int button;
-				final ContactListState state;
-				if (filterString != null) {
-					if (commonState == CommonState.online)
-						state = ContactListState.online;
-					else if (commonState == CommonState.roster
-							|| commonState == CommonState.connecting)
-						state = ContactListState.connecting;
-					else
-						state = ContactListState.offline;
-					text = R.string.application_state_no_online;
-					button = 0;
-				} else if (hasContact) {
-					state = ContactListState.online;
-					text = R.string.application_state_no_online;
-					button = R.string.application_action_no_online;
-				} else if (commonState == CommonState.online) {
-					state = ContactListState.online;
-					text = R.string.application_state_no_contacts;
-					button = R.string.application_action_no_contacts;
-				} else if (commonState == CommonState.roster) {
-					state = ContactListState.connecting;
-					text = R.string.application_state_roster;
-					button = 0;
-				} else if (commonState == CommonState.connecting) {
-					state = ContactListState.connecting;
-					text = R.string.application_state_connecting;
-					button = 0;
-				} else if (commonState == CommonState.waiting) {
-					state = ContactListState.offline;
-					text = R.string.application_state_waiting;
-					button = R.string.application_action_waiting;
-				} else if (commonState == CommonState.offline) {
-					state = ContactListState.offline;
-					text = R.string.application_state_offline;
-					button = R.string.application_action_offline;
-				} else if (commonState == CommonState.disabled) {
-					state = ContactListState.offline;
-					text = R.string.application_state_disabled;
-					button = R.string.application_action_disabled;
-				} else if (commonState == CommonState.empty) {
-					state = ContactListState.offline;
-					text = R.string.application_state_empty;
-					button = R.string.application_action_empty;
-				} else {
-					throw new IllegalStateException();
-				}
-				if (state == ContactListState.offline) {
-					connectedView.setVisibility(View.INVISIBLE);
-					disconnectedView.setVisibility(View.VISIBLE);
-					disconnectedView.clearAnimation();
-				} else if (state == ContactListState.connecting) {
-					connectedView.setVisibility(View.VISIBLE);
-					disconnectedView.setVisibility(View.VISIBLE);
-					if (disconnectedView.getAnimation() == null)
-						disconnectedView.startAnimation(animation);
-				} else if (state == ContactListState.online) {
-					connectedView.setVisibility(View.VISIBLE);
-					disconnectedView.setVisibility(View.INVISIBLE);
-					disconnectedView.clearAnimation();
-				}
-				textView.setText(text);
-				if (button == 0) {
-					buttonView.setVisibility(View.GONE);
-				} else {
-					buttonView.setVisibility(View.VISIBLE);
-					buttonView.setText(button);
-					buttonView.setTag(Integer.valueOf(button));
-				}
-			}
+			hasVisibleContacts = baseEntities.size() > 0;
 		}
 
 		super.onChange();
+		listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts,
+				filterString != null);
 
 		synchronized (refreshLock) {
 			nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
@@ -513,6 +390,19 @@ public class ContactListAdapter extends
 	@Override
 	public void run() {
 		onChange();
+	}
+
+	/**
+	 * Listener for contact list appearance changes.
+	 * 
+	 * @author alexander.ivanov
+	 * 
+	 */
+	public interface OnContactListChangedListener {
+
+		void onContactListChanged(CommonState commonState, boolean hasContacts,
+				boolean hasVisibleContacts, boolean isFilterEnabled);
+
 	}
 
 }
