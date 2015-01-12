@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -53,6 +55,8 @@ public class PreferenceEditor extends ManagedPreferenceActivity implements
 		if (isFinishing())
 			return;
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		addPreferencesFromResource(R.xml.preference_editor);
 
 		getPreferenceScreen().findPreference(
@@ -80,11 +84,20 @@ public class PreferenceEditor extends ManagedPreferenceActivity implements
 
 		PreferenceScreen about = (PreferenceScreen) getPreferenceScreen()
 				.findPreference(getString(R.string.preference_about_key));
-		about.setSummary(getString(R.string.application_name) + "\n"
-				+ getString(R.string.application_version));
+		about.setSummary(getString(R.string.application_name) + "\n" + getVersionName());
 		about.setIntent(AboutViewer.createIntent(this));
 		PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
 	}
+
+    private String getVersionName() {
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
 	@Override
 	protected void onResume() {

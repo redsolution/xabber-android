@@ -16,8 +16,12 @@ package com.xabber.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.text.method.LinkMovementMethod;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.xabber.android.ui.helper.ManagedActivity;
@@ -29,15 +33,38 @@ public class AboutViewer extends ManagedActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_viewer);
-		((TextView) findViewById(R.id.about_version))
-				.setText(getString(R.string.about_version,
-						getString(R.string.application_version)));
+
+        ((TextView) findViewById(R.id.about_version))
+                .setText(getString(R.string.about_version, getVersionName()));
 		((TextView) findViewById(R.id.about_license))
 				.setMovementMethod(LinkMovementMethod.getInstance());
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-	public static Intent createIntent(Context context) {
+    private String getVersionName() {
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static Intent createIntent(Context context) {
 		return new Intent(context, AboutViewer.class);
 	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

@@ -58,7 +58,14 @@ public class ContactAdd extends GroupListActivity implements
 	private EditText userView;
 	private EditText nameView;
 
-	@Override
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected void onInflate(Bundle savedInstanceState) {
 		setContentView(R.layout.contact_add);
 

@@ -14,14 +14,5 @@
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:state_pressed="true"
-        android:drawable="@drawable/btn_status_mode_pressed" />
-    <item
-        android:state_selected="true"
-        android:drawable="@drawable/btn_status_mode_focused" />
-    <item
-        android:state_focused="true"
-        android:drawable="@drawable/btn_status_mode_focused" />
-    <item
         android:drawable="@drawable/btn_status_mode_normal" />
 </selector>

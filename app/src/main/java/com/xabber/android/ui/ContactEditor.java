@@ -43,7 +43,14 @@ public class ContactEditor extends GroupListActivity implements
 	private String account;
 	private String user;
 
-	@Override
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected void onInflate(Bundle savedInstanceState) {
 		setContentView(R.layout.contact_editor);
 

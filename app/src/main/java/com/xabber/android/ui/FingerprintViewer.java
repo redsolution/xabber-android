@@ -119,6 +119,8 @@ public class FingerprintViewer extends ManagedActivity implements
 		copyView = findViewById(R.id.copy);
 		copyView.setOnClickListener(this);
 		isUpdating = false;
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

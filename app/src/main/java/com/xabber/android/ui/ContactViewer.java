@@ -203,6 +203,8 @@ public class ContactViewer extends ManagedPreferenceActivity implements
 				}
 		}
 		setTitle(getString(R.string.contact_viewer_for, bareAddress));
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

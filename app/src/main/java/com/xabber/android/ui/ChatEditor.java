@@ -35,7 +35,14 @@ public class ChatEditor extends BaseSettingsActivity {
 	private String account;
 	private String user;
 
-	@Override
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected void onInflate(Bundle savedInstanceState) {
 		account = getAccount(getIntent());
 		user = getUser(getIntent());

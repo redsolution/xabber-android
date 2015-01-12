@@ -2,12 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.xabber.androiddev"
-        minSdkVersion 7
+        minSdkVersion 14
         targetSdkVersion 21
+        versionCode 85
+        versionName '0.10.1'
     }
 
     buildTypes {

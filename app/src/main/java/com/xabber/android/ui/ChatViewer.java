@@ -19,8 +19,10 @@ import java.util.Collection;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.xabber.android.data.ActivityManager;
@@ -112,6 +114,8 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
 			actionWithAccount = account;
 		if (actionWithUser == null)
 			actionWithUser = user;
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		selectChat(actionWithAccount, actionWithUser);
 	}
@@ -391,5 +395,16 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
 	private static boolean hasAttention(Intent intent) {
 		return ACTION_ATTENTION.equals(intent.getAction());
 	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
