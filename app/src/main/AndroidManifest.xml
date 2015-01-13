@@ -279,10 +279,21 @@
         <activity
             android:name="com.xabber.android.ui.preferences.PhraseList"
             android:label="@string/events_phrases_title"
-            />
+            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
         <activity
             android:name="com.xabber.android.ui.preferences.PhraseEditor"
-            />
+            android:parentActivityName="com.xabber.android.ui.preferences.PhraseList">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PhraseList" />
+        </activity>
+
         <activity
             android:name="com.xabber.android.ui.ReconnectionActivity"
             />

@@ -27,7 +27,14 @@ import com.xabber.androiddev.R;
 
 public class PhraseList extends BaseListEditor<Integer> {
 
-	@Override
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected int getAddTextResourceId() {
 		return R.string.phrase_add;
 	}

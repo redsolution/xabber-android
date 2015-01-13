@@ -36,7 +36,14 @@ public class PhraseEditor extends BaseSettingsActivity {
 
 	private Phrase phrase;
 
-	@Override
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
 	protected void onInflate(Bundle savedInstanceState) {
 		addPreferencesFromResource(R.xml.phrase_editor);
 		Integer index = getPhraseIndex(getIntent());
