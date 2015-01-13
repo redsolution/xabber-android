@@ -10,10 +10,8 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 
-import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
@@ -73,9 +71,6 @@ public class PreferencesFragment extends android.preference.PreferenceFragment
             changeGrouping();
         } else if (key.equals(getString(R.string.contacts_show_groups_key))) {
             changeGrouping();
-        } else if (key.equals(getString(R.string.interface_theme_key))) {
-            ActivityManager.getInstance().clearStack(true);
-            startActivity(ContactList.createIntent(getActivity()));
         }
     }
 
