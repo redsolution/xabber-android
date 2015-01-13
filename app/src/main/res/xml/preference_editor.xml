@@ -14,10 +14,13 @@
 -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceScreen
+        <Preference
             android:title="@string/preference_accounts"
-            android:key="@string/preference_accounts_key"
-            />
+            android:key="@string/preference_accounts_key">
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.AccountList"/>
+        </Preference>
         <PreferenceScreen
             android:title="@string/preference_interface"
             android:key="@string/preference_interface"
@@ -212,10 +215,14 @@
                 android:key="@string/events_first_only_key"
                 android:defaultValue="@bool/events_first_only_default"
                 />
-            <PreferenceScreen
+            <Preference
                 android:title="@string/events_phrases"
-                android:key="@string/events_phrases"
-                />
+                android:key="@string/events_phrases">
+                <intent
+                    android:targetPackage="@string/application_package"
+                    android:targetClass="com.xabber.android.ui.preferences.PhraseList"/>
+            </Preference>
+
         </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/preference_connection"
@@ -340,8 +347,11 @@
                 android:key="@string/cache_clear_key"
                 />
         </PreferenceScreen>
-        <PreferenceScreen
+        <Preference
             android:title="@string/preference_about"
-            android:key="@string/preference_about_key"
-            />
+            android:key="@string/preference_about_key">
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.AboutViewer"/>
+            </Preference>
 </PreferenceScreen>

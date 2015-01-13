@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.preferences;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +33,7 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.ui.OAuthActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.BaseSettingsActivity;
 import com.xabber.android.ui.helper.OrbotHelper;
@@ -43,9 +44,9 @@ public class AccountEditor extends BaseSettingsActivity implements
 
 	private static final int OAUTH_WML_REQUEST_CODE = 1;
 
-	private static final String SAVED_TOKEN = "com.xabber.android.ui.AccountEditor.TOKEN";
+	private static final String SAVED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.TOKEN";
 
-	private static final String INVALIDATED_TOKEN = "com.xabber.android.ui.AccountEditor.INVALIDATED";
+	private static final String INVALIDATED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.INVALIDATED";
 
 	private static final int ORBOT_DIALOG_ID = 9050;
 

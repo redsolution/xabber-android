@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.preferences;
 
 import java.util.Collection;
 
@@ -26,6 +26,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.ui.AccountAdd;
+import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.helper.BaseListEditor;
