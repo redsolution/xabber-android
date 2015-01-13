@@ -129,8 +129,6 @@ public class ActivityManager implements OnUnloadListener {
 	 * @param activity
 	 */
 	private void applyTheme(Activity activity) {
-		if (activity instanceof PreferenceEditor)
-			return;
 		TypedArray title = activity.getTheme().obtainStyledAttributes(
 				new int[] { android.R.attr.windowNoTitle,
 						android.R.attr.windowIsFloating });
