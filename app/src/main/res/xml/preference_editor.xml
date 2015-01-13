@@ -30,63 +30,14 @@
                 android:targetPackage="@string/application_package"
                 android:targetClass="com.xabber.android.ui.preferences.ThemeSettings"/>
         </Preference>
-        <PreferenceScreen
+        <Preference
             android:title="@string/preference_contacts"
             android:key="@string/preference_contacts"
             >
-            <CheckBoxPreference
-                android:title="@string/contacts_show_panel"
-                android:key="@string/contacts_show_panel_key"
-                android:defaultValue="@bool/contacts_show_panel_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_show_avatars"
-                android:key="@string/contacts_show_avatars_key"
-                android:defaultValue="@bool/contacts_show_avatars_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_show_offline"
-                android:key="@string/contacts_show_offline_key"
-                android:defaultValue="@bool/contacts_show_offline_default"
-                />
-            <PreferenceScreen
-                android:title="@string/contacts_reset_offline"
-                android:key="@string/contacts_reset_offline_key"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_show_groups"
-                android:key="@string/contacts_show_groups_key"
-                android:defaultValue="@bool/contacts_show_groups_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_show_accounts"
-                android:key="@string/contacts_show_accounts_key"
-                android:defaultValue="@bool/contacts_show_accounts_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_show_active_chats"
-                android:key="@string/contacts_show_active_chats_key"
-                android:defaultValue="@bool/contacts_show_active_chats_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_stay_active_chats"
-                android:key="@string/contacts_stay_active_chats_key"
-                android:defaultValue="@bool/contacts_stay_active_chats_default"
-                android:dependency="@string/contacts_show_active_chats_key"
-                />
-            <CheckBoxPreference
-                android:title="@string/contacts_show_empty_groups"
-                android:key="@string/contacts_show_empty_groups_key"
-                android:defaultValue="@bool/contacts_show_empty_groups_default"
-                />
-            <ListPreference
-                android:title="@string/contacts_order"
-                android:key="@string/contacts_order_key"
-                android:entries="@array/contacts_order_entries"
-                android:entryValues="@array/contacts_order_entryvalues"
-                android:defaultValue="@string/contacts_order_default"
-                />
-        </PreferenceScreen>
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.ContactListSettings"/>
+        </Preference>
         <PreferenceScreen
             android:title="@string/preference_chats"
             android:key="@string/preference_chats"

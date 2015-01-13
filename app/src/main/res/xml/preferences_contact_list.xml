@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="@string/contacts_show_panel"
+        android:key="@string/contacts_show_panel_key"
+        android:defaultValue="@bool/contacts_show_panel_default"
+        />
+    <CheckBoxPreference
+        android:title="@string/contacts_show_avatars"
+        android:key="@string/contacts_show_avatars_key"
+        android:defaultValue="@bool/contacts_show_avatars_default"
+        />
+    <CheckBoxPreference
+        android:title="@string/contacts_show_offline"
+        android:key="@string/contacts_show_offline_key"
+        android:defaultValue="@bool/contacts_show_offline_default"
+        />
+    <com.xabber.android.ui.preferences.ContactResetOfflineSettingsDialog
+        android:title="@string/contacts_reset_offline"
+        android:key="@string/contacts_reset_offline_key"
+        android:dialogMessage="@string/contacts_reset_offline_warning"/>
+
+    <CheckBoxPreference
+        android:title="@string/contacts_show_groups"
+        android:key="@string/contacts_show_groups_key"
+        android:defaultValue="@bool/contacts_show_groups_default"
+        />
+    <CheckBoxPreference
+        android:title="@string/contacts_show_accounts"
+        android:key="@string/contacts_show_accounts_key"
+        android:defaultValue="@bool/contacts_show_accounts_default"
+        />
+    <CheckBoxPreference
+        android:title="@string/contacts_show_active_chats"
+        android:key="@string/contacts_show_active_chats_key"
+        android:defaultValue="@bool/contacts_show_active_chats_default"
+        />
+    <CheckBoxPreference
+        android:title="@string/contacts_stay_active_chats"
+        android:key="@string/contacts_stay_active_chats_key"
+        android:defaultValue="@bool/contacts_stay_active_chats_default"
+        android:dependency="@string/contacts_show_active_chats_key"
+        />
+    <CheckBoxPreference
+        android:title="@string/contacts_show_empty_groups"
+        android:key="@string/contacts_show_empty_groups_key"
+        android:defaultValue="@bool/contacts_show_empty_groups_default"
+        />
+    <ListPreference
+        android:title="@string/contacts_order"
+        android:key="@string/contacts_order_key"
+        android:entries="@array/contacts_order_entries"
+        android:entryValues="@array/contacts_order_entryvalues"
+        android:defaultValue="@string/contacts_order_default"
+        />
+
+</PreferenceScreen>

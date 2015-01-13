@@ -65,9 +65,6 @@ public class PreferenceEditor extends Activity
         } else if (preference.getKey().equals(
                 getString(R.string.security_clear_certificate_key))) {
             showDialog(R.string.security_clear_certificate_warning);
-        } else if (preference.getKey().equals(
-                getString(R.string.contacts_reset_offline_key))) {
-            showDialog(R.string.contacts_reset_offline_warning);
         }
         return false;
     }
@@ -84,10 +81,6 @@ public class PreferenceEditor extends Activity
                     R.string.security_clear_certificate_warning, this)
                     .setMessage(R.string.security_clear_certificate_warning)
                     .create();
-        case R.string.contacts_reset_offline_warning:
-            return new ConfirmDialogBuilder(this,
-                    R.string.contacts_reset_offline_warning, this).setMessage(
-                    R.string.contacts_reset_offline_warning).create();
         case R.string.application_state_closing:
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog
@@ -113,9 +106,6 @@ public class PreferenceEditor extends Activity
         case R.string.security_clear_certificate_warning:
             CertificateManager.getInstance().removeCertificates();
             ConnectionManager.getInstance().updateConnections(true);
-            break;
-        case R.string.contacts_reset_offline_warning:
-            GroupManager.getInstance().resetShowOfflineModes();
             break;
         }
     }
