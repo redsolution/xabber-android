@@ -1,15 +1,13 @@
 package com.xabber.android.ui.preferences;
 
-import android.app.Activity;
 import android.os.Bundle;
 
+import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-public class ContactListSettings extends Activity {
+public class ContactListSettings extends ManagedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         super.onCreate(savedInstanceState);
         if (isFinishing())
             return;

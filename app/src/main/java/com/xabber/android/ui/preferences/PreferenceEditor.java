@@ -14,7 +14,6 @@
  */
 package com.xabber.android.ui.preferences;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,13 +27,13 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
+import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-public class PreferenceEditor extends Activity
+public class PreferenceEditor extends ManagedActivity
         implements PreferencesFragment.OnPreferencesFragmentInteractionListener,
         Preference.OnPreferenceClickListener, ConfirmDialogListener {
 
