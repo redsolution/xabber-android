@@ -70,20 +70,14 @@
                 android:targetPackage="@string/application_package"
                 android:targetClass="com.xabber.android.ui.preferences.SecuritySettings"/>
         </Preference>
-        <PreferenceScreen
+        <Preference
             android:title="@string/preference_debug"
             android:key="@string/preference_debug"
             >
-            <CheckBoxPreference
-                android:title="@string/debug_log"
-                android:key="@string/debug_log_key"
-                android:defaultValue="@bool/debug_log_default"
-                />
-            <PreferenceScreen
-                android:title="@string/cache_clear"
-                android:key="@string/cache_clear_key"
-                />
-        </PreferenceScreen>
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.DebugSettings"/>
+        </Preference>
         <Preference
             android:title="@string/preference_about"
             android:key="@string/preference_about_key">
