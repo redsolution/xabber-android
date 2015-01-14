@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
 public class ThemeSettings extends ManagedActivity
@@ -19,6 +20,8 @@ public class ThemeSettings extends ManagedActivity
         setContentView(R.layout.activity_preferences);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_interface)));
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

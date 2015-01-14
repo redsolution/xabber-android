@@ -3,6 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
 public class ContactListSettings extends ManagedActivity {
@@ -13,6 +14,8 @@ public class ContactListSettings extends ManagedActivity {
             return;
 
         setContentView(R.layout.activity_preferences);
+
+        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_contacts)));
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 

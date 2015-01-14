@@ -31,6 +31,7 @@ import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.helper.BaseListEditor;
+import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
 public class AccountList extends BaseListEditor<String> implements
@@ -43,6 +44,8 @@ public class AccountList extends BaseListEditor<String> implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts)));
     }
 
     @Override

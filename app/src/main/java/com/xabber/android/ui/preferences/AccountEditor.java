@@ -89,9 +89,7 @@ public class AccountEditor extends BaseSettingsActivity implements
 		if (!Application.getInstance().isContactsSupported())
 			getPreferenceScreen().removePreference(
 					findPreference(getString(R.string.account_syncable_key)));
-		setTitle(getString(R.string.account_editor_title,
-				getString(protocol.getShortResource()), AccountManager
-						.getInstance().getVerboseName(account)));
+		setTitle(AccountManager.getInstance().getVerboseName(account));
 		if (savedInstanceState == null)
 			token = accountItem.getConnectionSettings().getPassword();
 		else

@@ -4,6 +4,7 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
 public class NotificationsSettings extends ManagedActivity {
@@ -15,6 +16,8 @@ public class NotificationsSettings extends ManagedActivity {
             return;
 
         setContentView(R.layout.activity_preferences);
+
+        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_events)));
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
