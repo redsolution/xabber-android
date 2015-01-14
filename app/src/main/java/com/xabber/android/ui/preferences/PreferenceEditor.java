@@ -61,9 +61,6 @@ public class PreferenceEditor extends ManagedActivity
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(getString(R.string.cache_clear_key))) {
             showDialog(R.string.cache_clear_warning);
-        } else if (preference.getKey().equals(
-                getString(R.string.security_clear_certificate_key))) {
-            showDialog(R.string.security_clear_certificate_warning);
         }
         return false;
     }
@@ -75,11 +72,6 @@ public class PreferenceEditor extends ManagedActivity
         case R.string.cache_clear_warning:
             return new ConfirmDialogBuilder(this, R.string.cache_clear_warning,
                     this).setMessage(R.string.cache_clear_warning).create();
-        case R.string.security_clear_certificate_warning:
-            return new ConfirmDialogBuilder(this,
-                    R.string.security_clear_certificate_warning, this)
-                    .setMessage(R.string.security_clear_certificate_warning)
-                    .create();
         case R.string.application_state_closing:
             ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog
@@ -101,10 +93,6 @@ public class PreferenceEditor extends ManagedActivity
             ((Application) getApplication()).requestToClear();
             Application.getInstance().requestToClose();
             showDialog(R.string.application_state_closing);
-            break;
-        case R.string.security_clear_certificate_warning:
-            CertificateManager.getInstance().removeCertificates();
-            ConnectionManager.getInstance().updateConnections(true);
             break;
         }
     }

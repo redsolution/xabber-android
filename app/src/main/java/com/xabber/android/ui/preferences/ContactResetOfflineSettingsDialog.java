@@ -18,6 +18,5 @@ public class ContactResetOfflineSettingsDialog extends DialogPreference {
         if (positiveResult) {
             GroupManager.getInstance().resetShowOfflineModes();
         }
-
     }
 }

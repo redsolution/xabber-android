@@ -62,32 +62,14 @@
                 android:targetPackage="@string/application_package"
                 android:targetClass="com.xabber.android.ui.preferences.ConnectionSettings"/>
         </Preference>
-        <PreferenceScreen
+        <Preference
             android:title="@string/preference_security"
             android:key="@string/preference_security"
             >
-            <CheckBoxPreference
-                android:title="@string/security_check_certificate"
-                android:key="@string/security_check_certificate_key"
-                android:defaultValue="@bool/security_check_certificate_default"
-                />
-            <PreferenceScreen
-                android:title="@string/security_clear_certificate"
-                android:key="@string/security_clear_certificate_key"
-                />
-            <ListPreference
-                android:title="@string/security_otr_mode"
-                android:key="@string/security_otr_mode_key"
-                android:entries="@array/security_otr_mode_entries"
-                android:entryValues="@array/security_otr_mode_entryvalues"
-                android:defaultValue="@string/security_otr_mode_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/security_otr_history"
-                android:key="@string/security_otr_history_key"
-                android:defaultValue="@bool/security_otr_history_default"
-                />
-        </PreferenceScreen>
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.SecuritySettings"/>
+        </Preference>
         <PreferenceScreen
             android:title="@string/preference_debug"
             android:key="@string/preference_debug"

@@ -26,8 +26,6 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
 
         getPreferenceScreen().findPreference(getString(R.string.cache_clear_key))
                 .setOnPreferenceClickListener(mListener.getOnPreferenceClickListener());
-        getPreferenceScreen().findPreference(getString(R.string.security_clear_certificate_key))
-                .setOnPreferenceClickListener(mListener.getOnPreferenceClickListener());
         getPreferenceScreen().findPreference(getString(R.string.debug_log_key))
                 .setEnabled(LogManager.isDebugable());
 
