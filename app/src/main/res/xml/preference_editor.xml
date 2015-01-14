@@ -38,69 +38,14 @@
                 android:targetPackage="@string/application_package"
                 android:targetClass="com.xabber.android.ui.preferences.ContactListSettings"/>
         </Preference>
-        <PreferenceScreen
+        <Preference
             android:title="@string/preference_chats"
             android:key="@string/preference_chats"
             >
-            <CheckBoxPreference
-                android:title="@string/chats_show_avatars"
-                android:key="@string/chats_show_avatars_key"
-                android:defaultValue="@bool/chats_show_avatars_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/chats_send_by_enter"
-                android:key="@string/chats_send_by_enter_key"
-                android:defaultValue="@bool/chats_send_by_enter_default"
-                />
-            <ListPreference
-                android:title="@string/chats_show_status_change"
-                android:summary="@string/chats_show_status_change"
-                android:key="@string/chats_show_status_change_key"
-                android:entries="@array/chats_show_status_change_entries"
-                android:entryValues="@array/chats_show_status_change_entryvalues"
-                android:defaultValue="@string/chats_show_status_change_default"
-                />
-            <ListPreference
-                android:title="@string/chats_hide_keyboard"
-                android:key="@string/chats_hide_keyboard_key"
-                android:entries="@array/chats_hide_keyboard_entries"
-                android:entryValues="@array/chats_hide_keyboard_entryvalues"
-                android:defaultValue="@string/chats_hide_keyboard_default"
-                />
-            <ListPreference
-                android:title="@string/chats_font_size"
-                android:key="@string/chats_font_size_key"
-                android:entries="@array/chats_font_size_entries"
-                android:entryValues="@array/chats_font_size_entryvalues"
-                android:defaultValue="@string/chats_font_size_default"
-                />
-            <ListPreference
-                android:title="@string/chats_divide"
-                android:key="@string/chats_divide_key"
-                android:entries="@array/chats_divide_entries"
-                android:entryValues="@array/chats_divide_entryvalues"
-                android:defaultValue="@string/chats_divide_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/chats_state_notification"
-                android:key="@string/chats_state_notification_key"
-                android:defaultValue="@bool/chats_state_notification_default"
-                />
-            <CheckBoxPreference
-                android:title="@string/chats_attention"
-                android:key="@string/chats_attention_key"
-                android:defaultValue="@bool/chats_attention_default"
-                />
-            <RingtonePreference
-                android:title="@string/chats_attention_sound"
-                android:key="@string/chats_attention_sound_key"
-                android:defaultValue="@string/chats_attention_sound_default"
-                android:ringtoneType="ringtone"
-                android:dependency="@string/chats_attention_key"
-                android:showSilent="true"
-                android:showDefault="true"
-                />
-        </PreferenceScreen>
+            <intent
+                android:targetPackage="@string/application_package"
+                android:targetClass="com.xabber.android.ui.preferences.ChatSettings"/>
+        </Preference>
         <PreferenceScreen
             android:title="@string/preference_events"
             android:key="@string/preference_events"
