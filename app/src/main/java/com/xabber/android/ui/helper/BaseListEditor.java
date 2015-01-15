@@ -118,6 +118,7 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, OPTION_MENU_ADD_ID, 0, getString(getAddTextResourceId()))
+                .setIcon(R.drawable.ic_add_white_24dp)
 				.setIntent(getAddIntent())
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
