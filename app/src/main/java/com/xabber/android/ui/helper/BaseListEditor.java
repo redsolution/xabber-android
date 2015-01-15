@@ -19,14 +19,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
@@ -65,11 +63,6 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 		else
 			actionWith = null;
 		ListView listView = getListView();
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-		View view = inflater.inflate(R.layout.add_item, null, true);
-		((TextView) view.findViewById(android.R.id.message))
-				.setText(getAddTextResourceId());
-		listView.addFooterView(view, null, true);
 		listView.setOnItemClickListener(this);
 		registerForContextMenu(listView);
 		adapter = createListAdapter();
@@ -125,8 +118,8 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, OPTION_MENU_ADD_ID, 0, getString(getAddTextResourceId()))
-				.setIcon(android.R.drawable.ic_menu_add)
-				.setIntent(getAddIntent());
+				.setIntent(getAddIntent())
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
 
@@ -175,12 +168,10 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		T actionWith = (T) parent.getAdapter().getItem(position);
-		Intent intent;
-		if (actionWith == null)
-			intent = getAddIntent();
-		else
-			intent = getEditIntent(actionWith);
-		startActivity(intent);
+		if (actionWith != null) {
+            Intent intent = getEditIntent(actionWith);
+            startActivity(intent);
+        }
 	}
 
 	@Override
