@@ -36,9 +36,10 @@ public abstract class ManagedDialog extends SingleActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setTheme(android.R.style.Theme_Dialog);
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 		setContentView(R.layout.dialog);
 		findViewById(android.R.id.button1).setOnClickListener(
 				new OnClickListener() {
