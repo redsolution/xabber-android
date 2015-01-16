@@ -22,5 +22,5 @@ android {
 
 dependencies {
     compile files('libs/otr4j.jar')
-    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
 }

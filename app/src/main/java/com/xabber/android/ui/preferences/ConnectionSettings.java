@@ -18,7 +18,7 @@ public class ConnectionSettings extends ManagedActivity {
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_connection)));
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

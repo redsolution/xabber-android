@@ -37,7 +37,7 @@ import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ContactAdd;
 import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.ContactViewer;
+import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.android.ui.MUCEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;

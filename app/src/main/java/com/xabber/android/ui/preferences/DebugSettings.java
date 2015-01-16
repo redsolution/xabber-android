@@ -18,7 +18,7 @@ public class DebugSettings extends ManagedActivity {
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_debug)));
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

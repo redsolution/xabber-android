@@ -19,7 +19,7 @@ public class ThemeSettings extends ManagedActivity
 
         setContentView(R.layout.activity_preferences);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_interface)));
 

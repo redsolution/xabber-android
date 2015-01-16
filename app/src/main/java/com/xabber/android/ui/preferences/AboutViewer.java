@@ -39,7 +39,7 @@ public class AboutViewer extends ManagedActivity {
 		((TextView) findViewById(R.id.about_license))
 				.setMovementMethod(LinkMovementMethod.getInstance());
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
     private String getVersionName() {

@@ -43,7 +43,7 @@ public class AccountList extends BaseListEditor<String> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts)));
     }

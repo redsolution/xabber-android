@@ -115,7 +115,7 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
 		if (actionWithUser == null)
 			actionWithUser = user;
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		selectChat(actionWithAccount, actionWithUser);
 	}
@@ -179,7 +179,6 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
 		String account = getAccount(intent);
 		String user = getUser(intent);
 		if (account == null || user == null) {
-			Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
 			return;
 		}
 		if (hasAttention(intent))

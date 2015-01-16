@@ -14,25 +14,19 @@
  */
 package com.xabber.android.ui.preferences;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.PatternSyntaxException;
-
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.widget.Toast;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.android.ui.helper.BaseSettingsActivity;
+import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-public class PhraseEditor extends BaseSettingsActivity {
+public class PhraseEditor extends ManagedActivity
+        implements PhraseEditorFragment.OnPhraseEditorFragmentInteractionListener {
 
 	private Phrase phrase;
 
@@ -40,90 +34,63 @@ public class PhraseEditor extends BaseSettingsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Integer index = getPhraseIndex(getIntent());
+        if (index == null) {
+            phrase = null;
+            setTitle(R.string.phrase_add);
+        } else {
+            phrase = PhraseManager.getInstance().getPhrase(index);
+            if (phrase == null) {
+                finish();
+                return;
+            }
+            String title = phrase.getText();
+            if ("".equals(title))
+                title = Application.getInstance().getString(
+                        R.string.phrase_empty);
+            setTitle(title);
+        }
+
+        setContentView(R.layout.activity_preferences);
+
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.preferences_activity_container, new PhraseEditorFragment()).commit();
+        }
+
+
     }
 
-    @Override
-	protected void onInflate(Bundle savedInstanceState) {
-		addPreferencesFromResource(R.xml.phrase_editor);
-		Integer index = getPhraseIndex(getIntent());
-		if (index == null) {
-			phrase = null;
-			setTitle(R.string.phrase_add);
-		} else {
-			phrase = PhraseManager.getInstance().getPhrase(index);
-			if (phrase == null) {
-				finish();
-				return;
-			}
-			String title = phrase.getText();
-			if ("".equals(title))
-				title = Application.getInstance().getString(
-						R.string.phrase_empty);
-			setTitle(title);
-		}
-	}
 
-	@Override
-	protected Map<String, Object> getValues() {
-		Map<String, Object> source = new HashMap<String, Object>();
-		putValue(source, R.string.phrase_text_key,
-				phrase == null ? "" : phrase.getText());
-		putValue(source, R.string.phrase_user_key,
-				phrase == null ? "" : phrase.getUser());
-		putValue(source, R.string.phrase_group_key, phrase == null ? ""
-				: phrase.getGroup());
-		putValue(source, R.string.phrase_regexp_key, phrase == null ? false
-				: phrase.isRegexp());
-		putValue(source, R.string.phrase_sound_key,
-				phrase == null ? Settings.System.DEFAULT_NOTIFICATION_URI
-						: phrase.getSound());
-		return source;
-	}
-
-	@Override
-	protected boolean setValues(Map<String, Object> source,
-			Map<String, Object> result) {
-		String text = getString(result, R.string.phrase_text_key);
-		String user = getString(result, R.string.phrase_user_key);
-		String group = getString(result, R.string.phrase_group_key);
-		boolean regexp = getBoolean(result, R.string.phrase_regexp_key);
-		Uri sound = getUri(result, R.string.phrase_sound_key);
-		if (regexp)
-			try {
-				Phrase.compile(text);
-				Phrase.compile(user);
-				Phrase.compile(group);
-			} catch (PatternSyntaxException e) {
-				Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-				return false;
-			}
-		if (phrase == null && "".equals(text) && "".equals(user)
-				&& "".equals(group))
-			return true;
-		PhraseManager.getInstance().updateOrCreatePhrase(phrase, text, user,
-				group, regexp, sound);
-		return true;
-	}
-
-	public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context) {
 		return createIntent(context, null);
 	}
 
-	public static Intent createIntent(Context context, Integer phraseIndex) {
-		SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<SegmentIntentBuilder<?>>(
-				context, PhraseEditor.class);
-		if (phraseIndex != null)
-			builder.addSegment(phraseIndex.toString());
-		return builder.build();
-	}
+    public static Intent createIntent(Context context, Integer phraseIndex) {
+        SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<>(
+                context, PhraseEditor.class);
+        if (phraseIndex != null)
+            builder.addSegment(phraseIndex.toString());
+        return builder.build();
+    }
 
-	private Integer getPhraseIndex(Intent intent) {
-		String value = SegmentIntentBuilder.getSegment(intent, 0);
-		if (value == null)
-			return null;
-		else
-			return Integer.valueOf(value);
-	}
+    private Integer getPhraseIndex(Intent intent) {
+        String value = SegmentIntentBuilder.getSegment(intent, 0);
+        if (value == null)
+            return null;
+        else
+            return Integer.valueOf(value);
+    }
 
+    @Override
+    public Phrase getPhrase() {
+        return phrase;
+    }
+
+    @Override
+    public void setPhrase(Phrase phrase) {
+        this.phrase = phrase;
+    }
 }

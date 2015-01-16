@@ -37,7 +37,7 @@
         android:label="@string/application_name"
         android:icon="@drawable/ic_launcher"
         android:name="com.xabber.android.data.Application"
-        android:theme="@style/Theme.Light"
+        android:theme="@style/Theme"
         android:allowBackup="true">
         <activity
             android:label="@string/application_name"
@@ -210,7 +210,7 @@
 
         <activity
             android:label="@string/chat_settings"
-            android:name="com.xabber.android.ui.ChatEditor"
+            android:name="com.xabber.android.ui.preferences.ChatEditor"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
 
@@ -222,7 +222,7 @@
 
         <activity
             android:label="@string/contact_viewer"
-            android:name="com.xabber.android.ui.ContactViewer"
+            android:name="com.xabber.android.ui.preferences.ContactViewer"
             android:icon="@drawable/ic_information"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >

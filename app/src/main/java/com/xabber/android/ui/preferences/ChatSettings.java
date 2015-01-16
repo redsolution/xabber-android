@@ -18,7 +18,7 @@ public class ChatSettings extends ManagedActivity {
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.chat_viewer)));
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

@@ -19,7 +19,7 @@ public class NotificationsSettings extends ManagedActivity {
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_events)));
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

@@ -39,7 +39,7 @@ public class PreferenceEditor extends ManagedActivity
                     .add(R.id.preferences_activity_container, new PreferencesFragment()).commit();
         }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Force request sound. This will set default value if not specified.
         SettingsManager.eventsSound();

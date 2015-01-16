@@ -99,7 +99,7 @@ public class QuestionViewer extends ManagedActivity implements
 		findViewById(R.id.cancel).setOnClickListener(this);
 		findViewById(R.id.send).setOnClickListener(this);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
