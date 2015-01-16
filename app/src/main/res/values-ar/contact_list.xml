@@ -109,5 +109,5 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_group_context_menu.png -->
     <string name="show_offline_settings">إظهار الأطراف الغير متصلة</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_boot.png -->
-    <string name="start_at_boot_suggest">هل تريد تشغيل Xabber عند بدء نظام التشغيل؟\nيمكن تغيير هذا الإعداد من "الإعدادات" → "إعدادات الاتصال" → "تشغيل عند البدء"</string>
+    <string name="start_at_boot_suggest">هل تريد تشغيل Xabber عند بدء نظام التشغيل؟\nيمكن تغيير هذا الإعداد من "الإعدادات" → "إعدادات الاتصال" → "تشغيل عند بدء النظام"</string>
 </resources>

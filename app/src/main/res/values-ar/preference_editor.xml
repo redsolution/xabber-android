@@ -105,7 +105,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Priority settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_start_at_boot">تشغيل عند البدء\nتشغيل التطبيق عند بدء نظام التشغيل Android. هذا الإعداد لن يعمل إذا تم تثبيت Xabber على بطاقة الذاكرة SD.</string>
+    <string name="connection_start_at_boot">تشغيل عند بدء النظام\nتشغيل التطبيق عند بدء نظام التشغيل Android. هذا الإعداد لن يعمل إذا تم تثبيت Xabber على بطاقة الذاكرة SD.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wake_lock">Prevent sleep mode\nWill reduce battery life</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
