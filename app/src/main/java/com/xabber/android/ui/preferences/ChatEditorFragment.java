@@ -30,6 +30,12 @@ public class ChatEditorFragment extends BaseSettingsFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        saveChanges();
+    }
+
+    @Override
     protected Map<String, Object> getValues() {
         Map<String, Object> map = new HashMap<>();
         String account = mListener.getAccount();

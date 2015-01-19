@@ -50,6 +50,12 @@ public class AccountEditorFragment extends BaseSettingsFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        saveChanges();
+    }
+
+    @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (getString(R.string.account_port_key).equals(preference.getKey()))
             try {

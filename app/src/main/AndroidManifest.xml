@@ -295,6 +295,16 @@
         </activity>
 
         <activity
+            android:name="com.xabber.android.ui.preferences.PhraseAdder"
+            android:parentActivityName="com.xabber.android.ui.preferences.PhraseList">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PhraseList" />
+        </activity>
+
+
+        <activity
             android:name="com.xabber.android.ui.ReconnectionActivity"
             />
         <activity

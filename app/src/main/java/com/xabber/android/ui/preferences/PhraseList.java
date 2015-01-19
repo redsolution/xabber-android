@@ -44,14 +44,14 @@ public class PhraseList extends BaseListEditor<Integer> {
     }
 
     @Override
-	protected Intent getAddIntent() {
-		return PhraseEditor.createIntent(this);
-	}
+    protected Intent getAddIntent() {
+        return PhraseAdder.createIntent(this);
+    }
 
-	@Override
-	protected Intent getEditIntent(Integer actionWith) {
-		return PhraseEditor.createIntent(this, actionWith);
-	}
+    @Override
+    protected Intent getEditIntent(Integer actionWith) {
+        return PhraseEditor.createIntent(this, actionWith);
+    }
 
 	@Override
 	protected int getRemoveTextResourceId() {

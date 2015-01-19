@@ -16,7 +16,8 @@ import com.xabber.android.ui.widget.RingtonePreference;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BaseSettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
+public abstract class BaseSettingsFragment extends PreferenceFragment
+        implements Preference.OnPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,12 +42,6 @@ public abstract class BaseSettingsFragment extends PreferenceFragment implements
                 onPreferenceChange(preference,
                         ((ListPreference) preference).getValue());
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        operation(Operation.save);
     }
 
     /**
@@ -189,7 +184,7 @@ public abstract class BaseSettingsFragment extends PreferenceFragment implements
         PreferenceScreen preferenceScreen = getPreferenceScreen();
         for (int index = 0; index < preferenceScreen.getPreferenceCount(); index++) {
             Preference preference = preferenceScreen.getPreference(index);
-            result.put(preference.getKey(), getPrefecence(preference, source));
+            result.put(preference.getKey(), getPreference(preference, source));
         }
         return result;
     }
@@ -201,11 +196,10 @@ public abstract class BaseSettingsFragment extends PreferenceFragment implements
      * @param source
      * @return
      */
-    protected Object getPrefecence(Preference preference,
-                                   Map<String, Object> source) {
-        if (preference instanceof PreferenceScreen)
+    protected Object getPreference(Preference preference, Map<String, Object> source) {
+        if (preference instanceof PreferenceScreen) {
             return null;
-        else if (preference instanceof EditTextPreference) {
+        } else if (preference instanceof EditTextPreference) {
             String value = ((EditTextPreference) preference).getText();
             if (source.get(preference.getKey()) instanceof Integer)
                 try {
@@ -233,5 +227,10 @@ public abstract class BaseSettingsFragment extends PreferenceFragment implements
      * @return Whether operation succeed.
      */
     protected abstract boolean setValues(Map<String, Object> source, Map<String, Object> result);
+
+
+    protected boolean saveChanges() {
+        return operation(Operation.save);
+    }
 
 }
