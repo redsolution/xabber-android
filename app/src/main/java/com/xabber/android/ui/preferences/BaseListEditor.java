@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui.helper;
+package com.xabber.android.ui.preferences;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -30,6 +30,7 @@ import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
+import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
 /**

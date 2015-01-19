@@ -22,7 +22,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.adapter.PhraseListAdapter;
-import com.xabber.android.ui.helper.BaseListEditor;
 import com.xabber.androiddev.R;
 
 public class PhraseList extends BaseListEditor<Integer> {

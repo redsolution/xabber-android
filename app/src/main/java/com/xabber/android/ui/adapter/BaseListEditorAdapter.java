@@ -21,7 +21,7 @@ import java.util.List;
 import android.app.Activity;
 import android.widget.BaseAdapter;
 
-import com.xabber.android.ui.helper.BaseListEditor;
+import com.xabber.android.ui.preferences.BaseListEditor;
 
 /**
  * This class manage abstract list for {@link BaseListEditor}.
