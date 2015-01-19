@@ -19,5 +19,5 @@
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
     <string name="phrase_text">Texte à rechercher</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_user">Partie du JID</string>
+    <string name="phrase_user">Partie serveur du JID</string>
 </resources>
