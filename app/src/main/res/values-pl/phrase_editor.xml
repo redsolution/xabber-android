@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="events_phrases_title">Słowa kluczowe</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_add">Dodaj frazę</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete">Usuń frazę</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete_confirm">Jesteś pewien, że chcesz usunąć frazę: %s?</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_empty">&lt; dowolny tekst &gt;</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_group">Członek grupy</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_regexp">Wyrażenie regularne</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_sound">Dźwięk\nWybierz dźwięk powiadomienia</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_text">Tekst do szukania</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_user">Identyfikator użytkownika (część przed @)</string>
+</resources>

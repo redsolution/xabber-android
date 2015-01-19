@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="CANNOT_ADD_TO_GROUP">Fel: kan inte lägga till i grupp</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->

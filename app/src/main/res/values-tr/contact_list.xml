@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
     <string name="accept_subscription">Bağlantıyı onayla</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_suggestion.png -->

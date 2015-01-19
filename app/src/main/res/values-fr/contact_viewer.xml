@@ -81,7 +81,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_parcel">Colis</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_dom">Domestique</string>
+    <string name="vcard_type_dom">Domicile</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_intl">International</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
@@ -111,7 +111,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_x400">X400</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="please_wait">Veuillez patienter...</string>
+    <string name="please_wait">Veuillez patienter…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="unknown">Inconnu</string>
 </resources>

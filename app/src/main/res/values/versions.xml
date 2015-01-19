@@ -14,7 +14,7 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <string name="application_name">@string/development_title</string>
-  <string name="application_version">@string/development_versions_88</string>
+  <string name="application_version">@string/development_versions_102</string>
   <string name="application_package">com.xabber.androiddev</string>
   <string name="client_name">Xabber</string>
 
@@ -102,6 +102,7 @@
   <string name="development_versions_82">0.9.30c</string>
   <string name="development_versions_86">0.9.30d</string>
   <string name="development_versions_88">0.9.30e</string>
+  <string name="development_versions_102">0.9.30f</string>
 
   <string name="production_versions_1">0.3.0 Alpha</string>
   <string name="production_versions_2">0.3.1 Alpha</string>

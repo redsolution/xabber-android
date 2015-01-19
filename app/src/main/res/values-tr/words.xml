@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
-    <string name="in10m">10 dakika sonra</string>
+    <string name="in10m">10 dakika içinde</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
-    <string name="in15m">15 dakika sonra</string>
+    <string name="in15m">15 dakika içinde</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
-    <string name="in1h">1 saat sonra</string>
+    <string name="in1h">1 saat içinde</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
-    <string name="in1m">1 dakika sonra</string>
+    <string name="in1m">1 dakika içinde</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
     <string name="in2m">2 dakika sonra</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
