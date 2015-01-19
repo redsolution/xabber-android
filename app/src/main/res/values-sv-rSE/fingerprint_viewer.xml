@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
     <string name="otr_fingerprint_description">Din motpart kan tillhandahålla sitt fingeravtryck som du kan jämföra med informationen nedan. Ni bör inte skicka denna information i chatt.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->

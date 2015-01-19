@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
     <string name="account_delete_confirm">Vill du verkligen radera kontot %s?\n(det kommer inte raderas från servern, bara från Xabber)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
