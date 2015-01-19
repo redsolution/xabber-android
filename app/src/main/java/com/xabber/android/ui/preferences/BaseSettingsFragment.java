@@ -44,9 +44,8 @@ public abstract class BaseSettingsFragment extends PreferenceFragment implements
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-
+    public void onPause() {
+        super.onPause();
         operation(Operation.save);
     }
 
