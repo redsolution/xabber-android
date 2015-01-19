@@ -44,8 +44,7 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 
 	private static final String SAVED_ACTION_WITH = "com.xabber.android.ui.BaseListActivity.SAVED_ACTION_WITH";
 
-	private static final int OPTION_MENU_ADD_ID = Menu.FIRST;
-	private static final int CONTEXT_MENU_DELETE_ID = 0x10;
+    private static final int CONTEXT_MENU_DELETE_ID = 0x10;
 	private static final int DIALOG_DELETE_ID = 0x100;
 
 	private T actionWith;
@@ -83,7 +82,9 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 	protected abstract void putSavedValue(Bundle bundle, String key,
 			T actionWith);
 
-	protected abstract int getAddTextResourceId();
+    protected abstract int getOptionsMenuId();
+
+    protected abstract int getAddActionId();
 
 	protected abstract Intent getAddIntent();
 
@@ -114,17 +115,15 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 			putSavedValue(outState, SAVED_ACTION_WITH, actionWith);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		menu.add(0, OPTION_MENU_ADD_ID, 0, getString(getAddTextResourceId()))
-                .setIcon(R.drawable.ic_add_white_24dp)
-				.setIntent(getAddIntent())
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(getOptionsMenuId(), menu);
+        menu.findItem(getAddActionId()).setIntent(getAddIntent());
+        return true;
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {

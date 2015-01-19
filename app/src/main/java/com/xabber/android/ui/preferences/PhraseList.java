@@ -35,11 +35,16 @@ public class PhraseList extends BaseListEditor<Integer> {
     }
 
     @Override
-	protected int getAddTextResourceId() {
-		return R.string.phrase_add;
-	}
+    protected int getOptionsMenuId() {
+        return R.menu.add_phrase;
+    }
 
-	@Override
+    @Override
+    protected int getAddActionId() {
+        return R.id.action_add_phrase;
+    }
+
+    @Override
 	protected Intent getAddIntent() {
 		return PhraseEditor.createIntent(this);
 	}
@@ -83,7 +88,7 @@ public class PhraseList extends BaseListEditor<Integer> {
 		bundle.putInt(key, actionWith);
 	}
 
-	public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context) {
 		return new Intent(context, PhraseList.class);
 	}
 

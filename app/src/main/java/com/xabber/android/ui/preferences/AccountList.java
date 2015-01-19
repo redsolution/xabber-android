@@ -49,11 +49,16 @@ public class AccountList extends BaseListEditor<String> implements
     }
 
     @Override
-	protected int getAddTextResourceId() {
-		return R.string.account_add;
-	}
+    protected int getOptionsMenuId() {
+        return R.menu.add_account;
+    }
 
-	@Override
+    @Override
+    protected int getAddActionId() {
+        return R.id.action_add_account;
+    }
+
+    @Override
 	protected Intent getAddIntent() {
 		return AccountAdd.createIntent(this);
 	}
@@ -142,7 +147,7 @@ public class AccountList extends BaseListEditor<String> implements
 		bundle.putString(key, actionWith);
 	}
 
-	public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context) {
 		return new Intent(context, AccountList.class);
 	}
 
