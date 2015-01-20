@@ -57,6 +57,7 @@ import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AbstractAvatarInflaterHelper;
 import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.android.ui.widget.PageSwitcher;
 import com.xabber.androiddev.R;
 

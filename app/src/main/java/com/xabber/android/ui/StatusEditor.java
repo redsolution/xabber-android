@@ -72,7 +72,7 @@ public class StatusEditor extends ManagedListActivity implements
 
 		setContentView(R.layout.status_editor);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
 		account = StatusEditor.getAccount(intent);

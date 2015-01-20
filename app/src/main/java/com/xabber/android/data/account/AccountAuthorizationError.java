@@ -19,7 +19,7 @@ import android.content.Intent;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
-import com.xabber.android.ui.AccountEditor;
+import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.androiddev.R;
 
 public class AccountAuthorizationError extends AccountRelated implements

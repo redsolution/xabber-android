@@ -24,7 +24,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -55,6 +54,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListene
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;

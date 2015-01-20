@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.preferences;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,25 +22,36 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.adapter.PhraseListAdapter;
-import com.xabber.android.ui.helper.BaseListEditor;
 import com.xabber.androiddev.R;
 
 public class PhraseList extends BaseListEditor<Integer> {
 
-	@Override
-	protected int getAddTextResourceId() {
-		return R.string.phrase_add;
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	protected Intent getAddIntent() {
-		return PhraseEditor.createIntent(this);
-	}
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	@Override
-	protected Intent getEditIntent(Integer actionWith) {
-		return PhraseEditor.createIntent(this, actionWith);
-	}
+    @Override
+    protected int getOptionsMenuId() {
+        return R.menu.add_phrase;
+    }
+
+    @Override
+    protected int getAddActionId() {
+        return R.id.action_add_phrase;
+    }
+
+    @Override
+    protected Intent getAddIntent() {
+        return PhraseAdder.createIntent(this);
+    }
+
+    @Override
+    protected Intent getEditIntent(Integer actionWith) {
+        return PhraseEditor.createIntent(this, actionWith);
+    }
 
 	@Override
 	protected int getRemoveTextResourceId() {
@@ -76,7 +87,7 @@ public class PhraseList extends BaseListEditor<Integer> {
 		bundle.putInt(key, actionWith);
 	}
 
-	public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context) {
 		return new Intent(context, PhraseList.class);
 	}
 

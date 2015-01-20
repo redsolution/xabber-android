@@ -39,6 +39,7 @@ import com.xabber.android.ui.adapter.ContactListState;
 import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
+import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.androiddev.R;
 
 public class ContactListFragment extends Fragment implements

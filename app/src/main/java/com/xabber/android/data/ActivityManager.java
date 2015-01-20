@@ -14,23 +14,20 @@
  */
 package com.xabber.android.data;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import com.xabber.android.ui.ContactList;
+import com.xabber.android.ui.LoadActivity;
+import com.xabber.androiddev.R;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.TypedArray;
-import android.os.Bundle;
-import android.widget.Toast;
-
-import com.xabber.android.data.SettingsManager.InterfaceTheme;
-import com.xabber.android.ui.ContactList;
-import com.xabber.android.ui.LoadActivity;
-import com.xabber.android.ui.PreferenceEditor;
-import com.xabber.androiddev.R;
 
 /**
  * Activity stack manager.
@@ -123,30 +120,14 @@ public class ActivityManager implements OnUnloadListener {
 		return false;
 	}
 
-	/**
-	 * Apply theme settings.
-	 * 
-	 * @param activity
-	 */
-	private void applyTheme(Activity activity) {
-		if (activity instanceof PreferenceEditor)
-			return;
-		TypedArray title = activity.getTheme().obtainStyledAttributes(
-				new int[] { android.R.attr.windowNoTitle,
-						android.R.attr.windowIsFloating });
-		boolean noTitle = title.getBoolean(0, false);
-		boolean isFloating = title.getBoolean(1, false);
-		title.recycle();
-		if (isFloating)
-			return;
-		InterfaceTheme theme = SettingsManager.interfaceTheme();
-		if (theme == SettingsManager.InterfaceTheme.light)
-			activity.setTheme(noTitle ? R.style.Theme_Light_NoTitleBar
-					: R.style.Theme_Light);
-		else if (theme == SettingsManager.InterfaceTheme.dark)
-			activity.setTheme(noTitle ? R.style.Theme_Dark_NoTitleBar
-					: R.style.Theme_Dark);
-	}
+    /**
+     * Apply theme settings.
+     *
+     * @param activity
+     */
+    private void applyTheme(Activity activity) {
+        activity.setTheme(R.style.Theme);
+    }
 
 	/**
 	 * Push activity to stack.
@@ -212,9 +193,9 @@ public class ActivityManager implements OnUnloadListener {
 				LogManager.i(this, "Wait for loading");
 			activity.startActivity(LoadActivity.createIntent(activity));
 		}
-		if (onErrorListener != null)
-			application
-					.removeUIListener(OnErrorListener.class, onErrorListener);
+		if (onErrorListener != null) {
+            application.removeUIListener(OnErrorListener.class, onErrorListener);
+        }
 		onErrorListener = new OnErrorListener() {
 			@Override
 			public void onError(final int resourceId) {

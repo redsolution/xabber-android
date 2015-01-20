@@ -26,4 +26,6 @@
     <string name="required">Required</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
     <string name="auto">Automatically</string>
+
+    <string name="save">Save</string>
 </resources>

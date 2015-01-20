@@ -16,7 +16,7 @@ package com.xabber.android.ui.helper;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -30,7 +30,7 @@ import com.xabber.android.data.ActivityManager;
  * @author alexander.ivanov
  * 
  */
-public abstract class ManagedListActivity extends FragmentActivity {
+public abstract class ManagedListActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

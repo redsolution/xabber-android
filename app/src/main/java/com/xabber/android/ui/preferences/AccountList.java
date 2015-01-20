@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.preferences;
 
 import java.util.Collection;
 
@@ -26,9 +26,11 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.ui.AccountAdd;
+import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
-import com.xabber.android.ui.helper.BaseListEditor;
+import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
 public class AccountList extends BaseListEditor<String> implements
@@ -40,15 +42,22 @@ public class AccountList extends BaseListEditor<String> implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts)));
     }
 
     @Override
-	protected int getAddTextResourceId() {
-		return R.string.account_add;
-	}
+    protected int getOptionsMenuId() {
+        return R.menu.add_account;
+    }
 
-	@Override
+    @Override
+    protected int getAddActionId() {
+        return R.id.action_add_account;
+    }
+
+    @Override
 	protected Intent getAddIntent() {
 		return AccountAdd.createIntent(this);
 	}
@@ -137,7 +146,7 @@ public class AccountList extends BaseListEditor<String> implements
 		bundle.putString(key, actionWith);
 	}
 
-	public static Intent createIntent(Context context) {
+    public static Intent createIntent(Context context) {
 		return new Intent(context, AccountList.class);
 	}
 

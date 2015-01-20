@@ -50,7 +50,7 @@ public class ChatList extends ManagedListActivity implements
 		setListAdapter(listAdapter);
 		getListView().setOnItemClickListener(this);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

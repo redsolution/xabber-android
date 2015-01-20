@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.preferences;
 
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +39,7 @@ public class AboutViewer extends ManagedActivity {
 		((TextView) findViewById(R.id.about_license))
 				.setMovementMethod(LinkMovementMethod.getInstance());
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
     private String getVersionName() {
