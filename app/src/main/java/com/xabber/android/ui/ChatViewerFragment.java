@@ -249,245 +249,206 @@ public class ChatViewerFragment implements OnCreateContextMenuListener {
 		return view;
 	}
 
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		final String account = chatMessageAdapter.getAccount();
-		final String user = chatMessageAdapter.getUser();
-		AbstractChat abstractChat = MessageManager.getInstance().getChat(
-				account, user);
-		if (abstractChat != null && abstractChat instanceof RoomChat) {
-			if (((RoomChat) abstractChat).getState() == RoomState.unavailable)
-				menu.add(R.string.muc_join)
-						.setIcon(android.R.drawable.ic_menu_add)
-						.setOnMenuItemClickListener(
-								new MenuItem.OnMenuItemClickListener() {
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final String account = chatMessageAdapter.getAccount();
+        final String user = chatMessageAdapter.getUser();
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
-									@Override
-									public boolean onMenuItemClick(MenuItem item) {
-										MUCManager.getInstance().joinRoom(
-												account, user, true);
-										return true;
-									}
+        getActivity().getMenuInflater().inflate(R.menu.chat, menu);
 
-								});
-			else
-				menu.add(R.string.muc_invite)
-						.setIcon(android.R.drawable.ic_menu_add)
-						.setIntent(
-								ContactList.createRoomInviteIntent(
-										getActivity(), account, user));
-		} else {
-			menu.add(R.string.contact_editor)
-					.setIcon(android.R.drawable.ic_menu_edit)
-					.setIntent(
-							ContactEditor.createIntent(getActivity(), account,
-									user));
-		}
-		menu.add(R.string.chat_list).setIcon(R.drawable.ic_menu_friendslist)
-				.setIntent(ChatList.createIntent(getActivity()));
-		menu.add(R.string.chat_settings)
-				.setIcon(android.R.drawable.ic_menu_preferences)
-				.setIntent(
-						ChatEditor.createIntent(getActivity(), account, user));
-		menu.add(R.string.show_history)
-				.setIcon(R.drawable.ic_menu_archive)
-				.setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
+        if (abstractChat != null && abstractChat instanceof RoomChat) {
+            if (((RoomChat) abstractChat).getState() == RoomState.unavailable) {
 
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								MessageManager.getInstance()
-										.requestToLoadLocalHistory(account,
-												user);
-								MessageArchiveManager.getInstance()
-										.requestHistory(account, user,
-												MINIMUM_MESSAGES_TO_LOAD, 0);
-								onChatChange(false);
-								return true;
-							}
+                MenuItem item = menu.findItem(R.id.action_join_conference);
+                item.setVisible(true);
+                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MUCManager.getInstance().joinRoom(account, user, true);
+                        return true;
+                    }});
+            } else {
+                menu.findItem(R.id.action_invite_to_chat).setVisible(true)
+                        .setIntent(ContactList.createRoomInviteIntent(getActivity(), account, user));
+            }
+        } else {
+            menu.findItem(R.id.action_edit_contact).setVisible(true)
+                    .setIntent(ContactEditor.createIntent(getActivity(), account, user));
+        }
+        menu.findItem(R.id.action_chat_list).setIntent(ChatList.createIntent(getActivity()));
 
-						});
-		if (abstractChat != null
-				&& abstractChat instanceof RoomChat
-				&& ((RoomChat) abstractChat).getState() != RoomState.unavailable) {
-			if (((RoomChat) abstractChat).getState() == RoomState.error)
-				menu.add(R.string.muc_edit)
-						.setIcon(android.R.drawable.ic_menu_edit)
-						.setIntent(
-								MUCEditor.createIntent(getActivity(), account,
-										user));
-			else
-				menu.add(R.string.muc_leave)
-						.setIcon(android.R.drawable.ic_menu_close_clear_cancel)
-						.setOnMenuItemClickListener(
-								new MenuItem.OnMenuItemClickListener() {
+        menu.findItem(R.id.action_chat_settings)
+                .setIntent(ChatEditor.createIntent(getActivity(), account, user));
 
-									@Override
-									public boolean onMenuItemClick(MenuItem item) {
-										MUCManager.getInstance().leaveRoom(
-												account, user);
-										MessageManager.getInstance().closeChat(
-												account, user);
-										NotificationManager.getInstance()
-												.removeMessageNotification(
-														account, user);
-										((ChatViewer) getActivity()).close();
-										return true;
-									}
+        menu.findItem(R.id.action_show_history).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
+                        MessageArchiveManager.getInstance()
+                                .requestHistory(account, user, MINIMUM_MESSAGES_TO_LOAD, 0);
+                        onChatChange(false);
+                        return true;
+                    }
+                });
 
-								});
-		} else {
-			menu.add(R.string.close_chat)
-					.setIcon(android.R.drawable.ic_menu_close_clear_cancel)
-					.setOnMenuItemClickListener(
-							new MenuItem.OnMenuItemClickListener() {
+        if (abstractChat != null && abstractChat instanceof RoomChat
+                && ((RoomChat) abstractChat).getState() != RoomState.unavailable) {
+            if (((RoomChat) abstractChat).getState() == RoomState.error) {
+                menu.findItem(R.id.action_authorization_settings).setVisible(true)
+                        .setIntent(MUCEditor.createIntent(getActivity(), account, user));
+            } else {
+                menu.findItem(R.id.action_leave_conference).setVisible(true).setOnMenuItemClickListener(
+                        new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                MUCManager.getInstance().leaveRoom(account, user);
+                                MessageManager.getInstance().closeChat(account, user);
+                                NotificationManager.getInstance()
+                                        .removeMessageNotification(account, user);
+                                ((ChatViewer) getActivity()).close();
+                                return true;
+                            }
+                        });
+            }
+        } else {
+            menu.findItem(R.id.action_close_chat).setVisible(true)
+                    .setOnMenuItemClickListener(
+                            new MenuItem.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    MessageManager.getInstance().closeChat(account, user);
+                                    NotificationManager.getInstance()
+                                            .removeMessageNotification(account, user);
+                                    ((ChatViewer) getActivity()).close();
+                                    return true;
+                                }
+                            });
+        }
 
-								@Override
-								public boolean onMenuItemClick(MenuItem item) {
-									MessageManager.getInstance().closeChat(
-											account, user);
-									NotificationManager.getInstance()
-											.removeMessageNotification(account,
-													user);
-									((ChatViewer) getActivity()).close();
-									return true;
-								}
+        menu.findItem(R.id.action_clear_text).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        inputView.setText("");
+                        return true;
+                    }
+                });
 
-							});
-		}
-		menu.add(R.string.clear_message)
-				.setIcon(R.drawable.ic_menu_stop)
-				.setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
+        menu.findItem(R.id.action_clear_history).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MessageManager.getInstance()
+                                .clearHistory(account, user);
+                        onChatChange(false);
+                        return false;
+                    }
+                });
 
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								inputView.setText("");
-								return true;
-							}
+        menu.findItem(R.id.action_export_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
 
-						});
-		menu.add(R.string.clear_history).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        ChatExportDialogFragment
+                                .newInstance(account, user)
+                                .show(getActivity().getSupportFragmentManager(),
+                                        "CHAT_EXPORT");
+                        return true;
+                    }
 
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						MessageManager.getInstance()
-								.clearHistory(account, user);
-						onChatChange(false);
-						return false;
-					}
+                });
+        if (abstractChat != null && abstractChat instanceof RegularChat) {
+            menu.findItem(R.id.action_call_attention).setOnMenuItemClickListener(
+                    new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            try {
+                                AttentionManager.getInstance().sendAttention(
+                                        account, user);
+                            } catch (NetworkException e) {
+                                Application.getInstance().onError(e);
+                            }
+                            return true;
+                        }
+                    });
+            SecurityLevel securityLevel = OTRManager.getInstance()
+                    .getSecurityLevel(abstractChat.getAccount(),
+                            abstractChat.getUser());
+            if (securityLevel == SecurityLevel.plain) {
+                menu.findItem(R.id.action_start_encryption).setVisible(true)
+                        .setEnabled(SettingsManager.securityOtrMode() != SecurityOtrMode.disabled)
+                        .setOnMenuItemClickListener(
+                                new MenuItem.OnMenuItemClickListener() {
 
-				});
-		menu.add(R.string.export_chat).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
+                                    @Override
+                                    public boolean onMenuItemClick(MenuItem item) {
+                                        try {
+                                            OTRManager.getInstance().startSession(account, user);
+                                        } catch (NetworkException e) {
+                                            Application.getInstance().onError(e);
+                                        }
+                                        return true;
+                                    }
+                                });
+            } else {
+                menu.findItem(R.id.action_restart_encryption).setVisible(true)
+                        .setOnMenuItemClickListener(
+                        new MenuItem.OnMenuItemClickListener() {
 
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						ChatExportDialogFragment
-								.newInstance(account, user)
-								.show(getActivity().getSupportFragmentManager(),
-										"CHAT_EXPORT");
-						return true;
-					}
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                try {
+                                    OTRManager.getInstance().refreshSession(
+                                            account, user);
+                                } catch (NetworkException e) {
+                                    Application.getInstance().onError(e);
+                                }
+                                return true;
+                            }
 
-				});
-		if (abstractChat != null && abstractChat instanceof RegularChat) {
-			menu.add(R.string.call_attention).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
+                        });
+            }
+            menu.findItem(R.id.action_stop_encryption)
+                    .setEnabled(securityLevel != SecurityLevel.plain)
+                    .setOnMenuItemClickListener(
+                            new MenuItem.OnMenuItemClickListener() {
 
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							try {
-								AttentionManager.getInstance().sendAttention(
-										account, user);
-							} catch (NetworkException e) {
-								Application.getInstance().onError(e);
-							}
-							return true;
-						}
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    try {
+                                        OTRManager.getInstance().endSession(account, user);
+                                    } catch (NetworkException e) {
+                                        Application.getInstance().onError(e);
+                                    }
+                                    return true;
+                                }
 
-					});
-			SecurityLevel securityLevel = OTRManager.getInstance()
-					.getSecurityLevel(abstractChat.getAccount(),
-							abstractChat.getUser());
-			SubMenu otrMenu = menu.addSubMenu(R.string.otr_encryption);
-			otrMenu.setHeaderTitle(R.string.otr_encryption);
-			if (securityLevel == SecurityLevel.plain)
-				otrMenu.add(R.string.otr_start)
-						.setEnabled(
-								SettingsManager.securityOtrMode() != SecurityOtrMode.disabled)
-						.setOnMenuItemClickListener(
-								new MenuItem.OnMenuItemClickListener() {
+                            });
 
-									@Override
-									public boolean onMenuItemClick(MenuItem item) {
-										try {
-											OTRManager
-													.getInstance()
-													.startSession(account, user);
-										} catch (NetworkException e) {
-											Application.getInstance()
-													.onError(e);
-										}
-										return true;
-									}
+            menu.findItem(R.id.action_verify_with_fingerprint)
+                    .setEnabled(securityLevel != SecurityLevel.plain)
+                    .setIntent(FingerprintViewer.createIntent(getActivity(), account, user));
 
-								});
-			else
-				otrMenu.add(R.string.otr_refresh).setOnMenuItemClickListener(
-						new MenuItem.OnMenuItemClickListener() {
+            menu.findItem(R.id.action_verify_with_question)
+                    .setEnabled(securityLevel != SecurityLevel.plain)
+                    .setIntent(QuestionViewer
+                            .createIntent(getActivity(), account, user, true, false, null));
 
-							@Override
-							public boolean onMenuItemClick(MenuItem item) {
-								try {
-									OTRManager.getInstance().refreshSession(
-											account, user);
-								} catch (NetworkException e) {
-									Application.getInstance().onError(e);
-								}
-								return true;
-							}
+            menu.findItem(R.id.action_verify_with_shared_secret)
+                    .setEnabled(securityLevel != SecurityLevel.plain)
+                    .setIntent(QuestionViewer
+                            .createIntent(getActivity(), account, user, false, false, null));
+        }
+        if (abstractChat != null && abstractChat instanceof RoomChat
+                && ((RoomChat) abstractChat).getState() == RoomState.available)
+            menu.findItem(R.id.action_list_of_occupants).setVisible(true).setIntent(
+                    OccupantList.createIntent(getActivity(), account, user));
+        return true;
+    }
 
-						});
-			otrMenu.add(R.string.otr_end)
-					.setEnabled(securityLevel != SecurityLevel.plain)
-					.setOnMenuItemClickListener(
-							new MenuItem.OnMenuItemClickListener() {
 
-								@Override
-								public boolean onMenuItemClick(MenuItem item) {
-									try {
-										OTRManager.getInstance().endSession(
-												account, user);
-									} catch (NetworkException e) {
-										Application.getInstance().onError(e);
-									}
-									return true;
-								}
-
-							});
-			otrMenu.add(R.string.otr_verify_fingerprint)
-					.setEnabled(securityLevel != SecurityLevel.plain)
-					.setIntent(
-							FingerprintViewer.createIntent(getActivity(),
-									account, user));
-			otrMenu.add(R.string.otr_verify_question)
-					.setEnabled(securityLevel != SecurityLevel.plain)
-					.setIntent(
-							QuestionViewer.createIntent(getActivity(), account,
-									user, true, false, null));
-			otrMenu.add(R.string.otr_verify_secret)
-					.setEnabled(securityLevel != SecurityLevel.plain)
-					.setIntent(
-							QuestionViewer.createIntent(getActivity(), account,
-									user, false, false, null));
-		}
-		if (abstractChat != null && abstractChat instanceof RoomChat
-				&& ((RoomChat) abstractChat).getState() == RoomState.available)
-			menu.add(R.string.occupant_list).setIntent(
-					OccupantList.createIntent(getActivity(), account, user));
-		return true;
-	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view,

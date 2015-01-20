@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_join_conference"
+        android:title="@string/muc_join"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="80"
+        android:visible="false"
+        android:icon="@drawable/ic_group_white_24dp"
+        />
+
+    <item android:id="@+id/action_invite_to_chat"
+        android:title="@string/muc_invite"
+        app:showAsAction="never"
+        android:orderInCategory="90"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_edit_contact"
+        android:title="@string/contact_editor"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="100"
+        android:visible="false"
+        android:icon="@drawable/ic_create_white_24dp"
+        />
+
+    <item android:id="@+id/action_chat_list"
+        android:title="@string/chat_list"
+        app:showAsAction="never"
+        android:orderInCategory="110"
+        />
+
+    <item android:id="@+id/action_chat_settings"
+        android:title="@string/chat_settings"
+        app:showAsAction="never"
+        android:orderInCategory="120"
+        />
+
+    <item android:id="@+id/action_show_history"
+        android:title="@string/show_history"
+        app:showAsAction="never"
+        android:orderInCategory="130"
+        />
+
+    <item android:id="@+id/action_authorization_settings"
+        android:title="@string/muc_edit"
+        app:showAsAction="never"
+        android:orderInCategory="133"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_leave_conference"
+        android:title="@string/muc_leave"
+        app:showAsAction="never"
+        android:orderInCategory="136"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_close_chat"
+        android:title="@string/close_chat"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="140"
+        android:visible="false"
+        android:icon="@drawable/ic_clear_white_24dp"
+        />
+
+    <item android:id="@+id/action_clear_text"
+        android:title="@string/clear_message"
+        app:showAsAction="never"
+        android:orderInCategory="150"
+        />
+
+    <item android:id="@+id/action_clear_history"
+        android:title="@string/clear_history"
+        app:showAsAction="never"
+        android:orderInCategory="160"
+        />
+
+    <item android:id="@+id/action_export_chat"
+        android:title="@string/export_chat"
+        app:showAsAction="never"
+        android:orderInCategory="170"
+        />
+
+    <item android:id="@+id/action_call_attention"
+        android:title="@string/call_attention"
+        app:showAsAction="never"
+        android:orderInCategory="180"
+        />
+
+    <item android:id="@+id/action_otr_encryption"
+        android:title="@string/otr_encryption"
+        app:showAsAction="never"
+        android:orderInCategory="190">
+
+        <menu>
+            <item android:id="@+id/action_start_encryption"
+                android:title="@string/otr_start"
+                app:showAsAction="never"
+                android:orderInCategory="100"
+                android:visible="false"
+                />
+
+            <item android:id="@+id/action_restart_encryption"
+                android:title="@string/otr_refresh"
+                app:showAsAction="never"
+                android:orderInCategory="105"
+                android:visible="false"
+                />
+
+            <item android:id="@+id/action_stop_encryption"
+                android:title="@string/otr_end"
+                app:showAsAction="never"
+                android:orderInCategory="110"
+                />
+
+            <item android:id="@+id/action_verify_with_fingerprint"
+                android:title="@string/otr_verify_fingerprint"
+                app:showAsAction="never"
+                android:orderInCategory="120"
+                />
+
+            <item android:id="@+id/action_verify_with_question"
+                android:title="@string/otr_verify_question"
+                app:showAsAction="never"
+                android:orderInCategory="130"
+                />
+
+            <item android:id="@+id/action_verify_with_shared_secret"
+                android:title="@string/otr_verify_secret"
+                app:showAsAction="never"
+                android:orderInCategory="140"
+                />
+        </menu>
+
+    </item>
+
+    <item android:id="@+id/action_list_of_occupants"
+        android:title="@string/occupant_list"
+        app:showAsAction="never"
+        android:orderInCategory="200"
+        android:visible="false"
+        />
+
+</menu>
