@@ -26,7 +26,7 @@ import org.apache.harmony.javax.security.auth.login.LoginException;
 public interface LoginModule {
 
     void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options);
+                    Map<String, ?> sharedState, Map<String, ?> options);
 
     boolean login() throws LoginException;
 

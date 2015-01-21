@@ -20,7 +20,6 @@ package org.apache.harmony.javax.security.auth.callback;
 import java.io.Serializable;
 
 
-
 public class ConfirmationCallback implements Callback, Serializable {
 
     private static final long serialVersionUID = -9095656433782481624L;
@@ -114,7 +113,7 @@ public class ConfirmationCallback implements Callback, Serializable {
     }
 
     public ConfirmationCallback(String prompt, int messageType, int optionType,
-            int defaultOption) {
+                                int defaultOption) {
         super();
         if (prompt == null || prompt.length() == 0) {
             throw new IllegalArgumentException("auth.14"); //$NON-NLS-1$
@@ -150,7 +149,7 @@ public class ConfirmationCallback implements Callback, Serializable {
     }
 
     public ConfirmationCallback(String prompt, int messageType, String[] options,
-            int defaultOption) {
+                                int defaultOption) {
         super();
         if (prompt == null || prompt.length() == 0) {
             throw new IllegalArgumentException("auth.14"); //$NON-NLS-1$

@@ -46,8 +46,7 @@ public class FromContainsFilter implements PacketFilter {
     public boolean accept(Packet packet) {
         if (packet.getFrom() == null) {
             return false;
-        }
-        else {
+        } else {
             return packet.getFrom().toLowerCase().indexOf(from) != -1;
         }
     }

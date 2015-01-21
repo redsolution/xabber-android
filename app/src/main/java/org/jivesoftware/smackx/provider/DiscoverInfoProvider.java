@@ -27,10 +27,10 @@ import org.jivesoftware.smackx.packet.DiscoverInfo;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
-* The DiscoverInfoProvider parses Service Discovery information packets.
-*
-* @author Gaston Dombiak
-*/
+ * The DiscoverInfoProvider parses Service Discovery information packets.
+ *
+ * @author Gaston Dombiak
+ */
 public class DiscoverInfoProvider implements IQProvider {
 
     public IQ parseIQ(XmlPullParser parser) throws Exception {
@@ -53,8 +53,7 @@ public class DiscoverInfoProvider implements IQProvider {
                     name = parser.getAttributeValue("", "name");
                     type = parser.getAttributeValue("", "type");
                     language = PacketParserUtils.getLanguageAttribute(parser);
-                }
-                else if (parser.getName().equals("feature")) {
+                } else if (parser.getName().equals("feature")) {
                     // Initialize the variables from the parsed XML
                     variable = parser.getAttributeValue("", "var");
                 }

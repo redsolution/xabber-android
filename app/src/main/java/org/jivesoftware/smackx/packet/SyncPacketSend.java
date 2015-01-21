@@ -24,20 +24,18 @@ import org.jivesoftware.smack.packet.Packet;
 /**
  * Utility class for doing synchronous calls to the server.  Provides several
  * methods for sending a packet to the server and waiting for the reply.
- * 
+ *
  * @author Robin Collier
  */
-final public class SyncPacketSend
-{
-	private SyncPacketSend()
-	{	}
-	
-	static public Packet getReply(Connection connection, Packet packet, long timeout)
-		throws XMPPException
-	{
+final public class SyncPacketSend {
+    private SyncPacketSend() {
+    }
+
+    static public Packet getReply(Connection connection, Packet packet, long timeout)
+            throws XMPPException {
         PacketFilter responseFilter = new PacketIDFilter(packet.getPacketID());
         PacketCollector response = connection.createPacketCollector(responseFilter);
-        
+
         connection.sendPacket(packet);
 
         // Wait up to a certain number of seconds for a reply.
@@ -48,16 +46,14 @@ final public class SyncPacketSend
 
         if (result == null) {
             throw new XMPPException("No response from server.");
-        }
-        else if (result.getError() != null) {
+        } else if (result.getError() != null) {
             throw new XMPPException(result.getError());
         }
         return result;
-	}
+    }
 
-	static public Packet getReply(Connection connection, Packet packet)
-		throws XMPPException
-	{
-		return getReply(connection, packet, SmackConfiguration.getPacketReplyTimeout());
-	}
+    static public Packet getReply(Connection connection, Packet packet)
+            throws XMPPException {
+        return getReply(connection, packet, SmackConfiguration.getPacketReplyTimeout());
+    }
 }

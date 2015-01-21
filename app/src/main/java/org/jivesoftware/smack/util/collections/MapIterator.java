@@ -44,7 +44,7 @@ import java.util.Iterator;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:19 $
  * @since Commons Collections 3.0
  */
-public interface MapIterator <K,V> extends Iterator<K> {
+public interface MapIterator<K, V> extends Iterator<K> {
 
     /**
      * Checks to see if there are more entries still to be iterated.
@@ -57,12 +57,12 @@ public interface MapIterator <K,V> extends Iterator<K> {
      * Gets the next <em>key</em> from the <code>Map</code>.
      *
      * @return the next key in the iteration
-     * @throws java.util.NoSuchElementException
-     *          if the iteration is finished
+     * @throws java.util.NoSuchElementException if the iteration is finished
      */
     K next();
 
     //-----------------------------------------------------------------------
+
     /**
      * Gets the current key, which is the key returned by the last call
      * to <code>next()</code>.
@@ -82,6 +82,7 @@ public interface MapIterator <K,V> extends Iterator<K> {
     V getValue();
 
     //-----------------------------------------------------------------------
+
     /**
      * Removes the last returned key from the underlying <code>Map</code> (optional operation).
      * <p/>

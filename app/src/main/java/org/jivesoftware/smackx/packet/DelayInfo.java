@@ -19,71 +19,63 @@ import org.jivesoftware.smack.util.StringUtils;
 
 /**
  * A decorator for the {@link DelayInformation} class to transparently support
- * both the new <b>Delay Delivery</b> specification <a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203</a> and 
+ * both the new <b>Delay Delivery</b> specification <a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203</a> and
  * the old one <a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091</a>.
- * 
- * Existing code can be backward compatible. 
- * 
+ * <p/>
+ * Existing code can be backward compatible.
+ *
  * @author Robin Collier
  */
-public class DelayInfo extends DelayInformation
-{
-    
-	DelayInformation wrappedInfo;
+public class DelayInfo extends DelayInformation {
 
-        /**
-         * Creates a new instance with given delay information. 
-         * @param delay the delay information
-         */
-	public DelayInfo(DelayInformation delay)
-	{
-		super(delay.getStamp());
-		wrappedInfo = delay;
-	}
-	
-	@Override
-	public String getFrom()
-	{
-		return wrappedInfo.getFrom();
-	}
+    DelayInformation wrappedInfo;
 
-	@Override
-	public String getReason()
-	{
-		return wrappedInfo.getReason();
-	}
+    /**
+     * Creates a new instance with given delay information.
+     *
+     * @param delay the delay information
+     */
+    public DelayInfo(DelayInformation delay) {
+        super(delay.getStamp());
+        wrappedInfo = delay;
+    }
 
-	@Override
-	public Date getStamp()
-	{
-		return wrappedInfo.getStamp();
-	}
+    @Override
+    public String getFrom() {
+        return wrappedInfo.getFrom();
+    }
 
-	@Override
-	public void setFrom(String from)
-	{
-		wrappedInfo.setFrom(from);
-	}
+    @Override
+    public String getReason() {
+        return wrappedInfo.getReason();
+    }
 
-	@Override
-	public void setReason(String reason)
-	{
-		wrappedInfo.setReason(reason);
-	}
+    @Override
+    public Date getStamp() {
+        return wrappedInfo.getStamp();
+    }
 
-	@Override
-	public String getElementName()
-	{
-		return "delay";
-	}
+    @Override
+    public void setFrom(String from) {
+        wrappedInfo.setFrom(from);
+    }
 
-	@Override
-	public String getNamespace()
-	{
-		return "urn:xmpp:delay";
-	}
+    @Override
+    public void setReason(String reason) {
+        wrappedInfo.setReason(reason);
+    }
 
-	@Override
+    @Override
+    public String getElementName() {
+        return "delay";
+    }
+
+    @Override
+    public String getNamespace() {
+        return "urn:xmpp:delay";
+    }
+
+    @Override
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
@@ -101,5 +93,5 @@ public class DelayInfo extends DelayInformation
         buf.append("</").append(getElementName()).append(">");
         return buf.toString();
     }
-	
+
 }

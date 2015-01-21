@@ -10,42 +10,41 @@ import com.xabber.androiddev.R;
 
 public class GroupDeleteDialogFragment extends ConfirmDialogFragment {
 
-	private static final String ACCOUNT = "ACCOUNT";
-	private static final String GROUP = "GROUP";
+    private static final String ACCOUNT = "ACCOUNT";
+    private static final String GROUP = "GROUP";
 
-	/**
-	 * @param account
-	 *            can be <code>null</code> to be used for all accounts.
-	 * @param group
-	 * @return
-	 */
-	public static DialogFragment newInstance(String account, String group) {
-		return new GroupDeleteDialogFragment().putAgrument(ACCOUNT, account)
-				.putAgrument(GROUP, group);
-	}
+    /**
+     * @param account can be <code>null</code> to be used for all accounts.
+     * @param group
+     * @return
+     */
+    public static DialogFragment newInstance(String account, String group) {
+        return new GroupDeleteDialogFragment().putAgrument(ACCOUNT, account)
+                .putAgrument(GROUP, group);
+    }
 
-	private String group;
-	private String account;
+    private String group;
+    private String account;
 
-	@Override
-	protected Builder getBuilder() {
-		group = getArguments().getString(GROUP);
-		account = getArguments().getString(ACCOUNT);
-		return new Builder(getActivity()).setMessage(getString(
-				R.string.group_remove_confirm, group));
-	}
+    @Override
+    protected Builder getBuilder() {
+        group = getArguments().getString(GROUP);
+        account = getArguments().getString(ACCOUNT);
+        return new Builder(getActivity()).setMessage(getString(
+                R.string.group_remove_confirm, group));
+    }
 
-	@Override
-	protected boolean onPositiveClick() {
-		try {
-			if (account == null)
-				RosterManager.getInstance().removeGroup(group);
-			else
-				RosterManager.getInstance().removeGroup(account, group);
-		} catch (NetworkException e) {
-			Application.getInstance().onError(e);
-		}
-		return true;
-	}
+    @Override
+    protected boolean onPositiveClick() {
+        try {
+            if (account == null)
+                RosterManager.getInstance().removeGroup(group);
+            else
+                RosterManager.getInstance().removeGroup(account, group);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+        return true;
+    }
 
 }

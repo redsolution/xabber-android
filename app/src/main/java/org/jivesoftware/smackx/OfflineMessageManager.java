@@ -44,7 +44,7 @@ import java.util.List;
  * becomes online. The server will not send a flood with all the offline messages to the session
  * that made the offline messages request or to any other session used by the user that becomes
  * online.<p>
- *
+ * <p/>
  * Once the session that made the offline messages request has been closed and the user becomes
  * offline in all the resources then the server will resume storing the messages offline and will
  * send all the offline messages to the user when he becomes online. Therefore, the server will
@@ -105,7 +105,7 @@ public class OfflineMessageManager {
      * the complete message or delete the specific message.
      *
      * @return an iterator on <tt>OfflineMessageHeader</tt> that keep information about the offline
-     *         message.
+     * message.
      * @throws XMPPException If the user is not allowed to make this request or the server does
      *                       not support offline message retrieval.
      */
@@ -113,7 +113,7 @@ public class OfflineMessageManager {
         List<OfflineMessageHeader> answer = new ArrayList<OfflineMessageHeader>();
         DiscoverItems items = ServiceDiscoveryManager.getInstanceFor(connection).discoverItems(
                 null, namespace);
-        for (Iterator it = items.getItems(); it.hasNext();) {
+        for (Iterator it = items.getItems(); it.hasNext(); ) {
             DiscoverItems.Item item = (DiscoverItems.Item) it.next();
             answer.add(new OfflineMessageHeader(item));
         }
@@ -128,7 +128,7 @@ public class OfflineMessageManager {
      *
      * @param nodes the list of stamps that uniquely identifies offline message.
      * @return an Iterator with the offline <tt>Messages</tt> that were received as part of
-     *         this request.
+     * this request.
      * @throws XMPPException If the user is not allowed to make this request or the server does
      *                       not support offline message retrieval.
      */

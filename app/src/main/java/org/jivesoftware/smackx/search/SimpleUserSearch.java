@@ -107,12 +107,10 @@ class SimpleUserSearch extends IQ {
 
             if (eventType == XmlPullParser.START_TAG && parser.getName().equals("item")) {
                 fields = new ArrayList<ReportedData.Field>();
-            }
-            else if (eventType == XmlPullParser.END_TAG && parser.getName().equals("item")) {
+            } else if (eventType == XmlPullParser.END_TAG && parser.getName().equals("item")) {
                 ReportedData.Row row = new ReportedData.Row(fields);
                 data.addRow(row);
-            }
-            else if (eventType == XmlPullParser.START_TAG) {
+            } else if (eventType == XmlPullParser.START_TAG) {
                 String name = parser.getName();
                 String value = parser.nextText();
 
@@ -135,8 +133,7 @@ class SimpleUserSearch extends IQ {
                     ReportedData.Column column = new ReportedData.Column(name, name, "text-single");
                     data.addColumn(column);
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }

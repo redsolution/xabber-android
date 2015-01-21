@@ -30,10 +30,10 @@ import org.jivesoftware.smackx.packet.XHTMLExtension;
 import java.util.Iterator;
 
 /**
- * Manages XHTML formatted texts within messages. A XHTMLManager provides a high level access to 
+ * Manages XHTML formatted texts within messages. A XHTMLManager provides a high level access to
  * get and set XHTML bodies to messages, enable and disable XHTML support and check if remote XMPP
- * clients support XHTML.   
- * 
+ * clients support XHTML.
+ *
  * @author Gaston Dombiak
  */
 public class XHTMLManager {
@@ -51,7 +51,7 @@ public class XHTMLManager {
     }
 
     /**
-     * Returns an Iterator for the XHTML bodies in the message. Returns null if 
+     * Returns an Iterator for the XHTML bodies in the message. Returns null if
      * the message does not contain an XHTML extension.
      *
      * @param message an XHTML message
@@ -69,7 +69,7 @@ public class XHTMLManager {
      * Adds an XHTML body to the message.
      *
      * @param message the message that will receive the XHTML body
-     * @param body the string to add as an XHTML body to the message
+     * @param body    the string to add as an XHTML body to the message
      */
     public static void addBody(Message message, String body) {
         XHTMLExtension xhtmlExtension = (XHTMLExtension) message.getExtension("html", namespace);
@@ -94,12 +94,12 @@ public class XHTMLManager {
 
     /**
      * Enables or disables the XHTML support on a given connection.<p>
-     *  
+     * <p/>
      * Before starting to send XHTML messages to a user, check that the user can handle XHTML
-     * messages. Enable the XHTML support to indicate that this client handles XHTML messages.  
+     * messages. Enable the XHTML support to indicate that this client handles XHTML messages.
      *
      * @param connection the connection where the service will be enabled or disabled
-     * @param enabled indicates if the service will be enabled or disabled 
+     * @param enabled    indicates if the service will be enabled or disabled
      */
     public synchronized static void setServiceEnabled(Connection connection, boolean enabled) {
         if (isServiceEnabled(connection) == enabled)
@@ -107,8 +107,7 @@ public class XHTMLManager {
 
         if (enabled) {
             ServiceDiscoveryManager.getInstanceFor(connection).addFeature(namespace);
-        }
-        else {
+        } else {
             ServiceDiscoveryManager.getInstanceFor(connection).removeFeature(namespace);
         }
     }
@@ -127,16 +126,15 @@ public class XHTMLManager {
      * Returns true if the specified user handles XHTML messages.
      *
      * @param connection the connection to use to perform the service discovery
-     * @param userID the user to check. A fully qualified xmpp ID, e.g. jdoe@example.com
+     * @param userID     the user to check. A fully qualified xmpp ID, e.g. jdoe@example.com
      * @return a boolean indicating whether the specified user handles XHTML messages
      */
     public static boolean isServiceEnabled(Connection connection, String userID) {
         try {
             DiscoverInfo result =
-                ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(userID);
+                    ServiceDiscoveryManager.getInstanceFor(connection).discoverInfo(userID);
             return result.containsFeature(namespace);
-        }
-        catch (XMPPException e) {
+        } catch (XMPPException e) {
             e.printStackTrace();
             return false;
         }

@@ -21,7 +21,7 @@ import org.jivesoftware.smackx.bytestreams.ibb.packet.Open;
 
 /**
  * InBandBytestreamRequest class handles incoming In-Band Bytestream requests.
- * 
+ *
  * @author Henning Staib
  */
 public class InBandBytestreamRequest implements BytestreamRequest {
@@ -36,14 +36,14 @@ public class InBandBytestreamRequest implements BytestreamRequest {
     private final InBandBytestreamManager manager;
 
     protected InBandBytestreamRequest(InBandBytestreamManager manager,
-                    Open byteStreamRequest) {
+                                      Open byteStreamRequest) {
         this.manager = manager;
         this.byteStreamRequest = byteStreamRequest;
     }
 
     /**
      * Returns the sender of the In-Band Bytestream open request.
-     * 
+     *
      * @return the sender of the In-Band Bytestream open request
      */
     public String getFrom() {
@@ -52,7 +52,7 @@ public class InBandBytestreamRequest implements BytestreamRequest {
 
     /**
      * Returns the session ID of the In-Band Bytestream open request.
-     * 
+     *
      * @return the session ID of the In-Band Bytestream open request
      */
     public String getSessionID() {
@@ -62,7 +62,7 @@ public class InBandBytestreamRequest implements BytestreamRequest {
     /**
      * Accepts the In-Band Bytestream open request and returns the session to
      * send/receive data.
-     * 
+     *
      * @return the session to send/receive data
      * @throws XMPPException if stream is invalid.
      */
@@ -71,7 +71,7 @@ public class InBandBytestreamRequest implements BytestreamRequest {
 
         // create In-Band Bytestream session and store it
         InBandBytestreamSession ibbSession = new InBandBytestreamSession(connection,
-                        this.byteStreamRequest, this.byteStreamRequest.getFrom());
+                this.byteStreamRequest, this.byteStreamRequest.getFrom());
         this.manager.getSessions().put(this.byteStreamRequest.getSessionID(), ibbSession);
 
         // acknowledge request

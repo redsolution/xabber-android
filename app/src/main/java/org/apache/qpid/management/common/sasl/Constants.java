@@ -21,8 +21,7 @@
 
 package org.apache.qpid.management.common.sasl;
 
-public class Constants
-{
+public class Constants {
 
     public final static String MECH_CRAMMD5 = "CRAM-MD5";
     public final static String MECH_PLAIN = "PLAIN";

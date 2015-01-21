@@ -31,7 +31,7 @@ import org.jivesoftware.smackx.bytestreams.socks5.packet.Bytestream;
  * listeners for a SOCKS5 bytestream request InitiationListener will always refuse the request and
  * reply with a &lt;not-acceptable/&gt; error (<a
  * href="http://xmpp.org/extensions/xep-0065.html#usecase-alternate">XEP-0065</a> Section 5.2.A2).
- * 
+ *
  * @author Henning Staib
  */
 final class InitiationListener implements PacketListener {
@@ -41,14 +41,14 @@ final class InitiationListener implements PacketListener {
 
     /* packet filter for all SOCKS5 Bytestream requests */
     private final PacketFilter initFilter = new AndFilter(new PacketTypeFilter(Bytestream.class),
-                    new IQTypeFilter(IQ.Type.SET));
+            new IQTypeFilter(IQ.Type.SET));
 
     /* executor service to process incoming requests concurrently */
     private final ExecutorService initiationListenerExecutor;
 
     /**
      * Constructor
-     * 
+     *
      * @param manager the SOCKS5 Bytestream manager
      */
     protected InitiationListener(Socks5BytestreamManager manager) {
@@ -75,15 +75,14 @@ final class InitiationListener implements PacketListener {
 
         // build bytestream request from packet
         Socks5BytestreamRequest request = new Socks5BytestreamRequest(this.manager,
-                        byteStreamRequest);
+                byteStreamRequest);
 
         // notify listeners for bytestream initiation from a specific user
         BytestreamListener userListener = this.manager.getUserListener(byteStreamRequest.getFrom());
         if (userListener != null) {
             userListener.incomingBytestreamRequest(request);
 
-        }
-        else if (!this.manager.getAllRequestListeners().isEmpty()) {
+        } else if (!this.manager.getAllRequestListeners().isEmpty()) {
             /*
              * if there is no user specific listener inform listeners for all initiation requests
              */
@@ -91,8 +90,7 @@ final class InitiationListener implements PacketListener {
                 listener.incomingBytestreamRequest(request);
             }
 
-        }
-        else {
+        } else {
             /*
              * if there is no listener for this initiation request, reply with reject message
              */
@@ -102,7 +100,7 @@ final class InitiationListener implements PacketListener {
 
     /**
      * Returns the packet filter for SOCKS5 Bytestream initialization requests.
-     * 
+     *
      * @return the packet filter for SOCKS5 Bytestream initialization requests
      */
     protected PacketFilter getFilter() {

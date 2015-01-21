@@ -19,18 +19,17 @@ import org.jivesoftware.smackx.bytestreams.BytestreamRequest;
 /**
  * InBandBytestreamListener are informed if a remote user wants to initiate an In-Band Bytestream.
  * Implement this interface to handle incoming In-Band Bytestream requests.
- * <p>
+ * <p/>
  * There are two ways to add this listener. See
  * {@link InBandBytestreamManager#addIncomingBytestreamListener(BytestreamListener)} and
  * {@link InBandBytestreamManager#addIncomingBytestreamListener(BytestreamListener, String)} for
  * further details.
- * 
+ *
  * @author Henning Staib
  */
 public abstract class InBandBytestreamListener implements BytestreamListener {
 
-    
-    
+
     public void incomingBytestreamRequest(BytestreamRequest request) {
         incomingBytestreamRequest((InBandBytestreamRequest) request);
     }
@@ -38,7 +37,7 @@ public abstract class InBandBytestreamListener implements BytestreamListener {
     /**
      * This listener is notified if an In-Band Bytestream request from another user has been
      * received.
-     * 
+     *
      * @param request the incoming In-Band Bytestream request
      */
     public abstract void incomingBytestreamRequest(InBandBytestreamRequest request);

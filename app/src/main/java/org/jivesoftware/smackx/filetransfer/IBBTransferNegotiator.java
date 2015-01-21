@@ -40,11 +40,11 @@ import org.jivesoftware.smackx.packet.StreamInitiation;
  * The In-Band Bytestream file transfer method, or IBB for short, transfers the
  * file over the same XML Stream used by XMPP. It is the fall-back mechanism in
  * case the SOCKS5 bytestream method of transferring files is not available.
- * 
+ *
  * @author Alexander Wenckus
  * @author Henning Staib
  * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band
- *      Bytestreams (IBB)</a>
+ * Bytestreams (IBB)</a>
  */
 public class IBBTransferNegotiator extends StreamNegotiator {
 
@@ -54,7 +54,7 @@ public class IBBTransferNegotiator extends StreamNegotiator {
 
     /**
      * The default constructor for the In-Band Bytestream Negotiator.
-     * 
+     *
      * @param connection The connection which this negotiator works on.
      */
     protected IBBTransferNegotiator(Connection connection) {
@@ -63,14 +63,14 @@ public class IBBTransferNegotiator extends StreamNegotiator {
     }
 
     public OutputStream createOutgoingStream(String streamID, String initiator,
-                    String target) throws XMPPException {
+                                             String target) throws XMPPException {
         InBandBytestreamSession session = this.manager.establishSession(target, streamID);
         session.setCloseBothStreamsEnabled(true);
         return session.getOutputStream();
     }
 
     public InputStream createIncomingStream(StreamInitiation initiation)
-                    throws XMPPException {
+            throws XMPPException {
         /*
          * In-Band Bytestream initiation listener must ignore next in-band
          * bytestream request with given session ID
@@ -93,13 +93,13 @@ public class IBBTransferNegotiator extends StreamNegotiator {
     }
 
     public String[] getNamespaces() {
-        return new String[] { InBandBytestreamManager.NAMESPACE };
+        return new String[]{InBandBytestreamManager.NAMESPACE};
     }
 
     InputStream negotiateIncomingStream(Packet streamInitiation) throws XMPPException {
         // build In-Band Bytestream request
         InBandBytestreamRequest request = new ByteStreamRequest(this.manager,
-                        (Open) streamInitiation);
+                (Open) streamInitiation);
 
         // always accept the request
         InBandBytestreamSession session = request.accept();
@@ -132,7 +132,7 @@ public class IBBTransferNegotiator extends StreamNegotiator {
 
                 // packet must by of type SET and contains the given session ID
                 return this.sessionID.equals(bytestream.getSessionID())
-                                && IQ.Type.SET.equals(bytestream.getType());
+                        && IQ.Type.SET.equals(bytestream.getType());
             }
             return false;
         }

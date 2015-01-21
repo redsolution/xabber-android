@@ -20,7 +20,7 @@ import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager;
 /**
  * Represents a chunk of data of an In-Band Bytestream within an IQ stanza or a
  * message stanza
- * 
+ *
  * @author Henning Staib
  */
 public class DataPacketExtension implements PacketExtension {
@@ -43,10 +43,10 @@ public class DataPacketExtension implements PacketExtension {
 
     /**
      * Creates a new In-Band Bytestream data packet.
-     * 
+     *
      * @param sessionID unique session ID identifying this In-Band Bytestream
-     * @param seq sequence of this packet in regard to the other data packets
-     * @param data the base64 encoded data contained in this packet
+     * @param seq       sequence of this packet in regard to the other data packets
+     * @param data      the base64 encoded data contained in this packet
      */
     public DataPacketExtension(String sessionID, long seq, String data) {
         if (sessionID == null || "".equals(sessionID)) {
@@ -65,7 +65,7 @@ public class DataPacketExtension implements PacketExtension {
 
     /**
      * Returns the unique session ID identifying this In-Band Bytestream.
-     * 
+     *
      * @return the unique session ID identifying this In-Band Bytestream
      */
     public String getSessionID() {
@@ -74,7 +74,7 @@ public class DataPacketExtension implements PacketExtension {
 
     /**
      * Returns the sequence of this packet in regard to the other data packets.
-     * 
+     *
      * @return the sequence of this packet in regard to the other data packets.
      */
     public long getSeq() {
@@ -83,7 +83,7 @@ public class DataPacketExtension implements PacketExtension {
 
     /**
      * Returns the data contained in this packet.
-     * 
+     *
      * @return the data contained in this packet.
      */
     public String getData() {
@@ -92,13 +92,13 @@ public class DataPacketExtension implements PacketExtension {
 
     /**
      * Returns the decoded data or null if data could not be decoded.
-     * <p>
+     * <p/>
      * The encoded data is invalid if it contains bad Base64 input characters or
      * if it contains the pad ('=') character on a position other than the last
      * character(s) of the data. See <a
      * href="http://xmpp.org/extensions/xep-0047.html#sec">XEP-0047</a> Section
      * 6.
-     * 
+     *
      * @return the decoded data
      */
     public byte[] getDecodedData() {

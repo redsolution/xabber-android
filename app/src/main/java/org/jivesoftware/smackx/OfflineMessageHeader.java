@@ -25,7 +25,7 @@ import org.jivesoftware.smackx.packet.DiscoverItems;
 /**
  * The OfflineMessageHeader holds header information of an offline message. The header
  * information was retrieved using the {@link OfflineMessageManager} class.<p>
- *
+ * <p/>
  * Each offline message is identified by the target user of the offline message and a unique stamp.
  * Use {@link OfflineMessageManager#getMessages(java.util.List)} to retrieve the whole message.
  *

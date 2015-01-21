@@ -18,37 +18,32 @@ package com.novell.sasl.client;
  * Implements the ParsedDirective class which will be used in the
  * DigestMD5SaslClient mechanism.
  */
-class ParsedDirective
-{
-    public static final int  QUOTED_STRING_VALUE = 1;
-    public static final int  TOKEN_VALUE         = 2;
+class ParsedDirective {
+    public static final int QUOTED_STRING_VALUE = 1;
+    public static final int TOKEN_VALUE = 2;
 
-    private int     m_valueType;
-    private String  m_name;
-    private String  m_value;
+    private int m_valueType;
+    private String m_name;
+    private String m_value;
 
     ParsedDirective(
-        String  name,
-        String  value,
-        int     type)
-    {
+            String name,
+            String value,
+            int type) {
         m_name = name;
         m_value = value;
         m_valueType = type;
     }
 
-    String getValue()
-    {
+    String getValue() {
         return m_value;
     }
 
-    String getName()
-    {
+    String getName() {
         return m_name;
     }
 
-    int getValueType()
-    {
+    int getValueType() {
         return m_valueType;
     }
 

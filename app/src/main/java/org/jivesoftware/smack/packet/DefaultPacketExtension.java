@@ -26,11 +26,11 @@ import java.util.*;
  * Default implementation of the PacketExtension interface. Unless a PacketExtensionProvider
  * is registered with {@link org.jivesoftware.smack.provider.ProviderManager ProviderManager},
  * instances of this class will be returned when getting packet extensions.<p>
- *
+ * <p/>
  * This class provides a very simple representation of an XML sub-document. Each element
  * is a key in a Map with its CDATA being the value. For example, given the following
  * XML sub-document:
- *
+ * <p/>
  * <pre>
  * &lt;foo xmlns="http://bar.com"&gt;
  *     &lt;color&gt;blue&lt;/color&gt;
@@ -48,20 +48,20 @@ public class DefaultPacketExtension implements PacketExtension {
 
     private String elementName;
     private String namespace;
-    private Map<String,String> map;
+    private Map<String, String> map;
 
     /**
      * Creates a new generic packet extension.
      *
      * @param elementName the name of the element of the XML sub-document.
-     * @param namespace the namespace of the element.
+     * @param namespace   the namespace of the element.
      */
     public DefaultPacketExtension(String elementName, String namespace) {
         this.elementName = elementName;
         this.namespace = namespace;
     }
 
-     /**
+    /**
      * Returns the XML element name of the extension sub-packet root element.
      *
      * @return the XML element name of the packet extension.
@@ -102,7 +102,7 @@ public class DefaultPacketExtension implements PacketExtension {
         if (map == null) {
             return Collections.emptySet();
         }
-        return Collections.unmodifiableSet(new HashMap<String,String>(map).keySet());
+        return Collections.unmodifiableSet(new HashMap<String, String>(map).keySet());
     }
 
     /**
@@ -121,12 +121,12 @@ public class DefaultPacketExtension implements PacketExtension {
     /**
      * Sets a packet extension value using the given name.
      *
-     * @param name the name.
+     * @param name  the name.
      * @param value the value.
      */
     public synchronized void setValue(String name, String value) {
         if (map == null) {
-            map = new HashMap<String,String>();
+            map = new HashMap<String, String>();
         }
         map.put(name, value);
     }

@@ -17,43 +17,36 @@ import org.jivesoftware.smack.packet.PacketExtension;
 
 /**
  * Represents a <b>Header</b> entry as specified by the <a href="http://xmpp.org/extensions/xep-031.html">Stanza Headers and Internet Metadata (SHIM)</a>
-
+ *
  * @author Robin Collier
  */
-public class Header implements PacketExtension
-{
-	private String name;
-	private String value;
-	
-	public Header(String name, String value)
-	{
-		this.name = name;
-		this.value = value;
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
+public class Header implements PacketExtension {
+    private String name;
+    private String value;
 
-	public String getValue()
-	{
-		return value;
-	}
+    public Header(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
-	public String getElementName()
-	{
-		return "header";
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getNamespace()
-	{
-		return HeadersExtension.NAMESPACE;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public String toXML()
-	{
-		return "<header name='" + name + "'>" + value + "</header>";
-	}
+    public String getElementName() {
+        return "header";
+    }
+
+    public String getNamespace() {
+        return HeadersExtension.NAMESPACE;
+    }
+
+    public String toXML() {
+        return "<header name='" + name + "'>" + value + "</header>";
+    }
 
 }

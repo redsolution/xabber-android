@@ -28,7 +28,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 /**
  * The MUCOwnerProvider parses MUCOwner packets. (@see MUCOwner)
- * 
+ *
  * @author Gaston Dombiak
  */
 public class MUCOwnerProvider implements IQProvider {
@@ -41,8 +41,7 @@ public class MUCOwnerProvider implements IQProvider {
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("item")) {
                     mucOwner.addItem(parseItem(parser));
-                }
-                else if (parser.getName().equals("destroy")) {
+                } else if (parser.getName().equals("destroy")) {
                     mucOwner.setDestroy(parseDestroy(parser));
                 }
                 // Otherwise, it must be a packet extension.
@@ -50,8 +49,7 @@ public class MUCOwnerProvider implements IQProvider {
                     mucOwner.addExtension(PacketParserUtils.parsePacketExtension(parser.getName(),
                             parser.getNamespace(), parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }
@@ -76,8 +74,7 @@ public class MUCOwnerProvider implements IQProvider {
                 if (parser.getName().equals("reason")) {
                     item.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("item")) {
                     done = true;
                 }
@@ -96,8 +93,7 @@ public class MUCOwnerProvider implements IQProvider {
                 if (parser.getName().equals("reason")) {
                     destroy.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("destroy")) {
                     done = true;
                 }

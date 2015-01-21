@@ -51,7 +51,7 @@ public class IncomingFileTransfer extends FileTransfer {
     private InputStream inputStream;
 
     protected IncomingFileTransfer(FileTransferRequest request,
-            FileTransferNegotiator transferNegotiator) {
+                                   FileTransferNegotiator transferNegotiator) {
         super(request.getRequestor(), request.getStreamID(), transferNegotiator);
         this.recieveRequest = request;
     }
@@ -71,8 +71,7 @@ public class IncomingFileTransfer extends FileTransfer {
 
         try {
             inputStream = negotiateStream();
-        }
-        catch (XMPPException e) {
+        } catch (XMPPException e) {
             setException(e);
             throw e;
         }
@@ -104,8 +103,7 @@ public class IncomingFileTransfer extends FileTransfer {
             if (!file.exists()) {
                 try {
                     file.createNewFile();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     throw new XMPPException(
                             "Could not create file to write too", e);
                 }
@@ -113,8 +111,7 @@ public class IncomingFileTransfer extends FileTransfer {
             if (!file.canWrite()) {
                 throw new IllegalArgumentException("Cannot write to provided file");
             }
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("File cannot be null");
         }
 
@@ -122,8 +119,7 @@ public class IncomingFileTransfer extends FileTransfer {
             public void run() {
                 try {
                     inputStream = negotiateStream();
-                }
-                catch (XMPPException e) {
+                } catch (XMPPException e) {
                     handleXMPPException(e);
                     return;
                 }
@@ -133,13 +129,11 @@ public class IncomingFileTransfer extends FileTransfer {
                     outputStream = new FileOutputStream(file);
                     setStatus(Status.in_progress);
                     writeToStream(inputStream, outputStream);
-                }
-                catch (XMPPException e) {
+                } catch (XMPPException e) {
                     setStatus(Status.error);
                     setError(Error.stream);
                     setException(e);
-                }
-                catch (FileNotFoundException e) {
+                } catch (FileNotFoundException e) {
                     setStatus(Status.error);
                     setError(Error.bad_file);
                     setException(e);
@@ -151,16 +145,14 @@ public class IncomingFileTransfer extends FileTransfer {
                 if (inputStream != null) {
                     try {
                         inputStream.close();
-                    }
-                    catch (Throwable io) {
+                    } catch (Throwable io) {
                         /* Ignore */
                     }
                 }
                 if (outputStream != null) {
                     try {
                         outputStream.close();
-                    }
-                    catch (Throwable io) {
+                    } catch (Throwable io) {
                         /* Ignore */
                     }
                 }
@@ -191,17 +183,13 @@ public class IncomingFileTransfer extends FileTransfer {
         InputStream inputStream;
         try {
             inputStream = streamNegotiatorTask.get(15, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new XMPPException("Interruption while executing", e);
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             throw new XMPPException("Error in execution", e);
-        }
-        catch (TimeoutException e) {
+        } catch (TimeoutException e) {
             throw new XMPPException("Request timed out", e);
-        }
-        finally {
+        } finally {
             streamNegotiatorTask.cancel(true);
         }
         setStatus(Status.negotiated);

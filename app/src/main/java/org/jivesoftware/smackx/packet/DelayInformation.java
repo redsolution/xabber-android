@@ -28,14 +28,14 @@ import java.util.TimeZone;
 import org.jivesoftware.smack.packet.PacketExtension;
 
 /**
- * Represents timestamp information about data stored for later delivery. A DelayInformation will 
- * always includes the timestamp when the packet was originally sent and may include more 
+ * Represents timestamp information about data stored for later delivery. A DelayInformation will
+ * always includes the timestamp when the packet was originally sent and may include more
  * information such as the JID of the entity that originally sent the packet as well as the reason
  * for the delay.<p>
- * 
+ * <p/>
  * For more information see <a href="http://xmpp.org/extensions/xep-0091.html">XEP-0091</a>
  * and <a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203</a>.
- * 
+ *
  * @author Gaston Dombiak
  */
 public class DelayInformation implements PacketExtension {
@@ -44,12 +44,13 @@ public class DelayInformation implements PacketExtension {
      * Date format according to the obsolete XEP-0091 specification.
      * XEP-0091 recommends to use this old format for date-time instead of
      * the one specified in XEP-0082.
-     * <p>
+     * <p/>
      * Date formats are not synchronized. Since multiple threads access the format concurrently,
-     * it must be synchronized externally. 
+     * it must be synchronized externally.
      */
     public static final DateFormat XEP_0091_UTC_FORMAT = new SimpleDateFormat(
             "yyyyMMdd'T'HH:mm:ss");
+
     static {
         XEP_0091_UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -59,7 +60,8 @@ public class DelayInformation implements PacketExtension {
     private String reason;
 
     /**
-     * Creates a new instance with the specified timestamp. 
+     * Creates a new instance with the specified timestamp.
+     *
      * @param stamp the timestamp
      */
     public DelayInformation(Date stamp) {
@@ -68,20 +70,20 @@ public class DelayInformation implements PacketExtension {
     }
 
     /**
-     * Returns the JID of the entity that originally sent the packet or that delayed the 
+     * Returns the JID of the entity that originally sent the packet or that delayed the
      * delivery of the packet or <tt>null</tt> if this information is not available.
-     * 
-     * @return the JID of the entity that originally sent the packet or that delayed the 
-     *         delivery of the packet.
+     *
+     * @return the JID of the entity that originally sent the packet or that delayed the
+     * delivery of the packet.
      */
     public String getFrom() {
         return from;
     }
 
     /**
-     * Sets the JID of the entity that originally sent the packet or that delayed the 
+     * Sets the JID of the entity that originally sent the packet or that delayed the
      * delivery of the packet or <tt>null</tt> if this information is not available.
-     * 
+     *
      * @param from the JID of the entity that originally sent the packet.
      */
     public void setFrom(String from) {
@@ -89,9 +91,9 @@ public class DelayInformation implements PacketExtension {
     }
 
     /**
-     * Returns the timestamp when the packet was originally sent. The returned Date is 
+     * Returns the timestamp when the packet was originally sent. The returned Date is
      * be understood as UTC.
-     * 
+     *
      * @return the timestamp when the packet was originally sent.
      */
     public Date getStamp() {
@@ -99,9 +101,9 @@ public class DelayInformation implements PacketExtension {
     }
 
     /**
-     * Returns a natural-language description of the reason for the delay or <tt>null</tt> if 
+     * Returns a natural-language description of the reason for the delay or <tt>null</tt> if
      * this information is not available.
-     * 
+     *
      * @return a natural-language description of the reason for the delay or <tt>null</tt>.
      */
     public String getReason() {
@@ -109,9 +111,9 @@ public class DelayInformation implements PacketExtension {
     }
 
     /**
-     * Sets a natural-language description of the reason for the delay or <tt>null</tt> if 
+     * Sets a natural-language description of the reason for the delay or <tt>null</tt> if
      * this information is not available.
-     * 
+     *
      * @param reason a natural-language description of the reason for the delay or <tt>null</tt>.
      */
     public void setReason(String reason) {

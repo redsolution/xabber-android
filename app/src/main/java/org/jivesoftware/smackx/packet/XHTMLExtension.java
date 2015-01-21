@@ -28,12 +28,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * An XHTML sub-packet, which is used by XMPP clients to exchange formatted text. The XHTML 
+ * An XHTML sub-packet, which is used by XMPP clients to exchange formatted text. The XHTML
  * extension is only a subset of XHTML 1.0.<p>
- * 
+ * <p/>
  * The following link summarizes the requirements of XHTML IM:
  * <a href="http://www.jabber.org/jeps/jep-0071.html#sect-id2598018">Valid tags</a>.<p>
- * 
+ * <p/>
  * Warning: this is an non-standard protocol documented by
  * <a href="http://www.jabber.org/jeps/jep-0071.html">JEP-71</a>. Because this is a
  * non-standard protocol, it is subject to change.
@@ -45,16 +45,16 @@ public class XHTMLExtension implements PacketExtension {
     private List bodies = new ArrayList();
 
     /**
-    * Returns the XML element name of the extension sub-packet root element.
-    * Always returns "html"
-    *
-    * @return the XML element name of the packet extension.
-    */
+     * Returns the XML element name of the extension sub-packet root element.
+     * Always returns "html"
+     *
+     * @return the XML element name of the packet extension.
+     */
     public String getElementName() {
         return "html";
     }
 
-    /** 
+    /**
      * Returns the XML namespace of the extension sub-packet root element.
      * According the specification the namespace is always "http://jabber.org/protocol/xhtml-im"
      *
@@ -66,7 +66,7 @@ public class XHTMLExtension implements PacketExtension {
 
     /**
      * Returns the XML representation of a XHTML extension according the specification.
-     * 
+     * <p/>
      * Usually the XML representation will be inside of a Message XML representation like
      * in the following example:
      * <pre>
@@ -78,14 +78,13 @@ public class XHTMLExtension implements PacketExtension {
      *     &lt;/html&gt;
      * &lt;/message&gt;
      * </pre>
-     * 
      */
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
-            "\">");
+                "\">");
         // Loop through all the bodies and append them to the string buffer
-        for (Iterator i = getBodies(); i.hasNext();) {
+        for (Iterator i = getBodies(); i.hasNext(); ) {
             buf.append((String) i.next());
         }
         buf.append("</").append(getElementName()).append(">");

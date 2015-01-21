@@ -24,35 +24,35 @@ import java.util.*;
 
 /**
  * Represents a XMPP error sub-packet. Typically, a server responds to a request that has
- * problems by sending the packet back and including an error packet. Each error has a code, type, 
+ * problems by sending the packet back and including an error packet. Each error has a code, type,
  * error condition as well as as an optional text explanation. Typical errors are:<p>
- *
+ * <p/>
  * <table border=1>
- *      <hr><td><b>Code</b></td><td><b>XMPP Error</b></td><td><b>Type</b></td></hr>
- *      <tr><td>500</td><td>interna-server-error</td><td>WAIT</td></tr>
- *      <tr><td>403</td><td>forbidden</td><td>AUTH</td></tr>
- *      <tr><td>400</td<td>bad-request</td><td>MODIFY</td>></tr>
- *      <tr><td>404</td><td>item-not-found</td><td>CANCEL</td></tr>
- *      <tr><td>409</td><td>conflict</td><td>CANCEL</td></tr>
- *      <tr><td>501</td><td>feature-not-implemented</td><td>CANCEL</td></tr>
- *      <tr><td>302</td><td>gone</td><td>MODIFY</td></tr>
- *      <tr><td>400</td><td>jid-malformed</td><td>MODIFY</td></tr>
- *      <tr><td>406</td><td>no-acceptable</td><td> MODIFY</td></tr>
- *      <tr><td>405</td><td>not-allowed</td><td>CANCEL</td></tr>
- *      <tr><td>401</td><td>not-authorized</td><td>AUTH</td></tr>
- *      <tr><td>402</td><td>payment-required</td><td>AUTH</td></tr>
- *      <tr><td>404</td><td>recipient-unavailable</td><td>WAIT</td></tr>
- *      <tr><td>302</td><td>redirect</td><td>MODIFY</td></tr>
- *      <tr><td>407</td><td>registration-required</td><td>AUTH</td></tr>
- *      <tr><td>404</td><td>remote-server-not-found</td><td>CANCEL</td></tr>
- *      <tr><td>504</td><td>remote-server-timeout</td><td>WAIT</td></tr>
- *      <tr><td>502</td><td>remote-server-error</td><td>CANCEL</td></tr>
- *      <tr><td>500</td><td>resource-constraint</td><td>WAIT</td></tr>
- *      <tr><td>503</td><td>service-unavailable</td><td>CANCEL</td></tr>
- *      <tr><td>407</td><td>subscription-required</td><td>AUTH</td></tr>
- *      <tr><td>500</td><td>undefined-condition</td><td>WAIT</td></tr>
- *      <tr><td>400</td><td>unexpected-condition</td><td>WAIT</td></tr>
- *      <tr><td>408</td><td>request-timeout</td><td>CANCEL</td></tr>
+ * <hr><td><b>Code</b></td><td><b>XMPP Error</b></td><td><b>Type</b></td></hr>
+ * <tr><td>500</td><td>interna-server-error</td><td>WAIT</td></tr>
+ * <tr><td>403</td><td>forbidden</td><td>AUTH</td></tr>
+ * <tr><td>400</td<td>bad-request</td><td>MODIFY</td>></tr>
+ * <tr><td>404</td><td>item-not-found</td><td>CANCEL</td></tr>
+ * <tr><td>409</td><td>conflict</td><td>CANCEL</td></tr>
+ * <tr><td>501</td><td>feature-not-implemented</td><td>CANCEL</td></tr>
+ * <tr><td>302</td><td>gone</td><td>MODIFY</td></tr>
+ * <tr><td>400</td><td>jid-malformed</td><td>MODIFY</td></tr>
+ * <tr><td>406</td><td>no-acceptable</td><td> MODIFY</td></tr>
+ * <tr><td>405</td><td>not-allowed</td><td>CANCEL</td></tr>
+ * <tr><td>401</td><td>not-authorized</td><td>AUTH</td></tr>
+ * <tr><td>402</td><td>payment-required</td><td>AUTH</td></tr>
+ * <tr><td>404</td><td>recipient-unavailable</td><td>WAIT</td></tr>
+ * <tr><td>302</td><td>redirect</td><td>MODIFY</td></tr>
+ * <tr><td>407</td><td>registration-required</td><td>AUTH</td></tr>
+ * <tr><td>404</td><td>remote-server-not-found</td><td>CANCEL</td></tr>
+ * <tr><td>504</td><td>remote-server-timeout</td><td>WAIT</td></tr>
+ * <tr><td>502</td><td>remote-server-error</td><td>CANCEL</td></tr>
+ * <tr><td>500</td><td>resource-constraint</td><td>WAIT</td></tr>
+ * <tr><td>503</td><td>service-unavailable</td><td>CANCEL</td></tr>
+ * <tr><td>407</td><td>subscription-required</td><td>AUTH</td></tr>
+ * <tr><td>500</td><td>undefined-condition</td><td>WAIT</td></tr>
+ * <tr><td>400</td><td>unexpected-condition</td><td>WAIT</td></tr>
+ * <tr><td>408</td><td>request-timeout</td><td>CANCEL</td></tr>
  * </table>
  *
  * @author Matt Tucker
@@ -69,10 +69,10 @@ public class XMPPError {
     /**
      * Creates a new error with the specified condition infering the type and code.
      * If the Condition is predefined, client code should be like:
-     *     new XMPPError(XMPPError.Condition.remote_server_timeout);
-     * If the Condition is not predefined, invocations should be like 
-     *     new XMPPError(new XMPPError.Condition("my_own_error"));
-     * 
+     * new XMPPError(XMPPError.Condition.remote_server_timeout);
+     * If the Condition is not predefined, invocations should be like
+     * new XMPPError(new XMPPError.Condition("my_own_error"));
+     *
      * @param condition the error condition.
      */
     public XMPPError(Condition condition) {
@@ -83,11 +83,11 @@ public class XMPPError {
     /**
      * Creates a new error with the specified condition and message infering the type and code.
      * If the Condition is predefined, client code should be like:
-     *     new XMPPError(XMPPError.Condition.remote_server_timeout, "Error Explanation");
-     * If the Condition is not predefined, invocations should be like 
-     *     new XMPPError(new XMPPError.Condition("my_own_error"), "Error Explanation");
+     * new XMPPError(XMPPError.Condition.remote_server_timeout, "Error Explanation");
+     * If the Condition is not predefined, invocations should be like
+     * new XMPPError(new XMPPError.Condition("my_own_error"), "Error Explanation");
      *
-     * @param condition the error condition.
+     * @param condition   the error condition.
      * @param messageText a message describing the error.
      */
     public XMPPError(Condition condition, String messageText) {
@@ -110,7 +110,7 @@ public class XMPPError {
      * Creates a new error with the specified code and message.
      * deprecated
      *
-     * @param code the error code.
+     * @param code    the error code.
      * @param message a message describing the error.
      * @deprecated new errors should be created using the constructor XMPPError(condition, message)
      */
@@ -122,17 +122,17 @@ public class XMPPError {
     /**
      * Creates a new error with the specified code, type, condition and message.
      * This constructor is used when the condition is not recognized automatically by XMPPError
-     * i.e. there is not a defined instance of ErrorCondition or it does not applies the default 
+     * i.e. there is not a defined instance of ErrorCondition or it does not applies the default
      * specification.
-     * 
-     * @param code the error code.
-     * @param type the error type.
+     *
+     * @param code      the error code.
+     * @param type      the error type.
      * @param condition the error condition.
-     * @param message a message describing the error.
+     * @param message   a message describing the error.
      * @param extension list of packet extensions
      */
     public XMPPError(int code, Type type, String condition, String message,
-            List<PacketExtension> extension) {
+                     List<PacketExtension> extension) {
         this.code = code;
         this.type = type;
         this.condition = condition;
@@ -142,7 +142,7 @@ public class XMPPError {
 
     /**
      * Initialize the error infering the type and code for the received condition.
-     * 
+     *
      * @param condition the error condition.
      */
     private void init(Condition condition) {
@@ -156,6 +156,7 @@ public class XMPPError {
             this.code = defaultErrorSpecification.getCode();
         }
     }
+
     /**
      * Returns the error condition.
      *
@@ -236,7 +237,7 @@ public class XMPPError {
 
     /**
      * Returns an Iterator for the error extensions attached to the xmppError.
-     * An application MAY provide application-specific error information by including a 
+     * An application MAY provide application-specific error information by including a
      * properly-namespaced child in the error element.
      *
      * @return an Iterator for the error extensions.
@@ -250,10 +251,10 @@ public class XMPPError {
 
     /**
      * Returns the first patcket extension that matches the specified element name and
-     * namespace, or <tt>null</tt> if it doesn't exist. 
+     * namespace, or <tt>null</tt> if it doesn't exist.
      *
      * @param elementName the XML element name of the packet extension.
-     * @param namespace the XML element namespace of the packet extension.
+     * @param namespace   the XML element namespace of the packet extension.
      * @return the extension, or <tt>null</tt> if it doesn't exist.
      */
     public synchronized PacketExtension getExtension(String elementName, String namespace) {
@@ -291,13 +292,13 @@ public class XMPPError {
 
     /**
      * A class to represent the type of the Error. The types are:
-     *
+     * <p/>
      * <ul>
-     *      <li>XMPPError.Type.WAIT - retry after waiting (the error is temporary)
-     *      <li>XMPPError.Type.CANCEL - do not retry (the error is unrecoverable)
-     *      <li>XMPPError.Type.MODIFY - retry after changing the data sent
-     *      <li>XMPPError.Type.AUTH - retry after providing credentials
-     *      <li>XMPPError.Type.CONTINUE - proceed (the condition was only a warning)
+     * <li>XMPPError.Type.WAIT - retry after waiting (the error is temporary)
+     * <li>XMPPError.Type.CANCEL - do not retry (the error is unrecoverable)
+     * <li>XMPPError.Type.MODIFY - retry after changing the data sent
+     * <li>XMPPError.Type.AUTH - retry after providing credentials
+     * <li>XMPPError.Type.CONTINUE - proceed (the condition was only a warning)
      * </ul>
      */
     public static enum Type {

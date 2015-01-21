@@ -23,7 +23,6 @@ package org.jivesoftware.smackx;
 import java.util.Iterator;
 
 /**
- *
  * A listener that is fired anytime a roster exchange is received.
  *
  * @author Gaston Dombiak
@@ -32,10 +31,10 @@ public interface RosterExchangeListener {
 
     /**
      * Called when roster entries are received as part of a roster exchange.
-     *  
-     * @param from the user that sent the entries.
-     * @param remoteRosterEntries the entries sent by the user. The entries are instances of 
-     * RemoteRosterEntry.
+     *
+     * @param from                the user that sent the entries.
+     * @param remoteRosterEntries the entries sent by the user. The entries are instances of
+     *                            RemoteRosterEntry.
      */
     public void entriesReceived(String from, Iterator remoteRosterEntries);
 

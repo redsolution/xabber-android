@@ -26,7 +26,7 @@ import org.jivesoftware.smackx.packet.*;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- * The MUCUserProvider parses packets with extended presence information about 
+ * The MUCUserProvider parses packets with extended presence information about
  * roles and affiliations.
  *
  * @author Gaston Dombiak
@@ -35,7 +35,7 @@ public class MUCUserProvider implements PacketExtensionProvider {
 
     /**
      * Creates a new MUCUserProvider.
-     * ProviderManager requires that every PacketExtensionProvider has a public, no-argument 
+     * ProviderManager requires that every PacketExtensionProvider has a public, no-argument
      * constructor
      */
     public MUCUserProvider() {
@@ -72,8 +72,7 @@ public class MUCUserProvider implements PacketExtensionProvider {
                 if (parser.getName().equals("destroy")) {
                     mucUser.setDestroy(parseDestroy(parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("x")) {
                     done = true;
                 }
@@ -86,9 +85,9 @@ public class MUCUserProvider implements PacketExtensionProvider {
     private MUCUser.Item parseItem(XmlPullParser parser) throws Exception {
         boolean done = false;
         MUCUser.Item item =
-            new MUCUser.Item(
-                parser.getAttributeValue("", "affiliation"),
-                parser.getAttributeValue("", "role"));
+                new MUCUser.Item(
+                        parser.getAttributeValue("", "affiliation"),
+                        parser.getAttributeValue("", "role"));
         item.setNick(parser.getAttributeValue("", "nick"));
         item.setJid(parser.getAttributeValue("", "jid"));
         while (!done) {
@@ -100,8 +99,7 @@ public class MUCUserProvider implements PacketExtensionProvider {
                 if (parser.getName().equals("reason")) {
                     item.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("item")) {
                     done = true;
                 }
@@ -121,8 +119,7 @@ public class MUCUserProvider implements PacketExtensionProvider {
                 if (parser.getName().equals("reason")) {
                     invite.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("invite")) {
                     done = true;
                 }
@@ -142,8 +139,7 @@ public class MUCUserProvider implements PacketExtensionProvider {
                 if (parser.getName().equals("reason")) {
                     decline.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("decline")) {
                     done = true;
                 }
@@ -162,8 +158,7 @@ public class MUCUserProvider implements PacketExtensionProvider {
                 if (parser.getName().equals("reason")) {
                     destroy.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("destroy")) {
                     done = true;
                 }

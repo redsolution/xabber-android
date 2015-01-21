@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * 
+ *
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- * 
+ *
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -99,7 +99,7 @@ public class AccountEditor extends ManagedActivity implements
                         token = value;
                 }
 
-                ((AccountEditorFragment)getFragmentManager().findFragmentById(
+                ((AccountEditorFragment) getFragmentManager().findFragmentById(
                         R.id.preferences_activity_container)).onOAuthChange();
             }
         }
@@ -110,7 +110,7 @@ public class AccountEditor extends ManagedActivity implements
     public boolean onPreferenceClick(Preference preference) {
         if (getString(R.string.account_oauth_key).equals(preference.getKey())) {
             startActivityForResult(OAuthActivity.createIntent(this, accountItem
-                    .getConnectionSettings().getProtocol()),
+                            .getConnectionSettings().getProtocol()),
                     OAUTH_WML_REQUEST_CODE);
             return true;
         }

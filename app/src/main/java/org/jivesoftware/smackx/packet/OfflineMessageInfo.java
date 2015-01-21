@@ -37,11 +37,11 @@ public class OfflineMessageInfo implements PacketExtension {
     private String node = null;
 
     /**
-    * Returns the XML element name of the extension sub-packet root element.
-    * Always returns "offline"
-    *
-    * @return the XML element name of the packet extension.
-    */
+     * Returns the XML element name of the extension sub-packet root element.
+     * Always returns "offline"
+     *
+     * @return the XML element name of the packet extension.
+     */
     public String getElementName() {
         return "offline";
     }
@@ -81,7 +81,7 @@ public class OfflineMessageInfo implements PacketExtension {
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
-            "\">");
+                "\">");
         if (getNode() != null)
             buf.append("<item node=\"").append(getNode()).append("\"/>");
         buf.append("</").append(getElementName()).append(">");
@@ -106,7 +106,7 @@ public class OfflineMessageInfo implements PacketExtension {
          * @throws Exception if a parsing error occurs.
          */
         public PacketExtension parseExtension(XmlPullParser parser)
-            throws Exception {
+                throws Exception {
             OfflineMessageInfo info = new OfflineMessageInfo();
             boolean done = false;
             while (!done) {

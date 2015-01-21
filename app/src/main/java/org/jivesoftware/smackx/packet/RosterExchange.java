@@ -33,19 +33,19 @@ import java.util.List;
 
 /**
  * Represents XMPP Roster Item Exchange packets.<p>
- * 
- * The 'jabber:x:roster' namespace (which is not to be confused with the 'jabber:iq:roster' 
- * namespace) is used to send roster items from one client to another. A roster item is sent by 
- * adding to the &lt;message/&gt; element an &lt;x/&gt; child scoped by the 'jabber:x:roster' namespace. This 
+ * <p/>
+ * The 'jabber:x:roster' namespace (which is not to be confused with the 'jabber:iq:roster'
+ * namespace) is used to send roster items from one client to another. A roster item is sent by
+ * adding to the &lt;message/&gt; element an &lt;x/&gt; child scoped by the 'jabber:x:roster' namespace. This
  * &lt;x/&gt; element may contain one or more &lt;item/&gt; children (one for each roster item to be sent).<p>
- * 
+ * <p/>
  * Each &lt;item/&gt; element may possess the following attributes:<p>
- * 
+ * <p/>
  * &lt;jid/&gt; -- The id of the contact being sent. This attribute is required.<br>
  * &lt;name/&gt; -- A natural-language nickname for the contact. This attribute is optional.<p>
- * 
- * Each &lt;item/&gt; element may also contain one or more &lt;group/&gt; children specifying the 
- * natural-language name of a user-specified group, for the purpose of categorizing this contact 
+ * <p/>
+ * Each &lt;item/&gt; element may also contain one or more &lt;group/&gt; children specifying the
+ * natural-language name of a user-specified group, for the purpose of categorizing this contact
  * into one or more roster groups.
  *
  * @author Gaston Dombiak
@@ -56,7 +56,6 @@ public class RosterExchange implements PacketExtension {
 
     /**
      * Creates a new empty roster exchange package.
-     *
      */
     public RosterExchange() {
         super();
@@ -80,18 +79,18 @@ public class RosterExchange implements PacketExtension {
      * @param rosterEntry a roster entry to add.
      */
     public void addRosterEntry(RosterEntry rosterEntry) {
-		// Obtain a String[] from the roster entry groups name 
-		List<String> groupNamesList = new ArrayList<String>();
-		String[] groupNames;
-		for (RosterGroup group : rosterEntry.getGroups()) {
-			groupNamesList.add(group.getName());
-		}
-		groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
+        // Obtain a String[] from the roster entry groups name
+        List<String> groupNamesList = new ArrayList<String>();
+        String[] groupNames;
+        for (RosterGroup group : rosterEntry.getGroups()) {
+            groupNamesList.add(group.getName());
+        }
+        groupNames = groupNamesList.toArray(new String[groupNamesList.size()]);
 
         // Create a new Entry based on the rosterEntry and add it to the packet
         RemoteRosterEntry remoteRosterEntry = new RemoteRosterEntry(rosterEntry.getUser(),
                 rosterEntry.getName(), groupNames);
-		
+
         addRosterEntry(remoteRosterEntry);
     }
 
@@ -105,18 +104,18 @@ public class RosterExchange implements PacketExtension {
             remoteRosterEntries.add(remoteRosterEntry);
         }
     }
-    
+
     /**
-    * Returns the XML element name of the extension sub-packet root element.
-    * Always returns "x"
-    *
-    * @return the XML element name of the packet extension.
-    */
+     * Returns the XML element name of the extension sub-packet root element.
+     * Always returns "x"
+     *
+     * @return the XML element name of the packet extension.
+     */
     public String getElementName() {
         return "x";
     }
 
-    /** 
+    /**
      * Returns the XML namespace of the extension sub-packet root element.
      * According the specification the namespace is always "jabber:x:roster"
      * (which is not to be confused with the 'jabber:iq:roster' namespace
@@ -150,7 +149,7 @@ public class RosterExchange implements PacketExtension {
 
     /**
      * Returns the XML representation of a Roster Item Exchange according the specification.
-     * 
+     * <p/>
      * Usually the XML representation will be inside of a Message XML representation like
      * in the following example:
      * <pre>
@@ -163,14 +162,13 @@ public class RosterExchange implements PacketExtension {
      *     &lt;/x&gt;
      * &lt;/message&gt;
      * </pre>
-     * 
      */
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
-            "\">");
+                "\">");
         // Loop through all roster entries and append them to the string buffer
-        for (Iterator i = getRosterEntries(); i.hasNext();) {
+        for (Iterator i = getRosterEntries(); i.hasNext(); ) {
             RemoteRosterEntry remoteRosterEntry = (RemoteRosterEntry) i.next();
             buf.append(remoteRosterEntry.toXML());
         }

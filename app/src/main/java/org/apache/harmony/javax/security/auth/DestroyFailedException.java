@@ -34,8 +34,7 @@ public class DestroyFailedException extends Exception {
     /**
      * Creates an exception of type {@code DestroyFailedException}.
      *
-     * @param message
-     *            A detail message that describes the reason for this exception.
+     * @param message A detail message that describes the reason for this exception.
      */
     public DestroyFailedException(String message) {
         super(message);

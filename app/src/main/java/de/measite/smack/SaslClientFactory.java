@@ -26,35 +26,34 @@ import org.apache.harmony.javax.security.sasl.SaslException;
 import org.apache.qpid.management.common.sasl.PlainSaslClient;
 
 public class SaslClientFactory implements
-		org.apache.harmony.javax.security.sasl.SaslClientFactory {
+        org.apache.harmony.javax.security.sasl.SaslClientFactory {
 
-	@Override
-	public SaslClient createSaslClient(String[] mechanisms,
-			String authorizationId, String protocol, String serverName,
-			Map<String, ?> props, CallbackHandler cbh) throws SaslException {
-		for (String mech: mechanisms) {
-			if ("PLAIN".equals(mech)) {
-				return new PlainSaslClient(authorizationId, cbh);
-			} else
-			if ("DIGEST-MD5".equals(mech)) {
-				return DigestMD5SaslClient.getClient(
-					authorizationId,
-					protocol,
-					serverName,
-					props,
-					cbh
-				);
-			}
-		}
-		return null;
-	}
+    @Override
+    public SaslClient createSaslClient(String[] mechanisms,
+                                       String authorizationId, String protocol, String serverName,
+                                       Map<String, ?> props, CallbackHandler cbh) throws SaslException {
+        for (String mech : mechanisms) {
+            if ("PLAIN".equals(mech)) {
+                return new PlainSaslClient(authorizationId, cbh);
+            } else if ("DIGEST-MD5".equals(mech)) {
+                return DigestMD5SaslClient.getClient(
+                        authorizationId,
+                        protocol,
+                        serverName,
+                        props,
+                        cbh
+                );
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public String[] getMechanismNames(Map<String, ?> props) {
-		return new String[]{
-			"PLAIN",
-			"DIGEST-MD5"
-		};
-	}
+    @Override
+    public String[] getMechanismNames(Map<String, ?> props) {
+        return new String[]{
+                "PLAIN",
+                "DIGEST-MD5"
+        };
+    }
 
 }

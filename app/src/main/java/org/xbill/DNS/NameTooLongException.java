@@ -11,14 +11,12 @@ package org.xbill.DNS;
 
 public class NameTooLongException extends WireParseException {
 
-public
-NameTooLongException() {
-	super();
-}
+    public NameTooLongException() {
+        super();
+    }
 
-public
-NameTooLongException(String s) {
-	super(s);
-}
+    public NameTooLongException(String s) {
+        super(s);
+    }
 
 }

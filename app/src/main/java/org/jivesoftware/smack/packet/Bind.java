@@ -25,9 +25,9 @@ package org.jivesoftware.smack.packet;
  * There are two ways to bind a resource. One is simply sending an empty Bind packet where the
  * server will assign a new resource for this connection. The other option is to set a desired
  * resource but the server may return a modified version of the sent resource.<p>
- *
+ * <p/>
  * For more information refer to the following
- * <a href=http://www.xmpp.org/specs/rfc3920.html#bind>link</a>. 
+ * <a href=http://www.xmpp.org/specs/rfc3920.html#bind>link</a>.
  *
  * @author Gaston Dombiak
  */

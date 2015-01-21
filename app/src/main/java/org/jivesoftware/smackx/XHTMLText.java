@@ -23,7 +23,7 @@ package org.jivesoftware.smackx;
 import org.jivesoftware.smack.util.StringUtils;
 
 /**
- * An XHTMLText represents formatted text. This class also helps to build valid 
+ * An XHTMLText represents formatted text. This class also helps to build valid
  * XHTML tags.
  *
  * @author Gaston Dombiak
@@ -34,9 +34,9 @@ public class XHTMLText {
 
     /**
      * Creates a new XHTMLText with body tag params.
-     * 
+     *
      * @param style the XHTML style of the body
-     * @param lang the language of the body
+     * @param lang  the language of the body
      */
     public XHTMLText(String style, String lang) {
         appendOpenBodyTag(style, lang);
@@ -44,8 +44,8 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that an anchor section begins.
-     * 
-     * @param href indicates the URL being linked to
+     *
+     * @param href  indicates the URL being linked to
      * @param style the XHTML style of the anchor
      */
     public void appendOpenAnchorTag(String href, String style) {
@@ -66,7 +66,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that an anchor section ends.
-     * 
      */
     public void appendCloseAnchorTag() {
         text.append("</a>");
@@ -74,7 +73,7 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a blockquote section begins.
-     * 
+     *
      * @param style the XHTML style of the blockquote
      */
     public void appendOpenBlockQuoteTag(String style) {
@@ -90,7 +89,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a blockquote section ends.
-     * 
      */
     public void appendCloseBlockQuoteTag() {
         text.append("</blockquote>");
@@ -98,9 +96,9 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a body section begins.
-     * 
+     *
      * @param style the XHTML style of the body
-     * @param lang the language of the body
+     * @param lang  the language of the body
      */
     private void appendOpenBodyTag(String style, String lang) {
         StringBuilder sb = new StringBuilder("<body");
@@ -120,7 +118,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a body section ends.
-     * 
      */
     private String closeBodyTag() {
         return "</body>";
@@ -128,7 +125,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that inserts a single carriage return.
-     * 
      */
     public void appendBrTag() {
         text.append("<br/>");
@@ -136,7 +132,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates a reference to work, such as a book, report or web site.
-     * 
      */
     public void appendOpenCiteTag() {
         text.append("<cite>");
@@ -144,7 +139,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates text that is the code for a program.
-     * 
      */
     public void appendOpenCodeTag() {
         text.append("<code>");
@@ -152,7 +146,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates end of text that is the code for a program.
-     * 
      */
     public void appendCloseCodeTag() {
         text.append("</code>");
@@ -160,7 +153,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates emphasis.
-     * 
      */
     public void appendOpenEmTag() {
         text.append("<em>");
@@ -168,7 +160,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates end of emphasis.
-     * 
      */
     public void appendCloseEmTag() {
         text.append("</em>");
@@ -176,7 +167,7 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates a header, a title of a section of the message.
-     * 
+     *
      * @param level the level of the Header. It should be a value between 1 and 3
      * @param style the XHTML style of the blockquote
      */
@@ -197,7 +188,7 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a header section ends.
-     * 
+     *
      * @param level the level of the Header. It should be a value between 1 and 3
      */
     public void appendCloseHeaderTag(int level) {
@@ -212,12 +203,12 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates an image.
-     * 
-     * @param align how text should flow around the picture
-     * @param alt the text to show if you don't show the picture
+     *
+     * @param align  how text should flow around the picture
+     * @param alt    the text to show if you don't show the picture
      * @param height how tall is the picture
-     * @param src where to get the picture
-     * @param width how wide is the picture
+     * @param src    where to get the picture
+     * @param width  how wide is the picture
      */
     public void appendImageTag(String align, String alt, String height, String src, String width) {
         StringBuilder sb = new StringBuilder("<img");
@@ -252,7 +243,7 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates the start of a new line item within a list.
-     * 
+     *
      * @param style the style of the line item
      */
     public void appendLineItemTag(String style) {
@@ -267,9 +258,9 @@ public class XHTMLText {
     }
 
     /**
-     * Appends a tag that creates an ordered list. "Ordered" means that the order of the items 
-     * in the list is important. To show this, browsers automatically number the list. 
-     * 
+     * Appends a tag that creates an ordered list. "Ordered" means that the order of the items
+     * in the list is important. To show this, browsers automatically number the list.
+     *
      * @param style the style of the ordered list
      */
     public void appendOpenOrderedListTag(String style) {
@@ -285,16 +276,15 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that an ordered list section ends.
-     * 
      */
     public void appendCloseOrderedListTag() {
         text.append("</ol>");
     }
 
     /**
-     * Appends a tag that creates an unordered list. The unordered part means that the items 
+     * Appends a tag that creates an unordered list. The unordered part means that the items
      * in the list are not in any particular order.
-     * 
+     *
      * @param style the style of the unordered list
      */
     public void appendOpenUnorderedListTag(String style) {
@@ -310,16 +300,15 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that an unordered list section ends.
-     * 
      */
     public void appendCloseUnorderedListTag() {
         text.append("</ul>");
     }
 
     /**
-     * Appends a tag that indicates the start of a new paragraph. This is usually rendered 
+     * Appends a tag that indicates the start of a new paragraph. This is usually rendered
      * with two carriage returns, producing a single blank line in between the two paragraphs.
-     * 
+     *
      * @param style the style of the paragraph
      */
     public void appendOpenParagraphTag(String style) {
@@ -334,9 +323,8 @@ public class XHTMLText {
     }
 
     /**
-     * Appends a tag that indicates the end of a new paragraph. This is usually rendered 
+     * Appends a tag that indicates the end of a new paragraph. This is usually rendered
      * with two carriage returns, producing a single blank line in between the two paragraphs.
-     * 
      */
     public void appendCloseParagraphTag() {
         text.append("</p>");
@@ -344,7 +332,7 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that an inlined quote section begins.
-     * 
+     *
      * @param style the style of the inlined quote
      */
     public void appendOpenInlinedQuoteTag(String style) {
@@ -360,7 +348,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that an inlined quote section ends.
-     * 
      */
     public void appendCloseInlinedQuoteTag() {
         text.append("</q>");
@@ -368,7 +355,7 @@ public class XHTMLText {
 
     /**
      * Appends a tag that allows to set the fonts for a span of text.
-     * 
+     *
      * @param style the style for a span of text
      */
     public void appendOpenSpanTag(String style) {
@@ -384,7 +371,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a span section ends.
-     * 
      */
     public void appendCloseSpanTag() {
         text.append("</span>");
@@ -392,7 +378,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates text which should be more forceful than surrounding text.
-     * 
      */
     public void appendOpenStrongTag() {
         text.append("<strong>");
@@ -400,7 +385,6 @@ public class XHTMLText {
 
     /**
      * Appends a tag that indicates that a strong section ends.
-     * 
      */
     public void appendCloseStrongTag() {
         text.append("</strong>");
@@ -408,8 +392,8 @@ public class XHTMLText {
 
     /**
      * Appends a given text to the XHTMLText.
-     * 
-     * @param textToAppend the text to append   
+     *
+     * @param textToAppend the text to append
      */
     public void append(String textToAppend) {
         text.append(StringUtils.escapeForXML(textToAppend));
@@ -417,10 +401,10 @@ public class XHTMLText {
 
     /**
      * Returns the text of the XHTMLText.
-     * 
+     * <p/>
      * Note: Automatically adds the closing body tag.
-     * 
-     * @return the text of the XHTMLText   
+     *
+     * @return the text of the XHTMLText
      */
     public String toString() {
         return text.toString().concat(closeBodyTag());

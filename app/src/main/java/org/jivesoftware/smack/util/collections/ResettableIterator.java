@@ -27,7 +27,7 @@ import java.util.Iterator;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:19 $
  * @since Commons Collections 3.0
  */
-public interface ResettableIterator <E> extends Iterator<E> {
+public interface ResettableIterator<E> extends Iterator<E> {
 
     /**
      * Resets the iterator back to the position at which the iterator

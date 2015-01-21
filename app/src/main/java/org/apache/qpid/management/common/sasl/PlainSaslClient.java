@@ -21,11 +21,11 @@
 package org.apache.qpid.management.common.sasl;
 
 import java.io.*;
+
 import org.apache.harmony.javax.security.auth.callback.*;
 import org.apache.harmony.javax.security.sasl.*;
 
-public class PlainSaslClient implements SaslClient
-{
+public class PlainSaslClient implements SaslClient {
 
     private boolean completed;
     private CallbackHandler cbh;
@@ -33,41 +33,36 @@ public class PlainSaslClient implements SaslClient
     private String authenticationID;
     private byte password[];
     private static byte SEPARATOR = 0;
-    
-    public PlainSaslClient(String authorizationID, CallbackHandler cbh) throws SaslException
-    {
+
+    public PlainSaslClient(String authorizationID, CallbackHandler cbh) throws SaslException {
         completed = false;
         this.cbh = cbh;
         Object[] userInfo = getUserInfo();
         this.authorizationID = authorizationID;
         this.authenticationID = (String) userInfo[0];
         this.password = (byte[]) userInfo[1];
-        if (authenticationID == null || password == null)
-        {
+        if (authenticationID == null || password == null) {
             throw new SaslException("PLAIN: authenticationID and password must be specified");
         }
     }
 
-    public byte[] evaluateChallenge(byte[] challenge) throws SaslException
-    {
-        if (completed)
-        {
+    public byte[] evaluateChallenge(byte[] challenge) throws SaslException {
+        if (completed) {
             throw new IllegalStateException("PLAIN: authentication already " +
-            "completed");
+                    "completed");
         }
         completed = true;
-        try 
-        {
+        try {
             byte authzid[] =
-                authorizationID == null ? null : authorizationID.getBytes("UTF8");
+                    authorizationID == null ? null : authorizationID.getBytes("UTF8");
             byte authnid[] = authenticationID.getBytes("UTF8");
             byte response[] =
-                new byte[
-                         password.length +
-                         authnid.length +
-                         2 + // SEPARATOR
-                         (authzid != null ? authzid.length : 0)
-                         ];
+                    new byte[
+                            password.length +
+                                    authnid.length +
+                                    2 + // SEPARATOR
+                                    (authzid != null ? authzid.length : 0)
+                            ];
             int size = 0;
             if (authzid != null) {
                 System.arraycopy(authzid, 0, response, 0, authzid.length);
@@ -86,117 +81,88 @@ public class PlainSaslClient implements SaslClient
         }
     }
 
-    public String getMechanismName()
-    {
+    public String getMechanismName() {
         return "PLAIN";
     }
 
-    public boolean hasInitialResponse()
-    {
+    public boolean hasInitialResponse() {
         return true;
     }
 
-    public boolean isComplete()
-    {
+    public boolean isComplete() {
         return completed;
     }
 
-    public byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException
-    {
+    public byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
         if (completed) {
             throw new IllegalStateException("PLAIN: this mechanism supports " +
-            "neither integrity nor privacy");
+                    "neither integrity nor privacy");
         } else {
             throw new IllegalStateException("PLAIN: authentication not " +
-            "completed");
+                    "completed");
         }
     }
 
-    public byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException
-    {
-        if (completed)
-        {
+    public byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
+        if (completed) {
             throw new IllegalStateException("PLAIN: this mechanism supports " +
-            "neither integrity nor privacy");
-        }
-        else
-        {
+                    "neither integrity nor privacy");
+        } else {
             throw new IllegalStateException("PLAIN: authentication not " +
-            "completed");
+                    "completed");
         }
     }
 
-    public Object getNegotiatedProperty(String propName)
-    {
-        if (completed)
-        {
-            if (propName.equals(Sasl.QOP))
-            {
+    public Object getNegotiatedProperty(String propName) {
+        if (completed) {
+            if (propName.equals(Sasl.QOP)) {
                 return "auth";
-            }
-            else
-            {
+            } else {
                 return null;
             }
-        }
-        else 
-        {
+        } else {
             throw new IllegalStateException("PLAIN: authentication not " +
-            "completed");
+                    "completed");
         }
     }
 
-    private void clearPassword()
-    {
-        if (password != null)
-        {
-            for (int i = 0 ; i < password.length ; i++)
-            {
+    private void clearPassword() {
+        if (password != null) {
+            for (int i = 0; i < password.length; i++) {
                 password[i] = 0;
             }
             password = null;
         }
     }
 
-    public void dispose() throws SaslException
-    {
+    public void dispose() throws SaslException {
         clearPassword();
     }
 
-    protected void finalize()
-    {
+    protected void finalize() {
         clearPassword();
     }
 
-    private Object[] getUserInfo() throws SaslException
-    {
-        try
-        {
+    private Object[] getUserInfo() throws SaslException {
+        try {
             final String userPrompt = "PLAIN authentication id: ";
             final String pwPrompt = "PLAIN password: ";
             NameCallback nameCb = new NameCallback(userPrompt);
             PasswordCallback passwordCb = new PasswordCallback(pwPrompt, false);
-            cbh.handle(new Callback[] { nameCb, passwordCb });
+            cbh.handle(new Callback[]{nameCb, passwordCb});
             String userid = nameCb.getName();
             char pwchars[] = passwordCb.getPassword();
             byte pwbytes[];
-            if (pwchars != null)
-            {
+            if (pwchars != null) {
                 pwbytes = (new String(pwchars)).getBytes("UTF8");
                 passwordCb.clearPassword();
-            }
-            else 
-            {
+            } else {
                 pwbytes = null;
             }
-            return (new Object[] { userid, pwbytes });
-        } 
-        catch (IOException e)
-        {
+            return (new Object[]{userid, pwbytes});
+        } catch (IOException e) {
             throw new SaslException("Cannot get password", e);
-        } 
-        catch (UnsupportedCallbackException e)
-        {
+        } catch (UnsupportedCallbackException e) {
             throw new SaslException("Cannot get userid/password", e);
         }
     }

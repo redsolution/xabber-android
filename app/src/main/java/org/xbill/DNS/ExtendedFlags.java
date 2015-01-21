@@ -10,36 +10,40 @@ package org.xbill.DNS;
 
 public final class ExtendedFlags {
 
-private static Mnemonic extflags = new Mnemonic("EDNS Flag",
-						Mnemonic.CASE_LOWER);
+    private static Mnemonic extflags = new Mnemonic("EDNS Flag",
+            Mnemonic.CASE_LOWER);
 
-/** dnssec ok */
-public static final int DO		= 0x8000;
+    /**
+     * dnssec ok
+     */
+    public static final int DO = 0x8000;
 
-static {
-	extflags.setMaximum(0xFFFF);
-	extflags.setPrefix("FLAG");
-	extflags.setNumericAllowed(true);
+    static {
+        extflags.setMaximum(0xFFFF);
+        extflags.setPrefix("FLAG");
+        extflags.setNumericAllowed(true);
 
-	extflags.add(DO, "do");
-}
+        extflags.add(DO, "do");
+    }
 
-private
-ExtendedFlags() {}
+    private ExtendedFlags() {
+    }
 
-/** Converts a numeric extended flag into a String */
-public static String
-string(int i) {
-	return extflags.getText(i);
-}
+    /**
+     * Converts a numeric extended flag into a String
+     */
+    public static String
+    string(int i) {
+        return extflags.getText(i);
+    }
 
-/**
- * Converts a textual representation of an extended flag into its numeric
- * value
- */
-public static int
-value(String s) {
-	return extflags.getValue(s);
-}
+    /**
+     * Converts a textual representation of an extended flag into its numeric
+     * value
+     */
+    public static int
+    value(String s) {
+        return extflags.getValue(s);
+    }
 
 }

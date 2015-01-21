@@ -27,7 +27,7 @@ package org.jivesoftware.smack.util.collections;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:19 $
  * @since Commons Collections 3.0
  */
-public interface KeyValue <K,V> {
+public interface KeyValue<K, V> {
 
     /**
      * Gets the key from the pair.

@@ -18,6 +18,7 @@
 package org.apache.harmony.javax.security.sasl;
 
 import java.io.Serializable;
+
 import org.apache.harmony.javax.security.auth.callback.Callback;
 
 public class AuthorizeCallback implements Callback, Serializable {

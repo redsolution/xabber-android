@@ -54,8 +54,7 @@ public abstract class StreamNegotiator {
      * @return The response to be forwarded to the initiator.
      */
     public StreamInitiation createInitiationAccept(
-            StreamInitiation streamInitiationOffer, String[] namespaces)
-    {
+            StreamInitiation streamInitiationOffer, String[] namespaces) {
         StreamInitiation response = new StreamInitiation();
         response.setTo(streamInitiationOffer.getFrom());
         response.setFrom(streamInitiationOffer.getTo());
@@ -107,7 +106,7 @@ public abstract class StreamNegotiator {
      * @param from     The initiator of the file transfer.
      * @param streamID The stream ID related to the transfer.
      * @return The <b><i>PacketFilter</b></i> that will return the packet relatable to the stream
-     *         initiation.
+     * initiation.
      */
     public abstract PacketFilter getInitiationPacketFilter(String from, String streamID);
 
@@ -125,9 +124,9 @@ public abstract class StreamNegotiator {
      *
      * @param initiation The initiation that triggered this download.
      * @return After the negotiation process is complete, the InputStream to
-     *         write a file to is returned.
-     * @throws XMPPException If an error occurs during this process an XMPPException is
-     *                       thrown.
+     * write a file to is returned.
+     * @throws XMPPException        If an error occurs during this process an XMPPException is
+     *                              thrown.
      * @throws InterruptedException If thread is interrupted.
      */
     public abstract InputStream createIncomingStream(StreamInitiation initiation)
@@ -148,14 +147,14 @@ public abstract class StreamNegotiator {
      *                       exception will be thrown.
      */
     public abstract OutputStream createOutgoingStream(String streamID,
-            String initiator, String target) throws XMPPException;
+                                                      String initiator, String target) throws XMPPException;
 
     /**
      * Returns the XMPP namespace reserved for this particular type of file
      * transfer.
      *
      * @return Returns the XMPP namespace reserved for this particular type of
-     *         file transfer.
+     * file transfer.
      */
     public abstract String[] getNamespaces();
 

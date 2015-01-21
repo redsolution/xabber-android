@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * 
+ *
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- * 
+ *
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -64,139 +64,136 @@ import java.util.Collection;
 
 /**
  * Main application activity.
- * 
+ *
  * @author alexander.ivanov
- * 
  */
 public class ContactList extends ManagedActivity implements OnChoosedListener, OnContactClickListener {
 
-	/**
-	 * Select contact to be invited to the room was requested.
-	 */
-	private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.ContactList.ACTION_ROOM_INVITE";
+    /**
+     * Select contact to be invited to the room was requested.
+     */
+    private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.ContactList.ACTION_ROOM_INVITE";
 
-	private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
+    private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
-	private static final String SAVED_ACTION = "com.xabber.android.ui.ContactList.SAVED_ACTION";
-	private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
+    private static final String SAVED_ACTION = "com.xabber.android.ui.ContactList.SAVED_ACTION";
+    private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
 
-	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
+    private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
-	private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
+    private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
 
-	/**
-	 * Current action.
-	 */
-	private String action;
+    /**
+     * Current action.
+     */
+    private String action;
 
-	/**
-	 * Dialog related values.
-	 */
-	private String sendText;
+    /**
+     * Dialog related values.
+     */
+    private String sendText;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		if (Intent.ACTION_VIEW.equals(getIntent().getAction())
-				|| Intent.ACTION_SEND.equals(getIntent().getAction())
-				|| Intent.ACTION_SENDTO.equals(getIntent().getAction())
-				|| Intent.ACTION_CREATE_SHORTCUT
-						.equals(getIntent().getAction()))
-			ActivityManager.getInstance().startNewTask(this);
-		super.onCreate(savedInstanceState);
-		if (isFinishing())
-			return;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (Intent.ACTION_VIEW.equals(getIntent().getAction())
+                || Intent.ACTION_SEND.equals(getIntent().getAction())
+                || Intent.ACTION_SENDTO.equals(getIntent().getAction())
+                || Intent.ACTION_CREATE_SHORTCUT
+                .equals(getIntent().getAction()))
+            ActivityManager.getInstance().startNewTask(this);
+        super.onCreate(savedInstanceState);
+        if (isFinishing())
+            return;
 
-		setContentView(R.layout.contact_list);
+        setContentView(R.layout.contact_list);
 
 
-		if (savedInstanceState != null) {
-			sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
-			action = savedInstanceState.getString(SAVED_ACTION);
-		} else {
+        if (savedInstanceState != null) {
+            sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
+            action = savedInstanceState.getString(SAVED_ACTION);
+        } else {
             getSupportFragmentManager().beginTransaction().add(R.id.container,
                     new ContactListFragment(), CONTACT_LIST_TAG).commit();
 
-			sendText = null;
-			action = getIntent().getAction();
-		}
-		getIntent().setAction(null);
-	}
+            sendText = null;
+            action = getIntent().getAction();
+        }
+        getIntent().setAction(null);
+    }
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		setIntent(intent);
-		action = getIntent().getAction();
-		getIntent().setAction(null);
-	}
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        action = getIntent().getAction();
+        getIntent().setAction(null);
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString(SAVED_ACTION, action);
-		outState.putString(SAVED_SEND_TEXT, sendText);
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(SAVED_ACTION, action);
+        outState.putString(SAVED_SEND_TEXT, sendText);
+    }
 
-	/**
-	 * Open chat with specified contact.
-	 * 
-	 * Show dialog to choose account if necessary.
-	 * 
-	 * @param user
-	 * @param text
-	 *            can be <code>null</code>.
-	 */
-	private void openChat(String user, String text) {
-		String bareAddress = Jid.getBareAddress(user);
-		ArrayList<BaseEntity> entities = new ArrayList<BaseEntity>();
-		for (AbstractChat check : MessageManager.getInstance().getChats())
-			if (check.isActive() && check.getUser().equals(bareAddress))
-				entities.add(check);
-		if (entities.size() == 1) {
-			openChat(entities.get(0), text);
-			return;
-		}
-		entities.clear();
-		for (RosterContact check : RosterManager.getInstance().getContacts())
-			if (check.isEnabled() && check.getUser().equals(bareAddress))
-				entities.add(check);
-		if (entities.size() == 1) {
-			openChat(entities.get(0), text);
-			return;
-		}
-		Collection<String> accounts = AccountManager.getInstance()
-				.getAccounts();
-		if (accounts.isEmpty())
-			return;
-		if (accounts.size() == 1) {
-			openChat(new BaseEntity(accounts.iterator().next(), bareAddress),
-					text);
-			return;
-		}
-		AccountChooseDialogFragment.newInstance(bareAddress, text).show(
+    /**
+     * Open chat with specified contact.
+     * <p/>
+     * Show dialog to choose account if necessary.
+     *
+     * @param user
+     * @param text can be <code>null</code>.
+     */
+    private void openChat(String user, String text) {
+        String bareAddress = Jid.getBareAddress(user);
+        ArrayList<BaseEntity> entities = new ArrayList<BaseEntity>();
+        for (AbstractChat check : MessageManager.getInstance().getChats())
+            if (check.isActive() && check.getUser().equals(bareAddress))
+                entities.add(check);
+        if (entities.size() == 1) {
+            openChat(entities.get(0), text);
+            return;
+        }
+        entities.clear();
+        for (RosterContact check : RosterManager.getInstance().getContacts())
+            if (check.isEnabled() && check.getUser().equals(bareAddress))
+                entities.add(check);
+        if (entities.size() == 1) {
+            openChat(entities.get(0), text);
+            return;
+        }
+        Collection<String> accounts = AccountManager.getInstance()
+                .getAccounts();
+        if (accounts.isEmpty())
+            return;
+        if (accounts.size() == 1) {
+            openChat(new BaseEntity(accounts.iterator().next(), bareAddress),
+                    text);
+            return;
+        }
+        AccountChooseDialogFragment.newInstance(bareAddress, text).show(
                 getSupportFragmentManager(), "OPEN_WITH_ACCOUNT");
-	}
+    }
 
-	/**
-	 * Open chat with specified contact and enter text to be sent.
-	 * 
-	 * @param baseEntity
-	 * @param text
-	 *            can be <code>null</code>.
-	 */
-	private void openChat(BaseEntity baseEntity, String text) {
-		if (text == null)
-			startActivity(ChatViewer.createSendIntent(this,
-					baseEntity.getAccount(), baseEntity.getUser(), null));
-		else
-			startActivity(ChatViewer.createSendIntent(this,
-					baseEntity.getAccount(), baseEntity.getUser(), text));
-		finish();
-	}
+    /**
+     * Open chat with specified contact and enter text to be sent.
+     *
+     * @param baseEntity
+     * @param text       can be <code>null</code>.
+     */
+    private void openChat(BaseEntity baseEntity, String text) {
+        if (text == null)
+            startActivity(ChatViewer.createSendIntent(this,
+                    baseEntity.getAccount(), baseEntity.getUser(), null));
+        else
+            startActivity(ChatViewer.createSendIntent(this,
+                    baseEntity.getAccount(), baseEntity.getUser(), text));
+        finish();
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
         if (action != null) {
             switch (action) {
                 case ContactList.ACTION_ROOM_INVITE:
@@ -239,27 +236,27 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
                 }
             }
         }
-		if (Application.getInstance().doNotify()) {
-			if (SettingsManager.bootCount() > 2
-					&& !SettingsManager.connectionStartAtBoot()
-					&& !SettingsManager.startAtBootSuggested())
-				StartAtBootDialogFragment.newInstance().show(
-						getSupportFragmentManager(), "START_AT_BOOT");
-			if (!SettingsManager.contactIntegrationSuggested()
-					&& Application.getInstance().isContactsSupported()) {
-				if (AccountManager.getInstance().getAllAccounts().isEmpty())
-					SettingsManager.setContactIntegrationSuggested();
-				else
-					ContactIntegrationDialogFragment.newInstance().show(
-							getSupportFragmentManager(), "CONTACT_INTEGRATION");
-			}
-		}
-	}
+        if (Application.getInstance().doNotify()) {
+            if (SettingsManager.bootCount() > 2
+                    && !SettingsManager.connectionStartAtBoot()
+                    && !SettingsManager.startAtBootSuggested())
+                StartAtBootDialogFragment.newInstance().show(
+                        getSupportFragmentManager(), "START_AT_BOOT");
+            if (!SettingsManager.contactIntegrationSuggested()
+                    && Application.getInstance().isContactsSupported()) {
+                if (AccountManager.getInstance().getAllAccounts().isEmpty())
+                    SettingsManager.setContactIntegrationSuggested();
+                else
+                    ContactIntegrationDialogFragment.newInstance().show(
+                            getSupportFragmentManager(), "CONTACT_INTEGRATION");
+            }
+        }
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -325,137 +322,137 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     }
 
     private ContactListFragment getContactListFragment() {
-		return (ContactListFragment) getSupportFragmentManager()
-				.findFragmentByTag(CONTACT_LIST_TAG);
-	}
+        return (ContactListFragment) getSupportFragmentManager()
+                .findFragmentByTag(CONTACT_LIST_TAG);
+    }
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View view,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, view, menuInfo);
-	}
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+    }
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		super.onCreateDialog(id);
-		switch (id) {
-		case DIALOG_CLOSE_APPLICATION_ID:
-			ProgressDialog progressDialog = new ProgressDialog(this);
-			progressDialog
-					.setMessage(getString(R.string.application_state_closing));
-			progressDialog.setOnCancelListener(new OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					finish();
-				}
-			});
-			progressDialog.setIndeterminate(true);
-			return progressDialog;
-		default:
-			return null;
-		}
-	}
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        super.onCreateDialog(id);
+        switch (id) {
+            case DIALOG_CLOSE_APPLICATION_ID:
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog
+                        .setMessage(getString(R.string.application_state_closing));
+                progressDialog.setOnCancelListener(new OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                });
+                progressDialog.setIndeterminate(true);
+                return progressDialog;
+            default:
+                return null;
+        }
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_SEARCH:
-			search();
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_SEARCH:
+                search();
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	@Override
-	public void onContactClick(AbstractContact abstractContact) {
-		if (ACTION_ROOM_INVITE.equals(action)) {
-			action = null;
-			Intent intent = getIntent();
-			String account = getRoomInviteAccount(intent);
-			String user = getRoomInviteUser(intent);
-			if (account != null && user != null)
-				try {
-					MUCManager.getInstance().invite(account, user,
-							abstractContact.getUser());
-				} catch (NetworkException e) {
-					Application.getInstance().onError(e);
-				}
-			finish();
-		} else if (Intent.ACTION_SEND.equals(action)) {
-			action = null;
-			startActivity(ChatViewer.createSendIntent(this,
-					abstractContact.getAccount(), abstractContact.getUser(),
-					sendText));
-			finish();
-		} else if (Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
-			Intent intent = new Intent();
-			intent.putExtra(
-					Intent.EXTRA_SHORTCUT_INTENT,
-					ChatViewer.createClearTopIntent(this,
-							abstractContact.getAccount(),
-							abstractContact.getUser()));
-			intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
-					abstractContact.getName());
-			Bitmap bitmap;
-			if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(),
-					abstractContact.getUser()))
-				bitmap = AvatarManager.getInstance().getRoomBitmap(
-						abstractContact.getUser());
-			else
-				bitmap = AvatarManager.getInstance().getUserBitmap(
-						abstractContact.getUser());
-			intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, AvatarManager
-					.getInstance().createShortcutBitmap(bitmap));
-			setResult(RESULT_OK, intent);
-			finish();
-		} else {
-			startActivity(ChatViewer.createIntent(this,
-					abstractContact.getAccount(), abstractContact.getUser()));
-		}
-	}
+    @Override
+    public void onContactClick(AbstractContact abstractContact) {
+        if (ACTION_ROOM_INVITE.equals(action)) {
+            action = null;
+            Intent intent = getIntent();
+            String account = getRoomInviteAccount(intent);
+            String user = getRoomInviteUser(intent);
+            if (account != null && user != null)
+                try {
+                    MUCManager.getInstance().invite(account, user,
+                            abstractContact.getUser());
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                }
+            finish();
+        } else if (Intent.ACTION_SEND.equals(action)) {
+            action = null;
+            startActivity(ChatViewer.createSendIntent(this,
+                    abstractContact.getAccount(), abstractContact.getUser(),
+                    sendText));
+            finish();
+        } else if (Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
+            Intent intent = new Intent();
+            intent.putExtra(
+                    Intent.EXTRA_SHORTCUT_INTENT,
+                    ChatViewer.createClearTopIntent(this,
+                            abstractContact.getAccount(),
+                            abstractContact.getUser()));
+            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
+                    abstractContact.getName());
+            Bitmap bitmap;
+            if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(),
+                    abstractContact.getUser()))
+                bitmap = AvatarManager.getInstance().getRoomBitmap(
+                        abstractContact.getUser());
+            else
+                bitmap = AvatarManager.getInstance().getUserBitmap(
+                        abstractContact.getUser());
+            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, AvatarManager
+                    .getInstance().createShortcutBitmap(bitmap));
+            setResult(RESULT_OK, intent);
+            finish();
+        } else {
+            startActivity(ChatViewer.createIntent(this,
+                    abstractContact.getAccount(), abstractContact.getUser()));
+        }
+    }
 
-	@Override
-	public void onChoosed(String account, String user, String text) {
-		openChat(new BaseEntity(account, user), text);
-	}
+    @Override
+    public void onChoosed(String account, String user, String text) {
+        openChat(new BaseEntity(account, user), text);
+    }
 
-	/**
-	 * Show search dialog.
-	 */
-	private void search() {
-		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		if (inputMethodManager != null)
-			inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-					0);
-	}
+    /**
+     * Show search dialog.
+     */
+    private void search() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null)
+            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                    0);
+    }
 
-	public static Intent createPersistentIntent(Context context) {
-		Intent intent = new Intent(context, ContactList.class);
-		intent.setAction("android.intent.action.MAIN");
-		intent.addCategory("android.intent.category.LAUNCHER");
-		intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-				| Intent.FLAG_ACTIVITY_NEW_TASK);
-		return intent;
-	}
+    public static Intent createPersistentIntent(Context context) {
+        Intent intent = new Intent(context, ContactList.class);
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.LAUNCHER");
+        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
 
-	public static Intent createIntent(Context context) {
-		return new Intent(context, ContactList.class);
-	}
+    public static Intent createIntent(Context context) {
+        return new Intent(context, ContactList.class);
+    }
 
-	public static Intent createRoomInviteIntent(Context context,
-			String account, String room) {
-		Intent intent = new EntityIntentBuilder(context, ContactList.class)
-				.setAccount(account).setUser(room).build();
-		intent.setAction(ACTION_ROOM_INVITE);
-		return intent;
-	}
+    public static Intent createRoomInviteIntent(Context context,
+                                                String account, String room) {
+        Intent intent = new EntityIntentBuilder(context, ContactList.class)
+                .setAccount(account).setUser(room).build();
+        intent.setAction(ACTION_ROOM_INVITE);
+        return intent;
+    }
 
-	private static String getRoomInviteAccount(Intent intent) {
-		return EntityIntentBuilder.getAccount(intent);
-	}
+    private static String getRoomInviteAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
 
-	private static String getRoomInviteUser(Intent intent) {
-		return EntityIntentBuilder.getUser(intent);
-	}
+    private static String getRoomInviteUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
 }

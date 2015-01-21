@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * A SharedGroupManager provides services for discovering the shared groups where a user belongs.<p>
- *
+ * <p/>
  * Important note: This functionality is not part of the XMPP spec and it will only work
  * with Wildfire.
  *
@@ -34,7 +34,7 @@ public class SharedGroupManager {
 
         // Create a packet collector to listen for a response.
         PacketCollector collector =
-            connection.createPacketCollector(new PacketIDFilter(info.getPacketID()));
+                connection.createPacketCollector(new PacketIDFilter(info.getPacketID()));
 
         connection.sendPacket(info);
 

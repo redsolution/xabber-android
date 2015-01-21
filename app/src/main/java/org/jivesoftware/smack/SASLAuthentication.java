@@ -28,6 +28,7 @@ import org.jivesoftware.smack.packet.Session;
 import org.jivesoftware.smack.sasl.*;
 
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -35,31 +36,30 @@ import java.util.*;
 /**
  * <p>This class is responsible authenticating the user using SASL, binding the resource
  * to the connection and establishing a session with the server.</p>
- *
+ * <p/>
  * <p>Once TLS has been negotiated (i.e. the connection has been secured) it is possible to
  * register with the server, authenticate using Non-SASL or authenticate using SASL. If the
  * server supports SASL then Smack will first try to authenticate using SASL. But if that
  * fails then Non-SASL will be tried.</p>
- *
+ * <p/>
  * <p>The server may support many SASL mechanisms to use for authenticating. Out of the box
  * Smack provides several SASL mechanisms, but it is possible to register new SASL Mechanisms. Use
  * {@link #registerSASLMechanism(String, Class)} to register a new mechanisms. A registered
  * mechanism wont be used until {@link #supportSASLMechanism(String, int)} is called. By default,
  * the list of supported SASL mechanisms is determined from the {@link SmackConfiguration}. </p>
- *
+ * <p/>
  * <p>Once the user has been authenticated with SASL, it is necessary to bind a resource for
  * the connection. If no resource is passed in {@link #authenticate(String, String, String)}
  * then the server will assign a resource for the connection. In case a resource is passed
  * then the server will receive the desired resource but may assign a modified resource for
  * the connection.</p>
- *
+ * <p/>
  * <p>Once a resource has been binded and if the server supports sessions then Smack will establish
  * a session so that instant messaging and presence functionalities may be used.</p>
  *
- * @see org.jivesoftware.smack.sasl.SASLMechanism
- *
  * @author Gaston Dombiak
  * @author Jay Kline
+ * @see org.jivesoftware.smack.sasl.SASLMechanism
  */
 public class SASLAuthentication implements UserAuthentication {
 
@@ -96,10 +96,10 @@ public class SASLAuthentication implements UserAuthentication {
         registerSASLMechanism("ANONYMOUS", SASLAnonymous.class);
 
 //        supportSASLMechanism("GSSAPI",0);
-        supportSASLMechanism("DIGEST-MD5",0);
+        supportSASLMechanism("DIGEST-MD5", 0);
 //        supportSASLMechanism("CRAM-MD5",2);
-        supportSASLMechanism("PLAIN",1);
-        supportSASLMechanism("ANONYMOUS",2);
+        supportSASLMechanism("PLAIN", 1);
+        supportSASLMechanism("ANONYMOUS", 2);
 
     }
 
@@ -144,7 +144,7 @@ public class SASLAuthentication implements UserAuthentication {
      * A value of 0 means that the mechanism is the most prefered one. The SASL mechanism must be
      * registered via {@link #registerSASLMechanism(String, Class)}
      *
-     * @param name common name of the SASL mechanism. E.g.: PLAIN, DIGEST-MD5 or KERBEROS_V4.
+     * @param name  common name of the SASL mechanism. E.g.: PLAIN, DIGEST-MD5 or KERBEROS_V4.
      * @param index preference position amongst all the implemented SASL mechanism. Starts with 0.
      */
     public static void supportSASLMechanism(String name, int index) {
@@ -203,17 +203,17 @@ public class SASLAuthentication implements UserAuthentication {
      * Performs SASL authentication of the specified user. If SASL authentication was successful
      * then resource binding and session establishment will be performed. This method will return
      * the full JID provided by the server while binding a resource to the connection.<p>
-     *
+     * <p/>
      * The server may assign a full JID with a username or resource different than the requested
      * by this method.
      *
      * @param username the username that is authenticating with the server.
      * @param resource the desired resource.
-     * @param cbh the CallbackHandler used to get information from the user
+     * @param cbh      the CallbackHandler used to get information from the user
      * @return the full JID provided by the server while binding a resource to the connection.
      * @throws XMPPException if an error occures while authenticating.
      */
-    public String authenticate(String username, String resource, CallbackHandler cbh) 
+    public String authenticate(String username, String resource, CallbackHandler cbh)
             throws XMPPException {
         // Locate the SASLMechanism to use
         String selectedMechanism = null;
@@ -241,8 +241,7 @@ public class SASLAuthentication implements UserAuthentication {
                     if (!saslNegotiated && !saslFailed) {
                         try {
                             wait(30000);
-                        }
-                        catch (InterruptedException e) {
+                        } catch (InterruptedException e) {
                             // Ignore
                         }
                     }
@@ -254,8 +253,7 @@ public class SASLAuthentication implements UserAuthentication {
                     if (errorCondition != null) {
                         throw new XMPPException("SASL authentication " +
                                 selectedMechanism + " failed: " + errorCondition);
-                    }
-                    else {
+                    } else {
                         throw new XMPPException("SASL authentication failed using mechanism " +
                                 selectedMechanism);
                     }
@@ -267,15 +265,12 @@ public class SASLAuthentication implements UserAuthentication {
                 } else {
                     // SASL authentication failed
                 }
-            }
-            catch (XMPPException e) {
+            } catch (XMPPException e) {
                 throw e;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             throw new XMPPException("SASL Authentication failed. No known authentication mechanisims.");
         }
         throw new XMPPException("SASL authentication failed");
@@ -285,7 +280,7 @@ public class SASLAuthentication implements UserAuthentication {
      * Performs SASL authentication of the specified user. If SASL authentication was successful
      * then resource binding and session establishment will be performed. This method will return
      * the full JID provided by the server while binding a resource to the connection.<p>
-     *
+     * <p/>
      * The server may assign a full JID with a username or resource different than the requested
      * by this method.
      *
@@ -323,8 +318,7 @@ public class SASLAuthentication implements UserAuthentication {
                     if (!saslNegotiated && !saslFailed) {
                         try {
                             wait(30000);
-                        }
-                        catch (InterruptedException e) {
+                        } catch (InterruptedException e) {
                             // Ignore
                         }
                     }
@@ -336,8 +330,7 @@ public class SASLAuthentication implements UserAuthentication {
                     if (errorCondition != null) {
                         throw new XMPPException("SASL authentication " +
                                 selectedMechanism + " failed: " + errorCondition);
-                    }
-                    else {
+                    } else {
                         throw new XMPPException("SASL authentication failed using mechanism " +
                                 selectedMechanism);
                     }
@@ -346,24 +339,20 @@ public class SASLAuthentication implements UserAuthentication {
                 if (saslNegotiated) {
                     // Bind a resource for this connection and
                     return bindResourceAndEstablishSession(resource);
-                }
-                else {
+                } else {
                     // SASL authentication failed so try a Non-SASL authentication
                     return new NonSASLAuthentication(connection)
                             .authenticate(username, password, resource);
                 }
-            }
-            catch (XMPPException e) {
+            } catch (XMPPException e) {
                 throw e;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 // SASL authentication failed so try a Non-SASL authentication
                 return new NonSASLAuthentication(connection)
                         .authenticate(username, password, resource);
             }
-        }
-        else {
+        } else {
             // No SASL method was found so try a Non-SASL authentication
             return new NonSASLAuthentication(connection).authenticate(username, password, resource);
         }
@@ -373,7 +362,7 @@ public class SASLAuthentication implements UserAuthentication {
      * Performs ANONYMOUS SASL authentication. If SASL authentication was successful
      * then resource binding and session establishment will be performed. This method will return
      * the full JID provided by the server while binding a resource to the connection.<p>
-     *
+     * <p/>
      * The server will assign a full JID with a randomly generated resource and possibly with
      * no username.
      *
@@ -383,15 +372,14 @@ public class SASLAuthentication implements UserAuthentication {
     public String authenticateAnonymously() throws XMPPException {
         try {
             currentMechanism = new SASLAnonymous(this);
-            currentMechanism.authenticate(null,null,"");
+            currentMechanism.authenticate(null, null, "");
 
             // Wait until SASL negotiation finishes
             synchronized (this) {
                 if (!saslNegotiated && !saslFailed) {
                     try {
                         wait(5000);
-                    }
-                    catch (InterruptedException e) {
+                    } catch (InterruptedException e) {
                         // Ignore
                     }
                 }
@@ -402,8 +390,7 @@ public class SASLAuthentication implements UserAuthentication {
                 // so throw an exception
                 if (errorCondition != null) {
                     throw new XMPPException("SASL authentication failed: " + errorCondition);
-                }
-                else {
+                } else {
                     throw new XMPPException("SASL authentication failed");
                 }
             }
@@ -411,8 +398,7 @@ public class SASLAuthentication implements UserAuthentication {
             if (saslNegotiated) {
                 // Bind a resource for this connection and
                 return bindResourceAndEstablishSession(null);
-            }
-            else {
+            } else {
                 return new NonSASLAuthentication(connection).authenticateAnonymously();
             }
         } catch (IOException e) {
@@ -426,8 +412,7 @@ public class SASLAuthentication implements UserAuthentication {
             if (!resourceBinded) {
                 try {
                     wait(30000);
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     // Ignore
                 }
             }
@@ -472,8 +457,7 @@ public class SASLAuthentication implements UserAuthentication {
             else if (ack.getType() == IQ.Type.ERROR) {
                 throw new XMPPException(ack.getError());
             }
-        }
-        else {
+        } else {
             // Server never offered session establishment
             throw new XMPPException("Session establishment not offered by server");
         }
@@ -529,7 +513,7 @@ public class SASLAuthentication implements UserAuthentication {
     /**
      * Notification message saying that SASL authentication has failed. The server may have
      * closed the connection depending on the number of possible retries.
-     * 
+     *
      * @deprecated replaced by {@see #authenticationFailed(String)}.
      */
     void authenticationFailed() {
@@ -539,7 +523,7 @@ public class SASLAuthentication implements UserAuthentication {
     /**
      * Notification message saying that SASL authentication has failed. The server may have
      * closed the connection depending on the number of possible retries.
-     * 
+     *
      * @param condition the error condition provided by the server.
      */
     void authenticationFailed(String condition) {
@@ -575,7 +559,7 @@ public class SASLAuthentication implements UserAuthentication {
     void sessionsSupported() {
         sessionSupported = true;
     }
-    
+
     /**
      * Initializes the internal state in order to be able to be reused. The authentication
      * is used by the connection at the first login and then reused after the connection

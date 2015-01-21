@@ -43,5 +43,5 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
 
     public interface OnPreferencesFragmentInteractionListener {
         String getVersionName();
-     }
+    }
 }

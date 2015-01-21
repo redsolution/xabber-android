@@ -25,9 +25,9 @@ import org.jivesoftware.smack.packet.Packet;
 
 /**
  * Filters for packets of a specific type of Message (e.g. CHAT).
- * 
- * @see org.jivesoftware.smack.packet.Message.Type
+ *
  * @author Ward Harold
+ * @see org.jivesoftware.smack.packet.Message.Type
  */
 public class MessageTypeFilter implements PacketFilter {
 
@@ -35,7 +35,7 @@ public class MessageTypeFilter implements PacketFilter {
 
     /**
      * Creates a new message type filter using the specified message type.
-     * 
+     *
      * @param type the message type.
      */
     public MessageTypeFilter(Message.Type type) {
@@ -45,8 +45,7 @@ public class MessageTypeFilter implements PacketFilter {
     public boolean accept(Packet packet) {
         if (!(packet instanceof Message)) {
             return false;
-        }
-        else {
+        } else {
             return ((Message) packet).getType().equals(this.type);
         }
     }

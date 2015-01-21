@@ -41,13 +41,10 @@ public interface CallbackHandler {
      * {@code Callback}, it needs to throw an
      * {@link UnsupportedCallbackException}.
      *
-     * @param callbacks
-     *            the array of {@code Callback}s that need handling
-     * @throws IOException
-     *             if an I/O related error occurs
-     * @throws UnsupportedCallbackException
-     *             if the {@code CallbackHandler} is not able to handle a
-     *             specific {@code Callback}
+     * @param callbacks the array of {@code Callback}s that need handling
+     * @throws IOException                  if an I/O related error occurs
+     * @throws UnsupportedCallbackException if the {@code CallbackHandler} is not able to handle a
+     *                                      specific {@code Callback}
      */
     void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException;
 

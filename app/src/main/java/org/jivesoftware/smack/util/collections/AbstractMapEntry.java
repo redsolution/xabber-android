@@ -28,7 +28,7 @@ import java.util.Map;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:32 $
  * @since Commons Collections 3.0
  */
-public abstract class AbstractMapEntry <K,V> extends AbstractKeyValue<K, V> implements Map.Entry<K, V> {
+public abstract class AbstractMapEntry<K, V> extends AbstractKeyValue<K, V> implements Map.Entry<K, V> {
 
     /**
      * Constructs a new entry with the given key and given value.
@@ -42,6 +42,7 @@ public abstract class AbstractMapEntry <K,V> extends AbstractKeyValue<K, V> impl
 
     // Map.Entry interface
     //-------------------------------------------------------------------------
+
     /**
      * Sets the value stored in this Map Entry.
      * <p/>

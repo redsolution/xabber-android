@@ -26,24 +26,23 @@ import java.security.Principal;
 import java.util.Set;
 
 
-
 /**
  * Protects private credential objects belonging to a {@code Subject}. It has
  * only one action which is "read". The target name of this permission has a
  * special syntax:
- *
+ * <p/>
  * <pre>
  * targetName = CredentialClass {PrincipalClass &quot;PrincipalName&quot;}*
  * </pre>
- *
+ * <p/>
  * First it states a credential class and is followed then by a list of one or
  * more principals identifying the subject.
- * <p>
+ * <p/>
  * The principals on their part are specified as the name of the {@code
  * Principal} class followed by the principal name in quotes. For example, the
  * following file may define permission to read the private credentials of a
  * principal named "Bob": "com.sun.PrivateCredential com.sun.Principal \"Bob\""
- * <p>
+ * <p/>
  * The syntax also allows the use of the wildcard "*" in place of {@code
  * CredentialClass} or {@code PrincipalClass} and/or {@code PrincipalName}.
  *
@@ -63,16 +62,14 @@ public final class PrivateCredentialPermission extends Permission {
 
     // owners set
     private transient CredOwner[] set;
-    
+
     /**
      * Creates a new permission for private credentials specified by the target
      * name {@code name} and an {@code action}. The action is always
      * {@code "read"}.
      *
-     * @param name
-     *            the target name of the permission.
-     * @param action
-     *            the action {@code "read"}.
+     * @param name   the target name of the permission.
+     * @param action the action {@code "read"}.
      */
     public PrivateCredentialPermission(String name, String action) {
         super(name);
@@ -86,11 +83,9 @@ public final class PrivateCredentialPermission extends Permission {
     /**
      * Creates a {@code PrivateCredentialPermission} from the {@code Credential}
      * class and set of principals.
-     * 
-     * @param credentialClass
-     *            the credential class name.
-     * @param principals
-     *            the set of principals.
+     *
+     * @param credentialClass the credential class name.
+     * @param principals      the set of principals.
      */
     PrivateCredentialPermission(String credentialClass, Set<Principal> principals) {
         super(credentialClass);
@@ -196,15 +191,15 @@ public final class PrivateCredentialPermission extends Permission {
      * dimension of the array corresponds to the number of principals. The
      * second dimension defines either the name of the {@code PrincipalClass}
      * [x][0] or the value of {@code PrincipalName} [x][1].
-     * <p>
+     * <p/>
      * This corresponds to the the target name's syntax:
-     *
+     * <p/>
      * <pre>
      * targetName = CredentialClass {PrincipalClass &quot;PrincipalName&quot;}*
      * </pre>
      *
      * @return the principal classes and names associated with this {@code
-     *         PrivateCredentialPermission}.
+     * PrivateCredentialPermission}.
      */
     public String[][] getPrincipals() {
 
@@ -381,7 +376,7 @@ public final class PrivateCredentialPermission extends Permission {
             if (obj instanceof CredOwner) {
                 CredOwner that = (CredOwner) obj;
                 return principalClass.equals(that.principalClass)
-                    && principalName.equals(that.principalName);
+                        && principalName.equals(that.principalName);
             }
             return false;
         }

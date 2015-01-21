@@ -47,7 +47,6 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
                                 Map<String, Object> result) {
 
 
-
         String text = getString(result, R.string.phrase_text_key);
         String user = getString(result, R.string.phrase_user_key);
         String group = getString(result, R.string.phrase_group_key);
@@ -99,6 +98,7 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
 
     public interface OnPhraseEditorFragmentInteractionListener {
         public Phrase getPhrase();
+
         public void setPhrase(Phrase phrase);
     }
 }

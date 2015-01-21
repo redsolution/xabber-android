@@ -27,7 +27,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 /**
  * The MUCAdminProvider parses MUCAdmin packets. (@see MUCAdmin)
- * 
+ *
  * @author Gaston Dombiak
  */
 public class MUCAdminProvider implements IQProvider {
@@ -41,8 +41,7 @@ public class MUCAdminProvider implements IQProvider {
                 if (parser.getName().equals("item")) {
                     mucAdmin.addItem(parseItem(parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }
@@ -55,9 +54,9 @@ public class MUCAdminProvider implements IQProvider {
     private MUCAdmin.Item parseItem(XmlPullParser parser) throws Exception {
         boolean done = false;
         MUCAdmin.Item item =
-            new MUCAdmin.Item(
-                parser.getAttributeValue("", "affiliation"),
-                parser.getAttributeValue("", "role"));
+                new MUCAdmin.Item(
+                        parser.getAttributeValue("", "affiliation"),
+                        parser.getAttributeValue("", "role"));
         item.setNick(parser.getAttributeValue("", "nick"));
         item.setJid(parser.getAttributeValue("", "jid"));
         while (!done) {
@@ -69,8 +68,7 @@ public class MUCAdminProvider implements IQProvider {
                 if (parser.getName().equals("reason")) {
                     item.setReason(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("item")) {
                     done = true;
                 }

@@ -18,6 +18,7 @@
 package org.apache.harmony.javax.security.auth.login;
 
 import java.security.AccessController;
+
 import org.apache.harmony.javax.security.auth.AuthPermission;
 
 public abstract class Configuration {
@@ -55,22 +56,22 @@ public abstract class Configuration {
      */
     private static final Configuration getDefaultProvider() {
         return new Configuration() {
-			
-			@Override
-			public void refresh() {
-			}
-			
-			@Override
-			public AppConfigurationEntry[] getAppConfigurationEntry(
-					String applicationName) {
-				return new AppConfigurationEntry[0];
-			}
-		};
+
+            @Override
+            public void refresh() {
+            }
+
+            @Override
+            public AppConfigurationEntry[] getAppConfigurationEntry(
+                    String applicationName) {
+                return new AppConfigurationEntry[0];
+            }
+        };
     }
 
     /**
      * Shortcut accessor for friendly classes, to skip security checks.
-     * If active configuration was set to <code>null</code>, tries to load a default 
+     * If active configuration was set to <code>null</code>, tries to load a default
      * provider, so this method never returns <code>null</code>. <br>
      * This method is synchronized with setConfiguration()
      */

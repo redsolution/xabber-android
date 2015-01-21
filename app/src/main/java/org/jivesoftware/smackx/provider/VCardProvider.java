@@ -30,6 +30,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,11 +70,9 @@ public class VCardProvider implements IQProvider {
 
                 event = parser.next();
             }
-        }
-        catch (XmlPullParserException e) {
+        } catch (XmlPullParserException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -134,8 +133,7 @@ public class VCardProvider implements IQProvider {
                 Element element = (Element) nodes.item(i);
                 if ("WORK".equals(element.getParentNode().getFirstChild().getNodeName())) {
                     vCard.setEmailWork(getTextContent(element));
-                }
-                else {
+                } else {
                     vCard.setEmailHome(getTextContent(element));
                 }
             }
@@ -155,19 +153,16 @@ public class VCardProvider implements IQProvider {
                     String nodeName = node.getNodeName();
                     if ("NUMBER".equals(nodeName)) {
                         value = getTextContent(node);
-                    }
-                    else if (isWorkHome(nodeName)) {
+                    } else if (isWorkHome(nodeName)) {
                         type = nodeName;
-                    }
-                    else {
+                    } else {
                         code = nodeName;
                     }
                 }
                 if (code == null || value == null) continue;
                 if ("HOME".equals(type)) {
                     vCard.setPhoneHome(code, value);
-                }
-                else { // By default, setup work phone
+                } else { // By default, setup work phone
                     vCard.setPhoneWork(code, value);
                 }
             }
@@ -193,8 +188,7 @@ public class VCardProvider implements IQProvider {
                     String nodeName = node.getNodeName();
                     if (isWorkHome(nodeName)) {
                         type = nodeName;
-                    }
-                    else {
+                    } else {
                         code.add(nodeName);
                         value.add(getTextContent(node));
                     }
@@ -202,8 +196,7 @@ public class VCardProvider implements IQProvider {
                 for (int j = 0; j < value.size(); j++) {
                     if ("HOME".equals(type)) {
                         vCard.setAddressFieldHome((String) code.get(j), (String) value.get(j));
-                    }
-                    else { // By default, setup work address
+                    } else { // By default, setup work address
                         vCard.setAddressFieldWork((String) code.get(j), (String) value.get(j));
                     }
                 }
@@ -228,8 +221,7 @@ public class VCardProvider implements IQProvider {
                     String field = element.getNodeName();
                     if (element.getChildNodes().getLength() == 0) {
                         vCard.setField(field, "");
-                    }
-                    else if (element.getChildNodes().getLength() == 1 &&
+                    } else if (element.getChildNodes().getLength() == 1 &&
                             element.getChildNodes().item(0) instanceof Text) {
                         vCard.setField(field, getTextContent(element));
                     }

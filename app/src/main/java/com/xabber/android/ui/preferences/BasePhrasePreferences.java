@@ -7,7 +7,7 @@ import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-public abstract class BasePhrasePreferences  extends ManagedActivity
+public abstract class BasePhrasePreferences extends ManagedActivity
         implements PhraseEditorFragment.OnPhraseEditorFragmentInteractionListener {
 
     private Phrase phrase;

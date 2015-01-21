@@ -45,9 +45,9 @@ public class ChatStateExtension implements PacketExtension {
         this.state = state;
     }
 
-	public ChatState getState() {
-		return state;
-	}
+    public ChatState getState() {
+        return state;
+    }
 
     public String getElementName() {
         return state.name();
@@ -67,8 +67,7 @@ public class ChatStateExtension implements PacketExtension {
             ChatState state;
             try {
                 state = ChatState.valueOf(parser.getName());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 state = ChatState.active;
             }
             return new ChatStateExtension(state);

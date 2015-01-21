@@ -27,14 +27,14 @@ import org.jivesoftware.smack.packet.Packet;
  * used when constructing packet listeners or collectors -- the filter defines
  * what packets match the criteria of the collector or listener for further
  * packet processing.<p>
- *
+ * <p/>
  * Several pre-defined filters are defined. These filters can be logically combined
  * for more complex packet filtering by using the
  * {@link org.jivesoftware.smack.filter.AndFilter AndFilter} and
  * {@link org.jivesoftware.smack.filter.OrFilter OrFilter} filters. It's also possible
  * to define your own filters by implementing this interface. The code example below
  * creates a trivial filter for packets with a specific ID.
- *
+ * <p/>
  * <pre>
  * // Use an anonymous inner class to define a packet filter that returns
  * // all packets that have a packet ID of "RS145".
@@ -47,9 +47,9 @@ import org.jivesoftware.smack.packet.Packet;
  * PacketCollector myCollector = packetReader.createPacketCollector(myFilter);
  * </pre>
  *
+ * @author Matt Tucker
  * @see org.jivesoftware.smack.PacketCollector
  * @see org.jivesoftware.smack.PacketListener
- * @author Matt Tucker
  */
 public interface PacketFilter {
 

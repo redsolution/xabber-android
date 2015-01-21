@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * 
+ *
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- * 
+ *
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -43,16 +43,15 @@ import java.util.Collection;
 
 /**
  * Chat activity.
- * 
+ * <p/>
  * Warning: {@link PageSwitcher} is to be removed and related implementation is
  * to be fixed.
- * 
+ *
  * @author alexander.ivanov
- * 
  */
 public class ChatViewer extends ManagedActivity implements OnSelectListener,
-    OnChatChangedListener, OnContactChangedListener,
-    OnAccountChangedListener {
+        OnChatChangedListener, OnContactChangedListener,
+        OnAccountChangedListener {
 
     /**
      * Attention request.
@@ -200,9 +199,9 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
-        case KeyEvent.KEYCODE_BACK:
-            close();
-            return false;
+            case KeyEvent.KEYCODE_BACK:
+                close();
+                return false;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -255,7 +254,7 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
 
     @Override
     public void onChatChanged(final String account, final String user,
-            final boolean incoming) {
+                              final boolean incoming) {
         BaseEntity baseEntity;
         baseEntity = (BaseEntity) pageSwitcher.getSelectedItem();
         if (baseEntity != null && baseEntity.equals(account, user)) {
@@ -334,13 +333,13 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
     }
 
     public static Intent createIntent(Context context, String account,
-            String user) {
+                                      String user) {
         return new EntityIntentBuilder(context, ChatViewer.class)
                 .setAccount(account).setUser(user).build();
     }
 
     public static Intent createClearTopIntent(Context context, String account,
-            String user) {
+                                              String user) {
         Intent intent = createIntent(context, account, user);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
@@ -348,19 +347,18 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
 
     /**
      * Create intent to send message.
-     *
+     * <p/>
      * Contact list will not be shown on when chat will be closed.
      *
      * @param context
      * @param account
      * @param user
-     * @param text
-     *            if <code>null</code> then user will be able to send a number
-     *            of messages. Else only one message can be send.
+     * @param text    if <code>null</code> then user will be able to send a number
+     *                of messages. Else only one message can be send.
      * @return
      */
     public static Intent createSendIntent(Context context, String account,
-            String user, String text) {
+                                          String user, String text) {
         Intent intent = ChatViewer.createIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
@@ -368,7 +366,7 @@ public class ChatViewer extends ManagedActivity implements OnSelectListener,
     }
 
     public static Intent createAttentionRequestIntent(Context context,
-            String account, String user) {
+                                                      String account, String user) {
         Intent intent = ChatViewer.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
         return intent;

@@ -122,7 +122,7 @@ public class StreamInitiation extends IQ {
      * neotiation and transfer.
      *
      * @return Returns the data form which contains the valid methods of stream
-     *         neotiation and transfer.
+     * neotiation and transfer.
      */
     public DataForm getFeatureNegotiationForm() {
         return featureNegotiation.getData();
@@ -151,11 +151,9 @@ public class StreamInitiation extends IQ {
             if (fileXML != null) {
                 buf.append(fileXML);
             }
-        }
-        else if (this.getType().equals(IQ.Type.RESULT)) {
+        } else if (this.getType().equals(IQ.Type.RESULT)) {
             buf.append("<si xmlns=\"http://jabber.org/protocol/si\">");
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("IQ Type not understood");
         }
         if (featureNegotiation != null) {
@@ -318,7 +316,7 @@ public class StreamInitiation extends IQ {
          * tranfer.
          *
          * @return Returns whether or not the initiator can support a range for
-         *         the file tranfer.
+         * the file tranfer.
          */
         public boolean isRanged() {
             return isRanged;
@@ -363,8 +361,7 @@ public class StreamInitiation extends IQ {
                     buffer.append("<range/>");
                 }
                 buffer.append("</").append(getElementName()).append(">");
-            }
-            else {
+            } else {
                 buffer.append("/>");
             }
             return buffer.toString();
@@ -375,7 +372,6 @@ public class StreamInitiation extends IQ {
      * The feature negotiation portion of the StreamInitiation packet.
      *
      * @author Alexander Wenckus
-     *
      */
     public class Feature implements PacketExtension {
 
@@ -411,9 +407,9 @@ public class StreamInitiation extends IQ {
             StringBuilder buf = new StringBuilder();
             buf
                     .append("<feature xmlns=\"http://jabber.org/protocol/feature-neg\">");
-			buf.append(data.toXML());
-			buf.append("</feature>");
-			return buf.toString();
-		}
-	}
+            buf.append(data.toXML());
+            buf.append("</feature>");
+            return buf.toString();
+        }
+    }
 }

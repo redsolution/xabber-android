@@ -25,8 +25,7 @@ import java.util.Map;
 
 import org.apache.harmony.javax.security.sasl.SaslClientFactory;
 
-public class JCAProvider extends Provider
-{
+public class JCAProvider extends Provider {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -34,10 +33,9 @@ public class JCAProvider extends Provider
      *
      * @param providerMap The map from SASL mechanims to implementing factory classes.
      */
-    public JCAProvider(Map<String, Class<? extends SaslClientFactory>> providerMap)
-    {
+    public JCAProvider(Map<String, Class<? extends SaslClientFactory>> providerMap) {
         super("AMQSASLProvider", 1.0, "A JCA provider that registers all "
-              + "AMQ SASL providers that want to be registered");
+                + "AMQ SASL providers that want to be registered");
         register(providerMap);
     }
 
@@ -46,10 +44,8 @@ public class JCAProvider extends Provider
      *
      * @param providerMap The map from SASL mechanims to implementing factory classes.
      */
-    private void register(Map<String, Class<? extends SaslClientFactory>> providerMap)
-    {
-        for (Map.Entry<String, Class<? extends SaslClientFactory>> me : providerMap.entrySet())
-        {
+    private void register(Map<String, Class<? extends SaslClientFactory>> providerMap) {
+        for (Map.Entry<String, Class<? extends SaslClientFactory>> me : providerMap.entrySet()) {
             put("SaslClientFactory." + me.getKey(), me.getValue().getName());
         }
     }

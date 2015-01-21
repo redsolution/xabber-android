@@ -72,9 +72,9 @@ public class CapsExtension implements PacketExtension {
      */
     public String toXML() {
         String xml = "<c xmlns='" + XMLNS + "' " +
-            "hash='" + hash + "' " +
-            "node='" + node + "' " +
-            "ver='" + version + "'/>";
+                "hash='" + hash + "' " +
+                "node='" + node + "' " +
+                "ver='" + version + "'/>";
 
         return xml;
     }

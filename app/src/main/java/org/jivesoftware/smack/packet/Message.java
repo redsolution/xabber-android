@@ -26,17 +26,17 @@ import java.util.*;
 
 /**
  * Represents XMPP message packets. A message can be one of several types:
- *
+ * <p/>
  * <ul>
- *      <li>Message.Type.NORMAL -- (Default) a normal text message used in email like interface.
- *      <li>Message.Type.CHAT -- a typically short text message used in line-by-line chat interfaces.
- *      <li>Message.Type.GROUP_CHAT -- a chat message sent to a groupchat server for group chats.
- *      <li>Message.Type.HEADLINE -- a text message to be displayed in scrolling marquee displays.
- *      <li>Message.Type.ERROR -- indicates a messaging error.
+ * <li>Message.Type.NORMAL -- (Default) a normal text message used in email like interface.
+ * <li>Message.Type.CHAT -- a typically short text message used in line-by-line chat interfaces.
+ * <li>Message.Type.GROUP_CHAT -- a chat message sent to a groupchat server for group chats.
+ * <li>Message.Type.HEADLINE -- a text message to be displayed in scrolling marquee displays.
+ * <li>Message.Type.ERROR -- indicates a messaging error.
  * </ul>
- *
+ * <p/>
  * For each message type, different message fields are typically used as follows:
- * <p>
+ * <p/>
  * <table border="1">
  * <tr><td>&nbsp;</td><td colspan="5"><b>Message type</b></td></tr>
  * <tr><td><i>Field</i></td><td><b>Normal</b></td><td><b>Chat</b></td><td><b>Group Chat</b></td><td><b>Headline</b></td><td><b>XMPPError</b></td></tr>
@@ -75,7 +75,7 @@ public class Message extends Packet {
     /**
      * Creates a new message of the specified type to a recipient.
      *
-     * @param to the user to send the message to.
+     * @param to   the user to send the message to.
      * @param type the message type.
      */
     public Message(String to, Type type) {
@@ -109,7 +109,7 @@ public class Message extends Packet {
     /**
      * Returns the default subject of the message, or null if the subject has not been set.
      * The subject is a short description of message contents.
-     * <p>
+     * <p/>
      * The default subject of a message is the subject that corresponds to the message's language.
      * (see {@link #getLanguage()}) or if no language is set to the applications default
      * language (see {@link Packet#getDefaultLanguage()}).
@@ -119,7 +119,7 @@ public class Message extends Packet {
     public String getSubject() {
         return getSubject(null);
     }
-    
+
     /**
      * Returns the subject corresponding to the language. If the language is null, the method result
      * will be the same as {@link #getSubject()}. Null will be returned if the language does not have
@@ -132,7 +132,7 @@ public class Message extends Packet {
         Subject subject = getMessageSubject(language);
         return subject == null ? null : subject.subject;
     }
-    
+
     private Subject getMessageSubject(String language) {
         language = determineLanguage(language);
         for (Subject subject : subjects) {
@@ -171,7 +171,7 @@ public class Message extends Packet {
      * Adds a subject with a corresponding language.
      *
      * @param language the language of the subject being added.
-     * @param subject the subject being added to the message.
+     * @param subject  the subject being added to the message.
      * @return the new {@link org.jivesoftware.smack.packet.Message.Subject}
      * @throws NullPointerException if the subject is null, a null pointer exception is thrown
      */
@@ -227,7 +227,7 @@ public class Message extends Packet {
     /**
      * Returns the default body of the message, or null if the body has not been set. The body
      * is the main message contents.
-     * <p>
+     * <p/>
      * The default body of a message is the body that corresponds to the message's language.
      * (see {@link #getLanguage()}) or if no language is set to the applications default
      * language (see {@link Packet#getDefaultLanguage()}).
@@ -251,7 +251,7 @@ public class Message extends Packet {
         Body body = getMessageBody(language);
         return body == null ? null : body.message;
     }
-    
+
     private Body getMessageBody(String language) {
         language = determineLanguage(language);
         for (Body body : bodies) {
@@ -290,7 +290,7 @@ public class Message extends Packet {
      * Adds a body with a corresponding language.
      *
      * @param language the language of the body being added.
-     * @param body the body being added to the message.
+     * @param body     the body being added to the message.
      * @return the new {@link org.jivesoftware.smack.packet.Message.Body}
      * @throws NullPointerException if the body is null, a null pointer exception is thrown
      * @since 3.0.2
@@ -387,21 +387,19 @@ public class Message extends Packet {
     }
 
     private String determineLanguage(String language) {
-        
+
         // empty string is passed by #setSubject() and #setBody() and is the same as null
         language = "".equals(language) ? null : language;
 
         // if given language is null check if message language is set
         if (language == null && this.language != null) {
             return this.language;
-        }
-        else if (language == null) {
+        } else if (language == null) {
             return getDefaultLanguage();
-        }
-        else {
+        } else {
             return language;
         }
-        
+
     }
 
     public String toXML() {
@@ -434,7 +432,7 @@ public class Message extends Packet {
         // Add the subject in other languages
         for (Subject subject : getSubjects()) {
             // Skip the default language
-            if(subject.equals(defaultSubject))
+            if (subject.equals(defaultSubject))
                 continue;
             buf.append("<subject xml:lang=\"").append(subject.language).append("\">");
             buf.append(StringUtils.escapeForXML(subject.subject));
@@ -448,7 +446,7 @@ public class Message extends Packet {
         // Add the bodies in other languages
         for (Body body : getBodies()) {
             // Skip the default language
-            if(body.equals(defaultBody))
+            if (body.equals(defaultBody))
                 continue;
             buf.append("<body xml:lang=\"").append(body.getLanguage()).append("\">");
             buf.append(StringUtils.escapeForXML(body.getMessage()));
@@ -477,7 +475,9 @@ public class Message extends Packet {
 
         Message message = (Message) o;
 
-        if(!super.equals(message)) { return false; }
+        if (!super.equals(message)) {
+            return false;
+        }
         if (bodies.size() != message.bodies.size() || !bodies.containsAll(message.bodies)) {
             return false;
         }
@@ -564,7 +564,7 @@ public class Message extends Packet {
             // simplified comparison because language and subject are always set
             return this.language.equals(other.language) && this.subject.equals(other.subject);
         }
-        
+
     }
 
     /**
@@ -626,7 +626,7 @@ public class Message extends Packet {
             // simplified comparison because language and message are always set
             return this.language.equals(other.language) && this.message.equals(other.message);
         }
-        
+
     }
 
     /**
@@ -662,8 +662,7 @@ public class Message extends Packet {
         public static Type fromString(String name) {
             try {
                 return Type.valueOf(name);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 return normal;
             }
         }

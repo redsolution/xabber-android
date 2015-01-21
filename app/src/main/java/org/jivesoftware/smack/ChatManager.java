@@ -85,7 +85,7 @@ public class ChatManager {
      * Maps base jids to chats
      */
     private Map<String, Chat> baseJidChats = Collections.synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
-	    ReferenceMap.WEAK));
+            ReferenceMap.WEAK));
 
     private Set<ChatManagerListener> chatManagerListeners
             = new CopyOnWriteArraySet<ChatManagerListener>();
@@ -115,17 +115,16 @@ public class ChatManager {
                 Message message = (Message) packet;
                 Chat chat;
                 if (message.getThread() == null) {
-                	chat = getUserChat(message.getFrom());
-                }
-                else {
+                    chat = getUserChat(message.getFrom());
+                } else {
                     chat = getThreadChat(message.getThread());
                     if (chat == null) {
                         // Try to locate the chat based on the sender of the message
-                    	chat = getUserChat(message.getFrom());
+                        chat = getUserChat(message.getFrom());
                     }
                 }
 
-                if(chat == null) {
+                if (chat == null) {
                     chat = createChat(message);
                 }
                 deliverMessage(chat, message);
@@ -136,13 +135,13 @@ public class ChatManager {
     /**
      * Creates a new chat and returns it.
      *
-     * @param userJID the user this chat is with.
+     * @param userJID  the user this chat is with.
      * @param listener the listener which will listen for new messages from this chat.
      * @return the created chat.
      */
     public Chat createChat(String userJID, MessageListener listener) {
         String threadID;
-        do  {
+        do {
             threadID = nextID();
         } while (threadChats.get(threadID) != null);
 
@@ -151,18 +150,18 @@ public class ChatManager {
 
     /**
      * Creates a new chat using the specified thread ID, then returns it.
-     * 
-     * @param userJID the jid of the user this chat is with
-     * @param thread the thread of the created chat.
+     *
+     * @param userJID  the jid of the user this chat is with
+     * @param thread   the thread of the created chat.
      * @param listener the listener to add to the chat
      * @return the created chat.
      */
     public Chat createChat(String userJID, String thread, MessageListener listener) {
-        if(thread == null) {
+        if (thread == null) {
             thread = nextID();
         }
         Chat chat = threadChats.get(thread);
-        if(chat != null) {
+        if (chat != null) {
             throw new IllegalArgumentException("ThreadID is already used");
         }
         chat = createChat(userJID, thread, true);
@@ -176,7 +175,7 @@ public class ChatManager {
         jidChats.put(userJID, chat);
         baseJidChats.put(StringUtils.parseBareAddress(userJID), chat);
 
-        for(ChatManagerListener listener : chatManagerListeners) {
+        for (ChatManagerListener listener : chatManagerListeners) {
             listener.chatCreated(chat, createdLocally);
         }
 
@@ -185,7 +184,7 @@ public class ChatManager {
 
     private Chat createChat(Message message) {
         String threadID = message.getThread();
-        if(threadID == null) {
+        if (threadID == null) {
             threadID = nextID();
         }
         String userJID = message.getFrom();
@@ -197,17 +196,17 @@ public class ChatManager {
      * Try to get a matching chat for the given user JID.  Try the full
      * JID map first, the try to match on the base JID if no match is
      * found.
-     * 
+     *
      * @param userJID
      * @return
      */
     private Chat getUserChat(String userJID) {
-	Chat match = jidChats.get(userJID);
-	
-	if (match == null) {
-	    match = baseJidChats.get(StringUtils.parseBareAddress(userJID));
-	}
-	return match;
+        Chat match = jidChats.get(userJID);
+
+        if (match == null) {
+            match = baseJidChats.get(StringUtils.parseBareAddress(userJID));
+        }
+        return match;
     }
 
     public Chat getThreadChat(String thread) {
@@ -249,9 +248,9 @@ public class ChatManager {
     }
 
     void sendMessage(Chat chat, Message message) {
-        for(Map.Entry<PacketInterceptor, PacketFilter> interceptor : interceptors.entrySet()) {
+        for (Map.Entry<PacketInterceptor, PacketFilter> interceptor : interceptors.entrySet()) {
             PacketFilter filter = interceptor.getValue();
-            if(filter != null && filter.accept(message)) {
+            if (filter != null && filter.accept(message)) {
                 interceptor.getKey().interceptPacket(message);
             }
         }
@@ -263,7 +262,7 @@ public class ChatManager {
     }
 
     PacketCollector createPacketCollector(Chat chat) {
-        return connection.createPacketCollector(new AndFilter(new ThreadFilter(chat.getThreadID()), 
+        return connection.createPacketCollector(new AndFilter(new ThreadFilter(chat.getThreadID()),
                 new FromContainsFilter(chat.getParticipant())));
     }
 

@@ -31,8 +31,7 @@ public class UnsupportedCallbackException extends Exception {
      * Creates a new exception instance and initializes it with just the
      * unsupported {@code Callback}, but no error message.
      *
-     * @param callback
-     *            the {@code Callback}
+     * @param callback the {@code Callback}
      */
     public UnsupportedCallbackException(Callback callback) {
         super();
@@ -43,10 +42,8 @@ public class UnsupportedCallbackException extends Exception {
      * Creates a new exception instance and initializes it with both the
      * unsupported {@code Callback} and an error message.
      *
-     * @param callback
-     *            the {@code Callback}
-     * @param message
-     *            the error message
+     * @param callback the {@code Callback}
+     * @param message  the error message
      */
     public UnsupportedCallbackException(Callback callback, String message) {
         super(message);

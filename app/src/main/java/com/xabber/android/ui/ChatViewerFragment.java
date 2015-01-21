@@ -63,191 +63,191 @@ import com.xabber.androiddev.R;
 
 public class ChatViewerFragment implements OnCreateContextMenuListener {
 
-	/**
-	 * Minimum number of new messages to be requested from the server side
-	 * archive.
-	 */
-	private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
+    /**
+     * Minimum number of new messages to be requested from the server side
+     * archive.
+     */
+    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
 
-	/**
-	 * Delay before hide pages.
-	 */
-	private static final long PAGES_HIDDER_DELAY = 1000;
+    /**
+     * Delay before hide pages.
+     */
+    private static final long PAGES_HIDDER_DELAY = 1000;
 
-	private AbstractAvatarInflaterHelper avatarInflaterHelper;
+    private AbstractAvatarInflaterHelper avatarInflaterHelper;
 
-	private boolean skipOnTextChanges;
+    private boolean skipOnTextChanges;
 
-	private TextView pageView;
-	private View titleView;
-	private EditText inputView;
-	private ListView listView;
-	private ChatMessageAdapter chatMessageAdapter;
+    private TextView pageView;
+    private View titleView;
+    private EditText inputView;
+    private ListView listView;
+    private ChatMessageAdapter chatMessageAdapter;
 
-	/**
-	 * Whether pages are shown.
-	 */
-	private boolean pagesShown;
+    /**
+     * Whether pages are shown.
+     */
+    private boolean pagesShown;
 
-	/**
-	 * Animation used to hide pages.
-	 */
-	private Animation pagesHideAnimation;
+    /**
+     * Animation used to hide pages.
+     */
+    private Animation pagesHideAnimation;
 
-	/**
-	 * Animation used for incoming message notification.
-	 */
-	private Animation shakeAnimation;
+    /**
+     * Animation used for incoming message notification.
+     */
+    private Animation shakeAnimation;
 
-	private Handler handler;
+    private Handler handler;
 
-	/**
-	 * Runnable called to hide pages.
-	 */
-	private final Runnable pagesHideRunnable = new Runnable() {
-		@Override
-		public void run() {
-			handler.removeCallbacks(this);
-			pageView.startAnimation(pagesHideAnimation);
-		}
-	};
+    /**
+     * Runnable called to hide pages.
+     */
+    private final Runnable pagesHideRunnable = new Runnable() {
+        @Override
+        public void run() {
+            handler.removeCallbacks(this);
+            pageView.startAnimation(pagesHideAnimation);
+        }
+    };
 
-	private final FragmentActivity activity;
+    private final FragmentActivity activity;
 
-	private final View view;
+    private final View view;
 
-	public ChatViewerFragment(FragmentActivity activity) {
-		this.activity = activity;
-		onCreate(null);
-		view = onCreateView(activity.getLayoutInflater(), null, null);
-	}
+    public ChatViewerFragment(FragmentActivity activity) {
+        this.activity = activity;
+        onCreate(null);
+        view = onCreateView(activity.getLayoutInflater(), null, null);
+    }
 
-	private FragmentActivity getActivity() {
-		return activity;
-	}
+    private FragmentActivity getActivity() {
+        return activity;
+    }
 
-	private String getString(int resId, Object... formatArgs) {
-		return activity.getString(resId, formatArgs);
-	}
+    private String getString(int resId, Object... formatArgs) {
+        return activity.getString(resId, formatArgs);
+    }
 
-	private void registerForContextMenu(View view) {
-		view.setOnCreateContextMenuListener(this);
-	}
+    private void registerForContextMenu(View view) {
+        view.setOnCreateContextMenuListener(this);
+    }
 
-	public View getView() {
-		return view;
-	}
+    public View getView() {
+        return view;
+    }
 
-	public void onCreate(Bundle savedInstanceState) {
-		// super.onCreate(savedInstanceState);
-		avatarInflaterHelper = AbstractAvatarInflaterHelper
-				.createAbstractContactInflaterHelper();
-		handler = new Handler();
-		pagesShown = false;
-	}
+    public void onCreate(Bundle savedInstanceState) {
+        // super.onCreate(savedInstanceState);
+        avatarInflaterHelper = AbstractAvatarInflaterHelper
+                .createAbstractContactInflaterHelper();
+        handler = new Handler();
+        pagesShown = false;
+    }
 
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		shakeAnimation = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.shake);
-		pagesHideAnimation = AnimationUtils.loadAnimation(getActivity(),
-				R.anim.chat_page_out);
-		pagesHideAnimation.setAnimationListener(new AnimationListener() {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        shakeAnimation = AnimationUtils.loadAnimation(getActivity(),
+                R.anim.shake);
+        pagesHideAnimation = AnimationUtils.loadAnimation(getActivity(),
+                R.anim.chat_page_out);
+        pagesHideAnimation.setAnimationListener(new AnimationListener() {
 
-			@Override
-			public void onAnimationStart(Animation animation) {
-			}
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
 
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				pageView.setVisibility(View.GONE);
-			}
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                pageView.setVisibility(View.GONE);
+            }
 
-			@Override
-			public void onAnimationRepeat(Animation animation) {
-			}
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
 
-		});
-		View view = inflater.inflate(R.layout.chat_viewer_item, container,
-				false);
-		chatMessageAdapter = new ChatMessageAdapter(getActivity());
-		pageView = (TextView) view.findViewById(R.id.chat_page);
-		titleView = view.findViewById(R.id.title);
-		inputView = (EditText) view.findViewById(R.id.chat_input);
-		listView = (ListView) view.findViewById(android.R.id.list);
+        });
+        View view = inflater.inflate(R.layout.chat_viewer_item, container,
+                false);
+        chatMessageAdapter = new ChatMessageAdapter(getActivity());
+        pageView = (TextView) view.findViewById(R.id.chat_page);
+        titleView = view.findViewById(R.id.title);
+        inputView = (EditText) view.findViewById(R.id.chat_input);
+        listView = (ListView) view.findViewById(android.R.id.list);
 
-		listView.setAdapter(chatMessageAdapter);
-		view.findViewById(R.id.chat_send).setOnClickListener(
-				new OnClickListener() {
+        listView.setAdapter(chatMessageAdapter);
+        view.findViewById(R.id.chat_send).setOnClickListener(
+                new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						sendMessage();
-					}
+                    @Override
+                    public void onClick(View v) {
+                        sendMessage();
+                    }
 
-				});
-		titleView.setOnClickListener(new OnClickListener() {
+                });
+        titleView.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				int size = listView.getCount();
-				if (size > 0)
-					listView.setSelection(size - 1);
-			}
+            @Override
+            public void onClick(View v) {
+                int size = listView.getCount();
+                if (size > 0)
+                    listView.setSelection(size - 1);
+            }
 
-		});
-		inputView.setOnKeyListener(new OnKeyListener() {
+        });
+        inputView.setOnKeyListener(new OnKeyListener() {
 
-			@Override
-			public boolean onKey(View view, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN
-						&& keyCode == KeyEvent.KEYCODE_ENTER
-						&& SettingsManager.chatsSendByEnter()) {
-					sendMessage();
-					return true;
-				}
-				return false;
-			}
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_ENTER
+                        && SettingsManager.chatsSendByEnter()) {
+                    sendMessage();
+                    return true;
+                }
+                return false;
+            }
 
-		});
-		inputView.setOnEditorActionListener(new OnEditorActionListener() {
+        });
+        inputView.setOnEditorActionListener(new OnEditorActionListener() {
 
-			@Override
-			public boolean onEditorAction(TextView view, int actionId,
-					KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_SEND) {
-					sendMessage();
-					return true;
-				}
-				return false;
-			}
+            @Override
+            public boolean onEditorAction(TextView view, int actionId,
+                                          KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    sendMessage();
+                    return true;
+                }
+                return false;
+            }
 
-		});
-		inputView.addTextChangedListener(new TextWatcher() {
+        });
+        inputView.addTextChangedListener(new TextWatcher() {
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-			}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before,
+                                      int count) {
+            }
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-			}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable text) {
-				if (skipOnTextChanges)
-					return;
-				String account = chatMessageAdapter.getAccount();
-				String user = chatMessageAdapter.getUser();
-				ChatStateManager.getInstance().onComposing(account, user, text);
-			}
+            @Override
+            public void afterTextChanged(Editable text) {
+                if (skipOnTextChanges)
+                    return;
+                String account = chatMessageAdapter.getAccount();
+                String user = chatMessageAdapter.getUser();
+                ChatStateManager.getInstance().onComposing(account, user, text);
+            }
 
-		});
-		registerForContextMenu(listView);
-		return view;
-	}
+        });
+        registerForContextMenu(listView);
+        return view;
+    }
 
     public boolean onPrepareOptionsMenu(Menu menu) {
         final String account = chatMessageAdapter.getAccount();
@@ -266,7 +266,8 @@ public class ChatViewerFragment implements OnCreateContextMenuListener {
                     public boolean onMenuItemClick(MenuItem item) {
                         MUCManager.getInstance().joinRoom(account, user, true);
                         return true;
-                    }});
+                    }
+                });
             } else {
                 menu.findItem(R.id.action_invite_to_chat).setVisible(true)
                         .setIntent(ContactList.createRoomInviteIntent(getActivity(), account, user));
@@ -395,20 +396,20 @@ public class ChatViewerFragment implements OnCreateContextMenuListener {
             } else {
                 menu.findItem(R.id.action_restart_encryption).setVisible(true)
                         .setOnMenuItemClickListener(
-                        new MenuItem.OnMenuItemClickListener() {
+                                new MenuItem.OnMenuItemClickListener() {
 
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                try {
-                                    OTRManager.getInstance().refreshSession(
-                                            account, user);
-                                } catch (NetworkException e) {
-                                    Application.getInstance().onError(e);
-                                }
-                                return true;
-                            }
+                                    @Override
+                                    public boolean onMenuItemClick(MenuItem item) {
+                                        try {
+                                            OTRManager.getInstance().refreshSession(
+                                                    account, user);
+                                        } catch (NetworkException e) {
+                                            Application.getInstance().onError(e);
+                                        }
+                                        return true;
+                                    }
 
-                        });
+                                });
             }
             menu.findItem(R.id.action_stop_encryption)
                     .setEnabled(securityLevel != SecurityLevel.plain)
@@ -449,203 +450,202 @@ public class ChatViewerFragment implements OnCreateContextMenuListener {
     }
 
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view,
+                                    ContextMenuInfo menuInfo) {
+        // super.onCreateContextMenu(menu, view, menuInfo);
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View view,
-			ContextMenuInfo menuInfo) {
-		// super.onCreateContextMenu(menu, view, menuInfo);
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        final MessageItem message = (MessageItem) listView.getAdapter()
+                .getItem(info.position);
+        if (message != null && message.getAction() != null)
+            return;
+        if (message.isError()) {
+            menu.add(R.string.message_repeat).setOnMenuItemClickListener(
+                    new MenuItem.OnMenuItemClickListener() {
 
-		final MessageItem message = (MessageItem) listView.getAdapter()
-				.getItem(info.position);
-		if (message != null && message.getAction() != null)
-			return;
-		if (message.isError()) {
-			menu.add(R.string.message_repeat).setOnMenuItemClickListener(
-					new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            sendMessage(message.getText());
+                            return true;
+                        }
 
-						@Override
-						public boolean onMenuItemClick(MenuItem item) {
-							sendMessage(message.getText());
-							return true;
-						}
+                    });
+        }
+        menu.add(R.string.message_quote).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
 
-					});
-		}
-		menu.add(R.string.message_quote).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        insertText("> " + message.getText() + "\n");
+                        return true;
+                    }
 
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						insertText("> " + message.getText() + "\n");
-						return true;
-					}
+                });
+        menu.add(R.string.message_copy).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
 
-				});
-		menu.add(R.string.message_copy).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        ((ClipboardManager) getActivity().getSystemService(
+                                Context.CLIPBOARD_SERVICE)).setText(message
+                                .getSpannable());
+                        return true;
+                    }
 
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						((ClipboardManager) getActivity().getSystemService(
-								Context.CLIPBOARD_SERVICE)).setText(message
-								.getSpannable());
-						return true;
-					}
+                });
+        menu.add(R.string.message_remove).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
 
-				});
-		menu.add(R.string.message_remove).setOnMenuItemClickListener(
-				new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MessageManager.getInstance().removeMessage(message);
+                        onChatChange(false);
+                        return true;
+                    }
 
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						MessageManager.getInstance().removeMessage(message);
-						onChatChange(false);
-						return true;
-					}
+                });
+    }
 
-				});
-	}
+    public void setChat(AbstractChat chat) {
+        final String account = chat.getAccount();
+        final String user = chat.getUser();
+        final AbstractContact abstractContact = RosterManager.getInstance()
+                .getBestContact(account, user);
+        if (chat.equals(chatMessageAdapter.getAccount(),
+                chatMessageAdapter.getUser())) {
+            chatMessageAdapter.updateInfo();
+        } else {
+            if (chatMessageAdapter.getAccount() != null
+                    && chatMessageAdapter.getUser() != null)
+                saveState();
+            if (PageSwitcher.LOG)
+                LogManager.i(this, "Load  " + chatMessageAdapter.getUser()
+                        + " in " + chatMessageAdapter.getAccount());
+            skipOnTextChanges = true;
+            inputView.setText(ChatManager.getInstance().getTypedMessage(
+                    account, user));
+            inputView.setSelection(
+                    ChatManager.getInstance().getSelectionStart(account, user),
+                    ChatManager.getInstance().getSelectionEnd(account, user));
+            skipOnTextChanges = false;
+            chatMessageAdapter.setChat(account, user);
+            listView.setAdapter(listView.getAdapter());
+        }
 
-	public void setChat(AbstractChat chat) {
-		final String account = chat.getAccount();
-		final String user = chat.getUser();
-		final AbstractContact abstractContact = RosterManager.getInstance()
-				.getBestContact(account, user);
-		if (chat.equals(chatMessageAdapter.getAccount(),
-				chatMessageAdapter.getUser())) {
-			chatMessageAdapter.updateInfo();
-		} else {
-			if (chatMessageAdapter.getAccount() != null
-					&& chatMessageAdapter.getUser() != null)
-				saveState();
-			if (PageSwitcher.LOG)
-				LogManager.i(this, "Load  " + chatMessageAdapter.getUser()
-						+ " in " + chatMessageAdapter.getAccount());
-			skipOnTextChanges = true;
-			inputView.setText(ChatManager.getInstance().getTypedMessage(
-					account, user));
-			inputView.setSelection(
-					ChatManager.getInstance().getSelectionStart(account, user),
-					ChatManager.getInstance().getSelectionEnd(account, user));
-			skipOnTextChanges = false;
-			chatMessageAdapter.setChat(account, user);
-			listView.setAdapter(listView.getAdapter());
-		}
+        pageView.setText(getString(
+                R.string.chat_page,
+                ((ChatViewer) getActivity()).getChatPosition(account, user) + 1,
+                ((ChatViewer) getActivity()).getChatCount()));
+        ContactTitleInflater.updateTitle(titleView, getActivity(),
+                abstractContact);
+        avatarInflaterHelper.updateAvatar(
+                (ImageView) titleView.findViewById(R.id.avatar),
+                abstractContact);
+        SecurityLevel securityLevel = OTRManager.getInstance()
+                .getSecurityLevel(chat.getAccount(), chat.getUser());
+        SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
+        ImageView securityView = (ImageView) titleView
+                .findViewById(R.id.security);
+        if (securityLevel == SecurityLevel.plain
+                && (securityOtrMode == SecurityOtrMode.disabled || securityOtrMode == SecurityOtrMode.manual)) {
+            securityView.setVisibility(View.GONE);
+        } else {
+            securityView.setVisibility(View.VISIBLE);
+            securityView.setImageLevel(securityLevel.getImageLevel());
+        }
+    }
 
-		pageView.setText(getString(
-				R.string.chat_page,
-				((ChatViewer) getActivity()).getChatPosition(account, user) + 1,
-				((ChatViewer) getActivity()).getChatCount()));
-		ContactTitleInflater.updateTitle(titleView, getActivity(),
-				abstractContact);
-		avatarInflaterHelper.updateAvatar(
-				(ImageView) titleView.findViewById(R.id.avatar),
-				abstractContact);
-		SecurityLevel securityLevel = OTRManager.getInstance()
-				.getSecurityLevel(chat.getAccount(), chat.getUser());
-		SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
-		ImageView securityView = (ImageView) titleView
-				.findViewById(R.id.security);
-		if (securityLevel == SecurityLevel.plain
-				&& (securityOtrMode == SecurityOtrMode.disabled || securityOtrMode == SecurityOtrMode.manual)) {
-			securityView.setVisibility(View.GONE);
-		} else {
-			securityView.setVisibility(View.VISIBLE);
-			securityView.setImageLevel(securityLevel.getImageLevel());
-		}
-	}
+    public void saveState() {
+        if (PageSwitcher.LOG)
+            LogManager.i(this, "Save " + chatMessageAdapter.getUser() + " in "
+                    + chatMessageAdapter.getAccount());
+        ChatManager.getInstance().setTyped(chatMessageAdapter.getAccount(),
+                chatMessageAdapter.getUser(), inputView.getText().toString(),
+                inputView.getSelectionStart(), inputView.getSelectionEnd());
+    }
 
-	public void saveState() {
-		if (PageSwitcher.LOG)
-			LogManager.i(this, "Save " + chatMessageAdapter.getUser() + " in "
-					+ chatMessageAdapter.getAccount());
-		ChatManager.getInstance().setTyped(chatMessageAdapter.getAccount(),
-				chatMessageAdapter.getUser(), inputView.getText().toString(),
-				inputView.getSelectionStart(), inputView.getSelectionEnd());
-	}
+    public void onChatChange(boolean incomingMessage) {
+        if (incomingMessage)
+            titleView.findViewById(R.id.name_holder).startAnimation(
+                    shakeAnimation);
+        chatMessageAdapter.onChange();
+    }
 
-	public void onChatChange(boolean incomingMessage) {
-		if (incomingMessage)
-			titleView.findViewById(R.id.name_holder).startAnimation(
-					shakeAnimation);
-		chatMessageAdapter.onChange();
-	}
+    /**
+     * Show pages.
+     */
+    public void showPages() {
+        if (pagesShown)
+            return;
+        pagesShown = true;
+        handler.removeCallbacks(pagesHideRunnable);
+        pageView.clearAnimation();
+        pageView.setVisibility(View.VISIBLE);
+    }
 
-	/**
-	 * Show pages.
-	 */
-	public void showPages() {
-		if (pagesShown)
-			return;
-		pagesShown = true;
-		handler.removeCallbacks(pagesHideRunnable);
-		pageView.clearAnimation();
-		pageView.setVisibility(View.VISIBLE);
-	}
+    /**
+     * Requests pages to be hiden in future.
+     */
+    public void hidePages() {
+        if (!pagesShown)
+            return;
+        pagesShown = false;
+        handler.postDelayed(pagesHideRunnable, PAGES_HIDDER_DELAY);
+    }
 
-	/**
-	 * Requests pages to be hiden in future.
-	 */
-	public void hidePages() {
-		if (!pagesShown)
-			return;
-		pagesShown = false;
-		handler.postDelayed(pagesHideRunnable, PAGES_HIDDER_DELAY);
-	}
+    /**
+     * Insert additional text to the input.
+     *
+     * @param additional
+     */
+    public void insertText(String additional) {
+        String source = inputView.getText().toString();
+        int selection = inputView.getSelectionEnd();
+        if (selection == -1)
+            selection = source.length();
+        else if (selection > source.length())
+            selection = source.length();
+        String before = source.substring(0, selection);
+        String after = source.substring(selection);
+        if (before.length() > 0 && !before.endsWith("\n"))
+            additional = "\n" + additional;
+        inputView.setText(before + additional + after);
+        inputView.setSelection(selection + additional.length());
+    }
 
-	/**
-	 * Insert additional text to the input.
-	 * 
-	 * @param additional
-	 */
-	public void insertText(String additional) {
-		String source = inputView.getText().toString();
-		int selection = inputView.getSelectionEnd();
-		if (selection == -1)
-			selection = source.length();
-		else if (selection > source.length())
-			selection = source.length();
-		String before = source.substring(0, selection);
-		String after = source.substring(selection);
-		if (before.length() > 0 && !before.endsWith("\n"))
-			additional = "\n" + additional;
-		inputView.setText(before + additional + after);
-		inputView.setSelection(selection + additional.length());
-	}
+    private void sendMessage() {
+        String text = inputView.getText().toString();
+        int start = 0;
+        int end = text.length();
+        while (start < end
+                && (text.charAt(start) == ' ' || text.charAt(start) == '\n'))
+            start += 1;
+        while (start < end
+                && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n'))
+            end -= 1;
+        text = text.substring(start, end);
+        if ("".equals(text))
+            return;
+        skipOnTextChanges = true;
+        inputView.setText("");
+        skipOnTextChanges = false;
+        sendMessage(text);
+        ((ChatViewer) getActivity()).onSent();
+        if (SettingsManager.chatsHideKeyboard() == ChatsHideKeyboard.always
+                || (getActivity().getResources().getBoolean(R.bool.landscape) && SettingsManager
+                .chatsHideKeyboard() == ChatsHideKeyboard.landscape)) {
+            InputMethodManager imm = (InputMethodManager) getActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
+        }
+    }
 
-	private void sendMessage() {
-		String text = inputView.getText().toString();
-		int start = 0;
-		int end = text.length();
-		while (start < end
-				&& (text.charAt(start) == ' ' || text.charAt(start) == '\n'))
-			start += 1;
-		while (start < end
-				&& (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n'))
-			end -= 1;
-		text = text.substring(start, end);
-		if ("".equals(text))
-			return;
-		skipOnTextChanges = true;
-		inputView.setText("");
-		skipOnTextChanges = false;
-		sendMessage(text);
-		((ChatViewer) getActivity()).onSent();
-		if (SettingsManager.chatsHideKeyboard() == ChatsHideKeyboard.always
-				|| (getActivity().getResources().getBoolean(R.bool.landscape) && SettingsManager
-						.chatsHideKeyboard() == ChatsHideKeyboard.landscape)) {
-			InputMethodManager imm = (InputMethodManager) getActivity()
-					.getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
-		}
-	}
-
-	private void sendMessage(String text) {
-		final String account = chatMessageAdapter.getAccount();
-		final String user = chatMessageAdapter.getUser();
-		MessageManager.getInstance().sendMessage(account, user, text);
-		onChatChange(false);
-	}
+    private void sendMessage(String text) {
+        final String account = chatMessageAdapter.getAccount();
+        final String user = chatMessageAdapter.getUser();
+        MessageManager.getInstance().sendMessage(account, user, text);
+        onChatChange(false);
+    }
 
 }

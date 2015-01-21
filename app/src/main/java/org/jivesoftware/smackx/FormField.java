@@ -270,39 +270,39 @@ public class FormField implements Instance {
         }
     }
 
-	@Override
-	public void serialize(XmlSerializer serializer) throws IOException {
-		serializer.startTag(null, "field");
+    @Override
+    public void serialize(XmlSerializer serializer) throws IOException {
+        serializer.startTag(null, "field");
         // Add attributes
         if (getLabel() != null) {
-        	SerializerUtils.setTextAttribute(serializer, "label", getLabel());
+            SerializerUtils.setTextAttribute(serializer, "label", getLabel());
         }
         if (getVariable() != null) {
-        	SerializerUtils.setTextAttribute(serializer, "var", getVariable());
+            SerializerUtils.setTextAttribute(serializer, "var", getVariable());
         }
         if (getType() != null) {
-        	SerializerUtils.setTextAttribute(serializer, "type", getType());
+            SerializerUtils.setTextAttribute(serializer, "type", getType());
         }
         // Add elements
         if (getDescription() != null) {
-        	SerializerUtils.addTextTag(serializer, "desc", getDescription());
+            SerializerUtils.addTextTag(serializer, "desc", getDescription());
         }
         if (isRequired()) {
-        	SerializerUtils.addEmtpyTag(serializer, "required");
+            SerializerUtils.addEmtpyTag(serializer, "required");
         }
         // Loop through all the values and append them to the string buffer
-        for (Iterator<String> i = getValues(); i.hasNext();) {
-        	SerializerUtils.addTextTag(serializer, "value", i.next());
+        for (Iterator<String> i = getValues(); i.hasNext(); ) {
+            SerializerUtils.addTextTag(serializer, "value", i.next());
         }
         // Loop through all the values and append them to the string buffer
-        for (Iterator<Option> i = getOptions(); i.hasNext();) {
-        	i.next().serialize(serializer);
+        for (Iterator<Option> i = getOptions(); i.hasNext(); ) {
+            i.next().serialize(serializer);
         }
         serializer.endTag(null, "field");
-	}
+    }
 
     public String toXML() {
-    	return SerializerUtils.toXml(this);
+        return SerializerUtils.toXml(this);
     }
 
     /**
@@ -346,32 +346,32 @@ public class FormField implements Instance {
             return getLabel();
         }
 
-    	@Override
-    	public void serialize(XmlSerializer serializer) throws IOException {
-    		serializer.startTag(null, "option");
+        @Override
+        public void serialize(XmlSerializer serializer) throws IOException {
+            serializer.startTag(null, "option");
             // Add attribute
             if (getLabel() != null) {
-            	SerializerUtils.setTextAttribute(serializer, "label", getLabel());
+                SerializerUtils.setTextAttribute(serializer, "label", getLabel());
             }
             // Add element
             SerializerUtils.addTextTag(serializer, "value", getValue());
             serializer.endTag(null, "option");
-    	}
-
-        public String toXML() {
-        	return SerializerUtils.toXml(this);
         }
 
-		@Override
-		public boolean isValid() {
-			return true;
-		}
+        public String toXML() {
+            return SerializerUtils.toXml(this);
+        }
+
+        @Override
+        public boolean isValid() {
+            return true;
+        }
 
     }
 
-	@Override
-	public boolean isValid() {
-		return true;
-	}
+    @Override
+    public boolean isValid() {
+        return true;
+    }
 
 }

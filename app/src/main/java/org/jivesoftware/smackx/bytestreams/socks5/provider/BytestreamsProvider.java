@@ -20,7 +20,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 /**
  * Parses a bytestream packet.
- * 
+ *
  * @author Alexander Wenckus
  */
 public class BytestreamsProvider implements IQProvider {
@@ -48,27 +48,22 @@ public class BytestreamsProvider implements IQProvider {
                     JID = parser.getAttributeValue("", "jid");
                     host = parser.getAttributeValue("", "host");
                     port = parser.getAttributeValue("", "port");
-                }
-                else if (elementName.equals(Bytestream.StreamHostUsed.ELEMENTNAME)) {
+                } else if (elementName.equals(Bytestream.StreamHostUsed.ELEMENTNAME)) {
                     toReturn.setUsedHost(parser.getAttributeValue("", "jid"));
-                }
-                else if (elementName.equals(Bytestream.Activate.ELEMENTNAME)) {
+                } else if (elementName.equals(Bytestream.Activate.ELEMENTNAME)) {
                     toReturn.setToActivate(parser.getAttributeValue("", "jid"));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (elementName.equals("streamhost")) {
                     if (port == null) {
                         toReturn.addStreamHost(JID, host);
-                    }
-                    else {
+                    } else {
                         toReturn.addStreamHost(JID, host, Integer.parseInt(port));
                     }
                     JID = null;
                     host = null;
                     port = null;
-                }
-                else if (elementName.equals("query")) {
+                } else if (elementName.equals("query")) {
                     done = true;
                 }
             }

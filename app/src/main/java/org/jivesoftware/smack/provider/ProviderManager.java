@@ -33,23 +33,23 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Manages providers for parsing custom XML sub-documents of XMPP packets. Two types of
  * providers exist:<ul>
- *      <li>IQProvider -- parses IQ requests into Java objects.
- *      <li>PacketExtension -- parses XML sub-documents attached to packets into
- *          PacketExtension instances.</ul>
- *
+ * <li>IQProvider -- parses IQ requests into Java objects.
+ * <li>PacketExtension -- parses XML sub-documents attached to packets into
+ * PacketExtension instances.</ul>
+ * <p/>
  * <b>IQProvider</b><p>
- *
+ * <p/>
  * By default, Smack only knows how to process IQ packets with sub-packets that
  * are in a few namespaces such as:<ul>
- *      <li>jabber:iq:auth
- *      <li>jabber:iq:roster
- *      <li>jabber:iq:register</ul>
- *
+ * <li>jabber:iq:auth
+ * <li>jabber:iq:roster
+ * <li>jabber:iq:register</ul>
+ * <p/>
  * Because many more IQ types are part of XMPP and its extensions, a pluggable IQ parsing
  * mechanism is provided. IQ providers are registered programatically or by creating a
  * smack.providers file in the META-INF directory of your JAR file. The file is an XML
  * document that contains one or more iqProvider entries, as in the following example:
- *
+ * <p/>
  * <pre>
  * &lt;?xml version="1.0"?&gt;
  * &lt;smackProviders&gt;
@@ -193,17 +193,14 @@ public class ProviderManager {
                                             Class provider = Class.forName(className);
                                             if (IQProvider.class.isAssignableFrom(provider)) {
                                                 iqProviders.put(key, provider.newInstance());
-                                            }
-                                            else if (IQ.class.isAssignableFrom(provider)) {
+                                            } else if (IQ.class.isAssignableFrom(provider)) {
                                                 iqProviders.put(key, provider);
                                             }
-                                        }
-                                        catch (ClassNotFoundException cnfe) {
+                                        } catch (ClassNotFoundException cnfe) {
                                             cnfe.printStackTrace();
                                         }
                                     }
-                                }
-                                else if (parser.getName().equals("extensionProvider")) {
+                                } else if (parser.getName().equals("extensionProvider")) {
                                     parser.next();
                                     parser.next();
                                     String elementName = parser.nextText();
@@ -228,13 +225,11 @@ public class ProviderManager {
                                             if (PacketExtensionProvider.class.isAssignableFrom(
                                                     provider)) {
                                                 extensionProviders.put(key, provider.newInstance());
-                                            }
-                                            else if (PacketExtension.class.isAssignableFrom(
+                                            } else if (PacketExtension.class.isAssignableFrom(
                                                     provider)) {
                                                 extensionProviders.put(key, provider);
                                             }
-                                        }
-                                        catch (ClassNotFoundException cnfe) {
+                                        } catch (ClassNotFoundException cnfe) {
                                             cnfe.printStackTrace();
                                         }
                                     }
@@ -243,19 +238,16 @@ public class ProviderManager {
                             eventType = parser.next();
                         }
                         while (eventType != XmlPullParser.END_DOCUMENT);
-                    }
-                    finally {
+                    } finally {
                         try {
                             providerStream.close();
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             // Ignore.
                         }
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -264,7 +256,7 @@ public class ProviderManager {
      * Returns the IQ provider registered to the specified XML element name and namespace.
      * For example, if a provider was registered to the element name "query" and the
      * namespace "jabber:iq:time", then the following packet would trigger the provider:
-     *
+     * <p/>
      * <pre>
      * &lt;iq type='result' to='joe@example.com' from='mary@example.com' id='time_1'&gt;
      *     &lt;query xmlns='jabber:iq:time'&gt;
@@ -277,7 +269,7 @@ public class ProviderManager {
      * <p>Note: this method is generally only called by the internal Smack classes.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
+     * @param namespace   the XML namespace.
      * @return the IQ provider.
      */
     public Object getIQProvider(String elementName, String namespace) {
@@ -302,15 +294,13 @@ public class ProviderManager {
      * loaded through the classpath.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
-     * @param provider the IQ provider.
+     * @param namespace   the XML namespace.
+     * @param provider    the IQ provider.
      */
     public void addIQProvider(String elementName, String namespace,
-            Object provider)
-    {
+                              Object provider) {
         if (!(provider instanceof IQProvider || (provider instanceof Class &&
-                IQ.class.isAssignableFrom((Class)provider))))
-        {
+                IQ.class.isAssignableFrom((Class) provider)))) {
             throw new IllegalArgumentException("Provider must be an IQProvider " +
                     "or a Class instance.");
         }
@@ -324,7 +314,7 @@ public class ProviderManager {
      * using the {@link #addIQProvider(String, String, Object) addIQProvider} method.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
+     * @param namespace   the XML namespace.
      */
     public void removeIQProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
@@ -335,7 +325,7 @@ public class ProviderManager {
      * Returns the packet extension provider registered to the specified XML element name
      * and namespace. For example, if a provider was registered to the element name "x" and the
      * namespace "jabber:x:event", then the following packet would trigger the provider:
-     *
+     * <p/>
      * <pre>
      * &lt;message to='romeo@montague.net' id='message_1'&gt;
      *     &lt;body&gt;Art thou not Romeo, and a Montague?&lt;/body&gt;
@@ -347,7 +337,7 @@ public class ProviderManager {
      * <p>Note: this method is generally only called by the internal Smack classes.
      *
      * @param elementName element name associated with extension provider.
-     * @param namespace namespace associated with extension provider.
+     * @param namespace   namespace associated with extension provider.
      * @return the extenion provider.
      */
     public Object getExtensionProvider(String elementName, String namespace) {
@@ -361,12 +351,11 @@ public class ProviderManager {
      * a PacketExtensionProvider instance, or a Class object of a Javabean.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
-     * @param provider the extension provider.
+     * @param namespace   the XML namespace.
+     * @param provider    the extension provider.
      */
     public void addExtensionProvider(String elementName, String namespace,
-            Object provider)
-    {
+                                     Object provider) {
         if (!(provider instanceof PacketExtensionProvider || provider instanceof Class)) {
             throw new IllegalArgumentException("Provider must be a PacketExtensionProvider " +
                     "or a Class instance.");
@@ -381,7 +370,7 @@ public class ProviderManager {
      * using the {@link #addExtensionProvider(String, String, Object) addExtensionProvider} method.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
+     * @param namespace   the XML namespace.
      */
     public void removeExtensionProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
@@ -403,7 +392,7 @@ public class ProviderManager {
      * Returns a String key for a given element name and namespace.
      *
      * @param elementName the element name.
-     * @param namespace the namespace.
+     * @param namespace   the namespace.
      * @return a unique key for the element name and namespace pair.
      */
     private String getProviderKey(String elementName, String namespace) {

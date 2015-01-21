@@ -24,12 +24,11 @@ import org.jivesoftware.smack.packet.PrivacyItem;
 import java.util.List;
 
 /**
- * Interface to implement classes to listen for server events about privacy communication. 
+ * Interface to implement classes to listen for server events about privacy communication.
  * Listeners are registered with the {@link PrivacyListManager}.
  *
- * @see PrivacyListManager#addListener
- * 
  * @author Francisco Vives
+ * @see PrivacyListManager#addListener
  */
 public interface PrivacyListListener {
 

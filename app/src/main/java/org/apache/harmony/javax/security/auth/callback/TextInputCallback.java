@@ -20,7 +20,6 @@ package org.apache.harmony.javax.security.auth.callback;
 import java.io.Serializable;
 
 
-
 public class TextInputCallback implements Callback, Serializable {
 
     private static final long serialVersionUID = -8064222478852811804L;

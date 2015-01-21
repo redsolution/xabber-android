@@ -48,7 +48,7 @@ public class MUCUser implements PacketExtension {
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
-            "\">");
+                "\">");
         if (getInvite() != null) {
             buf.append(getInvite().toXML());
         }
@@ -175,7 +175,7 @@ public class MUCUser implements PacketExtension {
      * Sets the status which holds a code that assists in presenting notification messages.
      *
      * @param status the status which holds a code that assists in presenting notification
-     * messages.
+     *               messages.
      */
     public void setStatus(Status status) {
         this.status = status;
@@ -380,7 +380,7 @@ public class MUCUser implements PacketExtension {
          * Creates a new item child.
          *
          * @param affiliation the actor's affiliation to the room
-         * @param role the privilege level of an occupant within a room.
+         * @param role        the privilege level of an occupant within a room.
          */
         public Item(String affiliation, String role) {
             this.affiliation = affiliation;
@@ -506,8 +506,7 @@ public class MUCUser implements PacketExtension {
             }
             if (getReason() == null && getActor() == null) {
                 buf.append("/>");
-            }
-            else {
+            } else {
                 buf.append(">");
                 if (getReason() != null) {
                     buf.append("<reason>").append(getReason()).append("</reason>");
@@ -612,8 +611,7 @@ public class MUCUser implements PacketExtension {
             }
             if (getReason() == null) {
                 buf.append("/>");
-            }
-            else {
+            } else {
                 buf.append(">");
                 if (getReason() != null) {
                     buf.append("<reason>").append(getReason()).append("</reason>");

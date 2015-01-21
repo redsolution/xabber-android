@@ -56,13 +56,12 @@ class ConnectionDetachedPacketCollector {
      * result queue.
      *
      * @return the next packet result, or <tt>null</tt> if there are no more
-     *      results.
+     * results.
      */
     public synchronized Packet pollResult() {
         if (resultQueue.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return resultQueue.removeLast();
         }
     }
@@ -78,8 +77,7 @@ class ConnectionDetachedPacketCollector {
         while (resultQueue.isEmpty()) {
             try {
                 wait();
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 // Ignore.
             }
         }
@@ -99,16 +97,14 @@ class ConnectionDetachedPacketCollector {
         if (resultQueue.isEmpty()) {
             try {
                 wait(timeout);
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 // Ignore.
             }
         }
         // If still no result, return null.
         if (resultQueue.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return resultQueue.removeLast();
         }
     }

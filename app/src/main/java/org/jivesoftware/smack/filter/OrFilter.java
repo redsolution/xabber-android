@@ -38,7 +38,7 @@ public class OrFilter implements PacketFilter {
     /**
      * The list of filters.
      */
-    private PacketFilter [] filters;
+    private PacketFilter[] filters;
 
     /**
      * Creates an empty OR filter. Filters should be added using the
@@ -77,8 +77,8 @@ public class OrFilter implements PacketFilter {
         }
         // If there is no more room left in the filters array, expand it.
         if (size == filters.length) {
-            PacketFilter [] newFilters = new PacketFilter[filters.length+2];
-            for (int i=0; i<filters.length; i++) {
+            PacketFilter[] newFilters = new PacketFilter[filters.length + 2];
+            for (int i = 0; i < filters.length; i++) {
                 newFilters[i] = filters[i];
             }
             filters = newFilters;
@@ -89,7 +89,7 @@ public class OrFilter implements PacketFilter {
     }
 
     public boolean accept(Packet packet) {
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             if (filters[i].accept(packet)) {
                 return true;
             }

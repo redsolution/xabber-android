@@ -26,9 +26,8 @@ import org.jivesoftware.smackx.packet.MessageEvent;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- *
  * The MessageEventProvider parses Message Event packets.
-*
+ *
  * @author Gaston Dombiak
  */
 public class MessageEventProvider implements PacketExtensionProvider {
@@ -48,7 +47,7 @@ public class MessageEventProvider implements PacketExtensionProvider {
      * @throws Exception if a parsing error occurs.
      */
     public PacketExtension parseExtension(XmlPullParser parser)
-        throws Exception {
+            throws Exception {
         MessageEvent messageEvent = new MessageEvent();
         boolean done = false;
         while (!done) {

@@ -10,42 +10,47 @@ package org.xbill.DNS;
 
 public class KXRecord extends U16NameBase {
 
-private static final long serialVersionUID = 7448568832769757809L;
+    private static final long serialVersionUID = 7448568832769757809L;
 
-KXRecord() {}
+    KXRecord() {
+    }
 
-Record
-getObject() {
-	return new KXRecord();
-}
+    Record
+    getObject() {
+        return new KXRecord();
+    }
 
-/**
- * Creates a KX Record from the given data
- * @param preference The preference of this KX.  Records with lower priority
- * are preferred.
- * @param target The host that authority is delegated to
- */
-public
-KXRecord(Name name, int dclass, long ttl, int preference, Name target) {
-	super(name, Type.KX, dclass, ttl, preference, "preference",
-	      target, "target");
-}
+    /**
+     * Creates a KX Record from the given data
+     *
+     * @param preference The preference of this KX.  Records with lower priority
+     *                   are preferred.
+     * @param target     The host that authority is delegated to
+     */
+    public KXRecord(Name name, int dclass, long ttl, int preference, Name target) {
+        super(name, Type.KX, dclass, ttl, preference, "preference",
+                target, "target");
+    }
 
-/** Returns the target of the KX record */
-public Name
-getTarget() {
-	return getNameField();
-}
+    /**
+     * Returns the target of the KX record
+     */
+    public Name
+    getTarget() {
+        return getNameField();
+    }
 
-/** Returns the preference of this KX record */
-public int
-getPreference() {
-	return getU16Field();
-}
+    /**
+     * Returns the preference of this KX record
+     */
+    public int
+    getPreference() {
+        return getU16Field();
+    }
 
-public Name
-getAdditionalName() {
-	return getNameField();
-}
+    public Name
+    getAdditionalName() {
+        return getNameField();
+    }
 
 }

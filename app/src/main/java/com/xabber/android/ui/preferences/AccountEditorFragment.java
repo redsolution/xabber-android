@@ -85,10 +85,10 @@ public class AccountEditorFragment extends BaseSettingsFragment
                     .equals(newValue)
                     && !getString(R.string.account_proxy_type_orbot).equals(
                     newValue);
-            for (int id : new Integer[] { R.string.account_proxy_host_key,
+            for (int id : new Integer[]{R.string.account_proxy_host_key,
                     R.string.account_proxy_port_key,
                     R.string.account_proxy_user_key,
-                    R.string.account_proxy_password_key, }) {
+                    R.string.account_proxy_password_key,}) {
                 Preference proxyPreference = findPreference(getString(id));
                 if (proxyPreference != null)
                     proxyPreference.setEnabled(enabled);
@@ -221,10 +221,13 @@ public class AccountEditorFragment extends BaseSettingsFragment
 
     public interface AccountEditorFragmentInteractionListener {
         public String getAccount();
+
         public AccountItem getAccountItem();
+
         public String getToken();
 
         public void onOAuthClick();
+
         public void showOrbotDialog();
     }
 }

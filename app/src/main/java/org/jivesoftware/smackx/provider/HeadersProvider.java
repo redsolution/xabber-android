@@ -23,15 +23,13 @@ import org.jivesoftware.smackx.packet.HeadersExtension;
 
 /**
  * Parses the headers element as defined in <a href="http://xmpp.org/extensions/xep-0131">Stanza Headers and Internet Metadata (SHIM)</a>.
- * 
+ *
  * @author Robin Collier
  */
-public class HeadersProvider extends EmbeddedExtensionProvider
-{
-	@Override
-	protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends PacketExtension> content)
-	{
-		return new HeadersExtension((Collection<Header>)content);
-	}
+public class HeadersProvider extends EmbeddedExtensionProvider {
+    @Override
+    protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends PacketExtension> content) {
+        return new HeadersExtension((Collection<Header>) content);
+    }
 
 }

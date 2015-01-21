@@ -21,7 +21,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 /**
  * Parses an In-Band Bytestream open packet.
- * 
+ *
  * @author Henning Staib
  */
 public class OpenIQProvider implements IQProvider {
@@ -34,8 +34,7 @@ public class OpenIQProvider implements IQProvider {
         StanzaType stanza = null;
         if (stanzaValue == null) {
             stanza = StanzaType.IQ;
-        }
-        else {
+        } else {
             stanza = StanzaType.valueOf(stanzaValue.toUpperCase());
         }
 

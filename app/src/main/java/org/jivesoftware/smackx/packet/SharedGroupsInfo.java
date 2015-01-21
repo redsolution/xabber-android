@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * IQ packet used for discovering the user's shared groups and for getting the answer back
  * from the server.<p>
- *
+ * <p/>
  * Important note: This functionality is not part of the XMPP spec and it will only work
  * with Wildfire.
  *
@@ -33,7 +33,7 @@ public class SharedGroupsInfo extends IQ {
     public String getChildElementXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<sharedgroup xmlns=\"http://www.jivesoftware.org/protocol/sharedgroup\">");
-        for (Iterator it=groups.iterator(); it.hasNext();) {
+        for (Iterator it = groups.iterator(); it.hasNext(); ) {
             buf.append("<group>").append(it.next()).append("</group>");
         }
         buf.append("</sharedgroup>");
@@ -60,8 +60,7 @@ public class SharedGroupsInfo extends IQ {
                 int eventType = parser.next();
                 if (eventType == XmlPullParser.START_TAG && parser.getName().equals("group")) {
                     groupsInfo.getGroups().add(parser.nextText());
-                }
-                else if (eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("sharedgroup")) {
                         done = true;
                     }

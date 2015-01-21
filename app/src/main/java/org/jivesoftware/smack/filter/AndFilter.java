@@ -55,8 +55,8 @@ public class AndFilter implements PacketFilter {
         if (filters == null) {
             throw new IllegalArgumentException("Parameter cannot be null.");
         }
-        for(PacketFilter filter : filters) {
-            if(filter == null) {
+        for (PacketFilter filter : filters) {
+            if (filter == null) {
                 throw new IllegalArgumentException("Parameter cannot be null.");
             }
             this.filters.add(filter);

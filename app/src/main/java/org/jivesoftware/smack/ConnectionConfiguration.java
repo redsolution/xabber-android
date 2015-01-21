@@ -25,7 +25,9 @@ import org.jivesoftware.smack.util.DNSUtil;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
+
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
+
 import java.io.File;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -34,7 +36,7 @@ import java.security.cert.X509Certificate;
  * Configuration to use while establishing the connection to the server. It is possible to
  * configure the path to the trustore file that keeps the trusted CA root certificates and
  * enable or disable all or some of the checkings done while verifying server certificates.<p>
- *
+ * <p/>
  * It is also possible to configure if TLS, SASL, and compression are used or not.
  *
  * @author Gaston Dombiak
@@ -78,10 +80,10 @@ public class ConnectionConfiguration implements Cloneable {
 
     // Flag that indicates if a reconnection should be attempted when abruptly disconnected
     private boolean reconnectionAllowed = true;
-    
+
     // Holds the socket factory that is used to generate the socket in the connection
     private SocketFactory socketFactory;
-    
+
     // Holds the authentication information for future reconnections
     private String username;
     private String password;
@@ -89,11 +91,11 @@ public class ConnectionConfiguration implements Cloneable {
     private boolean sendPresence = true;
     private boolean rosterLoadedAtLogin = true;
     private SecurityMode securityMode = SecurityMode.enabled;
-	
-	// Holds the proxy information (such as proxyhost, proxyport, username, password etc)
+
+    // Holds the proxy information (such as proxyhost, proxyport, username, password etc)
     protected ProxyInfo proxy;
 
-	private CertificateListener certificateListener;
+    private CertificateListener certificateListener;
 
     /**
      * Creates a new ConnectionConfiguration for the specified service name.
@@ -105,20 +107,20 @@ public class ConnectionConfiguration implements Cloneable {
     public ConnectionConfiguration(String serviceName) {
         // Perform DNS lookup to get host and port to use
         DNSUtil.HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
-        init(address.getHost(), address.getPort(), serviceName, 
-			ProxyInfo.forDefaultProxy());
+        init(address.getHost(), address.getPort(), serviceName,
+                ProxyInfo.forDefaultProxy());
     }
-	
-	/**
-     * Creates a new ConnectionConfiguration for the specified service name 
+
+    /**
+     * Creates a new ConnectionConfiguration for the specified service name
      * with specified proxy.
      * A DNS SRV lookup will be performed to find out the actual host address
      * and port to use for the connection.
      *
      * @param serviceName the name of the service provided by an XMPP server.
-     * @param proxy the proxy through which XMPP is to be connected
+     * @param proxy       the proxy through which XMPP is to be connected
      */
-    public ConnectionConfiguration(String serviceName,ProxyInfo proxy) {
+    public ConnectionConfiguration(String serviceName, ProxyInfo proxy) {
         // Perform DNS lookup to get host and port to use
         DNSUtil.HostAddress address = DNSUtil.resolveXMPPDomain(serviceName);
         init(address.getHost(), address.getPort(), serviceName, proxy);
@@ -134,15 +136,15 @@ public class ConnectionConfiguration implements Cloneable {
      * to the server in that case since a DNS SRV lookup for example.com would not
      * point to the local testing server.
      *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
+     * @param host        the host where the XMPP server is running.
+     * @param port        the port where the XMPP is listening.
      * @param serviceName the name of the service provided by an XMPP server.
      */
     public ConnectionConfiguration(String host, int port, String serviceName) {
         init(host, port, serviceName, ProxyInfo.forDefaultProxy());
     }
-	
-	/**
+
+    /**
      * Creates a new ConnectionConfiguration using the specified host, port and
      * service name. This is useful for manually overriding the DNS SRV lookup
      * process that's used with the {@link #ConnectionConfiguration(String)}
@@ -152,10 +154,10 @@ public class ConnectionConfiguration implements Cloneable {
      * to the server in that case since a DNS SRV lookup for example.com would not
      * point to the local testing server.
      *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
+     * @param host        the host where the XMPP server is running.
+     * @param port        the port where the XMPP is listening.
      * @param serviceName the name of the service provided by an XMPP server.
-     * @param proxy the proxy through which XMPP is to be connected
+     * @param proxy       the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, String serviceName, ProxyInfo proxy) {
         init(host, port, serviceName, proxy);
@@ -171,13 +173,13 @@ public class ConnectionConfiguration implements Cloneable {
     public ConnectionConfiguration(String host, int port) {
         init(host, port, host, ProxyInfo.forDefaultProxy());
     }
-	
-	/**
+
+    /**
      * Creates a new ConnectionConfiguration for a connection that will connect
      * to the desired host and port with desired proxy.
      *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
+     * @param host  the host where the XMPP server is running.
+     * @param port  the port where the XMPP is listening.
      * @param proxy the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, ProxyInfo proxy) {
@@ -205,8 +207,8 @@ public class ConnectionConfiguration implements Cloneable {
         keystorePath = System.getProperty("javax.net.ssl.keyStore");
         keystoreType = "jks";
         pkcs11Library = "pkcs11.config";
-		
-		//Setting the SocketFactory according to proxy supplied
+
+        //Setting the SocketFactory according to proxy supplied
         socketFactory = proxy.getSocketFactory();
     }
 
@@ -330,7 +332,7 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Retuns the path to the keystore file. The key store file contains the 
+     * Retuns the path to the keystore file. The key store file contains the
      * certificates that may be used to authenticate the client to the server,
      * in the event the server requests or requires it.
      *
@@ -341,7 +343,7 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Sets the path to the keystore file. The key store file contains the 
+     * Sets the path to the keystore file. The key store file contains the
      * certificates that may be used to authenticate the client to the server,
      * in the event the server requests or requires it.
      *
@@ -395,7 +397,7 @@ public class ConnectionConfiguration implements Cloneable {
      * be checked. By default the certificate chain is not verified.
      *
      * @return true if the whole chaing of certificates presented by the server are going to
-     *         be checked.
+     * be checked.
      */
     public boolean isVerifyChainEnabled() {
         return verifyChainEnabled;
@@ -406,7 +408,7 @@ public class ConnectionConfiguration implements Cloneable {
      * be checked. By default the certificate chain is not verified.
      *
      * @param verifyChainEnabled if the whole chaing of certificates presented by the server
-     *        are going to be checked.
+     *                           are going to be checked.
      */
     public void setVerifyChainEnabled(boolean verifyChainEnabled) {
         this.verifyChainEnabled = verifyChainEnabled;
@@ -455,7 +457,7 @@ public class ConnectionConfiguration implements Cloneable {
      * validity. By default certificates are not verified.
      *
      * @return true if certificates presented by the server are going to be checked for their
-     *         validity.
+     * validity.
      */
     public boolean isExpiredCertificatesCheckEnabled() {
         return expiredCertificatesCheckEnabled;
@@ -466,7 +468,7 @@ public class ConnectionConfiguration implements Cloneable {
      * validity. By default certificates are not verified.
      *
      * @param expiredCertificatesCheckEnabled if certificates presented by the server are going
-     *        to be checked for their validity.
+     *                                        to be checked for their validity.
      */
     public void setExpiredCertificatesCheckEnabled(boolean expiredCertificatesCheckEnabled) {
         this.expiredCertificatesCheckEnabled = expiredCertificatesCheckEnabled;
@@ -477,7 +479,7 @@ public class ConnectionConfiguration implements Cloneable {
      * domain. By default certificates are not verified.
      *
      * @return true if certificates presented by the server are going to be checked for their
-     *         domain.
+     * domain.
      */
     public boolean isNotMatchingDomainCheckEnabled() {
         return notMatchingDomainCheckEnabled;
@@ -488,7 +490,7 @@ public class ConnectionConfiguration implements Cloneable {
      * domain. By default certificates are not verified.
      *
      * @param notMatchingDomainCheckEnabled if certificates presented by the server are going
-     *        to be checked for their domain.
+     *                                      to be checked for their domain.
      */
     public void setNotMatchingDomainCheckEnabled(boolean notMatchingDomainCheckEnabled) {
         this.notMatchingDomainCheckEnabled = notMatchingDomainCheckEnabled;
@@ -500,7 +502,7 @@ public class ConnectionConfiguration implements Cloneable {
      * @return the SSLContext previously set with setCustomSSLContext() or null.
      */
     public SSLContext getCustomSSLContext() {
-	    return this.customSSLContext;
+        return this.customSSLContext;
     }
 
     /**
@@ -510,7 +512,7 @@ public class ConnectionConfiguration implements Cloneable {
      * @param context the custom SSLContext for new sockets; null to reset default behaviour.
      */
     public void setCustomSSLContext(SSLContext context) {
-	    this.customSSLContext = context;
+        this.customSSLContext = context;
     }
 
     /**
@@ -543,7 +545,7 @@ public class ConnectionConfiguration implements Cloneable {
      * By default SASL is enabled.
      *
      * @return true if the client is going to use SASL authentication when logging into the
-     *         server.
+     * server.
      */
     public boolean isSASLAuthenticationEnabled() {
         return saslAuthenticationEnabled;
@@ -555,7 +557,7 @@ public class ConnectionConfiguration implements Cloneable {
      * By default, SASL is enabled.
      *
      * @param saslAuthenticationEnabled if the client is going to use SASL authentication when
-     *        logging into the server.
+     *                                  logging into the server.
      */
     public void setSASLAuthenticationEnabled(boolean saslAuthenticationEnabled) {
         this.saslAuthenticationEnabled = saslAuthenticationEnabled;
@@ -580,16 +582,17 @@ public class ConnectionConfiguration implements Cloneable {
     public void setDebuggerEnabled(boolean debuggerEnabled) {
         this.debuggerEnabled = debuggerEnabled;
     }
-    
+
     /**
      * Sets if the reconnection mechanism is allowed to be used. By default
      * reconnection is allowed.
-     * 
+     *
      * @param isAllowed if the reconnection mechanism is allowed to use.
      */
     public void setReconnectionAllowed(boolean isAllowed) {
         this.reconnectionAllowed = isAllowed;
     }
+
     /**
      * Returns if the reconnection mechanism is allowed to be used. By default
      * reconnection is allowed.
@@ -599,7 +602,7 @@ public class ConnectionConfiguration implements Cloneable {
     public boolean isReconnectionAllowed() {
         return this.reconnectionAllowed;
     }
-    
+
     /**
      * Sets the socket factory used to create new xmppConnection sockets.
      * This is useful when connecting through SOCKS5 proxies.
@@ -664,7 +667,7 @@ public class ConnectionConfiguration implements Cloneable {
      * using SASL authentication.
      *
      * @param callbackHandler to obtain information, such as the password or
-     * principal information during the SASL authentication.
+     *                        principal information during the SASL authentication.
      */
     public void setCallbackHandler(CallbackHandler callbackHandler) {
         this.callbackHandler = callbackHandler;
@@ -673,7 +676,7 @@ public class ConnectionConfiguration implements Cloneable {
     /**
      * Returns the socket factory used to create new xmppConnection sockets.
      * This is useful when connecting through SOCKS5 proxies.
-     * 
+     *
      * @return socketFactory used to create new sockets.
      */
     public SocketFactory getSocketFactory() {
@@ -739,21 +742,21 @@ public class ConnectionConfiguration implements Cloneable {
     String getResource() {
         return resource;
     }
-    
-    boolean isRosterVersioningAvailable(){
-    	return isRosterVersioningAvailable;
+
+    boolean isRosterVersioningAvailable() {
+        return isRosterVersioningAvailable;
     }
-    
-    void setRosterVersioningAvailable(boolean enabled){
-    	isRosterVersioningAvailable = enabled;
+
+    void setRosterVersioningAvailable(boolean enabled) {
+        isRosterVersioningAvailable = enabled;
     }
-    
-    void setCapsNode(String node){
-    	capsNode = node;
+
+    void setCapsNode(String node) {
+        capsNode = node;
     }
-    
-    String getCapsNode(){
-    	return capsNode;
+
+    String getCapsNode() {
+        return capsNode;
     }
 
     /**
@@ -771,43 +774,43 @@ public class ConnectionConfiguration implements Cloneable {
         this.resource = resource;
     }
 
-	/**
-	 * @return Previously set {@link CertificateListener} or newly created based
-	 *       on configuration.
-	 */
+    /**
+     * @return Previously set {@link CertificateListener} or newly created based
+     * on configuration.
+     */
     CertificateListener getCertificateListener() {
-		if (certificateListener != null)
-			return certificateListener;
-		return new CertificateListener() {
+        if (certificateListener != null)
+            return certificateListener;
+        return new CertificateListener() {
 
-			@Override
-			public boolean onValid(X509Certificate[] chain) {
-				return true;
-			}
+            @Override
+            public boolean onValid(X509Certificate[] chain) {
+                return true;
+            }
 
-			@Override
-			public boolean onInvalidChain(X509Certificate[] chain,
-					CertificateException exception) {
-				return false;
-			}
+            @Override
+            public boolean onInvalidChain(X509Certificate[] chain,
+                                          CertificateException exception) {
+                return false;
+            }
 
-			@Override
-			public boolean onSelfSigned(X509Certificate certificate,
-					CertificateException exception) {
-				return false;
-			}
+            @Override
+            public boolean onSelfSigned(X509Certificate certificate,
+                                        CertificateException exception) {
+                return false;
+            }
 
-			@Override
-			public boolean onInvalidTarget(X509Certificate certificate,
-					CertificateException exception) {
-				return false;
-			}
+            @Override
+            public boolean onInvalidTarget(X509Certificate certificate,
+                                           CertificateException exception) {
+                return false;
+            }
 
-		};
-	}
+        };
+    }
 
-	public void setCertificateListener(CertificateListener certificateListener) {
-		this.certificateListener = certificateListener;
-	}
+    public void setCertificateListener(CertificateListener certificateListener) {
+        this.certificateListener = certificateListener;
+    }
 
 }

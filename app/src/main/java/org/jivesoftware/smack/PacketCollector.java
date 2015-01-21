@@ -33,12 +33,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * operations on the result queue. So, a PacketCollector is more suitable to
  * use than a {@link PacketListener} when you need to wait for a specific
  * result.<p>
- *
+ * <p/>
  * Each packet collector will queue up to 2^16 packets for processing before
  * older packets are automatically dropped.
  *
- * @see Connection#createPacketCollector(PacketFilter)
  * @author Matt Tucker
+ * @see Connection#createPacketCollector(PacketFilter)
  */
 public class PacketCollector {
 
@@ -58,7 +58,7 @@ public class PacketCollector {
      * Creates a new packet collector. If the packet filter is <tt>null</tt>, then
      * all packets will match this collector.
      *
-     * @param conection the connection the collector is tied to.
+     * @param conection    the connection the collector is tied to.
      * @param packetFilter determines which packets will be returned by this collector.
      */
     protected PacketCollector(Connection conection, PacketFilter packetFilter) {
@@ -96,13 +96,12 @@ public class PacketCollector {
      * result queue.
      *
      * @return the next packet result, or <tt>null</tt> if there are no more
-     *      results.
+     * results.
      */
     public synchronized Packet pollResult() {
         if (resultQueue.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return resultQueue.removeLast();
         }
     }
@@ -118,8 +117,7 @@ public class PacketCollector {
         while (resultQueue.isEmpty()) {
             try {
                 wait();
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 // Ignore.
             }
         }
@@ -151,8 +149,7 @@ public class PacketCollector {
                     waitTime -= (now - start);
                     start = now;
                 }
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 // Ignore.
             }
             // Still haven't found a result, so return null.

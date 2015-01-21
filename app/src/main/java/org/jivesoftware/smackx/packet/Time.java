@@ -34,7 +34,7 @@ import java.util.TimeZone;
  * a PacketListener for incoming time requests that then respond with the local time.
  * This class can be used to request the time from other clients, such as in the
  * following code snippet:
- *
+ * <p/>
  * <pre>
  * // Request the time from a remote user.
  * Time timeRequest = new Time();
@@ -73,7 +73,7 @@ public class Time extends IQ {
      * Creates a new Time instance with empty values for all fields.
      */
     public Time() {
-        
+
     }
 
     /**
@@ -107,8 +107,7 @@ public class Time extends IQ {
             cal.setTime(new Date(utcFormat.parse(utc).getTime() +
                     cal.getTimeZone().getOffset(cal.getTimeInMillis())));
             date = cal.getTime();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return date;

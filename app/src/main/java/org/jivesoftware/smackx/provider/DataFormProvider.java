@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * The DataFormProvider parses DataForm packets.
- * 
+ *
  * @author Gaston Dombiak
  */
 public class DataFormProvider implements PacketExtensionProvider {
@@ -50,19 +50,15 @@ public class DataFormProvider implements PacketExtensionProvider {
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
-                if (parser.getName().equals("instructions")) { 
+                if (parser.getName().equals("instructions")) {
                     dataForm.addInstruction(parser.nextText());
-                }
-                else if (parser.getName().equals("title")) {                    
+                } else if (parser.getName().equals("title")) {
                     dataForm.setTitle(parser.nextText());
-                }
-                else if (parser.getName().equals("field")) {                    
+                } else if (parser.getName().equals("field")) {
                     dataForm.addField(parseField(parser));
-                }
-                else if (parser.getName().equals("item")) {                    
+                } else if (parser.getName().equals("item")) {
                     dataForm.addItem(parseItem(parser));
-                }
-                else if (parser.getName().equals("reported")) {                    
+                } else if (parser.getName().equals("reported")) {
                     dataForm.setReportedData(parseReported(parser));
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -82,16 +78,13 @@ public class DataFormProvider implements PacketExtensionProvider {
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
-                if (parser.getName().equals("desc")) { 
+                if (parser.getName().equals("desc")) {
                     formField.setDescription(parser.nextText());
-                }
-                else if (parser.getName().equals("value")) {                    
+                } else if (parser.getName().equals("value")) {
                     formField.addValue(parser.nextText());
-                }
-                else if (parser.getName().equals("required")) {                    
+                } else if (parser.getName().equals("required")) {
                     formField.setRequired(true);
-                }
-                else if (parser.getName().equals("option")) {                    
+                } else if (parser.getName().equals("option")) {
                     formField.addOption(parseOption(parser));
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -109,7 +102,7 @@ public class DataFormProvider implements PacketExtensionProvider {
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
-                if (parser.getName().equals("field")) { 
+                if (parser.getName().equals("field")) {
                     fields.add(parseField(parser));
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -127,7 +120,7 @@ public class DataFormProvider implements PacketExtensionProvider {
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
-                if (parser.getName().equals("field")) { 
+                if (parser.getName().equals("field")) {
                     fields.add(parseField(parser));
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -147,7 +140,7 @@ public class DataFormProvider implements PacketExtensionProvider {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("value")) {
-                    option = new FormField.Option(label, parser.nextText());                     
+                    option = new FormField.Option(label, parser.nextText());
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("option")) {

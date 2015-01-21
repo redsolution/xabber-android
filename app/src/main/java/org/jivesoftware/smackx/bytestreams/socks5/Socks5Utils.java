@@ -21,7 +21,7 @@ import org.jivesoftware.smack.util.StringUtils;
 
 /**
  * A collection of utility methods for SOcKS5 messages.
- * 
+ *
  * @author Henning Staib
  */
 class Socks5Utils {
@@ -29,10 +29,10 @@ class Socks5Utils {
     /**
      * Returns a SHA-1 digest of the given parameters as specified in <a
      * href="http://xmpp.org/extensions/xep-0065.html#impl-socks5">XEP-0065</a>.
-     * 
-     * @param sessionID for the SOCKS5 Bytestream
+     *
+     * @param sessionID    for the SOCKS5 Bytestream
      * @param initiatorJID JID of the initiator of a SOCKS5 Bytestream
-     * @param targetJID JID of the target of a SOCKS5 Bytestream
+     * @param targetJID    JID of the target of a SOCKS5 Bytestream
      * @return SHA-1 digest of the given parameters
      */
     public static String createDigest(String sessionID, String initiatorJID, String targetJID) {
@@ -44,12 +44,12 @@ class Socks5Utils {
     /**
      * Reads a SOCKS5 message from the given InputStream. The message can either be a SOCKS5 request
      * message or a SOCKS5 response message.
-     * <p>
+     * <p/>
      * (see <a href="http://tools.ietf.org/html/rfc1928">RFC1928</a>)
-     * 
+     *
      * @param in the DataInputStream to read the message from
      * @return the SOCKS5 message
-     * @throws IOException if a network error occurred
+     * @throws IOException   if a network error occurred
      * @throws XMPPException if the SOCKS5 message contains an unsupported address type
      */
     public static byte[] receiveSocks5Message(DataInputStream in) throws IOException, XMPPException {

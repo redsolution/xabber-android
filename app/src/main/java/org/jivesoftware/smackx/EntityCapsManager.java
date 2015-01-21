@@ -57,22 +57,22 @@ public class EntityCapsManager {
     private static String entityNode = "http://www.igniterealtime.org/projects/smack/";
 
     /**
-     * Map of (node, hash algorithm) -&gt; DiscoverInfo. 
+     * Map of (node, hash algorithm) -&gt; DiscoverInfo.
      */
-    private static Map<String,DiscoverInfo> caps =
-        new ConcurrentHashMap<String,DiscoverInfo>();
-    
+    private static Map<String, DiscoverInfo> caps =
+            new ConcurrentHashMap<String, DiscoverInfo>();
+
     /**
      * Map of Full JID -&gt; DiscoverInfo/null.
      * In case of c2s connection the key is formed as user@server/resource (resource is required)
      * In case of link-local connection the key is formed as user@host (no resource)
      */
-    private Map<String,String> userCaps =
-        new ConcurrentHashMap<String,String>(); 
+    private Map<String, String> userCaps =
+            new ConcurrentHashMap<String, String>();
 
     // CapsVerListeners gets notified when the version string is changed.
     private Set<CapsVerListener> capsVerListeners =
-        new CopyOnWriteArraySet<CapsVerListener>();
+            new CopyOnWriteArraySet<CapsVerListener>();
 
     private String currentCapsVersion = null;
 
@@ -101,9 +101,9 @@ public class EntityCapsManager {
      * @param node the entity caps node#ver
      */
     public void addUserCapsNode(String user, String node) {
-    	if(user!=null && node!=null){
-    		userCaps.put(user, node);
-    	}
+        if (user != null && node != null) {
+            userCaps.put(user, node);
+        }
     }
 
     /**
@@ -186,9 +186,9 @@ public class EntityCapsManager {
 
     public void addPacketListener(Connection connection) {
         PacketFilter f =
-            new AndFilter(
-                    new PacketTypeFilter(Presence.class),
-                    new PacketExtensionFilter(CapsExtension.NODE_NAME, CapsExtension.XMLNS));
+                new AndFilter(
+                        new PacketTypeFilter(Presence.class),
+                        new PacketExtensionFilter(CapsExtension.NODE_NAME, CapsExtension.XMLNS));
         connection.addPacketListener(new CapsPacketListener(), f);
     }
 
@@ -230,8 +230,7 @@ public class EntityCapsManager {
             MessageDigest md = MessageDigest.getInstance(HASH_METHOD_CAPS);
             byte[] digest = md.digest(capsString.getBytes());
             return Base64.encodeBytes(digest);
-        }
-        catch (NoSuchAlgorithmException nsae) {
+        } catch (NoSuchAlgorithmException nsae) {
             return null;
         }
     }
@@ -239,7 +238,7 @@ public class EntityCapsManager {
     private static String formFieldValuesToCaps(Iterator<String> i) {
         String s = "";
         SortedSet<String> fvs = new TreeSet<String>();
-        for (; i.hasNext();) {
+        for (; i.hasNext(); ) {
             fvs.add(i.next());
         }
         for (String fv : fvs) {
@@ -249,9 +248,9 @@ public class EntityCapsManager {
     }
 
     void calculateEntityCapsVersion(DiscoverInfo discoverInfo,
-            String identityType,
-            String identityName,
-            DataForm extendedInfo) {
+                                    String identityType,
+                                    String identityName,
+                                    DataForm extendedInfo) {
         String s = "";
 
         // Add identity
@@ -260,8 +259,8 @@ public class EntityCapsManager {
 
         // Add features
         SortedSet<String> features = new TreeSet<String>();
-        for (Iterator<Feature> it = discoverInfo.getFeatures(); it.hasNext();)
-        	features.add(it.next().getVar());
+        for (Iterator<Feature> it = discoverInfo.getFeatures(); it.hasNext(); )
+            features.add(it.next().getVar());
 
         for (String f : features) {
             s += f + "<";
@@ -278,12 +277,11 @@ public class EntityCapsManager {
 
                 FormField ft = null;
 
-                for (Iterator<FormField> i = extendedInfo.getFields(); i.hasNext();) {
+                for (Iterator<FormField> i = extendedInfo.getFields(); i.hasNext(); ) {
                     FormField f = i.next();
                     if (!f.getVariable().equals("FORM_TYPE")) {
                         fs.add(f);
-                    }
-                    else {
+                    } else {
                         ft = f;
                     }
                 }
@@ -320,13 +318,13 @@ public class EntityCapsManager {
 
         public void processPacket(Packet packet) {
             CapsExtension ext =
-                (CapsExtension) packet.getExtension(CapsExtension.NODE_NAME, CapsExtension.XMLNS);
+                    (CapsExtension) packet.getExtension(CapsExtension.NODE_NAME, CapsExtension.XMLNS);
 
             String nodeVer = ext.getNode() + "#" + ext.getVersion();
             String user = packet.getFrom();
 
             addUserCapsNode(user, nodeVer);
-            
+
             // DEBUG
             //spam();
         }

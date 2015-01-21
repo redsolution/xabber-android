@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * A DiscoverInfo IQ packet, which is used by XMPP clients to request and receive information 
- * to/from other XMPP entities.<p> 
- * 
- * The received information may contain one or more identities of the requested XMPP entity, and 
+ * A DiscoverInfo IQ packet, which is used by XMPP clients to request and receive information
+ * to/from other XMPP entities.<p>
+ * <p/>
+ * The received information may contain one or more identities of the requested XMPP entity, and
  * a list of supported features by the requested XMPP entity.
  *
  * @author Gaston Dombiak
@@ -67,7 +67,7 @@ public class DiscoverInfo extends IQ {
 
     /**
      * Adds a new identity of the requested entity to the discovered information.
-     * 
+     *
      * @param identity the discovered entity's identity
      */
     public void addIdentity(Identity identity) {
@@ -76,18 +76,18 @@ public class DiscoverInfo extends IQ {
 
     /**
      * Returns the discovered identities of an XMPP entity.
-     * 
-     * @return an Iterator on the discoveted identities 
+     *
+     * @return an Iterator on the discoveted identities
      */
     public Iterator<Identity> getIdentities() {
         return Collections.unmodifiableList(identities).iterator();
     }
 
     /**
-     * Returns the node attribute that supplements the 'jid' attribute. A node is merely 
-     * something that is associated with a JID and for which the JID can provide information.<p> 
-     * 
-     * Node attributes SHOULD be used only when trying to provide or query information which 
+     * Returns the node attribute that supplements the 'jid' attribute. A node is merely
+     * something that is associated with a JID and for which the JID can provide information.<p>
+     * <p/>
+     * Node attributes SHOULD be used only when trying to provide or query information which
      * is not directly addressable.
      *
      * @return the node attribute that supplements the 'jid' attribute
@@ -97,12 +97,12 @@ public class DiscoverInfo extends IQ {
     }
 
     /**
-     * Sets the node attribute that supplements the 'jid' attribute. A node is merely 
-     * something that is associated with a JID and for which the JID can provide information.<p> 
-     * 
-     * Node attributes SHOULD be used only when trying to provide or query information which 
+     * Sets the node attribute that supplements the 'jid' attribute. A node is merely
+     * something that is associated with a JID and for which the JID can provide information.<p>
+     * <p/>
+     * Node attributes SHOULD be used only when trying to provide or query information which
      * is not directly addressable.
-     * 
+     *
      * @param node the node attribute that supplements the 'jid' attribute
      */
     public void setNode(String node) {
@@ -111,12 +111,12 @@ public class DiscoverInfo extends IQ {
 
     /**
      * Returns true if the specified feature is part of the discovered information.
-     * 
+     *
      * @param feature the feature to check
      * @return true if the requestes feature has been discovered
      */
     public boolean containsFeature(String feature) {
-        for (Iterator<Feature> it = getFeatures(); it.hasNext();) {
+        for (Iterator<Feature> it = getFeatures(); it.hasNext(); ) {
             if (feature.equals(it.next().getVar()))
                 return true;
         }
@@ -159,7 +159,7 @@ public class DiscoverInfo extends IQ {
         for (Identity i : identities) {
             d.addIdentity(i);
         }
-        
+
         // Copy extensions
         for (PacketExtension pe : getExtensions()) {
             d.addExtension(pe);
@@ -171,11 +171,10 @@ public class DiscoverInfo extends IQ {
     /**
      * Represents the identity of a given XMPP entity. An entity may have many identities but all
      * the identities SHOULD have the same name.<p>
-     * 
+     * <p/>
      * Refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a>
-     * in order to get the official registry of values for the <i>category</i> and <i>type</i> 
+     * in order to get the official registry of values for the <i>category</i> and <i>type</i>
      * attributes.
-     * 
      */
     public static class Identity {
 
@@ -186,9 +185,9 @@ public class DiscoverInfo extends IQ {
 
         /**
          * Creates a new identity for an XMPP entity.
-         * 
+         *
          * @param category the entity's category.
-         * @param name the entity's name.
+         * @param name     the entity's name.
          */
         public Identity(String category, String name) {
             this.category = category;
@@ -196,8 +195,8 @@ public class DiscoverInfo extends IQ {
         }
 
         /**
-         * Returns the entity's category. To get the official registry of values for the 
-         * 'category' attribute refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a> 
+         * Returns the entity's category. To get the official registry of values for the
+         * 'category' attribute refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a>
          *
          * @return the entity's category.
          */
@@ -215,8 +214,8 @@ public class DiscoverInfo extends IQ {
         }
 
         /**
-         * Returns the entity's type. To get the official registry of values for the 
-         * 'type' attribute refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a> 
+         * Returns the entity's type. To get the official registry of values for the
+         * 'type' attribute refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a>
          *
          * @return the entity's type.
          */
@@ -225,8 +224,8 @@ public class DiscoverInfo extends IQ {
         }
 
         /**
-         * Sets the entity's type. To get the official registry of values for the 
-         * 'type' attribute refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a> 
+         * Sets the entity's type. To get the official registry of values for the
+         * 'type' attribute refer to <a href="http://www.jabber.org/registrar/disco-categories.html">Jabber::Registrar</a>
          *
          * @param type the identity's type.
          */
@@ -235,7 +234,7 @@ public class DiscoverInfo extends IQ {
         }
 
         /**
-         * Returns the name's language. 
+         * Returns the name's language.
          *
          * @return the name's language.
          */
@@ -244,7 +243,7 @@ public class DiscoverInfo extends IQ {
         }
 
         /**
-         * Sets the name's language. 
+         * Sets the name's language.
          *
          * @param type the name's language.
          */
@@ -268,9 +267,9 @@ public class DiscoverInfo extends IQ {
     }
 
     /**
-     * Represents the features offered by the item. This information helps requestors determine 
-     * what actions are possible with regard to this item (registration, search, join, etc.) 
-     * as well as specific feature types of interest, if any (e.g., for the purpose of feature 
+     * Represents the features offered by the item. This information helps requestors determine
+     * what actions are possible with regard to this item (registration, search, join, etc.)
+     * as well as specific feature types of interest, if any (e.g., for the purpose of feature
      * negotiation).
      */
     public static class Feature {
@@ -279,7 +278,7 @@ public class DiscoverInfo extends IQ {
 
         /**
          * Creates a new feature offered by an XMPP entity or item.
-         * 
+         *
          * @param variable the feature's variable.
          */
         public Feature(String variable) {

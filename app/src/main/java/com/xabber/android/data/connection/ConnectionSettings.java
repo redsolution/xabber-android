@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * 
+ *
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- * 
+ *
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -18,222 +18,221 @@ import com.xabber.android.data.account.AccountProtocol;
 
 /**
  * Settings for connection.
- * 
+ *
  * @author alexander.ivanov
- * 
  */
 public class ConnectionSettings {
 
-	/**
-	 * Protocol.
-	 */
-	private final AccountProtocol protocol;
+    /**
+     * Protocol.
+     */
+    private final AccountProtocol protocol;
 
-	/**
-	 * User part of jid.
-	 */
-	private final String userName;
+    /**
+     * User part of jid.
+     */
+    private final String userName;
 
-	/**
-	 * Server part of jid.
-	 */
-	private final String serverName;
+    /**
+     * Server part of jid.
+     */
+    private final String serverName;
 
-	/**
-	 * Resource part of jid.
-	 */
-	private final String resource;
+    /**
+     * Resource part of jid.
+     */
+    private final String resource;
 
-	/**
-	 * Use custom connection host and port.
-	 */
-	private boolean custom;
+    /**
+     * Use custom connection host and port.
+     */
+    private boolean custom;
 
-	/**
-	 * Host for connection.
-	 */
-	private String host;
+    /**
+     * Host for connection.
+     */
+    private String host;
 
-	/**
-	 * Port for connection.
-	 */
-	private int port;
+    /**
+     * Port for connection.
+     */
+    private int port;
 
-	/**
-	 * Password.
-	 */
-	private String password;
+    /**
+     * Password.
+     */
+    private String password;
 
-	/**
-	 * Whether SASL Authentication Enabled.
-	 */
-	private boolean saslEnabled;
+    /**
+     * Whether SASL Authentication Enabled.
+     */
+    private boolean saslEnabled;
 
-	/**
-	 * TLS mode.
-	 */
-	private TLSMode tlsMode;
+    /**
+     * TLS mode.
+     */
+    private TLSMode tlsMode;
 
-	/**
-	 * Use compression.
-	 */
-	private boolean compression;
+    /**
+     * Use compression.
+     */
+    private boolean compression;
 
-	private ProxyType proxyType;
+    private ProxyType proxyType;
 
-	private String proxyHost;
+    private String proxyHost;
 
-	private int proxyPort;
+    private int proxyPort;
 
-	private String proxyUser;
+    private String proxyUser;
 
-	private String proxyPassword;
+    private String proxyPassword;
 
-	public ConnectionSettings(AccountProtocol protocol, String userName,
-			String serverName, String resource, boolean custom, String host,
-			int port, String password, boolean saslEnabled, TLSMode tlsMode,
-			boolean compression, ProxyType proxyType, String proxyHost,
-			int proxyPort, String proxyUser, String proxyPassword) {
-		super();
-		this.protocol = protocol;
-		this.userName = userName;
-		this.serverName = serverName;
-		this.resource = resource;
-		this.custom = custom;
-		this.host = host;
-		this.port = port;
-		this.password = password;
-		this.saslEnabled = saslEnabled;
-		this.tlsMode = tlsMode;
-		this.compression = compression;
-		this.proxyType = proxyType;
-		this.proxyHost = proxyHost;
-		this.proxyPort = proxyPort;
-		this.proxyUser = proxyUser;
-		this.proxyPassword = proxyPassword;
-	}
+    public ConnectionSettings(AccountProtocol protocol, String userName,
+                              String serverName, String resource, boolean custom, String host,
+                              int port, String password, boolean saslEnabled, TLSMode tlsMode,
+                              boolean compression, ProxyType proxyType, String proxyHost,
+                              int proxyPort, String proxyUser, String proxyPassword) {
+        super();
+        this.protocol = protocol;
+        this.userName = userName;
+        this.serverName = serverName;
+        this.resource = resource;
+        this.custom = custom;
+        this.host = host;
+        this.port = port;
+        this.password = password;
+        this.saslEnabled = saslEnabled;
+        this.tlsMode = tlsMode;
+        this.compression = compression;
+        this.proxyType = proxyType;
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        this.proxyUser = proxyUser;
+        this.proxyPassword = proxyPassword;
+    }
 
-	public AccountProtocol getProtocol() {
-		return protocol;
-	}
+    public AccountProtocol getProtocol() {
+        return protocol;
+    }
 
-	/**
-	 * @return User part of jid.
-	 */
-	public String getUserName() {
-		return userName;
-	}
+    /**
+     * @return User part of jid.
+     */
+    public String getUserName() {
+        return userName;
+    }
 
-	/**
-	 * @return Server part of jid.
-	 */
-	public String getServerName() {
-		return serverName;
-	}
+    /**
+     * @return Server part of jid.
+     */
+    public String getServerName() {
+        return serverName;
+    }
 
-	/**
-	 * @return Whether custom host and port must be used.
-	 */
-	public boolean isCustom() {
-		return custom;
-	}
+    /**
+     * @return Whether custom host and port must be used.
+     */
+    public boolean isCustom() {
+        return custom;
+    }
 
-	/**
-	 * @return Custom host to connect to.
-	 */
-	public String getHost() {
-		return host;
-	}
+    /**
+     * @return Custom host to connect to.
+     */
+    public String getHost() {
+        return host;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public String getResource() {
-		return resource;
-	}
+    public String getResource() {
+        return resource;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	/**
-	 * @return Whether SASL Authentication Enabled.
-	 */
-	public boolean isSaslEnabled() {
-		return saslEnabled;
-	}
+    /**
+     * @return Whether SASL Authentication Enabled.
+     */
+    public boolean isSaslEnabled() {
+        return saslEnabled;
+    }
 
-	/**
-	 * @return TLS mode.
-	 */
-	public TLSMode getTlsMode() {
-		return tlsMode;
-	}
+    /**
+     * @return TLS mode.
+     */
+    public TLSMode getTlsMode() {
+        return tlsMode;
+    }
 
-	/**
-	 * @return Whether compression is used.
-	 */
-	public boolean useCompression() {
-		return compression;
-	}
+    /**
+     * @return Whether compression is used.
+     */
+    public boolean useCompression() {
+        return compression;
+    }
 
-	public ProxyType getProxyType() {
-		return proxyType;
-	}
+    public ProxyType getProxyType() {
+        return proxyType;
+    }
 
-	public String getProxyHost() {
-		return proxyHost;
-	}
+    public String getProxyHost() {
+        return proxyHost;
+    }
 
-	public int getProxyPort() {
-		return proxyPort;
-	}
+    public int getProxyPort() {
+        return proxyPort;
+    }
 
-	public String getProxyUser() {
-		return proxyUser;
-	}
+    public String getProxyUser() {
+        return proxyUser;
+    }
 
-	public String getProxyPassword() {
-		return proxyPassword;
-	}
+    public String getProxyPassword() {
+        return proxyPassword;
+    }
 
-	/**
-	 * Updates options.
-	 * 
-	 * @param custom
-	 * @param host
-	 * @param port
-	 * @param password
-	 * @param saslEnabled
-	 * @param tlsMode
-	 * @param compression
-	 */
-	public void update(boolean custom, String host, int port, String password,
-			boolean saslEnabled, TLSMode tlsMode, boolean compression,
-			ProxyType proxyType, String proxyHost, int proxyPort,
-			String proxyUser, String proxyPassword) {
-		this.custom = custom;
-		this.host = host;
-		this.port = port;
-		this.password = password;
-		this.saslEnabled = saslEnabled;
-		this.tlsMode = tlsMode;
-		this.compression = compression;
-		this.proxyType = proxyType;
-		this.proxyHost = proxyHost;
-		this.proxyPort = proxyPort;
-		this.proxyUser = proxyUser;
-		this.proxyPassword = proxyPassword;
-	}
+    /**
+     * Updates options.
+     *
+     * @param custom
+     * @param host
+     * @param port
+     * @param password
+     * @param saslEnabled
+     * @param tlsMode
+     * @param compression
+     */
+    public void update(boolean custom, String host, int port, String password,
+                       boolean saslEnabled, TLSMode tlsMode, boolean compression,
+                       ProxyType proxyType, String proxyHost, int proxyPort,
+                       String proxyUser, String proxyPassword) {
+        this.custom = custom;
+        this.host = host;
+        this.port = port;
+        this.password = password;
+        this.saslEnabled = saslEnabled;
+        this.tlsMode = tlsMode;
+        this.compression = compression;
+        this.proxyType = proxyType;
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        this.proxyUser = proxyUser;
+        this.proxyPassword = proxyPassword;
+    }
 
-	/**
-	 * Sets password.
-	 * 
-	 * @param password
-	 */
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    /**
+     * Sets password.
+     *
+     * @param password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

@@ -48,13 +48,13 @@ public class RosterPacket extends IQ {
             rosterItems.add(item);
         }
     }
-    
-    public String getVersion(){
-    	return version;
+
+    public String getVersion() {
+        return version;
     }
-    
-    public void setVersion(String version){
-    	this.version = version;
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     /**
@@ -82,8 +82,8 @@ public class RosterPacket extends IQ {
     public String getChildElementXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<query xmlns=\"jabber:iq:roster\" ");
-        if(version!=null){
-        	buf.append(" ver=\""+version+"\" ");
+        if (version != null) {
+            buf.append(" ver=\"" + version + "\" ");
         }
         buf.append(">");
         synchronized (rosterItems) {
@@ -256,11 +256,9 @@ public class RosterPacket extends IQ {
             value = value.toLowerCase();
             if ("unsubscribe".equals(value)) {
                 return UNSUBSCRIPTION_PENDING;
-            }
-            else if ("subscribe".equals(value)) {
+            } else if ("subscribe".equals(value)) {
                 return SUBSCRIPTION_PENDING;
-            }
-            else {
+            } else {
                 return null;
             }
         }

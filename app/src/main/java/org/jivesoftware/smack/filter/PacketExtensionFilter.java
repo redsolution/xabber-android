@@ -38,7 +38,7 @@ public class PacketExtensionFilter implements PacketFilter {
      * and namespace.
      *
      * @param elementName the XML element name of the packet extension.
-     * @param namespace the XML namespace of the packet extension.
+     * @param namespace   the XML namespace of the packet extension.
      */
     public PacketExtensionFilter(String elementName, String namespace) {
         this.elementName = elementName;

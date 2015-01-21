@@ -36,8 +36,8 @@ import org.jivesoftware.smackx.packet.MessageEvent;
 
 /**
  * Manages message events requests and notifications. A MessageEventManager provides a high
- * level access to request for notifications and send event notifications. It also provides 
- * an easy way to hook up custom logic when requests or notifications are received. 
+ * level access to request for notifications and send event notifications. It also provides
+ * an easy way to hook up custom logic when requests or notifications are received.
  *
  * @author Gaston Dombiak
  */
@@ -65,16 +65,15 @@ public class MessageEventManager {
      * Adds event notification requests to a message. For each event type that
      * the user wishes event notifications from the message recepient for, <tt>true</tt>
      * should be passed in to this method.
-     * 
-     * @param message the message to add the requested notifications.
-     * @param offline specifies if the offline event is requested.
+     *
+     * @param message   the message to add the requested notifications.
+     * @param offline   specifies if the offline event is requested.
      * @param delivered specifies if the delivered event is requested.
      * @param displayed specifies if the displayed event is requested.
      * @param composing specifies if the composing event is requested.
      */
     public static void addNotificationsRequests(Message message, boolean offline,
-            boolean delivered, boolean displayed, boolean composing)
-    {
+                                                boolean delivered, boolean displayed, boolean composing) {
         // Create a MessageEvent Package and add it to the message
         MessageEvent messageEvent = new MessageEvent();
         messageEvent.setOffline(offline);
@@ -140,9 +139,9 @@ public class MessageEventManager {
      * Fires message event request listeners.
      */
     private void fireMessageEventRequestListeners(
-        String from,
-        String packetID,
-        String methodName) {
+            String from,
+            String packetID,
+            String methodName) {
         MessageEventRequestListener[] listeners = null;
         Method method;
         synchronized (messageEventRequestListeners) {
@@ -151,11 +150,11 @@ public class MessageEventManager {
         }
         try {
             method =
-                MessageEventRequestListener.class.getDeclaredMethod(
-                    methodName,
-                    new Class[] { String.class, String.class, MessageEventManager.class });
+                    MessageEventRequestListener.class.getDeclaredMethod(
+                            methodName,
+                            new Class[]{String.class, String.class, MessageEventManager.class});
             for (int i = 0; i < listeners.length; i++) {
-                method.invoke(listeners[i], new Object[] { from, packetID, this });
+                method.invoke(listeners[i], new Object[]{from, packetID, this});
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -170,23 +169,23 @@ public class MessageEventManager {
      * Fires message event notification listeners.
      */
     private void fireMessageEventNotificationListeners(
-        String from,
-        String packetID,
-        String methodName) {
+            String from,
+            String packetID,
+            String methodName) {
         MessageEventNotificationListener[] listeners = null;
         Method method;
         synchronized (messageEventNotificationListeners) {
             listeners =
-                new MessageEventNotificationListener[messageEventNotificationListeners.size()];
+                    new MessageEventNotificationListener[messageEventNotificationListeners.size()];
             messageEventNotificationListeners.toArray(listeners);
         }
         try {
             method =
-                MessageEventNotificationListener.class.getDeclaredMethod(
-                    methodName,
-                    new Class[] { String.class, String.class });
+                    MessageEventNotificationListener.class.getDeclaredMethod(
+                            methodName,
+                            new Class[]{String.class, String.class});
             for (int i = 0; i < listeners.length; i++) {
-                method.invoke(listeners[i], new Object[] { from, packetID });
+                method.invoke(listeners[i], new Object[]{from, packetID});
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -203,23 +202,25 @@ public class MessageEventManager {
             public void processPacket(Packet packet) {
                 Message message = (Message) packet;
                 MessageEvent messageEvent =
-                    (MessageEvent) message.getExtension("x", "jabber:x:event");
+                        (MessageEvent) message.getExtension("x", "jabber:x:event");
                 if (messageEvent.isMessageEventRequest()) {
                     // Fire event for requests of message events
-                    for (Iterator it = messageEvent.getEventTypes(); it.hasNext();)
+                    for (Iterator it = messageEvent.getEventTypes(); it.hasNext(); )
                         fireMessageEventRequestListeners(
-                            message.getFrom(),
-                            message.getPacketID(),
-                            ((String) it.next()).concat("NotificationRequested"));
+                                message.getFrom(),
+                                message.getPacketID(),
+                                ((String) it.next()).concat("NotificationRequested"));
                 } else
                     // Fire event for notifications of message events
-                    for (Iterator it = messageEvent.getEventTypes(); it.hasNext();)
+                    for (Iterator it = messageEvent.getEventTypes(); it.hasNext(); )
                         fireMessageEventNotificationListeners(
-                            message.getFrom(),
-                            messageEvent.getPacketID(),
-                            ((String) it.next()).concat("Notification"));
+                                message.getFrom(),
+                                messageEvent.getPacketID(),
+                                ((String) it.next()).concat("Notification"));
 
-            };
+            }
+
+            ;
 
         };
         con.addPacketListener(packetListener, packetFilter);
@@ -227,8 +228,8 @@ public class MessageEventManager {
 
     /**
      * Sends the notification that the message was delivered to the sender of the original message
-     * 
-     * @param to the recipient of the notification.
+     *
+     * @param to       the recipient of the notification.
      * @param packetID the id of the message to send.
      */
     public void sendDeliveredNotification(String to, String packetID) {
@@ -245,8 +246,8 @@ public class MessageEventManager {
 
     /**
      * Sends the notification that the message was displayed to the sender of the original message
-     * 
-     * @param to the recipient of the notification.
+     *
+     * @param to       the recipient of the notification.
      * @param packetID the id of the message to send.
      */
     public void sendDisplayedNotification(String to, String packetID) {
@@ -263,8 +264,8 @@ public class MessageEventManager {
 
     /**
      * Sends the notification that the receiver of the message is composing a reply
-     * 
-     * @param to the recipient of the notification.
+     *
+     * @param to       the recipient of the notification.
      * @param packetID the id of the message to send.
      */
     public void sendComposingNotification(String to, String packetID) {
@@ -281,8 +282,8 @@ public class MessageEventManager {
 
     /**
      * Sends the notification that the receiver of the message has cancelled composing a reply.
-     * 
-     * @param to the recipient of the notification.
+     *
+     * @param to       the recipient of the notification.
      * @param packetID the id of the message to send.
      */
     public void sendCancelledNotification(String to, String packetID) {

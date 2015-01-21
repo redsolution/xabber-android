@@ -19,6 +19,7 @@
  */
 
 package org.jivesoftware.smackx.packet;
+
 import org.jivesoftware.smack.packet.IQ;
 
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * IQ packet that serves for kicking users, granting and revoking voice, banning users, 
- * modifying the ban list, granting and revoking membership and granting and revoking 
- * moderator privileges. All these operations are scoped by the 
+ * IQ packet that serves for kicking users, granting and revoking voice, banning users,
+ * modifying the ban list, granting and revoking membership and granting and revoking
+ * moderator privileges. All these operations are scoped by the
  * 'http://jabber.org/protocol/muc#admin' namespace.
- * 
+ *
  * @author Gaston Dombiak
  */
 public class MUCAdmin extends IQ {
@@ -39,11 +40,11 @@ public class MUCAdmin extends IQ {
     private List items = new ArrayList();
 
     /**
-     * Returns an Iterator for item childs that holds information about roles, affiliation, 
+     * Returns an Iterator for item childs that holds information about roles, affiliation,
      * jids and nicks.
-     * 
+     *
      * @return an Iterator for item childs that holds information about roles, affiliation,
-     *          jids and nicks.
+     * jids and nicks.
      */
     public Iterator getItems() {
         synchronized (items) {
@@ -53,7 +54,7 @@ public class MUCAdmin extends IQ {
 
     /**
      * Adds an item child that holds information about roles, affiliation, jids and nicks.
-     * 
+     *
      * @param item the item child that holds information about roles, affiliation, jids and nicks.
      */
     public void addItem(Item item) {
@@ -89,21 +90,21 @@ public class MUCAdmin extends IQ {
         private String jid;
         private String nick;
         private String role;
-        
+
         /**
-         * Creates a new item child. 
-         * 
+         * Creates a new item child.
+         *
          * @param affiliation the actor's affiliation to the room
-         * @param role the privilege level of an occupant within a room.
+         * @param role        the privilege level of an occupant within a room.
          */
         public Item(String affiliation, String role) {
             this.affiliation = affiliation;
             this.role = role;
         }
-        
+
         /**
          * Returns the actor (JID of an occupant in the room) that was kicked or banned.
-         * 
+         *
          * @return the JID of an occupant in the room that was kicked or banned.
          */
         public String getActor() {
@@ -113,7 +114,7 @@ public class MUCAdmin extends IQ {
         /**
          * Returns the reason for the item child. The reason is optional and could be used to
          * explain the reason why a user (occupant) was kicked or banned.
-         *  
+         *
          * @return the reason for the item child.
          */
         public String getReason() {
@@ -121,11 +122,11 @@ public class MUCAdmin extends IQ {
         }
 
         /**
-         * Returns the occupant's affiliation to the room. The affiliation is a semi-permanent 
-         * association or connection with a room. The possible affiliations are "owner", "admin", 
-         * "member", and "outcast" (naturally it is also possible to have no affiliation). An 
+         * Returns the occupant's affiliation to the room. The affiliation is a semi-permanent
+         * association or connection with a room. The possible affiliations are "owner", "admin",
+         * "member", and "outcast" (naturally it is also possible to have no affiliation). An
          * affiliation lasts across a user's visits to a room.
-         * 
+         *
          * @return the actor's affiliation to the room
          */
         public String getAffiliation() {
@@ -133,9 +134,9 @@ public class MUCAdmin extends IQ {
         }
 
         /**
-         * Returns the <room@service/nick> by which an occupant is identified within the context 
-         * of a room. If the room is non-anonymous, the JID will be included in the item. 
-         * 
+         * Returns the <room@service/nick> by which an occupant is identified within the context
+         * of a room. If the room is non-anonymous, the JID will be included in the item.
+         *
          * @return the room JID by which an occupant is identified within the room.
          */
         public String getJid() {
@@ -143,9 +144,9 @@ public class MUCAdmin extends IQ {
         }
 
         /**
-         * Returns the new nickname of an occupant that is changing his/her nickname. The new 
-         * nickname is sent as part of the unavailable presence.  
-         * 
+         * Returns the new nickname of an occupant that is changing his/her nickname. The new
+         * nickname is sent as part of the unavailable presence.
+         *
          * @return the new nickname of an occupant that is changing his/her nickname.
          */
         public String getNick() {
@@ -153,11 +154,11 @@ public class MUCAdmin extends IQ {
         }
 
         /**
-         * Returns the temporary position or privilege level of an occupant within a room. The 
-         * possible roles are "moderator", "participant", and "visitor" (it is also possible to 
-         * have no defined role). A role lasts only for the duration of an occupant's visit to 
-         * a room. 
-         * 
+         * Returns the temporary position or privilege level of an occupant within a room. The
+         * possible roles are "moderator", "participant", and "visitor" (it is also possible to
+         * have no defined role). A role lasts only for the duration of an occupant's visit to
+         * a room.
+         *
          * @return the privilege level of an occupant within a room.
          */
         public String getRole() {
@@ -166,7 +167,7 @@ public class MUCAdmin extends IQ {
 
         /**
          * Sets the actor (JID of an occupant in the room) that was kicked or banned.
-         * 
+         *
          * @param actor the actor (JID of an occupant in the room) that was kicked or banned.
          */
         public void setActor(String actor) {
@@ -176,7 +177,7 @@ public class MUCAdmin extends IQ {
         /**
          * Sets the reason for the item child. The reason is optional and could be used to
          * explain the reason why a user (occupant) was kicked or banned.
-         * 
+         *
          * @param reason the reason why a user (occupant) was kicked or banned.
          */
         public void setReason(String reason) {
@@ -184,9 +185,9 @@ public class MUCAdmin extends IQ {
         }
 
         /**
-         * Sets the <room@service/nick> by which an occupant is identified within the context 
+         * Sets the <room@service/nick> by which an occupant is identified within the context
          * of a room. If the room is non-anonymous, the JID will be included in the item.
-         *  
+         *
          * @param jid the JID by which an occupant is identified within a room.
          */
         public void setJid(String jid) {
@@ -194,9 +195,9 @@ public class MUCAdmin extends IQ {
         }
 
         /**
-         * Sets the new nickname of an occupant that is changing his/her nickname. The new 
+         * Sets the new nickname of an occupant that is changing his/her nickname. The new
          * nickname is sent as part of the unavailable presence.
-         *   
+         *
          * @param nick the new nickname of an occupant that is changing his/her nickname.
          */
         public void setNick(String nick) {
@@ -220,8 +221,7 @@ public class MUCAdmin extends IQ {
             }
             if (getReason() == null && getActor() == null) {
                 buf.append("/>");
-            }
-            else {
+            } else {
                 buf.append(">");
                 if (getReason() != null) {
                     buf.append("<reason>").append(getReason()).append("</reason>");
@@ -233,5 +233,7 @@ public class MUCAdmin extends IQ {
             }
             return buf.toString();
         }
-    };
+    }
+
+    ;
 }

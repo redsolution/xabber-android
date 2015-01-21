@@ -62,8 +62,7 @@ public class UserSearch extends IQ {
      * @param con           the current Connection.
      * @param searchService the search service to use. (ex. search.jivesoftware.com)
      * @return the search form received by the server.
-     * @throws org.jivesoftware.smack.XMPPException
-     *          thrown if a server error has occurred.
+     * @throws org.jivesoftware.smack.XMPPException thrown if a server error has occurred.
      */
     public Form getSearchForm(Connection con, String searchService) throws XMPPException {
         UserSearch search = new UserSearch();
@@ -93,8 +92,7 @@ public class UserSearch extends IQ {
      * @param searchForm    the <code>Form</code> to send for querying.
      * @param searchService the search service to use. (ex. search.jivesoftware.com)
      * @return ReportedData the data found from the query.
-     * @throws org.jivesoftware.smack.XMPPException
-     *          thrown if a server error has occurred.
+     * @throws org.jivesoftware.smack.XMPPException thrown if a server error has occurred.
      */
     public ReportedData sendSearchForm(Connection con, Form searchForm, String searchService) throws XMPPException {
         UserSearch search = new UserSearch();
@@ -128,8 +126,7 @@ public class UserSearch extends IQ {
      * @param searchForm    the <code>Form</code> to send for querying.
      * @param searchService the search service to use. (ex. search.jivesoftware.com)
      * @return ReportedData the data found from the query.
-     * @throws org.jivesoftware.smack.XMPPException
-     *          thrown if a server error has occurred.
+     * @throws org.jivesoftware.smack.XMPPException thrown if a server error has occurred.
      */
     public ReportedData sendSimpleSearchForm(Connection con, Form searchForm, String searchService) throws XMPPException {
         SimpleUserSearch search = new SimpleUserSearch();
@@ -180,19 +177,16 @@ public class UserSearch extends IQ {
                 if (eventType == XmlPullParser.START_TAG && parser.getName().equals("instructions")) {
                     buildDataForm(simpleUserSearch, parser.nextText(), parser);
                     return simpleUserSearch;
-                }
-                else if (eventType == XmlPullParser.START_TAG && parser.getName().equals("item")) {
+                } else if (eventType == XmlPullParser.START_TAG && parser.getName().equals("item")) {
                     simpleUserSearch.parseItems(parser);
                     return simpleUserSearch;
-                }
-                else if (eventType == XmlPullParser.START_TAG && parser.getNamespace().equals("jabber:x:data")) {
+                } else if (eventType == XmlPullParser.START_TAG && parser.getNamespace().equals("jabber:x:data")) {
                     // Otherwise, it must be a packet extension.
                     search = new UserSearch();
                     search.addExtension(PacketParserUtils.parsePacketExtension(parser.getName(),
                             parser.getNamespace(), parser));
 
-                }
-                else if (eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("query")) {
                         done = true;
                     }
@@ -219,28 +213,23 @@ public class UserSearch extends IQ {
                 FormField field = new FormField(name);
 
                 // Handle hard coded values.
-                if(name.equals("first")){
+                if (name.equals("first")) {
                     field.setLabel("First Name");
-                }
-                else if(name.equals("last")){
+                } else if (name.equals("last")) {
                     field.setLabel("Last Name");
-                }
-                else if(name.equals("email")){
+                } else if (name.equals("email")) {
                     field.setLabel("Email Address");
-                }
-                else if(name.equals("nick")){
+                } else if (name.equals("nick")) {
                     field.setLabel("Nickname");
                 }
 
                 field.setType(FormField.TYPE_TEXT_SINGLE);
                 dataForm.addField(field);
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }
-            }
-            else if (eventType == XmlPullParser.START_TAG && parser.getNamespace().equals("jabber:x:data")) {
+            } else if (eventType == XmlPullParser.START_TAG && parser.getNamespace().equals("jabber:x:data")) {
                 search.addExtension(PacketParserUtils.parsePacketExtension(parser.getName(),
                         parser.getNamespace(), parser));
                 done = true;

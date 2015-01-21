@@ -101,7 +101,9 @@ public class ChatEditorFragment extends BaseSettingsFragment {
 
     public interface ChatEditorFragmentInteractionListener {
         public String getAccount();
+
         public AccountItem getAccountItem();
+
         public String getUser();
     }
 }

@@ -39,18 +39,18 @@ import java.util.Map;
  * Manages private data, which is a mechanism to allow users to store arbitrary XML
  * data on an XMPP server. Each private data chunk is defined by a element name and
  * XML namespace. Example private data:
- *
+ * <p/>
  * <pre>
  * &lt;color xmlns="http://example.com/xmpp/color"&gt;
  *     &lt;favorite&gt;blue&lt;/blue&gt;
  *     &lt;leastFavorite&gt;puce&lt;/leastFavorite&gt;
  * &lt;/color&gt;
  * </pre>
- *
+ * <p/>
  * {@link PrivateDataProvider} instances are responsible for translating the XML into objects.
  * If no PrivateDataProvider is registered for a given element name and namespace, then
  * a {@link DefaultPrivateData} instance will be returned.<p>
- *
+ * <p/>
  * Warning: this is an non-standard protocol documented by
  * <a href="http://www.jabber.org/jeps/jep-0049.html">JEP-49</a>. Because this is a
  * non-standard protocol, it is subject to change.
@@ -69,7 +69,7 @@ public class PrivateDataManager {
      * For example, if a provider was registered to the element name "prefs" and the
      * namespace "http://www.xmppclient.com/prefs", then the following packet would trigger
      * the provider:
-     *
+     * <p/>
      * <pre>
      * &lt;iq type='result' to='joe@example.com' from='mary@example.com' id='time_1'&gt;
      *     &lt;query xmlns='jabber:iq:private'&gt;
@@ -83,12 +83,12 @@ public class PrivateDataManager {
      * <p>Note: this method is generally only called by the internal Smack classes.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
+     * @param namespace   the XML namespace.
      * @return the PrivateData provider.
      */
     public static PrivateDataProvider getPrivateDataProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
-        return (PrivateDataProvider)privateDataProviders.get(key);
+        return (PrivateDataProvider) privateDataProviders.get(key);
     }
 
     /**
@@ -96,12 +96,11 @@ public class PrivateDataManager {
      * will override any providers loaded through the classpath.
      *
      * @param elementName the XML element name.
-     * @param namespace the XML namespace.
-     * @param provider the private data provider.
+     * @param namespace   the XML namespace.
+     * @param provider    the private data provider.
      */
     public static void addPrivateDataProvider(String elementName, String namespace,
-            PrivateDataProvider provider)
-    {
+                                              PrivateDataProvider provider) {
         String key = getProviderKey(elementName, namespace);
         privateDataProviders.put(key, provider);
     }
@@ -110,7 +109,7 @@ public class PrivateDataManager {
      * Removes a private data provider with the specified element name and namespace.
      *
      * @param elementName The XML element name.
-     * @param namespace The XML namespace.
+     * @param namespace   The XML namespace.
      */
     public static void removePrivateDataProvider(String elementName, String namespace) {
         String key = getProviderKey(elementName, namespace);
@@ -133,7 +132,7 @@ public class PrivateDataManager {
      * this class.
      *
      * @param connection an XMPP connection which must have already undergone a
-     *      successful login.
+     *                   successful login.
      */
     public PrivateDataManager(Connection connection) {
         if (!connection.isAuthenticated()) {
@@ -151,8 +150,8 @@ public class PrivateDataManager {
      * being used to construct an instance of this class.
      *
      * @param connection an XMPP connection which must have already undergone a
-     *      successful login.
-     * @param user the XMPP address of the user to get and set private data for.
+     *                   successful login.
+     * @param user       the XMPP address of the user to get and set private data for.
      */
     public PrivateDataManager(Connection connection, String user) {
         if (!connection.isAuthenticated()) {
@@ -165,19 +164,18 @@ public class PrivateDataManager {
     /**
      * Returns the private data specified by the given element name and namespace. Each chunk
      * of private data is uniquely identified by an element name and namespace pair.<p>
-     *
+     * <p/>
      * If a PrivateDataProvider is registered for the specified element name/namespace pair then
      * that provider will determine the specific object type that is returned. If no provider
      * is registered, a {@link DefaultPrivateData} instance will be returned.
      *
      * @param elementName the element name.
-     * @param namespace the namespace.
+     * @param namespace   the namespace.
      * @return the private data.
      * @throws XMPPException if an error occurs getting the private data.
      */
     public PrivateData getPrivateData(final String elementName, final String namespace)
-            throws XMPPException
-    {
+            throws XMPPException {
         // Create an IQ packet to get the private data.
         IQ privateDataGet = new IQ() {
             public String getChildElementXML() {
@@ -202,7 +200,7 @@ public class PrivateDataManager {
         connection.sendPacket(privateDataGet);
 
         // Wait up to five seconds for a response from the server.
-        IQ response = (IQ)collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        IQ response = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         // Stop queuing results
         collector.cancel();
         if (response == null) {
@@ -212,7 +210,7 @@ public class PrivateDataManager {
         else if (response.getType() == IQ.Type.ERROR) {
             throw new XMPPException(response.getError());
         }
-        return ((PrivateDataResult)response).getPrivateData();
+        return ((PrivateDataResult) response).getPrivateData();
     }
 
     /**
@@ -248,7 +246,7 @@ public class PrivateDataManager {
         connection.sendPacket(privateDataSet);
 
         // Wait up to five seconds for a response from the server.
-        IQ response = (IQ)collector.nextResult(5000);
+        IQ response = (IQ) collector.nextResult(5000);
         // Stop queuing results
         collector.cancel();
         if (response == null) {
@@ -264,7 +262,7 @@ public class PrivateDataManager {
      * Returns a String key for a given element name and namespace.
      *
      * @param elementName the element name.
-     * @param namespace the namespace.
+     * @param namespace   the namespace.
      * @return a unique key for the element name and namespace pair.
      */
     private static String getProviderKey(String elementName, String namespace) {
@@ -301,7 +299,7 @@ public class PrivateDataManager {
                                 String name = parser.getName();
                                 // If an empty element, set the value with the empty string.
                                 if (parser.isEmptyElementTag()) {
-                                    data.setValue(name,"");
+                                    data.setValue(name, "");
                                 }
                                 // Otherwise, get the the element text.
                                 else {
@@ -311,8 +309,7 @@ public class PrivateDataManager {
                                         data.setValue(name, value);
                                     }
                                 }
-                            }
-                            else if (event == XmlPullParser.END_TAG) {
+                            } else if (event == XmlPullParser.END_TAG) {
                                 if (parser.getName().equals(elementName)) {
                                     finished = true;
                                 }
@@ -320,8 +317,7 @@ public class PrivateDataManager {
                         }
                         privateData = data;
                     }
-                }
-                else if (eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("query")) {
                         done = true;
                     }

@@ -192,7 +192,7 @@ public class ContactViewer extends ManagedActivity implements
             getFragmentManager().beginTransaction()
                     .add(R.id.preferences_activity_container, new ContactViewerFragment()).commit();
         }
-}
+    }
 
     @Override
     protected void onResume() {
@@ -271,9 +271,8 @@ public class ContactViewer extends ManagedActivity implements
     }
 
 
-
     public static Intent createIntent(Context context, String account,
-            String user) {
+                                      String user) {
         return new EntityIntentBuilder(context, ContactViewer.class)
                 .setAccount(account).setUser(user).build();
     }

@@ -24,7 +24,7 @@ import org.xmlpull.v1.XmlPullParser;
 /**
  * Parses an In-Band Bytestream data packet which can be a packet extension of
  * either an IQ stanza or a message stanza.
- * 
+ *
  * @author Henning Staib
  */
 public class DataPacketProvider implements PacketExtensionProvider, IQProvider {

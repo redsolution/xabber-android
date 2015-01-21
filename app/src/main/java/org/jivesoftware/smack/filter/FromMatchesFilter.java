@@ -58,12 +58,10 @@ public class FromMatchesFilter implements PacketFilter {
     public boolean accept(Packet packet) {
         if (packet.getFrom() == null) {
             return false;
-        }
-        else if (matchBareJID) {
+        } else if (matchBareJID) {
             // Check if the bare JID of the sender of the packet matches the specified JID
             return packet.getFrom().toLowerCase().startsWith(address);
-        }
-        else {
+        } else {
             // Check if the full JID of the sender of the packet matches the specified JID
             return address.equals(packet.getFrom().toLowerCase());
         }

@@ -28,6 +28,7 @@ import org.jivesoftware.smack.util.Base64;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
+
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
 import org.apache.harmony.javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.harmony.javax.security.auth.callback.Callback;
@@ -35,21 +36,23 @@ import org.apache.harmony.javax.security.auth.callback.NameCallback;
 import org.apache.harmony.javax.security.auth.callback.PasswordCallback;
 import org.apache.harmony.javax.security.sasl.RealmCallback;
 import org.apache.harmony.javax.security.sasl.RealmChoiceCallback;
+
 import de.measite.smack.Sasl;
+
 import org.apache.harmony.javax.security.sasl.SaslClient;
 import org.apache.harmony.javax.security.sasl.SaslException;
 
 /**
  * Base class for SASL mechanisms. Subclasses must implement these methods:
  * <ul>
- *  <li>{@link #getName()} -- returns the common name of the SASL mechanism.</li>
+ * <li>{@link #getName()} -- returns the common name of the SASL mechanism.</li>
  * </ul>
  * Subclasses will likely want to implement their own versions of these mthods:
- *  <li>{@link #authenticate(String, String, String)} -- Initiate authentication stanza using the
- *  deprecated method.</li>
- *  <li>{@link #authenticate(String, String, CallbackHandler)} -- Initiate authentication stanza
- *  using the CallbackHandler method.</li>
- *  <li>{@link #challengeReceived(String)} -- Handle a challenge from the server.</li>
+ * <li>{@link #authenticate(String, String, String)} -- Initiate authentication stanza using the
+ * deprecated method.</li>
+ * <li>{@link #authenticate(String, String, CallbackHandler)} -- Initiate authentication stanza
+ * using the CallbackHandler method.</li>
+ * <li>{@link #challengeReceived(String)} -- Handle a challenge from the server.</li>
  * </ul>
  *
  * @author Jay Kline
@@ -75,7 +78,7 @@ public abstract class SASLMechanism implements CallbackHandler {
      * @param username the username of the user being authenticated.
      * @param host     the hostname where the user account resides.
      * @param password the password for this account.
-     * @throws IOException If a network error occurs while authenticating.
+     * @throws IOException   If a network error occurs while authenticating.
      * @throws XMPPException If a protocol error occurs or the user is not authenticated.
      */
     public void authenticate(String username, String host, String password) throws IOException, XMPPException {
@@ -87,8 +90,8 @@ public abstract class SASLMechanism implements CallbackHandler {
         this.password = password;
         this.hostname = host;
 
-        String[] mechanisms = { getName() };
-        Map<String,String> props = new HashMap<String,String>();
+        String[] mechanisms = {getName()};
+        Map<String, String> props = new HashMap<String, String>();
         sc = Sasl.createSaslClient(mechanisms, username, "xmpp", host, props, this);
         authenticate();
     }
@@ -100,12 +103,12 @@ public abstract class SASLMechanism implements CallbackHandler {
      * @param username the username of the user being authenticated.
      * @param host     the hostname where the user account resides.
      * @param cbh      the CallbackHandler to obtain user information.
-     * @throws IOException If a network error occures while authenticating.
+     * @throws IOException   If a network error occures while authenticating.
      * @throws XMPPException If a protocol error occurs or the user is not authenticated.
      */
     public void authenticate(String username, String host, CallbackHandler cbh) throws IOException, XMPPException {
-        String[] mechanisms = { getName() };
-        Map<String,String> props = new HashMap<String,String>();
+        String[] mechanisms = {getName()};
+        Map<String, String> props = new HashMap<String, String>();
         sc = Sasl.createSaslClient(mechanisms, username, "xmpp", host, props, cbh);
         authenticate();
     }
@@ -113,9 +116,9 @@ public abstract class SASLMechanism implements CallbackHandler {
     protected void authenticate() throws IOException, XMPPException {
         String authenticationText = null;
         try {
-            if(sc.hasInitialResponse()) {
+            if (sc.hasInitialResponse()) {
                 byte[] response = sc.evaluateChallenge(new byte[0]);
-                authenticationText = Base64.encodeBytes(response,Base64.DONT_BREAK_LINES);
+                authenticationText = Base64.encodeBytes(response, Base64.DONT_BREAK_LINES);
             }
         } catch (SaslException e) {
             throw new XMPPException("SASL authentication failed", e);
@@ -135,7 +138,7 @@ public abstract class SASLMechanism implements CallbackHandler {
      */
     public void challengeReceived(String challenge) throws IOException {
         byte response[];
-        if(challenge != null) {
+        if (challenge != null) {
             response = sc.evaluateChallenge(Base64.decode(challenge));
         } else {
             response = sc.evaluateChallenge(new byte[0]);
@@ -144,9 +147,8 @@ public abstract class SASLMechanism implements CallbackHandler {
         Packet responseStanza;
         if (response == null) {
             responseStanza = new Response();
-        }
-        else {
-            responseStanza = new Response(Base64.encodeBytes(response,Base64.DONT_BREAK_LINES));
+        } else {
+            responseStanza = new Response(Base64.encodeBytes(response, Base64.DONT_BREAK_LINES));
         }
 
         // Send the authentication to the server
@@ -166,26 +168,26 @@ public abstract class SASLMechanism implements CallbackHandler {
     }
 
     /**
-     * 
+     *
      */
     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof NameCallback) {
-                NameCallback ncb = (NameCallback)callbacks[i];
+                NameCallback ncb = (NameCallback) callbacks[i];
                 ncb.setName(authenticationId);
-            } else if(callbacks[i] instanceof PasswordCallback) {
-                PasswordCallback pcb = (PasswordCallback)callbacks[i];
+            } else if (callbacks[i] instanceof PasswordCallback) {
+                PasswordCallback pcb = (PasswordCallback) callbacks[i];
                 pcb.setPassword(password.toCharArray());
-            } else if(callbacks[i] instanceof RealmCallback) {
-                RealmCallback rcb = (RealmCallback)callbacks[i];
+            } else if (callbacks[i] instanceof RealmCallback) {
+                RealmCallback rcb = (RealmCallback) callbacks[i];
                 rcb.setText(hostname);
-            } else if(callbacks[i] instanceof RealmChoiceCallback){
+            } else if (callbacks[i] instanceof RealmChoiceCallback) {
                 //unused
                 //RealmChoiceCallback rccb = (RealmChoiceCallback)callbacks[i];
             } else {
-               throw new UnsupportedCallbackException(callbacks[i]);
+                throw new UnsupportedCallbackException(callbacks[i]);
             }
-         }
+        }
     }
 
     /**
@@ -251,8 +253,7 @@ public abstract class SASLMechanism implements CallbackHandler {
         public Response(String authenticationText) {
             if (authenticationText == null || authenticationText.trim().length() == 0) {
                 this.authenticationText = null;
-            }
-            else {
+            } else {
                 this.authenticationText = authenticationText;
             }
         }
@@ -302,7 +303,7 @@ public abstract class SASLMechanism implements CallbackHandler {
 
         /**
          * Get the SASL related error condition.
-         * 
+         *
          * @return the SASL related error condition.
          */
         public String getCondition() {

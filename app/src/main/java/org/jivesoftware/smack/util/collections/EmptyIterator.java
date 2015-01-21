@@ -29,7 +29,7 @@ import java.util.Iterator;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:24 $
  * @since Commons Collections 2.1.1 and 3.1
  */
-public class EmptyIterator <E> extends AbstractEmptyIterator<E> implements ResettableIterator<E> {
+public class EmptyIterator<E> extends AbstractEmptyIterator<E> implements ResettableIterator<E> {
 
     /**
      * Singleton instance of the iterator.
@@ -44,10 +44,10 @@ public class EmptyIterator <E> extends AbstractEmptyIterator<E> implements Reset
      */
     public static final Iterator INSTANCE = RESETTABLE_INSTANCE;
 
-	public static <T> Iterator<T> getInstance() {
-		return INSTANCE;
-	}
-	
+    public static <T> Iterator<T> getInstance() {
+        return INSTANCE;
+    }
+
     /**
      * Constructor.
      */

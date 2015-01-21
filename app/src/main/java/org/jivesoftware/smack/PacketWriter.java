@@ -34,10 +34,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * interceptors can be registered to dynamically modify packets before they're actually
  * sent. Packet listeners can be registered to listen for all outgoing packets.
  *
+ * @author Matt Tucker
  * @see Connection#addPacketInterceptor
  * @see Connection#addPacketSendingListener
- *
- * @author Matt Tucker
  */
 class PacketWriter {
 
@@ -48,62 +47,62 @@ class PacketWriter {
     private final BlockingQueue<Packet> queue;
     private boolean done;
 
-	/**
-	 * Lock used to avoid access to incompatible values.
-	 */
-	private final Object keepAliveAccessLock;
+    /**
+     * Lock used to avoid access to incompatible values.
+     */
+    private final Object keepAliveAccessLock;
 
-	/**
-	 * Lock for changing values while send or receive packet . This lock can be
-	 * hold for a long period. Should be taken before
-	 * {@link #keepAliveAccessLock}.
-	 */
-	private final Object keepAliveWriteLock;
+    /**
+     * Lock for changing values while send or receive packet . This lock can be
+     * hold for a long period. Should be taken before
+     * {@link #keepAliveAccessLock}.
+     */
+    private final Object keepAliveWriteLock;
 
-	/**
-	 * Keep-alive requests must be send to the server.
-	 */
-	private boolean keepAliveIsEnabled;
+    /**
+     * Keep-alive requests must be send to the server.
+     */
+    private boolean keepAliveIsEnabled;
 
-	/**
-	 * Timestamp when the next ping request must be sent.
-	 */
-	private long keepAliveNextRequest;
+    /**
+     * Timestamp when the next ping request must be sent.
+     */
+    private long keepAliveNextRequest;
 
-	/**
-	 * Timestamp when response from server must be received or connection will
-	 * be broken.
-	 */
-	private Long keepAliveNextResponse;
+    /**
+     * Timestamp when response from server must be received or connection will
+     * be broken.
+     */
+    private Long keepAliveNextResponse;
 
-	/**
-	 * Timestamp data sending must be completed or connection will be broken.
-	 */
-	private Long sendNextComplete;
+    /**
+     * Timestamp data sending must be completed or connection will be broken.
+     */
+    private Long sendNextComplete;
 
-	/**
-	 * The number of milleseconds delay between sending keep-alive requests to
-	 * the server. The default value is 30000 ms. A value of -1 mean no
-	 * keep-alive requests will be sent to the server.
-	 */
-	private final int keepAliveRequestInterval;
+    /**
+     * The number of milleseconds delay between sending keep-alive requests to
+     * the server. The default value is 30000 ms. A value of -1 mean no
+     * keep-alive requests will be sent to the server.
+     */
+    private final int keepAliveRequestInterval;
 
-	/**
-	 * The number of milleseconds to wait answer from the server before
-	 * connection will be broken.
-	 */
-	private final int keepAliveResponseInterval;
+    /**
+     * The number of milleseconds to wait answer from the server before
+     * connection will be broken.
+     */
+    private final int keepAliveResponseInterval;
 
-	/**
-	 * Packet for keep alive.
-	 */
-	private static final String PING;
+    /**
+     * Packet for keep alive.
+     */
+    private static final String PING;
 
-	static {
-		Ping ping = new Ping();
-		ping.setPacketID("ping");
-		PING = ping.toXML();
-	}
+    static {
+        Ping ping = new Ping();
+        ping.setPacketID("ping");
+        PING = ping.toXML();
+    }
 
     /**
      * Creates a new packet writer with the specified connection.
@@ -113,21 +112,21 @@ class PacketWriter {
     protected PacketWriter(XMPPConnection connection) {
         this.queue = new LinkedBlockingQueue<Packet>();
         this.connection = connection;
-		keepAliveRequestInterval = SmackConfiguration.getKeepAliveInterval();
-		keepAliveResponseInterval = SmackConfiguration.getKeepAliveResponse();
-		keepAliveIsEnabled = false;
-		keepAliveNextRequest = System.currentTimeMillis();
-		keepAliveNextResponse = null;
-		sendNextComplete = null;
-		keepAliveWriteLock = new Object();
-		keepAliveAccessLock = new Object();
+        keepAliveRequestInterval = SmackConfiguration.getKeepAliveInterval();
+        keepAliveResponseInterval = SmackConfiguration.getKeepAliveResponse();
+        keepAliveIsEnabled = false;
+        keepAliveNextRequest = System.currentTimeMillis();
+        keepAliveNextResponse = null;
+        sendNextComplete = null;
+        keepAliveWriteLock = new Object();
+        keepAliveAccessLock = new Object();
         init();
     }
 
-    /** 
-    * Initializes the writer in order to be used. It is called at the first connection and also 
-    * is invoked if the connection is disconnected by an error.
-    */ 
+    /**
+     * Initializes the writer in order to be used. It is called at the first connection and also
+     * is invoked if the connection is disconnected by an error.
+     */
     protected void init() {
         this.writer = connection.writer;
         done = false;
@@ -154,8 +153,7 @@ class PacketWriter {
 
             try {
                 queue.put(packet);
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 ie.printStackTrace();
                 return;
             }
@@ -184,44 +182,44 @@ class PacketWriter {
      * to the server.
      */
     void startKeepAliveProcess() {
-		// Schedule a keep-alive task to run if the feature is enabled. will
-		// write
-		// out a space character each time it runs to keep the TCP/IP connection
-		// open.
-		if (keepAliveRequestInterval < 0)
-			return;
-		resumeKeepAliveProcess();
-		KeepAliveTask task = new KeepAliveTask();
-		keepAliveThread = new Thread(task);
-		task.setThread(keepAliveThread);
-		keepAliveThread.setDaemon(true);
-		keepAliveThread.setName("Smack Keep Alive ("
-				+ connection.connectionCounterValue + ")");
-		keepAliveThread.start();
+        // Schedule a keep-alive task to run if the feature is enabled. will
+        // write
+        // out a space character each time it runs to keep the TCP/IP connection
+        // open.
+        if (keepAliveRequestInterval < 0)
+            return;
+        resumeKeepAliveProcess();
+        KeepAliveTask task = new KeepAliveTask();
+        keepAliveThread = new Thread(task);
+        task.setThread(keepAliveThread);
+        keepAliveThread.setDaemon(true);
+        keepAliveThread.setName("Smack Keep Alive ("
+                + connection.connectionCounterValue + ")");
+        keepAliveThread.start();
     }
 
-	/**
-	 * Stops the keep alive process white SASL negotiation or compression
-	 * waiting.
-	 */
-	void stopKeepAliveProcess() {
-		synchronized (keepAliveWriteLock) {
-			synchronized (keepAliveAccessLock) {
-				keepAliveIsEnabled = false;
-			}
-		}
-	}
+    /**
+     * Stops the keep alive process white SASL negotiation or compression
+     * waiting.
+     */
+    void stopKeepAliveProcess() {
+        synchronized (keepAliveWriteLock) {
+            synchronized (keepAliveAccessLock) {
+                keepAliveIsEnabled = false;
+            }
+        }
+    }
 
-	void resumeKeepAliveProcess() {
-		if (keepAliveRequestInterval < 0)
-			return;
-		synchronized (keepAliveWriteLock) {
-			synchronized (keepAliveAccessLock) {
-				keepAliveIsEnabled = true;
-				responseReceived();
-			}
-		}
-	}
+    void resumeKeepAliveProcess() {
+        if (keepAliveRequestInterval < 0)
+            return;
+        synchronized (keepAliveWriteLock) {
+            synchronized (keepAliveAccessLock) {
+                keepAliveIsEnabled = true;
+                responseReceived();
+            }
+        }
+    }
 
     void setWriter(Writer writer) {
         this.writer = writer;
@@ -254,13 +252,12 @@ class PacketWriter {
     private Packet nextPacket() {
         Packet packet = null;
         // Wait until there's a packet or we're done.
-		while (!done && (packet = queue.poll()) == null) {
+        while (!done && (packet = queue.poll()) == null) {
             try {
                 synchronized (queue) {
-					queue.wait();
-				}
-            }
-            catch (InterruptedException ie) {
+                    queue.wait();
+                }
+            } catch (InterruptedException ie) {
                 // Do nothing
             }
         }
@@ -277,18 +274,18 @@ class PacketWriter {
                 if (packet != null) {
                     synchronized (writer) {
                         synchronized (keepAliveWriteLock) {
-							synchronized (keepAliveAccessLock) {
-								if (keepAliveIsEnabled)
-									sendNextComplete = System.currentTimeMillis()
-											+ keepAliveResponseInterval;
-							}
-	                        writer.write(packet.toXML());
-	                        writer.flush();
-							synchronized (keepAliveAccessLock) {
-								if (keepAliveIsEnabled)
-									sendNextComplete = null;
-							}
-	                    }
+                            synchronized (keepAliveAccessLock) {
+                                if (keepAliveIsEnabled)
+                                    sendNextComplete = System.currentTimeMillis()
+                                            + keepAliveResponseInterval;
+                            }
+                            writer.write(packet.toXML());
+                            writer.flush();
+                            synchronized (keepAliveAccessLock) {
+                                if (keepAliveIsEnabled)
+                                    sendNextComplete = null;
+                            }
+                        }
                     }
                 }
             }
@@ -297,14 +294,13 @@ class PacketWriter {
             // by the shutdown process.
             try {
                 synchronized (writer) {
-                   while (!queue.isEmpty()) {
-                       Packet packet = queue.remove();
+                    while (!queue.isEmpty()) {
+                        Packet packet = queue.remove();
                         writer.write(packet.toXML());
                     }
                     writer.flush();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -315,20 +311,16 @@ class PacketWriter {
             try {
                 writer.write("</stream:stream>");
                 writer.flush();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // Do nothing
-            }
-            finally {
+            } finally {
                 try {
                     writer.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     // Do nothing
                 }
             }
-        }
-        catch (IOException ioe){
+        } catch (IOException ioe) {
             if (!done) {
                 done = true;
                 connection.packetReader.notifyConnectionError(ioe);
@@ -354,92 +346,92 @@ class PacketWriter {
         writer.flush();
     }
 
-	/**
-	 * Returns whether connection with server is alive.
-	 * 
-	 * @return <code>false</code> if timeout occur.
-	 */
-	boolean isAlive() {
-		synchronized (keepAliveAccessLock) {
-			if (!keepAliveIsEnabled)
-				return true;
-			long current = System.currentTimeMillis();
-			if (keepAliveNextResponse != null
-					&& keepAliveNextResponse <= current) {
-				System.out.println("No response!");
-				return false;
-			}
-			if (sendNextComplete != null && sendNextComplete <= current) {
-				System.out.println("Not sent!");
-				return false;
-			}
-			return true;
-		}
-	}
+    /**
+     * Returns whether connection with server is alive.
+     *
+     * @return <code>false</code> if timeout occur.
+     */
+    boolean isAlive() {
+        synchronized (keepAliveAccessLock) {
+            if (!keepAliveIsEnabled)
+                return true;
+            long current = System.currentTimeMillis();
+            if (keepAliveNextResponse != null
+                    && keepAliveNextResponse <= current) {
+                System.out.println("No response!");
+                return false;
+            }
+            if (sendNextComplete != null && sendNextComplete <= current) {
+                System.out.println("Not sent!");
+                return false;
+            }
+            return true;
+        }
+    }
 
-	/**
-	 * Some date from server was received.
-	 */
-	void responseReceived() {
-		synchronized (keepAliveWriteLock) {
-			synchronized (keepAliveAccessLock) {
-				if (!keepAliveIsEnabled)
-					return;
-				keepAliveNextRequest = System.currentTimeMillis()
-						+ keepAliveRequestInterval;
-				keepAliveNextResponse = null;
-			}
-		}
-	}
+    /**
+     * Some date from server was received.
+     */
+    void responseReceived() {
+        synchronized (keepAliveWriteLock) {
+            synchronized (keepAliveAccessLock) {
+                if (!keepAliveIsEnabled)
+                    return;
+                keepAliveNextRequest = System.currentTimeMillis()
+                        + keepAliveRequestInterval;
+                keepAliveNextResponse = null;
+            }
+        }
+    }
 
-	/**
-	 * A task that keeps connections to the server alive by sending a ping on an
-	 * interval.
-	 */
-	private class KeepAliveTask implements Runnable {
+    /**
+     * A task that keeps connections to the server alive by sending a ping on an
+     * interval.
+     */
+    private class KeepAliveTask implements Runnable {
 
-		private Thread thread;
+        private Thread thread;
 
-		protected void setThread(Thread thread) {
-			this.thread = thread;
-		}
+        protected void setThread(Thread thread) {
+            this.thread = thread;
+        }
 
-		private void ping() {
-			synchronized (writer) {
-				synchronized (keepAliveWriteLock) {
-					synchronized (keepAliveAccessLock) {
-						// Don`t ping until response will be received.
-						if (!keepAliveIsEnabled
-								|| keepAliveNextResponse != null)
-							return;
-						long current = System.currentTimeMillis();
-						if (keepAliveNextRequest > current)
-							return;
-						sendNextComplete = current + keepAliveResponseInterval;
-					}
-					try {
-						writer.write(PING);
-						writer.flush();
-					} catch (IOException ioe) {
-					}
-					synchronized (keepAliveAccessLock) {
-						sendNextComplete = null;
-						keepAliveNextResponse = System.currentTimeMillis()
-								+ keepAliveResponseInterval;
-					}
-				}
-			}
-		}
+        private void ping() {
+            synchronized (writer) {
+                synchronized (keepAliveWriteLock) {
+                    synchronized (keepAliveAccessLock) {
+                        // Don`t ping until response will be received.
+                        if (!keepAliveIsEnabled
+                                || keepAliveNextResponse != null)
+                            return;
+                        long current = System.currentTimeMillis();
+                        if (keepAliveNextRequest > current)
+                            return;
+                        sendNextComplete = current + keepAliveResponseInterval;
+                    }
+                    try {
+                        writer.write(PING);
+                        writer.flush();
+                    } catch (IOException ioe) {
+                    }
+                    synchronized (keepAliveAccessLock) {
+                        sendNextComplete = null;
+                        keepAliveNextResponse = System.currentTimeMillis()
+                                + keepAliveResponseInterval;
+                    }
+                }
+            }
+        }
 
-		public void run() {
-			while (!done && keepAliveThread == thread) {
-				ping();
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ie) {
-					// Do nothing
-				}
-			}
-		}
-	}
+        public void run() {
+            while (!done && keepAliveThread == thread) {
+                ping();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    // Do nothing
+                }
+            }
+        }
+    }
 }

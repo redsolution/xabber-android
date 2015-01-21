@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * 
+ *
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- * 
+ *
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -43,111 +43,111 @@ import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
 public class StatusEditor extends ManagedListActivity implements
-		View.OnClickListener, OnItemClickListener {
+        View.OnClickListener, OnItemClickListener {
 
-	private static final String SAVED_TEXT = "com.xabber.android.ui.StatusEditor.SAVED_TEXT";
-	private static final String SAVED_MODE = "com.xabber.android.ui.StatusEditor.SAVED_MODE";
+    private static final String SAVED_TEXT = "com.xabber.android.ui.StatusEditor.SAVED_TEXT";
+    private static final String SAVED_MODE = "com.xabber.android.ui.StatusEditor.SAVED_MODE";
 
     static final public int CONTEXT_MENU_SELECT_STATUS_ID = 10;
-	static final public int CONTEXT_MENU_EDIT_STATUS_ID = 11;
-	static final public int CONTEXT_MENU_REMOVE_STATUS_ID = 12;
+    static final public int CONTEXT_MENU_EDIT_STATUS_ID = 11;
+    static final public int CONTEXT_MENU_REMOVE_STATUS_ID = 12;
 
-	private String account;
-	private Spinner statusModeView;
-	private EditText statusTextView;
+    private String account;
+    private Spinner statusModeView;
+    private EditText statusTextView;
 
-	private SavedStatus actionWithItem;
-	private StatusEditorAdapter adapter;
+    private SavedStatus actionWithItem;
+    private StatusEditorAdapter adapter;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		if (isFinishing())
-			return;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (isFinishing())
+            return;
 
-		actionWithItem = null;
+        actionWithItem = null;
 
-		setContentView(R.layout.status_editor);
+        setContentView(R.layout.status_editor);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		Intent intent = getIntent();
-		account = StatusEditor.getAccount(intent);
-		if (account == null)
-			setTitle(getString(R.string.status_editor));
-		else
-			setTitle(getString(R.string.status_editor_for, AccountManager
-					.getInstance().getVerboseName(account)));
+        Intent intent = getIntent();
+        account = StatusEditor.getAccount(intent);
+        if (account == null)
+            setTitle(getString(R.string.status_editor));
+        else
+            setTitle(getString(R.string.status_editor_for, AccountManager
+                    .getInstance().getVerboseName(account)));
 
-		ListView listView = getListView();
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-		View header = inflater.inflate(R.layout.status_editor_header, listView,
-				false);
-		listView.addHeaderView(header, null, false);
-		listView.setOnItemClickListener(this);
-		registerForContextMenu(listView);
-		adapter = new StatusEditorAdapter(this);
-		setListAdapter(adapter);
+        ListView listView = getListView();
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View header = inflater.inflate(R.layout.status_editor_header, listView,
+                false);
+        listView.addHeaderView(header, null, false);
+        listView.setOnItemClickListener(this);
+        registerForContextMenu(listView);
+        adapter = new StatusEditorAdapter(this);
+        setListAdapter(adapter);
 
-		statusTextView = (EditText) header.findViewById(R.id.status_text);
-		statusModeView = (Spinner) header.findViewById(R.id.status_mode);
-		statusModeView.setAdapter(new StatusModeAdapter(this));
-		findViewById(R.id.ok).setOnClickListener(this);
+        statusTextView = (EditText) header.findViewById(R.id.status_text);
+        statusModeView = (Spinner) header.findViewById(R.id.status_mode);
+        statusModeView.setAdapter(new StatusModeAdapter(this));
+        findViewById(R.id.ok).setOnClickListener(this);
 
-		StatusMode statusMode;
-		String statusText;
-		if (savedInstanceState == null) {
-			if (account == null) {
-				statusMode = SettingsManager.statusMode();
-				statusText = SettingsManager.statusText();
-			} else {
-				AccountItem accountItem = AccountManager.getInstance()
-						.getAccount(account);
-				if (accountItem == null) {
-					Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
-					finish();
-					return;
-				}
-				statusMode = accountItem.getFactualStatusMode();
-				statusText = accountItem.getStatusText();
-			}
-		} else {
-			statusMode = StatusMode.valueOf(savedInstanceState
-					.getString(SAVED_MODE));
-			statusText = savedInstanceState.getString(SAVED_TEXT);
-		}
-		showStatus(statusMode, statusText);
-	}
+        StatusMode statusMode;
+        String statusText;
+        if (savedInstanceState == null) {
+            if (account == null) {
+                statusMode = SettingsManager.statusMode();
+                statusText = SettingsManager.statusText();
+            } else {
+                AccountItem accountItem = AccountManager.getInstance()
+                        .getAccount(account);
+                if (accountItem == null) {
+                    Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
+                    finish();
+                    return;
+                }
+                statusMode = accountItem.getFactualStatusMode();
+                statusText = accountItem.getStatusText();
+            }
+        } else {
+            statusMode = StatusMode.valueOf(savedInstanceState
+                    .getString(SAVED_MODE));
+            statusText = savedInstanceState.getString(SAVED_TEXT);
+        }
+        showStatus(statusMode, statusText);
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		StatusMode statusMode = (StatusMode) statusModeView.getSelectedItem();
-		outState.putString(SAVED_MODE, statusMode.name());
-		outState.putString(SAVED_TEXT, statusTextView.getText().toString());
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        StatusMode statusMode = (StatusMode) statusModeView.getSelectedItem();
+        outState.putString(SAVED_MODE, statusMode.name());
+        outState.putString(SAVED_TEXT, statusTextView.getText().toString());
+    }
 
-	private void setStatus(StatusMode statusMode, String statusText) {
-		AccountManager accountManager = AccountManager.getInstance();
-		if (account != null)
-			accountManager.setStatus(account, statusMode, statusText);
-		else {
-			accountManager.setStatus(statusMode, statusText);
-		}
-	}
+    private void setStatus(StatusMode statusMode, String statusText) {
+        AccountManager accountManager = AccountManager.getInstance();
+        if (account != null)
+            accountManager.setStatus(account, statusMode, statusText);
+        else {
+            accountManager.setStatus(statusMode, statusText);
+        }
+    }
 
-	private void showStatus(StatusMode statusMode, String statusText) {
-		for (int index = 0; index < statusModeView.getCount(); index++)
-			if (statusMode == statusModeView.getAdapter().getItem(index))
-				statusModeView.setSelection(index);
-		statusTextView.setText(statusText);
-	}
+    private void showStatus(StatusMode statusMode, String statusText) {
+        for (int index = 0; index < statusModeView.getCount(); index++)
+            if (statusMode == statusModeView.getAdapter().getItem(index))
+                statusModeView.setSelection(index);
+        statusTextView.setText(statusText);
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		adapter.onChange();
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.onChange();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -164,64 +164,64 @@ public class StatusEditor extends ManagedListActivity implements
         switch (item.getItemId()) {
             case R.id.action_change_status:
                 changeStatus();
-            return true;
+                return true;
 
             case R.id.action_delete_status_message:
                 AccountManager.getInstance().clearSavedStatuses();
                 adapter.onChange();
-            return true;
+                return true;
         }
         return false;
     }
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		actionWithItem = (SavedStatus) getListView().getItemAtPosition(
-				info.position);
-		if (actionWithItem == null) // Header
-			return;
-		menu.add(0, CONTEXT_MENU_SELECT_STATUS_ID, 0,
-				getResources().getText(R.string.select_status));
-		menu.add(0, CONTEXT_MENU_EDIT_STATUS_ID, 0,
-				getResources().getText(R.string.edit_status));
-		menu.add(0, CONTEXT_MENU_REMOVE_STATUS_ID, 0,
-				getResources().getText(R.string.remove_status));
-	}
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        actionWithItem = (SavedStatus) getListView().getItemAtPosition(
+                info.position);
+        if (actionWithItem == null) // Header
+            return;
+        menu.add(0, CONTEXT_MENU_SELECT_STATUS_ID, 0,
+                getResources().getText(R.string.select_status));
+        menu.add(0, CONTEXT_MENU_EDIT_STATUS_ID, 0,
+                getResources().getText(R.string.edit_status));
+        menu.add(0, CONTEXT_MENU_REMOVE_STATUS_ID, 0,
+                getResources().getText(R.string.remove_status));
+    }
 
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		super.onContextItemSelected(item);
-		switch (item.getItemId()) {
-		case CONTEXT_MENU_SELECT_STATUS_ID:
-			setStatus(actionWithItem.getStatusMode(),
-					actionWithItem.getStatusText());
-			finish();
-			return true;
-		case CONTEXT_MENU_EDIT_STATUS_ID:
-			showStatus(actionWithItem.getStatusMode(),
-					actionWithItem.getStatusText());
-			return true;
-		case CONTEXT_MENU_REMOVE_STATUS_ID:
-			AccountManager.getInstance().removeSavedStatus(actionWithItem);
-			adapter.onChange();
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        super.onContextItemSelected(item);
+        switch (item.getItemId()) {
+            case CONTEXT_MENU_SELECT_STATUS_ID:
+                setStatus(actionWithItem.getStatusMode(),
+                        actionWithItem.getStatusText());
+                finish();
+                return true;
+            case CONTEXT_MENU_EDIT_STATUS_ID:
+                showStatus(actionWithItem.getStatusMode(),
+                        actionWithItem.getStatusText());
+                return true;
+            case CONTEXT_MENU_REMOVE_STATUS_ID:
+                AccountManager.getInstance().removeSavedStatus(actionWithItem);
+                adapter.onChange();
+                return true;
+        }
+        return false;
+    }
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.ok:
-            changeStatus();
-			break;
-		default:
-			break;
-		}
-	}
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ok:
+                changeStatus();
+                break;
+            default:
+                break;
+        }
+    }
 
     private void changeStatus() {
         StatusMode statusMode = (StatusMode) statusModeView
@@ -232,26 +232,26 @@ public class StatusEditor extends ManagedListActivity implements
     }
 
     @Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		SavedStatus savedStatus = (SavedStatus) parent.getAdapter().getItem(
-				position);
-		if (savedStatus == null) // Header
-			return;
-		setStatus(savedStatus.getStatusMode(), savedStatus.getStatusText());
-		finish();
-	}
+    public void onItemClick(AdapterView<?> parent, View view, int position,
+                            long id) {
+        SavedStatus savedStatus = (SavedStatus) parent.getAdapter().getItem(
+                position);
+        if (savedStatus == null) // Header
+            return;
+        setStatus(savedStatus.getStatusMode(), savedStatus.getStatusText());
+        finish();
+    }
 
-	public static Intent createIntent(Context context) {
-		return StatusEditor.createIntent(context, null);
-	}
+    public static Intent createIntent(Context context) {
+        return StatusEditor.createIntent(context, null);
+    }
 
-	public static Intent createIntent(Context context, String account) {
-		return new AccountIntentBuilder(context, StatusEditor.class)
-				.setAccount(account).build();
-	}
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, StatusEditor.class)
+                .setAccount(account).build();
+    }
 
-	private static String getAccount(Intent intent) {
-		return AccountIntentBuilder.getAccount(intent);
-	}
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
 }

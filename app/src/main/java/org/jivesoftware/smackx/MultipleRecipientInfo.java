@@ -65,7 +65,7 @@ public class MultipleRecipientInfo {
      * and send the reply to the room.
      *
      * @return the JID of a MUC room to which responses should be sent or <tt>null</tt>  if
-     *         no specific address was provided.
+     * no specific address was provided.
      */
     public String getReplyRoom() {
         List replyRoom = extension.getAddressesOfType(MultipleAddresses.REPLY_ROOM);
@@ -75,7 +75,7 @@ public class MultipleRecipientInfo {
     /**
      * Returns true if the received packet should not be replied. Use
      * {@link MultipleRecipientManager#reply(org.jivesoftware.smack.Connection, org.jivesoftware.smack.packet.Message, org.jivesoftware.smack.packet.Message)}
-     * to send replies. 
+     * to send replies.
      *
      * @return true if the received packet should not be replied.
      */
@@ -89,7 +89,7 @@ public class MultipleRecipientInfo {
      * can be sent to any or all recipients.
      *
      * @return the address to which all replies are requested to be sent or <tt>null</tt> if
-     *         no specific address was provided.
+     * no specific address was provided.
      */
     public MultipleAddresses.Address getReplyAddress() {
         List replyTo = extension.getAddressesOfType(MultipleAddresses.REPLY_TO);

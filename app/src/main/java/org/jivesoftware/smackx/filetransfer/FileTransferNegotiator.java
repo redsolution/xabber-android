@@ -97,8 +97,7 @@ public class FileTransferNegotiator {
 
         if (transferObject.containsKey(connection)) {
             return transferObject.get(connection);
-        }
-        else {
+        } else {
             FileTransferNegotiator transfer = new FileTransferNegotiator(
                     connection);
             setServiceEnabled(connection, true);
@@ -115,7 +114,7 @@ public class FileTransferNegotiator {
      * @param isEnabled  True to enable, false to disable.
      */
     public static void setServiceEnabled(final Connection connection,
-            final boolean isEnabled) {
+                                         final boolean isEnabled) {
         ServiceDiscoveryManager manager = ServiceDiscoveryManager
                 .getInstanceFor(connection);
 
@@ -135,7 +134,7 @@ public class FileTransferNegotiator {
                 manager.removeFeature(namespace);
             }
         }
-        
+
     }
 
     /**
@@ -174,7 +173,7 @@ public class FileTransferNegotiator {
      * @return The created IQ packet.
      */
     public static IQ createIQ(final String ID, final String to,
-            final String from, final IQ.Type type) {
+                              final String from, final IQ.Type type) {
         IQ iqPacket = new IQ() {
             public String getChildElementXML() {
                 return null;
@@ -277,8 +276,7 @@ public class FileTransferNegotiator {
         StreamNegotiator selectedStreamNegotiator;
         try {
             selectedStreamNegotiator = getNegotiator(streamMethodField);
-        }
-        catch (XMPPException e) {
+        } catch (XMPPException e) {
             IQ iqPacket = createIQ(si.getPacketID(), si.getFrom(), si.getTo(),
                     IQ.Type.ERROR);
             iqPacket.setError(e.getXMPPError());
@@ -293,7 +291,7 @@ public class FileTransferNegotiator {
 
     private FormField getStreamMethodField(DataForm form) {
         FormField field = null;
-        for (Iterator<FormField> it = form.getFields(); it.hasNext();) {
+        for (Iterator<FormField> it = form.getFields(); it.hasNext(); ) {
             field = it.next();
             if (field.getVariable().equals(STREAM_DATA_FIELD_NAME)) {
                 break;
@@ -308,12 +306,11 @@ public class FileTransferNegotiator {
         String variable;
         boolean isByteStream = false;
         boolean isIBB = false;
-        for (Iterator<FormField.Option> it = field.getOptions(); it.hasNext();) {
+        for (Iterator<FormField.Option> it = field.getOptions(); it.hasNext(); ) {
             variable = it.next().getValue();
             if (variable.equals(Socks5BytestreamManager.NAMESPACE) && !IBB_ONLY) {
                 isByteStream = true;
-            }
-            else if (variable.equals(InBandBytestreamManager.NAMESPACE)) {
+            } else if (variable.equals(InBandBytestreamManager.NAMESPACE)) {
                 isIBB = true;
             }
         }
@@ -324,16 +321,14 @@ public class FileTransferNegotiator {
             throw new XMPPException(error.getMessage(), error);
         }
 
-       //if (isByteStream && isIBB && field.getType().equals(FormField.TYPE_LIST_MULTI)) {
-        if (isByteStream && isIBB) { 
+        //if (isByteStream && isIBB && field.getType().equals(FormField.TYPE_LIST_MULTI)) {
+        if (isByteStream && isIBB) {
             return new FaultTolerantNegotiator(connection,
                     byteStreamTransferManager,
                     inbandTransferManager);
-        }
-        else if (isByteStream) {
+        } else if (isByteStream) {
             return byteStreamTransferManager;
-        }
-        else {
+        } else {
             return inbandTransferManager;
         }
     }
@@ -396,8 +391,8 @@ public class FileTransferNegotiator {
      * @throws XMPPException Thrown if there is an error negotiating the file transfer.
      */
     public StreamNegotiator negotiateOutgoingTransfer(final String userID,
-            final String streamID, final String fileName, final long size,
-            final String desc, int responseTimeout) throws XMPPException {
+                                                      final String streamID, final String fileName, final long size,
+                                                      final String desc, int responseTimeout) throws XMPPException {
         StreamInitiation si = new StreamInitiation();
         si.setSesssionID(streamID);
         si.setMimeType(URLConnection.guessContentTypeFromName(fileName));
@@ -425,15 +420,12 @@ public class FileTransferNegotiator {
                 return getOutgoingNegotiator(getStreamMethodField(response
                         .getFeatureNegotiationForm()));
 
-            }
-            else if (iqResponse.getType().equals(IQ.Type.ERROR)) {
+            } else if (iqResponse.getType().equals(IQ.Type.ERROR)) {
                 throw new XMPPException(iqResponse.getError());
-            }
-            else {
+            } else {
                 throw new XMPPException("File transfer response unreadable");
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -443,12 +435,11 @@ public class FileTransferNegotiator {
         String variable;
         boolean isByteStream = false;
         boolean isIBB = false;
-        for (Iterator<String> it = field.getValues(); it.hasNext();) {
+        for (Iterator<String> it = field.getValues(); it.hasNext(); ) {
             variable = it.next();
             if (variable.equals(Socks5BytestreamManager.NAMESPACE) && !IBB_ONLY) {
                 isByteStream = true;
-            }
-            else if (variable.equals(InBandBytestreamManager.NAMESPACE)) {
+            } else if (variable.equals(InBandBytestreamManager.NAMESPACE)) {
                 isIBB = true;
             }
         }
@@ -462,11 +453,9 @@ public class FileTransferNegotiator {
         if (isByteStream && isIBB) {
             return new FaultTolerantNegotiator(connection,
                     byteStreamTransferManager, inbandTransferManager);
-        }
-        else if (isByteStream) {
+        } else if (isByteStream) {
             return byteStreamTransferManager;
-        }
-        else {
+        } else {
             return inbandTransferManager;
         }
     }
