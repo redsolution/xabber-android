@@ -27,8 +27,9 @@
 
     <item android:id="@+id/action_chat_list"
         android:title="@string/chat_list"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:orderInCategory="110"
+        android:icon="@drawable/ic_list_white_24dp"
         />
 
     <item android:id="@+id/action_chat_settings"
@@ -39,8 +40,9 @@
 
     <item android:id="@+id/action_show_history"
         android:title="@string/show_history"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:orderInCategory="130"
+        android:icon="@drawable/ic_forum_white_24dp"
         />
 
     <item android:id="@+id/action_authorization_settings"
@@ -57,14 +59,6 @@
         android:visible="false"
         />
 
-    <item android:id="@+id/action_close_chat"
-        android:title="@string/close_chat"
-        app:showAsAction="ifRoom"
-        android:orderInCategory="140"
-        android:visible="false"
-        android:icon="@drawable/ic_clear_white_24dp"
-        />
-
     <item android:id="@+id/action_clear_text"
         android:title="@string/clear_message"
         app:showAsAction="never"
@@ -73,8 +67,17 @@
 
     <item android:id="@+id/action_clear_history"
         android:title="@string/clear_history"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:orderInCategory="160"
+        android:icon="@drawable/ic_clear_all_white_24dp"
+        />
+
+    <item android:id="@+id/action_close_chat"
+        android:title="@string/close_chat"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="165"
+        android:visible="false"
+        android:icon="@drawable/ic_clear_white_24dp"
         />
 
     <item android:id="@+id/action_export_chat"
