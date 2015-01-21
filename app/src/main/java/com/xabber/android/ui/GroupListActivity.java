@@ -46,9 +46,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 	private static final String SAVED_GROUPS = "com.xabber.android.ui.ContactList.SAVED_GROUPS";
 	private static final String SAVED_SELECTED = "com.xabber.android.ui.ContactList.SAVED_SELECTED";
 
-	static final int OPTION_MENU_ADD_GROUP_ID = 1;
-
-	private ArrayAdapter<String> arrayAdapter;
+    private ArrayAdapter<String> arrayAdapter;
 
 	private ListView listView;
 
@@ -73,7 +71,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 		listView = getListView();
 		listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		listView.setOnItemClickListener(this);
-		arrayAdapter = new ArrayAdapter<String>(this,
+		arrayAdapter = new ArrayAdapter<>(this,
 				android.R.layout.simple_list_item_multiple_choice,
 				new ArrayList<String>());
 		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -113,7 +111,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 	 * @return Actual groups from adapter.
 	 */
 	private ArrayList<String> getGroups() {
-		ArrayList<String> groups = new ArrayList<String>();
+		ArrayList<String> groups = new ArrayList<>();
 		for (int position = 0; position < arrayAdapter.getCount(); position++)
 			groups.add(arrayAdapter.getItem(position));
 		return groups;
@@ -123,7 +121,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 	 * @return Actual selected groups from adapter.
 	 */
 	public ArrayList<String> getSelected() {
-		ArrayList<String> groups = new ArrayList<String>();
+		ArrayList<String> groups = new ArrayList<>();
 		for (int position = 0; position < arrayAdapter.getCount(); position++)
 			if (listView.isItemChecked(position
 					+ listView.getHeaderViewsCount())) {
@@ -132,23 +130,21 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 		return groups;
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, OPTION_MENU_ADD_GROUP_ID, 0,
-				getResources().getText(R.string.group_add)).setIcon(
-				android.R.drawable.ic_menu_add);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.create_new_group, menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case OPTION_MENU_ADD_GROUP_ID:
-			showGroupAddDialog();
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.action_create_new_group:
+            showGroupAddDialog();
+            return true;
+        }
+        return false;
+    }
 
 	private void showGroupAddDialog() {
 		GroupAddDialogFragment.newInstance(getGroups()).show(
@@ -169,7 +165,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 	 * @param selected
 	 */
 	void setGroups(Collection<String> groups, Collection<String> selected) {
-		ArrayList<String> list = new ArrayList<String>(groups);
+		ArrayList<String> list = new ArrayList<>(groups);
 		Collections.sort(list);
 		arrayAdapter.clear();
 		for (int position = 0; position < list.size(); position++) {

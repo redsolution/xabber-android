@@ -80,15 +80,6 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
 	private static final String SAVED_ACTION = "com.xabber.android.ui.ContactList.SAVED_ACTION";
 	private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
 
-	private static final int OPTION_MENU_ADD_CONTACT_ID = 0x02;
-	private static final int OPTION_MENU_STATUS_EDITOR_ID = 0x04;
-	private static final int OPTION_MENU_PREFERENCE_EDITOR_ID = 0x05;
-	private static final int OPTION_MENU_CHAT_LIST_ID = 0x06;
-	private static final int OPTION_MENU_JOIN_ROOM_ID = 0x07;
-	private static final int OPTION_MENU_EXIT_ID = 0x08;
-	private static final int OPTION_MENU_SEARCH_ID = 0x0A;
-	private static final int OPTION_MENU_CLOSE_CHATS_ID = 0x0B;
-
 	private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
 	private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
@@ -270,80 +261,70 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
 		super.onPause();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		menu.add(0, OPTION_MENU_ADD_CONTACT_ID, 0,
-				getText(R.string.contact_add)).setIcon(
-				R.drawable.ic_menu_invite);
-		menu.add(0, OPTION_MENU_CLOSE_CHATS_ID, 0,
-				getText(R.string.close_chats)).setIcon(
-				R.drawable.ic_menu_end_conversation);
-		menu.add(0, OPTION_MENU_PREFERENCE_EDITOR_ID, 0,
-				getResources().getText(R.string.preference_editor)).setIcon(
-				android.R.drawable.ic_menu_preferences);
-		menu.add(0, OPTION_MENU_STATUS_EDITOR_ID, 0,
-				getText(R.string.status_editor)).setIcon(
-				R.drawable.ic_menu_notifications);
-		menu.add(0, OPTION_MENU_EXIT_ID, 0, getText(R.string.exit)).setIcon(
-				android.R.drawable.ic_menu_close_clear_cancel);
-		menu.add(0, OPTION_MENU_JOIN_ROOM_ID, 0, getText(R.string.muc_add));
-		menu.add(0, OPTION_MENU_SEARCH_ID, 0,
-				getText(android.R.string.search_go));
-		menu.add(0, OPTION_MENU_CHAT_LIST_ID, 0, getText(R.string.chat_list))
-				.setIcon(R.drawable.ic_menu_friendslist);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.contact_list, menu);
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
-		switch (item.getItemId()) {
-		case OPTION_MENU_ADD_CONTACT_ID:
-			startActivity(ContactAdd.createIntent(this));
-			return true;
-		case OPTION_MENU_STATUS_EDITOR_ID:
-			startActivity(StatusEditor.createIntent(this));
-			return true;
-		case OPTION_MENU_PREFERENCE_EDITOR_ID:
-			startActivity(PreferenceEditor.createIntent(this));
-			return true;
-		case OPTION_MENU_CHAT_LIST_ID:
-			startActivity(ChatList.createIntent(this));
-			return true;
-		case OPTION_MENU_JOIN_ROOM_ID:
-			startActivity(MUCEditor.createIntent(this));
-			return true;
-		case OPTION_MENU_EXIT_ID:
-			Application.getInstance().requestToClose();
-			showDialog(DIALOG_CLOSE_APPLICATION_ID);
-			getContactListFragment().unregisterListeners();
-			new Handler().postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					// Close activity if application was not killed yet.
-					finish();
-				}
-			}, CLOSE_ACTIVITY_AFTER_DELAY);
-			return true;
-		case OPTION_MENU_SEARCH_ID:
-			search();
-			return true;
-		case OPTION_MENU_CLOSE_CHATS_ID:
-			for (AbstractChat chat : MessageManager.getInstance()
-					.getActiveChats()) {
-				MessageManager.getInstance().closeChat(chat.getAccount(),
-						chat.getUser());
-				NotificationManager.getInstance().removeMessageNotification(
-						chat.getAccount(), chat.getUser());
-			}
-			getContactListFragment().getAdapter().onChange();
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                search();
+                return true;
+            case R.id.action_change_status:
+                startActivity(StatusEditor.createIntent(this));
+                return true;
+            case R.id.action_add_contact:
+                startActivity(ContactAdd.createIntent(this));
+                return true;
+            case R.id.action_close_chats:
+                closeAllChats();
+                return true;
+            case R.id.action_join_conference:
+                startActivity(MUCEditor.createIntent(this));
+                return true;
+            case R.id.action_chat_list:
+                startActivity(ChatList.createIntent(this));
+                return true;
+            case R.id.action_settings:
+                startActivity(PreferenceEditor.createIntent(this));
+                return true;
+            case R.id.action_exit:
+                exit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	private ContactListFragment getContactListFragment() {
+    private void exit() {
+        Application.getInstance().requestToClose();
+        showDialog(DIALOG_CLOSE_APPLICATION_ID);
+        getContactListFragment().unregisterListeners();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Close activity if application was not killed yet.
+                finish();
+            }
+        }, CLOSE_ACTIVITY_AFTER_DELAY);
+    }
+
+    private void closeAllChats() {
+        for (AbstractChat chat : MessageManager.getInstance()
+                .getActiveChats()) {
+            MessageManager.getInstance().closeChat(chat.getAccount(),
+                    chat.getUser());
+            NotificationManager.getInstance().removeMessageNotification(
+                    chat.getAccount(), chat.getUser());
+        }
+        getContactListFragment().getAdapter().onChange();
+    }
+
+    private ContactListFragment getContactListFragment() {
 		return (ContactListFragment) getSupportFragmentManager()
 				.findFragmentByTag(CONTACT_LIST_TAG);
 	}

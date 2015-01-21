@@ -26,7 +26,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -49,9 +48,7 @@ public class StatusEditor extends ManagedListActivity implements
 	private static final String SAVED_TEXT = "com.xabber.android.ui.StatusEditor.SAVED_TEXT";
 	private static final String SAVED_MODE = "com.xabber.android.ui.StatusEditor.SAVED_MODE";
 
-	static final public int OPTION_MENU_CLEAR_STATUSES_ID = 1;
-
-	static final public int CONTEXT_MENU_SELECT_STATUS_ID = 10;
+    static final public int CONTEXT_MENU_SELECT_STATUS_ID = 10;
 	static final public int CONTEXT_MENU_EDIT_STATUS_ID = 11;
 	static final public int CONTEXT_MENU_REMOVE_STATUS_ID = 12;
 
@@ -95,7 +92,7 @@ public class StatusEditor extends ManagedListActivity implements
 		statusTextView = (EditText) header.findViewById(R.id.status_text);
 		statusModeView = (Spinner) header.findViewById(R.id.status_mode);
 		statusModeView.setAdapter(new StatusModeAdapter(this));
-		((Button) findViewById(R.id.ok)).setOnClickListener(this);
+		findViewById(R.id.ok).setOnClickListener(this);
 
 		StatusMode statusMode;
 		String statusText;
@@ -152,26 +149,26 @@ public class StatusEditor extends ManagedListActivity implements
 		adapter.onChange();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		menu.add(0, OPTION_MENU_CLEAR_STATUSES_ID, 0,
-				getResources().getText(R.string.clear_statuses)).setIcon(
-				android.R.drawable.ic_menu_close_clear_cancel);
-		return true;
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.delete_status_message, menu);
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
-		switch (item.getItemId()) {
-		case OPTION_MENU_CLEAR_STATUSES_ID:
-			AccountManager.getInstance().clearSavedStatuses();
-			adapter.onChange();
-			return true;
-		}
-		return false;
-	}
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+        case R.id.action_delete_status_message:
+            AccountManager.getInstance().clearSavedStatuses();
+            adapter.onChange();
+            return true;
+        }
+        return false;
+    }
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
