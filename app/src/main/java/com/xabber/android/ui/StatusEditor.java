@@ -152,7 +152,7 @@ public class StatusEditor extends ManagedListActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.delete_status_message, menu);
+        getMenuInflater().inflate(R.menu.status, menu);
 
 
         return true;
@@ -162,9 +162,13 @@ public class StatusEditor extends ManagedListActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
-        case R.id.action_delete_status_message:
-            AccountManager.getInstance().clearSavedStatuses();
-            adapter.onChange();
+            case R.id.action_change_status:
+                changeStatus();
+            return true;
+
+            case R.id.action_delete_status_message:
+                AccountManager.getInstance().clearSavedStatuses();
+                adapter.onChange();
             return true;
         }
         return false;
@@ -212,18 +216,22 @@ public class StatusEditor extends ManagedListActivity implements
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.ok:
-			StatusMode statusMode = (StatusMode) statusModeView
-					.getSelectedItem();
-			String statusText = statusTextView.getText().toString();
-			setStatus(statusMode, statusText);
-			finish();
+            changeStatus();
 			break;
 		default:
 			break;
 		}
 	}
 
-	@Override
+    private void changeStatus() {
+        StatusMode statusMode = (StatusMode) statusModeView
+                .getSelectedItem();
+        String statusText = statusTextView.getText().toString();
+        setStatus(statusMode, statusText);
+        finish();
+    }
+
+    @Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		SavedStatus savedStatus = (SavedStatus) parent.getAdapter().getItem(
