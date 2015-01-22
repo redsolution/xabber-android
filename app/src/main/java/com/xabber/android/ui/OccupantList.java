@@ -61,6 +61,8 @@ public class OccupantList extends ManagedListActivity implements
         setContentView(R.layout.list);
         listAdapter = new OccupantListAdapter(this, account, room);
         setListAdapter(listAdapter);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
