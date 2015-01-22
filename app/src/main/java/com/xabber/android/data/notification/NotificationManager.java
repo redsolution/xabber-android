@@ -240,23 +240,24 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         Intent intent = top.getIntent();
 
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
 
-
-        Notification notification = new Notification(provider.getIcon(),
-                ticker, System.currentTimeMillis());
+        notificationBuilder.setSmallIcon(provider.getIcon()).setTicker(ticker);
 
         if (!provider.canClearNotifications()) {
-            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationBuilder.setOngoing(true);
         }
 
-        notification.setLatestEventInfo(application, top.getTitle(), top.getText(),
-                PendingIntent.getActivity(application, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+        notificationBuilder.setContentTitle(top.getTitle()).setContentText(top.getText());
+        notificationBuilder.setContentIntent(PendingIntent.getActivity(application, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT));
+
         if (ticker != null) {
             setNotificationDefaults(SettingsManager.eventsVibro(), provider.getSound(), provider.getStreamType());
         }
 
-        notification.deleteIntent = clearNotifications;
-        notify(id, notification);
+        notificationBuilder.setDeleteIntent(clearNotifications);
+        notify(id, notificationBuilder.build());
     }
 
     /**
@@ -380,6 +381,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationBuilder.setDefaults(0);
         persistentNotificationBuilder.setSound(null);
         persistentNotificationBuilder.setTicker(null);
+        persistentNotificationBuilder.setStyle(null);
+        persistentNotificationBuilder.setLargeIcon(null);
 
         if (SettingsManager.eventsPersistent()) {
             // Ongoing icons are in the left side, so always use it.
@@ -431,7 +434,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 = ChatViewer.createClearTopIntent(application, message.getAccount(), message.getUser());
 
         if (messageCount == 1) {
-            persistentNotificationBuilder.setContentTitle(RosterManager.getInstance().getName(message.getAccount(), message.getUser()));
+
+            String title = RosterManager.getInstance().getName(message.getAccount(), message.getUser());
 
             String text;
 
@@ -441,6 +445,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 text = "";
             }
 
+            persistentNotificationBuilder.setContentTitle(title);
             persistentNotificationBuilder.setContentText(Emoticons.getSmiledText(application, text));
 
             if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser())) {
@@ -448,6 +453,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             } else {
                 persistentNotificationBuilder.setLargeIcon(AvatarManager.getInstance().getUserBitmap(message.getUser()));
             }
+
+            NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+            bigTextStyle.setBigContentTitle(title);
+            bigTextStyle.bigText(text);
+
+            persistentNotificationBuilder.setStyle(bigTextStyle);
 
         } else {
             String messageText = StringUtils.getQuantityString(
@@ -459,9 +470,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
 
             persistentNotificationBuilder.setContentTitle(status);
-
-            persistentNotificationBuilder.setLargeIcon(null);
-
         }
 
         persistentNotificationBuilder.setWhen(message.getTimestamp().getTime());
