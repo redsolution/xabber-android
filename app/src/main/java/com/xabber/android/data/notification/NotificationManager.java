@@ -73,6 +73,9 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     private static final long VIBRATION_DURATION = 500;
     private static final int MAX_NOTIFICATION_TEXT = 80;
+
+    public static final int COLOR_MATERIAL_RED_500 = 0xF44336;
+
     private final long startTime;
     private final Application application;
     private final android.app.NotificationManager notificationManager;
@@ -383,6 +386,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationBuilder.setTicker(null);
         persistentNotificationBuilder.setStyle(null);
         persistentNotificationBuilder.setLargeIcon(null);
+
+        persistentNotificationBuilder.setColor(COLOR_MATERIAL_RED_500);
 
         if (SettingsManager.eventsPersistent()) {
             // Ongoing icons are in the left side, so always use it.
