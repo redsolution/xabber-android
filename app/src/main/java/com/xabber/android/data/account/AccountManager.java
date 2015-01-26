@@ -14,18 +14,6 @@
  */
 package com.xabber.android.data.account;
 
-import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import org.jivesoftware.smack.util.StringUtils;
-
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Build;
@@ -45,6 +33,18 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+
+import org.jivesoftware.smack.util.StringUtils;
+
+import java.security.KeyPair;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class manage all operations with accounts.
@@ -117,9 +117,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         enabledAccounts = new HashSet<String>();
         savedStatuses = new ArrayList<SavedStatus>();
         authorizationErrorProvider = new BaseAccountNotificationProvider<AccountAuthorizationError>(
-                R.drawable.ic_stat_auth_failed);
+                R.drawable.ic_stat_error);
         passwordRequestProvider = new BaseAccountNotificationProvider<PasswordRequest>(
-                R.drawable.ic_stat_request);
+                R.drawable.ic_stat_ic_add_circle);
 
         TypedArray accountAvatars = application.getResources()
                 .obtainTypedArray(R.array.account_avatars);

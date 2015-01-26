@@ -14,29 +14,6 @@
  */
 package com.xabber.android.data.extension.otr;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-import net.java.otr4j.OtrEngineHost;
-import net.java.otr4j.OtrEngineListener;
-import net.java.otr4j.OtrException;
-import net.java.otr4j.OtrPolicy;
-import net.java.otr4j.OtrPolicyImpl;
-import net.java.otr4j.crypto.OtrCryptoEngineImpl;
-import net.java.otr4j.crypto.OtrCryptoException;
-import net.java.otr4j.io.SerializationUtils;
-import net.java.otr4j.session.Session;
-import net.java.otr4j.session.SessionID;
-import net.java.otr4j.session.SessionImpl;
-import net.java.otr4j.session.SessionStatus;
-
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
@@ -65,6 +42,29 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.archive.OtrMode;
 import com.xabber.xmpp.archive.SaveMode;
+
+import net.java.otr4j.OtrEngineHost;
+import net.java.otr4j.OtrEngineListener;
+import net.java.otr4j.OtrException;
+import net.java.otr4j.OtrPolicy;
+import net.java.otr4j.OtrPolicyImpl;
+import net.java.otr4j.crypto.OtrCryptoEngineImpl;
+import net.java.otr4j.crypto.OtrCryptoException;
+import net.java.otr4j.io.SerializationUtils;
+import net.java.otr4j.session.Session;
+import net.java.otr4j.session.SessionID;
+import net.java.otr4j.session.SessionImpl;
+import net.java.otr4j.session.SessionStatus;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Manage off-the-record encryption.
@@ -134,9 +134,9 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     private OTRManager() {
         smRequestProvider = new EntityNotificationProvider<SMRequest>(
-                R.drawable.ic_stat_request);
+                R.drawable.ic_stat_ic_help_black);
         smProgressProvider = new EntityNotificationProvider<SMProgress>(
-                R.drawable.ic_stat_play);
+                R.drawable.ic_stat_ic_play_circle_fill);
         smProgressProvider.setCanClearNotifications(false);
         fingerprints = new NestedNestedMaps<String, Boolean>();
         actives = new NestedMap<String>();

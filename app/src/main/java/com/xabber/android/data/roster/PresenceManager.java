@@ -14,20 +14,6 @@
  */
 package com.xabber.android.data.roster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Presence.Type;
-import org.jivesoftware.smack.packet.RosterPacket;
-import org.jivesoftware.smack.packet.RosterPacket.ItemType;
-import org.jivesoftware.smack.util.StringUtils;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -45,6 +31,20 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smack.packet.RosterPacket;
+import org.jivesoftware.smack.packet.RosterPacket.ItemType;
+import org.jivesoftware.smack.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Process contact's presence information.
@@ -86,7 +86,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<SubscriptionRequest>(
-                R.drawable.ic_stat_subscribe);
+                R.drawable.ic_stat_ic_add_circle);
         requestedSubscriptions = new HashMap<String, HashSet<String>>();
         presenceContainers = new NestedMap<ResourceContainer>();
         readyAccounts = new ArrayList<String>();

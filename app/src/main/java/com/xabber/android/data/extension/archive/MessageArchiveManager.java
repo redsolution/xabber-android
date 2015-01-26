@@ -14,16 +14,6 @@
  */
 package com.xabber.android.data.extension.archive;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Packet;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -67,6 +57,16 @@ import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.archive.Session;
 import com.xabber.xmpp.archive.SessionRemove;
 import com.xabber.xmpp.rsm.Set;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Packet;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Manage server side archive. Replicate it with memory storage.
@@ -164,7 +164,7 @@ public class MessageArchiveManager implements OnPacketListener,
         modificationRequests = new NestedMap<Boolean>();
         chatStorages = new NestedNestedMaps<String, ChatStorage>();
         availableArchiveRequestProvider = new BaseAccountNotificationProvider<AvailableArchiveRequest>(
-                R.drawable.ic_stat_request);
+                R.drawable.ic_stat_ic_help_black);
     }
 
     @Override
