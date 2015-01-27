@@ -59,15 +59,14 @@ public class MessageNotificationCreator {
         notificationBuilder.setContentText(getText(message, showText));
         notificationBuilder.setSubText(message.getAccount());
 
-        if (showText) {
-            notificationBuilder.setTicker(message.getText());
-        }
+        notificationBuilder.setTicker(getText(message, showText));
+
         notificationBuilder.setSmallIcon(getSmallIcon());
         notificationBuilder.setLargeIcon(getLargeIcon(message));
 
         notificationBuilder.setWhen(message.getTimestamp().getTime());
         notificationBuilder.setColor(NotificationManager.COLOR_MATERIAL_RED_500);
-        notificationBuilder.setStyle(getStyle(message, messageCount));
+        notificationBuilder.setStyle(getStyle(message, messageCount, showText));
 
         notificationBuilder.setContentIntent(getIntent(message));
 
@@ -114,14 +113,14 @@ public class MessageNotificationCreator {
     }
 
     private CharSequence getText(MessageNotification message, boolean showText) {
-        if (!showText) {
-            return message.getAccount();
-        }
-
         if (isFromOneContact()) {
-            return message.getText();
+            if (showText) {
+                return message.getText();
+            } else {
+                return null;
+            }
         } else {
-            return getContactNameAndMessage(message);
+            return getContactNameAndMessage(message, showText);
         }
     }
 
@@ -144,37 +143,54 @@ public class MessageNotificationCreator {
         return messageNotifications.size() == 1;
     }
 
-    private NotificationCompat.Style getStyle(MessageNotification message, int messageCount) {
+    private NotificationCompat.Style getStyle(MessageNotification message, int messageCount, boolean showText) {
         if (isFromOneContact()) {
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
 
             bigTextStyle.setBigContentTitle(getSingleContactTitle(message, messageCount));
-            bigTextStyle.bigText(message.getText());
+            if (showText) {
+                bigTextStyle.bigText(message.getText());
+            }
             bigTextStyle.setSummaryText(message.getAccount());
 
             return bigTextStyle;
         } else {
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-
-            inboxStyle.setBigContentTitle(getMultiContactTitle(messageCount));
-
-            for (int i = 1; i <= messageNotifications.size(); i++) {
-                MessageNotification messageNotification = messageNotifications.get(messageNotifications.size() - i);
-
-                inboxStyle.addLine(getContactNameAndMessage(messageNotification));
-            }
-
-            inboxStyle.setSummaryText(message.getAccount());
-
-            return inboxStyle;
+            return getInboxStyle(messageCount, message.getAccount());
         }
     }
 
-    private Spannable getContactNameAndMessage(MessageNotification messageNotification) {
+    private NotificationCompat.Style getInboxStyle(int messageCount, String accountName) {
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+        inboxStyle.setBigContentTitle(getMultiContactTitle(messageCount));
+
+        for (int i = 1; i <= messageNotifications.size(); i++) {
+            MessageNotification messageNotification = messageNotifications.get(messageNotifications.size() - i);
+
+            boolean showTextForThisContact
+                    = ChatManager.getInstance().isShowText(messageNotification.getAccount(), messageNotification.getUser());
+
+            inboxStyle.addLine(getContactNameAndMessage(messageNotification, showTextForThisContact));
+        }
+
+        inboxStyle.setSummaryText(accountName);
+
+        return inboxStyle;
+    }
+
+    private Spannable getContactNameAndMessage(MessageNotification messageNotification, boolean showText) {
         String userName = getContactName(messageNotification);
-        String contactAndMessage = application.getString(
-                R.string.chat_contact_and_message, userName, messageNotification.getText());
-        Spannable spannableString = new SpannableString(contactAndMessage);
+
+        Spannable spannableString;
+        if (showText) {
+            String contactAndMessage = application.getString(
+                    R.string.chat_contact_and_message, userName, messageNotification.getText());
+            spannableString = new SpannableString(contactAndMessage);
+
+        } else {
+            spannableString = new SpannableString(userName);
+        }
+
         spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, userName.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannableString;
