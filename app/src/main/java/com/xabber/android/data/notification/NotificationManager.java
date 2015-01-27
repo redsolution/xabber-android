@@ -157,8 +157,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationBuilder.setContentTitle(application.getString(R.string.application_name));
         persistentNotificationBuilder.setDeleteIntent(clearNotifications);
         persistentNotificationBuilder.setOngoing(true);
-        persistentNotificationBuilder.setColor(COLOR_MATERIAL_RED_500);
         persistentNotificationBuilder.setWhen(System.currentTimeMillis());
+        persistentNotificationBuilder.setCategory(NotificationCompat.CATEGORY_SERVICE);
+        persistentNotificationBuilder.setPriority(NotificationCompat.PRIORITY_LOW);
+
     }
 
     @Override
@@ -357,8 +359,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             persistentIntent = ContactList.createPersistentIntent(application);
         }
 
-        persistentNotificationBuilder.setSmallIcon(connected > 0 ? R.drawable.ic_stat_light_bulb_big
-                : R.drawable.ic_stat_light_bulb_big_off);
+        if (connected > 0) {
+            persistentNotificationBuilder.setColor(COLOR_MATERIAL_RED_500);
+            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_light_bulb_big);
+        } else {
+            persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
+            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_light_bulb_big_off);
+        }
+
         persistentNotificationBuilder.setContentText(getConnectionState(waiting, connecting, connected, accountList.size()));
         persistentNotificationBuilder.setContentIntent(PendingIntent.getActivity(application, 0, persistentIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT));

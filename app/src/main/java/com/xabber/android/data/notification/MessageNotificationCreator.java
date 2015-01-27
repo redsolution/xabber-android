@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -54,6 +57,8 @@ public class MessageNotificationCreator {
         notificationBuilder = new NotificationCompat.Builder(application);
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
+        notificationBuilder.setSubText(message.getAccount());
+
         if (showText) {
             notificationBuilder.setTicker(message.getText());
         }
@@ -66,6 +71,9 @@ public class MessageNotificationCreator {
 
         notificationBuilder.setContentIntent(getIntent(message));
 
+        notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
+        notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
         addEffects(messageItem);
 
         return notificationBuilder.build();
@@ -73,22 +81,47 @@ public class MessageNotificationCreator {
 
     private CharSequence getTitle(MessageNotification message, int messageCount) {
         if (isFromOneContact()) {
-            return RosterManager.getInstance().getName(message.getAccount(), message.getUser());
+            return getSingleContactTitle(message, messageCount);
         } else {
-            String messageText = StringUtils.getQuantityString(
-                    application.getResources(), R.array.chat_message_quantity, messageCount);
-            String contactText = StringUtils.getQuantityString(application.getResources(),
-                    R.array.chat_contact_quantity, messageNotifications.size());
-            return application.getString(R.string.chat_status,
-                    messageCount, messageText, messageNotifications.size(), contactText);
+            return getMultiContactTitle(messageCount);
         }
     }
 
+    private CharSequence getSingleContactTitle(MessageNotification message, int messageCount) {
+        if (messageCount > 1) {
+            return application.getString(R.string.chat_messages_from_contact,
+                    messageCount, getTextForMessages(messageCount), getContactName(message));
+        } else {
+            return getContactName(message);
+        }
+    }
+
+    private String getContactName(MessageNotification message) {
+        return RosterManager.getInstance().getName(message.getAccount(), message.getUser());
+    }
+
+    private CharSequence getMultiContactTitle(int messageCount) {
+        String messageText = getTextForMessages(messageCount);
+        String contactText = StringUtils.getQuantityString(application.getResources(),
+                R.array.chat_contact_quantity, messageNotifications.size());
+        return application.getString(R.string.chat_status,
+                messageCount, messageText, messageNotifications.size(), contactText);
+    }
+
+    private String getTextForMessages(int messageCount) {
+        return StringUtils.getQuantityString(
+                application.getResources(), R.array.chat_message_quantity, messageCount);
+    }
+
     private CharSequence getText(MessageNotification message, boolean showText) {
-        if (showText && isFromOneContact()) {
+        if (!showText) {
+            return message.getAccount();
+        }
+
+        if (isFromOneContact()) {
             return message.getText();
         } else {
-            return "";
+            return getContactNameAndMessage(message);
         }
     }
 
@@ -111,18 +144,40 @@ public class MessageNotificationCreator {
         return messageNotifications.size() == 1;
     }
 
-    private NotificationCompat.BigTextStyle getStyle(MessageNotification message, int messageCount) {
-        if (messageCount == 1) {
-            String title = RosterManager.getInstance().getName(message.getAccount(), message.getUser());
-
-            String text = message.getText();
-
+    private NotificationCompat.Style getStyle(MessageNotification message, int messageCount) {
+        if (isFromOneContact()) {
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
-            bigTextStyle.setBigContentTitle(title);
-            bigTextStyle.bigText(text);
+
+            bigTextStyle.setBigContentTitle(getSingleContactTitle(message, messageCount));
+            bigTextStyle.bigText(message.getText());
+            bigTextStyle.setSummaryText(message.getAccount());
+
             return bigTextStyle;
+        } else {
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+            inboxStyle.setBigContentTitle(getMultiContactTitle(messageCount));
+
+            for (int i = 1; i <= messageNotifications.size(); i++) {
+                MessageNotification messageNotification = messageNotifications.get(messageNotifications.size() - i);
+
+                inboxStyle.addLine(getContactNameAndMessage(messageNotification));
+            }
+
+            inboxStyle.setSummaryText(message.getAccount());
+
+            return inboxStyle;
         }
-        return null;
+    }
+
+    private Spannable getContactNameAndMessage(MessageNotification messageNotification) {
+        String userName = getContactName(messageNotification);
+        String contactAndMessage = application.getString(
+                R.string.chat_contact_and_message, userName, messageNotification.getText());
+        Spannable spannableString = new SpannableString(contactAndMessage);
+        spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, userName.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableString;
     }
 
     private PendingIntent getIntent(MessageNotification message) {

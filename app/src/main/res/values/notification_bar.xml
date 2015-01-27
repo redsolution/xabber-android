@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
     <string name="account_quantity_1">account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
@@ -28,6 +28,10 @@
     <string name="chat_message_quantity_5">-</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_message.png -->
     <string name="chat_status">%1$d %2$s from %3$d %4$s</string>
+
+    <string name="chat_messages_from_contact">%1$d %2$s from %3$s</string>
+    <string name="chat_contact_and_message">%1$s: %2$s</string>
+
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
     <string name="connection_state_connected_1">%1$d of %2$d %3$s online</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_connected.png -->
