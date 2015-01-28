@@ -160,6 +160,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationBuilder.setWhen(System.currentTimeMillis());
         persistentNotificationBuilder.setCategory(NotificationCompat.CATEGORY_SERVICE);
         persistentNotificationBuilder.setPriority(NotificationCompat.PRIORITY_LOW);
+        persistentNotificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
     }
 
