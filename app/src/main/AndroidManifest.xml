@@ -123,7 +123,14 @@
         <activity
             android:label="@string/occupant_list"
             android:name="com.xabber.android.ui.OccupantList"
-            />
+            android:parentActivityName="com.xabber.android.ui.ChatViewer"
+            >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.ChatViewer" />
+
+        </activity>
         <activity
             android:label="@string/chat_viewer"
             android:name="com.xabber.android.ui.ChatViewer"

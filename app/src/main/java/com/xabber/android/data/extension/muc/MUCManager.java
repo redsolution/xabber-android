@@ -14,17 +14,6 @@
  */
 package com.xabber.android.data.extension.muc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.packet.MUCUser;
-
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
@@ -45,6 +34,17 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.muc.MUC;
+
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.packet.MUCUser;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Manage multi user chats.
@@ -72,9 +72,9 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     private MUCManager() {
         inviteProvider = new EntityNotificationProvider<RoomInvite>(
-                R.drawable.ic_stat_subscribe);
+                R.drawable.ic_stat_ic_add_circle);
         authorizationErrorProvider = new EntityNotificationProvider<RoomAuthorizationError>(
-                R.drawable.ic_stat_auth_failed);
+                R.drawable.ic_stat_error);
     }
 
     @Override

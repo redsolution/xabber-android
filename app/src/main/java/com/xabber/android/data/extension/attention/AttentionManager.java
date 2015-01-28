@@ -14,16 +14,6 @@
  */
 package com.xabber.android.data.extension.attention;
 
-import java.util.Iterator;
-
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-
 import android.media.AudioManager;
 import android.net.Uri;
 
@@ -50,6 +40,16 @@ import com.xabber.android.data.roster.ResourceItem;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.attention.Attention;
+
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+
+import java.util.Iterator;
 
 /**
  * XEP-0224: Attention.
@@ -86,7 +86,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     private final EntityNotificationProvider<AttentionRequest> attentionRequestProvider = new EntityNotificationProvider<AttentionRequest>(
-            R.drawable.ic_stat_attention) {
+            R.drawable.ic_stat_error) {
 
         @Override
         public Uri getSound() {

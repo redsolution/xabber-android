@@ -14,6 +14,19 @@
  */
 package com.xabber.android.data.connection;
 
+import android.content.res.AssetManager;
+
+import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
+import com.xabber.android.data.OnClearListener;
+import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.notification.BaseNotificationProvider;
+import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.androiddev.R;
+
+import org.jivesoftware.smack.CertificateListener;
+import org.jivesoftware.smack.util.StringUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,19 +46,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.jivesoftware.smack.CertificateListener;
-import org.jivesoftware.smack.util.StringUtils;
-
-import android.content.res.AssetManager;
-
-import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.OnClearListener;
-import com.xabber.android.data.OnLoadListener;
-import com.xabber.android.data.notification.BaseNotificationProvider;
-import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
 
 /**
  * Manage certificate exceptions.
@@ -94,7 +94,7 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
     private final Map<CertificateInvalidReason, KeyStore> defaultStores;
 
     private final BaseNotificationProvider<PendingCertificate> pendingCertificateProvider = new BaseNotificationProvider<PendingCertificate>(
-            R.drawable.ic_stat_auth_failed) {
+            R.drawable.ic_stat_error) {
 
         @Override
         public void clearNotifications() {
