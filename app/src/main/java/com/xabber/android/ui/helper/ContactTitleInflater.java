@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui.helper;
 
-import org.jivesoftware.smackx.ChatState;
-
 import android.app.Activity;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -24,7 +22,6 @@ import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +30,8 @@ import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.androiddev.R;
+
+import org.jivesoftware.smackx.ChatState;
 
 /**
  * Helper class to update <code>contact_title.xml</code>.
@@ -61,8 +60,7 @@ public class ContactTitleInflater {
                 .findViewById(R.id.avatar);
         final ImageView statusModeView = (ImageView) titleView
                 .findViewById(R.id.status_mode);
-        final TextView statusTextView = (TextView) titleView
-                .findViewById(R.id.status_text);
+        final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         final View shadowView = titleView.findViewById(R.id.shadow);
         titleView.setBackgroundDrawable(titleAccountBackground);
         nameView.setText(abstractContact.getName());

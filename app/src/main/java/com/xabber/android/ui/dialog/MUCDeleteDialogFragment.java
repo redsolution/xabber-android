@@ -1,7 +1,7 @@
 package com.xabber.android.ui.dialog;
 
 import android.app.AlertDialog.Builder;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;

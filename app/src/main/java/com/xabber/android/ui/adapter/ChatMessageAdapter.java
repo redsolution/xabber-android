@@ -14,11 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import android.app.Activity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -48,6 +43,11 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Adapter for the list of messages in the chat.
@@ -309,7 +309,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public void onChange() {
-        messages = new ArrayList<MessageItem>(MessageManager.getInstance()
+        messages = new ArrayList<>(MessageManager.getInstance()
                 .getMessages(account, user));
         hint = getHint();
         notifyDataSetChanged();

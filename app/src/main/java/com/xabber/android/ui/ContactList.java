@@ -171,8 +171,8 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
                     text);
             return;
         }
-        AccountChooseDialogFragment.newInstance(bareAddress, text).show(
-                getSupportFragmentManager(), "OPEN_WITH_ACCOUNT");
+        AccountChooseDialogFragment.newInstance(bareAddress, text)
+                .show(getFragmentManager(), "OPEN_WITH_ACCOUNT");
     }
 
     /**
@@ -240,15 +240,14 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
             if (SettingsManager.bootCount() > 2
                     && !SettingsManager.connectionStartAtBoot()
                     && !SettingsManager.startAtBootSuggested())
-                StartAtBootDialogFragment.newInstance().show(
-                        getSupportFragmentManager(), "START_AT_BOOT");
+                StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
             if (!SettingsManager.contactIntegrationSuggested()
                     && Application.getInstance().isContactsSupported()) {
                 if (AccountManager.getInstance().getAllAccounts().isEmpty())
                     SettingsManager.setContactIntegrationSuggested();
                 else
                     ContactIntegrationDialogFragment.newInstance().show(
-                            getSupportFragmentManager(), "CONTACT_INTEGRATION");
+                            getFragmentManager(), "CONTACT_INTEGRATION");
             }
         }
     }
