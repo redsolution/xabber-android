@@ -25,7 +25,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -51,10 +50,13 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment extends Fragment {
+public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUpdatableChat {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
+
+    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
+
     private TextView pageView;
     private View titleView;
     private EditText inputView;
@@ -70,18 +72,16 @@ public class ChatViewerFragment extends Fragment {
 
     private AbstractAvatarInflaterHelper avatarInflaterHelper;
 
-    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
     private String account;
     private String user;
-
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
 
-        Bundle args = new Bundle();
-        args.putString(ARGUMENT_ACCOUNT, account);
-        args.putString(ARGUMENT_USER, user);
-        fragment.setArguments(args);
+        Bundle arguments = new Bundle();
+        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_USER, user);
+        fragment.setArguments(arguments);
         return fragment;
     }
 
@@ -90,6 +90,10 @@ public class ChatViewerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
+
+        Bundle args = getArguments();
+        account = args.getString(ARGUMENT_ACCOUNT, null);
+        user = args.getString(ARGUMENT_USER, null);
     }
 
     @Override
@@ -118,14 +122,19 @@ public class ChatViewerFragment extends Fragment {
             }
 
         });
+
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
+
         chatMessageAdapter = new ChatMessageAdapter(getActivity());
+        chatMessageAdapter.setChat(account, user);
+
+        listView = (ListView) view.findViewById(android.R.id.list);
+        listView.setAdapter(chatMessageAdapter);
+
         pageView = (TextView) view.findViewById(R.id.chat_page);
         titleView = view.findViewById(R.id.title);
         inputView = (EditText) view.findViewById(R.id.chat_input);
-        listView = (ListView) view.findViewById(android.R.id.list);
 
-        listView.setAdapter(chatMessageAdapter);
         view.findViewById(R.id.chat_send).setOnClickListener(
                 new View.OnClickListener() {
 
@@ -175,13 +184,11 @@ public class ChatViewerFragment extends Fragment {
         inputView.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
@@ -196,87 +203,92 @@ public class ChatViewerFragment extends Fragment {
         });
         registerForContextMenu(listView);
 
-
-        Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
-
         setHasOptionsMenu(true);
 
-        setChat(account, user);
+        updateView();
+
         chatMessageAdapter.onChange();
 
         return view;
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ((ChatViewer)getActivity()).registerChat(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ((ChatViewer)getActivity()).unregisterChat(this);
+    }
+
     private void sendMessage() {
         String text = inputView.getText().toString();
         int start = 0;
         int end = text.length();
-        while (start < end
-                && (text.charAt(start) == ' ' || text.charAt(start) == '\n'))
+
+        while (start < end && (text.charAt(start) == ' ' || text.charAt(start) == '\n')) {
             start += 1;
-        while (start < end
-                && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n'))
+        }
+        while (start < end && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n')) {
             end -= 1;
+        }
         text = text.substring(start, end);
-        if ("".equals(text))
+
+        if ("".equals(text)) {
             return;
+        }
+
         skipOnTextChanges = true;
         inputView.setText("");
         skipOnTextChanges = false;
+
         sendMessage(text);
+
         ((ChatViewer) getActivity()).onSent();
+
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
-                || (getActivity().getResources().getBoolean(R.bool.landscape) && SettingsManager
-                .chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
-            InputMethodManager imm = (InputMethodManager) getActivity()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                || (getActivity().getResources().getBoolean(R.bool.landscape)
+                && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
         }
     }
 
     private void sendMessage(String text) {
-        final String account = chatMessageAdapter.getAccount();
-        final String user = chatMessageAdapter.getUser();
         MessageManager.getInstance().sendMessage(account, user, text);
-        onChatChange(false);
+        updateChat(false);
     }
 
-    public void onChatChange(boolean incomingMessage) {
-        if (incomingMessage) {
-            titleView.findViewById(R.id.name_holder).startAnimation(
-                    shakeAnimation);
-        }
-        setChat(account, user);
+
+    private void updateMessages() {
         chatMessageAdapter.onChange();
     }
 
-    public void onChange() {
-        setChat(account, user);
-        chatMessageAdapter.onChange();
-    }
+    private void updateView() {
+        final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
 
-    public void setChat(String account, String user) {
-        final AbstractContact abstractContact = RosterManager.getInstance()
-                .getBestContact(account, user);
-
-        LogManager.i(this, "setChat  " + chatMessageAdapter.getUser() + " in " + chatMessageAdapter.getAccount());
         skipOnTextChanges = true;
+
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
         inputView.setSelection(ChatManager.getInstance().getSelectionStart(account, user),
                 ChatManager.getInstance().getSelectionEnd(account, user));
+
         skipOnTextChanges = false;
-        chatMessageAdapter.setChat(account, user);
-        listView.setAdapter(listView.getAdapter());
 
         ContactTitleInflater.updateTitle(titleView, getActivity(), abstractContact);
+
         avatarInflaterHelper.updateAvatar((ImageView) titleView.findViewById(R.id.avatar), abstractContact);
+
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
         SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
-        ImageView securityView = (ImageView) titleView
-                .findViewById(R.id.security);
+        ImageView securityView = (ImageView) titleView.findViewById(R.id.security);
+
         if (securityLevel == SecurityLevel.plain
                 && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled
                 || securityOtrMode == SettingsManager.SecurityOtrMode.manual)) {
@@ -329,7 +341,7 @@ public class ChatViewerFragment extends Fragment {
                         MessageManager.getInstance().requestToLoadLocalHistory(account, user);
                         MessageArchiveManager.getInstance()
                                 .requestHistory(account, user, MINIMUM_MESSAGES_TO_LOAD, 0);
-                        onChatChange(false);
+                        updateChat(false);
                         return true;
                     }
                 });
@@ -383,7 +395,7 @@ public class ChatViewerFragment extends Fragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         MessageManager.getInstance()
                                 .clearHistory(account, user);
-                        onChatChange(false);
+                        updateChat(false);
                         return false;
                     }
                 });
@@ -537,7 +549,7 @@ public class ChatViewerFragment extends Fragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         MessageManager.getInstance().removeMessage(message);
-                        onChatChange(false);
+                        updateChat(false);
                         return true;
                     }
 
@@ -562,5 +574,20 @@ public class ChatViewerFragment extends Fragment {
             additional = "\n" + additional;
         inputView.setText(before + additional + after);
         inputView.setSelection(selection + additional.length());
+    }
+
+    @Override
+    public void updateChat(boolean incomingMessage) {
+        if (incomingMessage) {
+            titleView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+        }
+
+        updateMessages();
+        updateView();
+    }
+
+    @Override
+    public boolean isEqual(String account, String user) {
+        return this.account.equals(account) && this.user.equals(user);
     }
 }

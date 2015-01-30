@@ -309,8 +309,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public void onChange() {
-        messages = new ArrayList<>(MessageManager.getInstance()
-                .getMessages(account, user));
+        messages = new ArrayList<>(MessageManager.getInstance().getMessages(account, user));
         hint = getHint();
         notifyDataSetChanged();
     }
