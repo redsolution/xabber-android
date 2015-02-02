@@ -10,6 +10,7 @@
     <string name="account_host">Host</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_password">Password</string>
+    <string name="confirm_password">Confirm password</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_port">Port</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -68,6 +69,7 @@
     <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="EMPTY_USER_NAME">Username is not specified</string>
+    <string name="CONFIRM_PASSWORD">Passwords do not match</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
     <string name="account_archive_mode">Store message history</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
