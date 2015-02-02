@@ -220,15 +220,34 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
         ((ChatViewer)getActivity()).registerChat(this);
 
         registerForContextMenu(listView);
+
+        restoreInputState();
+    }
+
+    private void restoreInputState() {
+        skipOnTextChanges = true;
+
+        inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
+        inputView.setSelection(ChatManager.getInstance().getSelectionStart(account, user),
+                ChatManager.getInstance().getSelectionEnd(account, user));
+
+        skipOnTextChanges = false;
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
+        saveInputState();
+
         ((ChatViewer)getActivity()).unregisterChat(this);
 
         unregisterForContextMenu(listView);
+    }
+
+    public void saveInputState() {
+        ChatManager.getInstance().setTyped(account, user, inputView.getText().toString(),
+                inputView.getSelectionStart(), inputView.getSelectionEnd());
     }
 
     private void sendMessage() {
@@ -276,14 +295,6 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
 
     private void updateView() {
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
-
-        skipOnTextChanges = true;
-
-        inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
-        inputView.setSelection(ChatManager.getInstance().getSelectionStart(account, user),
-                ChatManager.getInstance().getSelectionEnd(account, user));
-
-        skipOnTextChanges = false;
 
         ContactTitleInflater.updateTitle(titleView, getActivity(), abstractContact);
 
