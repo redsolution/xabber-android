@@ -1,6 +1,7 @@
 package com.xabber.android.ui;
 
 import android.app.Fragment;
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -201,7 +202,6 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
             }
 
         });
-        registerForContextMenu(listView);
 
         setHasOptionsMenu(true);
 
@@ -218,6 +218,8 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
         super.onResume();
 
         ((ChatViewer)getActivity()).registerChat(this);
+
+        registerForContextMenu(listView);
     }
 
     @Override
@@ -225,6 +227,8 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
         super.onPause();
 
         ((ChatViewer)getActivity()).unregisterChat(this);
+
+        unregisterForContextMenu(listView);
     }
 
     private void sendMessage() {
@@ -506,54 +510,41 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
 
         final MessageItem message = (MessageItem) listView.getAdapter().getItem(info.position);
 
-        if (message == null || message.getAction() == null) {
-            return;
-        }
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.chat_context_menu, menu);
+
         if (message.isError()) {
-            menu.add(R.string.message_repeat).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            sendMessage(message.getText());
-                            return true;
-                        }
-
-                    });
+            menu.findItem(R.id.action_message_repeat).setVisible(true);
         }
-        menu.add(R.string.message_quote).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
+    }
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        insertText("> " + message.getText() + "\n");
-                        return true;
-                    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final MessageItem message = (MessageItem) listView.getAdapter().getItem(info.position);
 
-                });
-        menu.add(R.string.message_copy).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
+        switch (item.getItemId()) {
+            case R.id.action_message_repeat:
+                sendMessage(message.getText());
+                return true;
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        ((ClipboardManager) getActivity().getSystemService(
-                                Context.CLIPBOARD_SERVICE)).setText(message
-                                .getSpannable());
-                        return true;
-                    }
+            case R.id.action_message_copy:
+                ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
+                        .setPrimaryClip(ClipData.newPlainText(message.getSpannable(), message.getSpannable()));
+                return true;
 
-                });
-        menu.add(R.string.message_remove).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
+            case R.id.action_message_quote:
+                insertText("> " + message.getText() + "\n");
+                return true;
 
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        MessageManager.getInstance().removeMessage(message);
-                        updateChat(false);
-                        return true;
-                    }
+            case R.id.action_message_remove:
+                MessageManager.getInstance().removeMessage(message);
+                updateChat(false);
+                return true;
 
-                });
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     /**
