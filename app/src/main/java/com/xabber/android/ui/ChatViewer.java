@@ -31,7 +31,9 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
@@ -323,6 +325,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 MessageManager.getInstance().getChat(account, user).getRequiredMessageCount());
 
         NotificationManager.getInstance().removeMessageNotification(account, user);
+
+        final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
+
+        setTitle(abstractContact.getName());
     }
 
     @Override
