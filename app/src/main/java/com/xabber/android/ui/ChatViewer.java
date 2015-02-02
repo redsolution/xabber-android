@@ -48,7 +48,8 @@ import java.util.HashSet;
  * @author alexander.ivanov
  */
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
-        OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener {
+        OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
+        ChatViewerAdapter.FinishUpdateListener {
 
     /**
      * Attention request.
@@ -111,7 +112,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         setContentView(R.layout.activity_chat_viewer);
 
-        chatViewerAdapter = new ChatViewerAdapter(getFragmentManager());
+        chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(),
+                actionWithAccount, actionWithUser, this);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
@@ -136,15 +138,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 exitOnSend = true;
             }
         }
-
-//        selectPage(actionWithAccount, actionWithUser);
-
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        LogManager.i(this, "onSave: " + actionWithAccount + ":" + actionWithUser);
         outState.putString(SAVED_ACCOUNT, actionWithAccount);
         outState.putString(SAVED_USER, actionWithUser);
         outState.putBoolean(SAVED_EXIT_ON_SEND, exitOnSend);
@@ -164,6 +162,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         super.onNewIntent(intent);
         if (isFinishing())
             return;
+
+        chatViewerAdapter.onChange();
 
         String account = getAccount(intent);
         String user = getUser(intent);
@@ -318,6 +318,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private void onChatSelected(String account, String user) {
         LogManager.i(this, "onChatSelected. account: " + account + "; user: " + user);
+
+        actionWithAccount = account;
+        actionWithUser = user;
+
         MessageManager.getInstance().setVisibleChat(account, user);
 
         MessageArchiveManager.getInstance().requestHistory(
@@ -345,8 +349,18 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         registeredChats.remove(chat);
     }
 
+    @Override
+    public void onChatViewAdapterFinishUpdate() {
+        for (CurrentUpdatableChat chat : registeredChats) {
+            if (chat.isEqual(actionWithAccount, actionWithUser)) {
+                chat.setInputFocus();
+            }
+        }
+    }
+
     public interface CurrentUpdatableChat {
         public void updateChat(final boolean incoming);
         public boolean isEqual(String account, String user);
+        public void setInputFocus();
     }
 }

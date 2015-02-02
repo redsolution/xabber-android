@@ -7,22 +7,45 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter {
 
+    /**
+     * Intent sent while opening chat activity.
+     */
+    private final AbstractChat intent;
+
+    /**
+     * Position to insert intent.
+     */
+    private final int intentPosition;
+
     private ArrayList<AbstractChat> activeChats;
 
-    public ChatViewerAdapter(FragmentManager fragmentManager) {
+    private FinishUpdateListener finishUpdateListener;
+
+    public ChatViewerAdapter(FragmentManager fragmentManager, String account, String user, FinishUpdateListener finishUpdateListener) {
         super(fragmentManager);
+        this.finishUpdateListener = finishUpdateListener;
 
-        LogManager.i(this, "ChatViewerAdapter");
-
+        activeChats = new ArrayList<>();
+        intent = MessageManager.getInstance().getOrCreateChat(account,
+                Jid.getBareAddress(user));
+        Collection<? extends BaseEntity> activeChats = MessageManager
+                .getInstance().getActiveChats();
+        if (activeChats.contains(intent)) {
+            intentPosition = -1;
+        } else {
+            intentPosition = activeChats.size();
+        }
         onChange();
     }
 
@@ -33,8 +56,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
     @Override
     public Fragment getItem(int i) {
-        LogManager.i(this, "getItem: " + i);
-
 
         AbstractChat abstractChat = getChat(i);
 
@@ -47,16 +68,23 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
     @Override
     public void onChange() {
-        LogManager.i(this, "onChange: ");
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
+        if (intentPosition != -1) {
+            int index = activeChats.indexOf(intent);
+            AbstractChat chat;
+            if (index == -1) {
+                chat = intent;
+            } else {
+                chat = activeChats.remove(index);
+            }
+            activeChats.add(Math.min(intentPosition, activeChats.size()), chat);
+        }
         notifyDataSetChanged();
     }
 
     public int getPosition(String account, String user) {
         LogManager.i(this, "getPosition: " + account + " : " + user);
-
-        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
 
         for (int position = 0; position < activeChats.size(); position++) {
             if (activeChats.get(position).equals(account, user)) {
@@ -64,20 +92,21 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
             }
         }
 
-        LogManager.i(this, "creating new chat: " + account + " : " + user);
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, Jid.getBareAddress(user));
-        activeChats.add(chat);
-        notifyDataSetChanged();
-
-        return activeChats.indexOf(chat);
+        return -1;
     }
 
 
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
         super.setPrimaryItem(container, position, object);
-
-        LogManager.i(this, "setPrimaryItem position: " + position);
     }
 
+    @Override
+    public void finishUpdate(ViewGroup container) {
+        super.finishUpdate(container);
+        finishUpdateListener.onChatViewAdapterFinishUpdate();
+    }
+    public interface FinishUpdateListener {
+        public void onChatViewAdapterFinishUpdate();
+    }
 }

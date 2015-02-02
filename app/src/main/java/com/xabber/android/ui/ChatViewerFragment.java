@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -90,16 +91,21 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
 
         Bundle args = getArguments();
         account = args.getString(ARGUMENT_ACCOUNT, null);
         user = args.getString(ARGUMENT_USER, null);
+
+        LogManager.i(this, "onCreate. user: " + user);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
+        LogManager.i(this, "onCreateView. user: " + user);
 
         shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
 
@@ -216,6 +222,8 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
     @Override
     public void onResume() {
         super.onResume();
+
+        LogManager.i(this, "onResume. user: " + user);
 
         ((ChatViewer)getActivity()).registerChat(this);
 
@@ -591,5 +599,10 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
     @Override
     public boolean isEqual(String account, String user) {
         return this.account.equals(account) && this.user.equals(user);
+    }
+
+    @Override
+    public void setInputFocus() {
+        inputView.requestFocus();
     }
 }
