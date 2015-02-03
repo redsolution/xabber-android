@@ -83,6 +83,30 @@
             android:checked="false"
             android:text="@string/account_use_orbot" />
 
+        <CheckBox
+            android:id="@+id/register_account"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/account_register" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+          	android:id="@+id/confirm_password_layout"
+            android:visibility="gone">
+          <TextView android:text="@string/confirm_password" android:layout_width="match_parent" android:layout_height="wrap_content" />
+          <EditText
+          	android:id="@+id/confirm_password"
+              android:layout_width="match_parent"
+          	android:layout_height="wrap_content"
+          	android:password="true"
+          	android:singleLine="true"
+          	android:text=""
+          />
+        </LinearLayout>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

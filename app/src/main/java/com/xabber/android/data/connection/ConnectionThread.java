@@ -106,6 +106,8 @@ public class ConnectionThread implements
 
     private boolean started;
 
+    private boolean registerNewAccount;
+
     public ConnectionThread(final ConnectionItem connectionItem) {
         this.connectionItem = connectionItem;
         executorService = Executors
@@ -488,12 +490,58 @@ public class ConnectionThread implements
     private void onConnected(final String password) {
         connectionItem.onConnected(this);
         ConnectionManager.getInstance().onConnected(this);
-        runOnConnectionThread(new Runnable() {
+        if(registerNewAccount) {
+            runOnConnectionThread(new Runnable() {
+                @Override
+                public void run() {
+                    registerAccount(password);
+                }
+            });
+        }
+        else {
+            runOnConnectionThread(new Runnable() {
+                @Override
+                public void run() {
+                    authorization(password);
+                }
+            });
+        }
+    }
+
+    /**
+     * Register new account.
+     * 
+     * @param password
+     */
+    private void registerAccount(final String password) {
+        try {
+            xmppConnection.getAccountManager().createAccount(login, password);
+        }
+        catch (XMPPException e) {
+            LogManager.exception(connectionItem, e);
+            connectionClosedOnError(e);
+            // Server will destroy connection, but we can speedup
+            // it.
+            xmppConnection.disconnect();
+            return;
+        }
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                authorization(password);
+                onAccountRegistered(password);
             }
         });
+    }
+
+    /**
+     * New account has been registerd on the server.
+     * 
+     * @param password
+     */
+    private void onAccountRegistered(final String password) {
+        LogManager.i(this, "Account registered");
+        connectionItem.onAccountRegistered(this);
+        authorization(password);
     }
 
     /**
@@ -621,10 +669,12 @@ public class ConnectionThread implements
      * @param useSRVLookup Whether SRV lookup should be used.
      */
     synchronized void start(final String fqdn, final int port,
-                            final boolean useSRVLookup) {
+                            final boolean useSRVLookup,
+                            final boolean registerNewAccount) {
         if (started)
             throw new IllegalStateException();
         started = true;
+        this.registerNewAccount = registerNewAccount;
         runOnConnectionThread(new Runnable() {
             @Override
             public void run() {
