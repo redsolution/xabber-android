@@ -8,8 +8,8 @@ android {
         applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 110
-        versionName '0.10.13'
+        versionCode 111
+        versionName '0.10.14'
     }
 
     buildTypes {
