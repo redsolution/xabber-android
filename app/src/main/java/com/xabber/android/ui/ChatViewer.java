@@ -62,6 +62,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private boolean exitOnSend;
 
+    private String extraText = null;
+
     ChatViewerAdapter chatViewerAdapter;
 
     ViewPager viewPager;
@@ -132,8 +134,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         Intent intent = getIntent();
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            String additional = intent.getStringExtra(Intent.EXTRA_TEXT);
-            if (additional != null) {
+            extraText = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+            if (extraText != null) {
                 intent.removeExtra(Intent.EXTRA_TEXT);
                 exitOnSend = true;
             }
@@ -354,6 +357,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         for (CurrentUpdatableChat chat : registeredChats) {
             if (chat.isEqual(actionWithAccount, actionWithUser)) {
                 chat.setInputFocus();
+
+                if (extraText != null) {
+                    chat.setInputText(extraText);
+                    extraText = null;
+                }
             }
         }
     }
@@ -362,5 +370,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         public void updateChat(final boolean incoming);
         public boolean isEqual(String account, String user);
         public void setInputFocus();
+        public void setInputText(String text);
     }
 }

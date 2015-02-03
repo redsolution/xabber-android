@@ -571,7 +571,7 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
      *
      * @param additional
      */
-    public void insertText(String additional) {
+    private void insertText(String additional) {
         String source = inputView.getText().toString();
         int selection = inputView.getSelectionEnd();
         if (selection == -1)
@@ -604,5 +604,10 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
     @Override
     public void setInputFocus() {
         inputView.requestFocus();
+    }
+
+    @Override
+    public void setInputText(String text) {
+        insertText(text);
     }
 }
