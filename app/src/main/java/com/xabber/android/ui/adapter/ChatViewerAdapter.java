@@ -7,14 +7,14 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter {
 
@@ -26,7 +26,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     /**
      * Position to insert intent.
      */
-    private final int intentPosition;
+//    private final int intentPosition;
 
     private ArrayList<AbstractChat> activeChats;
 
@@ -36,15 +36,11 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         super(fragmentManager);
         this.finishUpdateListener = finishUpdateListener;
 
-        activeChats = new ArrayList<>();
-        intent = MessageManager.getInstance().getOrCreateChat(account,
-                Jid.getBareAddress(user));
-        Collection<? extends BaseEntity> activeChats = MessageManager
-                .getInstance().getActiveChats();
-        if (activeChats.contains(intent)) {
-            intentPosition = -1;
-        } else {
-            intentPosition = activeChats.size();
+        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
+        intent = MessageManager.getInstance().getOrCreateChat(account, Jid.getBareAddress(user));
+
+        if (!activeChats.contains(intent)) {
+            intent.updateCreationTime();
         }
         onChange();
     }
@@ -68,18 +64,19 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
     @Override
     public void onChange() {
-
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        if (intentPosition != -1) {
-            int index = activeChats.indexOf(intent);
-            AbstractChat chat;
-            if (index == -1) {
-                chat = intent;
-            } else {
-                chat = activeChats.remove(index);
-            }
-            activeChats.add(Math.min(intentPosition, activeChats.size()), chat);
+
+        if (!activeChats.contains(intent)) {
+            activeChats.add(intent);
         }
+
+        Collections.sort(activeChats, new Comparator<AbstractChat>() {
+            @Override
+            public int compare(AbstractChat lhs, AbstractChat rhs) {
+                return lhs.getCreationTime().compareTo(rhs.getCreationTime());
+            }
+        });
+
         notifyDataSetChanged();
     }
 
