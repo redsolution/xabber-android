@@ -6,7 +6,6 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
@@ -16,17 +15,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter {
+public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter,
+        ChatViewerFragment.ActiveChatProvider {
 
     /**
      * Intent sent while opening chat activity.
      */
     private final AbstractChat intent;
-
-    /**
-     * Position to insert intent.
-     */
-//    private final int intentPosition;
 
     private ArrayList<AbstractChat> activeChats;
 
@@ -47,19 +42,45 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
     @Override
     public int getCount() {
-        return activeChats.size();
+        // warning: scrolling to very high values (1,000,000+) results in
+        // strange drawing behaviour
+        return Integer.MAX_VALUE;
+    }
+
+    public int getRealCount() {
+        int realCount = activeChats.size();
+        if (realCount == 1) {
+            return 4;
+        } else if (realCount == 2 || realCount == 3) {
+            return realCount * 2;
+        } else {
+            return realCount;
+        }
     }
 
     @Override
     public Fragment getItem(int i) {
+        int position = i % activeChats.size();
 
-        AbstractChat abstractChat = getChat(i);
-
-        return ChatViewerFragment.newInstance(abstractChat.getAccount(), abstractChat.getUser());
+        ChatViewerFragment chatViewerFragment = ChatViewerFragment.newInstance();
+        chatViewerFragment.setActiveChat(this, position);
+        return chatViewerFragment;
     }
 
     public AbstractChat getChat(int i) {
-        return activeChats.get(i);
+        int realCount = activeChats.size();
+
+        int position;
+
+        if (realCount == 1) {
+            position = 0;
+        } else if (realCount == 2 || realCount == 3) {
+            position = i % realCount;
+        } else {
+            position = i;
+        }
+
+        return activeChats.get(position);
     }
 
     @Override
@@ -81,8 +102,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     }
 
     public int getPosition(String account, String user) {
-        LogManager.i(this, "getPosition: " + account + " : " + user);
-
         for (int position = 0; position < activeChats.size(); position++) {
             if (activeChats.get(position).equals(account, user)) {
                 return position;
@@ -92,18 +111,23 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         return -1;
     }
 
-
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-    }
-
     @Override
     public void finishUpdate(ViewGroup container) {
         super.finishUpdate(container);
         finishUpdateListener.onChatViewAdapterFinishUpdate();
     }
+
+    @Override
+    public AbstractChat getActiveChat(int index) {
+        return getChat(index);
+    }
+
     public interface FinishUpdateListener {
         public void onChatViewAdapterFinishUpdate();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 }

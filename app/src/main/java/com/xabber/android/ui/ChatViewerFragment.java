@@ -26,7 +26,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -52,10 +51,7 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUpdatableChat {
-
-    public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
-    public static final String ARGUMENT_USER = "ARGUMENT_USER";
+public class ChatViewerFragment extends Fragment {
 
     private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
 
@@ -77,35 +73,29 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
     private String account;
     private String user;
 
-    public static ChatViewerFragment newInstance(String account, String user) {
-        ChatViewerFragment fragment = new ChatViewerFragment();
+    private int activeChatIndex;
+    private ActiveChatProvider activeChatProvider;
 
-        Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
-        fragment.setArguments(arguments);
-        return fragment;
+    public static ChatViewerFragment newInstance() {
+        return new ChatViewerFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
+    }
 
-        Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
-
-        LogManager.i(this, "onCreate. user: " + user);
+    public void setActiveChat(ActiveChatProvider activeChatProvider, int activeChatIndex) {
+        this.activeChatProvider = activeChatProvider;
+        this.activeChatIndex = activeChatIndex;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        LogManager.i(this, "onCreateView. user: " + user);
+        updateUserAndAccount();
 
         shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
 
@@ -133,7 +123,6 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity());
-        chatMessageAdapter.setChat(account, user);
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
@@ -219,11 +208,15 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
 
     }
 
+    private void updateUserAndAccount() {
+        AbstractChat activeChat = activeChatProvider.getActiveChat(activeChatIndex);
+        user = activeChat.getUser();
+        account = activeChat.getAccount();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-
-        LogManager.i(this, "onResume. user: " + user);
 
         ((ChatViewer)getActivity()).registerChat(this);
 
@@ -302,6 +295,10 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
     }
 
     private void updateView() {
+        updateUserAndAccount();
+
+        chatMessageAdapter.setChat(account, user);
+
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
 
         ContactTitleInflater.updateTitle(titleView, getActivity(), abstractContact);
@@ -586,28 +583,29 @@ public class ChatViewerFragment extends Fragment implements ChatViewer.CurrentUp
         inputView.setSelection(selection + additional.length());
     }
 
-    @Override
     public void updateChat(boolean incomingMessage) {
         if (incomingMessage) {
             titleView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
         }
+        updateUserAndAccount();
 
         updateMessages();
         updateView();
     }
 
-    @Override
     public boolean isEqual(String account, String user) {
         return this.account.equals(account) && this.user.equals(user);
     }
 
-    @Override
     public void setInputFocus() {
         inputView.requestFocus();
     }
 
-    @Override
     public void setInputText(String text) {
         insertText(text);
+    }
+
+    public interface ActiveChatProvider {
+        public AbstractChat getActiveChat(int index);
     }
 }
