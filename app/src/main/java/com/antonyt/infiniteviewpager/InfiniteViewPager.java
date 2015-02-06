@@ -30,8 +30,7 @@ import android.util.AttributeSet;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 
 /**
- * A {@link android.support.v4.view.ViewPager} that allows pseudo-infinite paging with a wrap-around effect. Should be used with an {@link
- * InfinitePagerAdapter}.
+ * A {@link android.support.v4.view.ViewPager} that allows pseudo-infinite paging with a wrap-around effect.
  */
 public class InfiniteViewPager extends ViewPager {
 

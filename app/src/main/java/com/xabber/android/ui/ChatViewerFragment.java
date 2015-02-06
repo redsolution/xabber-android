@@ -53,6 +53,9 @@ import com.xabber.androiddev.R;
 
 public class ChatViewerFragment extends Fragment {
 
+    public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_USER = "ARGUMENT_USER";
+
     private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
 
     private TextView pageView;
@@ -73,29 +76,30 @@ public class ChatViewerFragment extends Fragment {
     private String account;
     private String user;
 
-    private int activeChatIndex;
-    private ActiveChatProvider activeChatProvider;
+    public static ChatViewerFragment newInstance(String account, String user) {
+        ChatViewerFragment fragment = new ChatViewerFragment();
 
-    public static ChatViewerFragment newInstance() {
-        return new ChatViewerFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_USER, user);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
-    }
 
-    public void setActiveChat(ActiveChatProvider activeChatProvider, int activeChatIndex) {
-        this.activeChatProvider = activeChatProvider;
-        this.activeChatIndex = activeChatIndex;
+        Bundle args = getArguments();
+        account = args.getString(ARGUMENT_ACCOUNT, null);
+        user = args.getString(ARGUMENT_USER, null);
+
+        avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
-        updateUserAndAccount();
 
         shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
 
@@ -123,6 +127,7 @@ public class ChatViewerFragment extends Fragment {
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity());
+        chatMessageAdapter.setChat(account, user);
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
@@ -208,12 +213,6 @@ public class ChatViewerFragment extends Fragment {
 
     }
 
-    private void updateUserAndAccount() {
-        AbstractChat activeChat = activeChatProvider.getActiveChat(activeChatIndex);
-        user = activeChat.getUser();
-        account = activeChat.getAccount();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -269,7 +268,7 @@ public class ChatViewerFragment extends Fragment {
         }
 
         skipOnTextChanges = true;
-        inputView.setText("");
+        inputView.getText().clear();
         skipOnTextChanges = false;
 
         sendMessage(text);
@@ -289,15 +288,8 @@ public class ChatViewerFragment extends Fragment {
         updateChat(false);
     }
 
-
-    private void updateMessages() {
-        chatMessageAdapter.onChange();
-    }
-
     private void updateView() {
-        updateUserAndAccount();
-
-        chatMessageAdapter.setChat(account, user);
+        chatMessageAdapter.onChange();
 
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
 
@@ -404,7 +396,7 @@ public class ChatViewerFragment extends Fragment {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        inputView.setText("");
+                        inputView.getText().clear();
                         return true;
                     }
                 });
@@ -587,9 +579,7 @@ public class ChatViewerFragment extends Fragment {
         if (incomingMessage) {
             titleView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
         }
-        updateUserAndAccount();
 
-        updateMessages();
         updateView();
     }
 
@@ -605,7 +595,11 @@ public class ChatViewerFragment extends Fragment {
         insertText(text);
     }
 
-    public interface ActiveChatProvider {
-        public AbstractChat getActiveChat(int index);
+    public String getAccount() {
+        return account;
+    }
+
+    public String getUser() {
+        return user;
     }
 }

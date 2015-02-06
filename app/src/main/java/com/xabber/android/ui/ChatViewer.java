@@ -49,7 +49,7 @@ import java.util.HashSet;
  */
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
         OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener {
+        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener {
 
     /**
      * Attention request.
@@ -121,8 +121,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.setOnPageChangeListener(this);
 
+        LogManager.i(this, "onCreate user: " + actionWithUser);
 
-        selectPage(actionWithAccount, actionWithUser);
+        selectPage(false);
+        onChatSelected();
     }
 
     @Override
@@ -176,19 +178,25 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         LogManager.i(this, "onNewIntent account: " + account + ", user: " + user);
 
-        selectPage(account, user);
+        actionWithUser = user;
+        actionWithAccount = user;
 
-
-
+        selectPage(false);
+        onChatSelected();
     }
 
-    private void selectPage(String account, String user) {
-        LogManager.i(this, "selectPage: account: " + account + ", user: " + user);
+    private void selectPage(boolean smoothScroll ) {
 
-        int position = chatViewerAdapter.getPosition(account, user);
-        viewPager.setCurrentItem(position);
 
-        onChatSelected(account, user);
+
+        int position = chatViewerAdapter.getPageNumber(actionWithAccount, actionWithUser);
+
+        LogManager.i(this, "selectPage user: " + actionWithUser + " position: " + position);
+        viewPager.setCurrentItem(position, smoothScroll);
+
+        for (ChatViewerFragment chat : registeredChats) {
+            chat.updateChat(false);
+        }
     }
 
     private static String getAccount(Intent intent) {
@@ -253,17 +261,34 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatChanged(final String account, final String user,
                               final boolean incoming) {
-        chatViewerAdapter.onChange();
+        LogManager.i(this, "onChatChanged " + user);
+
+        for (ChatViewerFragment chat : registeredChats) {
+            if (chat.isEqual(account, user)) {
+                chat.updateChat(incoming);
+            }
+        }
+
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
+        LogManager.i(this, "onContactsChanged");
         chatViewerAdapter.onChange();
+
+        for (ChatViewerFragment chat : registeredChats) {
+                chat.updateChat(false);
+        }
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
+        LogManager.i(this, "onAccountsChanged");
         chatViewerAdapter.onChange();
+
+        for (ChatViewerFragment chat : registeredChats) {
+            chat.updateChat(false);
+        }
     }
 
     void onSent() {
@@ -289,35 +314,38 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     @Override
     public void onPageSelected(int position) {
-        int realCount = chatViewerAdapter.getRealCount();
 
-        int virtualPosition = position % realCount;
 
-        AbstractChat chat = chatViewerAdapter.getChat(virtualPosition);
-        String account = chat.getAccount();
-        String user = chat.getUser();
+        AbstractChat selectedChat = chatViewerAdapter.getChatByPageNumber(position);
 
-        actionWithAccount = account;
-        actionWithUser = user;
+        if (selectedChat == null) {
+            setTitle(getString(R.string.chat_list));
+            return;
+        }
 
-        onChatSelected(account, user);
+        actionWithAccount = selectedChat.getAccount();
+        actionWithUser = selectedChat.getUser();
+
+        LogManager.i(this, "onPageSelected position: " + position + " user: " + actionWithUser + " position: " + position);
+
+        onChatSelected();
     }
 
-    private void onChatSelected(String account, String user) {
-        actionWithAccount = account;
-        actionWithUser = user;
+    private void onChatSelected() {
+        LogManager.i(this, "onChatSelected user: " + actionWithUser);
 
-        MessageManager.getInstance().setVisibleChat(account, user);
-
-        MessageArchiveManager.getInstance().requestHistory(
-                account, user, 0,
-                MessageManager.getInstance().getChat(account, user).getRequiredMessageCount());
-
-        NotificationManager.getInstance().removeMessageNotification(account, user);
-
-        final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
+        final AbstractContact abstractContact
+                = RosterManager.getInstance().getBestContact(actionWithAccount, actionWithUser);
 
         setTitle(abstractContact.getName());
+
+        MessageManager.getInstance().setVisibleChat(actionWithAccount, actionWithUser);
+
+        MessageArchiveManager.getInstance().requestHistory(
+                actionWithAccount, actionWithUser, 0,
+                MessageManager.getInstance().getChat(actionWithAccount, actionWithUser).getRequiredMessageCount());
+
+        NotificationManager.getInstance().removeMessageNotification(actionWithAccount, actionWithUser);
     }
 
     @Override
@@ -335,15 +363,39 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     @Override
     public void onChatViewAdapterFinishUpdate() {
+        LogManager.i(this, "onChatViewAdapterFinishUpdate position: user: " + actionWithUser);
+        insertExtraText();
+    }
+
+    private void insertExtraText() {
+
+        if (extraText == null) {
+            return;
+        }
+
+        boolean isExtraTextInserted = false;
+
         for (ChatViewerFragment chat : registeredChats) {
             if (chat.isEqual(actionWithAccount, actionWithUser)) {
-                chat.setInputFocus();
-
-                if (extraText != null) {
-                    chat.setInputText(extraText);
-                    extraText = null;
-                }
+                chat.setInputText(extraText);
+                isExtraTextInserted = true;
             }
         }
+
+        if (isExtraTextInserted) {
+            extraText = null;
+        }
+    }
+
+    @Override
+    public void onRecentChatSelected(AbstractChat chat) {
+
+
+        actionWithAccount = chat.getAccount();
+        actionWithUser = chat.getUser();
+
+        LogManager.i(this, "onRecentChatSelected position: user: " + actionWithUser);
+
+        selectPage(true);
     }
 }

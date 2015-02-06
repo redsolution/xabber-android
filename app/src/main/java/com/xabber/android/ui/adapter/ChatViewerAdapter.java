@@ -9,14 +9,14 @@ import android.view.ViewGroup;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
+import com.xabber.android.ui.RecentChatFragment;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter,
-        ChatViewerFragment.ActiveChatProvider {
+public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter {
 
     /**
      * Intent sent while opening chat activity.
@@ -26,6 +26,8 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     private ArrayList<AbstractChat> activeChats;
 
     private FinishUpdateListener finishUpdateListener;
+
+    private Fragment currentFragment;
 
     public ChatViewerAdapter(FragmentManager fragmentManager, String account, String user, FinishUpdateListener finishUpdateListener) {
         super(fragmentManager);
@@ -49,38 +51,26 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
     public int getRealCount() {
         int realCount = activeChats.size();
-        if (realCount == 1) {
-            return 4;
-        } else if (realCount == 2 || realCount == 3) {
-            return realCount * 2;
-        } else {
-            return realCount;
-        }
+
+        return realCount + 1;
     }
 
     @Override
-    public Fragment getItem(int i) {
-        int position = i % activeChats.size();
+    public Fragment getItem(int virtualPagePosition) {
 
-        ChatViewerFragment chatViewerFragment = ChatViewerFragment.newInstance();
-        chatViewerFragment.setActiveChat(this, position);
-        return chatViewerFragment;
-    }
+        int chatIndex;
+        int realPosition = virtualPagePosition % getRealCount();
 
-    public AbstractChat getChat(int i) {
-        int realCount = activeChats.size();
-
-        int position;
-
-        if (realCount == 1) {
-            position = 0;
-        } else if (realCount == 2 || realCount == 3) {
-            position = i % realCount;
+        if (realPosition == 0) {
+            RecentChatFragment activeChatFragment = RecentChatFragment.newInstance();
+            activeChatFragment.setInitialChats(activeChats);
+            return activeChatFragment;
         } else {
-            position = i;
+            chatIndex = realPosition -1;
         }
 
-        return activeChats.get(position);
+        AbstractChat chat = activeChats.get(chatIndex);
+        return ChatViewerFragment.newInstance(chat.getAccount(), chat.getUser());
     }
 
     @Override
@@ -101,25 +91,46 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         notifyDataSetChanged();
     }
 
-    public int getPosition(String account, String user) {
+    public int getPageNumber(String account, String user) {
         for (int position = 0; position < activeChats.size(); position++) {
             if (activeChats.get(position).equals(account, user)) {
-                return position;
+                return position + 1;
             }
         }
 
         return -1;
     }
 
-    @Override
-    public void finishUpdate(ViewGroup container) {
-        super.finishUpdate(container);
-        finishUpdateListener.onChatViewAdapterFinishUpdate();
+    public AbstractChat getChatByPageNumber(int virtualPosition) {
+        int realPosition = virtualPosition % getRealCount();
+
+        int chatIndex = realPosition - 1;
+
+        if (chatIndex < 0) {
+            return null;
+        }
+        return activeChats.get(chatIndex);
     }
 
     @Override
-    public AbstractChat getActiveChat(int index) {
-        return getChat(index);
+    public void startUpdate(ViewGroup container) {
+        if (currentFragment instanceof ChatViewerFragment) {
+            ((ChatViewerFragment)currentFragment).saveInputState();
+        }
+
+        super.startUpdate(container);
+    }
+
+    @Override
+    public void finishUpdate(ViewGroup container) {
+        super.finishUpdate(container);
+
+        finishUpdateListener.onChatViewAdapterFinishUpdate();
+
+        if (currentFragment instanceof ChatViewerFragment) {
+            ((ChatViewerFragment)currentFragment).updateChat(false);
+            ((ChatViewerFragment)currentFragment).setInputFocus();
+        }
     }
 
     public interface FinishUpdateListener {
@@ -127,7 +138,15 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     }
 
     @Override
-    public int getItemPosition(Object object) {
-        return POSITION_NONE;
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        if (getCurrentFragment() != object) {
+            currentFragment = ((Fragment) object);
+        }
+
+        super.setPrimaryItem(container, position, object);
+    }
+
+    public Fragment getCurrentFragment() {
+        return currentFragment;
     }
 }
