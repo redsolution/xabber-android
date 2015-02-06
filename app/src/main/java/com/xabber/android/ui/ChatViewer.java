@@ -179,7 +179,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         LogManager.i(this, "onNewIntent account: " + account + ", user: " + user);
 
         actionWithUser = user;
-        actionWithAccount = user;
+        actionWithAccount = account;
 
         selectPage(false);
         onChatSelected();
