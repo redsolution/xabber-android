@@ -344,13 +344,19 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                                    boolean compression, ProxyType proxyType, String proxyHost,
                                    int proxyPort, String proxyUser, String proxyPassword,
                                    boolean syncable, KeyPair keyPair, Date lastSync,
-                                   ArchiveMode archiveMode) {
+                                   ArchiveMode archiveMode,
+                                   boolean registerNewAccount) {
         AccountItem accountItem = new AccountItem(protocol, custom, host, port,
                 serverName, userName, resource, storePassword, password, color,
                 priority, statusMode, statusText, enabled, saslEnabled,
                 tlsMode, compression, proxyType, proxyHost, proxyPort,
                 proxyUser, proxyPassword, syncable, keyPair, lastSync,
                 archiveMode);
+        if(registerNewAccount) {
+          // TODO: attempt to register account, if that fails return null;
+          accountItem.registerAccount();
+          //return(null);
+        }
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
         accountItem.updateConnection(true);
@@ -371,7 +377,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     public String addAccount(String user, String password,
                              AccountType accountType, boolean syncable, boolean storePassword,
-                             boolean useOrbot) throws NetworkException {
+                             boolean useOrbot,
+                             boolean registerNewAccount) throws NetworkException {
         if (accountType.getProtocol().isOAuth()) {
             int index = 1;
             while (true) {
@@ -446,7 +453,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 SettingsManager.statusText(), true, true,
                 tlsRequired ? TLSMode.required : TLSMode.enabled, false,
                 useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
-                "", "", syncable, null, null, ArchiveMode.available);
+                "", "", syncable, null, null, ArchiveMode.available, registerNewAccount);
+        if(accountItem == null) {
+            throw new NetworkException(R.string.ACCOUNT_REGISTER_FAILED);
+        }
+
         onAccountChanged(accountItem.getAccount());
         if (accountItems.size() > 1
                 && SettingsManager.contactsEnableShowAccounts())
@@ -609,7 +620,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                     priority, statusMode, statusText, enabled, saslEnabled,
                     tlsMode, compression, proxyType, proxyHost, proxyPort,
                     proxyUser, proxyPassword, syncable, keyPair, lastSync,
-                    archiveMode);
+                    archiveMode, false);
         }
         onAccountChanged(result.getAccount());
     }

@@ -53,6 +53,11 @@ public abstract class ConnectionItem {
      */
     private boolean disconnectionRequested;
 
+    /**
+     * Need to register account on XMPP server.
+     */
+    private boolean registerNewAccount;
+
     public ConnectionItem(AccountProtocol protocol, boolean custom,
                           String host, int port, String serverName, String userName,
                           String resource, boolean storePassword, String password,
@@ -67,6 +72,20 @@ public abstract class ConnectionItem {
         disconnectionRequested = false;
         connectionThread = null;
         state = ConnectionState.offline;
+    }
+
+    /**
+     * Register new account on server.
+     */
+    public void registerAccount() {
+        registerNewAccount = true;
+    }
+
+    /**
+     * Report if this connection is to register a new account on XMPP server.
+     */
+    public boolean isRegisterAccount() {
+        return(registerNewAccount);
     }
 
     /**
@@ -152,10 +171,10 @@ public abstract class ConnectionItem {
                 connectionThread = new ConnectionThread(this);
                 if (connectionSettings.isCustom())
                     connectionThread.start(connectionSettings.getHost(),
-                            connectionSettings.getPort(), false);
+                            connectionSettings.getPort(), false, registerNewAccount);
                 else
                     connectionThread.start(connectionSettings.getServerName(),
-                            5222, true);
+                            5222, true, registerNewAccount);
                 return true;
             } else {
                 return false;
@@ -235,6 +254,17 @@ public abstract class ConnectionItem {
      * Connection has been established.
      */
     protected void onConnected(ConnectionThread connectionThread) {
+        if (isRegisterAccount())
+            state = ConnectionState.registration;
+        else if (isManaged(connectionThread))
+            state = ConnectionState.authentication;
+    }
+
+    /**
+     * New account has been registered on XMPP server.
+     */
+    protected void onAccountRegistered(ConnectionThread connectionThread) {
+        registerNewAccount = false;
         if (isManaged(connectionThread))
             state = ConnectionState.authentication;
     }
@@ -302,7 +332,7 @@ public abstract class ConnectionItem {
         if (onDisconnect(connectionThread)) {
             state = ConnectionState.connecting;
             this.connectionThread = new ConnectionThread(this);
-            this.connectionThread.start(fqdn, port, useSrvLookup);
+            this.connectionThread.start(fqdn, port, useSrvLookup, registerNewAccount);
         }
     }
 
