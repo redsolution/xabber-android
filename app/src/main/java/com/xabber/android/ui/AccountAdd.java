@@ -27,6 +27,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -51,6 +53,7 @@ public class AccountAdd extends ManagedActivity implements
     private CheckBox storePasswordView;
     private CheckBox useOrbotView;
     private CheckBox syncableView;
+    private CheckBox createAccount;
     private Spinner accountTypeView;
 
     @Override
@@ -68,6 +71,7 @@ public class AccountAdd extends ManagedActivity implements
             syncableView.setVisibility(View.GONE);
             syncableView.setChecked(false);
         }
+        createAccount = (CheckBox) findViewById(R.id.register_account);
 
         accountTypeView = (Spinner) findViewById(R.id.account_type);
         accountTypeView.setAdapter(new AccountTypeAdapter(this));
@@ -87,6 +91,7 @@ public class AccountAdd extends ManagedActivity implements
             }
 
         ((Button) findViewById(R.id.ok)).setOnClickListener(this);
+        createAccount.setOnClickListener(this);
         InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(findViewById(R.id.ok)
                 .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -121,7 +126,8 @@ public class AccountAdd extends ManagedActivity implements
                                                 .getSelectedItem(),
                                         syncableView.isChecked(),
                                         storePasswordView.isChecked(),
-                                        useOrbotView.isChecked());
+                                        useOrbotView.isChecked(),
+                                        false);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                         return;
@@ -152,6 +158,13 @@ public class AccountAdd extends ManagedActivity implements
                 } else {
                     EditText userView = (EditText) findViewById(R.id.account_user_name);
                     EditText passwordView = (EditText) findViewById(R.id.account_password);
+                    EditText passwordConfirmView = (EditText) findViewById(R.id.confirm_password);
+                    if(createAccount.isChecked() &&
+                       !passwordView.getText().toString().contentEquals(passwordConfirmView.getText().toString())) {
+                        Toast.makeText(this, getString(R.string.CONFIRM_PASSWORD),
+                            Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     String account;
                     try {
                         account = AccountManager.getInstance().addAccount(
@@ -159,7 +172,8 @@ public class AccountAdd extends ManagedActivity implements
                                 passwordView.getText().toString(), accountType,
                                 syncableView.isChecked(),
                                 storePasswordView.isChecked(),
-                                useOrbotView.isChecked());
+                                useOrbotView.isChecked(),
+                                createAccount.isChecked());
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                         return;
@@ -168,6 +182,14 @@ public class AccountAdd extends ManagedActivity implements
                     finish();
                 }
                 break;
+            case R.id.register_account:
+                LinearLayout passwordConfirmView = (LinearLayout) findViewById(R.id.confirm_password_layout);
+                if(createAccount.isChecked()) {
+                    passwordConfirmView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    passwordConfirmView.setVisibility(View.GONE);
+                }
             default:
                 break;
         }
