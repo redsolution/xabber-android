@@ -74,6 +74,20 @@ public class RecentChatFragment extends ListFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        ((ChatViewer)getActivity()).registerRecentChatsList(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ((ChatViewer)getActivity()).unregisterRecentChatsList(this);
+    }
+
+    @Override
     public void onDetach() {
         listener = null;
         super.onDetach();
@@ -93,4 +107,7 @@ public class RecentChatFragment extends ListFragment {
         public void onRecentChatSelected(AbstractChat chat);
     }
 
+    public void updateChats(List<AbstractChat> chats) {
+        ((ChatListAdapter) getListAdapter()).updateChats(chats);
+    }
 }

@@ -152,4 +152,8 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     public Fragment getCurrentFragment() {
         return currentFragment;
     }
+
+    public ArrayList<AbstractChat> getActiveChats() {
+        return activeChats;
+    }
 }

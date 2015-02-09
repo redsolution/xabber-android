@@ -22,7 +22,6 @@ import android.support.v4.view.ViewPager;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -71,6 +70,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     ViewPager viewPager;
 
     Collection<ChatViewerFragment> registeredChats = new HashSet<>();
+    Collection<RecentChatFragment> recentChatFragments = new HashSet<>();
 
     private String actionWithAccount = null;
     private String actionWithUser = null;
@@ -167,8 +167,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
         }
 
-        LogManager.i(this, "onNewIntent account: " + account + ", user: " + user);
-
         selectPage(account, user, false);
     }
 
@@ -244,30 +242,29 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatChanged(final String account, final String user,
                               final boolean incoming) {
-        LogManager.i(this, "onChatChanged " + user);
-
         for (ChatViewerFragment chat : registeredChats) {
             if (chat.isEqual(account, user)) {
                 chat.updateChat(incoming);
             }
         }
+        updateRegisteredRecentChatsFragments();
 
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        LogManager.i(this, "onContactsChanged");
         chatViewerAdapter.onChange();
 
         updateRegisteredChats();
+        updateRegisteredRecentChatsFragments();
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        LogManager.i(this, "onAccountsChanged");
         chatViewerAdapter.onChange();
 
         updateRegisteredChats();
+        updateRegisteredRecentChatsFragments();
     }
 
     void onSent() {
@@ -325,6 +322,12 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
     }
 
+    private void updateRegisteredRecentChatsFragments() {
+        for (RecentChatFragment recentChatFragment : recentChatFragments) {
+            recentChatFragment.updateChats(chatViewerAdapter.getActiveChats());
+        }
+    }
+
     @Override
     public void onPageScrollStateChanged(int state) {
     }
@@ -338,9 +341,17 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         registeredChats.remove(chat);
     }
 
+    public void registerRecentChatsList(RecentChatFragment recentChatFragment) {
+        recentChatFragments.add(recentChatFragment);
+    }
+
+    public void unregisterRecentChatsList(RecentChatFragment recentChatFragment) {
+        recentChatFragments.remove(recentChatFragment);
+    }
+
+
     @Override
     public void onChatViewAdapterFinishUpdate() {
-        LogManager.i(this, "onChatViewAdapterFinishUpdate position: user: " + actionWithUser);
         insertExtraText();
 
         Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
