@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui.helper;
 
-import org.jivesoftware.smackx.ChatState;
-
 import android.app.Activity;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -24,7 +22,6 @@ import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,6 +30,8 @@ import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.androiddev.R;
+
+import org.jivesoftware.smackx.ChatState;
 
 /**
  * Helper class to update <code>contact_title.xml</code>.
@@ -51,47 +50,53 @@ public class ContactTitleInflater {
      */
     public static void updateTitle(View titleView, final Activity activity,
                                    AbstractContact abstractContact) {
-        final TypedArray typedArray = activity
-                .obtainStyledAttributes(R.styleable.ContactList);
+        final TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
+
         final Drawable titleAccountBackground = typedArray
                 .getDrawable(R.styleable.ContactList_titleAccountBackground);
         typedArray.recycle();
+
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
-        final ImageView avatarView = (ImageView) titleView
-                .findViewById(R.id.avatar);
-        final ImageView statusModeView = (ImageView) titleView
-                .findViewById(R.id.status_mode);
-        final TextView statusTextView = (TextView) titleView
-                .findViewById(R.id.status_text);
+        final ImageView avatarView = (ImageView) titleView.findViewById(R.id.avatar);
+        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_mode);
+        final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         final View shadowView = titleView.findViewById(R.id.shadow);
+
         titleView.setBackgroundDrawable(titleAccountBackground);
         nameView.setText(abstractContact.getName());
-        statusModeView.setImageLevel(abstractContact.getStatusMode()
-                .getStatusLevel());
-        titleView.getBackground().setLevel(
-                AccountManager.getInstance().getColorLevel(
+        statusModeView.setImageLevel(abstractContact.getStatusMode().getStatusLevel());
+        titleView.getBackground().setLevel(AccountManager.getInstance().getColorLevel(
                         abstractContact.getAccount()));
         avatarView.setImageDrawable(abstractContact.getAvatar());
-        ChatState chatState = ChatStateManager.getInstance().getChatState(
-                abstractContact.getAccount(), abstractContact.getUser());
-        final CharSequence statusText;
-        if (chatState == ChatState.composing)
-            statusText = activity.getString(R.string.chat_state_composing);
-        else if (chatState == ChatState.paused)
-            statusText = activity.getString(R.string.chat_state_paused);
-        else
-            statusText = Emoticons.getSmiledText(activity,
-                    abstractContact.getStatusText());
-        statusTextView.setText(statusText);
-        final Bitmap bitmap = BitmapFactory.decodeResource(
-                activity.getResources(), R.drawable.shadow);
+
+        setStatusText(activity, abstractContact, statusTextView);
+
+        final Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.shadow);
         final BitmapDrawable shadowDrawable = new BitmapDrawable(bitmap);
         shadowDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
         shadowView.setBackgroundDrawable(shadowDrawable);
-        if (abstractContact.isConnected())
+
+        if (abstractContact.isConnected()) {
             shadowView.setVisibility(View.GONE);
-        else
+        } else {
             shadowView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private static void setStatusText(Activity activity, AbstractContact abstractContact,
+                                      TextView statusTextView) {
+        ChatState chatState = ChatStateManager.getInstance().getChatState(
+                abstractContact.getAccount(), abstractContact.getUser());
+
+        final CharSequence statusText;
+        if (chatState == ChatState.composing) {
+            statusText = activity.getString(R.string.chat_state_composing);
+        } else if (chatState == ChatState.paused) {
+            statusText = activity.getString(R.string.chat_state_paused);
+        } else {
+            statusText = Emoticons.getSmiledText(activity, abstractContact.getStatusText());
+        }
+        statusTextView.setText(statusText);
     }
 
 }

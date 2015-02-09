@@ -14,10 +14,6 @@
  */
 package com.xabber.android.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,6 +29,10 @@ import com.xabber.android.ui.dialog.GroupAddDialogFragment;
 import com.xabber.android.ui.dialog.GroupAddDialogFragment.OnGroupAddConfirmed;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Manage list of selected groups.
@@ -146,8 +146,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements
     }
 
     private void showGroupAddDialog() {
-        GroupAddDialogFragment.newInstance(getGroups()).show(
-                getSupportFragmentManager(), "GROUP-ADD");
+        GroupAddDialogFragment.newInstance(getGroups()).show(getFragmentManager(), "GROUP-ADD");
     }
 
     @Override

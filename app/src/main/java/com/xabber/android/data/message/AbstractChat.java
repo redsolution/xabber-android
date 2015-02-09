@@ -14,20 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Message.Type;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.packet.DelayInformation;
-
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
@@ -44,6 +30,20 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.archive.SaveMode;
+
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Message.Type;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.packet.DelayInformation;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Chat instance.
@@ -109,6 +109,8 @@ public abstract class AbstractChat extends BaseEntity {
      */
     protected final Collection<MessageItem> sendQuery;
 
+    protected Date creationTime = new Date();
+
     protected AbstractChat(final String account, final String user) {
         super(account, user);
         threadId = StringUtils.randomString(12);
@@ -120,6 +122,7 @@ public abstract class AbstractChat extends BaseEntity {
         historyIds = new ArrayList<Long>();
         messages = new ArrayList<MessageItem>();
         sendQuery = new ArrayList<MessageItem>();
+        updateCreationTime();
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -267,6 +270,10 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     void openChat() {
+        if (!active) {
+            updateCreationTime();
+        }
+
         active = true;
         trackStatus = true;
     }
@@ -672,4 +679,11 @@ public abstract class AbstractChat extends BaseEntity {
     protected void onDisconnect() {
     }
 
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    public void updateCreationTime() {
+        creationTime.setTime(System.currentTimeMillis());
+    }
 }

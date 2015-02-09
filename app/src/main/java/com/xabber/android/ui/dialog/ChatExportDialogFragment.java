@@ -14,14 +14,12 @@
  */
 package com.xabber.android.ui.dialog;
 
-import java.io.File;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -34,6 +32,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 
+import java.io.File;
+
 public class ChatExportDialogFragment extends ConfirmDialogFragment {
 
     private static final String ACCOUNT = "ACCOUNT";
@@ -45,8 +45,7 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
      * @return
      */
     public static DialogFragment newInstance(String account, String user) {
-        return new ChatExportDialogFragment().putAgrument(ACCOUNT, account)
-                .putAgrument(USER, user);
+        return new ChatExportDialogFragment().putAgrument(ACCOUNT, account).putAgrument(USER, user);
     }
 
     private String account;

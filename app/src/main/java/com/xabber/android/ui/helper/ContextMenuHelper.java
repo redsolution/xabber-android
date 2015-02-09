@@ -33,11 +33,9 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ContactAdd;
 import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.android.ui.MUCEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -45,6 +43,8 @@ import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
+import com.xabber.android.ui.preferences.AccountEditor;
+import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.androiddev.R;
 
 /**
@@ -84,7 +84,7 @@ public class ContextMenuHelper {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             MUCDeleteDialogFragment.newInstance(account, user)
-                                    .show(activity.getSupportFragmentManager(),
+                                    .show(activity.getFragmentManager(),
                                             "MUC_DELETE");
                             return true;
                         }
@@ -131,8 +131,7 @@ public class ContextMenuHelper {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             ContactDeleteDialogFragment.newInstance(account,
-                                    user).show(
-                                    activity.getSupportFragmentManager(),
+                                    user).show(activity.getFragmentManager(),
                                     "CONTACT_DELETE");
                             return true;
                         }
@@ -225,8 +224,7 @@ public class ContextMenuHelper {
                                     account == GroupManager.NO_ACCOUNT ? null
                                             : account,
                                     group == GroupManager.NO_GROUP ? null
-                                            : group).show(
-                                    activity.getSupportFragmentManager(),
+                                            : group).show(activity.getFragmentManager(),
                                     "GROUP_RENAME");
                             return true;
                         }
@@ -241,9 +239,7 @@ public class ContextMenuHelper {
                                         .newInstance(
                                                 account == GroupManager.NO_ACCOUNT ? null
                                                         : account, group)
-                                        .show(activity
-                                                        .getSupportFragmentManager(),
-                                                "GROUP_DELETE");
+                                        .show(activity.getFragmentManager(), "GROUP_DELETE");
                                 return true;
                             }
                         });
