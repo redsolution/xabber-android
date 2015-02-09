@@ -43,6 +43,15 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         onChange();
     }
 
+    public ChatViewerAdapter(FragmentManager fragmentManager, FinishUpdateListener finishUpdateListener) {
+        super(fragmentManager);
+        this.finishUpdateListener = finishUpdateListener;
+
+        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
+        intent = null;
+        onChange();
+    }
+
     @Override
     public int getCount() {
         // warning: scrolling to very high values (1,000,000+) results in
@@ -51,9 +60,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     }
 
     public int getRealCount() {
-        int realCount = activeChats.size();
-
-        return realCount + 1;
+        return activeChats.size() + 1;
     }
 
     @Override
@@ -78,7 +85,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     public void onChange() {
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
 
-        if (!activeChats.contains(intent)) {
+        if (intent != null && !activeChats.contains(intent)) {
             activeChats.add(intent);
         }
 
@@ -99,7 +106,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
             }
         }
 
-        return -1;
+        return 0;
     }
 
     public AbstractChat getChatByPageNumber(int virtualPosition) {
@@ -127,11 +134,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         super.finishUpdate(container);
 
         finishUpdateListener.onChatViewAdapterFinishUpdate();
-
-        if (currentFragment instanceof ChatViewerFragment) {
-            ((ChatViewerFragment)currentFragment).updateChat(false);
-            ((ChatViewerFragment)currentFragment).setInputFocus();
-        }
     }
 
     public interface FinishUpdateListener {

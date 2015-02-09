@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
@@ -61,6 +62,12 @@ public class RecentChatFragment extends ListFragment {
         if (initialChats != null) {
             ((ChatListAdapter) getListAdapter()).updateChats(initialChats);
             initialChats = null;
+        }
+
+        if (getListAdapter().isEmpty()) {
+            Activity activity = getActivity();
+            Toast.makeText(activity, R.string.chat_list_is_empty, Toast.LENGTH_LONG).show();
+            activity.finish();
         }
 
         return inflater.inflate(R.layout.list, container, false);

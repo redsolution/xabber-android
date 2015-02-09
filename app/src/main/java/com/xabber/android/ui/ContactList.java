@@ -283,7 +283,7 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
                 startActivity(MUCEditor.createIntent(this));
                 return true;
             case R.id.action_chat_list:
-                startActivity(ChatList.createIntent(this));
+                startActivity(ChatViewer.createIntent(this));
                 return true;
             case R.id.action_settings:
                 startActivity(PreferenceEditor.createIntent(this));
