@@ -68,6 +68,7 @@ public class RecentChatFragment extends ListFragment {
 
     @Override
     public void onDetach() {
+        listener = null;
         super.onDetach();
     }
 

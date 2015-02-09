@@ -49,7 +49,8 @@ import java.util.HashSet;
  */
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
         OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener {
+        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener,
+        ChatViewerFragment.ChatViewerFragmentListener {
 
     /**
      * Attention request.
@@ -397,5 +398,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         LogManager.i(this, "onRecentChatSelected position: user: " + actionWithUser);
 
         selectPage(true);
+    }
+
+    @Override
+    public void onRecentChatsCalled() {
+        viewPager.setCurrentItem(0, true);
     }
 }

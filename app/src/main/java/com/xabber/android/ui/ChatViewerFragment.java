@@ -1,5 +1,6 @@
 package com.xabber.android.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -75,6 +76,8 @@ public class ChatViewerFragment extends Fragment {
 
     private String account;
     private String user;
+
+    private ChatViewerFragmentListener listener;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -245,6 +248,23 @@ public class ChatViewerFragment extends Fragment {
         unregisterForContextMenu(listView);
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            listener = (ChatViewerFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement ChatViewerFragmentListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        listener = null;
+        super.onDetach();
+    }
+
     public void saveInputState() {
         ChatManager.getInstance().setTyped(account, user, inputView.getText().toString(),
                 inputView.getSelectionStart(), inputView.getSelectionEnd());
@@ -341,7 +361,13 @@ public class ChatViewerFragment extends Fragment {
             menu.findItem(R.id.action_edit_contact).setVisible(true)
                     .setIntent(ContactEditor.createIntent(getActivity(), account, user));
         }
-        menu.findItem(R.id.action_chat_list).setIntent(ChatList.createIntent(getActivity()));
+        menu.findItem(R.id.action_chat_list).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                listener.onRecentChatsCalled();
+                return true;
+            }
+        });
 
         menu.findItem(R.id.action_chat_settings)
                 .setIntent(ChatEditor.createIntent(getActivity(), account, user));
@@ -601,5 +627,9 @@ public class ChatViewerFragment extends Fragment {
 
     public String getUser() {
         return user;
+    }
+
+    public interface ChatViewerFragmentListener {
+        public void onRecentChatsCalled();
     }
 }
