@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
+import com.antonyt.infiniteviewpager.InfiniteViewPager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
@@ -46,7 +47,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     public int getCount() {
         // warning: scrolling to very high values (1,000,000+) results in
         // strange drawing behaviour
-        return Integer.MAX_VALUE;
+        return InfiniteViewPager.TOTAL_COUNT;
     }
 
     public int getRealCount() {

@@ -34,6 +34,9 @@ import com.xabber.android.ui.adapter.ChatViewerAdapter;
  */
 public class InfiniteViewPager extends ViewPager {
 
+    public static final int OFFSET = 100;
+    public static final int TOTAL_COUNT = 200;
+
     public InfiniteViewPager(Context context) {
         super(context);
     }
@@ -74,7 +77,7 @@ public class InfiniteViewPager extends ViewPager {
         // should be enough to create an illusion of infinity
         // warning: scrolling to very high values (1,000,000+) results in
         // strange drawing behaviour
-        return ((ChatViewerAdapter) getAdapter()).getRealCount() * 100;
+        return OFFSET;
     }
 
     @Override
