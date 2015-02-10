@@ -171,4 +171,9 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     public ArrayList<AbstractChat> getActiveChats() {
         return activeChats;
     }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
 }

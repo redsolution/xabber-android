@@ -65,11 +65,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private String extraText = null;
 
-    private boolean isIncoming = false;
-    private String incomingAccount;
-    private String incomingUser;
-
-
     ChatViewerAdapter chatViewerAdapter;
 
     ViewPager viewPager;
@@ -250,13 +245,19 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatChanged(final String account, final String user,
                               final boolean incoming) {
+
+        String currentAccount = null;
+        String currentUser = null;
+        AbstractChat chatByPageNumber = chatViewerAdapter.getChatByPageNumber(viewPager.getCurrentItem());
+
+        if (chatByPageNumber != null) {
+            currentAccount = chatByPageNumber.getAccount();
+            currentUser = chatByPageNumber.getUser();
+        }
+
         chatViewerAdapter.onChange();
 
-        if (incoming) {
-            isIncoming = true;
-            incomingAccount = account;
-            incomingUser = user;
-        }
+        selectPage(currentAccount, currentUser, false);
     }
 
     @Override
@@ -302,6 +303,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         if (selectedChat == null) {
             setTitle(getString(R.string.chat_list));
+            MessageManager.getInstance().removeVisibleChat();
             return;
         }
 
@@ -364,15 +366,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         updateRegisteredChats();
         updateRegisteredRecentChatsFragments();
-
-        if (isIncoming) {
-            for (ChatViewerFragment chat : registeredChats) {
-                if (chat.isEqual(incomingAccount, incomingUser)) {
-                    chat.updateChat(true);
-                }
-            }
-            isIncoming = false;
-        }
 
         Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
         if (currentFragment instanceof ChatViewerFragment) {
