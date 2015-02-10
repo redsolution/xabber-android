@@ -65,6 +65,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private String extraText = null;
 
+    private boolean isIncoming = false;
+    private String incomingAccount;
+    private String incomingUser;
+
+
     ChatViewerAdapter chatViewerAdapter;
 
     ViewPager viewPager;
@@ -74,7 +79,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private String actionWithAccount = null;
     private String actionWithUser = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,6 +176,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private void selectPage(String account, String user, boolean smoothScroll) {
         int position = chatViewerAdapter.getPageNumber(account, user);
+        selectPage(position, smoothScroll);
+    }
+
+    private void selectPage(int position, boolean smoothScroll) {
         viewPager.setCurrentItem(position, smoothScroll);
         onPageSelected(position);
     }
@@ -242,13 +250,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatChanged(final String account, final String user,
                               final boolean incoming) {
-        for (ChatViewerFragment chat : registeredChats) {
-            if (chat.isEqual(account, user)) {
-                chat.updateChat(incoming);
-            }
-        }
-        updateRegisteredRecentChatsFragments();
+        chatViewerAdapter.onChange();
 
+        if (incoming) {
+            isIncoming = true;
+            incomingAccount = account;
+            incomingUser = user;
+        }
     }
 
     @Override
@@ -354,6 +362,18 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     public void onChatViewAdapterFinishUpdate() {
         insertExtraText();
 
+        updateRegisteredChats();
+        updateRegisteredRecentChatsFragments();
+
+        if (isIncoming) {
+            for (ChatViewerFragment chat : registeredChats) {
+                if (chat.isEqual(incomingAccount, incomingUser)) {
+                    chat.updateChat(true);
+                }
+            }
+            isIncoming = false;
+        }
+
         Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
         if (currentFragment instanceof ChatViewerFragment) {
             ((ChatViewerFragment)currentFragment).setInputFocus();
@@ -387,6 +407,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     @Override
     public void onRecentChatsCalled() {
-        viewPager.setCurrentItem(0, true);
+        viewPager.setCurrentItem(chatViewerAdapter.getRecentChatsPosition(), true);
     }
 }

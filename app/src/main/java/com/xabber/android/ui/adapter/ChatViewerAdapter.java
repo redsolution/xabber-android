@@ -6,7 +6,6 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
-import com.antonyt.infiniteviewpager.InfiniteViewPager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
@@ -16,6 +15,8 @@ import com.xabber.xmpp.address.Jid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
+import static java.lang.Math.abs;
 
 public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter {
 
@@ -29,6 +30,10 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     private FinishUpdateListener finishUpdateListener;
 
     private Fragment currentFragment;
+
+    private static final int TOTAL_COUNT = 200;
+    private static final int OFFSET = TOTAL_COUNT / 2;
+
 
     public ChatViewerAdapter(FragmentManager fragmentManager, String account, String user, FinishUpdateListener finishUpdateListener) {
         super(fragmentManager);
@@ -56,7 +61,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     public int getCount() {
         // warning: scrolling to very high values (1,000,000+) results in
         // strange drawing behaviour
-        return InfiniteViewPager.TOTAL_COUNT;
+        return TOTAL_COUNT;
     }
 
     public int getRealCount() {
@@ -65,19 +70,15 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
     @Override
     public Fragment getItem(int virtualPagePosition) {
-
-        int chatIndex;
-        int realPosition = virtualPagePosition % getRealCount();
+        int realPosition = getRealPagePosition(virtualPagePosition);
 
         if (realPosition == 0) {
             RecentChatFragment activeChatFragment = RecentChatFragment.newInstance();
             activeChatFragment.setInitialChats(activeChats);
             return activeChatFragment;
-        } else {
-            chatIndex = realPosition -1;
         }
 
-        AbstractChat chat = activeChats.get(chatIndex);
+        AbstractChat chat = activeChats.get(getChatIndexFromRealPosition(realPosition));
         return ChatViewerFragment.newInstance(chat.getAccount(), chat.getUser());
     }
 
@@ -100,24 +101,38 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
     }
 
     public int getPageNumber(String account, String user) {
-        for (int position = 0; position < activeChats.size(); position++) {
-            if (activeChats.get(position).equals(account, user)) {
-                return position + 1;
+        int realPosition = 0;
+
+        for (int chatIndex = 0; chatIndex < activeChats.size(); chatIndex++) {
+            if (activeChats.get(chatIndex).equals(account, user)) {
+                realPosition = chatIndex + 1;
+                break;
             }
         }
 
-        return 0;
+        return realPosition + OFFSET;
+    }
+
+    public int getRecentChatsPosition() {
+        return OFFSET;
     }
 
     public AbstractChat getChatByPageNumber(int virtualPosition) {
-        int realPosition = virtualPosition % getRealCount();
+        int realPosition = getRealPagePosition(virtualPosition);
 
-        int chatIndex = realPosition - 1;
-
-        if (chatIndex < 0) {
+        if (realPosition == 0) {
             return null;
         }
-        return activeChats.get(chatIndex);
+        return activeChats.get(getChatIndexFromRealPosition(realPosition));
+    }
+
+
+    private int getRealPagePosition(int virtualPosition) {
+        return abs(virtualPosition - OFFSET) % getRealCount();
+    }
+
+    private int getChatIndexFromRealPosition(int virtualPosition) {
+        return virtualPosition - 1;
     }
 
     @Override
