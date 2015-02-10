@@ -54,8 +54,8 @@
         <EditText
             android:id="@+id/chat_input"
             android:layout_weight="1"
-			android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
-			android:imeOptions="actionSend|flagNoEnterAction"
+            android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+            android:imeOptions="actionSend|flagNoEnterAction"
             android:cursorVisible="true"
             android:hint="@string/chat_input_hint"
             android:layout_width="wrap_content"
@@ -63,6 +63,8 @@
             android:maxLines="5"
             android:scrollbars="vertical"
             android:fadingEdge="vertical"
+            android:focusable="true"
+            android:descendantFocusability="beforeDescendants"
             />
         <Button
             android:text="@string/chat_send"

@@ -615,6 +615,10 @@ public class ChatViewerFragment extends Fragment {
 
     public void setInputFocus() {
         inputView.requestFocus();
+        if (getActivity() != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(inputView.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
     }
 
     public void setInputText(String text) {
