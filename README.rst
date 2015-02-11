@@ -36,3 +36,8 @@ All related resources are automatically generated from files got with webtransla
 If you want to update any translation please email us to info[at]xabber.com and specify all the translation languages you want to edit.
 Then we'll send an invitation to our project on webtranslateit.com.
 Please don't create pull requests with translation fixes as any changes will be overwritten with the next update from webtranslateit.com.
+
+Wiki
+====
+
+Visit our wiki pages for additional information: https://github.com/redsolution/xabber-android/wiki
