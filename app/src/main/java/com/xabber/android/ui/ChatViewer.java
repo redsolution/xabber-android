@@ -158,7 +158,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         if (isFinishing())
             return;
 
-        chatViewerAdapter.onChange();
+        chatViewerAdapter.updateChats();
 
         String account = getAccount(intent);
         String user = getUser(intent);
@@ -255,23 +255,30 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             currentUser = chatByPageNumber.getUser();
         }
 
-        chatViewerAdapter.onChange();
+        if (chatViewerAdapter.updateChats()) {
+            selectPage(currentAccount, currentUser, false);
+        } else {
+            updateRegisteredChats();
+            updateRegisteredRecentChatsFragments();
 
-        selectPage(currentAccount, currentUser, false);
+            for (ChatViewerFragment chat : registeredChats) {
+                if (chat.isEqual(account, user)) {
+                    chat.updateChat(true);
+                }
+            }
+        }
+
+
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        chatViewerAdapter.onChange();
-
         updateRegisteredChats();
         updateRegisteredRecentChatsFragments();
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        chatViewerAdapter.onChange();
-
         updateRegisteredChats();
         updateRegisteredRecentChatsFragments();
     }
@@ -365,7 +372,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         insertExtraText();
 
         updateRegisteredChats();
-        updateRegisteredRecentChatsFragments();
 
         Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
         if (currentFragment instanceof ChatViewerFragment) {

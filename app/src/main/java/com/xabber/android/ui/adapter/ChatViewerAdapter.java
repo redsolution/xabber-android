@@ -18,7 +18,7 @@ import java.util.Comparator;
 
 import static java.lang.Math.abs;
 
-public class ChatViewerAdapter extends FragmentStatePagerAdapter implements UpdatableAdapter {
+public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     /**
      * Intent sent while opening chat activity.
@@ -45,7 +45,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         if (!activeChats.contains(intent)) {
             intent.updateCreationTime();
         }
-        onChange();
+        updateChats();
     }
 
     public ChatViewerAdapter(FragmentManager fragmentManager, FinishUpdateListener finishUpdateListener) {
@@ -54,7 +54,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
         intent = null;
-        onChange();
+        updateChats();
     }
 
     @Override
@@ -82,22 +82,46 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter implements Upda
         return ChatViewerFragment.newInstance(chat.getAccount(), chat.getUser());
     }
 
-    @Override
-    public void onChange() {
-        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
+    public boolean updateChats() {
 
-        if (intent != null && !activeChats.contains(intent)) {
-            activeChats.add(intent);
+        ArrayList<AbstractChat> newChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
+
+        if (intent != null && !newChats.contains(intent)) {
+            newChats.add(intent);
         }
 
-        Collections.sort(activeChats, new Comparator<AbstractChat>() {
+        Collections.sort(newChats, new Comparator<AbstractChat>() {
             @Override
             public int compare(AbstractChat lhs, AbstractChat rhs) {
                 return lhs.getCreationTime().compareTo(rhs.getCreationTime());
             }
         });
 
+
+        if (isChatsEquals(newChats)) {
+            return false;
+        }
+
+        activeChats = newChats;
         notifyDataSetChanged();
+
+        return true;
+    }
+
+    private boolean isChatsEquals(ArrayList<AbstractChat> newChats) {
+        if (newChats.size() != activeChats.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < activeChats.size(); i++) {
+            AbstractChat oldChat = activeChats.get(i);
+            AbstractChat newChat = newChats.get(i);
+
+            if (!oldChat.equals(newChat.getAccount(), newChat.getUser())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public int getPageNumber(String account, String user) {
