@@ -1,0 +1,3 @@
+[submodule "app/otr4j"]
+	path = app/otr4j
+	url = https://github.com/otr4j/otr4j.git
