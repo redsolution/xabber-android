@@ -408,4 +408,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     public void onRecentChatsCalled() {
         viewPager.setCurrentItem(chatViewerAdapter.getRecentChatsPosition(), true);
     }
+
+    public ChatViewerAdapter getChatViewerAdapter() {
+        return chatViewerAdapter;
+    }
 }

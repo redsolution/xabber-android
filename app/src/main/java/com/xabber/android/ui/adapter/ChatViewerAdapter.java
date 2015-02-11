@@ -73,9 +73,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         int realPosition = getRealPagePosition(virtualPagePosition);
 
         if (realPosition == 0) {
-            RecentChatFragment activeChatFragment = RecentChatFragment.newInstance();
-            activeChatFragment.setInitialChats(activeChats);
-            return activeChatFragment;
+            return RecentChatFragment.newInstance();
         }
 
         AbstractChat chat = activeChats.get(getChatIndexFromRealPosition(realPosition));

@@ -13,12 +13,11 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
 import com.xabber.androiddev.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecentChatFragment extends ListFragment {
     private RecentChatFragmentInteractionListener listener;
-
-    private List<AbstractChat> initialChats = null;
 
     public static RecentChatFragment newInstance() {
         return  new RecentChatFragment();
@@ -29,10 +28,6 @@ public class RecentChatFragment extends ListFragment {
      * fragment (e.g. upon screen orientation changes).
      */
     public RecentChatFragment() {
-    }
-
-    public void setInitialChats(List<AbstractChat> initialChats) {
-        this.initialChats = initialChats;
     }
 
     @Override
@@ -59,10 +54,8 @@ public class RecentChatFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        if (initialChats != null) {
-            ((ChatListAdapter) getListAdapter()).updateChats(initialChats);
-            initialChats = null;
-        }
+        ArrayList<AbstractChat> activeChats = ((ChatViewer) getActivity()).getChatViewerAdapter().getActiveChats();
+        ((ChatListAdapter) getListAdapter()).updateChats(activeChats);
 
         if (getListAdapter().isEmpty()) {
             Activity activity = getActivity();
