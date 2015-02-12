@@ -185,19 +185,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         public void onChatViewAdapterFinishUpdate();
     }
 
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        if (getCurrentFragment() != object) {
-            currentFragment = ((Fragment) object);
-        }
-
-        super.setPrimaryItem(container, position, object);
-    }
-
-    public Fragment getCurrentFragment() {
-        return currentFragment;
-    }
-
     public ArrayList<AbstractChat> getActiveChats() {
         return activeChats;
     }
