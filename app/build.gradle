@@ -13,8 +13,8 @@ android {
         applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 116
-        versionName '0.10.19'
+        versionCode 117
+        versionName '0.10.20'
     }
 
     sourceSets {
