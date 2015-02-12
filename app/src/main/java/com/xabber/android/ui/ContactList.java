@@ -24,17 +24,20 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -92,6 +95,7 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
      * Dialog related values.
      */
     private String sendText;
+    private SearchView searchView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -255,21 +259,78 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     @Override
     protected void onPause() {
         super.onPause();
+        hideKeyboard();
+    }
+
+    private void hideKeyboard() {
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager)  getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.contact_list, menu);
+        setUpSearchView(menu);
         return true;
+    }
+
+    private void setUpSearchView(Menu menu) {
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setQueryHint("Search contact");
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                return true;
+            }
+        });
+
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.action_search), new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                searchView.requestFocus();
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
+                        toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                LogManager.i(this, "onMenuItemActionCollapse");
+                searchView.setQuery("", true);
+                searchView.clearFocus();
+                return true;
+            }
+        });
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Fragment fragmentById = getSupportFragmentManager().findFragmentById(R.id.container);
+                ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(newText);
+                return true;
+            }
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                search();
+
+                searchView.setIconified(false);
+
                 return true;
+
             case R.id.action_change_status:
                 startActivity(StatusEditor.createIntent(this));
                 return true;
@@ -321,8 +382,7 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     }
 
     private ContactListFragment getContactListFragment() {
-        return (ContactListFragment) getSupportFragmentManager()
-                .findFragmentByTag(CONTACT_LIST_TAG);
+        return (ContactListFragment) getSupportFragmentManager().findFragmentByTag(CONTACT_LIST_TAG);
     }
 
     @Override
@@ -350,16 +410,6 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
             default:
                 return null;
         }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_SEARCH:
-                search();
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -413,16 +463,6 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     @Override
     public void onChoosed(String account, String user, String text) {
         openChat(new BaseEntity(account, user), text);
-    }
-
-    /**
-     * Show search dialog.
-     */
-    private void search() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null)
-            inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                    0);
     }
 
     public static Intent createPersistentIntent(Context context) {

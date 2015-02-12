@@ -1,7 +1,5 @@
 package com.xabber.android.ui;
 
-import java.util.Collection;
-
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -18,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +40,8 @@ import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.androiddev.R;
+
+import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements
         OnAccountChangedListener, OnContactChangedListener,
@@ -321,6 +322,10 @@ public class ContactListFragment extends Fragment implements
     }
 
     UpdatableAdapter getAdapter() {
+        return adapter;
+    }
+
+    Filterable getFilterableAdapter() {
         return adapter;
     }
 

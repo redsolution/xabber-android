@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_search"
         android:title="@android:string/search_go"
-        app:showAsAction="always"
+        app:showAsAction="always|collapseActionView"
         android:orderInCategory="100"
         android:icon="@drawable/ic_search_white_24dp"
+        app:actionViewClass="android.widget.SearchView"
         />
 
     <item android:id="@+id/action_add_contact"
