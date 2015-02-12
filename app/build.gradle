@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+repositories {
+  mavenCentral()
+  mavenLocal()
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -10,6 +15,12 @@ android {
         targetSdkVersion 21
         versionCode 115
         versionName '0.10.18'
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', 'otr4j/src/main/java']
+        }
     }
 
     buildTypes {
@@ -25,7 +36,7 @@ android {
 }
 
 dependencies {
-    compile files('libs/otr4j.jar')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:support-v13:21.0.3'
+    compile 'org.bouncycastle:bcprov-jdk15on:1.49'
 }

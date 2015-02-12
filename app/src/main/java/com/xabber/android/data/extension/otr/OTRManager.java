@@ -39,6 +39,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.androiddev.BuildConfig;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.archive.OtrMode;
 import com.xabber.xmpp.archive.SaveMode;
@@ -51,9 +52,9 @@ import net.java.otr4j.OtrPolicyImpl;
 import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.crypto.OtrCryptoException;
 import net.java.otr4j.io.SerializationUtils;
+import net.java.otr4j.session.InstanceTag;
 import net.java.otr4j.session.Session;
 import net.java.otr4j.session.SessionID;
-import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
 
 import java.security.KeyPair;
@@ -194,7 +195,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             return session;
         AccountItem accountItem = AccountManager.getInstance().getAccount(
                 account);
-        session = new SessionImpl(new SessionID(account, user,
+        session = new Session(new SessionID(account, user,
                 accountItem == null ? "" : accountItem.getConnectionSettings()
                         .getProtocol().toString()), this);
         session.addOtrEngineListener(this);
@@ -283,7 +284,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public String getReplyForUnreadableMessage() {
+    public String getReplyForUnreadableMessage(SessionID sessionID) {
         return Application.getInstance().getString(
                 R.string.otr_unreadable_message);
     }
@@ -318,7 +319,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public void finishedSessionMessage(SessionID sessionID) throws OtrException {
+    public void finishedSessionMessage(SessionID sessionID, String msgText) throws OtrException {
         newAction(sessionID.getAccountID(), sessionID.getUserID(), null,
                 ChatAction.otr_finished_session);
         throw new OtrException(
@@ -413,7 +414,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public void askForSecret(SessionID sessionID, String question) {
+    public void askForSecret(SessionID sessionID, InstanceTag receiverTag, String question) {
         smRequestProvider.add(
                 new SMRequest(sessionID.getAccountID(), sessionID.getUserID(),
                         question), true);
@@ -430,8 +431,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      */
     public String transformSending(String account, String user, String content)
             throws OtrException {
-        return getOrCreateSession(account, user)
+        String parts[] = getOrCreateSession(account, user)
                 .transformSending(content, null);
+        if (BuildConfig.DEBUG && parts.length != 1) {
+            throw new RuntimeException(
+            "We do not use fragmentation, so there must be only one otr fragment.");
+        }
+        return parts[0];
     }
 
     /**
@@ -516,7 +522,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public void verify(SessionID sessionID, boolean approved) {
+    public void verify(SessionID sessionID, String fingerprint, boolean approved) {
         if (approved)
             setVerify(sessionID, true);
         else if (isVerified(sessionID.getAccountID(), sessionID.getUserID()))
@@ -526,7 +532,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public void unverify(SessionID sessionID) {
+    public void unverify(SessionID sessionID, String fingerprint) {
         setVerify(sessionID, false);
         removeSMProgress(sessionID.getAccountID(), sessionID.getUserID());
     }
@@ -555,7 +561,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public String getFallbackMessage() {
+    public String getFallbackMessage(SessionID sessionID) {
         return Application.getInstance().getString(R.string.otr_request);
     }
 
@@ -710,6 +716,32 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     public void onSettingsChanged() {
         if (SettingsManager.securityOtrMode() == SecurityOtrMode.disabled)
             endAllSessions();
+    }
+
+    @Override
+    public int getMaxFragmentSize(SessionID sessionID) {
+        // we do not want fragmentation
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public void outgoingSessionChanged(SessionID sessionID) {
+        LogManager.i(this, "Outgoing session change with SessionID " + sessionID);
+        // TODO what to in this situation?
+    }
+
+    @Override
+    public void messageFromAnotherInstanceReceived(SessionID sessionID) {
+        LogManager.i(this, "Message from another instance received on SessionID "
+                + sessionID + ". Restarting OTR session for this user.");
+        newAction(sessionID.getAccountID(), sessionID.getUserID(), null,
+                ChatAction.otr_unreadable);
+    }
+
+    @Override
+    public void multipleInstancesDetected(SessionID sessionID) {
+        LogManager.i(this, "Multiple instances detected on SessionID " + sessionID);
+        // since this is not supported, we don't need to do anything
     }
 
 }
