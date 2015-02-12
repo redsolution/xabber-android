@@ -19,7 +19,6 @@
         <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
         <item name="accountBackground">@drawable/account_background</item>
         <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
-        <item name="titleMainBackground">@drawable/title_main_background_dark</item>
         <item name="titleAccountBackground">@drawable/title_account_background_dark</item>
         <item name="textColorPrimaryNoSelected">@color/bright_foreground_dark</item>
     </style>

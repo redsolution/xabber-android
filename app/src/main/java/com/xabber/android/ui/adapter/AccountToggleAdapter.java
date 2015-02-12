@@ -14,9 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +26,9 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Adapter for the list of accounts in the title of contact list.
@@ -60,7 +60,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
         this.activity = activity;
         this.onClickListener = onClickListener;
         this.linearLayout = linearLayout;
-        accounts = new ArrayList<String>();
+        accounts = new ArrayList<>();
     }
 
     /**
@@ -105,11 +105,9 @@ public class AccountToggleAdapter implements UpdatableAdapter {
                     .getColorLevel(account);
             view.getBackground().setLevel(colorLevel);
             if (contactsShowAccounts)
-                accountViewHolder.statusMode
-                        .setBackgroundResource(R.drawable.account_border);
+                accountViewHolder.statusMode.setBackgroundResource(R.drawable.account_border);
             else
-                accountViewHolder.statusMode
-                        .setBackgroundResource(R.drawable.account_border_persistent);
+                accountViewHolder.statusMode.setBackgroundResource(R.drawable.account_border_persistent);
             if (selected == null || account.equals(selected))
                 accountViewHolder.disabled.setVisibility(View.GONE);
             else

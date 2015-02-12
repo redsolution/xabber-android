@@ -32,7 +32,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.data.ActivityManager;
@@ -41,6 +44,8 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -52,6 +57,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ContactListFragment.OnContactClickListener;
+import com.xabber.android.ui.adapter.AccountToggleAdapter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
@@ -70,7 +76,9 @@ import java.util.Collection;
  *
  * @author alexander.ivanov
  */
-public class ContactList extends ManagedActivity implements OnChoosedListener, OnContactClickListener {
+public class ContactList extends ManagedActivity implements
+        OnAccountChangedListener, View.OnClickListener, View.OnLongClickListener,
+        OnChoosedListener, OnContactClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -87,6 +95,11 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
 
     /**
+     * Adapter for account list.
+     */
+    private AccountToggleAdapter accountToggleAdapter;
+
+    /**
      * Current action.
      */
     private String action;
@@ -95,22 +108,35 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
      * Dialog related values.
      */
     private String sendText;
+
     private SearchView searchView;
+    private View titleView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         if (Intent.ACTION_VIEW.equals(getIntent().getAction())
                 || Intent.ACTION_SEND.equals(getIntent().getAction())
                 || Intent.ACTION_SENDTO.equals(getIntent().getAction())
-                || Intent.ACTION_CREATE_SHORTCUT
-                .equals(getIntent().getAction()))
+                || Intent.ACTION_CREATE_SHORTCUT.equals(getIntent().getAction())) {
             ActivityManager.getInstance().startNewTask(this);
+        }
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         setContentView(R.layout.contact_list);
+        titleView = findViewById(android.R.id.title);
+        accountToggleAdapter = new AccountToggleAdapter(this, this,
+                (LinearLayout) findViewById(R.id.account_list));
 
+        View commonStatusText = findViewById(R.id.common_status_text);
+        View commonStatusMode = findViewById(R.id.common_status_mode);
+
+        commonStatusText.setOnLongClickListener(this);
+        commonStatusMode.setOnClickListener(this);
+        commonStatusText.setOnClickListener(this);
+        titleView.setOnClickListener(this);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -150,29 +176,33 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
      */
     private void openChat(String user, String text) {
         String bareAddress = Jid.getBareAddress(user);
-        ArrayList<BaseEntity> entities = new ArrayList<BaseEntity>();
-        for (AbstractChat check : MessageManager.getInstance().getChats())
-            if (check.isActive() && check.getUser().equals(bareAddress))
+        ArrayList<BaseEntity> entities = new ArrayList<>();
+        for (AbstractChat check : MessageManager.getInstance().getChats()) {
+            if (check.isActive() && check.getUser().equals(bareAddress)) {
                 entities.add(check);
+            }
+        }
         if (entities.size() == 1) {
             openChat(entities.get(0), text);
             return;
         }
         entities.clear();
-        for (RosterContact check : RosterManager.getInstance().getContacts())
-            if (check.isEnabled() && check.getUser().equals(bareAddress))
+        for (RosterContact check : RosterManager.getInstance().getContacts()) {
+            if (check.isEnabled() && check.getUser().equals(bareAddress)) {
                 entities.add(check);
+            }
+        }
         if (entities.size() == 1) {
             openChat(entities.get(0), text);
             return;
         }
         Collection<String> accounts = AccountManager.getInstance()
                 .getAccounts();
-        if (accounts.isEmpty())
+        if (accounts.isEmpty()) {
             return;
+        }
         if (accounts.size() == 1) {
-            openChat(new BaseEntity(accounts.iterator().next(), bareAddress),
-                    text);
+            openChat(new BaseEntity(accounts.iterator().next(), bareAddress), text);
             return;
         }
         AccountChooseDialogFragment.newInstance(bareAddress, text)
@@ -186,27 +216,32 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
      * @param text       can be <code>null</code>.
      */
     private void openChat(BaseEntity baseEntity, String text) {
-        if (text == null)
+        if (text == null) {
             startActivity(ChatViewer.createSendIntent(this,
                     baseEntity.getAccount(), baseEntity.getUser(), null));
-        else
+        } else {
             startActivity(ChatViewer.createSendIntent(this,
                     baseEntity.getAccount(), baseEntity.getUser(), text));
+        }
         finish();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        updateStatusBar();
+        rebuildAccountToggle();
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+
         if (action != null) {
             switch (action) {
                 case ContactList.ACTION_ROOM_INVITE:
                 case Intent.ACTION_SEND:
                 case Intent.ACTION_CREATE_SHORTCUT:
-                    if (Intent.ACTION_SEND.equals(action))
+                    if (Intent.ACTION_SEND.equals(action)) {
                         sendText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-                    Toast.makeText(this, getString(R.string.select_contact),
-                            Toast.LENGTH_LONG).show();
+                    }
+                    Toast.makeText(this, getString(R.string.select_contact), Toast.LENGTH_LONG).show();
                     break;
                 case Intent.ACTION_VIEW: {
                     action = null;
@@ -221,8 +256,9 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
                         if (xmppUri != null && "message".equals(xmppUri.getQueryType())) {
                             ArrayList<String> texts = xmppUri.getValues("body");
                             String text = null;
-                            if (texts != null && !texts.isEmpty())
+                            if (texts != null && !texts.isEmpty()) {
                                 text = texts.get(0);
+                            }
                             openChat(xmppUri.getPath(), text);
                         }
                     }
@@ -233,8 +269,9 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
                     Uri data = getIntent().getData();
                     if (data != null) {
                         String path = data.getPath();
-                        if (path != null && path.startsWith("/"))
+                        if (path != null && path.startsWith("/")) {
                             openChat(path.substring(1), null);
+                        }
                     }
                     break;
                 }
@@ -243,15 +280,17 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
         if (Application.getInstance().doNotify()) {
             if (SettingsManager.bootCount() > 2
                     && !SettingsManager.connectionStartAtBoot()
-                    && !SettingsManager.startAtBootSuggested())
+                    && !SettingsManager.startAtBootSuggested()) {
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
+            }
             if (!SettingsManager.contactIntegrationSuggested()
                     && Application.getInstance().isContactsSupported()) {
-                if (AccountManager.getInstance().getAllAccounts().isEmpty())
+                if (AccountManager.getInstance().getAllAccounts().isEmpty()) {
                     SettingsManager.setContactIntegrationSuggested();
-                else
-                    ContactIntegrationDialogFragment.newInstance().show(
-                            getFragmentManager(), "CONTACT_INTEGRATION");
+                } else {
+                    ContactIntegrationDialogFragment.newInstance()
+                            .show(getFragmentManager(), "CONTACT_INTEGRATION");
+                }
             }
         }
     }
@@ -260,6 +299,7 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     protected void onPause() {
         super.onPause();
         hideKeyboard();
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
     private void hideKeyboard() {
@@ -326,11 +366,8 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-
                 searchView.setIconified(false);
-
                 return true;
-
             case R.id.action_change_status:
                 startActivity(StatusEditor.createIntent(this));
                 return true;
@@ -371,12 +408,10 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     }
 
     private void closeAllChats() {
-        for (AbstractChat chat : MessageManager.getInstance()
-                .getActiveChats()) {
-            MessageManager.getInstance().closeChat(chat.getAccount(),
-                    chat.getUser());
-            NotificationManager.getInstance().removeMessageNotification(
-                    chat.getAccount(), chat.getUser());
+        for (AbstractChat chat : MessageManager.getInstance().getActiveChats()) {
+            MessageManager.getInstance().closeChat(chat.getAccount(), chat.getUser());
+            NotificationManager.getInstance().
+                    removeMessageNotification(chat.getAccount(), chat.getUser());
         }
         getContactListFragment().getAdapter().onChange();
     }
@@ -386,8 +421,7 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view,
-                                    ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
     }
 
@@ -397,8 +431,7 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
         switch (id) {
             case DIALOG_CLOSE_APPLICATION_ID:
                 ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog
-                        .setMessage(getString(R.string.application_state_closing));
+                progressDialog.setMessage(getString(R.string.application_state_closing));
                 progressDialog.setOnCancelListener(new OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
@@ -413,64 +446,131 @@ public class ContactList extends ManagedActivity implements OnChoosedListener, O
     }
 
     @Override
-    public void onContactClick(AbstractContact abstractContact) {
-        if (ACTION_ROOM_INVITE.equals(action)) {
-            action = null;
-            Intent intent = getIntent();
-            String account = getRoomInviteAccount(intent);
-            String user = getRoomInviteUser(intent);
-            if (account != null && user != null)
-                try {
-                    MUCManager.getInstance().invite(account, user,
-                            abstractContact.getUser());
-                } catch (NetworkException e) {
-                    Application.getInstance().onError(e);
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.common_status_mode:
+                startActivity(StatusEditor.createIntent(this));
+                break;
+            case R.id.common_status_text:
+            case android.R.id.title:
+                getContactListFragment().scrollUp();
+                break;
+            default:
+                String account = accountToggleAdapter.getItemForView(view);
+                if (account == null) // Check for tap on account in the title
+                    break;
+                if (!SettingsManager.contactsShowAccounts()) {
+                    if (AccountManager.getInstance().getAccounts().size() < 2) {
+                        getContactListFragment().scrollUp();
+                    } else {
+                        getContactListFragment().setSelectedAccount(account);
+                        rebuildAccountToggle();
+                    }
+                } else {
+                    getContactListFragment().scrollTo(account);
                 }
-            finish();
-        } else if (Intent.ACTION_SEND.equals(action)) {
-            action = null;
-            startActivity(ChatViewer.createSendIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser(),
-                    sendText));
-            finish();
-        } else if (Intent.ACTION_CREATE_SHORTCUT.equals(action)) {
-            Intent intent = new Intent();
-            intent.putExtra(
-                    Intent.EXTRA_SHORTCUT_INTENT,
-                    ChatViewer.createClearTopIntent(this,
-                            abstractContact.getAccount(),
-                            abstractContact.getUser()));
-            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME,
-                    abstractContact.getName());
-            Bitmap bitmap;
-            if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(),
-                    abstractContact.getUser()))
-                bitmap = AvatarManager.getInstance().getRoomBitmap(
-                        abstractContact.getUser());
-            else
-                bitmap = AvatarManager.getInstance().getUserBitmap(
-                        abstractContact.getUser());
-            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, AvatarManager
-                    .getInstance().createShortcutBitmap(bitmap));
-            setResult(RESULT_OK, intent);
-            finish();
-        } else {
-            startActivity(ChatViewer.createIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser()));
+                break;
         }
     }
 
     @Override
-    public void onChoosed(String account, String user, String text) {
+    public boolean onLongClick(View view) {
+        switch (view.getId()) {
+            case R.id.common_status_text:
+                startActivity(StatusEditor.createIntent(this));
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onContactClick(AbstractContact abstractContact) {
+        switch (action) {
+            case ACTION_ROOM_INVITE: {
+                action = null;
+                Intent intent = getIntent();
+                String account = getRoomInviteAccount(intent);
+                String user = getRoomInviteUser(intent);
+                if (account != null && user != null) {
+                    try {
+                        MUCManager.getInstance().invite(account, user, abstractContact.getUser());
+                    } catch (NetworkException e) {
+                        Application.getInstance().onError(e);
+                    }
+                }
+                finish();
+                break;
+            }
+            case Intent.ACTION_SEND:
+                action = null;
+                startActivity(ChatViewer.createSendIntent(this,
+                        abstractContact.getAccount(), abstractContact.getUser(), sendText));
+                finish();
+                break;
+            case Intent.ACTION_CREATE_SHORTCUT: {
+                createShortcut(abstractContact);
+                finish();
+                break;
+            }
+            default:
+                startActivity(ChatViewer.createIntent(this,
+                        abstractContact.getAccount(), abstractContact.getUser()));
+                break;
+        }
+    }
+
+    private void createShortcut(AbstractContact abstractContact) {
+        Intent intent = new Intent();
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatViewer.createClearTopIntent(this,
+                abstractContact.getAccount(), abstractContact.getUser()));
+        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, abstractContact.getName());
+        Bitmap bitmap;
+        if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(),
+                abstractContact.getUser())) {
+            bitmap = AvatarManager.getInstance().getRoomBitmap(abstractContact.getUser());
+        } else {
+            bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser());
+        }
+        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
+                    AvatarManager.getInstance().createShortcutBitmap(bitmap));
+        setResult(RESULT_OK, intent);
+    }
+
+    @Override
+    public void onAccountsChanged(Collection<String> accounts) {
+        accountToggleAdapter.onChange();
+    }
+
+    @Override
+    public void onChoose(String account, String user, String text) {
         openChat(new BaseEntity(account, user), text);
+    }
+
+    private void rebuildAccountToggle() {
+        updateStatusBar();
+        accountToggleAdapter.rebuild();
+        if (SettingsManager.contactsShowPanel() && accountToggleAdapter.getCount() > 0) {
+            titleView.setVisibility(View.VISIBLE);
+        } else {
+            titleView.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateStatusBar() {
+        String statusText = SettingsManager.statusText();
+        StatusMode statusMode = SettingsManager.statusMode();
+        if ("".equals(statusText)) {
+            statusText = getString(statusMode.getStringID());
+        }
+        ((TextView) findViewById(R.id.common_status_text)).setText(statusText);
+        ((ImageView) findViewById(R.id.common_status_mode)).setImageLevel(statusMode.getStatusLevel());
     }
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactList.class);
         intent.setAction("android.intent.action.MAIN");
         intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
