@@ -321,13 +321,14 @@ public class ContactList extends ManagedActivity implements
         return true;
     }
 
-    private void setUpSearchView(Menu menu) {
+    private void setUpSearchView(final Menu menu) {
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setQueryHint("Search contact");
 
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
+                menu.findItem(R.id.action_search).collapseActionView();
                 return true;
             }
         });
