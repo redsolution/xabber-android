@@ -26,16 +26,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.data.ActivityManager;
@@ -77,7 +77,7 @@ import java.util.Collection;
  * @author alexander.ivanov
  */
 public class ContactList extends ManagedActivity implements
-        OnAccountChangedListener, View.OnClickListener, View.OnLongClickListener,
+        OnAccountChangedListener, View.OnClickListener,
         OnChoosedListener, OnContactClickListener {
 
     /**
@@ -110,7 +110,7 @@ public class ContactList extends ManagedActivity implements
     private String sendText;
 
     private SearchView searchView;
-    private View titleView;
+    private View actionBarView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,17 +126,21 @@ public class ContactList extends ManagedActivity implements
         }
 
         setContentView(R.layout.contact_list);
-        titleView = findViewById(android.R.id.title);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+
+        actionBarView = LayoutInflater.from(this).inflate(R.layout.contact_list_action_bar, null);
+        actionBarView.setOnClickListener(this);
+
+        actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
+
         accountToggleAdapter = new AccountToggleAdapter(this, this,
-                (LinearLayout) findViewById(R.id.account_list));
-
-        View commonStatusText = findViewById(R.id.common_status_text);
-        View commonStatusMode = findViewById(R.id.common_status_mode);
-
-        commonStatusText.setOnLongClickListener(this);
-        commonStatusMode.setOnClickListener(this);
-        commonStatusText.setOnClickListener(this);
-        titleView.setOnClickListener(this);
+                (LinearLayout) actionBarView.findViewById(R.id.account_list));
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -448,10 +452,6 @@ public class ContactList extends ManagedActivity implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.common_status_mode:
-                startActivity(StatusEditor.createIntent(this));
-                break;
-            case R.id.common_status_text:
             case android.R.id.title:
                 getContactListFragment().scrollUp();
                 break;
@@ -471,16 +471,6 @@ public class ContactList extends ManagedActivity implements
                 }
                 break;
         }
-    }
-
-    @Override
-    public boolean onLongClick(View view) {
-        switch (view.getId()) {
-            case R.id.common_status_text:
-                startActivity(StatusEditor.createIntent(this));
-                return true;
-        }
-        return false;
     }
 
     @Override
@@ -550,9 +540,9 @@ public class ContactList extends ManagedActivity implements
         updateStatusBar();
         accountToggleAdapter.rebuild();
         if (SettingsManager.contactsShowPanel() && accountToggleAdapter.getCount() > 0) {
-            titleView.setVisibility(View.VISIBLE);
+            actionBarView.setVisibility(View.VISIBLE);
         } else {
-            titleView.setVisibility(View.GONE);
+            actionBarView.setVisibility(View.GONE);
         }
     }
 
@@ -562,8 +552,6 @@ public class ContactList extends ManagedActivity implements
         if ("".equals(statusText)) {
             statusText = getString(statusMode.getStringID());
         }
-        ((TextView) findViewById(R.id.common_status_text)).setText(statusText);
-        ((ImageView) findViewById(R.id.common_status_mode)).setImageLevel(statusMode.getStatusLevel());
     }
 
     public static Intent createPersistentIntent(Context context) {

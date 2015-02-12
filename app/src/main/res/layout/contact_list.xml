@@ -18,69 +18,6 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@android:id/title"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/title_height"
-        android:layout_alignParentTop="true"
-        >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="@dimen/contact_list_status_mode_width"
-            android:layout_marginEnd="@dimen/contact_list_status_mode_width"
-            android:orientation="horizontal" >
-
-            <HorizontalScrollView
-                android:id="@+id/account_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="72dip"
-                android:layout_marginEnd="72dip"
-                >
-
-                <LinearLayout
-                    android:id="@+id/account_list"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-                </LinearLayout>
-
-            </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/common_status_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:layout_marginLeft="-72dip"
-                android:layout_marginStart="-72dip"
-                android:gravity="start|center_vertical"
-                android:padding="2dip"
-                android:singleLine="true"
-                android:text="online"
-                android:textColor="?android:attr/textColorPrimary" />
-
-        </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/common_status_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/btn_status_mode"
-            android:paddingLeft="@dimen/active_chat_padding_right"
-            android:paddingRight="@dimen/active_chat_padding_right"
-            android:src="@drawable/ic_status" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
