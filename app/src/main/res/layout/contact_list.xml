@@ -27,16 +27,21 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginRight="@dimen/contact_list_status_mode_width"
+            android:layout_marginEnd="@dimen/contact_list_status_mode_width"
             android:orientation="horizontal" >
 
             <HorizontalScrollView
                 android:id="@+id/account_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="72dip" >
+                android:layout_marginRight="72dip"
+                android:layout_marginEnd="72dip"
+                >
 
                 <LinearLayout
                     android:id="@+id/account_list"
@@ -51,9 +56,10 @@
                 android:id="@+id/common_status_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:layout_marginLeft="-72dip"
-                android:gravity="left|center_vertical"
+                android:layout_marginStart="-72dip"
+                android:gravity="start|center_vertical"
                 android:padding="2dip"
                 android:singleLine="true"
                 android:text="online"
@@ -66,6 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:background="@drawable/btn_status_mode"
             android:paddingLeft="@dimen/active_chat_padding_right"
             android:paddingRight="@dimen/active_chat_padding_right"
