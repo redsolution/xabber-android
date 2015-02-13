@@ -14,11 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeMap;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -37,6 +32,11 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.GroupStateProvider;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.TreeMap;
 
 /**
  * Provide grouping implementation for the list of contacts.
@@ -62,7 +62,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     static final int TYPE_GROUP = 1;
 
     static {
-        Collection<Group> groups = new ArrayList<Group>(1);
+        Collection<Group> groups = new ArrayList<>(1);
         groups.add(new Group() {
             @Override
             public String getName() {
@@ -95,26 +95,13 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     public GroupedContactAdapter(Activity activity, ListView listView,
                                  Inflater inflater, StateProvider groupStateProvider) {
         super(activity, listView, inflater);
-        layoutInflater = (LayoutInflater) activity
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.groupStateProvider = groupStateProvider;
         TypedArray typedArray;
-        typedArray = activity.getTheme().obtainStyledAttributes(
-                R.styleable.ContactList);
-        expanderAccountTextColor = typedArray
-                .getColorStateList(R.styleable.ContactList_expanderAccountColor);
-        expanderGroupTextColor = typedArray
-                .getColorStateList(R.styleable.ContactList_expanderGroupColor);
+        typedArray = activity.getTheme().obtainStyledAttributes(R.styleable.ContactList);
+        expanderAccountTextColor = typedArray.getColorStateList(R.styleable.ContactList_expanderAccountColor);
+        expanderGroupTextColor = typedArray.getColorStateList(R.styleable.ContactList_expanderGroupColor);
         typedArray.recycle();
-    }
-
-    /**
-     * Returns group state provider.
-     *
-     * @return
-     */
-    public StateProvider getGroupStateProvider() {
-        return groupStateProvider;
     }
 
     @Override
@@ -125,12 +112,13 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     @Override
     public int getItemViewType(int position) {
         Object object = getItem(position);
-        if (object instanceof AbstractContact)
+        if (object instanceof AbstractContact) {
             return TYPE_CONTACT;
-        else if (object instanceof GroupConfiguration)
+        } else if (object instanceof GroupConfiguration) {
             return TYPE_GROUP;
-        else
+        } else {
             throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -141,15 +129,12 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             final View view;
             final GroupViewHolder viewHolder;
             if (convertView == null) {
-                view = layoutInflater.inflate(R.layout.base_group_item, parent,
-                        false);
-                TypedArray typedArray = activity
-                        .obtainStyledAttributes(R.styleable.ContactList);
-                view.setBackgroundDrawable(typedArray
-                        .getDrawable(R.styleable.ContactList_expanderBackground));
-                ((ImageView) view.findViewById(R.id.indicator))
-                        .setImageDrawable(typedArray
-                                .getDrawable(R.styleable.ContactList_expanderIndicator));
+                view = layoutInflater.inflate(R.layout.base_group_item, parent, false);
+                TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
+                view.setBackgroundDrawable(
+                        typedArray.getDrawable(R.styleable.ContactList_expanderBackground));
+                ((ImageView) view.findViewById(R.id.indicator)).setImageDrawable(
+                        typedArray.getDrawable(R.styleable.ContactList_expanderIndicator));
                 typedArray.recycle();
 
                 viewHolder = new GroupViewHolder(view);
@@ -161,25 +146,23 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             final GroupConfiguration configuration = (GroupConfiguration) getItem(position);
             final int level;
             if (configuration instanceof AccountConfiguration) {
-                level = AccountManager.getInstance().getColorLevel(
-                        configuration.getAccount());
+                level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
                 viewHolder.name.setTextColor(expanderAccountTextColor);
             } else {
                 level = AccountManager.getInstance().getColorCount();
                 viewHolder.name.setTextColor(expanderGroupTextColor);
             }
             view.getBackground().setLevel(level);
-            viewHolder.name.getBackground().setLevel(
-                    configuration.getShowOfflineMode().ordinal());
+            viewHolder.name.getBackground().setLevel(configuration.getShowOfflineMode().ordinal());
             final String name = GroupManager.getInstance().getGroupName(
                     configuration.getAccount(), configuration.getUser());
             viewHolder.name.setText(name + " (" + configuration.getOnline()
                     + "/" + configuration.getTotal() + ")");
-            viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1
-                    : 0);
+            viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
             return view;
-        } else
+        } else {
             throw new IllegalStateException();
+        }
     }
 
     /**
@@ -191,10 +174,10 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      */
     protected GroupConfiguration getGroupConfiguration(
             AccountConfiguration accountConfiguration, String name) {
-        GroupConfiguration groupConfiguration = accountConfiguration
-                .getGroupConfiguration(name);
-        if (groupConfiguration != null)
+        GroupConfiguration groupConfiguration = accountConfiguration.getGroupConfiguration(name);
+        if (groupConfiguration != null) {
             return groupConfiguration;
+        }
         groupConfiguration = new GroupConfiguration(
                 accountConfiguration.getAccount(), name, groupStateProvider);
         accountConfiguration.addGroupConfiguration(groupConfiguration);
@@ -211,10 +194,10 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     protected GroupConfiguration getGroupConfiguration(
             TreeMap<String, GroupConfiguration> groups, String name) {
         GroupConfiguration groupConfiguration = groups.get(name);
-        if (groupConfiguration != null)
+        if (groupConfiguration != null) {
             return groupConfiguration;
-        groupConfiguration = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                name, groupStateProvider);
+        }
+        groupConfiguration = new GroupConfiguration(GroupManager.NO_ACCOUNT, name, groupStateProvider);
         groups.put(name, groupConfiguration);
         return groupConfiguration;
     }
@@ -231,38 +214,39 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * @param showAccounts
      * @param showGroups
      */
-    protected void addContact(AbstractContact abstractContact, String group,
-                              boolean online, TreeMap<String, AccountConfiguration> accounts,
-                              TreeMap<String, GroupConfiguration> groups,
-                              ArrayList<AbstractContact> contacts, boolean showAccounts,
-                              boolean showGroups) {
+    protected void addContact(AbstractContact abstractContact, String group, boolean online,
+        TreeMap<String, AccountConfiguration> accounts, TreeMap<String, GroupConfiguration> groups,
+        ArrayList<AbstractContact> contacts,   boolean showAccounts, boolean showGroups) {
         if (showAccounts) {
             final String account = abstractContact.getAccount();
             final AccountConfiguration accountConfiguration;
             accountConfiguration = accounts.get(account);
-            if (accountConfiguration == null)
+            if (accountConfiguration == null) {
                 return;
+            }
             if (showGroups) {
-                GroupConfiguration groupConfiguration = getGroupConfiguration(
-                        accountConfiguration, group);
+                GroupConfiguration groupConfiguration
+                        = getGroupConfiguration(accountConfiguration, group);
                 if (accountConfiguration.isExpanded()) {
                     groupConfiguration.setNotEmpty();
-                    if (groupConfiguration.isExpanded())
+                    if (groupConfiguration.isExpanded()) {
                         groupConfiguration.addAbstractContact(abstractContact);
+                    }
                 }
                 groupConfiguration.increment(online);
             } else {
-                if (accountConfiguration.isExpanded())
+                if (accountConfiguration.isExpanded()) {
                     accountConfiguration.addAbstractContact(abstractContact);
+                }
             }
             accountConfiguration.increment(online);
         } else {
             if (showGroups) {
-                GroupConfiguration groupConfiguration = getGroupConfiguration(
-                        groups, group);
+                GroupConfiguration groupConfiguration = getGroupConfiguration(groups, group);
                 groupConfiguration.setNotEmpty();
-                if (groupConfiguration.isExpanded())
+                if (groupConfiguration.isExpanded()) {
                     groupConfiguration.addAbstractContact(abstractContact);
+                }
                 groupConfiguration.increment(online);
             } else {
                 contacts.add(abstractContact);
@@ -292,13 +276,14 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         if (showAccounts) {
             final AccountConfiguration accountConfiguration;
             accountConfiguration = accounts.get(abstractContact.getAccount());
-            if (accountConfiguration == null)
-                return hasVisible;
+            if (accountConfiguration == null) {
+                return false;
+            }
             if (showGroups) {
-                Collection<? extends Group> abstractGroups = abstractContact
-                        .getGroups();
-                if (abstractGroups.size() == 0)
+                Collection<? extends Group> abstractGroups = abstractContact.getGroups();
+                if (abstractGroups.size() == 0) {
                     abstractGroups = NO_GROUP_LIST;
+                }
                 for (Group abstractGroup : abstractGroups) {
                     GroupConfiguration groupConfiguration = getGroupConfiguration(
                             accountConfiguration, abstractGroup.getName());
@@ -316,41 +301,39 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                         hasVisible = true;
                         if (accountConfiguration.isExpanded()) {
                             groupConfiguration.setNotEmpty();
-                            if (groupConfiguration.isExpanded())
-                                groupConfiguration
-                                        .addAbstractContact(abstractContact);
+                            if (groupConfiguration.isExpanded()) {
+                                groupConfiguration.addAbstractContact(abstractContact);
+                            }
                         }
                     }
                     groupConfiguration.increment(online);
                 }
             } else {
-                if (online
-                        || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
+                if (online || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                         || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                     hasVisible = true;
-                    if (accountConfiguration.isExpanded())
-                        accountConfiguration
-                                .addAbstractContact(abstractContact);
+                    if (accountConfiguration.isExpanded()) {
+                        accountConfiguration.addAbstractContact(abstractContact);
+                    }
                 }
             }
             accountConfiguration.increment(online);
         } else {
             if (showGroups) {
-                Collection<? extends Group> abstractGroups = abstractContact
-                        .getGroups();
-                if (abstractGroups.size() == 0)
+                Collection<? extends Group> abstractGroups = abstractContact.getGroups();
+                if (abstractGroups.size() == 0) {
                     abstractGroups = NO_GROUP_LIST;
+                }
                 for (Group abstractGroup : abstractGroups) {
-                    GroupConfiguration groupConfiguration = getGroupConfiguration(
-                            groups, abstractGroup.getName());
-                    if (online
-                            || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
+                    GroupConfiguration groupConfiguration
+                            = getGroupConfiguration(groups, abstractGroup.getName());
+                    if (online || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                             || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                         groupConfiguration.setNotEmpty();
                         hasVisible = true;
-                        if (groupConfiguration.isExpanded())
-                            groupConfiguration
-                                    .addAbstractContact(abstractContact);
+                        if (groupConfiguration.isExpanded()) {
+                            groupConfiguration.addAbstractContact(abstractContact);
+                        }
                     }
                     groupConfiguration.increment(online);
                 }

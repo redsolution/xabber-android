@@ -14,19 +14,19 @@
 -->
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@drawable/title_account_background_1_light"
+        android:drawable="@color/account_1"
         android:minLevel="0"
         android:maxLevel="0" />
     <item
-        android:drawable="@drawable/title_account_background_2_light"
+        android:drawable="@color/account_2"
         android:minLevel="1"
         android:maxLevel="1" />
     <item
-        android:drawable="@drawable/title_account_background_3_light"
+        android:drawable="@color/account_3"
         android:minLevel="2"
         android:maxLevel="2" />
     <item
-        android:drawable="@drawable/title_account_background_4_light"
+        android:drawable="@color/account_4"
         android:minLevel="3"
         android:maxLevel="3" />
 </level-list>

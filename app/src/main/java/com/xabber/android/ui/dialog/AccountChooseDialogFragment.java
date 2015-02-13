@@ -43,7 +43,7 @@ public class AccountChooseDialogFragment extends AbstractDialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 String account = (String) adapter.getItem(which);
                 OnChoosedListener listener = (OnChoosedListener) getActivity();
-                listener.onChoosed(account, user, text);
+                listener.onChoose(account, user, text);
             }
         });
         return builder;
@@ -73,7 +73,7 @@ public class AccountChooseDialogFragment extends AbstractDialogFragment {
 
     public interface OnChoosedListener {
 
-        void onChoosed(String account, String user, String text);
+        void onChoose(String account, String user, String text);
 
     }
 

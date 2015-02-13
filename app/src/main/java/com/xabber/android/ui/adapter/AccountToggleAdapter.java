@@ -14,9 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +21,13 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Adapter for the list of accounts in the title of contact list.
@@ -60,7 +59,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
         this.activity = activity;
         this.onClickListener = onClickListener;
         this.linearLayout = linearLayout;
-        accounts = new ArrayList<String>();
+        accounts = new ArrayList<>();
     }
 
     /**
@@ -76,48 +75,36 @@ public class AccountToggleAdapter implements UpdatableAdapter {
         final LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         while (linearLayout.getChildCount() < size) {
-            final View view = inflater.inflate(R.layout.account_toggler_item,
-                    linearLayout, false);
+            final View view = inflater.inflate(R.layout.account_toggler_item, linearLayout, false);
             linearLayout.addView(view);
-            final AccountViewHolder accountViewHolder = new AccountViewHolder(
-                    view);
+            final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
             view.setTag(accountViewHolder);
             activity.registerForContextMenu(accountViewHolder.statusMode);
             accountViewHolder.statusMode.setOnClickListener(onClickListener);
         }
-        while (linearLayout.getChildCount() > size)
+        while (linearLayout.getChildCount() > size) {
             linearLayout.removeViewAt(size);
+        }
         onChange();
     }
 
     @Override
     public void onChange() {
-        boolean contactsShowAccounts = SettingsManager.contactsShowAccounts();
         String selected = AccountManager.getInstance().getSelectedAccount();
         for (int index = 0; index < accounts.size(); index++) {
             final View view = linearLayout.getChildAt(index);
-            final AccountViewHolder accountViewHolder = (AccountViewHolder) view
-                    .getTag();
+            final AccountViewHolder accountViewHolder = (AccountViewHolder) view.getTag();
             final String account = accounts.get(index);
-            StatusMode statusMode = AccountManager.getInstance()
-                    .getAccount(account).getDisplayStatusMode();
-            int colorLevel = AccountManager.getInstance()
-                    .getColorLevel(account);
+            StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
+            int colorLevel = AccountManager.getInstance().getColorLevel(account);
             view.getBackground().setLevel(colorLevel);
-            if (contactsShowAccounts)
-                accountViewHolder.statusMode
-                        .setBackgroundResource(R.drawable.account_border);
-            else
-                accountViewHolder.statusMode
-                        .setBackgroundResource(R.drawable.account_border_persistent);
-            if (selected == null || account.equals(selected))
+            if (selected == null || account.equals(selected)) {
                 accountViewHolder.disabled.setVisibility(View.GONE);
-            else
+            } else {
                 accountViewHolder.disabled.setVisibility(View.VISIBLE);
-            accountViewHolder.statusMode.getBackground().setLevel(colorLevel);
+            }
             accountViewHolder.statusMode.setImageLevel(statusMode.ordinal());
-            accountViewHolder.avatar.setImageDrawable(AvatarManager
-                    .getInstance().getAccountAvatar(account));
+            accountViewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
         }
     }
 
@@ -137,11 +124,14 @@ public class AccountToggleAdapter implements UpdatableAdapter {
      * @return The data for the specified view.
      */
     public String getItemForView(View view) {
-        if (view.getId() == R.id.status_mode)
+        if (view.getId() == R.id.status_mode) {
             view = (View) view.getParent();
-        for (int index = 0; index < linearLayout.getChildCount(); index++)
-            if (view == linearLayout.getChildAt(index))
+        }
+        for (int index = 0; index < linearLayout.getChildCount(); index++) {
+            if (view == linearLayout.getChildAt(index)) {
                 return accounts.get(index);
+            }
+        }
         return null;
     }
 

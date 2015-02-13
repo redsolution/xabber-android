@@ -30,7 +30,6 @@
         android:id="@+id/status_mode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/account_border"
         android:src="@drawable/ic_status_account"
         android:clickable="true"
         />
@@ -38,6 +37,6 @@
         android:id="@+id/disabled"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/account_border_disabled"
+        android:src="@color/account_disabled"
         />
 </RelativeLayout>

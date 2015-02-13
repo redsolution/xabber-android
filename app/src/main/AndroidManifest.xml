@@ -40,7 +40,7 @@
         android:theme="@style/Theme"
         android:allowBackup="true">
         <activity
-            android:label="@string/application_name"
+            android:label="@string/production_title"
             android:name="com.xabber.android.ui.ContactList"
             android:launchMode="singleTop"
             >
@@ -220,7 +220,6 @@
         <activity
             android:label="@string/contact_viewer"
             android:name="com.xabber.android.ui.preferences.ContactViewer"
-            android:icon="@drawable/ic_information"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -387,10 +386,6 @@
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter"
-                />
-            <meta-data
-                android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/contacts_structure"
                 />
         </service>
         <service

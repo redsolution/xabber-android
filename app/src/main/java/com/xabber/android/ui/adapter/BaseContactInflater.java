@@ -59,14 +59,11 @@ public abstract class BaseContactInflater {
 
     public BaseContactInflater(Activity activity) {
         this.activity = activity;
-        layoutInflater = (LayoutInflater) activity
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        avatarInflaterHelper = AbstractAvatarInflaterHelper
-                .createAbstractContactInflaterHelper();
+        layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
 
-        Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(),
-                R.drawable.shadow);
-        shadowDrawable = new BitmapDrawable(bitmap);
+        Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.shadow);
+        shadowDrawable = new BitmapDrawable(activity.getResources(), bitmap);
         shadowDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
     }
 
@@ -115,19 +112,18 @@ public abstract class BaseContactInflater {
      */
     public void getView(View view, AbstractContact abstractContact) {
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
-        if (abstractContact.isConnected())
+        if (abstractContact.isConnected()) {
             viewHolder.shadow.setVisibility(View.GONE);
-        else
+        } else {
             viewHolder.shadow.setVisibility(View.VISIBLE);
+        }
 
         viewHolder.color.setImageLevel(abstractContact.getColorLevel());
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatar.setVisibility(View.VISIBLE);
-            viewHolder.avatar.setImageDrawable(abstractContact
-                    .getAvatarForContactList());
-            avatarInflaterHelper.updateAvatar(viewHolder.avatar,
-                    abstractContact);
+            viewHolder.avatar.setImageDrawable(abstractContact.getAvatarForContactList());
+            avatarInflaterHelper.updateAvatar(viewHolder.avatar, abstractContact);
             ((RelativeLayout.LayoutParams) viewHolder.panel.getLayoutParams())
                     .addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
         } else {
@@ -140,14 +136,12 @@ public abstract class BaseContactInflater {
         final String statusText = getStatusText(abstractContact);
         if ("".equals(statusText)) {
             viewHolder.name.getLayoutParams().height = activity.getResources()
-                    .getDimensionPixelSize(
-                            R.dimen.contact_name_height_hide_status);
+                    .getDimensionPixelSize(R.dimen.contact_name_height_hide_status);
             viewHolder.name.setGravity(Gravity.CENTER_VERTICAL);
             viewHolder.status.setVisibility(View.GONE);
         } else {
             viewHolder.name.getLayoutParams().height = activity.getResources()
-                    .getDimensionPixelSize(
-                            R.dimen.contact_name_height_show_status);
+                    .getDimensionPixelSize(R.dimen.contact_name_height_show_status);
             viewHolder.name.setGravity(Gravity.BOTTOM);
             viewHolder.status.setText(statusText);
             viewHolder.status.setVisibility(View.VISIBLE);

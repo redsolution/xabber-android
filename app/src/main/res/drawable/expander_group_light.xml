@@ -15,14 +15,5 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:state_pressed="true"
-        android:drawable="@drawable/expander_group_light_pressed" />
-    <item
-        android:state_selected="true"
-        android:drawable="@drawable/expander_group_light_focused" />
-    <item
-        android:state_focused="true"
-        android:drawable="@drawable/expander_group_light_focused" />
-    <item
-        android:drawable="@drawable/expander_group_light_normal" />
+        android:drawable="@color/material_blue_grey_900" />
 </selector>

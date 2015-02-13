@@ -43,9 +43,8 @@ import com.xabber.androiddev.R;
 
 import java.util.Collection;
 
-public class ContactListFragment extends Fragment implements
-        OnAccountChangedListener, OnContactChangedListener,
-        OnChatChangedListener, OnItemClickListener,
+public class ContactListFragment extends Fragment implements OnAccountChangedListener,
+        OnContactChangedListener, OnChatChangedListener, OnItemClickListener,
         OnContactListChangedListener {
 
     private ContactListAdapter adapter;
@@ -85,8 +84,7 @@ public class ContactListFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contact_list_fragment, container,
-                false);
+        View view = inflater.inflate(R.layout.contact_list_fragment, container, false);
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
         listView.setItemsCanFocus(true);
@@ -98,20 +96,16 @@ public class ContactListFragment extends Fragment implements
         disconnectedView = infoView.findViewById(R.id.disconnected);
         textView = (TextView) infoView.findViewById(R.id.text);
         buttonView = (Button) infoView.findViewById(R.id.button);
-        animation = AnimationUtils.loadAnimation(getActivity(),
-                R.anim.connection);
+        animation = AnimationUtils.loadAnimation(getActivity(), R.anim.connection);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class,
-                this);
-        Application.getInstance().addUIListener(OnChatChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         adapter.onChange();
     }
 
@@ -122,38 +116,35 @@ public class ContactListFragment extends Fragment implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view,
-                                    ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        BaseEntity baseEntity = (BaseEntity) listView
-                .getItemAtPosition(info.position);
+        BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(info.position);
         if (baseEntity instanceof AbstractContact) {
-            ContextMenuHelper.createContactContextMenu(getActivity(), adapter,
-                    (AbstractContact) baseEntity, menu);
+            ContextMenuHelper.createContactContextMenu(
+                    getActivity(), adapter, (AbstractContact) baseEntity, menu);
         } else if (baseEntity instanceof AccountConfiguration) {
-            ContextMenuHelper.createAccountContextMenu(getActivity(), adapter,
-                    baseEntity.getAccount(), menu);
+            ContextMenuHelper.createAccountContextMenu(
+                    getActivity(), adapter, baseEntity.getAccount(), menu);
         } else if (baseEntity instanceof GroupConfiguration) {
             ContextMenuHelper.createGroupContextMenu(getActivity(), adapter,
                     baseEntity.getAccount(), baseEntity.getUser(), menu);
-        } else
+        } else {
             throw new IllegalStateException();
+        }
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
-                            long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Object object = parent.getAdapter().getItem(position);
         if (object instanceof AbstractContact) {
-            ((OnContactClickListener) getActivity())
-                    .onContactClick((AbstractContact) object);
+            ((OnContactClickListener) getActivity()).onContactClick((AbstractContact) object);
         } else if (object instanceof GroupConfiguration) {
             GroupConfiguration groupConfiguration = (GroupConfiguration) object;
-            adapter.setExpanded(groupConfiguration.getAccount(),
-                    groupConfiguration.getUser(),
+            adapter.setExpanded(groupConfiguration.getAccount(), groupConfiguration.getUser(),
                     !groupConfiguration.isExpanded());
-        } else
+        } else {
             throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -168,14 +159,14 @@ public class ContactListFragment extends Fragment implements
 
     @Override
     public void onChatChanged(String account, String user, boolean incoming) {
-        if (incoming)
+        if (incoming) {
             adapter.refreshRequest();
+        }
     }
 
     @Override
-    public void onContactListChanged(CommonState commonState,
-                                     boolean hasContacts, boolean hasVisibleContacts,
-                                     boolean isFilterEnabled) {
+    public void onContactListChanged(CommonState commonState, boolean hasContacts,
+                                     boolean hasVisibleContacts, boolean isFilterEnabled) {
         if (hasVisibleContacts) {
             infoView.setVisibility(View.GONE);
             disconnectedView.clearAnimation();
@@ -187,13 +178,13 @@ public class ContactListFragment extends Fragment implements
         final ContactListState state;
         final OnClickListener listener;
         if (isFilterEnabled) {
-            if (commonState == CommonState.online)
+            if (commonState == CommonState.online) {
                 state = ContactListState.online;
-            else if (commonState == CommonState.roster
-                    || commonState == CommonState.connecting)
+            } else if (commonState == CommonState.roster || commonState == CommonState.connecting) {
                 state = ContactListState.connecting;
-            else
+            } else {
                 state = ContactListState.offline;
+            }
             text = R.string.application_state_no_online;
             button = 0;
             listener = null;
@@ -202,25 +193,21 @@ public class ContactListFragment extends Fragment implements
             text = R.string.application_state_no_online;
             button = R.string.application_action_no_online;
             listener = new OnClickListener() {
-
                 @Override
                 public void onClick(View view) {
                     SettingsManager.setContactsShowOffline(true);
                     adapter.onChange();
                 }
-
             };
         } else if (commonState == CommonState.online) {
             state = ContactListState.online;
             text = R.string.application_state_no_contacts;
             button = R.string.application_action_no_contacts;
             listener = new OnClickListener() {
-
                 @Override
                 public void onClick(View view) {
                     startActivity(ContactAdd.createIntent(getActivity()));
                 }
-
             };
         } else if (commonState == CommonState.roster) {
             state = ContactListState.connecting;
@@ -237,49 +224,41 @@ public class ContactListFragment extends Fragment implements
             text = R.string.application_state_waiting;
             button = R.string.application_action_waiting;
             listener = new OnClickListener() {
-
                 @Override
                 public void onClick(View view) {
                     ConnectionManager.getInstance().updateConnections(true);
                 }
-
             };
         } else if (commonState == CommonState.offline) {
             state = ContactListState.offline;
             text = R.string.application_state_offline;
             button = R.string.application_action_offline;
             listener = new OnClickListener() {
-
                 @Override
                 public void onClick(View view) {
                     AccountManager.getInstance().setStatus(
                             StatusMode.available, null);
                 }
-
             };
         } else if (commonState == CommonState.disabled) {
             state = ContactListState.offline;
             text = R.string.application_state_disabled;
             button = R.string.application_action_disabled;
             listener = new OnClickListener() {
-
                 @Override
                 public void onClick(View view) {
                     startActivity(AccountList.createIntent(getActivity()));
                 }
-
             };
         } else if (commonState == CommonState.empty) {
             state = ContactListState.offline;
             text = R.string.application_state_empty;
             button = R.string.application_action_empty;
             listener = new OnClickListener() {
-
                 @Override
                 public void onClick(View view) {
                     startActivity(AccountAdd.createIntent(getActivity()));
                 }
-
             };
         } else {
             throw new IllegalStateException();
@@ -291,9 +270,10 @@ public class ContactListFragment extends Fragment implements
         } else if (state == ContactListState.connecting) {
             connectedView.setVisibility(View.VISIBLE);
             disconnectedView.setVisibility(View.VISIBLE);
-            if (disconnectedView.getAnimation() == null)
+            if (disconnectedView.getAnimation() == null) {
                 disconnectedView.startAnimation(animation);
-        } else if (state == ContactListState.online) {
+            }
+        } else {
             connectedView.setVisibility(View.VISIBLE);
             disconnectedView.setVisibility(View.INVISIBLE);
             disconnectedView.clearAnimation();
@@ -312,12 +292,9 @@ public class ContactListFragment extends Fragment implements
      * Force stop contact list updates before pause or application close.
      */
     void unregisterListeners() {
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(
-                OnContactChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnChatChangedListener.class,
-                this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
         adapter.removeRefreshRequests();
     }
 
@@ -337,10 +314,8 @@ public class ContactListFragment extends Fragment implements
     void scrollTo(String account) {
         long count = listView.getCount();
         for (int position = 0; position < (int) count; position++) {
-            BaseEntity baseEntity = (BaseEntity) listView
-                    .getItemAtPosition(position);
-            if (baseEntity != null
-                    && baseEntity instanceof AccountConfiguration
+            BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(position);
+            if (baseEntity != null && baseEntity instanceof AccountConfiguration
                     && baseEntity.getAccount().equals(account)) {
                 stopMovement();
                 listView.setSelection(position);
@@ -355,10 +330,11 @@ public class ContactListFragment extends Fragment implements
      * @param account
      */
     void setSelectedAccount(String account) {
-        if (account.equals(AccountManager.getInstance().getSelectedAccount()))
+        if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
             SettingsManager.setContactsSelectedAccount("");
-        else
+        } else {
             SettingsManager.setContactsSelectedAccount(account);
+        }
         stopMovement();
         adapter.onChange();
     }
@@ -367,8 +343,9 @@ public class ContactListFragment extends Fragment implements
      * Scroll to the top of contact list.
      */
     void scrollUp() {
-        if (listView.getCount() > 0)
+        if (listView.getCount() > 0) {
             listView.setSelection(0);
+        }
         stopMovement();
     }
 
@@ -383,9 +360,7 @@ public class ContactListFragment extends Fragment implements
     }
 
     public interface OnContactClickListener {
-
         void onContactClick(AbstractContact contact);
-
     }
 
 }

@@ -14,9 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +23,9 @@ import android.widget.Filterable;
 
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.roster.AbstractContact;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Base adapter for the list of contacts.
@@ -62,18 +62,11 @@ public abstract class BaseContactAdapter<Inflater extends BaseContactInflater>
     public BaseContactAdapter(Activity activity, Inflater inflater) {
         this.activity = activity;
         this.locale = Locale.getDefault();
-        this.baseEntities = new ArrayList<BaseEntity>();
+        this.baseEntities = new ArrayList<>();
         this.inflater = inflater;
         inflater.setAdapter(this);
         contactFilter = null;
         filterString = null;
-    }
-
-    /**
-     * @return View inflater.
-     */
-    public Inflater getInflater() {
-        return inflater;
     }
 
     @Override
@@ -111,8 +104,9 @@ public abstract class BaseContactAdapter<Inflater extends BaseContactInflater>
 
     @Override
     public Filter getFilter() {
-        if (contactFilter == null)
+        if (contactFilter == null) {
             contactFilter = new ContactFilter();
+        }
         return contactFilter;
     }
 
@@ -126,10 +120,11 @@ public abstract class BaseContactAdapter<Inflater extends BaseContactInflater>
         @Override
         protected void publishResults(CharSequence constraint,
                                       FilterResults results) {
-            if (constraint == null || constraint.length() == 0)
+            if (constraint == null || constraint.length() == 0) {
                 filterString = null;
-            else
+            } else {
                 filterString = constraint.toString().toLowerCase(locale);
+            }
             onChange();
         }
 

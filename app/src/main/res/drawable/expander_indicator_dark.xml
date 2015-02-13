@@ -14,6 +14,6 @@
 -->
 
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/expander_indicator_dark_hidden" android:minLevel="0" android:maxLevel="0" />
-    <item android:drawable="@drawable/expander_indicator_dark_show" android:minLevel="1" android:maxLevel="1" />
+    <item android:drawable="@drawable/ic_arrow_drop_right_white_24dp" android:minLevel="0" android:maxLevel="0" />
+    <item android:drawable="@drawable/ic_arrow_drop_down_white_24dp" android:minLevel="1" android:maxLevel="1" />
 </level-list>

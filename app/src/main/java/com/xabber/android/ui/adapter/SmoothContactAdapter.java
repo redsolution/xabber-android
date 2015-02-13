@@ -36,8 +36,7 @@ public abstract class SmoothContactAdapter<Inflater extends BaseContactInflater>
      */
     ListView listView;
 
-    public SmoothContactAdapter(Activity activity, ListView listView,
-                                Inflater inflater) {
+    public SmoothContactAdapter(Activity activity, ListView listView, Inflater inflater) {
         super(activity, inflater);
         this.listView = listView;
     }
