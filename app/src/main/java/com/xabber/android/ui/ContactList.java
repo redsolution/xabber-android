@@ -45,7 +45,6 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -76,9 +75,8 @@ import java.util.Collection;
  *
  * @author alexander.ivanov
  */
-public class ContactList extends ManagedActivity implements
-        OnAccountChangedListener, View.OnClickListener,
-        OnChoosedListener, OnContactClickListener {
+public class ContactList extends ManagedActivity implements OnAccountChangedListener,
+        View.OnClickListener, OnChoosedListener, OnContactClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -121,6 +119,7 @@ public class ContactList extends ManagedActivity implements
             ActivityManager.getInstance().startNewTask(this);
         }
         super.onCreate(savedInstanceState);
+
         if (isFinishing()) {
             return;
         }
@@ -233,7 +232,6 @@ public class ContactList extends ManagedActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        updateStatusBar();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
@@ -281,9 +279,9 @@ public class ContactList extends ManagedActivity implements
                 }
             }
         }
+
         if (Application.getInstance().doNotify()) {
-            if (SettingsManager.bootCount() > 2
-                    && !SettingsManager.connectionStartAtBoot()
+            if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
                     && !SettingsManager.startAtBootSuggested()) {
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
             }
@@ -458,8 +456,9 @@ public class ContactList extends ManagedActivity implements
                 break;
             default:
                 String account = accountToggleAdapter.getItemForView(view);
-                if (account == null) // Check for tap on account in the title
+                if (account == null) { // Check for tap on account in the title
                     break;
+                }
                 if (!SettingsManager.contactsShowAccounts()) {
                     if (AccountManager.getInstance().getAccounts().size() < 2) {
                         getContactListFragment().scrollUp();
@@ -538,20 +537,11 @@ public class ContactList extends ManagedActivity implements
     }
 
     private void rebuildAccountToggle() {
-        updateStatusBar();
         accountToggleAdapter.rebuild();
         if (SettingsManager.contactsShowPanel() && accountToggleAdapter.getCount() > 0) {
             actionBarView.setVisibility(View.VISIBLE);
         } else {
             actionBarView.setVisibility(View.GONE);
-        }
-    }
-
-    private void updateStatusBar() {
-        String statusText = SettingsManager.statusText();
-        StatusMode statusMode = SettingsManager.statusMode();
-        if ("".equals(statusText)) {
-            statusText = getString(statusMode.getStringID());
         }
     }
 
@@ -567,8 +557,7 @@ public class ContactList extends ManagedActivity implements
         return new Intent(context, ContactList.class);
     }
 
-    public static Intent createRoomInviteIntent(Context context,
-                                                String account, String room) {
+    public static Intent createRoomInviteIntent(Context context, String account, String room) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
                 .setAccount(account).setUser(room).build();
         intent.setAction(ACTION_ROOM_INVITE);
