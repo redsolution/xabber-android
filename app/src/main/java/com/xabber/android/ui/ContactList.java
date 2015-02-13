@@ -539,9 +539,11 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     private void rebuildAccountToggle() {
         accountToggleAdapter.rebuild();
         if (SettingsManager.contactsShowPanel() && accountToggleAdapter.getCount() > 0) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
             actionBarView.setVisibility(View.VISIBLE);
         } else {
             actionBarView.setVisibility(View.GONE);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
         }
     }
 
