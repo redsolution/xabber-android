@@ -40,7 +40,7 @@
         android:theme="@style/Theme"
         android:allowBackup="true">
         <activity
-            android:label="@string/application_name"
+            android:label="@string/production_title"
             android:name="com.xabber.android.ui.ContactList"
             android:launchMode="singleTop"
             >
