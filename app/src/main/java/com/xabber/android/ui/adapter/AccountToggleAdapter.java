@@ -21,7 +21,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -91,7 +90,6 @@ public class AccountToggleAdapter implements UpdatableAdapter {
 
     @Override
     public void onChange() {
-        boolean contactsShowAccounts = SettingsManager.contactsShowAccounts();
         String selected = AccountManager.getInstance().getSelectedAccount();
         for (int index = 0; index < accounts.size(); index++) {
             final View view = linearLayout.getChildAt(index);
@@ -100,17 +98,11 @@ public class AccountToggleAdapter implements UpdatableAdapter {
             StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
             int colorLevel = AccountManager.getInstance().getColorLevel(account);
             view.getBackground().setLevel(colorLevel);
-            if (contactsShowAccounts) {
-                accountViewHolder.statusMode.setBackgroundResource(R.drawable.account_border);
-            } else {
-                accountViewHolder.statusMode.setBackgroundResource(R.drawable.account_border_persistent);
-            }
             if (selected == null || account.equals(selected)) {
                 accountViewHolder.disabled.setVisibility(View.GONE);
             } else {
                 accountViewHolder.disabled.setVisibility(View.VISIBLE);
             }
-            accountViewHolder.statusMode.getBackground().setLevel(colorLevel);
             accountViewHolder.statusMode.setImageLevel(statusMode.ordinal());
             accountViewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
         }

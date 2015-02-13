@@ -15,4 +15,12 @@
 <resources>
     <color name="bright_foreground_dark">#ffffffff</color>
     <color name="bright_foreground_light">#ff000000</color>
+
+    <color name="account_1" >#FFCCFF90</color>
+    <color name="account_2" >#FFFFE57F</color>
+    <color name="account_3" >#FFFF8A80</color>
+    <color name="account_4" >#FF80D8FF</color>
+
+    <color name="account_disabled" >#33000000</color>
+
 </resources>

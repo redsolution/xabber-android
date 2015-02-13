@@ -14,15 +14,5 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:state_pressed="true"
-        android:drawable="@drawable/expander_account_3_dark_pressed" />
-    <item
-        android:state_selected="true"
-        android:drawable="@drawable/expander_account_3_dark_focused" />
-    <item
-        android:state_focused="true"
-        android:drawable="@drawable/expander_account_3_dark_focused" />
-    <item
-        android:drawable="@drawable/expander_account_3_dark_normal" />
+    <item android:drawable="@color/account_3" />
 </selector>

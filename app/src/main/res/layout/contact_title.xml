@@ -59,7 +59,7 @@
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/secondary_text_default_material_light"
                 android:text="name"
                 />
             <TextView
@@ -70,7 +70,7 @@
                 android:gravity="top"
                 android:singleLine="true"
                 android:ellipsize="marquee"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/secondary_text_default_material_light"
                 android:text="status"
                 />
         </LinearLayout>
