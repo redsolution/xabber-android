@@ -1,78 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/title"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
+    android:orientation="horizontal"
     >
+    <include layout="@layout/contact_title_avatar" />
+
     <LinearLayout
-        android:id="@+id/title_color"
+        android:id="@+id/name_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_gravity="center_vertical"
         >
-        <LinearLayout
+        <TextView
+            android:id="@+id/name"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
-            <include layout="@layout/contact_title_avatar" />
-        </LinearLayout>
-        <ImageView
-            android:id="@+id/security"
-            android:src="@drawable/ic_security"
-            android:paddingLeft="6dip"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:visibility="gone"
+            android:layout_height="0dp"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:layout_weight="1"
+            android:text="name"
             />
         <LinearLayout
-            android:id="@+id/name_holder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
             android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:paddingLeft="6dip"
             >
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="bottom"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:textStyle="bold"
-                android:textColor="@color/secondary_text_default_material_light"
-                android:text="name"
+
+            <ImageView
+                android:id="@+id/security"
+                android:src="@drawable/ic_security"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
                 />
+
+            <ImageView
+                android:id="@+id/status_mode"
+                android:src="@drawable/ic_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
             <TextView
                 android:id="@+id/status_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="top"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
                 android:singleLine="true"
-                android:ellipsize="marquee"
-                android:textColor="@color/secondary_text_default_material_light"
                 android:text="status"
                 />
         </LinearLayout>
-        <ImageView
-            android:id="@+id/status_mode"
-            android:src="@drawable/ic_status"
-            android:paddingLeft="@dimen/active_chat_padding_right"
-            android:paddingRight="@dimen/active_chat_padding_right"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
     </LinearLayout>
-    <ImageView
-        android:id="@+id/shadow"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/shadow"
-        android:visibility="gone"
-        />
-</RelativeLayout>
+</LinearLayout>

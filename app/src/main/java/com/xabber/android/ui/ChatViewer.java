@@ -17,6 +17,7 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -24,14 +25,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -87,6 +94,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private Window window;
     private int defaultStatusBarColor;
 
+    private Animation shakeAnimation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,12 +120,15 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             exitOnSend = savedInstanceState.getBoolean(SAVED_EXIT_ON_SEND);
         }
 
+        shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
 
         window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        defaultStatusBarColor = window.getStatusBarColor();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            defaultStatusBarColor = window.getStatusBarColor();
+        }
 
         accountActionBarColors = getResources().getIntArray(R.array.account_action_bar);
         accountStatusBarColors = getResources().getIntArray(R.array.account_status_bar);
@@ -302,7 +314,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
             for (ChatViewerFragment chat : registeredChats) {
                 if (chat.isEqual(account, user)) {
-                    chat.updateChat(true);
+                    chat.updateChat();
                 }
             }
         }
@@ -310,6 +322,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         if (actionWithAccount != null && actionWithAccount.equals(account)
                 && actionWithUser != null && actionWithUser.equals(user)) {
             updateActionBar(account, user);
+            if (incoming) {
+                actionBarView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+            }
         }
 
 
@@ -361,7 +376,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         AbstractChat selectedChat = chatViewerAdapter.getChatByPageNumber(position);
 
         if (selectedChat == null) {
-            window.setStatusBarColor(defaultStatusBarColor);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.setStatusBarColor(defaultStatusBarColor);
+            }
             getSupportActionBar().setBackgroundDrawable(null);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             actionBarView.setVisibility(View.GONE);
@@ -394,14 +411,29 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         ContactTitleInflater.updateTitle(actionBarView, this, abstractContact);
 
         int colorLevel = AccountManager.getInstance().getColorLevel(abstractContact.getAccount());
-
-        window.setStatusBarColor(accountStatusBarColors[colorLevel]);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(accountStatusBarColors[colorLevel]);
+        }
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
+
+        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+        SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
+        ImageView securityView = (ImageView) actionBarView.findViewById(R.id.security);
+
+        if (securityLevel == SecurityLevel.plain
+                && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled
+                || securityOtrMode == SettingsManager.SecurityOtrMode.manual)) {
+            securityView.setVisibility(View.GONE);
+        } else {
+            securityView.setVisibility(View.VISIBLE);
+            securityView.setImageLevel(securityLevel.getImageLevel());
+        }
+
     }
 
     private void updateRegisteredChats() {
         for (ChatViewerFragment chat : registeredChats) {
-            chat.updateChat(false);
+            chat.updateChat();
         }
     }
 

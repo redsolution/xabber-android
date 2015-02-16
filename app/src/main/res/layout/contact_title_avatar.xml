@@ -18,4 +18,8 @@
     android:layout_width="48dip"
     android:layout_height="48dip"
     android:src="@drawable/avatar_1_1"
+    android:layout_gravity="center_vertical"
+    android:layout_marginRight="4dp"
+    android:layout_marginEnd="4dp"
+
     />

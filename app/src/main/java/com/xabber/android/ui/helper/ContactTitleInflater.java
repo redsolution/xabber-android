@@ -15,10 +15,6 @@
 package com.xabber.android.ui.helper;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Shader.TileMode;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.ImageView;
@@ -53,7 +49,6 @@ public class ContactTitleInflater {
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.avatar);
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_mode);
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
-        final View shadowView = titleView.findViewById(R.id.shadow);
 
         int[] accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
 
@@ -64,17 +59,6 @@ public class ContactTitleInflater {
         avatarView.setImageDrawable(abstractContact.getAvatar());
 
         setStatusText(activity, abstractContact, statusTextView);
-
-        final Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.shadow);
-        final BitmapDrawable shadowDrawable = new BitmapDrawable(bitmap);
-        shadowDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
-        shadowView.setBackgroundDrawable(shadowDrawable);
-
-        if (abstractContact.isConnected()) {
-            shadowView.setVisibility(View.GONE);
-        } else {
-            shadowView.setVisibility(View.VISIBLE);
-        }
     }
 
     private static void setStatusText(Activity activity, AbstractContact abstractContact,
