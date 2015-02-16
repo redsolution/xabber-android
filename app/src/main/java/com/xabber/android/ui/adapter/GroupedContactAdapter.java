@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,11 +93,16 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      */
     private final LayoutInflater layoutInflater;
 
+    private int[] accountActionBarColors;
+
     public GroupedContactAdapter(Activity activity, ListView listView,
                                  Inflater inflater, StateProvider groupStateProvider) {
         super(activity, listView, inflater);
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.groupStateProvider = groupStateProvider;
+
+        accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
+
         TypedArray typedArray;
         typedArray = activity.getTheme().obtainStyledAttributes(R.styleable.ContactList);
         expanderAccountTextColor = typedArray.getColorStateList(R.styleable.ContactList_expanderAccountColor);
@@ -148,11 +154,13 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             if (configuration instanceof AccountConfiguration) {
                 level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
                 viewHolder.name.setTextColor(expanderAccountTextColor);
+                view.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[level]));
             } else {
-                level = AccountManager.getInstance().getColorCount();
+                view.setBackgroundDrawable(
+                        new ColorDrawable(activity.getResources().getColor(R.color.group_expander)));
                 viewHolder.name.setTextColor(expanderGroupTextColor);
             }
-            view.getBackground().setLevel(level);
+
             viewHolder.name.getBackground().setLevel(configuration.getShowOfflineMode().ordinal());
             final String name = GroupManager.getInstance().getGroupName(
                     configuration.getAccount(), configuration.getUser());

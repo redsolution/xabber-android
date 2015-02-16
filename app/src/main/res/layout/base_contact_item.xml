@@ -28,7 +28,6 @@
         android:layout_marginRight="3dp"
         android:layout_marginEnd="3dp"
 
-        android:src="@drawable/account_color"
         />
     <include layout="@layout/base_contact_avatar" />
     <RelativeLayout

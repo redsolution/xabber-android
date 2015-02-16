@@ -17,7 +17,6 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/expander_height"
     android:gravity="center_vertical|start"
-    android:background="@drawable/expander_background_dark"
     >
     <ImageView
         android:id="@+id/indicator"

@@ -15,6 +15,7 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -52,6 +53,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
      * List of accounts.
      */
     private final ArrayList<String> accounts;
+    private int[] accountActionBarColors;
 
     public AccountToggleAdapter(Activity activity,
                                 OnClickListener onClickListener, LinearLayout linearLayout) {
@@ -72,6 +74,9 @@ public class AccountToggleAdapter implements UpdatableAdapter {
         accounts.addAll(AccountManager.getInstance().getAccounts());
         Collections.sort(accounts);
         final int size = accounts.size();
+
+        accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
+
         final LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         while (linearLayout.getChildCount() < size) {
@@ -97,7 +102,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
             final String account = accounts.get(index);
             StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
             int colorLevel = AccountManager.getInstance().getColorLevel(account);
-            view.getBackground().setLevel(colorLevel);
+            view.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
             if (selected == null || account.equals(selected)) {
                 accountViewHolder.disabled.setVisibility(View.GONE);
             } else {

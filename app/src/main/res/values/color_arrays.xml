@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="account_action_bar">
+        <item>@color/green_500</item>
+        <item>@color/yellow_500</item>
+        <item>@color/red_500</item>
+        <item>@color/blue_500</item>
+    </array>
+
+    <array name="account_status_bar">
+        <item>@color/green_700</item>
+        <item>@color/yellow_700</item>
+        <item>@color/red_700</item>
+        <item>@color/blue_700</item>
+    </array>
+
+    <color name="account_disabled">@color/black_dividers</color>
+    <color name="group_expander">@color/blue_grey_800</color>
+</resources>

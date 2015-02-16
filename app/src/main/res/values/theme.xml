@@ -14,12 +14,8 @@
 -->
 <resources>
     <style name="Theme" parent="Theme.AppCompat">
-        <item name="expanderBackground">@drawable/expander_background_dark</item>
         <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
         <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
-        <item name="accountBackground">@drawable/account_background</item>
         <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
-        <item name="titleAccountBackground">@drawable/title_account_background_dark</item>
-        <item name="textColorPrimaryNoSelected">@color/bright_foreground_dark</item>
     </style>
 </resources>

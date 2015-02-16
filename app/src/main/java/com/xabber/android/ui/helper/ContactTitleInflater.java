@@ -15,12 +15,11 @@
 package com.xabber.android.ui.helper;
 
 import android.app.Activity;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,23 +49,18 @@ public class ContactTitleInflater {
      */
     public static void updateTitle(View titleView, final Activity activity,
                                    AbstractContact abstractContact) {
-        final TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
-
-        final Drawable titleAccountBackground = typedArray
-                .getDrawable(R.styleable.ContactList_titleAccountBackground);
-        typedArray.recycle();
-
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.avatar);
         final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_mode);
         final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
         final View shadowView = titleView.findViewById(R.id.shadow);
 
-        titleView.setBackgroundDrawable(titleAccountBackground);
+        int[] accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
+
+        titleView.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[
+                AccountManager.getInstance().getColorLevel(abstractContact.getAccount())]));
         nameView.setText(abstractContact.getName());
         statusModeView.setImageLevel(abstractContact.getStatusMode().getStatusLevel());
-        titleView.getBackground().setLevel(AccountManager.getInstance().getColorLevel(
-                        abstractContact.getAccount()));
         avatarView.setImageDrawable(abstractContact.getAvatar());
 
         setStatusText(activity, abstractContact, statusTextView);
