@@ -23,7 +23,7 @@
             android:singleLine="true"
             android:layout_weight="1"
             android:text="name"
-            />
+            android:textStyle="bold" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
