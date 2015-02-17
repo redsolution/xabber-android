@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +57,7 @@ public abstract class BaseContactInflater {
      * Managed adapter.
      */
     BaseAdapter adapter;
+    private final int[] accountColors;
 
     public BaseContactInflater(Activity activity) {
         this.activity = activity;
@@ -65,6 +67,8 @@ public abstract class BaseContactInflater {
         Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.shadow);
         shadowDrawable = new BitmapDrawable(activity.getResources(), bitmap);
         shadowDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
+
+        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
     }
 
     /**
@@ -118,7 +122,8 @@ public abstract class BaseContactInflater {
             viewHolder.shadow.setVisibility(View.VISIBLE);
         }
 
-        viewHolder.color.setImageLevel(abstractContact.getColorLevel());
+        int colorLevel = abstractContact.getColorLevel();
+        viewHolder.color.setImageDrawable(new ColorDrawable(accountColors[colorLevel]));
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatar.setVisibility(View.VISIBLE);
