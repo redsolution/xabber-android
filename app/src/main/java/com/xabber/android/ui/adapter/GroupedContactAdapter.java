@@ -153,7 +153,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             final int level;
             if (configuration instanceof AccountConfiguration) {
                 level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
-                viewHolder.name.setTextColor(expanderAccountTextColor);
                 view.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[level]));
             } else {
                 view.setBackgroundDrawable(

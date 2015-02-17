@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="account_action_bar">
-        <item>@color/green_500</item>
-        <item>@color/yellow_500</item>
-        <item>@color/red_500</item>
-        <item>@color/blue_500</item>
+        <item>@color/teal_500</item>
+        <item>@color/deep_orange_500</item>
+        <item>@color/pink_500</item>
+        <item>@color/dark_purple_500</item>
     </array>
 
     <array name="account_status_bar">
-        <item>@color/green_700</item>
-        <item>@color/yellow_700</item>
-        <item>@color/red_700</item>
-        <item>@color/blue_700</item>
+        <item>@color/teal_700</item>
+        <item>@color/deep_orange_700</item>
+        <item>@color/pink_700</item>
+        <item>@color/dark_purple_700</item>
     </array>
 
     <color name="account_disabled">@color/black_dividers</color>
