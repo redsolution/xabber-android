@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -31,25 +33,32 @@ import android.widget.ImageView;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
+import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
+import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
 
 import java.util.Collection;
@@ -63,8 +72,7 @@ import java.util.HashSet;
  */
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
         OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener,
-        ChatViewerFragment.ChatViewerFragmentListener {
+        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener {
 
     /**
      * Attention request.
@@ -74,6 +82,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.ChatViewer.SAVED_ACCOUNT";
     private static final String SAVED_USER = "com.xabber.android.ui.ChatViewer.SAVED_USER";
     private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.ChatViewer.EXIT_ON_SEND";
+
+    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
 
     private boolean exitOnSend;
 
@@ -95,6 +105,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private int defaultStatusBarColor;
 
     private Animation shakeAnimation;
+
+    private boolean isChatSelected;
+    private Menu menu = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,19 +155,24 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         actionBarView = LayoutInflater.from(this).inflate(R.layout.chat_viewer_action_bar, null);
 
+        actionBarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scrollChat();
+            }
+        });
+
         actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
-
-
-
 
         setContentView(R.layout.activity_chat_viewer);
 
         if (account != null && user != null) {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(),
-                    account, user, this);
+            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), account, user, this);
+            isChatSelected = true;
         } else {
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this);
+            isChatSelected = false;
         }
 
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -162,6 +180,92 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager.setOnPageChangeListener(this);
 
         selectPage(account, user, false);
+    }
+
+    private void scrollChat() {
+        if (!isChatSelected) {
+            return;
+        }
+        for (ChatViewerFragment chat : registeredChats) {
+            if (chat.isEqual(actionWithAccount, actionWithUser)) {
+                chat.scrollChat();
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        this.menu = menu;
+        createOptionsMenu();
+        return true;
+    }
+
+    private void createOptionsMenu() {
+        if (menu == null) {
+            return;
+        }
+
+        menu.clear();
+
+        if (!isChatSelected) {
+            return;
+        }
+
+        getMenuInflater().inflate(R.menu.chat, menu);
+
+        final String account = actionWithAccount;
+        final String user = actionWithUser;
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
+        if (abstractChat instanceof RoomChat) {
+            RoomState chatState = ((RoomChat) abstractChat).getState();
+
+            if (chatState == RoomState.available) {
+                menu.findItem(R.id.action_list_of_occupants).setVisible(true);
+            }
+
+            if (chatState == RoomState.unavailable) {
+                menu.findItem(R.id.action_join_conference).setVisible(true);
+                menu.findItem(R.id.action_close_chat).setVisible(true);
+            } else {
+                menu.findItem(R.id.action_invite_to_chat).setVisible(true);
+
+                if (chatState == RoomState.error) {
+                    menu.findItem(R.id.action_authorization_settings).setVisible(true);
+                } else {
+                    menu.findItem(R.id.action_leave_conference).setVisible(true);
+                }
+            }
+        }
+
+        if (abstractChat instanceof RegularChat) {
+            menu.findItem(R.id.action_edit_contact).setVisible(true);
+
+            SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+
+            if (securityLevel == SecurityLevel.plain) {
+                menu.findItem(R.id.action_start_encryption).setVisible(true)
+                        .setEnabled(SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled);
+            } else {
+                menu.findItem(R.id.action_restart_encryption).setVisible(true);
+            }
+
+            boolean isEncrypted = securityLevel != SecurityLevel.plain;
+
+            menu.findItem(R.id.action_stop_encryption).setEnabled(isEncrypted);
+            menu.findItem(R.id.action_verify_with_fingerprint).setEnabled(isEncrypted);
+            menu.findItem(R.id.action_verify_with_question).setEnabled(isEncrypted);
+            menu.findItem(R.id.action_verify_with_shared_secret).setEnabled(isEncrypted);
+        }
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        createOptionsMenu();
+        return true;
     }
 
     @Override
@@ -218,6 +322,163 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         selectPage(account, user, false);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final String account = actionWithAccount;
+        final String user = actionWithUser;
+
+        switch (item.getItemId()) {
+            case R.id.action_edit_contact:
+                startActivity(ContactEditor.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_chat_list:
+                selectRecentChatsPage();
+                return true;
+
+            case R.id.action_chat_settings:
+                startActivity(ChatEditor.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_show_history:
+                showHistory(account, user);
+                return true;
+
+            case R.id.action_authorization_settings:
+                startActivity(MUCEditor.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_close_chat:
+                closeChat(account, user);
+                return true;
+
+            case R.id.action_clear_text:
+                cleatInputText(account, user);
+                return true;
+
+            case R.id.action_clear_history:
+                clearHistory(account, user);
+                return true;
+
+            case R.id.action_export_chat:
+                ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
+                return true;
+
+            case R.id.action_call_attention:
+                callAttention(account, user);
+                return true;
+
+            /* conferences */
+
+            case R.id.action_join_conference:
+                MUCManager.getInstance().joinRoom(account, user, true);
+                return true;
+
+            case R.id.action_invite_to_chat:
+                startActivity(ContactList.createRoomInviteIntent(this, account, user));
+                return true;
+
+            case R.id.action_leave_conference:
+                leaveConference(account, user);
+                return true;
+
+            case R.id.action_list_of_occupants:
+                startActivity(OccupantList.createIntent(this, account, user));
+                return true;
+
+            /* encryption */
+
+            case R.id.action_start_encryption:
+                startEncryption(account, user);
+                return true;
+
+            case R.id.action_restart_encryption:
+                restartEncryption(account, user);
+                return true;
+
+            case R.id.action_stop_encryption:
+                stopEncryption(account, user);
+                return true;
+
+            case R.id.action_verify_with_fingerprint:
+                startActivity(FingerprintViewer.createIntent(this, account, user));
+                return true;
+
+            case R.id.action_verify_with_question:
+                startActivity(QuestionViewer.createIntent(this, account, user, true, false, null));
+                return true;
+
+            case R.id.action_verify_with_shared_secret:
+                startActivity(QuestionViewer.createIntent(this, account, user, false, false, null));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void cleatInputText(String account, String user) {
+        for (ChatViewerFragment chat : registeredChats) {
+            if (chat.isEqual(account, user)) {
+                chat.clearInputView();
+            }
+        }
+    }
+
+    private void stopEncryption(String account, String user) {
+        try {
+            OTRManager.getInstance().endSession(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+    }
+
+    private void restartEncryption(String account, String user) {
+        try {
+            OTRManager.getInstance().refreshSession(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+    }
+
+    private void startEncryption(String account, String user) {
+        try {
+            OTRManager.getInstance().startSession(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+    }
+
+    private void callAttention(String account, String user) {
+        try {
+            AttentionManager.getInstance().sendAttention(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+    }
+
+    private void clearHistory(String account, String user) {
+        MessageManager.getInstance().clearHistory(account, user);
+        updateRegisteredChats();
+    }
+
+    private void closeChat(String account, String user) {
+        MessageManager.getInstance().closeChat(account, user);
+        NotificationManager.getInstance().removeMessageNotification(account, user);
+        close();
+    }
+
+    private void leaveConference(String account, String user) {
+        MUCManager.getInstance().leaveRoom(account, user);
+        closeChat(account, user);
+    }
+
+    private void showHistory(String account, String user) {
+        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
+        MessageArchiveManager.getInstance().requestHistory(account, user, MINIMUM_MESSAGES_TO_LOAD, 0);
+        updateRegisteredChats();
     }
 
     private void selectPage(String account, String user, boolean smoothScroll) {
@@ -375,7 +636,19 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     public void onPageSelected(int position) {
         AbstractChat selectedChat = chatViewerAdapter.getChatByPageNumber(position);
 
-        if (selectedChat == null) {
+        isChatSelected = selectedChat != null;
+
+        if (isChatSelected) {
+            actionWithAccount = selectedChat.getAccount();
+            actionWithUser = selectedChat.getUser();
+        } else {
+            actionWithAccount = null;
+            actionWithUser = null;
+        }
+
+        createOptionsMenu();
+
+        if (!isChatSelected) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.setStatusBarColor(defaultStatusBarColor);
             }
@@ -387,21 +660,15 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
         }
 
-        String account = selectedChat.getAccount();
-        String user = selectedChat.getUser();
+        updateActionBar(actionWithAccount, actionWithUser);
 
-        updateActionBar(account, user);
-
-        MessageManager.getInstance().setVisibleChat(account, user);
+        MessageManager.getInstance().setVisibleChat(actionWithAccount, actionWithUser);
 
         MessageArchiveManager.getInstance().requestHistory(
-                account, user, 0,
-                MessageManager.getInstance().getChat(account, user).getRequiredMessageCount());
+                actionWithAccount, actionWithUser, 0,
+                MessageManager.getInstance().getChat(actionWithAccount, actionWithUser).getRequiredMessageCount());
 
-        NotificationManager.getInstance().removeMessageNotification(account, user);
-
-        actionWithAccount = account;
-        actionWithUser = user;
+        NotificationManager.getInstance().removeMessageNotification(actionWithAccount, actionWithUser);
     }
 
     private void updateActionBar(String account, String user) {
@@ -497,8 +764,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         selectPage(chat.getAccount(), chat.getUser(), true);
     }
 
-    @Override
-    public void onRecentChatsCalled() {
+    public void selectRecentChatsPage() {
         viewPager.setCurrentItem(chatViewerAdapter.getRecentChatsPosition(), true);
     }
 

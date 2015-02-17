@@ -1,6 +1,5 @@
 package com.xabber.android.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -11,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,34 +23,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
-import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.extension.muc.RoomState;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
-import com.xabber.android.ui.dialog.ChatExportDialogFragment;
-import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
 
 public class ChatViewerFragment extends Fragment {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
-
-    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
 
     private TextView pageView;
     private EditText inputView;
@@ -63,8 +45,6 @@ public class ChatViewerFragment extends Fragment {
 
     private String account;
     private String user;
-
-    private ChatViewerFragmentListener listener;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -119,7 +99,6 @@ public class ChatViewerFragment extends Fragment {
         listView.setAdapter(chatMessageAdapter);
 
         pageView = (TextView) view.findViewById(R.id.chat_page);
-//        titleView = view.findViewById(R.id.title);
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
         view.findViewById(R.id.chat_send).setOnClickListener(
@@ -131,16 +110,7 @@ public class ChatViewerFragment extends Fragment {
                     }
 
                 });
-//        titleView.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                int size = listView.getCount();
-//                if (size > 0)
-//                    listView.setSelection(size - 1);
-//            }
-//
-//        });
+
         inputView.setOnKeyListener(new View.OnKeyListener() {
 
             @Override
@@ -189,8 +159,6 @@ public class ChatViewerFragment extends Fragment {
 
         });
 
-        setHasOptionsMenu(true);
-
         updateView();
 
         chatMessageAdapter.onChange();
@@ -229,23 +197,6 @@ public class ChatViewerFragment extends Fragment {
         ((ChatViewer)getActivity()).unregisterChat(this);
 
         unregisterForContextMenu(listView);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        try {
-            listener = (ChatViewerFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement ChatViewerFragmentListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        listener = null;
-        super.onDetach();
     }
 
     public void saveInputState() {
@@ -293,211 +244,6 @@ public class ChatViewerFragment extends Fragment {
 
     private void updateView() {
         chatMessageAdapter.onChange();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        final String account = chatMessageAdapter.getAccount();
-        final String user = chatMessageAdapter.getUser();
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-
-        inflater.inflate(R.menu.chat, menu);
-
-        if (abstractChat != null && abstractChat instanceof RoomChat) {
-            if (((RoomChat) abstractChat).getState() == RoomState.unavailable) {
-
-                MenuItem item = menu.findItem(R.id.action_join_conference);
-                item.setVisible(true);
-                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        MUCManager.getInstance().joinRoom(account, user, true);
-                        return true;
-                    }
-                });
-            } else {
-                menu.findItem(R.id.action_invite_to_chat).setVisible(true)
-                        .setIntent(ContactList.createRoomInviteIntent(getActivity(), account, user));
-            }
-        } else {
-            menu.findItem(R.id.action_edit_contact).setVisible(true)
-                    .setIntent(ContactEditor.createIntent(getActivity(), account, user));
-        }
-        menu.findItem(R.id.action_chat_list).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                listener.onRecentChatsCalled();
-                return true;
-            }
-        });
-
-        menu.findItem(R.id.action_chat_settings)
-                .setIntent(ChatEditor.createIntent(getActivity(), account, user));
-
-        menu.findItem(R.id.action_show_history).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
-                        MessageArchiveManager.getInstance()
-                                .requestHistory(account, user, MINIMUM_MESSAGES_TO_LOAD, 0);
-                        updateChat();
-                        return true;
-                    }
-                });
-
-        if (abstractChat != null && abstractChat instanceof RoomChat
-                && ((RoomChat) abstractChat).getState() != RoomState.unavailable) {
-            if (((RoomChat) abstractChat).getState() == RoomState.error) {
-                menu.findItem(R.id.action_authorization_settings).setVisible(true)
-                        .setIntent(MUCEditor.createIntent(getActivity(), account, user));
-            } else {
-                menu.findItem(R.id.action_leave_conference).setVisible(true).setOnMenuItemClickListener(
-                        new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                MUCManager.getInstance().leaveRoom(account, user);
-                                MessageManager.getInstance().closeChat(account, user);
-                                NotificationManager.getInstance()
-                                        .removeMessageNotification(account, user);
-                                ((ChatViewer) getActivity()).close();
-                                return true;
-                            }
-                        });
-            }
-        } else {
-            menu.findItem(R.id.action_close_chat).setVisible(true)
-                    .setOnMenuItemClickListener(
-                            new MenuItem.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    MessageManager.getInstance().closeChat(account, user);
-                                    NotificationManager.getInstance()
-                                            .removeMessageNotification(account, user);
-                                    ((ChatViewer) getActivity()).close();
-                                    return true;
-                                }
-                            });
-        }
-
-        menu.findItem(R.id.action_clear_text).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        inputView.getText().clear();
-                        return true;
-                    }
-                });
-
-        menu.findItem(R.id.action_clear_history).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        MessageManager.getInstance()
-                                .clearHistory(account, user);
-                        updateChat();
-                        return false;
-                    }
-                });
-
-        menu.findItem(R.id.action_export_chat).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        ChatExportDialogFragment.newInstance(account, user).show(getActivity().getFragmentManager(), "CHAT_EXPORT");
-                        return true;
-                    }
-
-                });
-        if (abstractChat != null && abstractChat instanceof RegularChat) {
-            menu.findItem(R.id.action_call_attention).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            try {
-                                AttentionManager.getInstance().sendAttention(
-                                        account, user);
-                            } catch (NetworkException e) {
-                                Application.getInstance().onError(e);
-                            }
-                            return true;
-                        }
-                    });
-            SecurityLevel securityLevel = OTRManager.getInstance()
-                    .getSecurityLevel(abstractChat.getAccount(),
-                            abstractChat.getUser());
-            if (securityLevel == SecurityLevel.plain) {
-                menu.findItem(R.id.action_start_encryption).setVisible(true)
-                        .setEnabled(SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled)
-                        .setOnMenuItemClickListener(
-                                new MenuItem.OnMenuItemClickListener() {
-
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem item) {
-                                        try {
-                                            OTRManager.getInstance().startSession(account, user);
-                                        } catch (NetworkException e) {
-                                            Application.getInstance().onError(e);
-                                        }
-                                        return true;
-                                    }
-                                });
-            } else {
-                menu.findItem(R.id.action_restart_encryption).setVisible(true)
-                        .setOnMenuItemClickListener(
-                                new MenuItem.OnMenuItemClickListener() {
-
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem item) {
-                                        try {
-                                            OTRManager.getInstance().refreshSession(
-                                                    account, user);
-                                        } catch (NetworkException e) {
-                                            Application.getInstance().onError(e);
-                                        }
-                                        return true;
-                                    }
-
-                                });
-            }
-            menu.findItem(R.id.action_stop_encryption)
-                    .setEnabled(securityLevel != SecurityLevel.plain)
-                    .setOnMenuItemClickListener(
-                            new MenuItem.OnMenuItemClickListener() {
-
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    try {
-                                        OTRManager.getInstance().endSession(account, user);
-                                    } catch (NetworkException e) {
-                                        Application.getInstance().onError(e);
-                                    }
-                                    return true;
-                                }
-
-                            });
-
-            menu.findItem(R.id.action_verify_with_fingerprint)
-                    .setEnabled(securityLevel != SecurityLevel.plain)
-                    .setIntent(FingerprintViewer.createIntent(getActivity(), account, user));
-
-            menu.findItem(R.id.action_verify_with_question)
-                    .setEnabled(securityLevel != SecurityLevel.plain)
-                    .setIntent(QuestionViewer
-                            .createIntent(getActivity(), account, user, true, false, null));
-
-            menu.findItem(R.id.action_verify_with_shared_secret)
-                    .setEnabled(securityLevel != SecurityLevel.plain)
-                    .setIntent(QuestionViewer
-                            .createIntent(getActivity(), account, user, false, false, null));
-        }
-        if (abstractChat != null && abstractChat instanceof RoomChat
-                && ((RoomChat) abstractChat).getState() == RoomState.available)
-            menu.findItem(R.id.action_list_of_occupants).setVisible(true).setIntent(
-                    OccupantList.createIntent(getActivity(), account, user));
     }
 
     @Override
@@ -585,7 +331,14 @@ public class ChatViewerFragment extends Fragment {
         return user;
     }
 
-    public interface ChatViewerFragmentListener {
-        public void onRecentChatsCalled();
+    public void clearInputView() {
+        inputView.getText().clear();
+    }
+
+    public void scrollChat() {
+        int size = listView.getCount();
+        if (size > 0) {
+            listView.setSelection(size - 1);
+        }
     }
 }

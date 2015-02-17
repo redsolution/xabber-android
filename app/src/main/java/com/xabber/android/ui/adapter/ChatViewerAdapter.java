@@ -29,8 +29,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     private FinishUpdateListener finishUpdateListener;
 
-    private Fragment currentFragment;
-
     private static final int TOTAL_COUNT = 200;
     private static final int OFFSET = TOTAL_COUNT / 2;
 
@@ -163,15 +161,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     private int getChatIndexFromRealPosition(int realPosition) {
         return realPosition - 1;
-    }
-
-    @Override
-    public void startUpdate(ViewGroup container) {
-        if (currentFragment instanceof ChatViewerFragment) {
-            ((ChatViewerFragment)currentFragment).saveInputState();
-        }
-
-        super.startUpdate(container);
     }
 
     @Override
