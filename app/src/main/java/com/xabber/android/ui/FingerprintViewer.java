@@ -48,7 +48,6 @@ import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.dialog.NotificationDialogBuilder;
 import com.xabber.android.ui.dialog.NotificationDialogListener;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
-import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -88,30 +87,26 @@ public class FingerprintViewer extends ManagedActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         setContentView(R.layout.fingerprint_viewer);
         integrator = new IntentIntegrator(this);
         Intent intent = getIntent();
         account = getAccount(intent);
         user = getUser(intent);
-        if (AccountManager.getInstance().getAccount(account) == null
-                || user == null) {
+        if (AccountManager.getInstance().getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
             return;
         }
         if (savedInstanceState != null) {
-            remoteFingerprint = savedInstanceState
-                    .getString(SAVED_REMOTE_FINGERPRINT);
-            localFingerprint = savedInstanceState
-                    .getString(SAVED_LOCAL_FINGERPRINT);
+            remoteFingerprint = savedInstanceState.getString(SAVED_REMOTE_FINGERPRINT);
+            localFingerprint = savedInstanceState.getString(SAVED_LOCAL_FINGERPRINT);
         } else {
-            remoteFingerprint = OTRManager.getInstance().getRemoteFingerprint(
-                    account, user);
-            localFingerprint = OTRManager.getInstance().getLocalFingerprint(
-                    account);
+            remoteFingerprint = OTRManager.getInstance().getRemoteFingerprint(account, user);
+            localFingerprint = OTRManager.getInstance().getLocalFingerprint(account);
         }
         verifiedView = (CheckBox) findViewById(R.id.verified);
         verifiedView.setOnCheckedChangeListener(this);
@@ -130,20 +125,16 @@ public class FingerprintViewer extends ManagedActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         update();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(
-                OnContactChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
     }
 
     @Override
@@ -169,36 +160,39 @@ public class FingerprintViewer extends ManagedActivity implements
             String code = scanResult.getContents();
             boolean equals = code != null && code.equals(remoteFingerprint);
             verifiedView.setChecked(equals);
-            if (equals)
+            if (equals) {
                 showDialog(R.string.action_otr_smp_verified);
-            else
+            } else {
                 showDialog(R.string.action_otr_smp_unverified);
+            }
         }
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
         String thisBareAddress = Jid.getBareAddress(user);
-        for (BaseEntity entity : entities)
+        for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
                 update();
                 break;
             }
+        }
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        if (accounts.contains(account))
+        if (accounts.contains(account)) {
             update();
+        }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.verified:
-                if (!isUpdating)
-                    OTRManager.getInstance().setVerify(account, user,
-                            remoteFingerprint, isChecked);
+                if (!isUpdating) {
+                    OTRManager.getInstance().setVerify(account, user, remoteFingerprint, isChecked);
+                }
                 break;
             default:
                 break;
@@ -211,8 +205,9 @@ public class FingerprintViewer extends ManagedActivity implements
      * @param alertDialog
      */
     private void wrapInstallDialog(AlertDialog alertDialog) {
-        if (alertDialog == null)
+        if (alertDialog == null) {
             return;
+        }
         alertDialog.dismiss();
         showDialog(R.string.zxing_install_message);
     }
@@ -221,16 +216,14 @@ public class FingerprintViewer extends ManagedActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.scan:
-                wrapInstallDialog(integrator
-                        .initiateScan(IntentIntegrator.QR_CODE_TYPES));
+                wrapInstallDialog(integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES));
                 break;
             case R.id.show:
                 wrapInstallDialog(integrator.shareText(localFingerprint));
                 break;
             case R.id.copy:
                 ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
-                        .setText(((TextView) findViewById(R.id.otr_local_fingerprint))
-                                .getText());
+                        .setText(((TextView) findViewById(R.id.otr_local_fingerprint)).getText());
                 break;
             default:
                 break;
@@ -241,17 +234,17 @@ public class FingerprintViewer extends ManagedActivity implements
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case R.string.zxing_install_message:
-                return new ConfirmDialogBuilder(this, id, this).setMessage(
-                        R.string.zxing_install_message).create();
+                return new ConfirmDialogBuilder(this, id, this)
+                        .setMessage(R.string.zxing_install_message).create();
             case R.string.zxing_install_fail:
-                return new NotificationDialogBuilder(this, id, this).setMessage(
-                        R.string.zxing_install_fail).create();
+                return new NotificationDialogBuilder(this, id, this)
+                        .setMessage(R.string.zxing_install_fail).create();
             case R.string.action_otr_smp_verified:
-                return new NotificationDialogBuilder(this, id, this).setMessage(
-                        R.string.action_otr_smp_verified).create();
+                return new NotificationDialogBuilder(this, id, this)
+                        .setMessage(R.string.action_otr_smp_verified).create();
             case R.string.action_otr_smp_unverified:
-                return new NotificationDialogBuilder(this, id, this).setMessage(
-                        R.string.action_otr_smp_unverified).create();
+                return new NotificationDialogBuilder(this, id, this)
+                        .setMessage(R.string.action_otr_smp_unverified).create();
             default:
                 return super.onCreateDialog(id);
         }
@@ -261,8 +254,7 @@ public class FingerprintViewer extends ManagedActivity implements
     public void onAccept(DialogBuilder dialogBuilder) {
         switch (dialogBuilder.getDialogId()) {
             case R.string.zxing_install_message:
-                Uri uri = Uri.parse("market://details?id="
-                        + IntentIntegrator.BS_PACKAGE);
+                Uri uri = Uri.parse("market://details?id=" + IntentIntegrator.BS_PACKAGE);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 try {
                     startActivity(intent);
@@ -286,30 +278,24 @@ public class FingerprintViewer extends ManagedActivity implements
 
     private void update() {
         isUpdating = true;
-        AbstractContact abstractContact = RosterManager.getInstance()
-                .getBestContact(account, user);
-        ContactTitleInflater.updateTitle(findViewById(R.id.title), this,
-                abstractContact);
-        verifiedView.setChecked(OTRManager.getInstance().isVerified(account,
-                user));
+        AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
+
+        verifiedView.setChecked(OTRManager.getInstance().isVerified(account, user));
         scanView.setEnabled(remoteFingerprint != null);
         verifiedView.setEnabled(remoteFingerprint != null);
-        ((TextView) findViewById(R.id.otr_remote_fingerprint))
-                .setText(remoteFingerprint == null ? getString(R.string.unknown)
-                        : CertificateManager.showFingerprint(remoteFingerprint));
+        ((TextView) findViewById(R.id.otr_remote_fingerprint)).setText(
+                remoteFingerprint == null ? getString(R.string.unknown) : CertificateManager.showFingerprint(remoteFingerprint));
         showView.setEnabled(localFingerprint != null);
         copyView.setEnabled(localFingerprint != null);
-        ((TextView) findViewById(R.id.otr_local_fingerprint))
-                .setText(localFingerprint == null ? getString(R.string.unknown)
-                        : CertificateManager.showFingerprint(localFingerprint));
+        ((TextView) findViewById(R.id.otr_local_fingerprint)).setText(
+                localFingerprint == null ? getString(R.string.unknown) : CertificateManager.showFingerprint(localFingerprint));
 
         contactTitleActionBarInflater.update(abstractContact);
 
         isUpdating = false;
     }
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
+    public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, FingerprintViewer.class)
                 .setAccount(account).setUser(user).build();
     }

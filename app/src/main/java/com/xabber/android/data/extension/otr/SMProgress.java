@@ -31,7 +31,7 @@ public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return QuestionViewer.createCanelIntent(
+        return QuestionViewer.createCancelIntent(
                 Application.getInstance(), account, user);
     }
 

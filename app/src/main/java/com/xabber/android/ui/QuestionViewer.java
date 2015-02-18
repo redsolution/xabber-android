@@ -34,7 +34,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
-import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -64,14 +63,14 @@ public class QuestionViewer extends ManagedActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         Intent intent = getIntent();
         account = QuestionViewer.getAccount(intent);
         user = QuestionViewer.getUser(intent);
-        if (AccountManager.getInstance().getAccount(account) == null
-                || user == null) {
+        if (AccountManager.getInstance().getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
             return;
@@ -86,18 +85,19 @@ public class QuestionViewer extends ManagedActivity implements
             return;
         }
         showQuestion = intent.getBooleanExtra(EXTRA_FIELD_SHOW_QUESTION, true);
-        answerRequest = intent.getBooleanExtra(EXTRA_FIELD_ANSWER_REQUEST,
-                false);
+        answerRequest = intent.getBooleanExtra(EXTRA_FIELD_ANSWER_REQUEST, false);
         if (showQuestion) {
             setContentView(R.layout.question_viewer);
             questionView = (EditText) findViewById(R.id.question);
             questionView.setEnabled(!answerRequest);
-            if (answerRequest)
+            if (answerRequest) {
                 questionView.setText(intent.getStringExtra(Intent.EXTRA_TEXT));
-            else
+            } else {
                 findViewById(R.id.cancel).setVisibility(View.GONE);
-        } else
+            }
+        } else {
             setContentView(R.layout.secret_viewer);
+        }
         findViewById(R.id.cancel).setOnClickListener(this);
         findViewById(R.id.send).setOnClickListener(this);
 
@@ -108,53 +108,48 @@ public class QuestionViewer extends ManagedActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         update();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(
-                OnContactChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
         String thisBareAddress = Jid.getBareAddress(user);
-        for (BaseEntity entity : entities)
+        for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
                 update();
                 break;
             }
+        }
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        if (accounts.contains(account))
+        if (accounts.contains(account)) {
             update();
+        }
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.send:
-                String question = showQuestion ? questionView.getText().toString()
-                        : null;
-                String answer = ((TextView) findViewById(R.id.answer)).getText()
-                        .toString();
+                String question = showQuestion ? questionView.getText().toString() : null;
+                String answer = ((TextView) findViewById(R.id.answer)).getText().toString();
                 try {
-                    if (answerRequest)
-                        OTRManager.getInstance().respondSmp(account, user,
-                                question, answer);
-                    else
-                        OTRManager.getInstance().initSmp(account, user, question,
-                                answer);
+                    if (answerRequest) {
+                        OTRManager.getInstance().respondSmp(account, user, question, answer);
+                    } else {
+                        OTRManager.getInstance().initSmp(account, user, question, answer);
+                    }
                 } catch (NetworkException e) {
                     Application.getInstance().onError(e);
                 }
@@ -173,11 +168,7 @@ public class QuestionViewer extends ManagedActivity implements
     }
 
     private void update() {
-        AbstractContact abstractContact = RosterManager.getInstance()
-                .getBestContact(account, user);
-        ContactTitleInflater.updateTitle(findViewById(R.id.title), this,
-                abstractContact);
-
+        AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
     }
 
@@ -187,8 +178,7 @@ public class QuestionViewer extends ManagedActivity implements
      * @param user
      * @return Intent to cancel negotiation.
      */
-    public static Intent createCanelIntent(Context context, String account,
-                                           String user) {
+    public static Intent createCancelIntent(Context context, String account, String user) {
         Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
                 .setAccount(account).setUser(user).build();
         intent.putExtra(EXTRA_FIELD_CANCEL, true);
@@ -205,9 +195,8 @@ public class QuestionViewer extends ManagedActivity implements
      *                      answerRequest are <code>true</code>.
      * @return
      */
-    public static Intent createIntent(Context context, String account,
-                                      String user, boolean showQuestion, boolean answerRequest,
-                                      String question) {
+    public static Intent createIntent(Context context, String account, String user,
+                                      boolean showQuestion, boolean answerRequest, String question) {
         Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
                 .setAccount(account).setUser(user).build();
         intent.putExtra(EXTRA_FIELD_SHOW_QUESTION, showQuestion);
