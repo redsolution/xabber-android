@@ -119,7 +119,7 @@ public class FingerprintViewer extends ManagedActivity implements
         isUpdating = false;
 
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
-        contactTitleActionBarInflater.setActionBarView();
+        contactTitleActionBarInflater.setUpActionBarView();
     }
 
     @Override
