@@ -33,7 +33,6 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:gravity="center_vertical"
-        android:textColor="@android:color/primary_text_light"
         android:text="GTalk"
         />
 

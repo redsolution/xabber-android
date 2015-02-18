@@ -32,7 +32,6 @@
         android:layout_marginLeft="6dip"
         android:singleLine="true"
         android:ellipsize="marquee"
-        android:textColor="@android:color/primary_text_light"
         android:gravity="center_vertical"
         android:text="account"
         />
