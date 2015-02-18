@@ -19,8 +19,6 @@
     android:layout_height="match_parent"
     >
 
-    <include layout="@layout/contact_title" />
-
     <TextView
         android:text="@string/contact_name"
         android:layout_width="wrap_content"

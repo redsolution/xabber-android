@@ -55,4 +55,8 @@ public class ContactTitleActionBarInflater {
         }
         activity.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
     }
+
+    public View getActionBarView() {
+        return actionBarView;
+    }
 }
