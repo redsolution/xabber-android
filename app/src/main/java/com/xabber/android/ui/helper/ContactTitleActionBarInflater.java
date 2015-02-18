@@ -8,6 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -20,17 +24,17 @@ public class ContactTitleActionBarInflater {
 
     private int[] accountActionBarColors;
     private int[] accountStatusBarColors;
+
     private Window window;
+    private int defaultStatusBarColor;
+
+    private Animation shakeAnimation = null;
 
     public ContactTitleActionBarInflater(ActionBarActivity activity) {
         this.activity = activity;
     }
 
-    public void setActionBarView() {
-        window = this.activity.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
+    public void setUpActionBarView() {
         accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
         accountStatusBarColors = activity.getResources().getIntArray(R.array.account_status_bar);
 
@@ -44,9 +48,19 @@ public class ContactTitleActionBarInflater {
 
         actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window = this.activity.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            defaultStatusBarColor = window.getStatusBarColor();
+        }
     }
 
     public void update(AbstractContact abstractContact) {
+        activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+        actionBarView.setVisibility(View.VISIBLE);
+
         ContactTitleInflater.updateTitle(actionBarView, activity, abstractContact);
 
         int colorLevel = AccountManager.getInstance().getColorLevel(abstractContact.getAccount());
@@ -56,7 +70,37 @@ public class ContactTitleActionBarInflater {
         activity.getSupportActionBar().setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
     }
 
-    public View getActionBarView() {
-        return actionBarView;
+    public void restoreDefaultTitleView(String title) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(defaultStatusBarColor);
+        }
+
+        activity.getSupportActionBar().setBackgroundDrawable(null);
+        activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+        actionBarView.setVisibility(View.GONE);
+        activity.setTitle(title);
+    }
+
+    public ImageView getSecurityView() {
+        return (ImageView)actionBarView.findViewById(R.id.security);
+    }
+
+    public void playIncomingAnimation() {
+        if (shakeAnimation == null) {
+            shakeAnimation = AnimationUtils.loadAnimation(activity, R.anim.shake);
+        }
+        actionBarView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        actionBarView.setOnClickListener(onClickListener);
+    }
+
+    public void setName(String name) {
+        ((TextView) actionBarView.findViewById(R.id.name)).setText(name);
+    }
+
+    public void setStatusText(String user) {
+        ((TextView) actionBarView.findViewById(R.id.status_text)).setText(user);
     }
 }

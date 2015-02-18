@@ -102,7 +102,7 @@ public class QuestionViewer extends ManagedActivity implements
         findViewById(R.id.send).setOnClickListener(this);
 
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
-        contactTitleActionBarInflater.setActionBarView();
+        contactTitleActionBarInflater.setUpActionBarView();
     }
 
     @Override

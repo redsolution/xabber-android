@@ -16,26 +16,17 @@ package com.xabber.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -56,7 +47,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
-import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
@@ -92,19 +83,14 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     ChatViewerAdapter chatViewerAdapter;
 
     ViewPager viewPager;
-    private View actionBarView;
 
     Collection<ChatViewerFragment> registeredChats = new HashSet<>();
     Collection<RecentChatFragment> recentChatFragments = new HashSet<>();
 
     private String actionWithAccount = null;
     private String actionWithUser = null;
-    private int[] accountActionBarColors;
-    private int[] accountStatusBarColors;
-    private Window window;
-    private int defaultStatusBarColor;
 
-    private Animation shakeAnimation;
+    private ContactTitleActionBarInflater contactTitleActionBarInflater;
 
     private boolean isChatSelected;
     private Menu menu = null;
@@ -133,37 +119,15 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             exitOnSend = savedInstanceState.getBoolean(SAVED_EXIT_ON_SEND);
         }
 
-        shakeAnimation = AnimationUtils.loadAnimation(this, R.anim.shake);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater.setUpActionBarView();
 
-        window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            defaultStatusBarColor = window.getStatusBarColor();
-        }
-
-        accountActionBarColors = getResources().getIntArray(R.array.account_action_bar);
-        accountStatusBarColors = getResources().getIntArray(R.array.account_status_bar);
-
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(true);
-
-        actionBarView = LayoutInflater.from(this).inflate(R.layout.contact_title, null);
-
-        actionBarView.setOnClickListener(new View.OnClickListener() {
+        contactTitleActionBarInflater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 scrollChat();
             }
         });
-
-        actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
 
         setContentView(R.layout.activity_chat_viewer);
 
@@ -584,11 +548,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 && actionWithUser != null && actionWithUser.equals(user)) {
             updateActionBar(account, user);
             if (incoming) {
-                actionBarView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+                contactTitleActionBarInflater.playIncomingAnimation();
             }
         }
-
-
     }
 
     @Override
@@ -649,13 +611,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         createOptionsMenu();
 
         if (!isChatSelected) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.setStatusBarColor(defaultStatusBarColor);
-            }
-            getSupportActionBar().setBackgroundDrawable(null);
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            actionBarView.setVisibility(View.GONE);
-            setTitle(getString(R.string.chat_list));
+            contactTitleActionBarInflater.restoreDefaultTitleView(getString(R.string.chat_list));
             MessageManager.getInstance().removeVisibleChat();
             return;
         }
@@ -672,20 +628,14 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     private void updateActionBar(String account, String user) {
-        actionBarView.setVisibility(View.VISIBLE);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
-        ContactTitleInflater.updateTitle(actionBarView, this, abstractContact);
 
-        int colorLevel = AccountManager.getInstance().getColorLevel(abstractContact.getAccount());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(accountStatusBarColors[colorLevel]);
-        }
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
+        contactTitleActionBarInflater.update(abstractContact);
 
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
         SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
-        ImageView securityView = (ImageView) actionBarView.findViewById(R.id.security);
+
+        ImageView securityView = contactTitleActionBarInflater.getSecurityView();
 
         if (securityLevel == SecurityLevel.plain
                 && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled

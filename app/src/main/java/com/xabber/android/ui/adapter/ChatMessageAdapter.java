@@ -89,12 +89,12 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
         ChatsDivide chatsDivide = SettingsManager.chatsDivide();
-        if (chatsDivide == ChatsDivide.always
-                || (chatsDivide == ChatsDivide.portial && !activity
-                .getResources().getBoolean(R.bool.landscape)))
+        if (chatsDivide == ChatsDivide.always || (chatsDivide == ChatsDivide.portial
+                && !activity.getResources().getBoolean(R.bool.landscape))) {
             divider = "\n";
-        else
+        } else {
             divider = " ";
+        }
     }
 
     @Override
@@ -104,10 +104,11 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public Object getItem(int position) {
-        if (position < messages.size())
+        if (position < messages.size()) {
             return messages.get(position);
-        else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -122,18 +123,17 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public int getItemViewType(int position) {
-        if (position < messages.size())
+        if (position < messages.size()) {
             return TYPE_MESSAGE;
-        else
+        } else {
             return hint == null ? TYPE_EMPTY : TYPE_HINT;
+        }
     }
 
-    private void append(SpannableStringBuilder builder, CharSequence text,
-                        CharacterStyle span) {
+    private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
         int start = builder.length();
         builder.append(text);
-        builder.setSpan(span, start, start + text.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.setSpan(span, start, start + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     @Override
@@ -142,24 +142,32 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         final View view;
         if (convertView == null) {
             final int resource;
-            if (type == TYPE_MESSAGE)
-                resource = R.layout.chat_viewer_message;
-            else if (type == TYPE_HINT)
-                resource = R.layout.chat_viewer_info;
-            else if (type == TYPE_EMPTY)
-                resource = R.layout.chat_viewer_empty;
-            else
-                throw new IllegalStateException();
-            view = activity.getLayoutInflater()
-                    .inflate(resource, parent, false);
-            if (type == TYPE_MESSAGE)
-                ((TextView) view.findViewById(R.id.text)).setTextAppearance(
-                        activity, appearanceStyle);
-        } else
-            view = convertView;
+            switch (type) {
+                case TYPE_MESSAGE:
+                    resource = R.layout.chat_viewer_message;
+                    break;
+                case TYPE_HINT:
+                    resource = R.layout.chat_viewer_info;
+                    break;
+                case TYPE_EMPTY:
+                    resource = R.layout.chat_viewer_empty;
+                    break;
+                default:
+                    throw new IllegalStateException();
+            }
 
-        if (type == TYPE_EMPTY)
+            view = activity.getLayoutInflater().inflate(resource, parent, false);
+
+            if (type == TYPE_MESSAGE) {
+                ((TextView) view.findViewById(R.id.text)).setTextAppearance(activity, appearanceStyle);
+            }
+        } else {
+            view = convertView;
+        }
+
+        if (type == TYPE_EMPTY) {
             return view;
+        }
 
         if (type == TYPE_HINT) {
             TextView textView = ((TextView) view.findViewById(R.id.info));
@@ -177,111 +185,94 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         if (isMUC) {
             name = resource;
         } else {
-            if (incoming)
+            if (incoming) {
                 name = RosterManager.getInstance().getName(account, user);
-            else
+            } else {
                 name = AccountManager.getInstance().getNickName(account);
+            }
         }
         if (incoming) {
-            if (view.getBackground() == null)
+            if (view.getBackground() == null) {
                 view.setBackgroundResource(R.drawable.chat_bg);
-            view.getBackground().setLevel(
-                    AccountManager.getInstance().getColorLevel(account));
+            }
+            view.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
         } else {
             view.setBackgroundDrawable(null);
         }
+
         Spannable text = messageItem.getSpannable();
         TextView textView = (TextView) view.findViewById(R.id.text);
         ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
         ChatAction action = messageItem.getAction();
         String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());
         SpannableStringBuilder builder = new SpannableStringBuilder();
+
         if (action == null) {
             int messageResource = R.drawable.ic_message_delivered;
             if (!incoming) {
-                if (messageItem.isError())
+                if (messageItem.isError()) {
                     messageResource = R.drawable.ic_message_has_error;
-                else if (!messageItem.isSent())
+                } else if (!messageItem.isSent()) {
                     messageResource = R.drawable.ic_message_not_sent;
-                else if (!messageItem.isDelivered())
+                } else if (!messageItem.isDelivered()) {
                     messageResource = R.drawable.ic_message_not_delivered;
+                }
             }
+
             append(builder, " ", new ImageSpan(activity, messageResource));
-            append(builder, " ", new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            append(builder, time, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Time));
-            append(builder, " ", new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            append(builder, name, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Name));
-            append(builder, divider, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
+            append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
+            append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
+            append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
+            append(builder, name, new TextAppearanceSpan(activity, R.style.ChatHeader_Name));
+            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+
             Date timeStamp = messageItem.getDelayTimestamp();
+
             if (timeStamp != null) {
-                String delay = activity.getString(
-                        incoming ? R.string.chat_delay : R.string.chat_typed,
+                String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
                         StringUtils.getSmartTimeText(timeStamp));
-                append(builder, delay, new TextAppearanceSpan(activity,
-                        R.style.ChatHeader_Delay));
-                append(builder, divider, new TextAppearanceSpan(activity,
-                        R.style.ChatHeader));
+                append(builder, delay, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
+                append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
             }
             if (messageItem.isUnencypted()) {
-                append(builder,
-                        activity.getString(R.string.otr_unencrypted_message),
-                        new TextAppearanceSpan(activity,
-                                R.style.ChatHeader_Delay));
-                append(builder, divider, new TextAppearanceSpan(activity,
-                        R.style.ChatHeader));
+                append(builder, activity.getString(R.string.otr_unencrypted_message),
+                        new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
+                append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
             }
             Emoticons.getSmiledText(activity.getApplication(), text);
-            if (messageItem.getTag() == null)
+            if (messageItem.getTag() == null) {
                 builder.append(text);
-            else
-                append(builder, text, new TextAppearanceSpan(activity,
-                        R.style.ChatRead));
+            } else {
+                append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
+            }
         } else {
-            append(builder, time, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Time));
-            append(builder, " ", new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            text = Emoticons.newSpannable(action.getText(activity, name,
-                    text.toString()));
+            append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
+            append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
+            text = Emoticons.newSpannable(action.getText(activity, name, text.toString()));
             Emoticons.getSmiledText(activity.getApplication(), text);
-            append(builder, text, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Delay));
+            append(builder, text, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
         }
         textView.setText(builder);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         if (SettingsManager.chatsShowAvatars()) {
             avatarView.setVisibility(View.VISIBLE);
-            if (!incoming
-                    || (isMUC && MUCManager.getInstance()
-                    .getNickname(account, user)
-                    .equalsIgnoreCase(resource))) {
-                avatarView.setImageDrawable(AvatarManager.getInstance()
-                        .getAccountAvatar(account));
+            if (!incoming || (isMUC && MUCManager.getInstance().getNickname(account, user).equalsIgnoreCase(resource))) {
+                avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
                 if (isMUC) {
                     if ("".equals(resource)) {
-                        avatarView.setImageDrawable(AvatarManager.getInstance()
-                                .getRoomAvatar(user));
+                        avatarView.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                     } else {
-                        avatarView.setImageDrawable(AvatarManager.getInstance()
-                                .getOccupantAvatar(user + "/" + resource));
+                        avatarView.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
                     }
                 } else {
-                    avatarView.setImageDrawable(AvatarManager.getInstance()
-                            .getUserAvatar(user));
+                    avatarView.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
                 }
             }
-            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(
-                    RelativeLayout.RIGHT_OF, R.id.avatar);
+            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
         } else {
             avatarView.setVisibility(View.GONE);
-            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(
-                    RelativeLayout.RIGHT_OF, 0);
+            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(RelativeLayout.RIGHT_OF, 0);
         }
         return view;
     }
@@ -318,26 +309,21 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      * @return New hint.
      */
     private String getHint() {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(
-                account);
-        boolean online;
-        if (accountItem == null)
-            online = false;
-        else
-            online = accountItem.getState().isConnected();
-        final AbstractContact abstractContact = RosterManager.getInstance()
-                .getBestContact(account, user);
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        boolean online = accountItem != null && accountItem.getState().isConnected();
+        final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         if (!online) {
-            if (abstractContact instanceof RoomContact)
+            if (abstractContact instanceof RoomContact) {
                 return activity.getString(R.string.muc_is_unavailable);
-            else
+            } else {
                 return activity.getString(R.string.account_is_offline);
+            }
         } else if (!abstractContact.getStatusMode().isOnline()) {
-            if (abstractContact instanceof RoomContact)
+            if (abstractContact instanceof RoomContact) {
                 return activity.getString(R.string.muc_is_unavailable);
-            else
-                return activity.getString(R.string.contact_is_offline,
-                        abstractContact.getName());
+            } else {
+                return activity.getString(R.string.contact_is_offline, abstractContact.getName());
+            }
         }
         return null;
     }
@@ -348,8 +334,9 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      */
     public void updateInfo() {
         String info = getHint();
-        if (this.hint == info || (this.hint != null && this.hint.equals(info)))
+        if (this.hint.equals(info) || (this.hint != null && this.hint.equals(info))) {
             return;
+        }
         this.hint = info;
         notifyDataSetChanged();
     }

@@ -17,10 +17,8 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -51,7 +49,7 @@ public class ContactEditor extends GroupListActivity implements
         super.onCreate(savedInstanceState);
 
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
-        contactTitleActionBarInflater.setActionBarView();
+        contactTitleActionBarInflater.setUpActionBarView();
     }
 
     @Override
@@ -103,12 +101,8 @@ public class ContactEditor extends GroupListActivity implements
     private void update() {
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
-
-        View actionBarView = contactTitleActionBarInflater.getActionBarView();
-
-        ((TextView) actionBarView.findViewById(R.id.name))
-                .setText(getString(R.string.contact_editor_title, abstractContact.getName()));
-        ((TextView) actionBarView.findViewById(R.id.status_text)).setText(user);
+        contactTitleActionBarInflater.setName(getString(R.string.contact_editor_title, abstractContact.getName()));
+        contactTitleActionBarInflater.setStatusText(user);
     }
 
     @Override
