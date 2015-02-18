@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui;
 
-import java.util.Collection;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -49,10 +47,13 @@ import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.dialog.NotificationDialogBuilder;
 import com.xabber.android.ui.dialog.NotificationDialogListener;
+import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+
+import java.util.Collection;
 
 public class FingerprintViewer extends ManagedActivity implements
         OnCheckedChangeListener, OnAccountChangedListener,
@@ -81,6 +82,8 @@ public class FingerprintViewer extends ManagedActivity implements
      * QR code scanner and generator.
      */
     private IntentIntegrator integrator;
+
+    ContactTitleActionBarInflater contactTitleActionBarInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +123,8 @@ public class FingerprintViewer extends ManagedActivity implements
         copyView.setOnClickListener(this);
         isUpdating = false;
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater.setActionBarView();
     }
 
     @Override
@@ -298,6 +302,9 @@ public class FingerprintViewer extends ManagedActivity implements
         ((TextView) findViewById(R.id.otr_local_fingerprint))
                 .setText(localFingerprint == null ? getString(R.string.unknown)
                         : CertificateManager.showFingerprint(localFingerprint));
+
+        contactTitleActionBarInflater.update(abstractContact);
+
         isUpdating = false;
     }
 

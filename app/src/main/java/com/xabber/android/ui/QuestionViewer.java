@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui;
 
-import java.util.Collection;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,10 +33,13 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+
+import java.util.Collection;
 
 /**
  * Represents OTR question.
@@ -57,6 +58,8 @@ public class QuestionViewer extends ManagedActivity implements
     private boolean showQuestion;
     private boolean answerRequest;
     private EditText questionView;
+
+    ContactTitleActionBarInflater contactTitleActionBarInflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +101,8 @@ public class QuestionViewer extends ManagedActivity implements
         findViewById(R.id.cancel).setOnClickListener(this);
         findViewById(R.id.send).setOnClickListener(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater.setActionBarView();
     }
 
     @Override
@@ -173,6 +177,8 @@ public class QuestionViewer extends ManagedActivity implements
                 .getBestContact(account, user);
         ContactTitleInflater.updateTitle(findViewById(R.id.title), this,
                 abstractContact);
+
+        contactTitleActionBarInflater.update(abstractContact);
     }
 
     /**
