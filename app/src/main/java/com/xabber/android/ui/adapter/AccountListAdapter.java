@@ -14,12 +14,8 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -32,15 +28,23 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.androiddev.R;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Adapter for the list of accounts for {@link AccountList}.
  *
  * @author alexander.ivanov
  */
 public class AccountListAdapter extends BaseListEditorAdapter<String> {
+    private final int[] accountColors;
 
     public AccountListAdapter(Activity activity) {
         super(activity);
+
+        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
     }
 
     @Override
@@ -48,34 +52,31 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
         View view;
         AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
-            view = getActivity().getLayoutInflater().inflate(
-                    R.layout.account_list_item, parent, false);
+            view = getActivity().getLayoutInflater().inflate(R.layout.account_list_item, parent, false);
         } else {
             view = convertView;
         }
         String account = getItem(position);
 
-        ((ImageView) view.findViewById(R.id.color))
-                .setImageLevel(accountManager.getColorLevel(account));
+        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(
+                new ColorDrawable(accountColors[accountManager.getColorLevel(account)]));
         ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(
-                        account));
-        ((TextView) view.findViewById(R.id.name)).setText(accountManager
-                .getVerboseName(account));
+                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+        ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
         AccountItem accountItem = accountManager.getAccount(account);
         ConnectionState state;
-        if (accountItem == null)
+        if (accountItem == null) {
             state = ConnectionState.offline;
-        else
+        } else {
             state = accountItem.getState();
-        ((TextView) view.findViewById(R.id.status)).setText(getActivity()
-                .getString(state.getStringId()));
+        }
+        ((TextView) view.findViewById(R.id.status)).setText(getActivity().getString(state.getStringId()));
         return view;
     }
 
     @Override
     protected Collection<String> getTags() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.addAll(AccountManager.getInstance().getAllAccounts());
         Collections.sort(list);
         return list;
