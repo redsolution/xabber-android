@@ -153,7 +153,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowCustomEnabled(true);
 
-        actionBarView = LayoutInflater.from(this).inflate(R.layout.chat_viewer_action_bar, null);
+        actionBarView = LayoutInflater.from(this).inflate(R.layout.contact_title, null);
 
         actionBarView.setOnClickListener(new View.OnClickListener() {
             @Override
