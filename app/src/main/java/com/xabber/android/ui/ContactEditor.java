@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui;
 
-import java.util.Collection;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,9 +30,12 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+
+import java.util.Collection;
 
 public class ContactEditor extends GroupListActivity implements
         OnContactChangedListener, AdapterView.OnItemClickListener,
@@ -43,11 +44,14 @@ public class ContactEditor extends GroupListActivity implements
     private String account;
     private String user;
 
+    ContactTitleActionBarInflater contactTitleActionBarInflater;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater.setActionBarView();
     }
 
     @Override
@@ -112,6 +116,8 @@ public class ContactEditor extends GroupListActivity implements
         ((TextView) findViewById(R.id.name)).setText(getString(
                 R.string.contact_editor_title, abstractContact.getName()));
         ((TextView) findViewById(R.id.status_text)).setText(user);
+
+        contactTitleActionBarInflater.update(abstractContact);
     }
 
     @Override
