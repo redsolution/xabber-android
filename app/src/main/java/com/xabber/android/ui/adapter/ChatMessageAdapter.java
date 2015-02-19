@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
@@ -139,65 +138,51 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final int type = getItemViewType(position);
-        final View view;
-        if (convertView == null) {
-            final int resource;
-            switch (type) {
-                case TYPE_MESSAGE:
-                    resource = R.layout.chat_viewer_message;
-                    break;
-                case TYPE_HINT:
-                    resource = R.layout.chat_viewer_info;
-                    break;
-                case TYPE_EMPTY:
-                    resource = R.layout.chat_viewer_empty;
-                    break;
-                default:
-                    throw new IllegalStateException();
-            }
-
-            view = activity.getLayoutInflater().inflate(resource, parent, false);
-
-            if (type == TYPE_MESSAGE) {
-                ((TextView) view.findViewById(R.id.text)).setTextAppearance(activity, appearanceStyle);
-            }
-        } else {
-            view = convertView;
-        }
 
         if (type == TYPE_EMPTY) {
-            return view;
+            if (convertView == null) {
+                return activity.getLayoutInflater().inflate(R.layout.chat_viewer_empty, parent, false);
+            } else {
+                return convertView;
+            }
         }
 
         if (type == TYPE_HINT) {
+            View view = convertView;
+            if (convertView == null) {
+                view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_info, parent, false);
+            }
+
             TextView textView = ((TextView) view.findViewById(R.id.info));
             textView.setText(hint);
             textView.setTextAppearance(activity, R.style.ChatInfo_Warning);
             return view;
         }
 
+        if (type != TYPE_MESSAGE) {
+            throw new IllegalStateException();
+        }
+
         final MessageItem messageItem = (MessageItem) getItem(position);
-        final String name;
+        final boolean incoming = ((MessageItem) getItem(position)).isIncoming();
         final String account = messageItem.getChat().getAccount();
         final String user = messageItem.getChat().getUser();
         final String resource = messageItem.getResource();
-        final boolean incoming = messageItem.isIncoming();
-        if (isMUC) {
-            name = resource;
-        } else {
-            if (incoming) {
-                name = RosterManager.getInstance().getName(account, user);
-            } else {
-                name = AccountManager.getInstance().getNickName(account);
-            }
-        }
+
+        final int layoutId;
         if (incoming) {
-            if (view.getBackground() == null) {
-                view.setBackgroundResource(R.drawable.chat_bg);
-            }
-            view.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+            layoutId = R.layout.chat_viewer_message;
         } else {
-            view.setBackgroundDrawable(null);
+            layoutId = R.layout.chat_viewer_message_own;
+        }
+
+        View view = activity.getLayoutInflater().inflate(layoutId, parent, false);
+
+        ((TextView) view.findViewById(R.id.text)).setTextAppearance(activity, appearanceStyle);
+
+        if (incoming) {
+            view.findViewById(R.id.text).setBackgroundResource(R.drawable.chat_bg);
+            view.findViewById(R.id.text).getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
         }
 
         Spannable text = messageItem.getSpannable();
@@ -223,7 +208,9 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
             append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
             append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
-            append(builder, name, new TextAppearanceSpan(activity, R.style.ChatHeader_Name));
+            if (isMUC) {
+                append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Name));
+            }
             append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
 
             Date timeStamp = messageItem.getDelayTimestamp();
@@ -248,31 +235,32 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         } else {
             append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
             append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
-            text = Emoticons.newSpannable(action.getText(activity, name, text.toString()));
+            text = Emoticons.newSpannable(action.getText(activity, resource, text.toString()));
             Emoticons.getSmiledText(activity.getApplication(), text);
             append(builder, text, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
         }
         textView.setText(builder);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
-        if (SettingsManager.chatsShowAvatars()) {
-            avatarView.setVisibility(View.VISIBLE);
-            if (!incoming || (isMUC && MUCManager.getInstance().getNickname(account, user).equalsIgnoreCase(resource))) {
-                avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-            } else {
-                if (isMUC) {
-                    if ("".equals(resource)) {
-                        avatarView.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
-                    } else {
-                        avatarView.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
-                    }
+
+        if (incoming) {
+            if (SettingsManager.chatsShowAvatars()) {
+                avatarView.setVisibility(View.VISIBLE);
+                if ((isMUC && MUCManager.getInstance().getNickname(account, user).equalsIgnoreCase(resource))) {
+                    avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
                 } else {
-                    avatarView.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
+                    if (isMUC) {
+                        if ("".equals(resource)) {
+                            avatarView.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
+                        } else {
+                            avatarView.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
+                        }
+                    } else {
+                        avatarView.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
+                    }
                 }
+            } else {
+                avatarView.setVisibility(View.GONE);
             }
-            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
-        } else {
-            avatarView.setVisibility(View.GONE);
-            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(RelativeLayout.RIGHT_OF, 0);
         }
         return view;
     }

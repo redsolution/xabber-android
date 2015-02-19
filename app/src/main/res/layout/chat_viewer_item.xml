@@ -32,6 +32,8 @@
             android:stackFromBottom="true"
             android:transcriptMode="normal"
             android:smoothScrollbar="false"
+            android:divider="@null"
+            android:dividerHeight="0dp"
             />
         <TextView
             android:id="@+id/chat_page"

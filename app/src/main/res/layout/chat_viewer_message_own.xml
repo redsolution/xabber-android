@@ -18,39 +18,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 
-
     >
-
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="32dip"
-        android:layout_height="32dip"
-        android:src="@drawable/avatar_1_1"
-
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-
-        />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/avatar"
-        android:layout_toEndOf="@id/avatar"
         android:padding="4dp"
-        android:layout_marginRight="48dp"
-        android:layout_marginEnd="48dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginStart="48dp"
 
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
 
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
 
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
 
         android:text="Some text\n line \nrgregrere"
-        android:background="@drawable/chat_bg"
-        />
+        android:background="@color/grey_600"
+        android:gravity="end"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
