@@ -192,14 +192,14 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         SpannableStringBuilder builder = new SpannableStringBuilder();
 
         if (action == null) {
-            int messageIcon = R.drawable.ic_message_delivered;
+            int messageIcon = R.drawable.ic_done_white_18dp;
             if (!incoming) {
                 if (messageItem.isError()) {
-                    messageIcon = R.drawable.ic_message_has_error;
+                    messageIcon = R.drawable.ic_clear_white_18dp;
                 } else if (!messageItem.isSent()) {
-                    messageIcon = R.drawable.ic_message_not_sent;
+                    messageIcon = R.drawable.ic_redo_white_18dp;
                 } else if (!messageItem.isDelivered()) {
-                    messageIcon = R.drawable.ic_message_not_delivered;
+                    messageIcon = R.drawable.ic_query_builder_white_18dp;
                 }
             }
 
