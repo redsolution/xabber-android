@@ -15,7 +15,6 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -80,7 +79,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      * Text with extra information.
      */
     private String hint;
-    private final int[] backgroundColors;
 
     public ChatMessageAdapter(Activity activity) {
         this.activity = activity;
@@ -96,8 +94,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         } else {
             divider = " ";
         }
-
-        backgroundColors = activity.getResources().getIntArray(R.array.accout_chat_background);
     }
 
     @Override
@@ -183,11 +179,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         TextView textView = (TextView) view.findViewById(R.id.text);
         textView.setTextAppearance(activity, appearanceStyle);
 
-        if (incoming) {
-            ColorDrawable colorDrawable = new ColorDrawable(backgroundColors[AccountManager.getInstance().getColorLevel(account)]);
-            colorDrawable.setAlpha(64);
-            textView.setBackgroundDrawable(colorDrawable);
-        }
+        textView.getBackground().setAlpha(127);
 
         Spannable text = messageItem.getSpannable();
         String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());

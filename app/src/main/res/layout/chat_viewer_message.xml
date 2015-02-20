@@ -38,7 +38,13 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/avatar"
         android:layout_toEndOf="@id/avatar"
-        android:padding="4dp"
+
+        android:paddingLeft="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingRight="6dp"
+        android:paddingEnd="6dp"
+
         android:layout_marginRight="48dp"
         android:layout_marginEnd="48dp"
 
@@ -46,10 +52,14 @@
         android:layout_marginBottom="4dp"
 
 
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="40dp"
         android:layout_marginLeft="4dp"
 
+        android:textColor="@android:color/primary_text_light"
+
         android:text="Some text\n line \nrgregrere"
+
+        android:background="@drawable/msg_in"
         />
 
 </RelativeLayout>
