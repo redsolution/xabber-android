@@ -233,7 +233,11 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
             append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
             if (!incoming) {
-                append(builder, " ", new ImageSpan(activity, messageIcon));
+                ImageSpan imageSpan = new ImageSpan(activity, messageIcon);
+                if (messageIcon == R.drawable.ic_query_builder_white_18dp) {
+                    imageSpan.getDrawable().setAlpha(0);
+                }
+                append(builder, " ", imageSpan);
             }
         } else {
             text = Emoticons.newSpannable(action.getText(activity, resource, text.toString()));
