@@ -14,8 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -36,7 +34,6 @@ public class ChatViewerFragment extends Fragment {
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
-    private TextView pageView;
     private EditText inputView;
     private ListView listView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -69,27 +66,6 @@ public class ChatViewerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        /*
-        Animation used to hide pages.
-        */
-        Animation pagesHideAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.chat_page_out);
-        pagesHideAnimation.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                pageView.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-        });
-
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity());
@@ -98,7 +74,6 @@ public class ChatViewerFragment extends Fragment {
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
 
-        pageView = (TextView) view.findViewById(R.id.chat_page);
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
         view.findViewById(R.id.chat_send).setOnClickListener(

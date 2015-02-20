@@ -12,66 +12,53 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="4dip"
     >
-    <RelativeLayout
+    <ListView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        >
-        <ListView
-            android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="4dip"
-            android:stackFromBottom="true"
-            android:transcriptMode="normal"
-            android:smoothScrollbar="false"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            />
-        <TextView
-            android:id="@+id/chat_page"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dip"
-            android:textSize="12sp"
-            android:gravity="center"
-            android:visibility="gone"
-            android:background="?android:attr/colorBackground"
-            android:text="@string/chat_page"
-            />
-    </RelativeLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+
+        android:stackFromBottom="true"
+        android:transcriptMode="normal"
+        android:smoothScrollbar="false"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:layout_above="@+id/chat_input"
+        />
+
+    <EditText
+        android:id="@+id/chat_input"
+        android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+        android:cursorVisible="true"
+        android:hint="@string/chat_input_hint"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingTop="4dip">
-        <EditText
-            android:id="@+id/chat_input"
-            android:layout_weight="1"
-            android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
-            android:imeOptions="actionSend|flagNoEnterAction"
-            android:cursorVisible="true"
-            android:hint="@string/chat_input_hint"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:maxLines="5"
-            android:scrollbars="vertical"
-            android:fadingEdge="vertical"
-            android:focusable="true"
-            android:descendantFocusability="beforeDescendants"
-            />
-        <Button
-            android:text="@string/chat_send"
-            android:id="@+id/chat_send"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            />
-    </LinearLayout>
-</LinearLayout>
+        android:maxLines="5"
+        android:scrollbars="vertical"
+        android:fadingEdge="vertical"
+        android:focusable="true"
+        android:descendantFocusability="beforeDescendants"
+
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/chat_send"
+        android:layout_toStartOf="@+id/chat_send" />
+
+    <ImageButton
+        android:id="@+id/chat_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_send_white_24dp"
+        android:contentDescription="@string/chat_send" />
+
+</RelativeLayout>
