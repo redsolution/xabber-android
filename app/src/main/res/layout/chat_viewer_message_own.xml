@@ -39,8 +39,6 @@
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
 
-        android:textColor="@android:color/primary_text_light"
-
         android:text="Some text\n line \nrgregrere"
         android:background="@drawable/msg_out"
         android:gravity="end"

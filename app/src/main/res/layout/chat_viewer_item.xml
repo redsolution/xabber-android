@@ -58,7 +58,9 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:padding="8dp"
         android:src="@drawable/ic_send_white_24dp"
+        android:background="@null"
         android:contentDescription="@string/chat_send" />
 
 </RelativeLayout>

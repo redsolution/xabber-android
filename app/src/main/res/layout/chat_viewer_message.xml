@@ -27,10 +27,9 @@
         android:layout_height="32dip"
         android:src="@drawable/avatar_1_1"
 
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-
-        />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/text"
@@ -54,8 +53,6 @@
 
         android:layout_marginStart="40dp"
         android:layout_marginLeft="4dp"
-
-        android:textColor="@android:color/primary_text_light"
 
         android:text="Some text\n line \nrgregrere"
 
