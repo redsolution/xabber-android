@@ -14,6 +14,13 @@
         <item>@color/dark_purple_700</item>
     </array>
 
+    <array name="accout_chat_background">
+        <item>@color/teal_A100</item>
+        <item>@color/deep_orange_A100</item>
+        <item>@color/pink_A100</item>
+        <item>@color/dark_purple_A100</item>
+    </array>
+
     <color name="account_disabled">@color/black_dividers</color>
     <color name="group_expander">@color/blue_grey_800</color>
 </resources>

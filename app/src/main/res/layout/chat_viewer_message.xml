@@ -50,7 +50,6 @@
         android:layout_marginLeft="4dp"
 
         android:text="Some text\n line \nrgregrere"
-        android:background="@drawable/chat_bg"
         />
 
 </RelativeLayout>
