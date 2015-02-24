@@ -192,7 +192,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
             if (chatState == RoomState.unavailable) {
                 menu.findItem(R.id.action_join_conference).setVisible(true);
-                menu.findItem(R.id.action_close_chat).setVisible(true);
+
             } else {
                 menu.findItem(R.id.action_invite_to_chat).setVisible(true);
 
@@ -206,6 +206,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         if (abstractChat instanceof RegularChat) {
             menu.findItem(R.id.action_edit_contact).setVisible(true);
+            menu.findItem(R.id.action_close_chat).setVisible(true);
 
             SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
 
