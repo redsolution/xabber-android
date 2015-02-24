@@ -14,13 +14,12 @@
  */
 package com.xabber.android.utils;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Helper class to get plural forms.
@@ -123,25 +122,15 @@ public class StringUtils {
      * @param timeStamp
      * @return String with time or with date and time depend on current time.
      */
-    public static String getSmartTimeText(Date timeStamp) {
+    public static String getSmartTimeText(Context context, Date timeStamp) {
         if (timeStamp == null) {
             return "";
         }
 
-        // today
-        Calendar midnight = new GregorianCalendar();
-        // reset hour, minutes, seconds and millis
-        midnight.set(Calendar.HOUR_OF_DAY, 0);
-        midnight.set(Calendar.MINUTE, 0);
-        midnight.set(Calendar.SECOND, 0);
-        midnight.set(Calendar.MILLISECOND, 0);
+        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
+        DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
 
-        if (timeStamp.getTime() > midnight.getTimeInMillis())
-            synchronized (TIME) {
-                return TIME.format(timeStamp);
-            }
-        else
-            return getDateTimeText(timeStamp);
+        return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
     }
 
 }

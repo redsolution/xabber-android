@@ -199,7 +199,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
             if (timeStamp != null) {
                 String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
-                        StringUtils.getSmartTimeText(timeStamp));
+                        StringUtils.getSmartTimeText(activity, timeStamp));
                 append(builder, delay, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
                 append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
             }
@@ -226,7 +226,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         textView.setText(builder);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());
+        String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
 
         ((TextView)view.findViewById(R.id.message_time)).setText(time);
 
