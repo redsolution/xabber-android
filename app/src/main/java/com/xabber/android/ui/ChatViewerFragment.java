@@ -70,8 +70,7 @@ public class ChatViewerFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
-        chatMessageAdapter = new ChatMessageAdapter(getActivity());
-        chatMessageAdapter.setChat(account, user);
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
@@ -133,8 +132,6 @@ public class ChatViewerFragment extends Fragment {
             public void afterTextChanged(Editable text) {
                 if (skipOnTextChanges)
                     return;
-                String account = chatMessageAdapter.getAccount();
-                String user = chatMessageAdapter.getUser();
                 ChatStateManager.getInstance().onComposing(account, user, text);
             }
 

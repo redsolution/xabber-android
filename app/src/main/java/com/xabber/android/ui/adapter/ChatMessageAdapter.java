@@ -55,9 +55,12 @@ import java.util.List;
  */
 public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter {
 
-    private static final int TYPE_MESSAGE = 0;
-    private static final int TYPE_HINT = 1;
-    private static final int TYPE_EMPTY = 2;
+    private static final int VIEW_TYPE_COUNT = 4;
+
+    private static final int VIEW_TYPE_EMPTY = 0;
+    private static final int VIEW_TYPE_HINT = 1;
+    private static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
+    private static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
 
     private final Activity activity;
     private String account;
@@ -80,11 +83,12 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      */
     private String hint;
 
-    public ChatMessageAdapter(Activity activity) {
+    public ChatMessageAdapter(Activity activity, String account, String user) {
         this.activity = activity;
         messages = Collections.emptyList();
-        account = null;
-        user = null;
+        this.account = account;
+        this.user = user;
+        isMUC = MUCManager.getInstance().hasRoom(account, user);
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
         ChatsDivide chatsDivide = SettingsManager.chatsDivide();
@@ -117,29 +121,24 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return VIEW_TYPE_COUNT;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position < messages.size()) {
-            return TYPE_MESSAGE;
-        } else {
-            return hint == null ? TYPE_EMPTY : TYPE_HINT;
+        if (position >= messages.size()) {
+            return hint == null ? VIEW_TYPE_EMPTY : VIEW_TYPE_HINT;
         }
-    }
 
-    private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
-        int start = builder.length();
-        builder.append(text);
-        builder.setSpan(span, start, start + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        final boolean incoming = ((MessageItem) getItem(position)).isIncoming();
+        return incoming ? VIEW_TYPE_INCOMING_MESSAGE : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final int type = getItemViewType(position);
 
-        if (type == TYPE_EMPTY) {
+        if (type == VIEW_TYPE_EMPTY) {
             if (convertView == null) {
                 return activity.getLayoutInflater().inflate(R.layout.chat_viewer_empty, parent, false);
             } else {
@@ -147,7 +146,7 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             }
         }
 
-        if (type == TYPE_HINT) {
+        if (type == VIEW_TYPE_HINT) {
             View view = convertView;
             if (convertView == null) {
                 view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_info, parent, false);
@@ -159,8 +158,20 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             return view;
         }
 
-        if (type != TYPE_MESSAGE) {
-            throw new IllegalStateException();
+        View view = convertView;
+
+        if (convertView == null) {
+            final int layoutId;
+
+            if (type == VIEW_TYPE_INCOMING_MESSAGE) {
+                layoutId = R.layout.chat_viewer_incoming_message;
+            } else if (type == VIEW_TYPE_OUTGOING_MESSAGE) {
+                layoutId = R.layout.chat_viewer_outgoing_message;
+            } else {
+                throw new IllegalStateException();
+            }
+
+            view = activity.getLayoutInflater().inflate(layoutId, parent, false);
         }
 
         final MessageItem messageItem = (MessageItem) getItem(position);
@@ -168,14 +179,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
         final String resource = messageItem.getResource();
 
-        final int layoutId;
-        if (incoming) {
-            layoutId = R.layout.chat_viewer_message;
-        } else {
-            layoutId = R.layout.chat_viewer_message_own;
-        }
-
-        View view = activity.getLayoutInflater().inflate(layoutId, parent, false);
         TextView textView = (TextView) view.findViewById(R.id.text);
         textView.setTextAppearance(activity, appearanceStyle);
 
@@ -254,6 +257,12 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         return view;
     }
 
+    private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
+        int start = builder.length();
+        builder.append(text);
+        builder.setSpan(span, start, start + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
     private void setUpAvatar(MessageItem messageItem, View view) {
         ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
 
@@ -279,27 +288,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         } else {
             avatarView.setVisibility(View.GONE);
         }
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    /**
-     * Changes managed chat.
-     *
-     * @param account
-     * @param user
-     */
-    public void setChat(String account, String user) {
-        this.account = account;
-        this.user = user;
-        this.isMUC = MUCManager.getInstance().hasRoom(account, user);
-        onChange();
     }
 
     @Override
@@ -331,18 +319,4 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         }
         return null;
     }
-
-    /**
-     * Contact information has been changed. Renews hint and updates data if
-     * necessary.
-     */
-    public void updateInfo() {
-        String info = getHint();
-        if (this.hint.equals(info) || (this.hint != null && this.hint.equals(info))) {
-            return;
-        }
-        this.hint = info;
-        notifyDataSetChanged();
-    }
-
 }
