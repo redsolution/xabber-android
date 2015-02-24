@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
@@ -73,6 +75,10 @@ public class ChatViewerFragment extends Fragment {
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
+
+        view .setBackgroundDrawable(new ColorDrawable(
+                getActivity().getResources().getIntArray(R.array.account_chat_background)[
+                        AccountManager.getInstance().getColorLevel(account)]));
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 

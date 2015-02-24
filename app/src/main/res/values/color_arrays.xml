@@ -14,11 +14,11 @@
         <item>@color/dark_purple_700</item>
     </array>
 
-    <array name="accout_chat_background">
-        <item>@color/teal_A100</item>
-        <item>@color/deep_orange_A100</item>
-        <item>@color/pink_A100</item>
-        <item>@color/dark_purple_A100</item>
+    <array name="account_chat_background">
+        <item>@color/teal_900</item>
+        <item>@color/deep_orange_900</item>
+        <item>@color/pink_900</item>
+        <item>@color/dark_purple_900</item>
     </array>
 
     <color name="account_disabled">@color/black_dividers</color>
