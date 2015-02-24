@@ -19,7 +19,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.CharacterStyle;
-import android.text.style.ImageSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.ViewGroup;
@@ -174,33 +173,21 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             view = activity.getLayoutInflater().inflate(layoutId, parent, false);
         }
 
-        final MessageItem messageItem = (MessageItem) getItem(position);
-        final boolean incoming = ((MessageItem) getItem(position)).isIncoming();
+        return setUpMessageView((MessageItem) getItem(position), view);
+    }
 
-        final String resource = messageItem.getResource();
-
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        textView.setTextAppearance(activity, appearanceStyle);
-
-        textView.getBackground().setAlpha(127);
-
-        Spannable text = messageItem.getSpannable();
-        String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());
+    private View setUpMessageView(MessageItem messageItem, View view) {
+        final boolean incoming = messageItem.isIncoming();
 
         ChatAction action = messageItem.getAction();
-
+        Spannable text = messageItem.getSpannable();
         SpannableStringBuilder builder = new SpannableStringBuilder();
+        final String resource = messageItem.getResource();
 
         if (action == null) {
-            int messageIcon = R.drawable.ic_done_white_18dp;
+
             if (!incoming) {
-                if (messageItem.isError()) {
-                    messageIcon = R.drawable.ic_clear_white_18dp;
-                } else if (!messageItem.isSent()) {
-                    messageIcon = R.drawable.ic_redo_white_18dp;
-                } else if (!messageItem.isDelivered()) {
-                    messageIcon = R.drawable.ic_query_builder_white_18dp;
-                }
+                setStatusIcon(messageItem, view);
             }
 
             if (isMUC) {
@@ -228,33 +215,41 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             } else {
                 append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
             }
-
-            append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
-            append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
-            append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
-            if (!incoming) {
-                ImageSpan imageSpan = new ImageSpan(activity, messageIcon);
-                if (messageIcon == R.drawable.ic_query_builder_white_18dp) {
-                    imageSpan.getDrawable().setAlpha(0);
-                }
-                append(builder, " ", imageSpan);
-            }
         } else {
             text = Emoticons.newSpannable(action.getText(activity, resource, text.toString()));
             Emoticons.getSmiledText(activity.getApplication(), text);
-            append(builder, text, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
-            append(builder, " ", new TextAppearanceSpan(activity, R.style.ChatHeader));
-            append(builder, time, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
         }
 
-
+        TextView textView = (TextView) view.findViewById(R.id.message_text);
+        textView.setTextAppearance(activity, appearanceStyle);
+        textView.getBackground().setAlpha(127);
         textView.setText(builder);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
+
+        String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());
+
+        ((TextView)view.findViewById(R.id.message_time)).setText(time);
 
         if (incoming) {
             setUpAvatar(messageItem, view);
         }
         return view;
+    }
+
+    private void setStatusIcon(MessageItem messageItem, View view) {
+        ImageView messageStatusIcon = (ImageView) view.findViewById(R.id.message_status_icon);
+        messageStatusIcon.setVisibility(View.VISIBLE);
+
+        int messageIcon = R.drawable.ic_done_white_18dp;
+        if (messageItem.isError()) {
+            messageIcon = R.drawable.ic_clear_white_18dp;
+        } else if (!messageItem.isSent()) {
+            messageIcon = R.drawable.ic_redo_white_18dp;
+        } else if (!messageItem.isDelivered()) {
+            messageStatusIcon.setVisibility(View.INVISIBLE);
+        }
+
+        messageStatusIcon.setImageResource(messageIcon);
     }
 
     private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
