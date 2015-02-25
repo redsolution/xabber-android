@@ -215,18 +215,12 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         }
 
         if (isMUC) {
-            append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Name));
+            append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
             append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
         }
 
         Date delayTimestamp = messageItem.getDelayTimestamp();
 
-        if (delayTimestamp != null) {
-            String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
-                    StringUtils.getSmartTimeText(activity, delayTimestamp));
-            append(builder, delay, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
-            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
-        }
 
         if (messageItem.isUnencypted()) {
             append(builder, activity.getString(R.string.otr_unencrypted_message),
@@ -249,6 +243,12 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
         String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+
+        if (delayTimestamp != null) {
+            String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
+                    StringUtils.getSmartTimeText(activity, delayTimestamp));
+            time += " (" + delay + ")";
+        }
 
         ((TextView)view.findViewById(R.id.message_time)).setText(time);
 
