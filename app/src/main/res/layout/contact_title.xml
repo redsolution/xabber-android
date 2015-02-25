@@ -35,8 +35,9 @@
                 android:id="@+id/security"
                 android:src="@drawable/ic_security"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:padding="3dp"
                 />
 
             <ImageView
