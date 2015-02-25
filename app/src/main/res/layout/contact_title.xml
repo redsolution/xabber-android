@@ -6,7 +6,18 @@
     android:layout_height="?android:attr/actionBarSize"
     android:orientation="horizontal"
     >
-    <include layout="@layout/contact_title_avatar" />
+
+    <ImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/avatar"
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:src="@drawable/avatar_1_1"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+
+        />
 
     <LinearLayout
         android:id="@+id/name_holder"
