@@ -30,6 +30,7 @@
         android:dividerHeight="0dp"
         android:layout_above="@+id/chat_input"
         tools:listitem="@layout/chat_viewer_outgoing_message"
+        android:listSelector="@android:color/transparent"
         />
 
     <EditText

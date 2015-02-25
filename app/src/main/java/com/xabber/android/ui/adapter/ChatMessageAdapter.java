@@ -54,12 +54,13 @@ import java.util.List;
  */
 public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter {
 
-    private static final int VIEW_TYPE_COUNT = 4;
+    private static final int VIEW_TYPE_COUNT = 5;
 
     private static final int VIEW_TYPE_EMPTY = 0;
     private static final int VIEW_TYPE_HINT = 1;
-    private static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
-    private static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
+    public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
+    private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
 
     private final Activity activity;
     private String account;
@@ -129,8 +130,12 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             return hint == null ? VIEW_TYPE_EMPTY : VIEW_TYPE_HINT;
         }
 
-        final boolean incoming = ((MessageItem) getItem(position)).isIncoming();
-        return incoming ? VIEW_TYPE_INCOMING_MESSAGE : VIEW_TYPE_OUTGOING_MESSAGE;
+        MessageItem messageItem = (MessageItem) getItem(position);
+        if (messageItem.getAction() != null) {
+            return VIEW_TYPE_ACTION_MESSAGE;
+        }
+
+        return messageItem.isIncoming() ? VIEW_TYPE_INCOMING_MESSAGE : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
     @Override
@@ -157,6 +162,28 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             return view;
         }
 
+        MessageItem messageItem = (MessageItem) getItem(position);
+
+        if (type == VIEW_TYPE_ACTION_MESSAGE) {
+            View view = convertView;
+            if (convertView == null) {
+                view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_action_message, parent, false);
+            }
+
+            ChatAction action = messageItem.getAction();
+
+            Spannable text = Emoticons.newSpannable(
+                    action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
+
+            Emoticons.getSmiledText(activity.getApplication(), text);
+
+            String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+
+            ((TextView)view.findViewById(R.id.action_message_text)).setText(time + ": " + text);
+
+            return view;
+        }
+
         View view = convertView;
 
         if (convertView == null) {
@@ -173,51 +200,46 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             view = activity.getLayoutInflater().inflate(layoutId, parent, false);
         }
 
-        return setUpMessageView((MessageItem) getItem(position), view);
+        return setUpMessageView(messageItem, view);
     }
 
     private View setUpMessageView(MessageItem messageItem, View view) {
         final boolean incoming = messageItem.isIncoming();
 
-        ChatAction action = messageItem.getAction();
-        Spannable text = messageItem.getSpannable();
+
         SpannableStringBuilder builder = new SpannableStringBuilder();
         final String resource = messageItem.getResource();
 
-        if (action == null) {
+        if (!incoming) {
+            setStatusIcon(messageItem, view);
+        }
 
-            if (!incoming) {
-                setStatusIcon(messageItem, view);
-            }
+        if (isMUC) {
+            append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Name));
+            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+        }
 
-            if (isMUC) {
-                append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Name));
-                append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
-            }
+        Date delayTimestamp = messageItem.getDelayTimestamp();
 
-            Date timeStamp = messageItem.getDelayTimestamp();
+        if (delayTimestamp != null) {
+            String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
+                    StringUtils.getSmartTimeText(activity, delayTimestamp));
+            append(builder, delay, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
+            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+        }
 
-            if (timeStamp != null) {
-                String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
-                        StringUtils.getSmartTimeText(activity, timeStamp));
-                append(builder, delay, new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
-                append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
-            }
+        if (messageItem.isUnencypted()) {
+            append(builder, activity.getString(R.string.otr_unencrypted_message),
+                    new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
+            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+        }
 
-            if (messageItem.isUnencypted()) {
-                append(builder, activity.getString(R.string.otr_unencrypted_message),
-                        new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
-                append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
-            }
-            Emoticons.getSmiledText(activity.getApplication(), text);
-            if (messageItem.getTag() == null) {
-                builder.append(text);
-            } else {
-                append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
-            }
+        Spannable text = messageItem.getSpannable();
+        Emoticons.getSmiledText(activity.getApplication(), text);
+        if (messageItem.getTag() == null) {
+            builder.append(text);
         } else {
-            text = Emoticons.newSpannable(action.getText(activity, resource, text.toString()));
-            Emoticons.getSmiledText(activity.getApplication(), text);
+            append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
         }
 
         TextView textView = (TextView) view.findViewById(R.id.message_text);

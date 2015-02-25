@@ -139,10 +139,7 @@ public class ChatViewerFragment extends Fragment {
 
         });
 
-        updateView();
-
-        chatMessageAdapter.onChange();
-
+        updateChat();
         return view;
 
     }
@@ -222,23 +219,25 @@ public class ChatViewerFragment extends Fragment {
         updateChat();
     }
 
-    private void updateView() {
-        chatMessageAdapter.onChange();
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view,
                                     ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-        final MessageItem message = (MessageItem) listView.getAdapter().getItem(info.position);
+        ChatMessageAdapter chatMessageAdapter = (ChatMessageAdapter) listView.getAdapter();
 
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.chat_context_menu, menu);
+        int itemViewType = chatMessageAdapter.getItemViewType(info.position);
 
-        if (message.isError()) {
-            menu.findItem(R.id.action_message_repeat).setVisible(true);
+        if (itemViewType == ChatMessageAdapter.VIEW_TYPE_INCOMING_MESSAGE
+                || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
+
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.chat_context_menu, menu);
+
+            if (((MessageItem) chatMessageAdapter.getItem(info.position)).isError()) {
+                menu.findItem(R.id.action_message_repeat).setVisible(true);
+            }
         }
     }
 
@@ -258,7 +257,7 @@ public class ChatViewerFragment extends Fragment {
                 return true;
 
             case R.id.action_message_quote:
-                insertText("> " + message.getText() + "\n");
+                setInputText("> " + message.getText() + "\n");
                 return true;
 
             case R.id.action_message_remove:
@@ -271,12 +270,15 @@ public class ChatViewerFragment extends Fragment {
         }
     }
 
-    /**
-     * Insert additional text to the input.
-     *
-     * @param additional
-     */
-    private void insertText(String additional) {
+    public void updateChat() {
+        chatMessageAdapter.onChange();
+    }
+
+    public boolean isEqual(String account, String user) {
+        return this.account.equals(account) && this.user.equals(user);
+    }
+
+    public void setInputText(String additional) {
         String source = inputView.getText().toString();
         int selection = inputView.getSelectionEnd();
         if (selection == -1)
@@ -289,18 +291,6 @@ public class ChatViewerFragment extends Fragment {
             additional = "\n" + additional;
         inputView.setText(before + additional + after);
         inputView.setSelection(selection + additional.length());
-    }
-
-    public void updateChat() {
-        updateView();
-    }
-
-    public boolean isEqual(String account, String user) {
-        return this.account.equals(account) && this.user.equals(user);
-    }
-
-    public void setInputText(String text) {
-        insertText(text);
     }
 
     public String getAccount() {
