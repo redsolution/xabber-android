@@ -75,9 +75,11 @@ public class ChatViewerFragment extends Fragment {
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
 
-        view .setBackgroundDrawable(new ColorDrawable(
-                getActivity().getResources().getIntArray(R.array.account_chat_background)[
-                        AccountManager.getInstance().getColorLevel(account)]));
+        ColorDrawable background = new ColorDrawable(getActivity().getResources().getIntArray(
+                R.array.account_chat_background)[AccountManager.getInstance().getColorLevel(account)]);
+        background.setAlpha(64);
+
+        view.setBackgroundDrawable(background);
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
