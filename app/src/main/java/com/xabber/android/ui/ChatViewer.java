@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -688,6 +689,19 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         insertExtraText();
 
         updateRegisteredChats();
+
+        Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
+
+        if (isChatSelected) {
+            if (!(currentFragment instanceof ChatViewerFragment)
+                    || !((ChatViewerFragment) currentFragment).isEqual(actionWithAccount, actionWithUser)) {
+                throw new RuntimeException("Wrong chat fragment selected!");
+            }
+        } else {
+            if (!(currentFragment instanceof RecentChatFragment)) {
+                throw new RuntimeException("RecentChatFragment selected by mistake!");
+            }
+        }
     }
 
     private void insertExtraText() {

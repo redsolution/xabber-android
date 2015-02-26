@@ -32,6 +32,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     private static final int TOTAL_COUNT = 200;
     private static final int OFFSET = TOTAL_COUNT / 2;
 
+    private Fragment currentFragment;
 
     public ChatViewerAdapter(FragmentManager fragmentManager, String account, String user, FinishUpdateListener finishUpdateListener) {
         super(fragmentManager);
@@ -181,5 +182,16 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getItemPosition(Object object) {
         return POSITION_NONE;
+    }
+
+    @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+        super.setPrimaryItem(container, position, object);
+
+        currentFragment = (Fragment) object;
+    }
+
+    public Fragment getCurrentFragment() {
+        return currentFragment;
     }
 }
