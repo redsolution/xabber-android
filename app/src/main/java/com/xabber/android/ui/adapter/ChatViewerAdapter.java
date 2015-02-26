@@ -134,10 +134,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         return realPosition + OFFSET;
     }
 
-    public int getRecentChatsPosition() {
-        return OFFSET;
-    }
-
     public AbstractChat getChatByPageNumber(int virtualPosition) {
         int realPosition = getRealPagePosition(virtualPosition);
 

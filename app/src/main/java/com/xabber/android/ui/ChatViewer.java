@@ -453,8 +453,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     private void selectPage(int position, boolean smoothScroll) {
-        viewPager.setCurrentItem(position, smoothScroll);
         onPageSelected(position);
+        viewPager.setCurrentItem(position, smoothScroll);
     }
 
     private static String getAccount(Intent intent) {
@@ -730,7 +730,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     public void selectRecentChatsPage() {
-        viewPager.setCurrentItem(chatViewerAdapter.getRecentChatsPosition(), true);
+        selectPage(null, null, false);
     }
 
     public ChatViewerAdapter getChatViewerAdapter() {
