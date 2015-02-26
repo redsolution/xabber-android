@@ -33,6 +33,10 @@
         android:layout_marginLeft="48dp"
         android:layout_marginStart="48dp"
 
+        android:layout_marginRight="6dp"
+        android:layout_marginEnd="6dp"
+
+
         android:minWidth="160dp"
 
         android:text="Some text\n line \nrgregrere"
@@ -53,14 +57,15 @@
         android:paddingEnd="16dp"
 
         android:textAppearance="@style/ChatHeader.Time"
+        android:textSize="10sp"
 
         android:text="Feb 19, 2015 4:39 PM"
         />
 
     <ImageView
         android:id="@+id/message_status_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
         android:layout_alignBottom="@+id/message_time"
         android:layout_toLeftOf="@+id/message_time"
 
