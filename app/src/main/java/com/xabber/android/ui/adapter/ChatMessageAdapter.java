@@ -17,7 +17,6 @@ package com.xabber.android.ui.adapter;
 import android.app.Activity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
 import android.text.style.CharacterStyle;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
@@ -200,10 +199,11 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             view = activity.getLayoutInflater().inflate(layoutId, parent, false);
         }
 
-        return setUpMessageView(messageItem, view);
+        setUpMessageView(messageItem, view);
+        return view;
     }
 
-    private View setUpMessageView(MessageItem messageItem, View view) {
+    private void setUpMessageView(MessageItem messageItem, View view) {
         final boolean incoming = messageItem.isIncoming();
 
 
@@ -240,7 +240,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         textView.setTextAppearance(activity, appearanceStyle);
         textView.getBackground().setAlpha(127);
         textView.setText(builder);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
 
         String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
 
@@ -255,7 +254,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         if (incoming) {
             setUpAvatar(messageItem, view);
         }
-        return view;
     }
 
     private void setStatusIcon(MessageItem messageItem, View view) {

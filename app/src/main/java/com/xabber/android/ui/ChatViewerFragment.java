@@ -31,7 +31,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment extends Fragment {
+public class ChatViewerFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -74,6 +74,7 @@ public class ChatViewerFragment extends Fragment {
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
+        listView.setOnItemClickListener(this);
 
         ColorDrawable background = new ColorDrawable(getActivity().getResources().getIntArray(
                 R.array.account_chat_background)[AccountManager.getInstance().getColorLevel(account)]);
@@ -132,8 +133,9 @@ public class ChatViewerFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable text) {
-                if (skipOnTextChanges)
+                if (skipOnTextChanges) {
                     return;
+                }
                 ChatStateManager.getInstance().onComposing(account, user, text);
             }
 
@@ -147,15 +149,11 @@ public class ChatViewerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         ((ChatViewer)getActivity()).registerChat(this);
-
-        registerForContextMenu(listView);
-
         restoreInputState();
     }
 
-    private void restoreInputState() {
+    public void restoreInputState() {
         skipOnTextChanges = true;
 
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
@@ -163,22 +161,24 @@ public class ChatViewerFragment extends Fragment {
                 ChatManager.getInstance().getSelectionEnd(account, user));
 
         skipOnTextChanges = false;
+
+        if (!inputView.getText().toString().isEmpty()) {
+            inputView.requestFocus();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
         saveInputState();
-
         ((ChatViewer)getActivity()).unregisterChat(this);
-
-        unregisterForContextMenu(listView);
     }
 
     public void saveInputState() {
         ChatManager.getInstance().setTyped(account, user, inputView.getText().toString(),
                 inputView.getSelectionStart(), inputView.getSelectionEnd());
+
+        inputView.clearFocus();
     }
 
     private void sendMessage() {
@@ -281,14 +281,16 @@ public class ChatViewerFragment extends Fragment {
     public void setInputText(String additional) {
         String source = inputView.getText().toString();
         int selection = inputView.getSelectionEnd();
-        if (selection == -1)
+        if (selection == -1) {
             selection = source.length();
-        else if (selection > source.length())
+        } else if (selection > source.length()) {
             selection = source.length();
+        }
         String before = source.substring(0, selection);
         String after = source.substring(selection);
-        if (before.length() > 0 && !before.endsWith("\n"))
+        if (before.length() > 0 && !before.endsWith("\n")) {
             additional = "\n" + additional;
+        }
         inputView.setText(before + additional + after);
         inputView.setSelection(selection + additional.length());
     }
@@ -310,5 +312,12 @@ public class ChatViewerFragment extends Fragment {
         if (size > 0) {
             listView.setSelection(size - 1);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        registerForContextMenu(listView);
+        listView.showContextMenuForChild(view);
+        unregisterForContextMenu(listView);
     }
 }
