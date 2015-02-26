@@ -238,8 +238,8 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
         TextView textView = (TextView) view.findViewById(R.id.message_text);
         textView.setTextAppearance(activity, appearanceStyle);
-        textView.getBackground().setAlpha(127);
         textView.setText(builder);
+        textView.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
         String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
 
@@ -260,11 +260,11 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         ImageView messageStatusIcon = (ImageView) view.findViewById(R.id.message_status_icon);
         messageStatusIcon.setVisibility(View.VISIBLE);
 
-        int messageIcon = R.drawable.ic_done_white_18dp;
+        int messageIcon = R.drawable.ic_message_delivered_18dp;
         if (messageItem.isError()) {
-            messageIcon = R.drawable.ic_clear_white_18dp;
+            messageIcon = R.drawable.ic_message_has_error_18dp;
         } else if (!messageItem.isSent()) {
-            messageIcon = R.drawable.ic_redo_white_18dp;
+            messageIcon = R.drawable.ic_message_not_sent_18dp;
         } else if (!messageItem.isDelivered()) {
             messageStatusIcon.setVisibility(View.INVISIBLE);
         }

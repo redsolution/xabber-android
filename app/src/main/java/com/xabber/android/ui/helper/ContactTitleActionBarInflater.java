@@ -1,5 +1,6 @@
 package com.xabber.android.ui.helper;
 
+import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
@@ -29,6 +30,7 @@ public class ContactTitleActionBarInflater {
     private int defaultStatusBarColor;
 
     private Animation shakeAnimation = null;
+    private ColorDrawable defaultActionBarBackground;
 
     public ContactTitleActionBarInflater(ActionBarActivity activity) {
         this.activity = activity;
@@ -39,10 +41,9 @@ public class ContactTitleActionBarInflater {
         accountStatusBarColors = activity.getResources().getIntArray(R.array.account_status_bar);
 
         ActionBar actionBar = activity.getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(true);
+
 
         actionBarView = LayoutInflater.from(activity).inflate(R.layout.contact_title, null);
 
@@ -55,9 +56,15 @@ public class ContactTitleActionBarInflater {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             defaultStatusBarColor = window.getStatusBarColor();
         }
+
+        TypedArray a = activity.getTheme().obtainStyledAttributes(R.style.Theme, new int[] {R.attr.colorPrimary});
+        int attributeResourceId = a.getResourceId(0, 0);
+        defaultActionBarBackground = new ColorDrawable(activity.getResources().getColor(attributeResourceId));
+
     }
 
     public void update(AbstractContact abstractContact) {
+        activity.getSupportActionBar().setDisplayShowCustomEnabled(true);
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         actionBarView.setVisibility(View.VISIBLE);
 
@@ -71,13 +78,17 @@ public class ContactTitleActionBarInflater {
     }
 
     public void restoreDefaultTitleView(String title) {
+        activity.getSupportActionBar().setDisplayShowCustomEnabled(false);
+        activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+        actionBarView.setVisibility(View.GONE);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(defaultStatusBarColor);
         }
 
-        activity.getSupportActionBar().setBackgroundDrawable(null);
-        activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
-        actionBarView.setVisibility(View.GONE);
+
+
+        activity.getSupportActionBar().setBackgroundDrawable(defaultActionBarBackground);
         activity.setTitle(title);
     }
 

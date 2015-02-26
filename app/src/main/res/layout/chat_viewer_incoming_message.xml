@@ -52,7 +52,7 @@
         android:layout_marginRight="48dp"
         android:layout_marginEnd="48dp"
 
-        android:background="@drawable/msg_in"
+        android:background="@drawable/message_incoming"
 
         android:text="Some text\n line \nrgregrere"
         />

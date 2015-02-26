@@ -54,6 +54,7 @@ public class ContactTitleInflater {
 
         titleView.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[
                 AccountManager.getInstance().getColorLevel(abstractContact.getAccount())]));
+        nameView.setTextColor(activity.getResources().getColor(R.color.primary_text_default_material_dark));
         nameView.setText(abstractContact.getName());
         statusModeView.setImageLevel(abstractContact.getStatusMode().getStatusLevel());
         avatarView.setImageDrawable(abstractContact.getAvatar());

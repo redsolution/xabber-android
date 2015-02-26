@@ -36,7 +36,7 @@
         android:minWidth="160dp"
 
         android:text="Some text\n line \nrgregrere"
-        android:background="@drawable/msg_out"
+        android:background="@drawable/message_outgoing"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -64,7 +64,7 @@
         android:layout_alignBottom="@+id/message_time"
         android:layout_toLeftOf="@+id/message_time"
 
-        android:src="@drawable/ic_done_white_18dp"
+        android:src="@drawable/ic_message_delivered_18dp"
         />
 
 </RelativeLayout>
