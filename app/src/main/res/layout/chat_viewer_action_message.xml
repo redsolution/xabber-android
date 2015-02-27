@@ -3,16 +3,15 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:gravity="center_horizontal"
     >
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/action_message_text"
         android:textAppearance="@style/ChatHeader.Delay"
-        android:background="@color/blue_grey_500"
         android:padding="6dp"
         android:layout_margin="3dp"
+        android:gravity="center"
 
         android:text="Message"
         />
