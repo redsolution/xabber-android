@@ -17,7 +17,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/blue_grey_100"
     >
     <TextView
         android:id="@+id/info"
@@ -25,5 +24,6 @@
         android:layout_height="wrap_content"
         android:padding="4dip"
         android:textAppearance="@style/ChatInfo.Warning"
+        android:gravity="center"
         android:text="info" />
 </LinearLayout>
