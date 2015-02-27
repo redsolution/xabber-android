@@ -19,7 +19,9 @@ import android.content.res.Resources;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Helper class to get plural forms.
@@ -127,10 +129,24 @@ public class StringUtils {
             return "";
         }
 
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
-        DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
+        // today
+        Calendar midnight = new GregorianCalendar();
+        // reset hour, minutes, seconds and millis
+        midnight.set(Calendar.HOUR_OF_DAY, 0);
+        midnight.set(Calendar.MINUTE, 0);
+        midnight.set(Calendar.SECOND, 0);
+        midnight.set(Calendar.MILLISECOND, 0);
 
-        return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
+        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
+
+        if (timeStamp.getTime() > midnight.getTimeInMillis()) {
+            synchronized (TIME) {
+                return timeFormat.format(timeStamp);
+            }
+        } else {
+            DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
+            return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
+        }
     }
 
 }
