@@ -45,6 +45,9 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     private String account;
     private String user;
 
+    boolean isInputEmpty = true;
+    private ImageButton sendButton;
+
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
 
@@ -70,8 +73,8 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
-        ((ImageButton)view.findViewById(R.id.button_send_message))
-                .setImageLevel(AccountManager.getInstance().getColorLevel(account));
+        sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
+        sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
@@ -135,13 +138,31 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
                     return;
                 }
                 ChatStateManager.getInstance().onComposing(account, user, text);
-            }
+
+                setSendButtonColor();
+             }
 
         });
 
         updateChat();
         return view;
 
+    }
+
+    private void setSendButtonColor() {
+        boolean empty = inputView.getText().toString().isEmpty();
+
+        if (empty != isInputEmpty) {
+            isInputEmpty = empty;
+
+            if (isInputEmpty) {
+                sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+            } else {
+                sendButton.setImageResource(R.drawable.ic_button_send);
+                sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+            }
+
+        }
     }
 
     @Override
@@ -157,6 +178,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
         inputView.setSelection(ChatManager.getInstance().getSelectionStart(account, user),
                 ChatManager.getInstance().getSelectionEnd(account, user));
+        setSendButtonColor();
 
         skipOnTextChanges = false;
 
@@ -198,6 +220,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         skipOnTextChanges = true;
         inputView.getText().clear();
+        setSendButtonColor();
         skipOnTextChanges = false;
 
         sendMessage(text);
@@ -291,6 +314,8 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         }
         inputView.setText(before + additional + after);
         inputView.setSelection(selection + additional.length());
+
+        setSendButtonColor();
     }
 
     public String getAccount() {
