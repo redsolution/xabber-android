@@ -9,8 +9,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/action_message_text"
         android:textAppearance="@style/ChatHeader.Delay"
-        android:padding="6dp"
-        android:layout_margin="3dp"
+        android:padding="2dp"
         android:gravity="center"
 
         android:text="Message"
