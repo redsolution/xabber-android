@@ -60,11 +60,11 @@
      />
 
     <ImageButton
-        android:id="@+id/chat_send"
+        android:id="@+id/button_send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:src="@drawable/ic_button_send_24dp"
+        android:src="@drawable/ic_button_send"
         android:background="@null"
         android:contentDescription="@string/chat_send" />
     </LinearLayout>

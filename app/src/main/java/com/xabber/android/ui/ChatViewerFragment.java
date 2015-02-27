@@ -18,10 +18,12 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
@@ -68,6 +70,9 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
+        ((ImageButton)view.findViewById(R.id.button_send_message))
+                .setImageLevel(AccountManager.getInstance().getColorLevel(account));
+
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
         listView = (ListView) view.findViewById(android.R.id.list);
@@ -77,7 +82,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
-        view.findViewById(R.id.chat_send).setOnClickListener(
+        view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
 
                     @Override
