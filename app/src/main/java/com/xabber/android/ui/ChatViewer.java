@@ -14,8 +14,10 @@
  */
 package com.xabber.android.ui;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -692,14 +694,49 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
 
+
+
+
+
+
         if (isChatSelected) {
-            if (!(currentFragment instanceof ChatViewerFragment)
-                    || !((ChatViewerFragment) currentFragment).isEqual(actionWithAccount, actionWithUser)) {
-                throw new RuntimeException("Wrong chat fragment selected!");
+            if (!(currentFragment instanceof ChatViewerFragment)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Debug message")
+                        .setMessage("Recent chats selected, but contact chat expected. Reselecting...")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPage(actionWithAccount, actionWithUser, false);
+                            }
+                        });
+                builder.create().show();
+            } else if (!((ChatViewerFragment) currentFragment).isEqual(actionWithAccount, actionWithUser)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Debug message")
+                        .setMessage("Wrong contact chat selected. Reselecting...")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPage(actionWithAccount, actionWithUser, false);
+                            }
+                        });
+                builder.create().show();
             }
+
         } else {
             if (!(currentFragment instanceof RecentChatFragment)) {
-                throw new RuntimeException("RecentChatFragment selected by mistake!");
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Debug message")
+                        .setMessage("Contact chat selected, but recent chats expected. Reselecting...")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPage(null, null, false);
+                            }
+                        });
+                builder.create().show();
             }
         }
     }
