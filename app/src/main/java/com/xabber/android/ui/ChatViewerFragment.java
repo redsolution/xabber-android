@@ -14,14 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -96,32 +94,27 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
                 });
 
         inputView.setOnKeyListener(new View.OnKeyListener() {
-
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN
-                        && keyCode == KeyEvent.KEYCODE_ENTER
-                        && SettingsManager.chatsSendByEnter()) {
+                if (SettingsManager.chatsSendByEnter()
+                        && event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_ENTER) {
                     sendMessage();
                     return true;
                 }
                 return false;
             }
-
         });
-        inputView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
+        inputView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public boolean onEditorAction(TextView view, int actionId,
-                                          KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendMessage();
-                    return true;
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    ChatStateManager.getInstance().onPaused(account, user);
                 }
-                return false;
             }
-
         });
+
         inputView.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -134,12 +127,13 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
             @Override
             public void afterTextChanged(Editable text) {
-                if (skipOnTextChanges) {
-                    return;
-                }
-                ChatStateManager.getInstance().onComposing(account, user, text);
+                LogManager.i(this, "afterTextChanged");
 
                 setSendButtonColor();
+
+                if (!skipOnTextChanges) {
+                    ChatStateManager.getInstance().onComposing(account, user, text);
+                }
              }
 
         });
@@ -178,7 +172,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
         inputView.setSelection(ChatManager.getInstance().getSelectionStart(account, user),
                 ChatManager.getInstance().getSelectionEnd(account, user));
-        setSendButtonColor();
 
         skipOnTextChanges = false;
 
@@ -197,31 +190,16 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     public void saveInputState() {
         ChatManager.getInstance().setTyped(account, user, inputView.getText().toString(),
                 inputView.getSelectionStart(), inputView.getSelectionEnd());
-
-        inputView.clearFocus();
     }
 
     private void sendMessage() {
-        String text = inputView.getText().toString();
-        int start = 0;
-        int end = text.length();
+        String text = inputView.getText().toString().trim();
 
-        while (start < end && (text.charAt(start) == ' ' || text.charAt(start) == '\n')) {
-            start += 1;
-        }
-        while (start < end && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n')) {
-            end -= 1;
-        }
-        text = text.substring(start, end);
-
-        if ("".equals(text)) {
+        if (text.isEmpty()) {
             return;
         }
 
-        skipOnTextChanges = true;
-        inputView.getText().clear();
-        setSendButtonColor();
-        skipOnTextChanges = false;
+        clearInputText();
 
         sendMessage(text);
 
@@ -230,8 +208,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
                 && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
+            ChatViewer.hideKeyboard(getActivity());
         }
     }
 
@@ -300,22 +277,10 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     }
 
     public void setInputText(String additional) {
-        String source = inputView.getText().toString();
-        int selection = inputView.getSelectionEnd();
-        if (selection == -1) {
-            selection = source.length();
-        } else if (selection > source.length()) {
-            selection = source.length();
-        }
-        String before = source.substring(0, selection);
-        String after = source.substring(selection);
-        if (before.length() > 0 && !before.endsWith("\n")) {
-            additional = "\n" + additional;
-        }
-        inputView.setText(before + additional + after);
-        inputView.setSelection(selection + additional.length());
-
-        setSendButtonColor();
+        skipOnTextChanges = true;
+        inputView.setText(additional);
+        inputView.setSelection(additional.length());
+        skipOnTextChanges = false;
     }
 
     public String getAccount() {
@@ -326,8 +291,10 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         return user;
     }
 
-    public void clearInputView() {
+    public void clearInputText() {
+        skipOnTextChanges = true;
         inputView.getText().clear();
+        skipOnTextChanges = false;
     }
 
     public void scrollChat() {

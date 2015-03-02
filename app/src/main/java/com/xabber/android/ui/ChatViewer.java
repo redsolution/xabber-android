@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
@@ -24,6 +25,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.xabber.android.data.ActivityManager;
@@ -390,7 +392,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private void cleatInputText(String account, String user) {
         for (ChatViewerFragment chat : registeredChats) {
             if (chat.isEqual(account, user)) {
-                chat.clearInputView();
+                chat.clearInputText();
             }
         }
     }
@@ -600,6 +602,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     @Override
     public void onPageSelected(int position) {
+        hideKeyboard(this);
+
         AbstractChat selectedChat = chatViewerAdapter.getChatByPageNumber(position);
 
         isChatSelected = selectedChat != null;
@@ -694,11 +698,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
 
-
-
-
-
-
         if (isChatSelected) {
             if (!(currentFragment instanceof ChatViewerFragment)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -762,7 +761,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     @Override
-    public void onRecentChatSelected(AbstractChat chat) {
+    public void onChatSelected(AbstractChat chat) {
         selectPage(chat.getAccount(), chat.getUser(), true);
     }
 
@@ -772,5 +771,14 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     public ChatViewerAdapter getChatViewerAdapter() {
         return chatViewerAdapter;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 }

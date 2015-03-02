@@ -184,6 +184,10 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
         super.setPrimaryItem(container, position, object);
 
+        if (currentFragment instanceof ChatViewerFragment) {
+            ((ChatViewerFragment)currentFragment).saveInputState();
+        }
+
         currentFragment = (Fragment) object;
     }
 

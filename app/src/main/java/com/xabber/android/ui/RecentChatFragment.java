@@ -92,12 +92,12 @@ public class RecentChatFragment extends ListFragment {
         super.onListItemClick(l, v, position, id);
 
         if (null != listener) {
-            listener.onRecentChatSelected((AbstractChat) getListAdapter().getItem(position));
+            listener.onChatSelected((AbstractChat) getListAdapter().getItem(position));
         }
     }
 
     public interface RecentChatFragmentInteractionListener {
-        public void onRecentChatSelected(AbstractChat chat);
+        public void onChatSelected(AbstractChat chat);
     }
 
     public void updateChats(List<AbstractChat> chats) {
