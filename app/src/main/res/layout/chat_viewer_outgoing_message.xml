@@ -40,7 +40,7 @@
         android:minWidth="160dp"
 
         android:text="Some text\n line \nrgregrere"
-        android:background="@drawable/message_outgoing"
+        android:background="@drawable/message_outgoing_states"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
