@@ -67,7 +67,6 @@ public class AccountEditor extends ManagedActivity implements
 
             getFragmentManager().beginTransaction()
                     .add(R.id.preferences_activity_container, new AccountEditorFragment()).commit();
-
         } else {
             token = savedInstanceState.getString(SAVED_TOKEN);
         }
@@ -92,11 +91,11 @@ public class AccountEditor extends ManagedActivity implements
                     token = INVALIDATED_TOKEN;
                 } else {
                     String value = OAuthActivity.getToken(data);
-                    if (value == null)
-                        Application.getInstance().onError(
-                                R.string.AUTHENTICATION_FAILED);
-                    else
+                    if (value == null) {
+                        Application.getInstance().onError(R.string.AUTHENTICATION_FAILED);
+                    } else {
                         token = value;
+                    }
                 }
 
                 ((AccountEditorFragment) getFragmentManager().findFragmentById(
@@ -109,9 +108,8 @@ public class AccountEditor extends ManagedActivity implements
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (getString(R.string.account_oauth_key).equals(preference.getKey())) {
-            startActivityForResult(OAuthActivity.createIntent(this, accountItem
-                            .getConnectionSettings().getProtocol()),
-                    OAUTH_WML_REQUEST_CODE);
+            startActivityForResult(OAuthActivity.createIntent(this,
+                    accountItem.getConnectionSettings().getProtocol()), OAUTH_WML_REQUEST_CODE);
             return true;
         }
         return false;
@@ -120,8 +118,7 @@ public class AccountEditor extends ManagedActivity implements
     @Override
     protected Dialog onCreateDialog(int id) {
         if (id == ORBOT_DIALOG_ID) {
-            return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID)
-                    .create();
+            return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID).create();
         }
         return super.onCreateDialog(id);
     }
@@ -131,8 +128,7 @@ public class AccountEditor extends ManagedActivity implements
     }
 
     public static Intent createIntent(Context context, String account) {
-        return new AccountIntentBuilder(context, AccountEditor.class)
-                .setAccount(account).build();
+        return new AccountIntentBuilder(context, AccountEditor.class).setAccount(account).build();
     }
 
     @Override
@@ -152,9 +148,8 @@ public class AccountEditor extends ManagedActivity implements
 
     @Override
     public void onOAuthClick() {
-        startActivityForResult(OAuthActivity.createIntent(this, accountItem
-                        .getConnectionSettings().getProtocol()),
-                OAUTH_WML_REQUEST_CODE);
+        startActivityForResult(OAuthActivity.createIntent(this,
+                        accountItem.getConnectionSettings().getProtocol()), OAUTH_WML_REQUEST_CODE);
     }
 
     @Override
