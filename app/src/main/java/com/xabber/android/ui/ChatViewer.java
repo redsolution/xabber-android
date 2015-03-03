@@ -14,13 +14,18 @@
  */
 package com.xabber.android.ui;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.xabber.android.data.ActivityManager;
@@ -192,7 +197,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
             if (chatState == RoomState.unavailable) {
                 menu.findItem(R.id.action_join_conference).setVisible(true);
-                menu.findItem(R.id.action_close_chat).setVisible(true);
+
             } else {
                 menu.findItem(R.id.action_invite_to_chat).setVisible(true);
 
@@ -206,6 +211,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         if (abstractChat instanceof RegularChat) {
             menu.findItem(R.id.action_edit_contact).setVisible(true);
+            menu.findItem(R.id.action_close_chat).setVisible(true);
 
             SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
 
@@ -386,7 +392,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private void cleatInputText(String account, String user) {
         for (ChatViewerFragment chat : registeredChats) {
             if (chat.isEqual(account, user)) {
-                chat.clearInputView();
+                chat.clearInputText();
             }
         }
     }
@@ -451,8 +457,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     private void selectPage(int position, boolean smoothScroll) {
-        viewPager.setCurrentItem(position, smoothScroll);
         onPageSelected(position);
+        viewPager.setCurrentItem(position, smoothScroll);
     }
 
     private static String getAccount(Intent intent) {
@@ -596,6 +602,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     @Override
     public void onPageSelected(int position) {
+        hideKeyboard(this);
+
         AbstractChat selectedChat = chatViewerAdapter.getChatByPageNumber(position);
 
         isChatSelected = selectedChat != null;
@@ -687,6 +695,49 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         insertExtraText();
 
         updateRegisteredChats();
+
+        Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
+
+        if (isChatSelected) {
+            if (!(currentFragment instanceof ChatViewerFragment)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Debug message")
+                        .setMessage("Recent chats selected, but contact chat expected. Reselecting...")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPage(actionWithAccount, actionWithUser, false);
+                            }
+                        });
+                builder.create().show();
+            } else if (!((ChatViewerFragment) currentFragment).isEqual(actionWithAccount, actionWithUser)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Debug message")
+                        .setMessage("Wrong contact chat selected. Reselecting...")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPage(actionWithAccount, actionWithUser, false);
+                            }
+                        });
+                builder.create().show();
+            }
+
+        } else {
+            if (!(currentFragment instanceof RecentChatFragment)) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Debug message")
+                        .setMessage("Contact chat selected, but recent chats expected. Reselecting...")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                selectPage(null, null, false);
+                            }
+                        });
+                builder.create().show();
+            }
+        }
     }
 
     private void insertExtraText() {
@@ -710,15 +761,24 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     @Override
-    public void onRecentChatSelected(AbstractChat chat) {
+    public void onChatSelected(AbstractChat chat) {
         selectPage(chat.getAccount(), chat.getUser(), true);
     }
 
     public void selectRecentChatsPage() {
-        viewPager.setCurrentItem(chatViewerAdapter.getRecentChatsPosition(), true);
+        selectPage(null, null, false);
     }
 
     public ChatViewerAdapter getChatViewerAdapter() {
         return chatViewerAdapter;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 }

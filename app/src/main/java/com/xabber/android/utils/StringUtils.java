@@ -14,10 +14,14 @@
  */
 package com.xabber.android.utils;
 
-import java.text.DateFormat;
-import java.util.Date;
-
+import android.content.Context;
 import android.content.res.Resources;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Helper class to get plural forms.
@@ -32,7 +36,7 @@ public class StringUtils {
     static {
         DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                 DateFormat.SHORT);
-        TIME = DateFormat.getTimeInstance(DateFormat.MEDIUM);
+        TIME = new SimpleDateFormat("H:mm");
     }
 
     private StringUtils() {
@@ -120,17 +124,29 @@ public class StringUtils {
      * @param timeStamp
      * @return String with time or with date and time depend on current time.
      */
-    public static String getSmartTimeText(Date timeStamp) {
-        if (timeStamp == null)
+    public static String getSmartTimeText(Context context, Date timeStamp) {
+        if (timeStamp == null) {
             return "";
-        Date date = new Date();
-        long delta = date.getTime() - timeStamp.getTime();
-        if (delta < 20 * 60 * 60 * 1000)
+        }
+
+        // today
+        Calendar midnight = new GregorianCalendar();
+        // reset hour, minutes, seconds and millis
+        midnight.set(Calendar.HOUR_OF_DAY, 0);
+        midnight.set(Calendar.MINUTE, 0);
+        midnight.set(Calendar.SECOND, 0);
+        midnight.set(Calendar.MILLISECOND, 0);
+
+        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
+
+        if (timeStamp.getTime() > midnight.getTimeInMillis()) {
             synchronized (TIME) {
-                return TIME.format(timeStamp);
+                return timeFormat.format(timeStamp);
             }
-        else
-            return getDateTimeText(timeStamp);
+        } else {
+            DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
+            return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
+        }
     }
 
 }

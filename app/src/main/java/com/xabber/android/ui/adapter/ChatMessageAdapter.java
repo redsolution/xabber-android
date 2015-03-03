@@ -17,15 +17,12 @@ package com.xabber.android.ui.adapter;
 import android.app.Activity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.method.LinkMovementMethod;
 import android.text.style.CharacterStyle;
-import android.text.style.ImageSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
@@ -56,9 +53,13 @@ import java.util.List;
  */
 public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter {
 
-    private static final int TYPE_MESSAGE = 0;
-    private static final int TYPE_HINT = 1;
-    private static final int TYPE_EMPTY = 2;
+    private static final int VIEW_TYPE_COUNT = 5;
+
+    private static final int VIEW_TYPE_EMPTY = 0;
+    private static final int VIEW_TYPE_HINT = 1;
+    public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
+    public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
+    private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
 
     private final Activity activity;
     private String account;
@@ -81,20 +82,21 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      */
     private String hint;
 
-    public ChatMessageAdapter(Activity activity) {
+    public ChatMessageAdapter(Activity activity, String account, String user) {
         this.activity = activity;
         messages = Collections.emptyList();
-        account = null;
-        user = null;
+        this.account = account;
+        this.user = user;
+        isMUC = MUCManager.getInstance().hasRoom(account, user);
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
         ChatsDivide chatsDivide = SettingsManager.chatsDivide();
-        if (chatsDivide == ChatsDivide.always
-                || (chatsDivide == ChatsDivide.portial && !activity
-                .getResources().getBoolean(R.bool.landscape)))
+        if (chatsDivide == ChatsDivide.always || (chatsDivide == ChatsDivide.portial
+                && !activity.getResources().getBoolean(R.bool.landscape))) {
             divider = "\n";
-        else
+        } else {
             divider = " ";
+        }
     }
 
     @Override
@@ -104,10 +106,11 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public Object getItem(int position) {
-        if (position < messages.size())
+        if (position < messages.size()) {
             return messages.get(position);
-        else
+        } else {
             return null;
+        }
     }
 
     @Override
@@ -117,194 +120,189 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
     @Override
     public int getViewTypeCount() {
-        return 3;
+        return VIEW_TYPE_COUNT;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position < messages.size())
-            return TYPE_MESSAGE;
-        else
-            return hint == null ? TYPE_EMPTY : TYPE_HINT;
-    }
+        if (position >= messages.size()) {
+            return hint == null ? VIEW_TYPE_EMPTY : VIEW_TYPE_HINT;
+        }
 
-    private void append(SpannableStringBuilder builder, CharSequence text,
-                        CharacterStyle span) {
-        int start = builder.length();
-        builder.append(text);
-        builder.setSpan(span, start, start + text.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        MessageItem messageItem = (MessageItem) getItem(position);
+        if (messageItem.getAction() != null) {
+            return VIEW_TYPE_ACTION_MESSAGE;
+        }
+
+        return messageItem.isIncoming() ? VIEW_TYPE_INCOMING_MESSAGE : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final int type = getItemViewType(position);
-        final View view;
-        if (convertView == null) {
-            final int resource;
-            if (type == TYPE_MESSAGE)
-                resource = R.layout.chat_viewer_message;
-            else if (type == TYPE_HINT)
-                resource = R.layout.chat_viewer_info;
-            else if (type == TYPE_EMPTY)
-                resource = R.layout.chat_viewer_empty;
-            else
-                throw new IllegalStateException();
-            view = activity.getLayoutInflater()
-                    .inflate(resource, parent, false);
-            if (type == TYPE_MESSAGE)
-                ((TextView) view.findViewById(R.id.text)).setTextAppearance(
-                        activity, appearanceStyle);
-        } else
-            view = convertView;
 
-        if (type == TYPE_EMPTY)
-            return view;
+        if (type == VIEW_TYPE_EMPTY) {
+            if (convertView == null) {
+                return activity.getLayoutInflater().inflate(R.layout.chat_viewer_empty, parent, false);
+            } else {
+                return convertView;
+            }
+        }
 
-        if (type == TYPE_HINT) {
+        if (type == VIEW_TYPE_HINT) {
+            View view = convertView;
+            if (convertView == null) {
+                view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_info, parent, false);
+            }
+
             TextView textView = ((TextView) view.findViewById(R.id.info));
             textView.setText(hint);
             textView.setTextAppearance(activity, R.style.ChatInfo_Warning);
             return view;
         }
 
-        final MessageItem messageItem = (MessageItem) getItem(position);
-        final String name;
-        final String account = messageItem.getChat().getAccount();
-        final String user = messageItem.getChat().getUser();
-        final String resource = messageItem.getResource();
-        final boolean incoming = messageItem.isIncoming();
-        if (isMUC) {
-            name = resource;
-        } else {
-            if (incoming)
-                name = RosterManager.getInstance().getName(account, user);
-            else
-                name = AccountManager.getInstance().getNickName(account);
-        }
-        if (incoming) {
-            if (view.getBackground() == null)
-                view.setBackgroundResource(R.drawable.chat_bg);
-            view.getBackground().setLevel(
-                    AccountManager.getInstance().getColorLevel(account));
-        } else {
-            view.setBackgroundDrawable(null);
-        }
-        Spannable text = messageItem.getSpannable();
-        TextView textView = (TextView) view.findViewById(R.id.text);
-        ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
-        ChatAction action = messageItem.getAction();
-        String time = StringUtils.getSmartTimeText(messageItem.getTimestamp());
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        if (action == null) {
-            int messageResource = R.drawable.ic_message_delivered;
-            if (!incoming) {
-                if (messageItem.isError())
-                    messageResource = R.drawable.ic_message_has_error;
-                else if (!messageItem.isSent())
-                    messageResource = R.drawable.ic_message_not_sent;
-                else if (!messageItem.isDelivered())
-                    messageResource = R.drawable.ic_message_not_delivered;
+        MessageItem messageItem = (MessageItem) getItem(position);
+
+        if (type == VIEW_TYPE_ACTION_MESSAGE) {
+            View view = convertView;
+            if (convertView == null) {
+                view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_action_message, parent, false);
             }
-            append(builder, " ", new ImageSpan(activity, messageResource));
-            append(builder, " ", new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            append(builder, time, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Time));
-            append(builder, " ", new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            append(builder, name, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Name));
-            append(builder, divider, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            Date timeStamp = messageItem.getDelayTimestamp();
-            if (timeStamp != null) {
-                String delay = activity.getString(
-                        incoming ? R.string.chat_delay : R.string.chat_typed,
-                        StringUtils.getSmartTimeText(timeStamp));
-                append(builder, delay, new TextAppearanceSpan(activity,
-                        R.style.ChatHeader_Delay));
-                append(builder, divider, new TextAppearanceSpan(activity,
-                        R.style.ChatHeader));
-            }
-            if (messageItem.isUnencypted()) {
-                append(builder,
-                        activity.getString(R.string.otr_unencrypted_message),
-                        new TextAppearanceSpan(activity,
-                                R.style.ChatHeader_Delay));
-                append(builder, divider, new TextAppearanceSpan(activity,
-                        R.style.ChatHeader));
-            }
+
+            ChatAction action = messageItem.getAction();
+
+            Spannable text = Emoticons.newSpannable(
+                    action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
+
             Emoticons.getSmiledText(activity.getApplication(), text);
-            if (messageItem.getTag() == null)
-                builder.append(text);
-            else
-                append(builder, text, new TextAppearanceSpan(activity,
-                        R.style.ChatRead));
-        } else {
-            append(builder, time, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Time));
-            append(builder, " ", new TextAppearanceSpan(activity,
-                    R.style.ChatHeader));
-            text = Emoticons.newSpannable(action.getText(activity, name,
-                    text.toString()));
-            Emoticons.getSmiledText(activity.getApplication(), text);
-            append(builder, text, new TextAppearanceSpan(activity,
-                    R.style.ChatHeader_Delay));
+
+            String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+
+            ((TextView)view.findViewById(R.id.action_message_text)).setText(time + ": " + text);
+
+            return view;
         }
-        textView.setText(builder);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
-        if (SettingsManager.chatsShowAvatars()) {
-            avatarView.setVisibility(View.VISIBLE);
-            if (!incoming
-                    || (isMUC && MUCManager.getInstance()
-                    .getNickname(account, user)
-                    .equalsIgnoreCase(resource))) {
-                avatarView.setImageDrawable(AvatarManager.getInstance()
-                        .getAccountAvatar(account));
+
+        View view = convertView;
+
+        if (convertView == null) {
+            final int layoutId;
+
+            if (type == VIEW_TYPE_INCOMING_MESSAGE) {
+                layoutId = R.layout.chat_viewer_incoming_message;
+            } else if (type == VIEW_TYPE_OUTGOING_MESSAGE) {
+                layoutId = R.layout.chat_viewer_outgoing_message;
             } else {
-                if (isMUC) {
-                    if ("".equals(resource)) {
-                        avatarView.setImageDrawable(AvatarManager.getInstance()
-                                .getRoomAvatar(user));
-                    } else {
-                        avatarView.setImageDrawable(AvatarManager.getInstance()
-                                .getOccupantAvatar(user + "/" + resource));
-                    }
-                } else {
-                    avatarView.setImageDrawable(AvatarManager.getInstance()
-                            .getUserAvatar(user));
-                }
+                throw new IllegalStateException();
             }
-            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(
-                    RelativeLayout.RIGHT_OF, R.id.avatar);
-        } else {
-            avatarView.setVisibility(View.GONE);
-            ((RelativeLayout.LayoutParams) textView.getLayoutParams()).addRule(
-                    RelativeLayout.RIGHT_OF, 0);
+
+            view = activity.getLayoutInflater().inflate(layoutId, parent, false);
         }
+
+        setUpMessageView(messageItem, view);
         return view;
     }
 
-    public String getAccount() {
-        return account;
+    private void setUpMessageView(MessageItem messageItem, View view) {
+        final boolean incoming = messageItem.isIncoming();
+
+
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        final String resource = messageItem.getResource();
+
+        if (!incoming) {
+            setStatusIcon(messageItem, view);
+        }
+
+        if (isMUC) {
+            append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
+            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+        }
+
+        Date delayTimestamp = messageItem.getDelayTimestamp();
+
+
+        if (messageItem.isUnencypted()) {
+            append(builder, activity.getString(R.string.otr_unencrypted_message),
+                    new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
+            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+        }
+
+        Spannable text = messageItem.getSpannable();
+        Emoticons.getSmiledText(activity.getApplication(), text);
+        if (messageItem.getTag() == null) {
+            builder.append(text);
+        } else {
+            append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
+        }
+
+        TextView textView = (TextView) view.findViewById(R.id.message_text);
+        textView.setTextAppearance(activity, appearanceStyle);
+        textView.setText(builder);
+        textView.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+
+        String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+
+        if (delayTimestamp != null) {
+            String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
+                    StringUtils.getSmartTimeText(activity, delayTimestamp));
+            time += " (" + delay + ")";
+        }
+
+        ((TextView)view.findViewById(R.id.message_time)).setText(time);
+
+        if (incoming) {
+            setUpAvatar(messageItem, view);
+        }
     }
 
-    public String getUser() {
-        return user;
+    private void setStatusIcon(MessageItem messageItem, View view) {
+        ImageView messageStatusIcon = (ImageView) view.findViewById(R.id.message_status_icon);
+        messageStatusIcon.setVisibility(View.VISIBLE);
+
+        int messageIcon = R.drawable.ic_message_delivered_18dp;
+        if (messageItem.isError()) {
+            messageIcon = R.drawable.ic_message_has_error_18dp;
+        } else if (!messageItem.isSent()) {
+            messageIcon = R.drawable.ic_message_not_sent_18dp;
+        } else if (!messageItem.isDelivered()) {
+            messageStatusIcon.setVisibility(View.INVISIBLE);
+        }
+
+        messageStatusIcon.setImageResource(messageIcon);
     }
 
-    /**
-     * Changes managed chat.
-     *
-     * @param account
-     * @param user
-     */
-    public void setChat(String account, String user) {
-        this.account = account;
-        this.user = user;
-        this.isMUC = MUCManager.getInstance().hasRoom(account, user);
-        onChange();
+    private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
+        int start = builder.length();
+        builder.append(text);
+        builder.setSpan(span, start, start + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    private void setUpAvatar(MessageItem messageItem, View view) {
+        ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
+
+        if (SettingsManager.chatsShowAvatars()) {
+            final String account = messageItem.getChat().getAccount();
+            final String user = messageItem.getChat().getUser();
+            final String resource = messageItem.getResource();
+
+            avatarView.setVisibility(View.VISIBLE);
+            if ((isMUC && MUCManager.getInstance().getNickname(account, user).equalsIgnoreCase(resource))) {
+                avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+            } else {
+                if (isMUC) {
+                    if ("".equals(resource)) {
+                        avatarView.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
+                    } else {
+                        avatarView.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
+                    }
+                } else {
+                    avatarView.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
+                }
+            }
+        } else {
+            avatarView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -318,40 +316,22 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      * @return New hint.
      */
     private String getHint() {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(
-                account);
-        boolean online;
-        if (accountItem == null)
-            online = false;
-        else
-            online = accountItem.getState().isConnected();
-        final AbstractContact abstractContact = RosterManager.getInstance()
-                .getBestContact(account, user);
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        boolean online = accountItem != null && accountItem.getState().isConnected();
+        final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         if (!online) {
-            if (abstractContact instanceof RoomContact)
+            if (abstractContact instanceof RoomContact) {
                 return activity.getString(R.string.muc_is_unavailable);
-            else
+            } else {
                 return activity.getString(R.string.account_is_offline);
+            }
         } else if (!abstractContact.getStatusMode().isOnline()) {
-            if (abstractContact instanceof RoomContact)
+            if (abstractContact instanceof RoomContact) {
                 return activity.getString(R.string.muc_is_unavailable);
-            else
-                return activity.getString(R.string.contact_is_offline,
-                        abstractContact.getName());
+            } else {
+                return activity.getString(R.string.contact_is_offline, abstractContact.getName());
+            }
         }
         return null;
     }
-
-    /**
-     * Contact information has been changed. Renews hint and updates data if
-     * necessary.
-     */
-    public void updateInfo() {
-        String info = getHint();
-        if (this.hint == info || (this.hint != null && this.hint.equals(info)))
-            return;
-        this.hint = info;
-        notifyDataSetChanged();
-    }
-
 }

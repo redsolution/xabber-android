@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.ui.helper.AbstractAvatarInflaterHelper;
 import com.xabber.androiddev.R;
 
 /**
@@ -46,7 +45,6 @@ public abstract class BaseContactInflater {
 
     final LayoutInflater layoutInflater;
 
-    final AbstractAvatarInflaterHelper avatarInflaterHelper;
 
     /**
      * Repeated shadow for drawable.
@@ -62,7 +60,6 @@ public abstract class BaseContactInflater {
     public BaseContactInflater(Activity activity) {
         this.activity = activity;
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
 
         Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.shadow);
         shadowDrawable = new BitmapDrawable(activity.getResources(), bitmap);
@@ -128,7 +125,6 @@ public abstract class BaseContactInflater {
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatar.setVisibility(View.VISIBLE);
             viewHolder.avatar.setImageDrawable(abstractContact.getAvatarForContactList());
-            avatarInflaterHelper.updateAvatar(viewHolder.avatar, abstractContact);
             ((RelativeLayout.LayoutParams) viewHolder.panel.getLayoutParams())
                     .addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
         } else {

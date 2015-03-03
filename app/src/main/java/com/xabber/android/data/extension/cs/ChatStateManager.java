@@ -14,20 +14,6 @@
  */
 package com.xabber.android.data.extension.cs;
 
-import java.util.Calendar;
-import java.util.Map;
-
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Presence.Type;
-import org.jivesoftware.smackx.ChatState;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.packet.ChatStateExtension;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -51,6 +37,20 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.ComposingPausedReceiver;
 import com.xabber.xmpp.address.Jid;
+
+import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smackx.ChatState;
+import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.packet.ChatStateExtension;
+
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Provide information about chat state.
@@ -260,7 +260,7 @@ public class ChatStateManager implements OnDisconnectListener,
         pauseIntents.put(account, user, pendingIntent);
     }
 
-    public void onPaused(Intent intent, String account, String user) {
+    public void onPaused(String account, String user) {
         if (account == null || user == null)
             return;
         updateChatState(account, user, ChatState.paused);

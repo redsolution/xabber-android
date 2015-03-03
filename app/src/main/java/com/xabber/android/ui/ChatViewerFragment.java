@@ -14,16 +14,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
@@ -31,12 +29,11 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment extends Fragment {
+public class ChatViewerFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
-    private TextView pageView;
     private EditText inputView;
     private ListView listView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -45,6 +42,9 @@ public class ChatViewerFragment extends Fragment {
 
     private String account;
     private String user;
+
+    boolean isInputEmpty = true;
+    private ImageButton sendButton;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -69,39 +69,21 @@ public class ChatViewerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        /*
-        Animation used to hide pages.
-        */
-        Animation pagesHideAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.chat_page_out);
-        pagesHideAnimation.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                pageView.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-        });
-
         View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
 
-        chatMessageAdapter = new ChatMessageAdapter(getActivity());
-        chatMessageAdapter.setChat(account, user);
+        sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
+        sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setAdapter(chatMessageAdapter);
+        listView.setOnItemClickListener(this);
 
-        pageView = (TextView) view.findViewById(R.id.chat_page);
+
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
-        view.findViewById(R.id.chat_send).setOnClickListener(
+        view.findViewById(R.id.button_send_message).setOnClickListener(
                 new View.OnClickListener() {
 
                     @Override
@@ -112,32 +94,27 @@ public class ChatViewerFragment extends Fragment {
                 });
 
         inputView.setOnKeyListener(new View.OnKeyListener() {
-
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN
-                        && keyCode == KeyEvent.KEYCODE_ENTER
-                        && SettingsManager.chatsSendByEnter()) {
+                if (SettingsManager.chatsSendByEnter()
+                        && event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_ENTER) {
                     sendMessage();
                     return true;
                 }
                 return false;
             }
-
         });
-        inputView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
+        inputView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public boolean onEditorAction(TextView view, int actionId,
-                                          KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendMessage();
-                    return true;
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    ChatStateManager.getInstance().onPaused(account, user);
                 }
-                return false;
             }
-
         });
+
         inputView.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -150,35 +127,46 @@ public class ChatViewerFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable text) {
-                if (skipOnTextChanges)
-                    return;
-                String account = chatMessageAdapter.getAccount();
-                String user = chatMessageAdapter.getUser();
-                ChatStateManager.getInstance().onComposing(account, user, text);
-            }
+                LogManager.i(this, "afterTextChanged");
+
+                setSendButtonColor();
+
+                if (!skipOnTextChanges) {
+                    ChatStateManager.getInstance().onComposing(account, user, text);
+                }
+             }
 
         });
 
-        updateView();
-
-        chatMessageAdapter.onChange();
-
+        updateChat();
         return view;
 
+    }
+
+    private void setSendButtonColor() {
+        boolean empty = inputView.getText().toString().isEmpty();
+
+        if (empty != isInputEmpty) {
+            isInputEmpty = empty;
+
+            if (isInputEmpty) {
+                sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+            } else {
+                sendButton.setImageResource(R.drawable.ic_button_send);
+                sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+            }
+
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         ((ChatViewer)getActivity()).registerChat(this);
-
-        registerForContextMenu(listView);
-
         restoreInputState();
     }
 
-    private void restoreInputState() {
+    public void restoreInputState() {
         skipOnTextChanges = true;
 
         inputView.setText(ChatManager.getInstance().getTypedMessage(account, user));
@@ -186,17 +174,17 @@ public class ChatViewerFragment extends Fragment {
                 ChatManager.getInstance().getSelectionEnd(account, user));
 
         skipOnTextChanges = false;
+
+        if (!inputView.getText().toString().isEmpty()) {
+            inputView.requestFocus();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
         saveInputState();
-
         ((ChatViewer)getActivity()).unregisterChat(this);
-
-        unregisterForContextMenu(listView);
     }
 
     public void saveInputState() {
@@ -205,25 +193,13 @@ public class ChatViewerFragment extends Fragment {
     }
 
     private void sendMessage() {
-        String text = inputView.getText().toString();
-        int start = 0;
-        int end = text.length();
+        String text = inputView.getText().toString().trim();
 
-        while (start < end && (text.charAt(start) == ' ' || text.charAt(start) == '\n')) {
-            start += 1;
-        }
-        while (start < end && (text.charAt(end - 1) == ' ' || text.charAt(end - 1) == '\n')) {
-            end -= 1;
-        }
-        text = text.substring(start, end);
-
-        if ("".equals(text)) {
+        if (text.isEmpty()) {
             return;
         }
 
-        skipOnTextChanges = true;
-        inputView.getText().clear();
-        skipOnTextChanges = false;
+        clearInputText();
 
         sendMessage(text);
 
@@ -232,8 +208,7 @@ public class ChatViewerFragment extends Fragment {
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
                 && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
-            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(inputView.getWindowToken(), 0);
+            ChatViewer.hideKeyboard(getActivity());
         }
     }
 
@@ -242,23 +217,25 @@ public class ChatViewerFragment extends Fragment {
         updateChat();
     }
 
-    private void updateView() {
-        chatMessageAdapter.onChange();
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view,
                                     ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-        final MessageItem message = (MessageItem) listView.getAdapter().getItem(info.position);
+        ChatMessageAdapter chatMessageAdapter = (ChatMessageAdapter) listView.getAdapter();
 
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.chat_context_menu, menu);
+        int itemViewType = chatMessageAdapter.getItemViewType(info.position);
 
-        if (message.isError()) {
-            menu.findItem(R.id.action_message_repeat).setVisible(true);
+        if (itemViewType == ChatMessageAdapter.VIEW_TYPE_INCOMING_MESSAGE
+                || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
+
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.chat_context_menu, menu);
+
+            if (((MessageItem) chatMessageAdapter.getItem(info.position)).isError()) {
+                menu.findItem(R.id.action_message_repeat).setVisible(true);
+            }
         }
     }
 
@@ -278,7 +255,7 @@ public class ChatViewerFragment extends Fragment {
                 return true;
 
             case R.id.action_message_quote:
-                insertText("> " + message.getText() + "\n");
+                setInputText("> " + message.getText() + "\n");
                 return true;
 
             case R.id.action_message_remove:
@@ -291,36 +268,19 @@ public class ChatViewerFragment extends Fragment {
         }
     }
 
-    /**
-     * Insert additional text to the input.
-     *
-     * @param additional
-     */
-    private void insertText(String additional) {
-        String source = inputView.getText().toString();
-        int selection = inputView.getSelectionEnd();
-        if (selection == -1)
-            selection = source.length();
-        else if (selection > source.length())
-            selection = source.length();
-        String before = source.substring(0, selection);
-        String after = source.substring(selection);
-        if (before.length() > 0 && !before.endsWith("\n"))
-            additional = "\n" + additional;
-        inputView.setText(before + additional + after);
-        inputView.setSelection(selection + additional.length());
-    }
-
     public void updateChat() {
-        updateView();
+        chatMessageAdapter.onChange();
     }
 
     public boolean isEqual(String account, String user) {
         return this.account.equals(account) && this.user.equals(user);
     }
 
-    public void setInputText(String text) {
-        insertText(text);
+    public void setInputText(String additional) {
+        skipOnTextChanges = true;
+        inputView.setText(additional);
+        inputView.setSelection(additional.length());
+        skipOnTextChanges = false;
     }
 
     public String getAccount() {
@@ -331,8 +291,10 @@ public class ChatViewerFragment extends Fragment {
         return user;
     }
 
-    public void clearInputView() {
+    public void clearInputText() {
+        skipOnTextChanges = true;
         inputView.getText().clear();
+        skipOnTextChanges = false;
     }
 
     public void scrollChat() {
@@ -340,5 +302,12 @@ public class ChatViewerFragment extends Fragment {
         if (size > 0) {
             listView.setSelection(size - 1);
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        registerForContextMenu(listView);
+        listView.showContextMenuForChild(view);
+        unregisterForContextMenu(listView);
     }
 }

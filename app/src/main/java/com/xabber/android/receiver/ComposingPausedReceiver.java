@@ -30,8 +30,7 @@ public class ComposingPausedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ChatStateManager.getInstance().onPaused(intent, getAccount(intent),
-                getUser(intent));
+        ChatStateManager.getInstance().onPaused(getAccount(intent), getUser(intent));
     }
 
     public static Intent createIntent(Context context, String account,

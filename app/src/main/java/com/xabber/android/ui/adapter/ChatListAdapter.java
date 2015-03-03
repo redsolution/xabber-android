@@ -13,7 +13,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.AbstractAvatarInflaterHelper;
 import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
@@ -23,15 +22,12 @@ public class ChatListAdapter extends BaseAdapter {
 
     private List<AbstractChat> chats;
 
-    private final AbstractAvatarInflaterHelper avatarInflaterHelper;
-
     private final Context context;
 
 
     public ChatListAdapter(Context context) {
         this.context = context;
         chats = new ArrayList<>();
-        avatarInflaterHelper = AbstractAvatarInflaterHelper.createAbstractContactInflaterHelper();
     }
 
     public void updateChats(List<AbstractChat> chats) {
@@ -73,7 +69,6 @@ public class ChatListAdapter extends BaseAdapter {
 
         final ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
         avatarView.setImageDrawable(abstractContact.getAvatar());
-        avatarInflaterHelper.updateAvatar(avatarView, abstractContact);
 
         final TextView textView = (TextView) view.findViewById(R.id.text);
 

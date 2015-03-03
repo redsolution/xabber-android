@@ -13,7 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources>
-    <style name="Theme" parent="Theme.AppCompat">
+    <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
         <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
         <item name="expanderIndicator">@drawable/expander_indicator_dark</item>

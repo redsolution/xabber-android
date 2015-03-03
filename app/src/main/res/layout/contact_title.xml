@@ -5,8 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
     android:orientation="horizontal"
+    android:background="@color/green_500"
     >
-    <include layout="@layout/contact_title_avatar" />
+
+    <ImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/avatar"
+        android:layout_width="48dip"
+        android:layout_height="48dip"
+        android:src="@drawable/avatar_1_1"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+
+        />
 
     <LinearLayout
         android:id="@+id/name_holder"
@@ -22,6 +34,7 @@
             android:gravity="center_vertical"
             android:singleLine="true"
             android:layout_weight="1"
+            android:textColor="@color/primary_text_default_material_dark"
             android:text="name"
             android:textStyle="bold" />
         <LinearLayout
@@ -35,8 +48,9 @@
                 android:id="@+id/security"
                 android:src="@drawable/ic_security"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:visibility="gone"
+                android:padding="3dp"
                 />
 
             <ImageView
@@ -52,6 +66,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:singleLine="true"
+                android:textColor="@color/primary_text_default_material_dark"
                 android:text="status"
                 />
         </LinearLayout>
