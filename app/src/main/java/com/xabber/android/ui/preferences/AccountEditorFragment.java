@@ -71,7 +71,8 @@ public class AccountEditorFragment extends BaseSettingsFragment
 
         if (getString(R.string.account_tls_mode_key).equals(key)
                 || getString(R.string.account_archive_mode_key).equals(key)
-                || getString(R.string.account_proxy_type_key).equals(key)) {
+                || getString(R.string.account_proxy_type_key).equals(key)
+                || getString(R.string.account_color_key).equals(key)) {
             preference.setSummary((String) newValue);
         } else if (!getString(R.string.account_password_key).equals(key)
                 && !getString(R.string.account_proxy_password_key).equals(key)
