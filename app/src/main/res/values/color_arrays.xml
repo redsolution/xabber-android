@@ -6,6 +6,10 @@
         <item>@string/account_color_name_orange</item>
         <item>@string/account_color_name_red</item>
         <item>@string/account_color_name_blue</item>
+        <item>@string/account_color_name_indigo</item>
+        <item>@string/account_color_name_blue_grey</item>
+        <item>@string/account_color_name_cyan</item>
+        <item>@string/account_color_name_teal</item>
     </array>
 
     <array name="account_action_bar">
@@ -13,6 +17,10 @@
         <item>@color/orange_500</item>
         <item>@color/red_500</item>
         <item>@color/blue_500</item>
+        <item>@color/indigo_500</item>
+        <item>@color/blue_grey_500</item>
+        <item>@color/cyan_500</item>
+        <item>@color/teal_500</item>
     </array>
 
     <array name="account_status_bar">
@@ -20,13 +28,10 @@
         <item>@color/orange_700</item>
         <item>@color/red_700</item>
         <item>@color/blue_700</item>
-    </array>
-
-    <array name="account_chat_background">
-        <item>@color/green_50</item>
-        <item>@color/orange_50</item>
-        <item>@color/red_50</item>
-        <item>@color/blue_50</item>
+        <item>@color/indigo_700</item>
+        <item>@color/blue_grey_700</item>
+        <item>@color/cyan_700</item>
+        <item>@color/teal_700</item>
     </array>
 
     <color name="account_disabled">@color/black_dividers</color>

@@ -120,9 +120,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         authorizationErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
         passwordRequestProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_ic_add_circle);
 
-        TypedArray accountAvatars = application.getResources().obtainTypedArray(R.array.account_avatars);
-        colors = accountAvatars.length();
-        accountAvatars.recycle();
+        colors = application.getResources().getIntArray(R.array.account_color_names).length;
 
         TypedArray types = application.getResources().obtainTypedArray(R.array.account_types);
         accountTypes = new ArrayList<>();

@@ -162,10 +162,15 @@
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
+
+    <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>
     <string name="account_color_name_orange">Orange</string>
     <string name="account_color_name_red">Red</string>
     <string name="account_color_name_blue">Blue</string>
-    <string name="account_color">Account color</string>
+    <string name="account_color_name_indigo">Indigo</string>
+    <string name="account_color_name_teal">Teal</string>
+    <string name="account_color_name_blue_grey">Blue grey</string>
+    <string name="account_color_name_cyan">Cyan</string>
 
 </resources>
