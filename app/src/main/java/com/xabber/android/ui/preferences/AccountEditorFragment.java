@@ -124,6 +124,7 @@ public class AccountEditorFragment extends BaseSettingsFragment
         putValue(source, R.string.account_store_password_key, accountItem.isStorePassword());
         putValue(source, R.string.account_syncable_key, accountItem.isSyncable());
         putValue(source, R.string.account_archive_mode_key, accountItem.getArchiveMode().ordinal());
+        putValue(source, R.string.account_color_key, accountItem.getColorIndex());
 
         com.xabber.android.data.connection.ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         putValue(source, R.string.account_custom_key, connectionSettings.isCustom());
@@ -182,7 +183,9 @@ public class AccountEditorFragment extends BaseSettingsFragment
                 getString(result, R.string.account_proxy_user_key),
                 getString(result, R.string.account_proxy_password_key),
                 getBoolean(result, R.string.account_syncable_key),
-                ArchiveMode.values()[getInt(result, R.string.account_archive_mode_key)]);
+                ArchiveMode.values()[getInt(result, R.string.account_archive_mode_key)],
+                getInt(result, R.string.account_color_key)
+        );
 
         return true;
     }

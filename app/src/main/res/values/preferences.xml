@@ -397,6 +397,7 @@
     <string name="account_proxy_password_key">account_proxy_password</string>
     <string name="account_custom_key">account_custom</string>
     <string name="account_archive_mode_key">account_archive_mode</string>
+    <string name="account_color_key">account_color_key</string>
 
     <string-array name="account_tls_entries">
         <item>@string/account_tls_enable</item>

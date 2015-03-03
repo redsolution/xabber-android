@@ -489,13 +489,18 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                               String userName, boolean storePassword, String password, String resource,
                               int priority, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
-                              String proxyUser, String proxyPassword, boolean syncable, ArchiveMode archiveMode) {
+                              String proxyUser, String proxyPassword, boolean syncable,
+                              ArchiveMode archiveMode, int colorIndex) {
         AccountItem result;
         AccountItem accountItem = getAccount(account);
+
         if (accountItem.getConnectionSettings().getServerName().equals(serverName)
                 && accountItem.getConnectionSettings().getUserName().equals(userName)
                 && accountItem.getConnectionSettings().getResource().equals(resource)) {
             result = accountItem;
+
+            result.setColorIndex(colorIndex);
+
             boolean reconnect = false;
             if (accountItem.getConnectionSettings().isCustom() != custom
                     || !accountItem.getConnectionSettings().getHost().equals(host)
@@ -558,7 +563,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
             requestToWriteAccount(result);
         } else {
-            int colorIndex = accountItem.getColorIndex();
             StatusMode statusMode = accountItem.getRawStatusMode();
             String statusText = accountItem.getStatusText();
             AccountProtocol protocol = accountItem.getConnectionSettings().getProtocol();
@@ -609,7 +613,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 connectionSettings.getProxyUser(),
                 connectionSettings.getProxyPassword(),
                 syncable,
-                accountItem.getArchiveMode());
+                accountItem.getArchiveMode(),
+                accountItem.getColorIndex()
+        );
     }
 
     public void setPassword(String account, boolean storePassword, String password) {
@@ -636,7 +642,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 connectionSettings.getProxyUser(),
                 connectionSettings.getProxyPassword(),
                 accountItem.isSyncable(),
-                accountItem.getArchiveMode()
+                accountItem.getArchiveMode(),
+                accountItem.getColorIndex()
         );
     }
 
@@ -664,7 +671,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 connectionSettings.getProxyUser(),
                 connectionSettings.getProxyPassword(),
                 accountItem.isSyncable(),
-                archiveMode
+                archiveMode,
+                accountItem.getColorIndex()
         );
     }
 
