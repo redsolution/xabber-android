@@ -14,16 +14,6 @@
  */
 package com.xabber.android.data.account;
 
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -37,6 +27,16 @@ import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.androiddev.R;
+
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Date;
 
 /**
  * Storage with account settings.
@@ -181,19 +181,16 @@ class AccountTable extends AbstractTable {
                 DatabaseManager.execSQL(db, sql);
                 break;
             case 34:
-                long count = db.compileStatement("SELECT COUNT(*) FROM accounts;")
-                        .simpleQueryForLong();
+                long count = db.compileStatement("SELECT COUNT(*) FROM accounts;").simpleQueryForLong();
                 Editor editor = PreferenceManager.getDefaultSharedPreferences(
                         Application.getInstance().getBaseContext()).edit();
-                if (count < 2)
-                    editor.putBoolean(
-                            Application.getInstance().getString(
-                                    R.string.contacts_show_accounts_key), false);
-                else
-                    editor.putBoolean(
-                            Application.getInstance().getString(
-                                    R.string.contacts_enable_show_accounts_key),
-                            false);
+                if (count < 2) {
+                    editor.putBoolean(Application.getInstance().getString(
+                            R.string.contacts_show_accounts_key), false);
+                } else {
+                    editor.putBoolean(Application.getInstance().getString(
+                            R.string.contacts_enable_show_accounts_key), false);
+                }
                 editor.commit();
                 break;
             case 36:
@@ -266,12 +263,17 @@ class AccountTable extends AbstractTable {
                 String value = PreferenceManager.getDefaultSharedPreferences(
                         Application.getInstance().getBaseContext()).getString(
                         "chats_history", "all");
-                if ("all".equals(value))
-                    archiveMode = ArchiveMode.available;
-                else if ("unread".equals(value))
-                    archiveMode = ArchiveMode.unreadOnly;
-                else
-                    archiveMode = ArchiveMode.dontStore;
+                switch (value) {
+                    case "all":
+                        archiveMode = ArchiveMode.available;
+                        break;
+                    case "unread":
+                        archiveMode = ArchiveMode.unreadOnly;
+                        break;
+                    default:
+                        archiveMode = ArchiveMode.dontStore;
+                        break;
+                }
                 sql = "UPDATE accounts SET archive_mode = " + archiveMode.ordinal()
                         + ";";
                 DatabaseManager.execSQL(db, sql);
@@ -320,8 +322,9 @@ class AccountTable extends AbstractTable {
         values.put(Fields.PORT, port);
         values.put(Fields.SERVER_NAME, serverName);
         values.put(Fields.USER_NAME, userName);
-        if (!storePassword)
+        if (!storePassword) {
             password = AccountItem.UNDEFINED_PASSWORD;
+        }
         values.put(Fields.PASSWORD, password);
         values.put(Fields.RESOURCE, resource);
         values.put(Fields.COLOR_INDEX, colorIndex);
@@ -344,26 +347,25 @@ class AccountTable extends AbstractTable {
             values.putNull(Fields.PRIVATE_KEY);
         } else {
             PublicKey publicKey = keyPair.getPublic();
-            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
-                    publicKey.getEncoded());
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
             PrivateKey privateKey = keyPair.getPrivate();
-            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
-                    privateKey.getEncoded());
+            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey.getEncoded());
             byte[] publicKeyBytes = x509EncodedKeySpec.getEncoded();
             byte[] privateKeyBytes = pkcs8EncodedKeySpec.getEncoded();
             values.put(Fields.PUBLIC_KEY, publicKeyBytes);
             values.put(Fields.PRIVATE_KEY, privateKeyBytes);
         }
-        if (lastSync == null)
+        if (lastSync == null) {
             values.putNull(Fields.LAST_SYNC);
-        else
+        } else {
             values.put(Fields.LAST_SYNC, lastSync.getTime());
+        }
         values.put(Fields.ARCHIVE_MODE, archiveMode.ordinal());
         SQLiteDatabase db = databaseManager.getWritableDatabase();
-        if (id == null)
+        if (id == null) {
             return db.insert(NAME, Fields.USER_NAME, values);
-        db.update(NAME, values, Fields._ID + " = ?",
-                new String[]{String.valueOf(id)});
+        }
+        db.update(NAME, values, Fields._ID + " = ?", new String[]{String.valueOf(id)});
         return id;
     }
 
@@ -375,8 +377,7 @@ class AccountTable extends AbstractTable {
      */
     void remove(String account, long id) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
-        db.delete(NAME, Fields._ID + " = ?",
-                new String[]{String.valueOf(id)});
+        db.delete(NAME, Fields._ID + " = ?", new String[]{ String.valueOf(id) });
         databaseManager.removeAccount(account);
     }
 
@@ -404,8 +405,7 @@ class AccountTable extends AbstractTable {
     }
 
     static AccountProtocol getProtocol(Cursor cursor) {
-        return AccountProtocol.valueOf(cursor.getString(cursor
-                .getColumnIndex(Fields.PROTOCOL)));
+        return AccountProtocol.valueOf(cursor.getString(cursor.getColumnIndex(Fields.PROTOCOL)));
     }
 
     static String getHost(Cursor cursor) {
@@ -429,8 +429,9 @@ class AccountTable extends AbstractTable {
     }
 
     static String getPassword(Cursor cursor) {
-        if (!isStorePassword(cursor))
+        if (!isStorePassword(cursor)) {
             return AccountItem.UNDEFINED_PASSWORD;
+        }
         return cursor.getString(cursor.getColumnIndex(Fields.PASSWORD));
     }
 
@@ -447,8 +448,7 @@ class AccountTable extends AbstractTable {
     }
 
     static StatusMode getStatusMode(Cursor cursor) {
-        int statusModeIndex = cursor.getInt(cursor
-                .getColumnIndex(Fields.STATUS_MODE));
+        int statusModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.STATUS_MODE));
         return StatusMode.values()[statusModeIndex];
     }
 
@@ -465,8 +465,7 @@ class AccountTable extends AbstractTable {
     }
 
     public static TLSMode getTLSMode(Cursor cursor) {
-        int tlsModeIndex = cursor
-                .getInt(cursor.getColumnIndex(Fields.TLS_MODE));
+        int tlsModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.TLS_MODE));
         return TLSMode.values()[tlsModeIndex];
     }
 
@@ -483,11 +482,11 @@ class AccountTable extends AbstractTable {
     }
 
     static Date getLastSync(Cursor cursor) {
-        if (cursor.isNull(cursor.getColumnIndex(Fields.LAST_SYNC)))
+        if (cursor.isNull(cursor.getColumnIndex(Fields.LAST_SYNC))) {
             return null;
-        else
-            return new Date(cursor.getLong(cursor
-                    .getColumnIndex(Fields.LAST_SYNC)));
+        } else {
+            return new Date(cursor.getLong(cursor.getColumnIndex(Fields.LAST_SYNC)));
+        }
     }
 
     static ArchiveMode getArchiveMode(Cursor cursor) {
@@ -517,16 +516,13 @@ class AccountTable extends AbstractTable {
     }
 
     static KeyPair getKeyPair(Cursor cursor) {
-        byte[] publicKeyBytes = cursor.getBlob(cursor
-                .getColumnIndex(Fields.PUBLIC_KEY));
-        byte[] privateKeyBytes = cursor.getBlob(cursor
-                .getColumnIndex(Fields.PRIVATE_KEY));
-        if (privateKeyBytes == null || publicKeyBytes == null)
+        byte[] publicKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PUBLIC_KEY));
+        byte[] privateKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PRIVATE_KEY));
+        if (privateKeyBytes == null || publicKeyBytes == null) {
             return null;
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
-                publicKeyBytes);
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(
-                privateKeyBytes);
+        }
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
         PublicKey publicKey;
         PrivateKey privateKey;
         KeyFactory keyFactory;
@@ -534,9 +530,7 @@ class AccountTable extends AbstractTable {
             keyFactory = KeyFactory.getInstance("DSA");
             publicKey = keyFactory.generatePublic(publicKeySpec);
             privateKey = keyFactory.generatePrivate(privateKeySpec);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
         return new KeyPair(publicKey, privateKey);
