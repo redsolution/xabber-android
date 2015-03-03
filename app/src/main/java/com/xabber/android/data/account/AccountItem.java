@@ -14,12 +14,6 @@
  */
 package com.xabber.android.data.account;
 
-import java.security.KeyPair;
-import java.util.Date;
-
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Presence.Type;
-
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -28,6 +22,12 @@ import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.androiddev.R;
+
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Type;
+
+import java.security.KeyPair;
+import java.util.Date;
 
 /**
  * Represent account settings and status.
@@ -51,7 +51,7 @@ public class AccountItem extends ConnectionItem {
      */
     private final String account;
 
-    private final int colorIndex;
+    private int colorIndex;
 
     /**
      * Whether account is enabled.
@@ -436,4 +436,7 @@ public class AccountItem extends ConnectionItem {
         return Math.min(128, Math.max(-128, priority));
     }
 
+    public void setColorIndex(int colorIndex) {
+        this.colorIndex = colorIndex;
+    }
 }

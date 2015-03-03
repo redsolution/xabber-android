@@ -23,6 +23,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnWipeListener;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
@@ -113,40 +114,35 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     private AccountManager() {
         this.application = Application.getInstance();
-        accountItems = new HashMap<String, AccountItem>();
-        enabledAccounts = new HashSet<String>();
-        savedStatuses = new ArrayList<SavedStatus>();
-        authorizationErrorProvider = new BaseAccountNotificationProvider<AccountAuthorizationError>(
-                R.drawable.ic_stat_error);
-        passwordRequestProvider = new BaseAccountNotificationProvider<PasswordRequest>(
-                R.drawable.ic_stat_ic_add_circle);
+        accountItems = new HashMap<>();
+        enabledAccounts = new HashSet<>();
+        savedStatuses = new ArrayList<>();
+        authorizationErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
+        passwordRequestProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_ic_add_circle);
 
-        TypedArray accountAvatars = application.getResources()
-                .obtainTypedArray(R.array.account_avatars);
+        TypedArray accountAvatars = application.getResources().obtainTypedArray(R.array.account_avatars);
         colors = accountAvatars.length();
         accountAvatars.recycle();
 
-        TypedArray types = application.getResources().obtainTypedArray(
-                R.array.account_types);
-        accountTypes = new ArrayList<AccountType>();
+        TypedArray types = application.getResources().obtainTypedArray(R.array.account_types);
+        accountTypes = new ArrayList<>();
         for (int index = 0; index < types.length(); index++) {
             int id = types.getResourceId(index, 0);
             TypedArray values = application.getResources().obtainTypedArray(id);
-            AccountProtocol protocol = AccountProtocol.valueOf(values
-                    .getString(0));
+            AccountProtocol protocol = AccountProtocol.valueOf(values.getString(0));
             if (Build.VERSION.SDK_INT < 8 && protocol == AccountProtocol.wlm) {
                 values.recycle();
                 continue;
             }
-            ArrayList<String> servers = new ArrayList<String>();
+            ArrayList<String> servers = new ArrayList<>();
             servers.add(values.getString(9));
-            for (int i = 10; i < values.length(); i++)
+            for (int i = 10; i < values.length(); i++) {
                 servers.add(values.getString(i));
+            }
             accountTypes.add(new AccountType(id, protocol, values.getString(1),
-                    values.getString(2), values.getString(3), values
-                    .getDrawable(4), values.getBoolean(5, false),
-                    values.getString(6), values.getInt(7, 5222), values
-                    .getBoolean(8, false), servers));
+                    values.getString(2), values.getString(3), values.getDrawable(4),
+                    values.getBoolean(5, false), values.getString(6), values.getInt(7, 5222),
+                    values.getBoolean(8, false), servers));
             values.recycle();
         }
         types.recycle();
@@ -156,15 +152,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     @Override
     public void onLoad() {
-        final Collection<SavedStatus> savedStatuses = new ArrayList<SavedStatus>();
-        final Collection<AccountItem> accountItems = new ArrayList<AccountItem>();
+        final Collection<SavedStatus> savedStatuses = new ArrayList<>();
+        final Collection<AccountItem> accountItems = new ArrayList<>();
         Cursor cursor = StatusTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    savedStatuses.add(new SavedStatus(StatusTable
-                            .getStatusMode(cursor), StatusTable
-                            .getStatusText(cursor)));
+                    savedStatuses.add(new SavedStatus(StatusTable.getStatusMode(cursor),
+                            StatusTable.getStatusText(cursor)));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -218,28 +213,28 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         });
     }
 
-    private void onLoaded(Collection<SavedStatus> savedStatuses,
-                          Collection<AccountItem> accountItems) {
+    private void onLoaded(Collection<SavedStatus> savedStatuses, Collection<AccountItem> accountItems) {
         this.savedStatuses.addAll(savedStatuses);
-        for (AccountItem accountItem : accountItems)
+        for (AccountItem accountItem : accountItems) {
             addAccount(accountItem);
-        NotificationManager.getInstance().registerNotificationProvider(
-                authorizationErrorProvider);
-        NotificationManager.getInstance().registerNotificationProvider(
-                passwordRequestProvider);
+        }
+        NotificationManager.getInstance().registerNotificationProvider(authorizationErrorProvider);
+        NotificationManager.getInstance().registerNotificationProvider(passwordRequestProvider);
     }
 
     private void addAccount(AccountItem accountItem) {
         accountItems.put(accountItem.getAccount(), accountItem);
-        if (accountItem.isEnabled())
+        if (accountItem.isEnabled()) {
             enabledAccounts.add(accountItem.getAccount());
-        for (OnAccountAddedListener listener : application
-                .getManagers(OnAccountAddedListener.class))
+        }
+        for (OnAccountAddedListener listener : application.getManagers(OnAccountAddedListener.class)) {
             listener.onAccountAdded(accountItem);
+        }
         if (accountItem.isEnabled()) {
             onAccountEnabled(accountItem);
-            if (accountItem.getRawStatusMode().isOnline())
+            if (accountItem.getRawStatusMode().isOnline()) {
                 onAccountOnline(accountItem);
+            }
         }
         onAccountChanged(accountItem.getAccount());
     }
@@ -256,13 +251,16 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     int getNextColorIndex() {
         int[] count = new int[colors];
-        for (AccountItem accountItem : accountItems.values())
+        for (AccountItem accountItem : accountItems.values()) {
             count[accountItem.getColorIndex() % colors] += 1;
+        }
         int result = 0;
         int value = count[0];
-        for (int index = 0; index < count.length; index++)
-            if (count[index] < value)
+        for (int index = 0; index < count.length; index++) {
+            if (count[index] < value) {
                 result = index;
+            }
+        }
         return result;
     }
 
@@ -280,55 +278,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param accountItem
      */
     void requestToWriteAccount(final AccountItem accountItem) {
-        final AccountProtocol protocol = accountItem.getConnectionSettings()
-                .getProtocol();
-        final boolean custom = accountItem.getConnectionSettings().isCustom();
-        final String host = accountItem.getConnectionSettings().getHost();
-        final int port = accountItem.getConnectionSettings().getPort();
-        final String serverName = accountItem.getConnectionSettings()
-                .getServerName();
-        final String userName = accountItem.getConnectionSettings()
-                .getUserName();
-        final String resource = accountItem.getConnectionSettings()
-                .getResource();
-        final boolean storePassword = accountItem.isStorePassword();
-        final String password = accountItem.getConnectionSettings()
-                .getPassword();
-        final int colorIndex = accountItem.getColorIndex();
-        final int priority = accountItem.getPriority();
-        final StatusMode statusMode = accountItem.getRawStatusMode();
-        final String statusText = accountItem.getStatusText();
-        final boolean enabled = accountItem.isEnabled();
-        final boolean saslEnabled = accountItem.getConnectionSettings()
-                .isSaslEnabled();
-        final TLSMode tlsMode = accountItem.getConnectionSettings()
-                .getTlsMode();
-        final boolean compression = accountItem.getConnectionSettings()
-                .useCompression();
-        final ProxyType proxyType = accountItem.getConnectionSettings()
-                .getProxyType();
-        final String proxyHost = accountItem.getConnectionSettings()
-                .getProxyHost();
-        final int proxyPort = accountItem.getConnectionSettings()
-                .getProxyPort();
-        final String proxyUser = accountItem.getConnectionSettings()
-                .getProxyUser();
-        final String proxyPassword = accountItem.getConnectionSettings()
-                .getProxyPassword();
-        final boolean syncable = accountItem.isSyncable();
-        final KeyPair keyPair = accountItem.getKeyPair();
-        final Date lastSync = accountItem.getLastSync();
-        final ArchiveMode archiveMode = accountItem.getArchiveMode();
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                accountItem.setId(AccountTable.getInstance().write(
-                        accountItem.getId(), protocol, custom, host, port,
-                        serverName, userName, resource, storePassword,
-                        password, colorIndex, priority, statusMode, statusText,
-                        enabled, saslEnabled, tlsMode, compression, proxyType,
-                        proxyHost, proxyPort, proxyUser, proxyPassword,
-                        syncable, keyPair, lastSync, archiveMode));
+                accountItem.setId(AccountTable.getInstance().write(accountItem.getId(), accountItem));
             }
         });
     }
@@ -336,26 +289,25 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     /**
      * Creates new account and starts connection.
      */
-    private AccountItem addAccount(AccountProtocol protocol, boolean custom,
-                                   String host, int port, String serverName, String userName,
-                                   boolean storePassword, String password, String resource, int color,
-                                   int priority, StatusMode statusMode, String statusText,
-                                   boolean enabled, boolean saslEnabled, TLSMode tlsMode,
-                                   boolean compression, ProxyType proxyType, String proxyHost,
-                                   int proxyPort, String proxyUser, String proxyPassword,
-                                   boolean syncable, KeyPair keyPair, Date lastSync,
-                                   ArchiveMode archiveMode,
+    private AccountItem addAccount(AccountProtocol protocol, boolean custom, String host, int port,
+                                   String serverName, String userName, boolean storePassword,
+                                   String password, String resource, int color, int priority,
+                                   StatusMode statusMode, String statusText, boolean enabled,
+                                   boolean saslEnabled, TLSMode tlsMode, boolean compression,
+                                   ProxyType proxyType, String proxyHost, int proxyPort,
+                                   String proxyUser, String proxyPassword, boolean syncable,
+                                   KeyPair keyPair, Date lastSync, ArchiveMode archiveMode,
                                    boolean registerNewAccount) {
-        AccountItem accountItem = new AccountItem(protocol, custom, host, port,
-                serverName, userName, resource, storePassword, password, color,
-                priority, statusMode, statusText, enabled, saslEnabled,
-                tlsMode, compression, proxyType, proxyHost, proxyPort,
-                proxyUser, proxyPassword, syncable, keyPair, lastSync,
-                archiveMode);
-        if(registerNewAccount) {
-          // TODO: attempt to register account, if that fails return null;
-          accountItem.registerAccount();
-          //return(null);
+
+        AccountItem accountItem = new AccountItem(protocol, custom, host, port, serverName, userName,
+                resource, storePassword, password, color, priority, statusMode, statusText, enabled,
+                saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
+                proxyPassword, syncable, keyPair, lastSync, archiveMode);
+
+        if (registerNewAccount) {
+              // TODO: attempt to register account, if that fails return null;
+              // accountItem.registerAccount();
+              // return(null);
         }
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
@@ -375,37 +327,39 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @return assigned account name.
      * @throws NetworkException if user or server part are invalid.
      */
-    public String addAccount(String user, String password,
-                             AccountType accountType, boolean syncable, boolean storePassword,
-                             boolean useOrbot,
-                             boolean registerNewAccount) throws NetworkException {
+    public String addAccount(String user, String password, AccountType accountType, boolean syncable,
+                             boolean storePassword, boolean useOrbot, boolean registerNewAccount)
+            throws NetworkException {
         if (accountType.getProtocol().isOAuth()) {
             int index = 1;
             while (true) {
                 user = String.valueOf(index);
                 boolean found = false;
-                for (AccountItem accountItem : accountItems.values())
+                for (AccountItem accountItem : accountItems.values()) {
                     if (accountItem.getConnectionSettings().getServerName()
                             .equals(accountType.getFirstServer())
-                            && accountItem.getConnectionSettings()
-                            .getUserName().equals(user)) {
+                            && accountItem.getConnectionSettings().getUserName().equals(user)) {
                         found = true;
                         break;
                     }
-                if (!found)
+                }
+                if (!found) {
                     break;
+                }
                 index++;
             }
         }
 
-        if (user == null)
+        if (user == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
+        }
 
-        if (user.indexOf("@") == -1) {
-            if ("".equals(accountType.getFirstServer()))
+        if (!user.contains("@")) {
+            if ("".equals(accountType.getFirstServer())) {
                 throw new NetworkException(R.string.EMPTY_SERVER_NAME);
-            else
+            } else {
                 user += "@" + accountType.getFirstServer();
+            }
         }
 
         String serverName = StringUtils.parseServer(user);
@@ -414,23 +368,26 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         String host = accountType.getHost();
         int port = accountType.getPort();
         boolean tlsRequired = accountType.isTLSRequired();
-        if (useOrbot)
+        if (useOrbot) {
             tlsRequired = true;
+        }
 
         if ("".equals(serverName)) {
             throw new NetworkException(R.string.EMPTY_SERVER_NAME);
-        } else if (!accountType.isAllowServer()
-                && !serverName.equals(accountType.getFirstServer()))
+        } else if (!accountType.isAllowServer() && !serverName.equals(accountType.getFirstServer())) {
             throw new NetworkException(R.string.INCORRECT_USER_NAME);
+        }
 
-        if ("".equals(userName))
+        if ("".equals(userName)) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
-        if ("".equals(resource))
+        }
+        if ("".equals(resource)) {
             resource = "android" + StringUtils.randomString(8);
+        }
 
         if (accountType.getId() == R.array.account_type_xmpp) {
             host = serverName;
-            for (AccountType check : accountTypes)
+            for (AccountType check : accountTypes) {
                 if (check.getServers().contains(serverName)) {
                     accountType = check;
                     host = check.getHost();
@@ -438,30 +395,30 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                     tlsRequired = check.isTLSRequired();
                     break;
                 }
+            }
         }
 
         AccountItem accountItem;
-        for (; ; ) {
-            if (getAccount(userName + '@' + serverName + '/' + resource) == null)
+        while(true) {
+            if (getAccount(userName + '@' + serverName + '/' + resource) == null) {
                 break;
+            }
             resource = "android" + StringUtils.randomString(8);
         }
 
-        accountItem = addAccount(accountType.getProtocol(), true, host, port,
-                serverName, userName, storePassword, password, resource,
-                getNextColorIndex(), 0, StatusMode.available,
-                SettingsManager.statusText(), true, true,
-                tlsRequired ? TLSMode.required : TLSMode.enabled, false,
-                useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
+        accountItem = addAccount(accountType.getProtocol(), true, host, port, serverName, userName,
+                storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
+                SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
+                false, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
                 "", "", syncable, null, null, ArchiveMode.available, registerNewAccount);
-        if(accountItem == null) {
+        if (accountItem == null) {
             throw new NetworkException(R.string.ACCOUNT_REGISTER_FAILED);
         }
 
         onAccountChanged(accountItem.getAccount());
-        if (accountItems.size() > 1
-                && SettingsManager.contactsEnableShowAccounts())
+        if (accountItems.size() > 1 && SettingsManager.contactsEnableShowAccounts()) {
             SettingsManager.enableContactsShowAccount();
+        }
         return accountItem.getAccount();
     }
 
@@ -476,8 +433,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         accountItem.setEnabled(false);
         accountItem.updateConnection(true);
         if (wasEnabled) {
-            if (accountItem.getRawStatusMode().isOnline())
+            if (accountItem.getRawStatusMode().isOnline()) {
                 onAccountOffline(accountItem);
+            }
             onAccountDisabled(accountItem);
         }
         Application.getInstance().runInBackground(new Runnable() {
@@ -488,9 +446,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         });
         accountItems.remove(account);
         enabledAccounts.remove(account);
-        for (OnAccountRemovedListener listener : application
-                .getManagers(OnAccountRemovedListener.class))
+        for (OnAccountRemovedListener listener : application.getManagers(OnAccountRemovedListener.class)) {
             listener.onAccountRemoved(accountItem);
+        }
         removeAuthorizationError(account);
     }
 
@@ -527,50 +485,45 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param syncable
      * @param archiveMode
      */
-    public void updateAccount(String account, boolean custom, String host,
-                              int port, String serverName, String userName,
-                              boolean storePassword, String password, String resource,
-                              int priority, boolean enabled, boolean saslEnabled,
-                              TLSMode tlsMode, boolean compression, ProxyType proxyType,
-                              String proxyHost, int proxyPort, String proxyUser,
-                              String proxyPassword, boolean syncable, ArchiveMode archiveMode) {
+    public void updateAccount(String account, boolean custom, String host, int port, String serverName,
+                              String userName, boolean storePassword, String password, String resource,
+                              int priority, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
+                              boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
+                              String proxyUser, String proxyPassword, boolean syncable,
+                              ArchiveMode archiveMode, int colorIndex) {
         AccountItem result;
         AccountItem accountItem = getAccount(account);
-        if (accountItem.getConnectionSettings().getServerName()
-                .equals(serverName)
-                && accountItem.getConnectionSettings().getUserName()
-                .equals(userName)
-                && accountItem.getConnectionSettings().getResource()
-                .equals(resource)) {
+
+        if (accountItem.getConnectionSettings().getServerName().equals(serverName)
+                && accountItem.getConnectionSettings().getUserName().equals(userName)
+                && accountItem.getConnectionSettings().getResource().equals(resource)) {
             result = accountItem;
+
+            result.setColorIndex(colorIndex);
+
             boolean reconnect = false;
             if (accountItem.getConnectionSettings().isCustom() != custom
-                    || !accountItem.getConnectionSettings().getHost()
-                    .equals(host)
+                    || !accountItem.getConnectionSettings().getHost().equals(host)
                     || accountItem.getConnectionSettings().getPort() != port
-                    || !accountItem.getConnectionSettings().getPassword()
-                    .equals(password)
+                    || !accountItem.getConnectionSettings().getPassword().equals(password)
                     || accountItem.getConnectionSettings().getTlsMode() != tlsMode
                     || accountItem.getConnectionSettings().isSaslEnabled() != saslEnabled
                     || accountItem.getConnectionSettings().useCompression() != compression
                     || accountItem.getConnectionSettings().getProxyType() != proxyType
-                    || !accountItem.getConnectionSettings().getProxyHost()
-                    .equals(proxyHost)
+                    || !accountItem.getConnectionSettings().getProxyHost().equals(proxyHost)
                     || accountItem.getConnectionSettings().getProxyPort() != proxyPort
-                    || !accountItem.getConnectionSettings().getProxyUser()
-                    .equals(proxyUser)
-                    || !accountItem.getConnectionSettings().getProxyPassword()
-                    .equals(proxyPassword)) {
-                result.updateConnectionSettings(custom, host, port, password,
-                        saslEnabled, tlsMode, compression, proxyType,
-                        proxyHost, proxyPort, proxyUser, proxyPassword);
+                    || !accountItem.getConnectionSettings().getProxyUser().equals(proxyUser)
+                    || !accountItem.getConnectionSettings().getProxyPassword().equals(proxyPassword)) {
+                result.updateConnectionSettings(custom, host, port, password, saslEnabled, tlsMode,
+                        compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
                 reconnect = true;
             }
             if (result.isSyncable() != syncable) {
                 result.setSyncable(syncable);
-                for (OnAccountSyncableChangedListener listener : application
-                        .getManagers(OnAccountSyncableChangedListener.class))
+                for (OnAccountSyncableChangedListener listener :
+                        application.getManagers(OnAccountSyncableChangedListener.class)) {
                     listener.onAccountSyncableChanged(result);
+                }
             }
             result.setStorePassword(storePassword);
             boolean changed = result.isEnabled() != enabled;
@@ -585,15 +538,17 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             if (result.getArchiveMode() != archiveMode) {
                 reconnect = (result.getArchiveMode() == ArchiveMode.server) != (archiveMode == ArchiveMode.server);
                 result.setArchiveMode(archiveMode);
-                for (OnAccountArchiveModeChangedListener listener : application
-                        .getManagers(OnAccountArchiveModeChangedListener.class))
+                for (OnAccountArchiveModeChangedListener listener :
+                        application.getManagers(OnAccountArchiveModeChangedListener.class)) {
                     listener.onAccountArchiveModeChanged(result);
+                }
             }
             if (changed && enabled) {
                 enabledAccounts.add(account);
                 onAccountEnabled(result);
-                if (result.getRawStatusMode().isOnline())
+                if (result.getRawStatusMode().isOnline()) {
                     onAccountOnline(result);
+                }
             }
             if (changed || reconnect) {
                 result.updateConnection(true);
@@ -601,26 +556,23 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
             if (changed && !enabled) {
                 enabledAccounts.remove(account);
-                if (result.getRawStatusMode().isOnline())
+                if (result.getRawStatusMode().isOnline()) {
                     onAccountOffline(result);
+                }
                 onAccountDisabled(result);
             }
             requestToWriteAccount(result);
         } else {
-            int colorIndex = accountItem.getColorIndex();
             StatusMode statusMode = accountItem.getRawStatusMode();
             String statusText = accountItem.getStatusText();
-            AccountProtocol protocol = accountItem.getConnectionSettings()
-                    .getProtocol();
+            AccountProtocol protocol = accountItem.getConnectionSettings().getProtocol();
             KeyPair keyPair = accountItem.getKeyPair();
             Date lastSync = accountItem.getLastSync();
             removeAccountWithoutCallback(account);
-            result = addAccount(protocol, custom, host, port, serverName,
-                    userName, storePassword, password, resource, colorIndex,
-                    priority, statusMode, statusText, enabled, saslEnabled,
-                    tlsMode, compression, proxyType, proxyHost, proxyPort,
-                    proxyUser, proxyPassword, syncable, keyPair, lastSync,
-                    archiveMode, false);
+            result = addAccount(protocol, custom, host, port, serverName, userName, storePassword,
+                    password, resource, colorIndex, priority, statusMode, statusText, enabled,
+                    saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
+                    proxyPassword, syncable, keyPair, lastSync, archiveMode, false);
         }
         onAccountChanged(result.getAccount());
     }
@@ -639,75 +591,96 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     public void setSyncable(String account, boolean syncable) {
         AccountItem accountItem = getAccount(account);
-        updateAccount(account, accountItem.getConnectionSettings().isCustom(),
-                accountItem.getConnectionSettings().getHost(), accountItem
-                        .getConnectionSettings().getPort(), accountItem
-                        .getConnectionSettings().getServerName(), accountItem
-                        .getConnectionSettings().getUserName(),
-                accountItem.isStorePassword(), accountItem
-                        .getConnectionSettings().getPassword(), accountItem
-                        .getConnectionSettings().getResource(),
-                accountItem.getPriority(), accountItem.isEnabled(), accountItem
-                        .getConnectionSettings().isSaslEnabled(), accountItem
-                        .getConnectionSettings().getTlsMode(), accountItem
-                        .getConnectionSettings().useCompression(), accountItem
-                        .getConnectionSettings().getProxyType(), accountItem
-                        .getConnectionSettings().getProxyHost(), accountItem
-                        .getConnectionSettings().getProxyPort(), accountItem
-                        .getConnectionSettings().getProxyUser(), accountItem
-                        .getConnectionSettings().getProxyPassword(), syncable,
-                accountItem.getArchiveMode());
+        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
+        updateAccount(
+                account,
+                connectionSettings.isCustom(),
+                connectionSettings.getHost(),
+                connectionSettings.getPort(),
+                connectionSettings.getServerName(),
+                connectionSettings.getUserName(),
+                accountItem.isStorePassword(),
+                connectionSettings.getPassword(),
+                connectionSettings.getResource(),
+                accountItem.getPriority(),
+                accountItem.isEnabled(),
+                connectionSettings.isSaslEnabled(),
+                connectionSettings.getTlsMode(),
+                connectionSettings.useCompression(),
+                connectionSettings.getProxyType(),
+                connectionSettings.getProxyHost(),
+                connectionSettings.getProxyPort(),
+                connectionSettings.getProxyUser(),
+                connectionSettings.getProxyPassword(),
+                syncable,
+                accountItem.getArchiveMode(),
+                accountItem.getColorIndex()
+        );
     }
 
-    public void setPassword(String account, boolean storePassword,
-                            String password) {
+    public void setPassword(String account, boolean storePassword, String password) {
         AccountItem accountItem = getAccount(account);
-        updateAccount(account, accountItem.getConnectionSettings().isCustom(),
-                accountItem.getConnectionSettings().getHost(), accountItem
-                        .getConnectionSettings().getPort(), accountItem
-                        .getConnectionSettings().getServerName(), accountItem
-                        .getConnectionSettings().getUserName(), storePassword,
-                password, accountItem.getConnectionSettings().getResource(),
-                accountItem.getPriority(), accountItem.isEnabled(), accountItem
-                        .getConnectionSettings().isSaslEnabled(), accountItem
-                        .getConnectionSettings().getTlsMode(), accountItem
-                        .getConnectionSettings().useCompression(), accountItem
-                        .getConnectionSettings().getProxyType(), accountItem
-                        .getConnectionSettings().getProxyHost(), accountItem
-                        .getConnectionSettings().getProxyPort(), accountItem
-                        .getConnectionSettings().getProxyUser(), accountItem
-                        .getConnectionSettings().getProxyPassword(),
-                accountItem.isSyncable(), accountItem.getArchiveMode());
+        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
+        updateAccount(
+                account,
+                connectionSettings.isCustom(),
+                connectionSettings.getHost(),
+                connectionSettings.getPort(),
+                connectionSettings.getServerName(),
+                connectionSettings.getUserName(),
+                storePassword,
+                password,
+                connectionSettings.getResource(),
+                accountItem.getPriority(),
+                accountItem.isEnabled(),
+                connectionSettings.isSaslEnabled(),
+                connectionSettings.getTlsMode(),
+                connectionSettings.useCompression(),
+                connectionSettings.getProxyType(),
+                connectionSettings.getProxyHost(),
+                connectionSettings.getProxyPort(),
+                connectionSettings.getProxyUser(),
+                connectionSettings.getProxyPassword(),
+                accountItem.isSyncable(),
+                accountItem.getArchiveMode(),
+                accountItem.getColorIndex()
+        );
     }
 
     public void setArchiveMode(String account, ArchiveMode archiveMode) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(
-                account);
-        AccountManager.getInstance().updateAccount(account,
-                accountItem.getConnectionSettings().isCustom(),
-                accountItem.getConnectionSettings().getHost(),
-                accountItem.getConnectionSettings().getPort(),
-                accountItem.getConnectionSettings().getServerName(),
-                accountItem.getConnectionSettings().getUserName(),
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
+        AccountManager.getInstance().updateAccount(
+                account,
+                connectionSettings.isCustom(),
+                connectionSettings.getHost(),
+                connectionSettings.getPort(),
+                connectionSettings.getServerName(),
+                connectionSettings.getUserName(),
                 accountItem.isStorePassword(),
-                accountItem.getConnectionSettings().getPassword(),
-                accountItem.getConnectionSettings().getResource(),
-                accountItem.getPriority(), accountItem.isEnabled(),
-                accountItem.getConnectionSettings().isSaslEnabled(),
-                accountItem.getConnectionSettings().getTlsMode(),
-                accountItem.getConnectionSettings().useCompression(),
-                accountItem.getConnectionSettings().getProxyType(),
-                accountItem.getConnectionSettings().getProxyHost(),
-                accountItem.getConnectionSettings().getProxyPort(),
-                accountItem.getConnectionSettings().getProxyUser(),
-                accountItem.getConnectionSettings().getProxyPassword(),
-                accountItem.isSyncable(), archiveMode);
+                connectionSettings.getPassword(),
+                connectionSettings.getResource(),
+                accountItem.getPriority(),
+                accountItem.isEnabled(),
+                connectionSettings.isSaslEnabled(),
+                connectionSettings.getTlsMode(),
+                connectionSettings.useCompression(),
+                connectionSettings.getProxyType(),
+                connectionSettings.getProxyHost(),
+                connectionSettings.getProxyPort(),
+                connectionSettings.getProxyUser(),
+                connectionSettings.getProxyPassword(),
+                accountItem.isSyncable(),
+                archiveMode,
+                accountItem.getColorIndex()
+        );
     }
 
     public ArchiveMode getArchiveMode(String account) {
         AccountItem accountItem = getAccount(account);
-        if (accountItem == null)
+        if (accountItem == null) {
             return ArchiveMode.available;
+        }
         return accountItem.getArchiveMode();
     }
 
@@ -735,34 +708,41 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
         for (AccountItem accountItem : accountItems.values()) {
             ConnectionState state = accountItem.getState();
-            if (state == ConnectionState.connected)
+            if (state == ConnectionState.connected) {
                 online = true;
-            if (RosterManager.getInstance().isRosterReceived(
-                    accountItem.getAccount()))
+            }
+            if (RosterManager.getInstance().isRosterReceived(accountItem.getAccount())) {
                 roster = true;
-            if (state == ConnectionState.connecting
-                    || state == ConnectionState.authentication)
+            }
+            if (state == ConnectionState.connecting || state == ConnectionState.authentication) {
                 connecting = true;
-            if (state == ConnectionState.waiting)
+            }
+            if (state == ConnectionState.waiting) {
                 waiting = true;
-            if (accountItem.isEnabled())
+            }
+            if (accountItem.isEnabled()) {
                 offline = true;
+            }
             disabled = true;
         }
-        if (online)
+
+        if (online) {
             return CommonState.online;
-        else if (roster)
+        } else if (roster) {
             return CommonState.roster;
-        else if (connecting)
+        } else if (connecting) {
             return CommonState.connecting;
-        if (waiting)
+        }
+
+        if (waiting) {
             return CommonState.waiting;
-        else if (offline)
+        } else if (offline) {
             return CommonState.offline;
-        else if (disabled)
+        } else if (disabled) {
             return CommonState.disabled;
-        else
+        } else {
             return CommonState.empty;
+        }
     }
 
     /**
@@ -772,12 +752,16 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     public int getColorLevel(String account) {
         AccountItem accountItem = getAccount(account);
         int colorIndex;
-        if (accountItem == null)
+
+        if (accountItem == null) {
             return 0;
-        else
+        } else {
             colorIndex = accountItem.getColorIndex() % colors;
-        if (colorIndex < 0)
+        }
+
+        if (colorIndex < 0) {
             colorIndex += colors;
+        }
         return colorIndex;
     }
 
@@ -790,21 +774,23 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     private boolean hasSameBareAddress(String account) {
         String bareAddress = Jid.getBareAddress(account);
-        for (AccountItem check : accountItems.values())
+        for (AccountItem check : accountItems.values()) {
             if (!check.getAccount().equals(account)
-                    && Jid.getBareAddress(check.getAccount()).equals(
-                    bareAddress))
+                    && Jid.getBareAddress(check.getAccount()).equals(bareAddress)) {
                 return true;
+            }
+        }
         return false;
     }
 
     private boolean hasSameProtocol(String account) {
-        AccountProtocol protocol = getAccount(account).getConnectionSettings()
-                .getProtocol();
-        for (AccountItem check : accountItems.values())
+        AccountProtocol protocol = getAccount(account).getConnectionSettings().getProtocol();
+        for (AccountItem check : accountItems.values()) {
             if (!check.getAccount().equals(account)
-                    && check.getConnectionSettings().getProtocol() == protocol)
+                    && check.getConnectionSettings().getProtocol() == protocol) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -814,32 +800,32 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     public String getVerboseName(String account) {
         AccountItem accountItem = getAccount(account);
-        if (accountItem == null)
+        if (accountItem == null) {
             return account;
+        }
         if (accountItem.getConnectionSettings().getProtocol().isOAuth()) {
             String jid = OAuthManager.getInstance().getAssignedJid(account);
-            AccountProtocol accountProtocol = accountItem
-                    .getConnectionSettings().getProtocol();
+            AccountProtocol accountProtocol = accountItem.getConnectionSettings().getProtocol();
             String name;
             if (jid == null) {
-                if (hasSameProtocol(account))
+                if (hasSameProtocol(account)) {
                     name = accountItem.getConnectionSettings().getUserName();
-                else
-                    return application.getString(accountProtocol
-                            .getNameResource());
-
+                } else {
+                    return application.getString(accountProtocol.getNameResource());
+                }
             } else {
                 name = Jid.getBareAddress(jid);
-                if (!hasSameBareAddress(jid))
+                if (!hasSameBareAddress(jid)) {
                     return name;
+                }
             }
-            return application.getString(accountProtocol.getShortResource())
-                    + " - " + name;
+            return application.getString(accountProtocol.getShortResource()) + " - " + name;
         } else {
-            if (hasSameBareAddress(account))
+            if (hasSameBareAddress(account)) {
                 return account;
-            else
+            } else {
                 return Jid.getBareAddress(account);
+            }
         }
     }
 
@@ -850,12 +836,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     public String getNickName(String account) {
         String jid = OAuthManager.getInstance().getAssignedJid(account);
-        String result = VCardManager.getInstance().getName(
-                Jid.getBareAddress(jid));
-        if ("".equals(result))
+        String result = VCardManager.getInstance().getName(Jid.getBareAddress(jid));
+        if ("".equals(result)) {
             return getVerboseName(account);
-        else
+        } else {
             return result;
+        }
     }
 
     /**
@@ -865,8 +851,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param statusMode
      * @param statusText
      */
-    public void setStatus(String account, StatusMode statusMode,
-                          String statusText) {
+    public void setStatus(String account, StatusMode statusMode, String statusText) {
         addSavedStatus(statusMode, statusText);
         AccountItem accountItem = getAccount(account);
         setStatus(accountItem, statusMode, statusText);
@@ -875,24 +860,25 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         } catch (NetworkException e) {
         }
         boolean found = false;
-        for (AccountItem check : accountItems.values())
-            if (check.isEnabled()
-                    && SettingsManager.statusMode() == check.getRawStatusMode()) {
+        for (AccountItem check : accountItems.values()) {
+            if (check.isEnabled() && SettingsManager.statusMode() == check.getRawStatusMode()) {
                 found = true;
                 break;
             }
-        if (!found)
+        }
+        if (!found) {
             SettingsManager.setStatusMode(statusMode);
+        }
         found = false;
-        for (AccountItem check : accountItems.values())
-            if (check.isEnabled()
-                    && SettingsManager.statusText().equals(
-                    check.getStatusText())) {
+        for (AccountItem check : accountItems.values()) {
+            if (check.isEnabled() && SettingsManager.statusText().equals(check.getStatusText())) {
                 found = true;
                 break;
             }
-        if (!found)
+        }
+        if (!found) {
             SettingsManager.setStatusText(statusText);
+        }
         onAccountChanged(account);
     }
 
@@ -910,8 +896,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * If we are already away or xa, do nothing.
      */
     public void goAway() {
-        if (away || xa)
+        if (away || xa) {
             return;
+        }
         away = true;
         resendPresence();
     }
@@ -922,8 +909,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * If we are already xa, do nothing.
      */
     public void goXa() {
-        if (xa)
+        if (xa) {
             return;
+        }
         xa = true;
         resendPresence();
     }
@@ -934,8 +922,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * If we are already waked up, do nothing.
      */
     public void wakeUp() {
-        if (!away && !xa)
+        if (!away && !xa) {
             return;
+        }
         away = false;
         xa = false;
         resendPresence();
@@ -945,12 +934,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * Sends new presence information for all accounts.
      */
     public void resendPresence() {
-        for (AccountItem accountItem : accountItems.values())
+        for (AccountItem accountItem : accountItems.values()) {
             try {
-                PresenceManager.getInstance().resendPresence(
-                        accountItem.getAccount());
+                PresenceManager.getInstance().resendPresence(accountItem.getAccount());
             } catch (NetworkException e) {
             }
+        }
     }
 
     /**
@@ -960,17 +949,17 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param statusMode
      * @param statusText
      */
-    private void setStatus(AccountItem accountItem, StatusMode statusMode,
-                           String statusText) {
+    private void setStatus(AccountItem accountItem, StatusMode statusMode, String statusText) {
         boolean changed = accountItem.isEnabled()
-                && accountItem.getRawStatusMode().isOnline() != statusMode
-                .isOnline();
+                && accountItem.getRawStatusMode().isOnline() != statusMode.isOnline();
         accountItem.setStatus(statusMode, statusText);
-        if (changed && statusMode.isOnline())
+        if (changed && statusMode.isOnline()) {
             onAccountOnline(accountItem);
+        }
         accountItem.updateConnection(true);
-        if (changed && !statusMode.isOnline())
+        if (changed && !statusMode.isOnline()) {
             onAccountOffline(accountItem);
+        }
         requestToWriteAccount(accountItem);
     }
 
@@ -982,18 +971,19 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     public void setStatus(StatusMode statusMode, String statusText) {
         SettingsManager.setStatusMode(statusMode);
+
         if (statusText != null) {
             addSavedStatus(statusMode, statusText);
             SettingsManager.setStatusText(statusText);
         }
+
         for (AccountItem accountItem : accountItems.values()) {
             setStatus(accountItem, statusMode,
-                    statusText == null ? accountItem.getStatusText()
-                            : statusText);
+                    statusText == null ? accountItem.getStatusText() : statusText);
         }
+
         resendPresence();
-        onAccountsChanged(new ArrayList<String>(AccountManager.getInstance()
-                .getAllAccounts()));
+        onAccountsChanged(new ArrayList<>(AccountManager.getInstance().getAllAccounts()));
     }
 
     /**
@@ -1002,11 +992,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param statusMode
      * @param statusText
      */
-    private void addSavedStatus(final StatusMode statusMode,
-                                final String statusText) {
+    private void addSavedStatus(final StatusMode statusMode, final String statusText) {
         SavedStatus savedStatus = new SavedStatus(statusMode, statusText);
-        if (savedStatuses.contains(savedStatus))
+        if (savedStatuses.contains(savedStatus)) {
             return;
+        }
         savedStatuses.add(savedStatus);
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -1023,8 +1013,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param statusText
      */
     public void removeSavedStatus(final SavedStatus savedStatus) {
-        if (!savedStatuses.remove(savedStatus))
+        if (!savedStatuses.remove(savedStatus)) {
             return;
+        }
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -1063,11 +1054,13 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * </ul>
      */
     public String getSelectedAccount() {
-        if (SettingsManager.contactsShowAccounts())
+        if (SettingsManager.contactsShowAccounts()) {
             return null;
+        }
         String selected = SettingsManager.contactsSelectedAccount();
-        if (enabledAccounts.contains(selected))
+        if (enabledAccounts.contains(selected)) {
             return selected;
+        }
         return null;
     }
 
@@ -1076,8 +1069,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     public void addAuthenticationError(String account) {
-        authorizationErrorProvider.add(new AccountAuthorizationError(account),
-                true);
+        authorizationErrorProvider.add(new AccountAuthorizationError(account), true);
     }
 
     public void removePasswordRequest(String account) {
@@ -1089,7 +1081,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     public void onAccountChanged(String account) {
-        Collection<String> accounts = new ArrayList<String>(1);
+        Collection<String> accounts = new ArrayList<>(1);
         accounts.add(account);
         onAccountsChanged(accounts);
     }
@@ -1098,37 +1090,37 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (OnAccountChangedListener accountListener : Application
-                        .getInstance().getUIListeners(
-                                OnAccountChangedListener.class))
+                for (OnAccountChangedListener accountListener
+                        : Application.getInstance().getUIListeners(OnAccountChangedListener.class)) {
                     accountListener.onAccountsChanged(accounts);
+                }
             }
         });
     }
 
     public void onAccountEnabled(AccountItem accountItem) {
-        for (OnAccountEnabledListener listener : application
-                .getManagers(OnAccountEnabledListener.class))
+        for (OnAccountEnabledListener listener : application.getManagers(OnAccountEnabledListener.class)) {
             listener.onAccountEnabled(accountItem);
+        }
     }
 
     public void onAccountOnline(AccountItem accountItem) {
-        for (OnAccountOnlineListener listener : application
-                .getManagers(OnAccountOnlineListener.class))
+        for (OnAccountOnlineListener listener : application.getManagers(OnAccountOnlineListener.class)) {
             listener.onAccountOnline(accountItem);
+        }
     }
 
     public void onAccountOffline(AccountItem accountItem) {
         accountItem.clearPassword();
-        for (OnAccountOfflineListener listener : application
-                .getManagers(OnAccountOfflineListener.class))
+        for (OnAccountOfflineListener listener : application.getManagers(OnAccountOfflineListener.class)) {
             listener.onAccountOffline(accountItem);
+        }
     }
 
     public void onAccountDisabled(AccountItem accountItem) {
-        for (OnAccountDisabledListener listener : application
-                .getManagers(OnAccountDisabledListener.class))
+        for (OnAccountDisabledListener listener : application.getManagers(OnAccountDisabledListener.class)) {
             listener.onAccountDisabled(accountItem);
+        }
     }
 
     @Override

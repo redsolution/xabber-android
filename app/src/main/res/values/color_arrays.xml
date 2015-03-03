@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <array name="account_color_names">
+        <item>@string/account_color_name_green</item>
+        <item>@string/account_color_name_orange</item>
+        <item>@string/account_color_name_red</item>
+        <item>@string/account_color_name_blue</item>
+    </array>
+
     <array name="account_action_bar">
         <item>@color/teal_500</item>
         <item>@color/deep_orange_500</item>
