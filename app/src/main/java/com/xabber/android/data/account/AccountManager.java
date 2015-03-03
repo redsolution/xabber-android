@@ -278,43 +278,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param accountItem
      */
     void requestToWriteAccount(final AccountItem accountItem) {
-        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
-
-        final AccountProtocol protocol = connectionSettings.getProtocol();
-        final boolean custom = connectionSettings.isCustom();
-        final String host = connectionSettings.getHost();
-        final int port = connectionSettings.getPort();
-        final String serverName = connectionSettings.getServerName();
-        final String userName = connectionSettings.getUserName();
-        final String resource = connectionSettings.getResource();
-        final boolean storePassword = accountItem.isStorePassword();
-        final String password = connectionSettings.getPassword();
-        final int colorIndex = accountItem.getColorIndex();
-        final int priority = accountItem.getPriority();
-        final StatusMode statusMode = accountItem.getRawStatusMode();
-        final String statusText = accountItem.getStatusText();
-        final boolean enabled = accountItem.isEnabled();
-        final boolean saslEnabled = connectionSettings.isSaslEnabled();
-        final TLSMode tlsMode = connectionSettings.getTlsMode();
-        final boolean compression = connectionSettings.useCompression();
-        final ProxyType proxyType = connectionSettings.getProxyType();
-        final String proxyHost = connectionSettings.getProxyHost();
-        final int proxyPort = connectionSettings.getProxyPort();
-        final String proxyUser = connectionSettings.getProxyUser();
-        final String proxyPassword = connectionSettings.getProxyPassword();
-        final boolean syncable = accountItem.isSyncable();
-        final KeyPair keyPair = accountItem.getKeyPair();
-        final Date lastSync = accountItem.getLastSync();
-        final ArchiveMode archiveMode = accountItem.getArchiveMode();
-
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                accountItem.setId(AccountTable.getInstance().write(accountItem.getId(), protocol,
-                        custom, host, port, serverName, userName, resource, storePassword, password,
-                        colorIndex, priority, statusMode, statusText, enabled, saslEnabled, tlsMode,
-                        compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword,
-                        syncable, keyPair, lastSync, archiveMode));
+                accountItem.setId(AccountTable.getInstance().write(accountItem.getId(), accountItem));
             }
         });
     }
