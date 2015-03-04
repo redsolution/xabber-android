@@ -22,7 +22,7 @@
         android:id="@+id/avatar"
         android:layout_width="32dip"
         android:layout_height="32dip"
-        android:src="@drawable/avatar_account_1"
+        android:src="@drawable/ic_type_gtalk"
         />
 
     <TextView

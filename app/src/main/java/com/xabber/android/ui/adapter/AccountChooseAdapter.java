@@ -14,10 +14,8 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -28,12 +26,16 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Adapter for drop down list of accounts.
  *
  * @author alexander.ivanov
  */
 public class AccountChooseAdapter extends BaseAdapter {
+    private final int[] accountColors;
 
     private final Activity activity;
     protected final ArrayList<String> accounts;
@@ -44,6 +46,8 @@ public class AccountChooseAdapter extends BaseAdapter {
         accounts = new ArrayList<String>(AccountManager.getInstance()
                 .getAccounts());
         Collections.sort(accounts);
+
+        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
     }
 
     @Override
@@ -72,9 +76,12 @@ public class AccountChooseAdapter extends BaseAdapter {
             view = convertView;
         }
         final String account = (String) getItem(position);
+
+        int accountColor = accountColors[accountManager.getColorLevel(account)];
+        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
         ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(
-                        account));
+                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+
         ((TextView) view.findViewById(R.id.name)).setText(accountManager
                 .getVerboseName(account));
         return view;
@@ -91,9 +98,12 @@ public class AccountChooseAdapter extends BaseAdapter {
             view = convertView;
         }
         final String account = (String) getItem(position);
+
+        int accountColor = accountColors[accountManager.getColorLevel(account)];
+        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
         ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(
-                        account));
+                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+
         ((TextView) view.findViewById(R.id.name)).setText(accountManager
                 .getVerboseName(account));
         return view;

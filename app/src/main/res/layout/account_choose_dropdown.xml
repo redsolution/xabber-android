@@ -18,12 +18,7 @@
     android:layout_height="wrap_content"
     android:padding="4dip">
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="48dip"
-        android:layout_height="48dip"
-        android:src="@drawable/avatar_account_1"
-        />
+    <include layout="@layout/avatar_account" />
 
     <TextView
         android:id="@+id/name"

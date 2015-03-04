@@ -14,14 +14,6 @@
  */
 package com.xabber.android.data.extension.avatar;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.packet.Presence;
-
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -41,6 +33,14 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
+
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.Presence;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Provides information about avatars (hashes and values). Store and retrieve
@@ -97,11 +97,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     private final BaseAvatarSet userAvatarSet;
 
     /**
-     * Accounts' default avatar set.
-     */
-    private final AccountAvatarSet accountAvatarSet;
-
-    /**
      * Rooms' default avatar set.
      */
     private final BaseAvatarSet roomAvatarSet;
@@ -121,13 +116,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
         this.application = Application.getInstance();
         userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars,
                 R.drawable.avatar_1_1);
-        accountAvatarSet = new AccountAvatarSet(application,
-                R.array.account_avatars, R.drawable.avatar_account_1);
         roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars,
                 R.drawable.avatar_muc_1);
-        hashes = new HashMap<String, String>();
-        bitmaps = new HashMap<String, Bitmap>();
-        contactListDrawables = new HashMap<String, Drawable>();
+        hashes = new HashMap<>();
+        bitmaps = new HashMap<>();
+        contactListDrawables = new HashMap<>();
     }
 
     @Override
@@ -259,7 +252,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     public void onLowMemory() {
         contactListDrawables.clear();
         userAvatarSet.onLowMemory();
-        accountAvatarSet.onLowMemory();
         roomAvatarSet.onLowMemory();
     }
 
@@ -281,7 +273,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
             return new BitmapDrawable(value);
         else
             return application.getResources().getDrawable(
-                    accountAvatarSet.getResourceId(account));
+                    R.drawable.ic_avatar_account);
     }
 
     /**

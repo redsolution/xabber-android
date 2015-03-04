@@ -58,10 +58,13 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
         }
         String account = getItem(position);
 
-        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(
-                new ColorDrawable(accountColors[accountManager.getColorLevel(account)]));
+        int accountColor = accountColors[accountManager.getColorLevel(account)];
+
+        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable(accountColor));
+        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
         ((ImageView) view.findViewById(R.id.avatar))
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+
         ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
         AccountItem accountItem = accountManager.getAccount(account);
         ConnectionState state;

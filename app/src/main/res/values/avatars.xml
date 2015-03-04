@@ -63,12 +63,7 @@
         <item>@drawable/avatar_6_7</item>
         <item>@drawable/avatar_6_8</item>
     </array>
-    <array name="account_avatars">
-        <item>@drawable/avatar_account_1</item>
-        <item>@drawable/avatar_account_2</item>
-        <item>@drawable/avatar_account_3</item>
-        <item>@drawable/avatar_account_4</item>
-    </array>
+
     <array name="muc_avatars">
         <item>@drawable/avatar_muc_1</item>
         <item>@drawable/avatar_muc_2</item>
