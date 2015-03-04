@@ -17,6 +17,7 @@
     android:id="@+id/chat_message_incoming"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     >
     <ImageView
         android:id="@+id/avatar"
@@ -40,6 +41,8 @@
 
         android:layout_toRightOf="@id/avatar"
         android:layout_toEndOf="@id/avatar"
+
+        android:autoLink="web"
 
         android:minWidth="142dp"
 

@@ -17,6 +17,7 @@
     android:id="@+id/chat_message_incoming"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     >
 
     <TextView
@@ -36,6 +37,7 @@
         android:layout_marginRight="6dp"
         android:layout_marginEnd="6dp"
 
+        android:autoLink="web"
 
         android:minWidth="160dp"
 
