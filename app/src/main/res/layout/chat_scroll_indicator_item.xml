@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="3dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginLeft="3dp"
+    android:layout_marginStart="3dp"
+    >
+
+    <ImageView
+        android:id="@+id/indicator_item_body"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_margin="3dp"
+        android:background="@color/grey_500"
+        />
+
+    <View
+        android:id="@+id/indicator_item_selection"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:background="@color/grey_500"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>
