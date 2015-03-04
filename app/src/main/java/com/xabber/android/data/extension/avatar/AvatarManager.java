@@ -19,7 +19,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
@@ -58,8 +57,7 @@ import java.util.Map;
  *
  * @author alexander.ivanov
  */
-public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
-        OnPacketListener {
+public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPacketListener {
 
     /**
      * Maximum image width / height to be loaded.
@@ -67,8 +65,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     private static final int MAX_SIZE = 256;
 
     private static final String EMPTY_HASH = "";
-    private static final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(1, 1,
-            Bitmap.Config.ALPHA_8);
+    private static final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
 
     private final Application application;
 
@@ -114,10 +111,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
 
     private AvatarManager() {
         this.application = Application.getInstance();
-        userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars,
-                R.drawable.avatar_1_1);
-        roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars,
-                R.drawable.avatar_muc_1);
+        userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars, R.drawable.avatar_1_1);
+        roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars, R.drawable.avatar_muc_1);
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
@@ -125,24 +120,22 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
 
     @Override
     public void onLoad() {
-        final Map<String, String> hashes = new HashMap<String, String>();
-        final Map<String, Bitmap> bitmaps = new HashMap<String, Bitmap>();
+        final Map<String, String> hashes = new HashMap<>();
+        final Map<String, Bitmap> bitmaps = new HashMap<>();
         Cursor cursor = AvatarTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
                 do {
                     String hash = AvatarTable.getHash(cursor);
-                    hashes.put(AvatarTable.getUser(cursor),
-                            hash == null ? EMPTY_HASH : hash);
+                    hashes.put(AvatarTable.getUser(cursor), hash == null ? EMPTY_HASH : hash);
                 } while (cursor.moveToNext());
             }
         } finally {
             cursor.close();
         }
-        for (String hash : new HashSet<String>(hashes.values()))
-            if (hash != EMPTY_HASH) {
-                Bitmap bitmap = makeBitemap(AvatarStorage.getInstance().read(
-                        hash));
+        for (String hash : new HashSet<>(hashes.values()))
+            if (!hash.equals(EMPTY_HASH)) {
+                Bitmap bitmap = makeBitmap(AvatarStorage.getInstance().read(hash));
                 bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
             }
         Application.getInstance().runOnUiThread(new Runnable() {
@@ -150,13 +143,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
             public void run() {
                 onLoaded(hashes, bitmaps);
             }
-
-            ;
         });
     }
 
-    private void onLoaded(Map<String, String> hashes,
-                          Map<String, Bitmap> bitmaps) {
+    private void onLoaded(Map<String, String> hashes, Map<String, Bitmap> bitmaps) {
         this.hashes.putAll(hashes);
         this.bitmaps.putAll(bitmaps);
     }
@@ -185,9 +175,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      * @return Bitmap. <code>null</code> can be returned if value is invalid or
      * is <code>null</code>.
      */
-    private static Bitmap makeBitemap(byte[] value) {
-        if (value == null)
+    private static Bitmap makeBitmap(byte[] value) {
+        if (value == null) {
             return null;
+        }
 
         // Load only size values
         BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
@@ -207,8 +198,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
         // Load image
         BitmapFactory.Options resultOptions = new BitmapFactory.Options();
         resultOptions.inSampleSize = scale;
-        return BitmapFactory.decodeByteArray(value, 0, value.length,
-                resultOptions);
+        return BitmapFactory.decodeByteArray(value, 0, value.length, resultOptions);
     }
 
     /**
@@ -220,13 +210,15 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      */
     private Bitmap getBitmap(String bareAddress) {
         String hash = hashes.get(bareAddress);
-        if (hash == null || hash == EMPTY_HASH)
+        if (hash == null || hash.equals(EMPTY_HASH)) {
             return null;
+        }
         Bitmap bitmap = bitmaps.get(hash);
-        if (bitmap == EMPTY_BITMAP)
+        if (bitmap == EMPTY_BITMAP) {
             return null;
-        else
+        } else {
             return bitmap;
+        }
     }
 
     /**
@@ -236,9 +228,10 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      * @param value
      */
     private void setValue(final String hash, final byte[] value) {
-        if (hash == null)
+        if (hash == null) {
             return;
-        Bitmap bitmap = makeBitemap(value);
+        }
+        Bitmap bitmap = makeBitmap(value);
         bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
         application.runInBackground(new Runnable() {
             @Override
@@ -266,14 +259,15 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      */
     public Drawable getAccountAvatar(String account) {
         String jid = OAuthManager.getInstance().getAssignedJid(account);
-        if (jid == null)
+        if (jid == null) {
             jid = account;
+        }
         Bitmap value = getBitmap(Jid.getBareAddress(jid));
-        if (value != null)
-            return new BitmapDrawable(value);
-        else
-            return application.getResources().getDrawable(
-                    R.drawable.ic_avatar_account);
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        } else {
+            return application.getResources().getDrawable(R.drawable.ic_avatar_account);
+        }
     }
 
     /**
@@ -284,11 +278,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      */
     public Drawable getUserAvatar(String user) {
         Bitmap value = getBitmap(user);
-        if (value != null)
-            return new BitmapDrawable(value);
-        else
-            return application.getResources().getDrawable(
-                    userAvatarSet.getResourceId(user));
+        if (value != null) {
+            return new BitmapDrawable(application.getResources(), value);
+        } else {
+            return application.getResources().getDrawable(userAvatarSet.getResourceId(user));
+        }
     }
 
     /**
@@ -299,11 +293,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      */
     public Bitmap getUserBitmap(String user) {
         Bitmap value = getBitmap(user);
-        if (value != null)
+        if (value != null) {
             return value;
-        else
+        } else {
             return ((BitmapDrawable) application.getResources().getDrawable(
                     userAvatarSet.getResourceId(user))).getBitmap();
+        }
     }
 
     /**
@@ -328,8 +323,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      * @return
      */
     public Drawable getRoomAvatar(String user) {
-        return application.getResources().getDrawable(
-                roomAvatarSet.getResourceId(user));
+        return application.getResources().getDrawable(roomAvatarSet.getResourceId(user));
     }
 
     /**
@@ -364,8 +358,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      * @return
      */
     public Drawable getOccupantAvatar(String user) {
-        return application.getResources().getDrawable(
-                userAvatarSet.getResourceId(user));
+        return application.getResources().getDrawable(userAvatarSet.getResourceId(user));
     }
 
     /**
@@ -383,24 +376,28 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     @Override
     public void onPacket(ConnectionItem connection, String bareAddress,
                          Packet packet) {
-        if (!(packet instanceof Presence) || bareAddress == null)
+        if (!(packet instanceof Presence) || bareAddress == null) {
             return;
-        if (!(connection instanceof AccountItem))
+        }
+        if (!(connection instanceof AccountItem)) {
             return;
+        }
         String account = ((AccountItem) connection).getAccount();
         Presence presence = (Presence) packet;
-        if (presence.getType() == Presence.Type.error)
+        if (presence.getType() == Presence.Type.error) {
             return;
-        for (PacketExtension packetExtension : presence.getExtensions())
+        }
+        for (PacketExtension packetExtension : presence.getExtensions()) {
             if (packetExtension instanceof VCardUpdate) {
                 VCardUpdate vCardUpdate = (VCardUpdate) packetExtension;
-                if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady())
+                if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {
                     onPhotoReady(account, bareAddress, vCardUpdate);
+                }
             }
+        }
     }
 
-    private void onPhotoReady(final String account, final String bareAddress,
-                              VCardUpdate vCardUpdate) {
+    private void onPhotoReady(final String account, final String bareAddress, VCardUpdate vCardUpdate) {
         if (vCardUpdate.isEmpty()) {
             setHash(bareAddress, null);
             return;
@@ -425,10 +422,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
      * @param bareAddress
      * @param hash
      */
-    private void loadBitmap(final String account, final String bareAddress,
-                            final String hash) {
+    private void loadBitmap(final String account, final String bareAddress, final String hash) {
         final byte[] value = AvatarStorage.getInstance().read(hash);
-        final Bitmap bitmap = makeBitemap(value);
+        final Bitmap bitmap = makeBitmap(value);
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -449,8 +445,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     private void onBitmapLoaded(String account, String bareAddress,
                                 String hash, byte[] value, Bitmap bitmap) {
         if (value == null) {
-            if (SettingsManager.connectionLoadVCard())
+            if (SettingsManager.connectionLoadVCard()) {
                 VCardManager.getInstance().request(account, bareAddress, hash);
+            }
         } else {
             bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
             setHash(bareAddress, hash);
@@ -464,8 +461,9 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     public Bitmap createShortcutBitmap(Bitmap bitmap) {
         int size = getLauncherLargeIconSize();
         int max = Math.max(bitmap.getWidth(), bitmap.getHeight());
-        if (max == size)
+        if (max == size) {
             return bitmap;
+        }
         double scale = ((double) size) / max;
         int width = (int) (bitmap.getWidth() * scale);
         int height = (int) (bitmap.getHeight() * scale);
@@ -473,12 +471,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener,
     }
 
     private int getLauncherLargeIconSize() {
-        if (Build.VERSION.SDK_INT < 9)
-            return BaseShortcutHelper.getLauncherLargeIconSize();
-        else if (Build.VERSION.SDK_INT < 11)
-            return GingerbreadShortcutHelper.getLauncherLargeIconSize();
-        else
-            return HoneycombShortcutHelper.getLauncherLargeIconSize();
+        return HoneycombShortcutHelper.getLauncherLargeIconSize();
     }
 
 }
