@@ -84,7 +84,6 @@
 
     <color name="account_disabled">@color/black_dividers</color>
 
-    <color name="contact_list_background">@color/grey_400</color>
     <color name="contact_list_active_chats_group_background">@color/grey_200</color>
     <color name="contact_list_active_chat_background">@color/grey_50</color>
     <color name="contact_list_contact_background">@color/grey_300</color>

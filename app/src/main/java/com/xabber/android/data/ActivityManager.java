@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.LoadActivity;
+import com.xabber.android.data.SettingsManager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -119,7 +120,11 @@ public class ActivityManager implements OnUnloadListener {
      * @param activity
      */
     private void applyTheme(Activity activity) {
-        activity.setTheme(R.style.Theme);
+        SettingsManager.InterfaceTheme theme = SettingsManager.interfaceTheme();
+        if(theme.equals(SettingsManager.InterfaceTheme.dark))
+          activity.setTheme(R.style.DarkTheme);
+        else
+          activity.setTheme(R.style.Theme);
     }
 
     /**
@@ -132,6 +137,8 @@ public class ActivityManager implements OnUnloadListener {
     public void onCreate(Activity activity) {
         if (LOG)
             LogManager.i(activity, "onCreate: " + activity.getIntent());
+        if(!activity.getClass().getSimpleName().equals("AboutViewer"))
+            applyTheme(activity);
         if (application.isClosing() && !(activity instanceof LoadActivity)) {
             activity.startActivity(LoadActivity.createIntent(activity));
             activity.finish();

@@ -24,7 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:drawSelectorOnTop="true"
-        android:background="@color/contact_list_background"
+        android:background="?attr/contact_list_background"
         android:divider="@null"
         android:dividerHeight="0dp"
         />

@@ -1,5 +1,7 @@
 package com.xabber.android.ui.adapter;
 
+import android.content.res.TypedArray;
+import android.util.TypedValue;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -89,7 +91,7 @@ public class ContactItemInflater {
 
             statusText = chat.getLastText().trim();
 
-            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_active_chat_background));
+            setBackgroundColor(view, R.attr.contact_list_active_chat_background);
 
             if (!statusText.isEmpty()) {
 
@@ -111,7 +113,7 @@ public class ContactItemInflater {
             }
         } else {
             statusText = contact.getStatusText().trim();
-            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_contact_background));
+            setBackgroundColor(view, R.attr.contact_list_contact_background);
             viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
@@ -125,6 +127,13 @@ public class ContactItemInflater {
 
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
         return view;
+    }
+
+    private void setBackgroundColor(View view, int colorAttribute) {
+        TypedArray a = context.obtainStyledAttributes(new int[] {colorAttribute});
+        int attributeResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        view.setBackgroundColor(context.getResources().getColor(attributeResourceId));
     }
 
     private void onAvatarClick(AbstractContact contact) {
