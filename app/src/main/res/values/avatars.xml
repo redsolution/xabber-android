@@ -29,6 +29,7 @@
         <item>@color/red_900</item>
         <item>@color/orange_700</item>
         <item>@color/amber_500</item>
+        <item>@color/grey_500</item>
     </array>
 
 
