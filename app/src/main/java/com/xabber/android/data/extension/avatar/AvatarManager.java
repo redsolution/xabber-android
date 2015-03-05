@@ -17,8 +17,11 @@ package com.xabber.android.data.extension.avatar;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
@@ -111,8 +114,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private AvatarManager() {
         this.application = Application.getInstance();
-        userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars, R.drawable.avatar_1_1);
-        roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars, R.drawable.avatar_muc_1);
+        userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars_icons, R.array.default_avatars_colors);
+        roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars, R.array.default_avatars_colors);
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
@@ -266,7 +269,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
-            return application.getResources().getDrawable(R.drawable.ic_avatar_account);
+            return application.getResources().getDrawable(R.drawable.ic_avatar_1);
         }
     }
 
@@ -281,8 +284,17 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
-            return application.getResources().getDrawable(userAvatarSet.getResourceId(user));
+            return getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
         }
+    }
+
+    private Drawable getDefaultAvatarDrawable(BaseAvatarSet.DefaultAvatar defaultAvatar) {
+        Drawable[] layers = new Drawable[2];
+        layers[0] = new ColorDrawable(defaultAvatar.getBackgroundColor());
+        layers[1] = application.getResources().getDrawable(defaultAvatar.getIconResource());
+
+
+        return new LayerDrawable(layers);
     }
 
     /**
@@ -296,8 +308,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (value != null) {
             return value;
         } else {
-            return ((BitmapDrawable) application.getResources().getDrawable(
-                    userAvatarSet.getResourceId(user))).getBitmap();
+            Drawable drawable = getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
+
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+
+            return bitmap;
         }
     }
 
@@ -323,7 +341,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @return
      */
     public Drawable getRoomAvatar(String user) {
-        return application.getResources().getDrawable(roomAvatarSet.getResourceId(user));
+        return getDefaultAvatarDrawable(roomAvatarSet.getResourceId(user));
     }
 
     /**
@@ -358,7 +376,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @return
      */
     public Drawable getOccupantAvatar(String user) {
-        return application.getResources().getDrawable(userAvatarSet.getResourceId(user));
+        return getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
     }
 
     /**
