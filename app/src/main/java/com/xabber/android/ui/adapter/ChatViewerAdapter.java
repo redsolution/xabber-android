@@ -144,7 +144,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     }
 
 
-    private int getRealPagePosition(int virtualPosition) {
+    public int getRealPagePosition(int virtualPosition) {
         int realCount = getRealCount();
 
         int pageNumber = abs(virtualPosition - OFFSET) % realCount;
@@ -194,4 +194,5 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     public Fragment getCurrentFragment() {
         return currentFragment;
     }
+
 }

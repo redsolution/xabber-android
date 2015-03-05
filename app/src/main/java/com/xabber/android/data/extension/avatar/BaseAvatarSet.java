@@ -14,13 +14,13 @@
  */
 package com.xabber.android.data.extension.avatar;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.res.TypedArray;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLowMemoryListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Set of default avatars.
@@ -33,22 +33,45 @@ public class BaseAvatarSet implements OnLowMemoryListener {
     /**
      * Default resources.
      */
-    private final int[] AVATARS;
+    private final int[] avatarIconsResources;
+
+    private final int[] colors;
 
     /**
      * Map with resource ids for specified uses.
      */
-    private final Map<String, Integer> resources;
+    private final Map<String, DefaultAvatar> resources;
 
-    public BaseAvatarSet(Application application, int array, int defaultDrawable) {
-        TypedArray defaultAvatars = application.getResources()
-                .obtainTypedArray(array);
-        AVATARS = new int[defaultAvatars.length()];
-        for (int index = 0; index < defaultAvatars.length(); index++)
-            AVATARS[index] = defaultAvatars.getResourceId(index,
-                    defaultDrawable);
+    public static class DefaultAvatar {
+        public DefaultAvatar(int iconResource, int backgroundColor) {
+            this.iconResource = iconResource;
+            this.backgroundColor = backgroundColor;
+        }
+
+        public int getIconResource() {
+            return iconResource;
+        }
+
+        public int getBackgroundColor() {
+            return backgroundColor;
+        }
+
+        private int iconResource;
+        private int backgroundColor;
+    }
+
+
+    public BaseAvatarSet(Application application, int avatarIconsArrayId, int avatarColorsArrayId) {
+        TypedArray defaultAvatars = application.getResources().obtainTypedArray(avatarIconsArrayId);
+        avatarIconsResources = new int[defaultAvatars.length()];
+        for (int index = 0; index < defaultAvatars.length(); index++) {
+            avatarIconsResources[index] = defaultAvatars.getResourceId(index, -1);
+        }
         defaultAvatars.recycle();
-        resources = new HashMap<String, Integer>();
+
+        colors = application.getResources().getIntArray(avatarColorsArrayId);
+
+        resources = new HashMap<>();
     }
 
     /**
@@ -67,13 +90,13 @@ public class BaseAvatarSet implements OnLowMemoryListener {
      * @param user
      * @return
      */
-    public int getResourceId(String user) {
-        Integer resource = resources.get(user);
-        if (resource == null) {
-            resource = getElement(getIndex(user), AVATARS);
-            resources.put(user, resource);
+    public DefaultAvatar getResourceId(String user) {
+        DefaultAvatar avatar = resources.get(user);
+        if (avatar == null) {
+            avatar = getElement(getIndex(user));
+            resources.put(user, avatar);
         }
-        return resource;
+        return avatar;
     }
 
     /**
@@ -83,11 +106,16 @@ public class BaseAvatarSet implements OnLowMemoryListener {
      * @param array
      * @return Always return element even if array's length is less then index.
      */
-    private int getElement(int index, int[] array) {
-        index = index % array.length;
-        if (index < 0)
-            index += array.length;
-        return array[index];
+    private DefaultAvatar getElement(int index) {
+        int uniqueCombinationsNumber = avatarIconsResources.length * colors.length;
+
+        index = index % uniqueCombinationsNumber;
+
+        if (index < 0) {
+            index += uniqueCombinationsNumber;
+        }
+
+        return new DefaultAvatar(avatarIconsResources[index / colors.length], colors[index % colors.length]);
     }
 
     @Override

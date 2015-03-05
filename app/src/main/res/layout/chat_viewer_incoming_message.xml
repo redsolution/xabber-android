@@ -31,7 +31,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
 
-        android:src="@drawable/avatar_1_1"
+        android:src="@drawable/ic_avatar_1"
         />
 
     <TextView

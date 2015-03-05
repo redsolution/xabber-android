@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
@@ -50,6 +51,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
@@ -85,6 +87,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private String extraText = null;
 
+    ChatScrollIndicatorAdapter chatScrollIndicatorAdapter;
     ChatViewerAdapter chatViewerAdapter;
 
     ViewPager viewPager;
@@ -143,6 +146,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this);
             isChatSelected = false;
         }
+
+        chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
+                (LinearLayout)findViewById(R.id.chat_scroll_indicator));
+        chatScrollIndicatorAdapter.update(chatViewerAdapter.getRealCount());
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
@@ -284,6 +291,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
 
         chatViewerAdapter.updateChats();
+        chatScrollIndicatorAdapter.update(chatViewerAdapter.getRealCount());
 
         String account = getAccount(intent);
         String user = getUser(intent);
@@ -292,6 +300,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         selectPage(account, user, false);
+
     }
 
     @Override
@@ -539,6 +548,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         if (chatViewerAdapter.updateChats()) {
             selectPage(currentAccount, currentUser, false);
+            chatScrollIndicatorAdapter.update(chatViewerAdapter.getRealCount());
+
         } else {
             updateRegisteredChats();
             updateRegisteredRecentChatsFragments();
@@ -605,6 +616,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         hideKeyboard(this);
 
         AbstractChat selectedChat = chatViewerAdapter.getChatByPageNumber(position);
+        chatScrollIndicatorAdapter.select(chatViewerAdapter.getRealPagePosition(position));
 
         isChatSelected = selectedChat != null;
 

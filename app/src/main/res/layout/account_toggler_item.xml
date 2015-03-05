@@ -24,7 +24,7 @@
         android:layout_height="32dip"
         android:layout_marginTop="4dip"
         android:layout_marginLeft="4dip"
-        android:src="@drawable/ic_avatar_account"
+        android:src="@drawable/ic_avatar_1"
         />
     <ImageView
         android:id="@+id/status_mode"

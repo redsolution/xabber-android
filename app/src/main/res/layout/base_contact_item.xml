@@ -36,7 +36,7 @@
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
         android:layout_toRightOf="@id/color"
-        android:src="@drawable/avatar_1_1"
+        android:src="@drawable/ic_avatar_1"
         />
 
     <RelativeLayout
