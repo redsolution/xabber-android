@@ -37,8 +37,6 @@ public class ChatScrollIndicatorAdapter {
             linearLayout.addView(view);
             final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
 
-            accountViewHolder.body.getBackground().setAlpha(127);
-            accountViewHolder.selection.getBackground().setAlpha(127);
             view.setTag(accountViewHolder);
         }
 

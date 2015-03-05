@@ -63,7 +63,7 @@ public class RecentChatFragment extends ListFragment {
             activity.finish();
         }
 
-        return inflater.inflate(R.layout.list, container, false);
+        return inflater.inflate(R.layout.recent_chats, container, false);
     }
 
     @Override
