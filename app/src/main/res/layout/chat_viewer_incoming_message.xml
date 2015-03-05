@@ -47,10 +47,12 @@
         android:minWidth="142dp"
 
         android:paddingLeft="16dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingRight="6dp"
+        android:paddingRight="10dp"
         android:paddingEnd="6dp"
+
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+
 
         android:layout_marginLeft="6dp"
         android:layout_marginStart="6dp"
