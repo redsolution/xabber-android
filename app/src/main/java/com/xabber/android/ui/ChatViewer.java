@@ -57,6 +57,7 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.ChatEditor;
+import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.androiddev.R;
 
 import java.util.Collection;
@@ -70,7 +71,7 @@ import java.util.HashSet;
  */
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
         OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener {
+        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener, View.OnClickListener {
 
     /**
      * Attention request.
@@ -136,6 +137,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 scrollChat();
             }
         });
+
+        contactTitleActionBarInflater.setOnAvatarClickListener(this);
 
         setContentView(R.layout.activity_chat_viewer);
 
@@ -791,6 +794,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         if (view != null) {
             InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.avatar) {
+            startActivity(ContactViewer.createIntent(this, actionWithAccount, actionWithUser));
         }
     }
 }

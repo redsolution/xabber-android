@@ -106,6 +106,10 @@ public class ContactTitleActionBarInflater {
         actionBarView.setOnClickListener(onClickListener);
     }
 
+    public void setOnAvatarClickListener(View.OnClickListener onClickListener) {
+        actionBarView.findViewById(R.id.avatar).setOnClickListener(onClickListener);
+    }
+
     public void setName(String name) {
         ((TextView) actionBarView.findViewById(R.id.name)).setText(name);
     }
