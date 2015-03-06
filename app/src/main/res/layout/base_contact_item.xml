@@ -25,8 +25,12 @@
 
         android:layout_width="4dp"
         android:layout_height="@dimen/avatar_size"
-        android:layout_marginRight="3dp"
-        android:layout_marginEnd="3dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+
+        android:layout_marginRight="2dp"
+        android:layout_marginEnd="2dp"
+        android:src="@color/green_500"
 
         />
 
@@ -97,5 +101,6 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="@dimen/contact_list_item_height"
 	    android:background="@drawable/shadow"
+        android:visibility="gone"
 	    />
 </RelativeLayout>
