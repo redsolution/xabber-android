@@ -714,22 +714,22 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             if (!(currentFragment instanceof ChatViewerFragment)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Debug message")
-                        .setMessage("Recent chats selected, but contact chat expected. Reselecting...")
+                        .setMessage("Recent chats selected, but contact chat expected.")
                         .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                selectPage(actionWithAccount, actionWithUser, false);
+                                finish();
                             }
                         });
                 builder.create().show();
             } else if (!((ChatViewerFragment) currentFragment).isEqual(actionWithAccount, actionWithUser)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Debug message")
-                        .setMessage("Wrong contact chat selected. Reselecting...")
+                        .setMessage("Wrong contact chat selected.")
                         .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                selectPage(actionWithAccount, actionWithUser, false);
+                                finish();
                             }
                         });
                 builder.create().show();
@@ -740,11 +740,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Debug message")
-                        .setMessage("Contact chat selected, but recent chats expected. Reselecting...")
+                        .setMessage("Contact chat selected, but recent chats expected.")
                         .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                selectPage(null, null, false);
+                                finish();
                             }
                         });
                 builder.create().show();
