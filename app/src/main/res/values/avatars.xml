@@ -33,13 +33,6 @@
     </array>
 
     <array name="muc_avatars">
-        <item>@drawable/avatar_muc_1</item>
-        <item>@drawable/avatar_muc_2</item>
-        <item>@drawable/avatar_muc_3</item>
-        <item>@drawable/avatar_muc_4</item>
-        <item>@drawable/avatar_muc_5</item>
-        <item>@drawable/avatar_muc_6</item>
-        <item>@drawable/avatar_muc_7</item>
-        <item>@drawable/avatar_muc_8</item>
+        <item>@drawable/ic_avatar_muc</item>
     </array>
 </resources>
