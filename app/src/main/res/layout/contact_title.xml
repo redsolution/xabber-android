@@ -15,9 +15,6 @@
         android:layout_height="48dip"
         android:src="@drawable/ic_avatar_1"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="4dp"
-        android:layout_marginEnd="4dp"
-
         />
 
     <LinearLayout
@@ -35,7 +32,11 @@
             android:singleLine="true"
             android:layout_weight="1"
             android:textColor="@color/primary_text_default_material_dark"
-            android:text="name"
+            android:text="Lorem Ipsum"
+
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="3dp"
+            android:textSize="18sp"
             android:textStyle="bold" />
         <LinearLayout
             android:layout_width="wrap_content"
@@ -66,8 +67,9 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:singleLine="true"
-                android:textColor="@color/primary_text_default_material_dark"
-                android:text="status"
+                android:textColor="@color/grey_200"
+                android:text="Lorem ipsum dolor sit amet"
+                android:layout_marginBottom="4dp"
                 />
         </LinearLayout>
     </LinearLayout>
