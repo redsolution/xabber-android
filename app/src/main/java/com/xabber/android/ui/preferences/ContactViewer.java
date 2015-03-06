@@ -30,6 +30,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -187,6 +188,10 @@ public class ContactViewer extends ManagedActivity implements
         setContentView(R.layout.activity_preferences);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ContactTitleActionBarInflater contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater.setUpActionBarView();
+        contactTitleActionBarInflater.update(RosterManager.getInstance().getBestContact(account, bareAddress));
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
