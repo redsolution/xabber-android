@@ -17,5 +17,6 @@
         <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
         <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
         <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
+        <item name="windowActionBar">false</item>
     </style>
 </resources>

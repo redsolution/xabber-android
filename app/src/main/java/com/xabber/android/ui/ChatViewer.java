@@ -22,6 +22,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -128,6 +129,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             exitOnSend = savedInstanceState.getBoolean(SAVED_EXIT_ON_SEND);
         }
 
+        setContentView(R.layout.activity_chat_viewer);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
         contactTitleActionBarInflater.setUpActionBarView();
 
@@ -139,8 +143,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         });
 
         contactTitleActionBarInflater.setOnAvatarClickListener(this);
-
-        setContentView(R.layout.activity_chat_viewer);
 
         if (account != null && user != null) {
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), account, user, this);

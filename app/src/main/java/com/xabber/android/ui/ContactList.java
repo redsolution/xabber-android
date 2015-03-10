@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -125,6 +126,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         }
 
         setContentView(R.layout.contact_list);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         setTitle(getString(R.string.production_title));
 

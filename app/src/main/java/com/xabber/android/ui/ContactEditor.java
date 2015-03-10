@@ -17,6 +17,7 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.AdapterView;
 import android.widget.EditText;
 
@@ -45,16 +46,12 @@ public class ContactEditor extends GroupListActivity implements
     ContactTitleActionBarInflater contactTitleActionBarInflater;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onInflate(Bundle savedInstanceState) {
+        setContentView(R.layout.contact_editor);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
         contactTitleActionBarInflater.setUpActionBarView();
-    }
-
-    @Override
-    protected void onInflate(Bundle savedInstanceState) {
-        setContentView(R.layout.contact_editor);
 
         Intent intent = getIntent();
         account = ContactEditor.getAccount(intent);

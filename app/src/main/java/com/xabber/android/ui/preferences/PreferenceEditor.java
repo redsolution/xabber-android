@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.helper.ManagedActivity;
@@ -33,6 +34,7 @@ public class PreferenceEditor extends ManagedActivity
             return;
 
         setContentView(R.layout.activity_preferences);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

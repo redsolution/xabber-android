@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -92,6 +93,8 @@ public class FingerprintViewer extends ManagedActivity implements
         }
 
         setContentView(R.layout.fingerprint_viewer);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
         integrator = new IntentIntegrator(this);
         Intent intent = getIntent();
         account = getAccount(intent);

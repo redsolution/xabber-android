@@ -19,6 +19,7 @@ import java.util.Collection;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.OnAccountChangedListener;
@@ -59,6 +60,8 @@ public class OccupantList extends ManagedListActivity implements
             return;
         }
         setContentView(R.layout.list);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
         listAdapter = new OccupantListAdapter(this, account, room);
         setListAdapter(listAdapter);
 

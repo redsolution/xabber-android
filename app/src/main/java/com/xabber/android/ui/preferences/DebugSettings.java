@@ -1,6 +1,7 @@
 package com.xabber.android.ui.preferences;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
@@ -15,6 +16,7 @@ public class DebugSettings extends ManagedActivity {
             return;
 
         setContentView(R.layout.activity_preferences);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_debug)));
 

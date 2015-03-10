@@ -17,6 +17,7 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -88,6 +89,7 @@ public class QuestionViewer extends ManagedActivity implements
         answerRequest = intent.getBooleanExtra(EXTRA_FIELD_ANSWER_REQUEST, false);
         if (showQuestion) {
             setContentView(R.layout.question_viewer);
+            setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
             questionView = (EditText) findViewById(R.id.question);
             questionView.setEnabled(!answerRequest);
             if (answerRequest) {
@@ -97,6 +99,7 @@ public class QuestionViewer extends ManagedActivity implements
             }
         } else {
             setContentView(R.layout.secret_viewer);
+            setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         }
         findViewById(R.id.cancel).setOnClickListener(this);
         findViewById(R.id.send).setOnClickListener(this);

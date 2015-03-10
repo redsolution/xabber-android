@@ -17,6 +17,7 @@ package com.xabber.android.ui.preferences;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -75,6 +76,7 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
      */
     protected void onInflate(Bundle savedInstanceState) {
         setContentView(R.layout.list);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
     }
 
     protected abstract T getSavedValue(Bundle bundle, String key);

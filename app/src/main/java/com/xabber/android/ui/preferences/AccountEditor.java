@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
@@ -71,9 +72,10 @@ public class AccountEditor extends ManagedActivity implements
             token = savedInstanceState.getString(SAVED_TOKEN);
         }
 
-        setTitle(AccountManager.getInstance().getVerboseName(account));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_preferences);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle(AccountManager.getInstance().getVerboseName(account));
     }
 
     @Override

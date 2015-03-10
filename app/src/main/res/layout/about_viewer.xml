@@ -18,8 +18,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:padding="4dip"
     >
+
+    <include layout="@layout/toolbar_default"/>
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

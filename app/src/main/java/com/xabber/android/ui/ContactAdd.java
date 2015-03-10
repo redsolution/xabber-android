@@ -21,6 +21,7 @@ import java.util.HashSet;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -62,12 +63,15 @@ public class ContactAdd extends GroupListActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override
     protected void onInflate(Bundle savedInstanceState) {
         setContentView(R.layout.contact_add);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ListView listView = getListView();
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);

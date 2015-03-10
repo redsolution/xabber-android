@@ -4,19 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<android.support.v4.view.ViewPager
-    android:id="@+id/pager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    <include layout="@layout/toolbar_default"
+        android:id="@+id/toolbar_default"
+        />
 
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="10dp"
-    android:id="@+id/chat_scroll_indicator"
-    >
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar_default"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:id="@+id/chat_scroll_indicator"
+        android:layout_below="@+id/toolbar_default"
+        >
 
     </LinearLayout>
 

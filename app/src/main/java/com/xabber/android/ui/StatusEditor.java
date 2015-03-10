@@ -17,6 +17,7 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -68,6 +69,7 @@ public class StatusEditor extends ManagedListActivity implements
         actionWithItem = null;
 
         setContentView(R.layout.status_editor);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

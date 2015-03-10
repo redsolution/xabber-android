@@ -22,6 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <include layout="@layout/toolbar_default"/>
+
         <TextView android:text="@string/account_type" android:layout_width="match_parent" android:layout_height="wrap_content" />
         <Spinner
             android:id="@+id/account_type"

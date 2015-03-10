@@ -1,6 +1,7 @@
 package com.xabber.android.ui.preferences;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.ui.ContactList;
@@ -18,7 +19,7 @@ public class ThemeSettings extends ManagedActivity
             return;
 
         setContentView(R.layout.activity_preferences);
-
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_interface)));

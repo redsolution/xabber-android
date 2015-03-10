@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -186,6 +187,8 @@ public class ContactViewer extends ManagedActivity implements
         setTitle(getString(R.string.contact_viewer));
 
         setContentView(R.layout.activity_preferences);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

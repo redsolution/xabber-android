@@ -20,6 +20,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class AboutViewer extends ManagedActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_viewer);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         ((TextView) findViewById(R.id.about_version))
                 .setText(getString(R.string.about_version, getVersionName()));

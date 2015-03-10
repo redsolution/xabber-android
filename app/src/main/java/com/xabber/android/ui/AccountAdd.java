@@ -18,6 +18,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -96,6 +97,7 @@ public class AccountAdd extends ManagedActivity implements
         inputManager.hideSoftInputFromWindow(findViewById(R.id.ok)
                 .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 

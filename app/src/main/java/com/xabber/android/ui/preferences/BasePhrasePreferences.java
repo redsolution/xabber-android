@@ -2,6 +2,7 @@ package com.xabber.android.ui.preferences;
 
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.ui.helper.ManagedActivity;
@@ -16,9 +17,9 @@ public abstract class BasePhrasePreferences extends ManagedActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         setContentView(R.layout.activity_preferences);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

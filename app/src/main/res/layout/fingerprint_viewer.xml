@@ -19,92 +19,94 @@
     android:layout_height="match_parent"
     >
 
-	<ScrollView
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    >
+    <include layout="@layout/toolbar_default"/>
 
-		<LinearLayout
-		    android:orientation="vertical"
-		    android:layout_width="match_parent"
-		    android:layout_height="match_parent"
-		    android:paddingTop="8dip"
-		    android:paddingBottom="4dip"
-		    android:paddingLeft="2dip"
-		    android:paddingRight="2dip"
-		    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
 
-		    <TextView
-		        android:text="@string/otr_fingerprint_description"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:paddingBottom="8dip"
-		        />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="8dip"
+            android:paddingBottom="4dip"
+            android:paddingLeft="2dip"
+            android:paddingRight="2dip"
+            >
 
-		    <TextView
-		        android:text="@string/otr_remote_fingerprint"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        />
+            <TextView
+                android:text="@string/otr_fingerprint_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dip"
+                />
 
-		    <TextView
-		        android:id="@+id/otr_remote_fingerprint"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        style="@android:style/TextAppearance.Large"
-		        android:text="12:34:56"
-		        />
+            <TextView
+                android:text="@string/otr_remote_fingerprint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
 
-		    <CheckBox
-		        android:id="@+id/verified"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/otr_is_verified"
-		        />
+            <TextView
+                android:id="@+id/otr_remote_fingerprint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@android:style/TextAppearance.Large"
+                android:text="12:34:56"
+                />
 
-		    <Button
-		        android:id="@+id/scan"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/otr_scan_fingerprint"
-		        />
+            <CheckBox
+                android:id="@+id/verified"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/otr_is_verified"
+                />
 
-		    <ImageView
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:background="@android:drawable/divider_horizontal_dark"
-		        />
+            <Button
+                android:id="@+id/scan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/otr_scan_fingerprint"
+                />
 
-		    <TextView
-		        android:text="@string/otr_local_fingerprint"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_dark"
+                />
 
-		    <TextView
-		        android:id="@+id/otr_local_fingerprint"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        style="@android:style/TextAppearance.Large"
-		        android:text="12:34:56"
-		        />
+            <TextView
+                android:text="@string/otr_local_fingerprint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
 
-		    <Button
-		        android:id="@+id/show"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/otr_show_fingerprint"
-		        />
+            <TextView
+                android:id="@+id/otr_local_fingerprint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@android:style/TextAppearance.Large"
+                android:text="12:34:56"
+                />
 
-		    <Button
-		        android:id="@+id/copy"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:text="@string/otr_copy_fingerprint"
-		        />
+            <Button
+                android:id="@+id/show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/otr_show_fingerprint"
+                />
 
-		</LinearLayout>
+            <Button
+                android:id="@+id/copy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/otr_copy_fingerprint"
+                />
 
-	</ScrollView>
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
