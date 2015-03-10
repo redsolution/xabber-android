@@ -47,8 +47,7 @@ public class ContactTitleInflater {
                                    AbstractContact abstractContact) {
         final TextView nameView = (TextView) titleView.findViewById(R.id.name);
         final ImageView avatarView = (ImageView) titleView.findViewById(R.id.avatar);
-        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_mode);
-        final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
+
 
         int[] accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
 
@@ -56,14 +55,26 @@ public class ContactTitleInflater {
                 AccountManager.getInstance().getColorLevel(abstractContact.getAccount())]));
         nameView.setTextColor(activity.getResources().getColor(R.color.primary_text_default_material_dark));
         nameView.setText(abstractContact.getName());
-        statusModeView.setImageLevel(abstractContact.getStatusMode().getStatusLevel());
+
         avatarView.setImageDrawable(abstractContact.getAvatar());
 
-        setStatusText(activity, abstractContact, statusTextView);
+        setStatus(activity, titleView, abstractContact);
     }
 
-    private static void setStatusText(Activity activity, AbstractContact abstractContact,
-                                      TextView statusTextView) {
+    private static void setStatus(Activity activity, View titleView, AbstractContact abstractContact) {
+        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_mode);
+
+        int statusLevel = abstractContact.getStatusMode().getStatusLevel();
+        if (isContactOffline(statusLevel)) {
+            statusModeView.setVisibility(View.INVISIBLE);
+        } else {
+            statusModeView.setVisibility(View.VISIBLE);
+            statusModeView.setImageLevel(statusLevel);
+        }
+
+        final TextView statusTextView = (TextView) titleView.findViewById(R.id.status_text);
+
+
         ChatState chatState = ChatStateManager.getInstance().getChatState(
                 abstractContact.getAccount(), abstractContact.getUser());
 
@@ -73,9 +84,17 @@ public class ContactTitleInflater {
         } else if (chatState == ChatState.paused) {
             statusText = activity.getString(R.string.chat_state_paused);
         } else {
-            statusText = Emoticons.getSmiledText(activity, abstractContact.getStatusText());
+            if (isContactOffline(statusLevel)) {
+                statusText = activity.getString(R.string.unavailable);
+            } else {
+                statusText = Emoticons.getSmiledText(activity, abstractContact.getStatusText());
+            }
         }
         statusTextView.setText(statusText);
+    }
+
+    private static boolean isContactOffline(int statusLevel) {
+        return statusLevel == 6;
     }
 
 }
