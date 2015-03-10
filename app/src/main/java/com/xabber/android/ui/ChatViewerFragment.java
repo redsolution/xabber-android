@@ -163,7 +163,11 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     public void onResume() {
         super.onResume();
         ((ChatViewer)getActivity()).registerChat(this);
+
+        updateChat();
+
         restoreInputState();
+
     }
 
     public void restoreInputState() {
