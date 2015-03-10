@@ -475,6 +475,11 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     @Override
     public void onContactClick(AbstractContact abstractContact) {
+        if (action == null) {
+            startActivity(ChatViewer.createIntent(this,
+                    abstractContact.getAccount(), abstractContact.getUser()));
+            return;
+        }
         switch (action) {
             case ACTION_ROOM_INVITE: {
                 action = null;
