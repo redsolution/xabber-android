@@ -186,9 +186,9 @@ public class ContactViewer extends ManagedActivity implements
         }
         setTitle(getString(R.string.contact_viewer));
 
-        setContentView(R.layout.activity_preferences);
+        setContentView(R.layout.contact_viewer);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        setSupportActionBar((Toolbar) findViewById(R.id.contact_viewer_toolbar));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -14,15 +14,15 @@
         android:layout_width="48dip"
         android:layout_height="48dip"
         android:src="@drawable/ic_avatar_1"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="bottom"
         />
 
     <LinearLayout
         android:id="@+id/name_holder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="48dip"
         android:orientation="vertical"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="bottom"
         >
         <TextView
             android:id="@+id/name"
