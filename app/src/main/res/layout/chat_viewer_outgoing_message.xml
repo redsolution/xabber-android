@@ -37,7 +37,7 @@
         android:layout_marginRight="6dp"
         android:layout_marginEnd="6dp"
 
-        android:autoLink="web"
+        android:autoLink="all"
 
         android:minWidth="160dp"
 
