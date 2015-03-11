@@ -1,8 +1,10 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.xabber.androiddev.R;
@@ -33,7 +35,13 @@ public class ChatScrollIndicatorAdapter {
                 = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         while (linearLayout.getChildCount() < size) {
-            final View view = inflater.inflate(R.layout.chat_scroll_indicator_item, linearLayout, false);
+            View view;
+            if (linearLayout.getChildCount() == 0) {
+                view = inflater.inflate(R.layout.chat_scroll_indicator_item_square, linearLayout, false);
+            } else {
+                view = inflater.inflate(R.layout.chat_scroll_indicator_item_circle, linearLayout, false);
+            }
+
             linearLayout.addView(view);
             final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
 
