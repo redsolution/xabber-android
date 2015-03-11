@@ -42,7 +42,7 @@
         android:layout_toRightOf="@id/avatar"
         android:layout_toEndOf="@id/avatar"
 
-        android:autoLink="web"
+        android:autoLink="all"
 
         android:minWidth="142dp"
 
