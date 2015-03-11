@@ -66,7 +66,7 @@ public class ContactTitleInflater {
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         if (isContactOffline(statusLevel)) {
-            statusModeView.setVisibility(View.INVISIBLE);
+            statusModeView.setVisibility(View.GONE);
         } else {
             statusModeView.setVisibility(View.VISIBLE);
             statusModeView.setImageLevel(statusLevel);
