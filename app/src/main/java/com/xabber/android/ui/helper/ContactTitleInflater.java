@@ -78,16 +78,15 @@ public class ContactTitleInflater {
         ChatState chatState = ChatStateManager.getInstance().getChatState(
                 abstractContact.getAccount(), abstractContact.getUser());
 
-        final CharSequence statusText;
+        CharSequence statusText;
         if (chatState == ChatState.composing) {
             statusText = activity.getString(R.string.chat_state_composing);
         } else if (chatState == ChatState.paused) {
             statusText = activity.getString(R.string.chat_state_paused);
         } else {
-            if (isContactOffline(statusLevel)) {
-                statusText = activity.getString(R.string.unavailable);
-            } else {
-                statusText = Emoticons.getSmiledText(activity, abstractContact.getStatusText());
+            statusText = Emoticons.getSmiledText(activity, abstractContact.getStatusText()).toString().trim();
+            if (statusText.toString().isEmpty()) {
+                statusText = activity.getString(abstractContact.getStatusMode().getStringID());
             }
         }
         statusTextView.setText(statusText);
