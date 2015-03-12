@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="toolbar_height">96dp</dimen>
+    <dimen name="toolbar_height">108dp</dimen>
+    <dimen name="contact_title_padding_left">10dp</dimen>
+    <dimen name="contact_title_padding_right">10dp</dimen>
+    <dimen name="contact_title_padding_bottom">10dp</dimen>
 </resources>

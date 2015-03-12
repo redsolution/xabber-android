@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/title"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/actionBarSize"
-    android:orientation="horizontal"
     android:background="@color/green_500"
+    >
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/actionBarSize"
+    android:orientation="horizontal"
+
+    android:layout_gravity="bottom"
     >
 
     <ImageView
@@ -14,7 +21,7 @@
         android:layout_width="48dip"
         android:layout_height="48dip"
         android:src="@drawable/ic_avatar_1"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center_vertical"
         />
 
     <LinearLayout
@@ -22,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="48dip"
         android:orientation="vertical"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         >
         <TextView
@@ -76,3 +83,4 @@
         />
 
 </LinearLayout>
+</FrameLayout>
