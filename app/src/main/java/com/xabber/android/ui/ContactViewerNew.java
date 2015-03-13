@@ -34,11 +34,18 @@ import static java.lang.Math.sqrt;
 public class ContactViewerNew extends ManagedActivity implements ObservableScrollViewCallbacks {
 
     private int toolbarHeight;
-    private View actionBarView;
-    private int paddingLeft;
+    private View avatarView;
+    private View titleView;
+    private int paddingLeftMin;
     private int paddingRight;
     private int actionBarSize;
-    private int radius;
+    private int toolbarHeightDelta;
+    private int avatarLargeSize;
+    private int avatarNormalSize;
+    private int avatarRadius;
+    private View contactNamePanel;
+    private int contactTitlePaddingBottomBig;
+    private int contactTitlePaddingBottomSmall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +63,24 @@ public class ContactViewerNew extends ManagedActivity implements ObservableScrol
         accountActionBarColors = getResources().getIntArray(R.array.account_action_bar);
         accountStatusBarColors = getResources().getIntArray(R.array.account_status_bar);
 
-        actionBarView = findViewById(R.id.title);
+        titleView = findViewById(R.id.title);
+        avatarView = findViewById(R.id.avatar);
+        contactNamePanel = findViewById(R.id.contact_name_panel);
 
-        paddingLeft = getResources().getDimensionPixelSize(R.dimen.contact_title_padding_left);
+        paddingLeftMin = getResources().getDimensionPixelSize(R.dimen.contact_title_padding_left);
         paddingRight = getResources().getDimensionPixelSize(R.dimen.contact_title_padding_right);
+        avatarLargeSize = getResources().getDimensionPixelSize(R.dimen.avatar_large_size);
+        avatarNormalSize = getResources().getDimensionPixelSize(R.dimen.avatar_normal_size);
+        avatarRadius = getResources().getDimensionPixelSize(R.dimen.avatar_radius);
 
-        TypedArray a = getTheme().obtainStyledAttributes(R.style.Theme, new int[] {R.attr.colorPrimary});
+        contactTitlePaddingBottomBig = getResources().getDimensionPixelSize(R.dimen.contact_title_padding_bottom_big);
+        contactTitlePaddingBottomSmall = getResources().getDimensionPixelSize(R.dimen.contact_title_padding_bottom_small);
+
+        TypedArray a = getTheme().obtainStyledAttributes(R.style.Theme, new int[]{R.attr.colorPrimary});
 
         AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(getIntent()), getUser(getIntent()));
 
-        ContactTitleInflater.updateTitle(actionBarView, this, bestContact);
+        ContactTitleInflater.updateTitle(titleView, this, bestContact);
 
         int colorLevel = AccountManager.getInstance().getColorLevel(bestContact.getAccount());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -75,7 +90,7 @@ public class ContactViewerNew extends ManagedActivity implements ObservableScrol
             window.setStatusBarColor(accountStatusBarColors[colorLevel]);
         }
 
-        actionBarView.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
+        titleView.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[colorLevel]));
 
         toolbarHeight = getResources().getDimensionPixelSize(R.dimen.toolbar_height);
 
@@ -95,7 +110,7 @@ public class ContactViewerNew extends ManagedActivity implements ObservableScrol
         super.onResume();
 
         actionBarSize = getActionBarSize();
-        radius = toolbarHeight - actionBarSize;
+        toolbarHeightDelta = toolbarHeight - actionBarSize;
     }
 
     protected int getActionBarSize() {
@@ -122,22 +137,65 @@ public class ContactViewerNew extends ManagedActivity implements ObservableScrol
     }
 
     private void updateFlexibleSpaceText(final int scrollY) {
-        if (scrollY <= radius) {
-            int newPadding = (int) round(sqrt(pow(radius, 2) - pow(scrollY - radius, 2)));
+        setLeftPadding(scrollY);
+        setTopPadding(scrollY);
+        setAvatarSize(scrollY);
+        setHeight(scrollY);
+    }
 
-            if (newPadding > radius) {
-                newPadding = radius;
-            }
+    private void setTopPadding(int scrollY) {
+        int paddingDelta = contactTitlePaddingBottomBig - contactTitlePaddingBottomSmall;
+        int paddingBottom = contactTitlePaddingBottomBig - scrollY * paddingDelta / toolbarHeightDelta;
 
-            actionBarView.setPadding(paddingLeft + newPadding, 0, paddingRight, 0);
+        if (scrollY <= 0) {
+            paddingBottom = contactTitlePaddingBottomBig;
         }
 
+        if (scrollY >= toolbarHeightDelta) {
+            paddingBottom = contactTitlePaddingBottomSmall;
+        }
+
+        contactNamePanel.setPadding(0, 0, 0, paddingBottom);
+    }
+
+    private void setAvatarSize(int scrollY) {
+        int newAvatarSize =  avatarLargeSize - (scrollY / 2);
+
+        if (newAvatarSize < avatarNormalSize) {
+            newAvatarSize = avatarNormalSize;
+        }
+
+        if (avatarView.getWidth() != newAvatarSize) {
+            avatarView.getLayoutParams().width = newAvatarSize;
+            avatarView.getLayoutParams().height = newAvatarSize;
+        }
+    }
+
+    private void setHeight(int scrollY) {
         int newHeight = toolbarHeight - scrollY;
         if (newHeight < actionBarSize) {
             newHeight = actionBarSize;
         }
 
-        actionBarView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, newHeight));
+        titleView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, newHeight));
+    }
+
+    private void setLeftPadding(int scrollY) {
+        int paddingLeft = (int) round(sqrt(pow(avatarRadius, 2) - pow(scrollY - avatarRadius, 2)));
+
+        if (scrollY < 0) {
+            paddingLeft = paddingLeftMin;
+        }
+
+        if (scrollY > avatarRadius) {
+            paddingLeft = avatarRadius;
+        }
+
+        if (paddingLeft < paddingLeftMin) {
+            paddingLeft = paddingLeftMin;
+        }
+
+        titleView.setPadding(paddingLeft, 0, paddingRight, 0);
     }
 
     public static Intent createIntent(Context context, String account, String user) {
