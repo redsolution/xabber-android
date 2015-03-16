@@ -13,7 +13,7 @@
         android:scrollbars="vertical">
 
         <FrameLayout
-            android:id="@+id/body"
+            android:id="@+id/scrollable_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/toolbar_height">
@@ -32,7 +32,7 @@
 
     <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/title"
+        android:id="@+id/expandable_contact_title"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         android:background="@color/green_500"
@@ -94,7 +94,7 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/status_mode"
+                android:id="@+id/status_icon"
                 android:src="@drawable/ic_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
     </FrameLayout>
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/contact_viewer_toolbar"
+        android:id="@+id/toolbar_overlay"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"

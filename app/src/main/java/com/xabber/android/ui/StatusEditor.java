@@ -92,7 +92,7 @@ public class StatusEditor extends ManagedListActivity implements
         setListAdapter(adapter);
 
         statusTextView = (EditText) header.findViewById(R.id.status_text);
-        statusModeView = (Spinner) header.findViewById(R.id.status_mode);
+        statusModeView = (Spinner) header.findViewById(R.id.status_icon);
         statusModeView.setAdapter(new StatusModeAdapter(this));
         findViewById(R.id.ok).setOnClickListener(this);
 

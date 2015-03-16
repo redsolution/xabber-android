@@ -58,7 +58,7 @@ public class StatusPreference extends Preference {
     @Override
     protected void onBindView(View view) {
         super.onBindView(view);
-        ((ImageView) view.findViewById(R.id.status_mode))
+        ((ImageView) view.findViewById(R.id.status_icon))
                 .setImageLevel(statusMode.getStatusLevel());
     }
 

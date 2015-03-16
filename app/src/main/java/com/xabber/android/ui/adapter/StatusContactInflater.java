@@ -58,7 +58,7 @@ public class StatusContactInflater extends BaseContactInflater {
 
         public ViewHolder(View view) {
             super(view);
-            statusMode = (ImageView) view.findViewById(R.id.status_mode);
+            statusMode = (ImageView) view.findViewById(R.id.status_icon);
         }
     }
 

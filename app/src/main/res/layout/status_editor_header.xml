@@ -18,7 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <Spinner
-		android:id="@+id/status_mode"
+		android:id="@+id/status_icon"
 		android:prompt="@string/status_editor"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"

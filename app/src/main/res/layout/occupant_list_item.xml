@@ -72,7 +72,7 @@
             android:textColor="?android:attr/textColorSecondary"
             />
         <ImageView
-            android:id="@+id/status_mode"
+            android:id="@+id/status_icon"
             android:layout_width="@dimen/status_icon_width"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

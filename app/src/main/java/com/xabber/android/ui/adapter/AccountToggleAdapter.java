@@ -129,7 +129,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
      * @return The data for the specified view.
      */
     public String getItemForView(View view) {
-        if (view.getId() == R.id.status_mode) {
+        if (view.getId() == R.id.status_icon) {
             view = (View) view.getParent();
         }
         for (int index = 0; index < linearLayout.getChildCount(); index++) {
@@ -146,7 +146,7 @@ public class AccountToggleAdapter implements UpdatableAdapter {
         final ImageView disabled;
 
         public AccountViewHolder(View view) {
-            statusMode = (ImageView) view.findViewById(R.id.status_mode);
+            statusMode = (ImageView) view.findViewById(R.id.status_icon);
             avatar = (ImageView) view.findViewById(R.id.avatar);
             disabled = (ImageView) view.findViewById(R.id.disabled);
         }
