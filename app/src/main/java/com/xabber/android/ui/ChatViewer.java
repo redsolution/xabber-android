@@ -58,6 +58,7 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.ChatEditor;
+import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.androiddev.R;
 
 import java.util.Collection;
@@ -801,7 +802,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.avatar) {
-            startActivity(ContactViewerNew.createIntent(this, actionWithAccount, actionWithUser));
+            startActivity(ContactViewer.createIntent(this, actionWithAccount, actionWithUser));
         }
     }
 }

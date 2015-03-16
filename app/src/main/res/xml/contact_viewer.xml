@@ -21,12 +21,10 @@
         <PreferenceScreen
             android:title="@string/contact_viewer_jid"
             android:key="@string/contact_viewer_jid"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/contact_viewer_name"
             android:key="@string/contact_viewer_name"
-            android:layout="@layout/info_preference"
             />
     </PreferenceCategory>
     <PreferenceCategory
@@ -39,43 +37,35 @@
         <PreferenceScreen
             android:title="@string/vcard_nick_name"
             android:key="@string/vcard_nick_name"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/vcard_formatted_name"
             android:key="@string/vcard_formatted_name"
-            android:layout="@layout/info_preference"
             >
             <PreferenceScreen
                 android:title="@string/vcard_prefix_name"
                 android:key="@string/vcard_prefix_name"
-                android:layout="@layout/info_preference"
                 />
             <PreferenceScreen
                 android:title="@string/vcard_given_name"
                 android:key="@string/vcard_given_name"
-                android:layout="@layout/info_preference"
                 />
             <PreferenceScreen
                 android:title="@string/vcard_middle_name"
                 android:key="@string/vcard_middle_name"
-                android:layout="@layout/info_preference"
                 />
             <PreferenceScreen
                 android:title="@string/vcard_family_name"
                 android:key="@string/vcard_family_name"
-                android:layout="@layout/info_preference"
                 />
             <PreferenceScreen
                 android:title="@string/vcard_suffix_name"
                 android:key="@string/vcard_suffix_name"
-                android:layout="@layout/info_preference"
                 />
         </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/vcard_birth_date"
             android:key="@string/vcard_birth_date"
-            android:layout="@layout/info_preference"
             />
     </PreferenceCategory>
     <PreferenceCategory
@@ -84,17 +74,14 @@
         <PreferenceScreen
             android:title="@string/vcard_title"
             android:key="@string/vcard_title"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/vcard_role"
             android:key="@string/vcard_role"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/vcard_organization"
             android:key="@string/vcard_organization"
-            android:layout="@layout/info_preference"
             />
     </PreferenceCategory>
     <PreferenceCategory
@@ -103,22 +90,18 @@
         <PreferenceScreen
             android:title="@string/vcard_url"
             android:key="@string/vcard_url"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/vcard_categories"
             android:key="@string/vcard_categories"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/vcard_decsription"
             android:key="@string/vcard_decsription"
-            android:layout="@layout/info_preference"
             />
         <PreferenceScreen
             android:title="@string/vcard_note"
             android:key="@string/vcard_note"
-            android:layout="@layout/info_preference"
             />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -28,10 +27,11 @@ import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
+import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -67,6 +67,8 @@ public class ContactViewer extends ManagedActivity implements
     private static final Map<AddressProperty, Integer> ADDRESS_PROPERTY_MAP = new HashMap<>();
     private static final Map<TelephoneType, Integer> TELEPHONE_TYPE_MAP = new HashMap<>();
     private static final Map<EmailType, Integer> EMAIL_TYPE_MAP = new HashMap<>();
+
+    private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
 
     static {
         ADDRESS_TYPE_MAP.put(AddressType.DOM, R.string.vcard_type_dom);
@@ -184,22 +186,17 @@ public class ContactViewer extends ManagedActivity implements
                     LogManager.exception(this, e);
                 }
         }
-        setTitle(getString(R.string.contact_viewer));
-
-        setContentView(R.layout.contact_viewer);
-
-        setSupportActionBar((Toolbar) findViewById(R.id.contact_viewer_toolbar));
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        ContactTitleActionBarInflater contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
-        contactTitleActionBarInflater.setUpActionBarView();
-        contactTitleActionBarInflater.update(RosterManager.getInstance().getBestContact(account, bareAddress));
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.preferences_activity_container, new ContactViewerFragment()).commit();
+                    .add(R.id.scrollable_container, new ContactViewerFragment()).commit();
         }
+
+
+        contactTitleExpandableToolbarInflater = new ContactTitleExpandableToolbarInflater(this);
+        AbstractContact bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
+        contactTitleExpandableToolbarInflater.onCreate(bestContact);
+
     }
 
     @Override
@@ -213,6 +210,8 @@ public class ContactViewer extends ManagedActivity implements
         if (vCard == null && !vCardError)
             VCardManager.getInstance().request(account, bareAddress, null);
 
+        contactTitleExpandableToolbarInflater.onResume();
+
         ContactViewerFragment contactViewerFragment = getFragment();
 
         contactViewerFragment.updateContact(account, bareAddress);
@@ -221,7 +220,7 @@ public class ContactViewer extends ManagedActivity implements
 
     private ContactViewerFragment getFragment() {
         return (ContactViewerFragment) getFragmentManager()
-                .findFragmentById(R.id.preferences_activity_container);
+                .findFragmentById(R.id.scrollable_container);
     }
 
     @Override

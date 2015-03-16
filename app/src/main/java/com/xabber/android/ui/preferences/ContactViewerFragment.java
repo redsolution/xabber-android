@@ -1,18 +1,23 @@
 package com.xabber.android.ui.preferences;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceGroup;
-import android.preference.PreferenceScreen;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
-import com.xabber.android.ui.widget.StatusPreference;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.vcard.Address;
 import com.xabber.xmpp.vcard.AddressProperty;
@@ -26,37 +31,26 @@ import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ContactViewerFragment extends android.preference.PreferenceFragment {
-    private List<PreferenceCategory> addresses;
-    private List<PreferenceCategory> telephones;
-    private List<PreferenceCategory> emails;
+public class ContactViewerFragment extends Fragment {
+    private LinearLayout contactInfoItems;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        addresses = new ArrayList<>();
-        telephones = new ArrayList<>();
-        emails = new ArrayList<>();
-
-        addPreferencesFromResource(R.xml.contact_viewer);
-
-        PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
     }
 
-    /**
-     * Sets value for the preference by its id.
-     *
-     * @param resourceId
-     * @param value
-     */
-    private void setValue(int resourceId, String value) {
-        if (value == null)
-            value = "";
-        findPreference(getString(resourceId)).setSummary(value);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        View view = inflater.inflate(R.layout.contact_viewer_fragment, container, false);
+
+        contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
+
+        return view;
     }
 
     /**
@@ -74,23 +68,18 @@ public class ContactViewerFragment extends android.preference.PreferenceFragment
     }
 
     public void updateContact(String account, String bareAddress) {
-        setValue(R.string.contact_viewer_jid, bareAddress);
-        RosterContact rosterContact = RosterManager.getInstance()
-                .getRosterContact(account, bareAddress);
-        setValue(R.string.contact_viewer_name, rosterContact == null ? null
-                : rosterContact.getRealName());
-        PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference(getString(R.string.contact_viewer_resources));
-        preferenceCategory.removeAll();
+        addContactInfoItem(R.string.contact_viewer_jid, bareAddress);
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
+        addContactInfoItem(R.string.contact_viewer_name, rosterContact == null ? null : rosterContact.getRealName());
+
         if (rosterContact != null && rosterContact.isConnected())
-            for (ResourceItem resourceItem : PresenceManager.getInstance()
-                    .getResourceItems(account, bareAddress)) {
-                StatusPreference preference = new StatusPreference(getActivity());
-                preference.setLayoutResource(R.layout.info_preference);
-                preference.setStatusMode(resourceItem.getStatusMode());
+            for (ResourceItem resourceItem
+                    : PresenceManager.getInstance().getResourceItems(account, bareAddress)) {
+
                 String user = resourceItem.getUser(bareAddress);
-                ClientInfo clientInfo = CapabilitiesManager.getInstance()
-                        .getClientInfo(account, user);
-                String client;
+                ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
+
+                String client = "";
                 if (clientInfo == null) {
                     CapabilitiesManager.getInstance().request(account, user);
                     client = getString(R.string.please_wait);
@@ -98,116 +87,133 @@ public class ContactViewerFragment extends android.preference.PreferenceFragment
                     client = getString(R.string.unknown);
                 } else {
                     String name = clientInfo.getName();
-                    if (name == null)
-                        name = getString(R.string.unknown);
+                    if (name != null) {
+                        client = name;
+                    }
+
                     String type = clientInfo.getType();
-                    if (type == null)
-                        type = getString(R.string.unknown);
-                    client = getString(R.string.contact_viewer_client_info,
-                            name, type);
+                    if (type != null) {
+                        if (client.isEmpty()) {
+                            client = type;
+                        } else {
+                            client = client + "/" + type;
+                        }
+
+                    }
                 }
-                preference.setTitle(getString(
-                        R.string.contact_viewer_resource_summary,
-                        resourceItem.getVerbose(), resourceItem.getPriority(),
-                        client));
-                preference.setSummary(resourceItem.getStatusText());
-                preferenceCategory.addPreference(preference);
+
+                resourceItem.getStatusMode().getStatusLevel();
+
+                String label = String.valueOf(resourceItem.getPriority());
+                if (!client.isEmpty()) {
+                    label = label + ", " + client;
+                }
+
+                addContactInfoItem(label, resourceItem.getVerbose(), null);
             }
     }
 
     public void updateVCard(VCard vCard) {
+        LogManager.i(this, "updateVCard.");
 
-        if (vCard == null)
+        if (vCard == null) {
             return;
-        setValue(R.string.vcard_nick_name,
-                vCard.getField(VCardProperty.NICKNAME));
-        setValue(R.string.vcard_formatted_name, vCard.getFormattedName());
-        setValue(R.string.vcard_prefix_name,
-                vCard.getField(NameProperty.PREFIX));
-        setValue(R.string.vcard_given_name, vCard.getField(NameProperty.GIVEN));
-        setValue(R.string.vcard_middle_name,
-                vCard.getField(NameProperty.MIDDLE));
-        setValue(R.string.vcard_family_name,
-                vCard.getField(NameProperty.FAMILY));
-        setValue(R.string.vcard_suffix_name,
-                vCard.getField(NameProperty.SUFFIX));
-        setValue(R.string.vcard_birth_date, vCard.getField(VCardProperty.BDAY));
-        setValue(R.string.vcard_title, vCard.getField(VCardProperty.TITLE));
-        setValue(R.string.vcard_role, vCard.getField(VCardProperty.ROLE));
+        }
+        addContactInfoItem(R.string.vcard_nick_name, vCard.getField(VCardProperty.NICKNAME));
+        addContactInfoItem(R.string.vcard_formatted_name, vCard.getFormattedName());
+        addContactInfoItem(R.string.vcard_prefix_name, vCard.getField(NameProperty.PREFIX));
+        addContactInfoItem(R.string.vcard_given_name, vCard.getField(NameProperty.GIVEN));
+        addContactInfoItem(R.string.vcard_middle_name, vCard.getField(NameProperty.MIDDLE));
+        addContactInfoItem(R.string.vcard_family_name, vCard.getField(NameProperty.FAMILY));
+        addContactInfoItem(R.string.vcard_suffix_name, vCard.getField(NameProperty.SUFFIX));
+        addContactInfoItem(R.string.vcard_birth_date, vCard.getField(VCardProperty.BDAY));
+        addContactInfoItem(R.string.vcard_title, vCard.getField(VCardProperty.TITLE));
+        addContactInfoItem(R.string.vcard_role, vCard.getField(VCardProperty.ROLE));
+
         List<Organization> organizations = vCard.getOrganizations();
         String organization;
-        if (organizations.isEmpty())
+        if (organizations.isEmpty()) {
             organization = null;
-        else {
+        }  else {
             organization = organizations.get(0).getName();
-            for (String unit : organizations.get(0).getUnits())
+            for (String unit : organizations.get(0).getUnits()) {
                 organization = addString(organization, unit, "\n");
+            }
         }
-        setValue(R.string.vcard_organization, organization);
-        setValue(R.string.vcard_url, vCard.getField(VCardProperty.URL));
+        addContactInfoItem(getString(R.string.vcard_organization), organization, R.drawable.ic_organization_24dp);
+
+        addContactInfoItem(R.string.vcard_url, vCard.getField(VCardProperty.URL));
+
         String categories = null;
-        for (String category : vCard.getCategories())
+        for (String category : vCard.getCategories()) {
             categories = addString(categories, category, "\n");
-        setValue(R.string.vcard_categories, categories);
-        setValue(R.string.vcard_note, vCard.getField(VCardProperty.NOTE));
-        setValue(R.string.vcard_decsription, vCard.getField(VCardProperty.DESC));
-        PreferenceScreen screen = getPreferenceScreen();
-        for (PreferenceCategory category : addresses)
-            screen.removePreference(category);
-        for (PreferenceCategory category : telephones)
-            screen.removePreference(category);
-        for (PreferenceCategory category : emails)
-            screen.removePreference(category);
+        }
+
+        addContactInfoItem(R.string.vcard_categories, categories);
+        addContactInfoItem(R.string.vcard_note, vCard.getField(VCardProperty.NOTE));
+        addContactInfoItem(R.string.vcard_decsription, vCard.getField(VCardProperty.DESC));
+
         for (Address address : vCard.getAddresses()) {
             String types = null;
-            for (AddressType type : address.getTypes())
-                types = addString(types, getString(ContactViewer.getAddressTypeMap().get(type)),
-                        ", ");
+            for (AddressType type : address.getTypes()) {
+                types = addString(types, getString(ContactViewer.getAddressTypeMap().get(type)), ", ");
+            }
+
             String value = null;
-            for (AddressProperty property : AddressProperty.values())
-                value = addString(value, address.getProperties().get(property),
-                        "\n");
-            PreferenceScreen addressScreen = createTypedCategory(
-                    R.string.vcard_address, types, value);
-            for (AddressProperty property : AddressProperty.values())
-                addPreferenceScreen(addressScreen,
-                        ContactViewer.getAddressPropertyMap().get(property), address
-                                .getProperties().get(property));
+            for (AddressProperty property : AddressProperty.values()) {
+                value = addString(value, address.getProperties().get(property), "\n");
+            }
+
+            addContactInfoItem(types, value, null);
+
+            for (AddressProperty property : AddressProperty.values()) {
+                ContactViewer.getAddressPropertyMap().get(property);
+                address.getProperties().get(property);
+            }
         }
+
         for (Telephone telephone : vCard.getTelephones()) {
             String types = null;
-            for (TelephoneType type : telephone.getTypes())
-                types = addString(types,
-                        getString(ContactViewer.getTelephoneTypeMap().get(type)), ", ");
-            createTypedCategory(R.string.vcard_telephone, types,
-                    telephone.getValue());
+            for (TelephoneType type : telephone.getTypes()) {
+                types = addString(types, getString(ContactViewer.getTelephoneTypeMap().get(type)), ", ");
+            }
+
+            addContactInfoItem(types, telephone.getValue(), R.drawable.ic_telephone_24dp);
         }
+
         for (Email email : vCard.getEmails()) {
             String types = null;
-            for (EmailType type : email.getTypes())
-                types = addString(types, getString(ContactViewer.getEmailTypeMap().get(type)),
-                        ", ");
-            createTypedCategory(R.string.vcard_email, types, email.getValue());
+            for (EmailType type : email.getTypes()) {
+                types = addString(types, getString(ContactViewer.getEmailTypeMap().get(type)), ", ");
+            }
+
+            addContactInfoItem(types, email.getValue(), R.drawable.ic_email_24dp);
         }
     }
 
-    private PreferenceScreen createTypedCategory(int title, String types,
-                                                 String value) {
-        PreferenceCategory preferenceCategory = new PreferenceCategory(getActivity());
-        preferenceCategory.setTitle(title);
-        getPreferenceScreen().addPreference(preferenceCategory);
-
-        addPreferenceScreen(preferenceCategory, R.string.vcard_type, types);
-        return addPreferenceScreen(preferenceCategory, title, value);
+    private void addContactInfoItem(int labelId, String value) {
+        addContactInfoItem(getString(labelId), value, null);
     }
 
-    private PreferenceScreen addPreferenceScreen(PreferenceGroup container,
-                                                 int title, String summary) {
-        PreferenceScreen preference = getPreferenceManager().createPreferenceScreen(getActivity());
-        preference.setLayoutResource(R.layout.info_preference);
-        preference.setTitle(title);
-        preference.setSummary(summary == null ? "" : summary);
-        container.addPreference(preference);
-        return preference;
+    private void addContactInfoItem(String label, String value, Integer iconResource) {
+        LogManager.i(this, label + ": " + value);
+
+        if (value == null || value.isEmpty() ) {
+            return;
+        }
+
+        final LayoutInflater inflater
+                = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        View contactInfoItem = inflater.inflate(R.layout.contact_info_item, contactInfoItems, false);
+
+        ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
+        ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(value);
+
+        if (iconResource != null) {
+            ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(iconResource);
+        }
+
+        contactInfoItems.addView(contactInfoItem);
     }
+
 }

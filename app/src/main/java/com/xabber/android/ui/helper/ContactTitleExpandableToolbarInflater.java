@@ -67,16 +67,6 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(accountStatusBarColors[colorLevel]);
         }
-
-        final ObservableScrollView scrollView = (ObservableScrollView) activity.findViewById(R.id.scroll);
-        scrollView.setScrollViewCallbacks(this);
-
-        ScrollUtils.addOnGlobalLayoutListener(activity.findViewById(R.id.toolbar_overlay), new Runnable() {
-            @Override
-            public void run() {
-                updateFlexibleSpaceText(scrollView.getCurrentScrollY());
-            }
-        });
     }
 
     public void onResume() {
@@ -92,6 +82,16 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
 
         actionBarSize = getActionBarSize();
         toolbarHeightDelta = toolbarHeight - actionBarSize;
+
+        final ObservableScrollView scrollView = (ObservableScrollView) activity.findViewById(R.id.scroll);
+        scrollView.setScrollViewCallbacks(this);
+
+        ScrollUtils.addOnGlobalLayoutListener(activity.findViewById(R.id.expandable_contact_title), new Runnable() {
+            @Override
+            public void run() {
+                updateFlexibleSpaceText(scrollView.getCurrentScrollY());
+            }
+        });
     }
 
     protected int getActionBarSize() {
