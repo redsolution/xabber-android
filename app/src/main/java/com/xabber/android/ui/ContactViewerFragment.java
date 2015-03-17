@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.roster.PresenceManager;
@@ -34,6 +33,7 @@ import com.xabber.xmpp.vcard.VCardProperty;
 import java.util.List;
 
 public class ContactViewerFragment extends Fragment {
+    private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
 
     @Override
@@ -48,6 +48,7 @@ public class ContactViewerFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.contact_viewer_fragment, container, false);
 
+        xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
 
         return view;
@@ -68,9 +69,11 @@ public class ContactViewerFragment extends Fragment {
     }
 
     public void updateContact(String account, String bareAddress) {
-        addContactInfoItem(R.string.contact_viewer_jid, bareAddress);
+        xmppItems.removeAllViews();
+
+        addXmppItem(getString(R.string.contact_viewer_jid), bareAddress, null);
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
-        addContactInfoItem(R.string.contact_viewer_name, rosterContact == null ? null : rosterContact.getRealName());
+        addXmppItem(getString(R.string.contact_viewer_name), rosterContact == null ? null : rosterContact.getRealName(), null);
 
         if (rosterContact != null && rosterContact.isConnected())
             for (ResourceItem resourceItem
@@ -109,16 +112,17 @@ public class ContactViewerFragment extends Fragment {
                     label = label + ", " + client;
                 }
 
-                addContactInfoItem(label, resourceItem.getVerbose(), R.drawable.ic_xmpp_24dp);
+                addXmppItem(label, resourceItem.getVerbose(), R.drawable.ic_xmpp_24dp);
             }
     }
 
     public void updateVCard(VCard vCard) {
-        LogManager.i(this, "updateVCard.");
-
         if (vCard == null) {
             return;
         }
+
+        contactInfoItems.removeAllViews();
+
         addContactInfoItem(R.string.vcard_nick_name, vCard.getField(VCardProperty.NICKNAME));
         addContactInfoItem(getString(R.string.vcard_formatted_name), vCard.getFormattedName(), R.drawable.ic_contact_info_24dp);
         addContactInfoItem(R.string.vcard_prefix_name, vCard.getField(NameProperty.PREFIX));
@@ -195,15 +199,28 @@ public class ContactViewerFragment extends Fragment {
     }
 
     private void addContactInfoItem(String label, String value, Integer iconResource) {
-        LogManager.i(this, label + ": " + value);
+        View contactInfoItem = createItemView(contactInfoItems, label, value, iconResource);
+        if (contactInfoItem != null) {
+            contactInfoItems.addView(contactInfoItem);
+        }
+    }
 
+    private void addXmppItem(String label, String value, Integer iconResource) {
+        View contactInfoItem = createItemView(xmppItems, label, value, iconResource);
+        if (contactInfoItem != null) {
+            xmppItems.addView(contactInfoItem);
+        }
+    }
+
+
+    private View createItemView(ViewGroup rootView, String label, String value, Integer iconResource) {
         if (value == null || value.isEmpty() ) {
-            return;
+            return null;
         }
 
-        final LayoutInflater inflater
-                = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        View contactInfoItem = inflater.inflate(R.layout.contact_info_item, contactInfoItems, false);
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+        View contactInfoItem = inflater.inflate(R.layout.contact_info_item, rootView, false);
 
         ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
         ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(value);
@@ -211,8 +228,7 @@ public class ContactViewerFragment extends Fragment {
         if (iconResource != null) {
             ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(iconResource);
         }
-
-        contactInfoItems.addView(contactInfoItem);
+        return contactInfoItem;
     }
 
 }
