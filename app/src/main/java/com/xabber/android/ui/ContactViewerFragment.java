@@ -109,7 +109,7 @@ public class ContactViewerFragment extends Fragment {
                     label = label + ", " + client;
                 }
 
-                addContactInfoItem(label, resourceItem.getVerbose(), null);
+                addContactInfoItem(label, resourceItem.getVerbose(), R.drawable.ic_xmpp_24dp);
             }
     }
 
@@ -120,14 +120,14 @@ public class ContactViewerFragment extends Fragment {
             return;
         }
         addContactInfoItem(R.string.vcard_nick_name, vCard.getField(VCardProperty.NICKNAME));
-        addContactInfoItem(R.string.vcard_formatted_name, vCard.getFormattedName());
+        addContactInfoItem(getString(R.string.vcard_formatted_name), vCard.getFormattedName(), R.drawable.ic_contact_info_24dp);
         addContactInfoItem(R.string.vcard_prefix_name, vCard.getField(NameProperty.PREFIX));
         addContactInfoItem(R.string.vcard_given_name, vCard.getField(NameProperty.GIVEN));
         addContactInfoItem(R.string.vcard_middle_name, vCard.getField(NameProperty.MIDDLE));
         addContactInfoItem(R.string.vcard_family_name, vCard.getField(NameProperty.FAMILY));
         addContactInfoItem(R.string.vcard_suffix_name, vCard.getField(NameProperty.SUFFIX));
-        addContactInfoItem(R.string.vcard_birth_date, vCard.getField(VCardProperty.BDAY));
-        addContactInfoItem(R.string.vcard_title, vCard.getField(VCardProperty.TITLE));
+        addContactInfoItem(getString(R.string.vcard_birth_date), vCard.getField(VCardProperty.BDAY), R.drawable.ic_birthday_24dp);
+        addContactInfoItem(getString(R.string.vcard_title), vCard.getField(VCardProperty.TITLE), R.drawable.ic_job_title_24dp);
         addContactInfoItem(R.string.vcard_role, vCard.getField(VCardProperty.ROLE));
 
         List<Organization> organizations = vCard.getOrganizations();
@@ -141,8 +141,7 @@ public class ContactViewerFragment extends Fragment {
             }
         }
         addContactInfoItem(getString(R.string.vcard_organization), organization, R.drawable.ic_organization_24dp);
-
-        addContactInfoItem(R.string.vcard_url, vCard.getField(VCardProperty.URL));
+        addContactInfoItem(getString(R.string.vcard_url), vCard.getField(VCardProperty.URL), R.drawable.ic_web_24dp);
 
         String categories = null;
         for (String category : vCard.getCategories()) {
@@ -164,7 +163,7 @@ public class ContactViewerFragment extends Fragment {
                 value = addString(value, address.getProperties().get(property), "\n");
             }
 
-            addContactInfoItem(types, value, null);
+            addContactInfoItem(types, value, R.drawable.ic_address_24dp);
 
             for (AddressProperty property : AddressProperty.values()) {
                 ContactViewer.getAddressPropertyMap().get(property);
@@ -178,7 +177,7 @@ public class ContactViewerFragment extends Fragment {
                 types = addString(types, getString(ContactViewer.getTelephoneTypeMap().get(type)), ", ");
             }
 
-            addContactInfoItem(types, telephone.getValue(), R.drawable.ic_telephone_24dp);
+            addContactInfoItem(types, telephone.getValue(), R.drawable.ic_phone_24dp);
         }
 
         for (Email email : vCard.getEmails()) {
