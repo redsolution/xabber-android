@@ -219,7 +219,7 @@
 
         <activity
             android:label="@string/contact_viewer"
-            android:name="com.xabber.android.ui.preferences.ContactViewer"
+            android:name="com.xabber.android.ui.ContactViewer"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->

@@ -1,4 +1,4 @@
-package com.xabber.android.ui.preferences;
+package com.xabber.android.ui;
 
 import android.app.Activity;
 import android.app.Fragment;

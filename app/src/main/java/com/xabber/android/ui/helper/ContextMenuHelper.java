@@ -44,7 +44,7 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.preferences.AccountEditor;
-import com.xabber.android.ui.preferences.ContactViewer;
+import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
 /**

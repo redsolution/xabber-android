@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui.preferences;
+package com.xabber.android.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -54,8 +54,8 @@ import java.util.Map;
 public class ContactViewer extends ManagedActivity implements
         OnVCardListener, OnContactChangedListener, OnAccountChangedListener {
 
-    private static final String SAVED_VCARD = "com.xabber.android.ui.preferences.ContactViewer.SAVED_VCARD";
-    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.preferences.ContactViewer.SAVED_VCARD_ERROR";
+    private static final String SAVED_VCARD = "com.xabber.android.ui.ContactViewer.SAVED_VCARD";
+    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.ContactViewer.SAVED_VCARD_ERROR";
 
     private String account;
     private String bareAddress;

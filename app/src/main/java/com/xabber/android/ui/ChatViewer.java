@@ -58,7 +58,6 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.ChatEditor;
-import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.androiddev.R;
 
 import java.util.Collection;
