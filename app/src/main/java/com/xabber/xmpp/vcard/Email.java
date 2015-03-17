@@ -16,7 +16,7 @@ package com.xabber.xmpp.vcard;
 
 public class Email extends AbstractTypedDataWithValue<EmailType> {
 
-    public static final String ELEMENT_NAME = "TEL";
+    public static final String ELEMENT_NAME = "EMAIL";
     public static final String USERID_NAME = "USERID";
 
     public Email() {
