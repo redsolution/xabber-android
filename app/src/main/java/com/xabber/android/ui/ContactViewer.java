@@ -202,6 +202,7 @@ public class ContactViewer extends ManagedActivity implements
         contactTitleExpandableToolbarInflater.onCreate(bestContact);
 
         findViewById(R.id.status_icon).setVisibility(View.GONE);
+        findViewById(R.id.status_text).setVisibility(View.GONE);
     }
 
     @Override
