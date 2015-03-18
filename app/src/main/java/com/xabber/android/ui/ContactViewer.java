@@ -18,6 +18,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.xabber.android.data.Application;
@@ -218,6 +221,26 @@ public class ContactViewer extends ManagedActivity implements
 
         contactViewerFragment.updateContact(account, bareAddress);
         contactViewerFragment.updateVCard(vCard);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.edit_contact, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit_contact:
+                startActivity(ContactEditor.createIntent(this, account, bareAddress));
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private ContactViewerFragment getFragment() {
