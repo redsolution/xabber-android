@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -197,6 +198,7 @@ public class ContactViewer extends ManagedActivity implements
         AbstractContact bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
         contactTitleExpandableToolbarInflater.onCreate(bestContact);
 
+        findViewById(R.id.status_icon).setVisibility(View.GONE);
     }
 
     @Override

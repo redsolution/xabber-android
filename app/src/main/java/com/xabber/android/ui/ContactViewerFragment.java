@@ -105,14 +105,27 @@ public class ContactViewerFragment extends Fragment {
                     }
                 }
 
-                resourceItem.getStatusMode().getStatusLevel();
-
                 String label = String.valueOf(resourceItem.getPriority());
                 if (!client.isEmpty()) {
                     label = label + ", " + client;
                 }
 
-                addXmppItem(label, resourceItem.getVerbose(), R.drawable.ic_xmpp_24dp);
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+                View contactInfoItem = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
+
+                ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
+                ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(resourceItem.getVerbose());
+
+                ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(R.drawable.ic_xmpp_24dp);
+
+                ImageView statusIcon = (ImageView) contactInfoItem.findViewById(R.id.contact_info_right_icon);
+                statusIcon.setVisibility(View.VISIBLE);
+
+                statusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_status));
+                statusIcon.setImageLevel(resourceItem.getStatusMode().getStatusLevel());
+
+                xmppItems.addView(contactInfoItem);
             }
     }
 
