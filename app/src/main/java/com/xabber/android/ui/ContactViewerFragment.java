@@ -30,6 +30,7 @@ import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactViewerFragment extends Fragment {
@@ -75,65 +76,70 @@ public class ContactViewerFragment extends Fragment {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
         addXmppItem(getString(R.string.contact_viewer_name), rosterContact == null ? null : rosterContact.getRealName(), null);
 
-        if (rosterContact != null && rosterContact.isConnected())
-            for (ResourceItem resourceItem
-                    : PresenceManager.getInstance().getResourceItems(account, bareAddress)) {
+        if (rosterContact == null || !rosterContact.isConnected()) {
+            return;
+        }
 
-                String user = resourceItem.getUser(bareAddress);
-                ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
+        List<View> resourcesList = new ArrayList<>();
 
-                String client = "";
-                if (clientInfo == null) {
-                    CapabilitiesManager.getInstance().request(account, user);
-                    client = getString(R.string.please_wait);
-                } else if (clientInfo == CapabilitiesManager.INVALID_CLIENT_INFO) {
-                    client = getString(R.string.unknown);
-                } else {
-                    String name = clientInfo.getName();
-                    if (name != null) {
-                        client = name;
+        for (ResourceItem resourceItem
+                : PresenceManager.getInstance().getResourceItems(account, bareAddress)) {
+
+            String user = resourceItem.getUser(bareAddress);
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
+
+            String client = "";
+            if (clientInfo == null) {
+                CapabilitiesManager.getInstance().request(account, user);
+                client = getString(R.string.please_wait);
+            } else if (clientInfo == CapabilitiesManager.INVALID_CLIENT_INFO) {
+                client = getString(R.string.unknown);
+            } else {
+                String name = clientInfo.getName();
+                if (name != null) {
+                    client = name;
+                }
+
+                String type = clientInfo.getType();
+                if (type != null) {
+                    if (client.isEmpty()) {
+                        client = type;
+                    } else {
+                        client = client + "/" + type;
                     }
 
-                    String type = clientInfo.getType();
-                    if (type != null) {
-                        if (client.isEmpty()) {
-                            client = type;
-                        } else {
-                            client = client + "/" + type;
-                        }
-
-                    }
                 }
-
-                String label = getString(R.string.account_priority) + ": " + resourceItem.getPriority();
-                if (!client.isEmpty()) {
-                    label = label + ", " + client;
-                }
-
-                label += " " + resourceItem.getVerbose();
-
-                String status = resourceItem.getStatusText().trim();
-                if (status.isEmpty()) {
-                    status = getString(resourceItem.getStatusMode().getStringID());
-                }
-
-                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-
-                View contactInfoItem = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
-
-                ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
-                ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(status);
-
-                ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(R.drawable.ic_xmpp_24dp);
-
-                ImageView statusIcon = (ImageView) contactInfoItem.findViewById(R.id.contact_info_right_icon);
-                statusIcon.setVisibility(View.VISIBLE);
-
-                statusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_status));
-                statusIcon.setImageLevel(resourceItem.getStatusMode().getStatusLevel());
-
-                xmppItems.addView(contactInfoItem);
             }
+
+            String label = getString(R.string.account_priority) + ": " + resourceItem.getPriority();
+            if (!client.isEmpty()) {
+                label = label + ", " + client;
+            }
+
+            label += " " + resourceItem.getVerbose();
+
+            String status = resourceItem.getStatusText().trim();
+            if (status.isEmpty()) {
+                status = getString(resourceItem.getStatusMode().getStringID());
+            }
+
+            LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+
+            View contactInfoItem = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
+
+            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
+            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(status);
+
+            ImageView statusIcon = (ImageView) contactInfoItem.findViewById(R.id.contact_info_right_icon);
+            statusIcon.setVisibility(View.VISIBLE);
+
+            statusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_status));
+            statusIcon.setImageLevel(resourceItem.getStatusMode().getStatusLevel());
+
+            resourcesList.add(contactInfoItem);
+        }
+
+        addItemGroup(resourcesList, xmppItems, R.drawable.ic_xmpp_24dp);
     }
 
     public void updateVCard(VCard vCard) {
@@ -143,38 +149,55 @@ public class ContactViewerFragment extends Fragment {
 
         contactInfoItems.removeAllViews();
 
-        addContactInfoItem(R.string.vcard_nick_name, vCard.getField(VCardProperty.NICKNAME));
-        addContactInfoItem(getString(R.string.vcard_formatted_name), vCard.getFormattedName(), R.drawable.ic_contact_info_24dp);
-        addContactInfoItem(R.string.vcard_prefix_name, vCard.getField(NameProperty.PREFIX));
-        addContactInfoItem(R.string.vcard_given_name, vCard.getField(NameProperty.GIVEN));
-        addContactInfoItem(R.string.vcard_middle_name, vCard.getField(NameProperty.MIDDLE));
-        addContactInfoItem(R.string.vcard_family_name, vCard.getField(NameProperty.FAMILY));
-        addContactInfoItem(R.string.vcard_suffix_name, vCard.getField(NameProperty.SUFFIX));
-        addContactInfoItem(getString(R.string.vcard_birth_date), vCard.getField(VCardProperty.BDAY), R.drawable.ic_birthday_24dp);
-        addContactInfoItem(getString(R.string.vcard_title), vCard.getField(VCardProperty.TITLE), R.drawable.ic_job_title_24dp);
-        addContactInfoItem(R.string.vcard_role, vCard.getField(VCardProperty.ROLE));
+        addNameInfo(vCard);
 
-        List<Organization> organizations = vCard.getOrganizations();
-        String organization;
-        if (organizations.isEmpty()) {
-            organization = null;
-        }  else {
-            organization = organizations.get(0).getName();
-            for (String unit : organizations.get(0).getUnits()) {
-                organization = addString(organization, unit, "\n");
+        List<View> birthDayList = new ArrayList<>();
+        addItem(birthDayList, contactInfoItems, getString(R.string.vcard_birth_date), vCard.getField(VCardProperty.BDAY));
+        addItemGroup(birthDayList, contactInfoItems, R.drawable.ic_birthday_24dp);
+
+
+        addOrganizationInfo(vCard);
+
+        List<View> webList = new ArrayList<>();
+        addItem(webList, contactInfoItems, getString(R.string.vcard_url), vCard.getField(VCardProperty.URL));
+        addItemGroup(webList, contactInfoItems, R.drawable.ic_web_24dp);
+
+        addAdditionalInfo(vCard);
+        addAddresses(vCard);
+        addPhones(vCard);
+        addEmails(vCard);
+    }
+
+    private void addEmails(VCard vCard) {
+        List<View> emailList = new ArrayList<>();
+        for (Email email : vCard.getEmails()) {
+            String types = null;
+            for (EmailType type : email.getTypes()) {
+                types = addString(types, getString(ContactViewer.getEmailTypeMap().get(type)), ", ");
             }
-        }
-        addContactInfoItem(getString(R.string.vcard_organization), organization, R.drawable.ic_organization_24dp);
-        addContactInfoItem(getString(R.string.vcard_url), vCard.getField(VCardProperty.URL), R.drawable.ic_web_24dp);
 
-        String categories = null;
-        for (String category : vCard.getCategories()) {
-            categories = addString(categories, category, "\n");
+            addItem(emailList, contactInfoItems, types, email.getValue());
         }
 
-        addContactInfoItem(R.string.vcard_categories, categories);
-        addContactInfoItem(R.string.vcard_note, vCard.getField(VCardProperty.NOTE));
-        addContactInfoItem(R.string.vcard_decsription, vCard.getField(VCardProperty.DESC));
+        addItemGroup(emailList, contactInfoItems, R.drawable.ic_email_24dp);
+    }
+
+    private void addPhones(VCard vCard) {
+        List<View> phoneList = new ArrayList<>();
+        for (Telephone telephone : vCard.getTelephones()) {
+            String types = null;
+            for (TelephoneType type : telephone.getTypes()) {
+                types = addString(types, getString(ContactViewer.getTelephoneTypeMap().get(type)), ", ");
+            }
+
+            addItem(phoneList, contactInfoItems, types, telephone.getValue());
+        }
+
+        addItemGroup(phoneList, contactInfoItems, R.drawable.ic_phone_24dp);
+    }
+
+    private void addAddresses(VCard vCard) {
+        List<View> addressList = new ArrayList<>();
 
         for (Address address : vCard.getAddresses()) {
             String types = null;
@@ -187,42 +210,84 @@ public class ContactViewerFragment extends Fragment {
                 value = addString(value, address.getProperties().get(property), "\n");
             }
 
-            addContactInfoItem(types, value, R.drawable.ic_address_24dp);
-
-            for (AddressProperty property : AddressProperty.values()) {
-                ContactViewer.getAddressPropertyMap().get(property);
-                address.getProperties().get(property);
-            }
+            addItem(addressList, contactInfoItems, types, value);
         }
 
-        for (Telephone telephone : vCard.getTelephones()) {
-            String types = null;
-            for (TelephoneType type : telephone.getTypes()) {
-                types = addString(types, getString(ContactViewer.getTelephoneTypeMap().get(type)), ", ");
-            }
+        addItemGroup(addressList, contactInfoItems, R.drawable.ic_address_24dp);
+    }
 
-            addContactInfoItem(types, telephone.getValue(), R.drawable.ic_phone_24dp);
+    private void addAdditionalInfo(VCard vCard) {
+        String categories = null;
+        for (String category : vCard.getCategories()) {
+            categories = addString(categories, category, "\n");
         }
 
-        for (Email email : vCard.getEmails()) {
-            String types = null;
-            for (EmailType type : email.getTypes()) {
-                types = addString(types, getString(ContactViewer.getEmailTypeMap().get(type)), ", ");
-            }
+        List<View> notesList = new ArrayList<>();
+        addItem(notesList, contactInfoItems, getString(R.string.vcard_categories), categories);
+        addItem(notesList, contactInfoItems, getString(R.string.vcard_note), vCard.getField(VCardProperty.NOTE));
+        addItem(notesList, contactInfoItems, getString(R.string.vcard_decsription), vCard.getField(VCardProperty.DESC));
+        addItemGroup(notesList, contactInfoItems, R.drawable.ic_notes_24dp);
+    }
 
-            addContactInfoItem(types, email.getValue(), R.drawable.ic_email_24dp);
+    private void addOrganizationInfo(VCard vCard) {
+        List<View> organizationList = new ArrayList<>();
+
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_title), vCard.getField(VCardProperty.TITLE));
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_role), vCard.getField(VCardProperty.ROLE));
+
+
+        List<Organization> organizations = vCard.getOrganizations();
+        String organization;
+        if (organizations.isEmpty()) {
+            organization = null;
+        }  else {
+            organization = organizations.get(0).getName();
+            for (String unit : organizations.get(0).getUnits()) {
+                organization = addString(organization, unit, "\n");
+            }
+        }
+        addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization), organization);
+
+        addItemGroup(organizationList, contactInfoItems, R.drawable.ic_job_title_24dp);
+    }
+
+    private void addNameInfo(VCard vCard) {
+        List<View> nameList = new ArrayList<>();
+
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_nick_name), vCard.getField(VCardProperty.NICKNAME));
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_formatted_name), vCard.getFormattedName());
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_prefix_name), vCard.getField(NameProperty.PREFIX));
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_given_name), vCard.getField(NameProperty.GIVEN));
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_middle_name), vCard.getField(NameProperty.MIDDLE));
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_family_name), vCard.getField(NameProperty.FAMILY));
+        addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getField(NameProperty.SUFFIX));
+
+        addItemGroup(nameList, contactInfoItems, R.drawable.ic_contact_info_24dp);
+    }
+
+    private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon) {
+        if (nameList.isEmpty()) {
+            return;
+        }
+
+        addSeparator(itemList);
+        ((ImageView) nameList.get(0).findViewById(R.id.contact_info_group_icon)).setImageResource(groupIcon);
+
+        for (View view : nameList) {
+            itemList.addView(view);
         }
     }
 
-    private void addContactInfoItem(int labelId, String value) {
-        addContactInfoItem(getString(labelId), value, null);
+    private void addItem(List<View> nameList, LinearLayout contactInfoItems, String label, String value) {
+        View itemView = createItemView(contactInfoItems, label, value, null);
+        if (itemView != null) {
+            nameList.add(itemView);
+        }
     }
 
-    private void addContactInfoItem(String label, String value, Integer iconResource) {
-        View contactInfoItem = createItemView(contactInfoItems, label, value, iconResource);
-        if (contactInfoItem != null) {
-            contactInfoItems.addView(contactInfoItem);
-        }
+    private void addSeparator(LinearLayout rootView) {
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        rootView.addView(inflater.inflate(R.layout.contact_info_separator, rootView, false));
     }
 
     private void addXmppItem(String label, String value, Integer iconResource) {
