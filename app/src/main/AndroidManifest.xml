@@ -142,12 +142,12 @@
         <activity
             android:label="@string/contact_editor"
             android:name="com.xabber.android.ui.ContactEditor"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
+            android:parentActivityName="com.xabber.android.ui.ContactViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.ContactList" />
+                android:value="com.xabber.android.ui.ContactViewer" />
         </activity>
         <activity
             android:label="@string/contact_add"
@@ -220,12 +220,12 @@
         <activity
             android:label="@string/contact_viewer"
             android:name="com.xabber.android.ui.ContactViewer"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
+            android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.ContactList" />
+                android:value="com.xabber.android.ui.ChatViewer" />
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

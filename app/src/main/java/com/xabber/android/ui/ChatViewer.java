@@ -221,7 +221,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         if (abstractChat instanceof RegularChat) {
-            menu.findItem(R.id.action_edit_contact).setVisible(true);
+            menu.findItem(R.id.action_view_contact).setVisible(true);
             menu.findItem(R.id.action_close_chat).setVisible(true);
 
             SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
@@ -313,8 +313,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         final String user = actionWithUser;
 
         switch (item.getItemId()) {
-            case R.id.action_edit_contact:
-                startActivity(ContactEditor.createIntent(this, account, user));
+            case R.id.action_view_contact:
+                startActivity(ContactViewer.createIntent(this, account, user));
                 return true;
 
             case R.id.action_chat_list:

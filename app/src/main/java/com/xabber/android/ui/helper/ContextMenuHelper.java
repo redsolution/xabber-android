@@ -63,17 +63,6 @@ public class ContextMenuHelper {
         final String account = abstractContact.getAccount();
         final String user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
-        menu.add(R.string.chat_viewer).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        MessageManager.getInstance().openChat(account, user);
-                        activity.startActivity(ChatViewer.createIntent(
-                                activity, account, user));
-                        return true;
-                    }
-                });
         if (MUCManager.getInstance().hasRoom(account, user)) {
             if (!MUCManager.getInstance().inUse(account, user))
                 menu.add(R.string.muc_edit).setIntent(
@@ -121,10 +110,6 @@ public class ContextMenuHelper {
 
                         });
         } else {
-            menu.add(R.string.contact_viewer).setIntent(
-                    ContactViewer.createIntent(activity, account, user));
-            menu.add(R.string.contact_editor).setIntent(
-                    ContactEditor.createIntent(activity, account, user));
             menu.add(R.string.contact_delete).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
@@ -290,7 +275,6 @@ public class ContextMenuHelper {
                             }
                             return true;
                         }
-
                     });
             menu.add(R.string.contact_add).setIntent(
                     ContactAdd.createIntent(activity, account));

@@ -17,12 +17,11 @@
         android:visible="false"
         />
 
-    <item android:id="@+id/action_edit_contact"
-        android:title="@string/contact_editor"
+    <item android:id="@+id/action_view_contact"
+        android:title="@string/contact_viewer"
         app:showAsAction="never"
         android:orderInCategory="100"
         android:visible="false"
-        android:icon="@drawable/ic_create_white_24dp"
         />
 
     <item android:id="@+id/action_chat_list"
