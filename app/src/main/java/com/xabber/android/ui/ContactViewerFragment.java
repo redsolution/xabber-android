@@ -105,9 +105,16 @@ public class ContactViewerFragment extends Fragment {
                     }
                 }
 
-                String label = String.valueOf(resourceItem.getPriority());
+                String label = getString(R.string.account_priority) + ": " + resourceItem.getPriority();
                 if (!client.isEmpty()) {
                     label = label + ", " + client;
+                }
+
+                label += " " + resourceItem.getVerbose();
+
+                String status = resourceItem.getStatusText().trim();
+                if (status.isEmpty()) {
+                    status = getString(resourceItem.getStatusMode().getStringID());
                 }
 
                 LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -115,7 +122,7 @@ public class ContactViewerFragment extends Fragment {
                 View contactInfoItem = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
 
                 ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
-                ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(resourceItem.getVerbose());
+                ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(status);
 
                 ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(R.drawable.ic_xmpp_24dp);
 
@@ -235,7 +242,11 @@ public class ContactViewerFragment extends Fragment {
 
         View contactInfoItem = inflater.inflate(R.layout.contact_info_item, rootView, false);
 
-        ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
+        if (label == null || label.trim().isEmpty()) {
+            contactInfoItem.findViewById(R.id.contact_info_item_name).setVisibility(View.GONE);
+        } else {
+            ((TextView) contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
+        }
         ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(value);
 
         if (iconResource != null) {

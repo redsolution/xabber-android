@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="72dp"
+    android:paddingRight="16dp"
+    android:paddingEnd="16dp"
     >
 
 
@@ -40,6 +42,7 @@
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorSecondary"
 
+            android:singleLine="true"
             android:text="Mobile"
             android:id="@+id/contact_info_item_name" />
     </LinearLayout>
@@ -51,7 +54,6 @@
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
         android:visibility="gone"
         />
 
