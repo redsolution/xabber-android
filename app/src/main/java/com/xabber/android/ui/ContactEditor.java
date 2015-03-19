@@ -37,8 +37,7 @@ import com.xabber.xmpp.address.Jid;
 import java.util.Collection;
 
 public class ContactEditor extends GroupListActivity implements
-        OnContactChangedListener, AdapterView.OnItemClickListener,
-        OnAccountChangedListener {
+        OnContactChangedListener, OnAccountChangedListener {
 
     private String account;
     private String user;

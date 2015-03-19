@@ -39,8 +39,7 @@ import java.util.Collections;
  *
  * @author alexander.ivanov
  */
-public abstract class GroupListActivity extends ManagedListActivity implements
-        OnItemClickListener, OnGroupAddConfirmed {
+public abstract class GroupListActivity extends ManagedListActivity implements OnGroupAddConfirmed {
 
     private static final String SAVED_GROUPS = "com.xabber.android.ui.ContactList.SAVED_GROUPS";
     private static final String SAVED_SELECTED = "com.xabber.android.ui.ContactList.SAVED_SELECTED";
@@ -69,15 +68,9 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 
         listView = getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        listView.setOnItemClickListener(this);
         arrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_multiple_choice,
                 new ArrayList<String>());
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.add_item, listView, false);
-        ((TextView) view.findViewById(android.R.id.message))
-                .setText(R.string.group_add);
-        listView.addFooterView(view, null, true);
         setListAdapter(arrayAdapter);
         setGroups(groups, selected);
     }
@@ -147,13 +140,6 @@ public abstract class GroupListActivity extends ManagedListActivity implements
 
     private void showGroupAddDialog() {
         GroupAddDialogFragment.newInstance(getGroups()).show(getFragmentManager(), "GROUP-ADD");
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
-                            long id) {
-        if (listView.getItemAtPosition(position) == null) // Footer
-            showGroupAddDialog();
     }
 
     /**
