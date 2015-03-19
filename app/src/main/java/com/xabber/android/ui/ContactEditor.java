@@ -95,7 +95,6 @@ public class ContactEditor extends GroupListActivity implements
     private void update() {
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
-        contactTitleActionBarInflater.setName(getString(R.string.contact_editor_title, abstractContact.getName()));
         contactTitleActionBarInflater.setStatusText(user);
     }
 
