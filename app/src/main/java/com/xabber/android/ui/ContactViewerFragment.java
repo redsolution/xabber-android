@@ -72,7 +72,7 @@ public class ContactViewerFragment extends Fragment {
     public void updateContact(String account, String bareAddress) {
         xmppItems.removeAllViews();
 
-        addXmppItem(getString(R.string.contact_viewer_jid), bareAddress, null);
+        addXmppItem(getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_xmpp_24dp);
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
         addXmppItem(getString(R.string.contact_viewer_name), rosterContact == null ? null : rosterContact.getRealName(), null);
 
@@ -149,7 +149,7 @@ public class ContactViewerFragment extends Fragment {
             resourcesList.add(contactInfoItem);
         }
 
-        addItemGroup(resourcesList, xmppItems, R.drawable.ic_xmpp_24dp);
+        addItemGroup(resourcesList, xmppItems, R.drawable.ic_jabber_24dp);
     }
 
     public void updateVCard(VCard vCard) {
