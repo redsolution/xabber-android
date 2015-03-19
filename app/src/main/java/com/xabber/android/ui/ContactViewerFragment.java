@@ -111,12 +111,19 @@ public class ContactViewerFragment extends Fragment {
                 }
             }
 
-            String label = getString(R.string.account_priority) + ": " + resourceItem.getPriority();
+            String priority = getString(R.string.account_priority) + ": " + resourceItem.getPriority();
+
+            String label = "";
             if (!client.isEmpty()) {
-                label = label + ", " + client;
+                label = getString(R.string.contact_viewer_client) + ": " + client + ", ";
             }
 
-            label += " " + resourceItem.getVerbose();
+            label += priority;
+
+
+            String resource = getString(R.string.account_resource) + ": " + resourceItem.getVerbose();
+
+
 
             String status = resourceItem.getStatusText().trim();
             if (status.isEmpty()) {
@@ -127,8 +134,11 @@ public class ContactViewerFragment extends Fragment {
 
             View contactInfoItem = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
 
-            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
-            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(status);
+            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_secondary)).setText(label);
+            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_main)).setText(status);
+
+            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_secondary_second_line)).setText(resource);
+            contactInfoItem.findViewById(R.id.contact_info_item_secondary_second_line).setVisibility(View.VISIBLE);
 
             ImageView statusIcon = (ImageView) contactInfoItem.findViewById(R.id.contact_info_right_icon);
             statusIcon.setVisibility(View.VISIBLE);
@@ -308,11 +318,11 @@ public class ContactViewerFragment extends Fragment {
         View contactInfoItem = inflater.inflate(R.layout.contact_info_item, rootView, false);
 
         if (label == null || label.trim().isEmpty()) {
-            contactInfoItem.findViewById(R.id.contact_info_item_name).setVisibility(View.GONE);
+            contactInfoItem.findViewById(R.id.contact_info_item_secondary).setVisibility(View.GONE);
         } else {
-            ((TextView) contactInfoItem.findViewById(R.id.contact_info_item_name)).setText(label);
+            ((TextView) contactInfoItem.findViewById(R.id.contact_info_item_secondary)).setText(label);
         }
-        ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_value)).setText(value);
+        ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_main)).setText(value);
 
         if (iconResource != null) {
             ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(iconResource);

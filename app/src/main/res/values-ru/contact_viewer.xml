@@ -14,6 +14,7 @@
     <string name="contact_viewer_resources">Ресурсы</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_resource_summary">Ресурс: %1$s\nПриоритет: %2$d\nКлиент: %3$s</string>
+    <string name="contact_viewer_client">Клиент</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_client_info">%1$s, тип: %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
