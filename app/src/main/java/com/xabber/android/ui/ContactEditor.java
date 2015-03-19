@@ -76,7 +76,6 @@ public class ContactEditor extends GroupListActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        ((EditText) findViewById(R.id.contact_name)).setText(RosterManager.getInstance().getName(account, user));
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         update();
@@ -88,8 +87,7 @@ public class ContactEditor extends GroupListActivity implements
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         try {
-            String name = ((EditText) findViewById(R.id.contact_name)).getText().toString();
-            RosterManager.getInstance().setNameAndGroup(account, user, name, getSelected());
+            RosterManager.getInstance().setGroups(account, user, getSelected());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }

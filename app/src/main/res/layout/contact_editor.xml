@@ -22,22 +22,6 @@
     <include layout="@layout/toolbar_default"/>
 
     <TextView
-        android:text="@string/contact_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dip"
-        android:paddingBottom="4dip"
-        android:paddingLeft="2dip"
-        android:paddingRight="2dip"
-        />
-
-    <EditText
-        android:id="@+id/contact_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-
-    <TextView
         android:text="@string/contact_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
