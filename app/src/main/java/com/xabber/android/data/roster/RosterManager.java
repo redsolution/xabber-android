@@ -348,11 +348,28 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
                     return;
             }
         }
+
+        updateRosterContact(account, bareAddress, name, groups);
+    }
+
+    public void setName(String account, String bareAddress, String name) throws NetworkException {
+        RosterContact contact = getRosterContact(account, bareAddress);
+        if (contact == null)
+            throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
+        if (contact.getRealName().equals(name)) {
+            return;
+        }
+
+        updateRosterContact(account, bareAddress, name, contact.getGroupNames());
+    }
+
+    private void updateRosterContact(String account, String bareAddress, String name, Collection<String> groups) throws NetworkException {
         RosterPacket packet = new RosterPacket();
         packet.setType(IQ.Type.SET);
         RosterPacket.Item item = new RosterPacket.Item(bareAddress, name);
-        for (String group : groups)
+        for (String group : groups) {
             item.addGroupName(group);
+        }
         packet.addRosterItem(item);
         ConnectionManager.getInstance().sendPacket(account, packet);
     }

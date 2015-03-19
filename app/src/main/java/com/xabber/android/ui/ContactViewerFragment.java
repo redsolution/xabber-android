@@ -7,10 +7,13 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.xabber.android.data.Application;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.roster.PresenceManager;
@@ -37,6 +40,10 @@ public class ContactViewerFragment extends Fragment {
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
 
+    String account;
+    String bareAddress;
+    private EditText contactNameEditText;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +59,27 @@ public class ContactViewerFragment extends Fragment {
         xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
 
+        View contactTitleView = ((ContactViewer) getActivity()).getContactTitleView();
+
+        contactTitleView.findViewById(R.id.status_icon).setVisibility(View.GONE);
+        contactTitleView.findViewById(R.id.status_text).setVisibility(View.GONE);
+        contactTitleView.findViewById(R.id.name).setVisibility(View.GONE);
+        contactNameEditText = (EditText) contactTitleView.findViewById(R.id.contact_name_edit);
+        contactNameEditText.setVisibility(View.VISIBLE);
+
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        try {
+            String name = contactNameEditText.getText().toString();
+            RosterManager.getInstance().setName(account, bareAddress, name);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
     }
 
     /**
@@ -70,13 +97,17 @@ public class ContactViewerFragment extends Fragment {
     }
 
     public void updateContact(String account, String bareAddress) {
+        this.account = account;
+        this.bareAddress = bareAddress;
+
         xmppItems.removeAllViews();
 
         addXmppItem(getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_xmpp_24dp);
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
-        addXmppItem(getString(R.string.contact_viewer_name), rosterContact == null ? null : rosterContact.getRealName(), null);
 
-        if (rosterContact == null || !rosterContact.isConnected()) {
+        contactNameEditText.setText(rosterContact.getName());
+
+        if (!rosterContact.isConnected()) {
             return;
         }
 
@@ -288,8 +319,8 @@ public class ContactViewerFragment extends Fragment {
         }
     }
 
-    private void addItem(List<View> nameList, LinearLayout contactInfoItems, String label, String value) {
-        View itemView = createItemView(contactInfoItems, label, value, null);
+    private void addItem(List<View> nameList, ViewGroup rootView, String label, String value) {
+        View itemView = createItemView(rootView, label, value, null);
         if (itemView != null) {
             nameList.add(itemView);
         }
@@ -306,7 +337,6 @@ public class ContactViewerFragment extends Fragment {
             xmppItems.addView(contactInfoItem);
         }
     }
-
 
     private View createItemView(ViewGroup rootView, String label, String value, Integer iconResource) {
         if (value == null || value.isEmpty() ) {

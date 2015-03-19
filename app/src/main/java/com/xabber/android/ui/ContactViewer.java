@@ -200,9 +200,6 @@ public class ContactViewer extends ManagedActivity implements
         contactTitleExpandableToolbarInflater = new ContactTitleExpandableToolbarInflater(this);
         AbstractContact bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
         contactTitleExpandableToolbarInflater.onCreate(bestContact);
-
-        findViewById(R.id.status_icon).setVisibility(View.GONE);
-        findViewById(R.id.status_text).setVisibility(View.GONE);
     }
 
     @Override
@@ -333,4 +330,10 @@ public class ContactViewer extends ManagedActivity implements
     public static Map<EmailType, Integer> getEmailTypeMap() {
         return EMAIL_TYPE_MAP;
     }
+
+
+    public View getContactTitleView() {
+        return findViewById(R.id.expandable_contact_title);
+    }
+
 }

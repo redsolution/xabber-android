@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true" >
 
     <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
         android:id="@+id/scroll"
@@ -70,6 +71,20 @@
                     android:layout_marginLeft="6dp"
                     android:textSize="18sp"
                     android:textStyle="bold" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/primary_text_default_material_dark"
+                    android:text="Name"
+                    android:singleLine="true"
+                    android:ems="10"
+                    android:id="@+id/contact_name_edit"
+                    android:gravity="center_vertical"
+                    android:visibility="gone"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    />
 
                 <TextView
                     android:id="@+id/status_text"
