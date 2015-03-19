@@ -115,4 +115,7 @@
     <string name="please_wait">Пожалуйста, подождите...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="unknown">Не известно</string>
+
+    <string name="edit_contact_groups">Редактировать группы</string>
+    <string name="remove_contact">Удалить контакт</string>
 </resources>

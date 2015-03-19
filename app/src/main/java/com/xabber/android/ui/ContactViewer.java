@@ -35,6 +35,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
@@ -224,7 +225,7 @@ public class ContactViewer extends ManagedActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
-        inflater.inflate(R.menu.edit_contact, menu);
+        inflater.inflate(R.menu.contact_viewer, menu);
 
         return true;
     }
@@ -232,8 +233,13 @@ public class ContactViewer extends ManagedActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_edit_contact:
+            case R.id.action_edit_groups:
                 startActivity(ContactEditor.createIntent(this, account, bareAddress));
+                return true;
+
+            case R.id.action_remove_contact:
+                ContactDeleteDialogFragment.newInstance(account, bareAddress)
+                        .show(getFragmentManager(), "CONTACT_DELETE");
                 return true;
 
             default:

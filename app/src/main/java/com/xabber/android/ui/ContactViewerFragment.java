@@ -105,11 +105,12 @@ public class ContactViewerFragment extends Fragment {
         addXmppItem(getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_xmpp_24dp);
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
 
-        contactNameEditText.setText(rosterContact.getName());
-
-        if (!rosterContact.isConnected()) {
+        if (rosterContact == null || !rosterContact.isConnected()) {
+            contactNameEditText.setText(bareAddress);
             return;
         }
+
+        contactNameEditText.setText(rosterContact.getName());
 
         List<View> resourcesList = new ArrayList<>();
 

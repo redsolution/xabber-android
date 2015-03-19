@@ -7,6 +7,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.ContactList;
+import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
 public class ContactDeleteDialogFragment extends ConfirmDialogFragment {
@@ -43,6 +45,10 @@ public class ContactDeleteDialogFragment extends ConfirmDialogFragment {
             RosterManager.getInstance().removeContact(account, user);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
+        }
+
+        if (getActivity() instanceof ContactViewer) {
+            startActivity(ContactList.createIntent(getActivity()));
         }
         return true;
     }
