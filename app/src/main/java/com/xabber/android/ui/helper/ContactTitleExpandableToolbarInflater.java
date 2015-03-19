@@ -176,7 +176,10 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
             paddingLeft = paddingLeftMin;
         }
 
-        titleView.setPadding(paddingLeft, 0, paddingRight, 0);
+        titleView.setPadding(paddingLeft, 0, paddingLeft, 0);
+
+
+
     }
 
 }
