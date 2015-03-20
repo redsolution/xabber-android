@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/expandable_contact_title"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
-    android:background="@color/green_500"
-    >
-
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/actionBarSize"
     android:orientation="horizontal"
-
-    android:layout_gravity="bottom"
+    android:background="@color/green_500"
+    android:gravity="center_vertical"
     >
 
     <ImageView
@@ -22,28 +14,25 @@
         android:layout_width="@dimen/avatar_size_toolbar"
         android:layout_height="@dimen/avatar_size_toolbar"
         android:src="@drawable/ic_avatar_1"
-        android:layout_gravity="center_vertical"
         />
 
     <LinearLayout
         android:id="@+id/name_holder"
         android:layout_width="0dp"
-        android:layout_height="48dip"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
         android:layout_weight="1"
         >
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
             android:singleLine="true"
             android:textColor="@color/primary_text_default_material_dark"
             android:text="Lorem Ipsum"
 
             android:layout_marginLeft="6dp"
-            android:layout_marginTop="3dp"
             android:textSize="18sp"
             android:textStyle="bold" />
         <LinearLayout
@@ -65,11 +54,9 @@
                 android:id="@+id/status_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:textColor="@color/grey_200"
                 android:text="Lorem ipsum dolor sit amet"
-                android:layout_marginBottom="4dp"
                 android:layout_marginLeft="6dp"
                 />
         </LinearLayout>
@@ -80,8 +67,6 @@
         android:src="@drawable/ic_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         />
 
 </LinearLayout>
-</FrameLayout>
