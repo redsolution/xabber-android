@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +103,13 @@ public class ContactViewerFragment extends Fragment {
 
         xmppItems.removeAllViews();
 
-        addXmppItem(getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_xmpp_24dp);
+        View jabberIdView = createItemView(xmppItems,
+                getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_xmpp_24dp);
+
+        if (jabberIdView != null) {
+            xmppItems.addView(jabberIdView);
+        }
+
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
 
         if (rosterContact == null || !rosterContact.isConnected()) {
@@ -164,21 +171,21 @@ public class ContactViewerFragment extends Fragment {
 
             LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-            View contactInfoItem = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
+            View resourceView = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
 
-            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_secondary)).setText(label);
-            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_main)).setText(status);
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary)).setText(label);
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_main)).setText(status);
 
-            ((TextView)contactInfoItem.findViewById(R.id.contact_info_item_secondary_second_line)).setText(resource);
-            contactInfoItem.findViewById(R.id.contact_info_item_secondary_second_line).setVisibility(View.VISIBLE);
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary_second_line)).setText(resource);
+            resourceView.findViewById(R.id.contact_info_item_secondary_second_line).setVisibility(View.VISIBLE);
 
-            ImageView statusIcon = (ImageView) contactInfoItem.findViewById(R.id.contact_info_right_icon);
+            ImageView statusIcon = (ImageView) resourceView.findViewById(R.id.contact_info_right_icon);
             statusIcon.setVisibility(View.VISIBLE);
 
             statusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_status));
             statusIcon.setImageLevel(resourceItem.getStatusMode().getStatusLevel());
 
-            resourcesList.add(contactInfoItem);
+            resourcesList.add(resourceView);
         }
 
         addItemGroup(resourcesList, xmppItems, R.drawable.ic_jabber_24dp);
@@ -323,6 +330,7 @@ public class ContactViewerFragment extends Fragment {
     private void addItem(List<View> nameList, ViewGroup rootView, String label, String value) {
         View itemView = createItemView(rootView, label, value, null);
         if (itemView != null) {
+            Linkify.addLinks((TextView)itemView.findViewById(R.id.contact_info_item_main), Linkify.ALL);
             nameList.add(itemView);
         }
     }
@@ -330,13 +338,6 @@ public class ContactViewerFragment extends Fragment {
     private void addSeparator(LinearLayout rootView) {
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         rootView.addView(inflater.inflate(R.layout.contact_info_separator, rootView, false));
-    }
-
-    private void addXmppItem(String label, String value, Integer iconResource) {
-        View contactInfoItem = createItemView(xmppItems, label, value, iconResource);
-        if (contactInfoItem != null) {
-            xmppItems.addView(contactInfoItem);
-        }
     }
 
     private View createItemView(ViewGroup rootView, String label, String value, Integer iconResource) {
