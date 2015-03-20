@@ -17,6 +17,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
+import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
 import com.xabber.android.data.roster.RosterContact;
@@ -43,7 +44,7 @@ public class ContactViewerFragment extends Fragment {
 
     String account;
     String bareAddress;
-    private EditText contactNameEditText;
+    private TextView contactNameView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,23 +65,9 @@ public class ContactViewerFragment extends Fragment {
 
         contactTitleView.findViewById(R.id.status_icon).setVisibility(View.GONE);
         contactTitleView.findViewById(R.id.status_text).setVisibility(View.GONE);
-        contactTitleView.findViewById(R.id.name).setVisibility(View.GONE);
-        contactNameEditText = (EditText) contactTitleView.findViewById(R.id.contact_name_edit);
-        contactNameEditText.setVisibility(View.VISIBLE);
+        contactNameView = (TextView) contactTitleView.findViewById(R.id.name);
 
         return view;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        try {
-            String name = contactNameEditText.getText().toString();
-            RosterManager.getInstance().setName(account, bareAddress, name);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
     }
 
     /**
@@ -101,6 +88,8 @@ public class ContactViewerFragment extends Fragment {
         this.account = account;
         this.bareAddress = bareAddress;
 
+        contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
+
         xmppItems.removeAllViews();
 
         View jabberIdView = createItemView(xmppItems,
@@ -109,15 +98,6 @@ public class ContactViewerFragment extends Fragment {
         if (jabberIdView != null) {
             xmppItems.addView(jabberIdView);
         }
-
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
-
-        if (rosterContact == null || !rosterContact.isConnected()) {
-            contactNameEditText.setText(bareAddress);
-            return;
-        }
-
-        contactNameEditText.setText(rosterContact.getName());
 
         List<View> resourcesList = new ArrayList<>();
 
