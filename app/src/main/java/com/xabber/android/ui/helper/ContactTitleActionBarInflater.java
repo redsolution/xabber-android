@@ -11,7 +11,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.data.account.AccountManager;
@@ -89,10 +88,6 @@ public class ContactTitleActionBarInflater {
 
         activity.getSupportActionBar().setBackgroundDrawable(defaultActionBarBackground);
         activity.setTitle(title);
-    }
-
-    public ImageView getSecurityView() {
-        return (ImageView)actionBarView.findViewById(R.id.security);
     }
 
     public void playIncomingAnimation() {

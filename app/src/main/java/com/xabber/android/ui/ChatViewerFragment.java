@@ -23,6 +23,8 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -45,6 +47,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     boolean isInputEmpty = true;
     private ImageButton sendButton;
+    private ImageButton securityButton;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -73,6 +76,8 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+
+        securityButton = (ImageButton) view.findViewById(R.id.button_security);
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
@@ -274,6 +279,22 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     public void updateChat() {
         chatMessageAdapter.onChange();
+
+        updateSecurityButton();
+    }
+
+    private void updateSecurityButton() {
+        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+        SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
+
+        if (securityLevel == SecurityLevel.plain
+                && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled
+                || securityOtrMode == SettingsManager.SecurityOtrMode.manual)) {
+            securityButton.setVisibility(View.GONE);
+        } else {
+            securityButton.setVisibility(View.VISIBLE);
+            securityButton.setImageLevel(securityLevel.getImageLevel());
+        }
     }
 
     public boolean isEqual(String account, String user) {

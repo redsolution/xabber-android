@@ -27,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.xabber.android.data.ActivityManager;
@@ -655,21 +654,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
 
         contactTitleActionBarInflater.update(abstractContact);
-
-        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
-        SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
-
-        ImageView securityView = contactTitleActionBarInflater.getSecurityView();
-
-        if (securityLevel == SecurityLevel.plain
-                && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled
-                || securityOtrMode == SettingsManager.SecurityOtrMode.manual)) {
-            securityView.setVisibility(View.GONE);
-        } else {
-            securityView.setVisibility(View.VISIBLE);
-            securityView.setImageLevel(securityLevel.getImageLevel());
-        }
-
     }
 
     private void updateRegisteredChats() {

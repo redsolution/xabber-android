@@ -44,6 +44,18 @@
         android:elevation="8dp"
         >
 
+    <ImageButton
+        android:id="@+id/button_security"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_security_grey_24dp"
+        android:background="@null"
+        android:contentDescription="@string/otr_encryption"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        />
+
     <EditText
         android:id="@+id/chat_input"
         android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
