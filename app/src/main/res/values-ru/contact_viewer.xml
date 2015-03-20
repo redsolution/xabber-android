@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
-    <string name="contact_viewer">Просмотр информации</string>
+    <string name="contact_viewer">Информация о контакте</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_for">Просмотр информации о %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
@@ -116,6 +116,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="unknown">Не известно</string>
 
+    <string name="edit_alias">Редактировать псевдоним</string>
     <string name="edit_contact_groups">Редактировать группы</string>
     <string name="remove_contact">Удалить контакт</string>
 </resources>

@@ -14,17 +14,22 @@
  */
 package com.xabber.android.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
@@ -233,6 +238,11 @@ public class ContactViewer extends ManagedActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_edit_alias:
+                editAlias();
+                return true;
+
+
             case R.id.action_edit_groups:
                 startActivity(ContactEditor.createIntent(this, account, bareAddress));
                 return true;
@@ -245,6 +255,37 @@ public class ContactViewer extends ManagedActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void editAlias() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.edit_alias);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
+        input.setText(rosterContact.getName());
+        builder.setView(input);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    RosterManager.getInstance().setName(account, bareAddress,  input.getText().toString());
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
     private ContactViewerFragment getFragment() {
