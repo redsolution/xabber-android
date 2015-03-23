@@ -12,14 +12,16 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-    <include layout="@layout/toolbar_default"/>
+    <include layout="@layout/toolbar_default"
+        android:id="@+id/toolbar_default"
+        />
 
     <TextView
         android:text="@string/contact_group"
@@ -29,13 +31,32 @@
         android:paddingBottom="2dip"
         android:paddingLeft="2dip"
         android:paddingRight="2dip"
+        android:id="@+id/edit_groups_title"
+        android:layout_below="@+id/toolbar_default"
         />
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:paddingLeft="6dip"
+        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
+        android:layout_below="@+id/edit_groups_title"
         />
-</LinearLayout>
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_white_24dp"
+        fab:fab_colorNormal="@color/red_500"
+        fab:fab_colorPressed="@color/red_700"
+        fab:fab_colorRipple="@color/red_300"
+         />
+
+</RelativeLayout>

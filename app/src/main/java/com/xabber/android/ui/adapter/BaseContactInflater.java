@@ -61,7 +61,7 @@ public abstract class BaseContactInflater {
         this.activity = activity;
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.shadow);
+        Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.contact_shadow);
         shadowDrawable = new BitmapDrawable(activity.getResources(), bitmap);
         shadowDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
 

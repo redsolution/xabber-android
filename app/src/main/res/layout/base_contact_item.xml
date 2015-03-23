@@ -100,7 +100,7 @@
 	    android:id="@+id/shadow"
 	    android:layout_width="match_parent"
 	    android:layout_height="@dimen/contact_list_item_height"
-	    android:background="@drawable/shadow"
+	    android:background="@drawable/contact_shadow"
         android:visibility="gone"
 	    />
 </RelativeLayout>

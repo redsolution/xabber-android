@@ -138,7 +138,7 @@ public abstract class GroupListActivity extends ManagedListActivity implements O
         return false;
     }
 
-    private void showGroupAddDialog() {
+    protected void showGroupAddDialog() {
         GroupAddDialogFragment.newInstance(getGroups()).show(getFragmentManager(), "GROUP-ADD");
     }
 

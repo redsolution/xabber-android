@@ -18,9 +18,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
@@ -30,6 +33,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.dialog.GroupAddDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -37,7 +41,7 @@ import com.xabber.xmpp.address.Jid;
 import java.util.Collection;
 
 public class ContactEditor extends GroupListActivity implements
-        OnContactChangedListener, OnAccountChangedListener {
+        OnContactChangedListener, OnAccountChangedListener, View.OnClickListener {
 
     private String account;
     private String user;
@@ -60,6 +64,11 @@ public class ContactEditor extends GroupListActivity implements
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
         }
+
+        ListView listView = (ListView) findViewById(android.R.id.list);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToListView(listView);
+        fab.setOnClickListener(this);
     }
 
     @Override
@@ -131,4 +140,13 @@ public class ContactEditor extends GroupListActivity implements
         return EntityIntentBuilder.getUser(intent);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab:
+                showGroupAddDialog();
+
+                return;
+        }
+    }
 }
