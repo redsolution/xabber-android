@@ -268,7 +268,6 @@
                     android:defaultValue="@string/connection_priority_chat_default"
                     android:dependency="@string/connection_adjust_priority_key"
                     android:title="@string/chat"
-                    android:inputType="numberSigned"
                     android:singleLine="true"
                     />
                 <com.xabber.android.ui.widget.PriorityPreference
@@ -276,7 +275,6 @@
                     android:defaultValue="@string/connection_priority_available_default"
                     android:dependency="@string/connection_adjust_priority_key"
                     android:title="@string/available"
-                    android:inputType="numberSigned"
                     android:singleLine="true"
                     />
                 <com.xabber.android.ui.widget.PriorityPreference
@@ -284,7 +282,6 @@
                     android:defaultValue="@string/connection_priority_away_default"
                     android:dependency="@string/connection_adjust_priority_key"
                     android:title="@string/away"
-                    android:inputType="numberSigned"
                     android:singleLine="true"
                     />
                 <com.xabber.android.ui.widget.PriorityPreference
@@ -292,7 +289,6 @@
                     android:defaultValue="@string/connection_priority_xa_default"
                     android:dependency="@string/connection_adjust_priority_key"
                     android:title="@string/xa"
-                    android:inputType="numberSigned"
                     android:singleLine="true"
                     />
                 <com.xabber.android.ui.widget.PriorityPreference
@@ -300,7 +296,6 @@
                     android:defaultValue="@string/connection_priority_dnd_default"
                     android:dependency="@string/connection_adjust_priority_key"
                     android:title="@string/dnd"
-                    android:inputType="numberSigned"
                     android:singleLine="true"
                     />
             </PreferenceCategory>
