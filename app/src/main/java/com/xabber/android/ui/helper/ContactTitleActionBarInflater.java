@@ -112,4 +112,8 @@ public class ContactTitleActionBarInflater {
     public void setStatusText(String user) {
         ((TextView) actionBarView.findViewById(R.id.status_text)).setText(user);
     }
+
+    public void hideStatusIcon() {
+        actionBarView.findViewById(R.id.status_icon).setVisibility(View.GONE);
+    }
 }

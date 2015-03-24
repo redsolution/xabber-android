@@ -141,7 +141,7 @@
         </activity>
         <activity
             android:label="@string/contact_editor"
-            android:name="com.xabber.android.ui.ContactEditor"
+            android:name="com.xabber.android.ui.GroupEditor"
             android:parentActivityName="com.xabber.android.ui.ContactViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->

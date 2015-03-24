@@ -33,9 +33,8 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ContactAdd;
-import com.xabber.android.ui.ContactEditor;
+import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.MUCEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -170,7 +169,7 @@ public class ContextMenuHelper {
                             } catch (NetworkException e) {
                                 Application.getInstance().onError(e);
                             }
-                            activity.startActivity(ContactEditor.createIntent(
+                            activity.startActivity(GroupEditor.createIntent(
                                     activity, account, user));
                             return true;
                         }

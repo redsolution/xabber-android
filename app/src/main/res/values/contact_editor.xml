@@ -40,4 +40,6 @@
     <string name="choose_account">Choose an account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="EMPTY_ACCOUNT">Please select an account</string>
+
+    <string name="add_new_group">Add new group…</string>
 </resources>

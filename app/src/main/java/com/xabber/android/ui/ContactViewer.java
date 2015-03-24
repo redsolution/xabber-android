@@ -244,7 +244,7 @@ public class ContactViewer extends ManagedActivity implements
 
 
             case R.id.action_edit_groups:
-                startActivity(ContactEditor.createIntent(this, account, bareAddress));
+                startActivity(GroupEditor.createIntent(this, account, bareAddress));
                 return true;
 
             case R.id.action_remove_contact:

@@ -18,14 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ListView;
 
-import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
@@ -33,23 +27,24 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.dialog.GroupAddDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
+import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
 
-public class ContactEditor extends GroupListActivity implements
-        OnContactChangedListener, OnAccountChangedListener, View.OnClickListener {
+public class GroupEditor extends ManagedActivity implements OnContactChangedListener,
+        OnAccountChangedListener {
 
     private String account;
     private String user;
 
     ContactTitleActionBarInflater contactTitleActionBarInflater;
 
-    @Override
-    protected void onInflate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.contact_editor);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
@@ -57,28 +52,19 @@ public class ContactEditor extends GroupListActivity implements
         contactTitleActionBarInflater.setUpActionBarView();
 
         Intent intent = getIntent();
-        account = ContactEditor.getAccount(intent);
-        user = ContactEditor.getUser(intent);
+        account = GroupEditor.getAccount(intent);
+        user = GroupEditor.getUser(intent);
 
         if (AccountManager.getInstance().getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
         }
 
-        ListView listView = (ListView) findViewById(android.R.id.list);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.attachToListView(listView);
-        fab.setOnClickListener(this);
-    }
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, GroupEditorFragment.newInstance(account, user)).commit();
+        }
 
-    @Override
-    Collection<String> getInitialGroups() {
-        return RosterManager.getInstance().getGroups(account);
-    }
-
-    @Override
-    Collection<String> getInitialSelected() {
-        return RosterManager.getInstance().getGroups(account, user);
     }
 
     @Override
@@ -94,17 +80,13 @@ public class ContactEditor extends GroupListActivity implements
         super.onPause();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
-        try {
-            RosterManager.getInstance().setGroups(account, user, getSelected());
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
     }
 
     private void update() {
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
         contactTitleActionBarInflater.setStatusText(user);
+        contactTitleActionBarInflater.hideStatusIcon();
     }
 
     @Override
@@ -126,7 +108,7 @@ public class ContactEditor extends GroupListActivity implements
     }
 
     public static Intent createIntent(Context context, String account, String user) {
-        Intent intent = new EntityIntentBuilder(context, ContactEditor.class)
+        Intent intent = new EntityIntentBuilder(context, GroupEditor.class)
                 .setAccount(account).setUser(user).build();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
@@ -140,13 +122,4 @@ public class ContactEditor extends GroupListActivity implements
         return EntityIntentBuilder.getUser(intent);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fab:
-                showGroupAddDialog();
-
-                return;
-        }
-    }
 }
