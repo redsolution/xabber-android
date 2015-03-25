@@ -53,6 +53,7 @@
     <EditTextPreference
         android:key="@string/account_proxy_port_key"
         android:title="@string/account_proxy_port"
+        android:inputType="number"
         android:singleLine="true"
         />
     <EditTextPreference
