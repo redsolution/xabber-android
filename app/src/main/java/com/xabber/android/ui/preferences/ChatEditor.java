@@ -23,6 +23,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
@@ -50,6 +51,9 @@ public class ChatEditor extends ManagedActivity
         setContentView(R.layout.activity_preferences);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBarPainter actionBarPainter = new ActionBarPainter(this);
+        actionBarPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

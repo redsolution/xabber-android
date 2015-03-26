@@ -39,7 +39,7 @@ public class ContactTitleActionBarInflater {
     }
 
     public void update(AbstractContact abstractContact) {
-        actionBarPainter.update(abstractContact.getAccount());
+        actionBarPainter.updateWithAccountName(abstractContact.getAccount());
 
         activity.getSupportActionBar().setDisplayShowCustomEnabled(true);
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);

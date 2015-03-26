@@ -92,6 +92,11 @@ public class AccountEditorFragment extends BaseSettingsFragment
                 }
             }
         }
+
+        if (getString(R.string.account_color_key).equals(key)) {
+            mListener.onColorChange((String)newValue);
+        }
+
         return true;
     }
 
@@ -210,10 +215,11 @@ public class AccountEditorFragment extends BaseSettingsFragment
     }
 
     public interface AccountEditorFragmentInteractionListener {
-        public String getAccount();
-        public AccountItem getAccountItem();
-        public String getToken();
-        public void onOAuthClick();
-        public void showOrbotDialog();
+        String getAccount();
+        AccountItem getAccountItem();
+        String getToken();
+        void onOAuthClick();
+        void showOrbotDialog();
+        void onColorChange(String colorName);
     }
 }

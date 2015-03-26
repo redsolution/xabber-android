@@ -100,6 +100,6 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
 
     @Override
     public void onAccountSelected(String account) {
-        actionBarPainter.update(account);
+        actionBarPainter.updateWithAccountName(account);
     }
 }

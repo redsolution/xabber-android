@@ -14,6 +14,7 @@ public class ActionBarPainter {
 
     private int[] accountActionBarColors;
     private int[] accountStatusBarColors;
+    private String[] accountColorNames;
 
     private Window window;
     private int defaultStatusBarColor;
@@ -26,6 +27,7 @@ public class ActionBarPainter {
 
         accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
         accountStatusBarColors = activity.getResources().getIntArray(R.array.account_status_bar);
+        accountColorNames = activity.getResources().getStringArray(R.array.account_color_names);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window = this.activity.getWindow();
@@ -39,8 +41,11 @@ public class ActionBarPainter {
         defaultActionBarBackground = new ColorDrawable(activity.getResources().getColor(attributeResourceId));
     }
 
-    public void update(String account) {
-        int colorLevel = AccountManager.getInstance().getColorLevel(account);
+    public void updateWithAccountName(String account) {
+        updateWithColorLevel(AccountManager.getInstance().getColorLevel(account));
+    }
+
+    public void updateWithColorLevel(int colorLevel) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(accountStatusBarColors[colorLevel]);
         }
@@ -53,5 +58,14 @@ public class ActionBarPainter {
         }
 
         activity.getSupportActionBar().setBackgroundDrawable(defaultActionBarBackground);
+    }
+
+    public void updateWithColorName(String targetColorName) {
+        for (int i = 0; i < accountColorNames.length; i++) {
+            String accountColorName = accountColorNames[i];
+            if (accountColorName.equals(targetColorName)) {
+                updateWithColorLevel(i);
+            }
+        }
     }
 }
