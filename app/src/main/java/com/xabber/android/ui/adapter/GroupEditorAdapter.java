@@ -36,7 +36,7 @@ public class GroupEditorAdapter extends ArrayAdapter<GroupEditorAdapter.Group> {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new GroupHolder();
-            holder.groupCheckbox = (CheckBox) row.findViewById(R.id.group_add_checkbox);
+            holder.groupCheckbox = (CheckBox) row.findViewById(R.id.group_item_selected_checkbox);
             holder.groupName = (TextView) row.findViewById(R.id.group_item_name);
 
             row.setTag(holder);

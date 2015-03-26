@@ -28,6 +28,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
+import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -45,7 +46,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.contact_editor);
+        setContentView(R.layout.group_editor);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
