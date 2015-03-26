@@ -31,7 +31,7 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     private Spinner accountView;
     private EditText userView;
     private EditText nameView;
-    private View selectGroupsView;
+    private View accountSpecificPanel;
 
     Listener listenerActivity;
 
@@ -66,10 +66,9 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
         userView = (EditText) headerView.findViewById(R.id.contact_user);
         nameView = (EditText) headerView.findViewById(R.id.contact_name);
 
-        selectGroupsView = headerView.findViewById(R.id.select_groups_text_view);
+        accountSpecificPanel = headerView.findViewById(R.id.account_specific_panel);
 
-        selectGroupsView.setVisibility(View.GONE);
-        getFooterView().setVisibility(View.GONE);
+        hideAdditionalInputs();
 
         String name;
 
@@ -110,6 +109,11 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
 
     }
 
+    private void hideAdditionalInputs() {
+        accountSpecificPanel.setVisibility(View.GONE);
+        getFooterView().setVisibility(View.GONE);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -140,15 +144,18 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
                 setAccountGroups();
                 updateGroups();
             }
-            getFooterView().setVisibility(View.VISIBLE);
-            selectGroupsView.setVisibility(View.VISIBLE);
+            setAdditionalPanelVisibility(View.VISIBLE);
         }
+    }
+
+    private void setAdditionalPanelVisibility(int visible) {
+        getFooterView().setVisibility(visible);
+        accountSpecificPanel.setVisibility(visible);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        getFooterView().setVisibility(View.GONE);
-        selectGroupsView.setVisibility(View.GONE);
+        setAdditionalPanelVisibility(View.GONE);
     }
 
     public void addContact() {
@@ -178,6 +185,6 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     }
 
     public interface Listener {
-        public void onAccountSelected(String account);
+        void onAccountSelected(String account);
     }
 }
