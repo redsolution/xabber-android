@@ -12,20 +12,22 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<ScrollView
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     >
+
+    <include layout="@layout/toolbar_default"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="16dp"
         >
-
-        <include layout="@layout/toolbar_default"/>
 
         <TextView
             android:text="@string/contact_account"
@@ -38,7 +40,7 @@
             android:layout_height="wrap_content"
             android:prompt="@string/choose_account"
             />
-    
+
         <TextView
             android:text="@string/muc_server"
             android:layout_width="wrap_content"
@@ -52,7 +54,7 @@
             android:singleLine="true"
             android:inputType="textEmailAddress"
             />
-    
+
         <TextView
             android:text="@string/muc_room"
             android:layout_width="wrap_content"
@@ -91,7 +93,7 @@
             android:singleLine="true"
             android:hint="@string/muc_password_hint"
             />
-        
+
         <CheckBox
             android:id="@+id/muc_join"
             android:checked="true"
@@ -99,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
-        
+
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="center_horizontal|bottom"
@@ -117,5 +119,4 @@
         </LinearLayout>
 
     </LinearLayout>
-
-</ScrollView>
+</LinearLayout>
