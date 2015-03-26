@@ -22,59 +22,41 @@
     android:paddingTop="16dp"
     >
 
+    <include layout="@layout/account_select_spinner" />
+
     <TextView
-        android:text="@string/contact_account"
+        android:text="@string/contact_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
-
-    <com.xabber.android.ui.widget.NoDefaultSpinner
-        android:id="@+id/contact_account"
+    <EditText
+        android:text=""
+        android:id="@+id/contact_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:prompt="@string/choose_account"
+        android:hint="user@domain.name"
+        android:singleLine="true"
+        android:inputType="textEmailAddress"
         />
 
-    <LinearLayout
-        android:id="@+id/account_specific_panel"
+    <TextView
+        android:text="@string/contact_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <EditText
+        android:text=""
+        android:id="@+id/contact_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-        <TextView
-            android:text="@string/contact_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-        <EditText
-            android:text=""
-            android:id="@+id/contact_user"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="user@domain.name"
-            android:singleLine="true"
-            android:inputType="textEmailAddress"
-            />
+        android:singleLine="true"
+        />
 
-        <TextView
-            android:text="@string/contact_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-        <EditText
-            android:text=""
-            android:id="@+id/contact_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            />
-
-        <TextView
-            android:id="@+id/select_groups_text_view"
-            android:text="@string/contact_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/select_groups_text_view"
+        android:text="@string/contact_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 
 </LinearLayout>

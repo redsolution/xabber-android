@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -31,9 +32,10 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     private Spinner accountView;
     private EditText userView;
     private EditText nameView;
-    private View accountSpecificPanel;
 
     Listener listenerActivity;
+    private String name;
+    private View accountSelectorPanel;
 
     public static ContactAddFragment newInstance(String account, String user) {
         ContactAddFragment fragment = new ContactAddFragment();
@@ -51,26 +53,9 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.contact_add_fragment, container, false);
 
-        View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.contact_add_header, null, false);
-        getListView().addHeaderView(headerView);
-
-
-        accountView = (Spinner) headerView.findViewById(R.id.contact_account);
-        accountView.setAdapter(new AccountChooseAdapter(getActivity()));
-        accountView.setOnItemSelectedListener(this);
-
-        userView = (EditText) headerView.findViewById(R.id.contact_user);
-        nameView = (EditText) headerView.findViewById(R.id.contact_name);
-
-        accountSpecificPanel = headerView.findViewById(R.id.account_specific_panel);
-
-        hideAdditionalInputs();
-
-        String name;
 
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
@@ -92,6 +77,19 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
                 setAccount(accounts.iterator().next());
             }
         }
+
+        accountSelectorPanel = view.findViewById(R.id.account_selector);
+
+        setUpAccountView((Spinner) view.findViewById(R.id.contact_account));
+
+        return view;
+    }
+
+    private void setUpAccountView(Spinner view) {
+        accountView = view;
+        accountView.setAdapter(new AccountChooseAdapter(getActivity()));
+        accountView.setOnItemSelectedListener(this);
+
         if (getAccount() != null) {
             for (int position = 0; position < accountView.getCount(); position++) {
                 if (getAccount().equals(accountView.getItemAtPosition(position))) {
@@ -100,18 +98,33 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
                 }
             }
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        getListView().setVisibility(View.GONE);
+    }
+
+    private void setUpListView() {
+        View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.contact_add_header, null, false);
+        getListView().addHeaderView(headerView);
+
+        accountSelectorPanel.setVisibility(View.GONE);
+
+        setUpAccountView((Spinner) headerView.findViewById(R.id.contact_account));
+
+        userView = (EditText) headerView.findViewById(R.id.contact_user);
+        nameView = (EditText) headerView.findViewById(R.id.contact_name);
+
         if (getUser() != null) {
             userView.setText(getUser());
         }
         if (name != null) {
             nameView.setText(name);
         }
-
-    }
-
-    private void hideAdditionalInputs() {
-        accountSpecificPanel.setVisibility(View.GONE);
-        getFooterView().setVisibility(View.GONE);
     }
 
     @Override
@@ -144,21 +157,25 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
                 setAccountGroups();
                 updateGroups();
             }
-            setAdditionalPanelVisibility(View.VISIBLE);
-        }
-    }
 
-    private void setAdditionalPanelVisibility(int visible) {
-        getFooterView().setVisibility(visible);
-        accountSpecificPanel.setVisibility(visible);
+            if (getListView().getVisibility() == View.GONE) {
+                setUpListView();
+                getListView().setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        setAdditionalPanelVisibility(View.GONE);
     }
 
     public void addContact() {
+        if (getAccount() == null) {
+            Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String user = userView.getText().toString();
         if ("".equals(user)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
