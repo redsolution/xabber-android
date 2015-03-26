@@ -28,7 +28,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
-import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;

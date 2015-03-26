@@ -21,28 +21,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.adapter.AccountChooseAdapter;
-import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
+import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-import java.util.Collection;
-import java.util.HashSet;
+public class ContactAdd extends ManagedActivity implements ContactAddFragment.Listener {
 
-public class ContactAdd extends ManagedActivity {
+    ActionBarPainter actionBarPainter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +40,8 @@ public class ContactAdd extends ManagedActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
         getSupportActionBar().setTitle(null);
+
+        actionBarPainter = new ActionBarPainter(this);
 
         Intent intent = getIntent();
 
@@ -109,4 +98,8 @@ public class ContactAdd extends ManagedActivity {
         return EntityIntentBuilder.getUser(intent);
     }
 
+    @Override
+    public void onAccountSelected(String account) {
+        actionBarPainter.update(account);
+    }
 }

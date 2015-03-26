@@ -1,5 +1,6 @@
 package com.xabber.android.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     private EditText nameView;
     private View selectGroupsView;
 
+    Listener listenerActivity;
+
     public static ContactAddFragment newInstance(String account, String user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
@@ -39,6 +42,12 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
         args.putString(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        listenerActivity = (Listener)activity;
     }
 
     @Override
@@ -111,6 +120,12 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        listenerActivity = null;
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String selectedAccount = (String) accountView.getSelectedItem();
 
@@ -118,6 +133,8 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
             onNothingSelected(parent);
             setAccount(selectedAccount);
         } else {
+            listenerActivity.onAccountSelected(selectedAccount);
+
             if (!selectedAccount.equals(getAccount())) {
                 setAccount(selectedAccount);
                 setAccountGroups();
@@ -158,5 +175,9 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
         }
         MessageManager.getInstance().openChat(account, user);
         getActivity().finish();
+    }
+
+    public interface Listener {
+        public void onAccountSelected(String account);
     }
 }
