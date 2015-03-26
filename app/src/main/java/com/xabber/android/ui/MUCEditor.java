@@ -39,6 +39,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
+import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
@@ -64,6 +65,8 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
     private EditText roomView;
     private EditText nickView;
     private EditText passwordView;
+
+    private ActionBarPainter actionBarPainter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +122,12 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
             if (accounts.size() == 1)
                 account = accounts.iterator().next();
         }
+
+        actionBarPainter = new ActionBarPainter(this);
+
         if (account != null) {
+            actionBarPainter.updateWithAccountName(account);
+
             for (int position = 0; position < accountView.getCount(); position++)
                 if (account.equals(accountView.getItemAtPosition(position))) {
                     accountView.setSelection(position);
@@ -129,6 +137,7 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
         if ("".equals(nickView.getText().toString()))
             nickView.setText(getNickname(((String) accountView
                     .getSelectedItem())));
+
     }
 
     @Override
@@ -217,11 +226,12 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
         if (selectedAccount == AdapterView.INVALID_POSITION)
             previous = "";
         else
-            previous = getNickname((String) accountView.getAdapter().getItem(
-                    selectedAccount));
+            previous = getNickname((String) accountView.getAdapter().getItem(selectedAccount));
         if (current.equals(previous))
             nickView.setText(getNickname((String) accountView.getSelectedItem()));
         selectedAccount = accountView.getSelectedItemPosition();
+
+        actionBarPainter.updateWithAccountName((String) accountView.getSelectedItem());
     }
 
     @Override
