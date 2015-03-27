@@ -18,5 +18,6 @@
         <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
         <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
         <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
     </style>
 </resources>
