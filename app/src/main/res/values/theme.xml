@@ -23,5 +23,8 @@
         <item name="windowActionModeOverlay">true</item>
         <!--for text selection toolbar color -->
         <item name="actionModeBackground">@drawable/myapp_action_mode_background</item>
+
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryDark">@color/red_700</item>
     </style>
 </resources>
