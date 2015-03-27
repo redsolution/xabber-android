@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,20 +19,25 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class ChatViewerFragment extends Fragment implements AdapterView.OnItemClickListener, PopupMenu.OnMenuItemClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -77,7 +83,19 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
 
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
+        if (abstractChat instanceof RegularChat) {
+            securityButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showSecurityMenu();
+                }
+            });
+        } else {
+            securityButton.setVisibility(View.GONE);
+        }
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
@@ -146,6 +164,32 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         updateChat();
         return view;
 
+    }
+
+    private void showSecurityMenu() {
+        PopupMenu popup = new PopupMenu(getActivity(), securityButton);
+        popup.inflate(R.menu.security);
+        popup.setOnMenuItemClickListener(this);
+
+        Menu menu = popup.getMenu();
+
+        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+
+        if (securityLevel == SecurityLevel.plain) {
+            menu.findItem(R.id.action_start_encryption).setVisible(true)
+                    .setEnabled(SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled);
+        } else {
+            menu.findItem(R.id.action_restart_encryption).setVisible(true);
+        }
+
+        boolean isEncrypted = securityLevel != SecurityLevel.plain;
+
+        menu.findItem(R.id.action_stop_encryption).setEnabled(isEncrypted);
+        menu.findItem(R.id.action_verify_with_fingerprint).setEnabled(isEncrypted);
+        menu.findItem(R.id.action_verify_with_question).setEnabled(isEncrypted);
+        menu.findItem(R.id.action_verify_with_shared_secret).setEnabled(isEncrypted);
+
+        popup.show();
     }
 
     private void setSendButtonColor() {
@@ -285,16 +329,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     private void updateSecurityButton() {
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
-        SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
-
-        if (securityLevel == SecurityLevel.plain
-                && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled
-                || securityOtrMode == SettingsManager.SecurityOtrMode.manual)) {
-            securityButton.setVisibility(View.GONE);
-        } else {
-            securityButton.setVisibility(View.VISIBLE);
-            securityButton.setImageLevel(securityLevel.getImageLevel());
-        }
+        securityButton.setImageLevel(securityLevel.getImageLevel());
     }
 
     public boolean isEqual(String account, String user) {
@@ -334,5 +369,61 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         registerForContextMenu(listView);
         listView.showContextMenuForChild(view);
         unregisterForContextMenu(listView);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_start_encryption:
+                startEncryption(account, user);
+                return true;
+
+            case R.id.action_restart_encryption:
+                restartEncryption(account, user);
+                return true;
+
+            case R.id.action_stop_encryption:
+                stopEncryption(account, user);
+                return true;
+
+            case R.id.action_verify_with_fingerprint:
+                startActivity(FingerprintViewer.createIntent(getActivity(), account, user));
+                return true;
+
+            case R.id.action_verify_with_question:
+                startActivity(QuestionViewer.createIntent(getActivity(), account, user, true, false, null));
+                return true;
+
+            case R.id.action_verify_with_shared_secret:
+                startActivity(QuestionViewer.createIntent(getActivity(), account, user, false, false, null));
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private void stopEncryption(String account, String user) {
+        try {
+            OTRManager.getInstance().endSession(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+    }
+
+    private void restartEncryption(String account, String user) {
+        try {
+            OTRManager.getInstance().refreshSession(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
+    }
+
+    private void startEncryption(String account, String user) {
+        try {
+            OTRManager.getInstance().startSession(account, user);
+        } catch (NetworkException e) {
+            Application.getInstance().onError(e);
+        }
     }
 }

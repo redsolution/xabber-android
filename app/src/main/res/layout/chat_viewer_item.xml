@@ -53,7 +53,6 @@
         android:background="@null"
         android:contentDescription="@string/otr_encryption"
         android:layout_gravity="bottom"
-        android:visibility="gone"
         />
 
     <EditText
