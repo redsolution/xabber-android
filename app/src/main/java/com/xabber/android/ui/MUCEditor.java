@@ -14,18 +14,16 @@
  */
 package com.xabber.android.ui;
 
-import java.util.Collection;
-
-import org.jivesoftware.smack.util.StringUtils;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -43,8 +41,11 @@ import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-public class MUCEditor extends ManagedActivity implements View.OnClickListener,
-        OnItemSelectedListener {
+import org.jivesoftware.smack.util.StringUtils;
+
+import java.util.Collection;
+
+public class MUCEditor extends ManagedActivity implements OnItemSelectedListener {
 
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.MUCEditor.SAVED_ACCOUNT";
     private static final String SAVED_ROOM = "com.xabber.android.ui.MUCEditor.SAVED_ROOM";
@@ -71,13 +72,16 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         setContentView(R.layout.muc_editor);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getSupportActionBar().setTitle(null);
 
         accountView = (Spinner) findViewById(R.id.contact_account);
         serverView = (EditText) findViewById(R.id.muc_server);
@@ -85,7 +89,6 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
         nickView = (EditText) findViewById(R.id.muc_nick);
         passwordView = (EditText) findViewById(R.id.muc_password);
 
-        ((Button) findViewById(R.id.ok)).setOnClickListener(this);
         accountView.setAdapter(new AccountChooseAdapter(this));
         accountView.setOnItemSelectedListener(this);
 
@@ -108,19 +111,19 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
                 String password;
                 RoomInvite roomInvite = MUCManager.getInstance().getInvite(
                         account, room);
-                if (roomInvite != null)
+                if (roomInvite != null) {
                     password = roomInvite.getPassword();
-                else
-                    password = MUCManager.getInstance().getPassword(account,
-                            room);
+                } else {
+                    password = MUCManager.getInstance().getPassword(account, room);
+                }
                 passwordView.setText(password);
             }
         }
         if (account == null) {
-            Collection<String> accounts = AccountManager.getInstance()
-                    .getAccounts();
-            if (accounts.size() == 1)
+            Collection<String> accounts = AccountManager.getInstance().getAccounts();
+            if (accounts.size() == 1) {
                 account = accounts.iterator().next();
+            }
         }
 
         actionBarPainter = new ActionBarPainter(this);
@@ -128,15 +131,16 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
         if (account != null) {
             actionBarPainter.updateWithAccountName(account);
 
-            for (int position = 0; position < accountView.getCount(); position++)
+            for (int position = 0; position < accountView.getCount(); position++) {
                 if (account.equals(accountView.getItemAtPosition(position))) {
                     accountView.setSelection(position);
                     break;
                 }
+            }
         }
-        if ("".equals(nickView.getText().toString()))
-            nickView.setText(getNickname(((String) accountView
-                    .getSelectedItem())));
+        if ("".equals(nickView.getText().toString())) {
+            nickView.setText(getNickname(((String) accountView.getSelectedItem())));
+        }
 
     }
 
@@ -155,52 +159,58 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ok:
-                String account = (String) accountView.getSelectedItem();
-                if (account == null) {
-                    Toast.makeText(this, getString(R.string.EMPTY_ACCOUNT),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String server = serverView.getText().toString();
-                if ("".equals(server)) {
-                    Toast.makeText(this, getString(R.string.EMPTY_SERVER_NAME),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String room = roomView.getText().toString();
-                if ("".equals(room)) {
-                    Toast.makeText(this, getString(R.string.EMPTY_ROOM_NAME),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String nick = nickView.getText().toString();
-                if ("".equals(nick)) {
-                    Toast.makeText(this, getString(R.string.EMPTY_NICK_NAME),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String password = passwordView.getText().toString();
-                boolean join = ((CheckBox) findViewById(R.id.muc_join)).isChecked();
-                room = room + "@" + server;
-                if (this.account != null && this.room != null)
-                    if (!account.equals(this.account) || !room.equals(this.room)) {
-                        MUCManager.getInstance()
-                                .removeRoom(this.account, this.room);
-                        MessageManager.getInstance().closeChat(this.account,
-                                this.room);
-                        NotificationManager.getInstance()
-                                .removeMessageNotification(this.account, this.room);
-                    }
-                MUCManager.getInstance().createRoom(account, room, nick, password,
-                        join);
-                finish();
-                break;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.add_conference, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_conference:
+                addConference();
+                return true;
+
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void addConference() {
+        String account = (String) accountView.getSelectedItem();
+        if (account == null) {
+            Toast.makeText(this, getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_LONG).show();
+            return;
+        }
+        String server = serverView.getText().toString();
+        if ("".equals(server)) {
+            Toast.makeText(this, getString(R.string.EMPTY_SERVER_NAME), Toast.LENGTH_LONG).show();
+            return;
+        }
+        String room = roomView.getText().toString();
+        if ("".equals(room)) {
+            Toast.makeText(this, getString(R.string.EMPTY_ROOM_NAME), Toast.LENGTH_LONG).show();
+            return;
+        }
+        String nick = nickView.getText().toString();
+        if ("".equals(nick)) {
+            Toast.makeText(this, getString(R.string.EMPTY_NICK_NAME), Toast.LENGTH_LONG).show();
+            return;
+        }
+        String password = passwordView.getText().toString();
+        boolean join = ((CheckBox) findViewById(R.id.muc_join)).isChecked();
+        room = room + "@" + server;
+        if (this.account != null && this.room != null) {
+            if (!account.equals(this.account) || !room.equals(this.room)) {
+                MUCManager.getInstance().removeRoom(this.account, this.room);
+                MessageManager.getInstance().closeChat(this.account, this.room);
+                NotificationManager.getInstance().removeMessageNotification(this.account, this.room);
+            }
+        }
+        MUCManager.getInstance().createRoom(account, room, nick, password, join);
+        finish();
     }
 
     /**
@@ -208,27 +218,30 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
      * @return Suggested nickname in the room.
      */
     private String getNickname(String account) {
-        if (account == null)
+        if (account == null) {
             return "";
+        }
         String nickname = AccountManager.getInstance().getNickName(account);
         String name = StringUtils.parseName(nickname);
-        if ("".equals(name))
+        if ("".equals(name)) {
             return nickname;
-        else
+        } else {
             return name;
+        }
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position,
-                               long id) {
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String current = nickView.getText().toString();
         String previous;
-        if (selectedAccount == AdapterView.INVALID_POSITION)
+        if (selectedAccount == AdapterView.INVALID_POSITION) {
             previous = "";
-        else
+        } else {
             previous = getNickname((String) accountView.getAdapter().getItem(selectedAccount));
-        if (current.equals(previous))
+        }
+        if (current.equals(previous)) {
             nickView.setText(getNickname((String) accountView.getSelectedItem()));
+        }
         selectedAccount = accountView.getSelectedItemPosition();
 
         actionBarPainter.updateWithAccountName((String) accountView.getSelectedItem());
@@ -245,8 +258,7 @@ public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 
     public static Intent createIntent(Context context, String account,
                                       String room) {
-        return new EntityIntentBuilder(context, MUCEditor.class)
-                .setAccount(account).setUser(room).build();
+        return new EntityIntentBuilder(context, MUCEditor.class).setAccount(account).setUser(room).build();
     }
 
     private static String getAccount(Intent intent) {
