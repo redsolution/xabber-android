@@ -26,8 +26,8 @@
     <ImageView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
+        android:layout_width="@dimen/avatar_size_toolbar"
+        android:layout_height="@dimen/avatar_size_toolbar"
         android:src="@drawable/ic_avatar_1"
         />
 
@@ -35,7 +35,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/affilation"
         android:layout_width="2dip"
-        android:layout_height="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size_toolbar"
         android:layout_marginLeft="2dip"
         android:scaleType="fitXY"
         android:src="@drawable/ic_affilation"
@@ -72,7 +72,7 @@
             android:textColor="?android:attr/textColorSecondary"
             />
         <ImageView
-            android:id="@+id/status_mode"
+            android:id="@+id/status_icon"
             android:layout_width="@dimen/status_icon_width"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

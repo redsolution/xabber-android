@@ -33,9 +33,8 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ContactAdd;
-import com.xabber.android.ui.ContactEditor;
+import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.MUCEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -44,7 +43,7 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.preferences.AccountEditor;
-import com.xabber.android.ui.preferences.ContactViewer;
+import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
 /**
@@ -63,17 +62,6 @@ public class ContextMenuHelper {
         final String account = abstractContact.getAccount();
         final String user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
-        menu.add(R.string.chat_viewer).setOnMenuItemClickListener(
-                new MenuItem.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        MessageManager.getInstance().openChat(account, user);
-                        activity.startActivity(ChatViewer.createIntent(
-                                activity, account, user));
-                        return true;
-                    }
-                });
         if (MUCManager.getInstance().hasRoom(account, user)) {
             if (!MUCManager.getInstance().inUse(account, user))
                 menu.add(R.string.muc_edit).setIntent(
@@ -121,10 +109,6 @@ public class ContextMenuHelper {
 
                         });
         } else {
-            menu.add(R.string.contact_viewer).setIntent(
-                    ContactViewer.createIntent(activity, account, user));
-            menu.add(R.string.contact_editor).setIntent(
-                    ContactEditor.createIntent(activity, account, user));
             menu.add(R.string.contact_delete).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
@@ -185,7 +169,7 @@ public class ContextMenuHelper {
                             } catch (NetworkException e) {
                                 Application.getInstance().onError(e);
                             }
-                            activity.startActivity(ContactEditor.createIntent(
+                            activity.startActivity(GroupEditor.createIntent(
                                     activity, account, user));
                             return true;
                         }
@@ -290,7 +274,6 @@ public class ContextMenuHelper {
                             }
                             return true;
                         }
-
                     });
             menu.add(R.string.contact_add).setIntent(
                     ContactAdd.createIntent(activity, account));

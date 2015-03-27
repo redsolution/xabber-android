@@ -102,7 +102,8 @@
     </style>
 
     <dimen name="status_icon_width">24dip</dimen>
-    <dimen name="avatar_size">48dip</dimen>
+    <dimen name="avatar_size">72dip</dimen>
+    <dimen name="avatar_size_toolbar">48dip</dimen>
 
     <dimen name="title_height">44dip</dimen>
 

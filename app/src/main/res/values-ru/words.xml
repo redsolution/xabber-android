@@ -28,4 +28,8 @@
     <string name="auto">Автоматически</string>
 
     <string name="save">Сохранить</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Отмена</string>
+
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_edit_alias"
+        android:title="@string/edit_alias"
+        app:showAsAction="never"
+        android:orderInCategory="90"
+        />
+
+    <item android:id="@+id/action_edit_groups"
+        android:title="@string/edit_contact_groups"
+        app:showAsAction="never"
+        android:orderInCategory="100"
+        />
+
+    <item android:id="@+id/action_remove_contact"
+        android:title="@string/remove_contact"
+        app:showAsAction="never"
+        android:orderInCategory="110"
+        />
+
+</menu>

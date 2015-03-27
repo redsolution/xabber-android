@@ -14,11 +14,11 @@
 -->
 <resources>
     <array name="default_avatars_icons">
-        <item>@drawable/ic_avatar_1</item>
-        <item>@drawable/ic_avatar_2</item>
-        <item>@drawable/ic_avatar_5</item>
-        <item>@drawable/ic_avatar_3</item>
-        <item>@drawable/ic_avatar_4</item>
+        <item>@drawable/ic_avatar_1_72dp</item>
+        <item>@drawable/ic_avatar_2_72dp</item>
+        <item>@drawable/ic_avatar_5_72dp</item>
+        <item>@drawable/ic_avatar_3_72dp</item>
+        <item>@drawable/ic_avatar_4_72dp</item>
     </array>
 
     <array name="default_avatars_colors">
@@ -33,6 +33,6 @@
     </array>
 
     <array name="muc_avatars">
-        <item>@drawable/ic_avatar_muc</item>
+        <item>@drawable/ic_avatar_muc_72dp</item>
     </array>
 </resources>

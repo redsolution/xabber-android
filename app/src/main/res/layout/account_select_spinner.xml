@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <TextView
+        android:text="@string/contact_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.xabber.android.ui.widget.NoDefaultSpinner
+        android:id="@+id/contact_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:prompt="@string/choose_account" />
+</LinearLayout>

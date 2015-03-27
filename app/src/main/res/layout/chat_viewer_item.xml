@@ -44,6 +44,17 @@
         android:elevation="8dp"
         >
 
+    <ImageButton
+        android:id="@+id/button_security"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:src="@drawable/ic_security_grey_24dp"
+        android:background="@null"
+        android:contentDescription="@string/otr_encryption"
+        android:layout_gravity="bottom"
+        />
+
     <EditText
         android:id="@+id/chat_input"
         android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
@@ -51,7 +62,7 @@
         android:hint="@string/chat_input_hint"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:maxLines="5"
+        android:maxLines="4"
         android:scrollbars="vertical"
         android:fadingEdge="vertical"
         android:focusable="true"
@@ -67,7 +78,9 @@
         android:padding="8dp"
         android:src="@drawable/ic_button_send"
         android:background="@null"
-        android:contentDescription="@string/chat_send" />
+        android:contentDescription="@string/chat_send"
+        android:layout_gravity="bottom"
+        />
     </LinearLayout>
 
 </RelativeLayout>

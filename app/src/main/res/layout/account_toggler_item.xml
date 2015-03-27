@@ -27,7 +27,7 @@
         android:src="@drawable/ic_avatar_1"
         />
     <ImageView
-        android:id="@+id/status_mode"
+        android:id="@+id/status_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_status_account"

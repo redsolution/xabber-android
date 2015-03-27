@@ -28,4 +28,7 @@
     <string name="auto">Automatically</string>
 
     <string name="save">Save</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>

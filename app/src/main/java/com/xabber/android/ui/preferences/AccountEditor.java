@@ -28,6 +28,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.OAuthActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
+import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
@@ -46,6 +47,7 @@ public class AccountEditor extends ManagedActivity implements
     private AccountItem accountItem;
 
     private String token;
+    private ActionBarPainter actionBarPainter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,9 @@ public class AccountEditor extends ManagedActivity implements
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(AccountManager.getInstance().getVerboseName(account));
+
+        actionBarPainter = new ActionBarPainter(this);
+        actionBarPainter.updateWithAccountName(account);
     }
 
     @Override
@@ -157,5 +162,10 @@ public class AccountEditor extends ManagedActivity implements
     @Override
     public void showOrbotDialog() {
         showDialog(ORBOT_DIALOG_ID);
+    }
+
+    @Override
+    public void onColorChange(String colorName) {
+        actionBarPainter.updateWithColorName(colorName);
     }
 }

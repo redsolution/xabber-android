@@ -62,7 +62,7 @@ public class ContactTitleInflater {
     }
 
     private static void setStatus(Activity activity, View titleView, AbstractContact abstractContact) {
-        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_mode);
+        final ImageView statusModeView = (ImageView) titleView.findViewById(R.id.status_icon);
 
         int statusLevel = abstractContact.getStatusMode().getStatusLevel();
         if (isContactOffline(statusLevel)) {

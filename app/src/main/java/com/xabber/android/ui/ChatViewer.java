@@ -27,13 +27,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -41,8 +39,6 @@ import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -58,7 +54,6 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.ChatEditor;
-import com.xabber.android.ui.preferences.ContactViewer;
 import com.xabber.androiddev.R;
 
 import java.util.Collection;
@@ -222,24 +217,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         if (abstractChat instanceof RegularChat) {
-            menu.findItem(R.id.action_edit_contact).setVisible(true);
+            menu.findItem(R.id.action_view_contact).setVisible(true);
             menu.findItem(R.id.action_close_chat).setVisible(true);
-
-            SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
-
-            if (securityLevel == SecurityLevel.plain) {
-                menu.findItem(R.id.action_start_encryption).setVisible(true)
-                        .setEnabled(SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.disabled);
-            } else {
-                menu.findItem(R.id.action_restart_encryption).setVisible(true);
-            }
-
-            boolean isEncrypted = securityLevel != SecurityLevel.plain;
-
-            menu.findItem(R.id.action_stop_encryption).setEnabled(isEncrypted);
-            menu.findItem(R.id.action_verify_with_fingerprint).setEnabled(isEncrypted);
-            menu.findItem(R.id.action_verify_with_question).setEnabled(isEncrypted);
-            menu.findItem(R.id.action_verify_with_shared_secret).setEnabled(isEncrypted);
         }
     }
 
@@ -314,8 +293,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         final String user = actionWithUser;
 
         switch (item.getItemId()) {
-            case R.id.action_edit_contact:
-                startActivity(ContactEditor.createIntent(this, account, user));
+            case R.id.action_view_contact:
+                startActivity(ContactViewer.createIntent(this, account, user));
                 return true;
 
             case R.id.action_chat_list:
@@ -372,32 +351,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 startActivity(OccupantList.createIntent(this, account, user));
                 return true;
 
-            /* encryption */
-
-            case R.id.action_start_encryption:
-                startEncryption(account, user);
-                return true;
-
-            case R.id.action_restart_encryption:
-                restartEncryption(account, user);
-                return true;
-
-            case R.id.action_stop_encryption:
-                stopEncryption(account, user);
-                return true;
-
-            case R.id.action_verify_with_fingerprint:
-                startActivity(FingerprintViewer.createIntent(this, account, user));
-                return true;
-
-            case R.id.action_verify_with_question:
-                startActivity(QuestionViewer.createIntent(this, account, user, true, false, null));
-                return true;
-
-            case R.id.action_verify_with_shared_secret:
-                startActivity(QuestionViewer.createIntent(this, account, user, false, false, null));
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -408,30 +361,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             if (chat.isEqual(account, user)) {
                 chat.clearInputText();
             }
-        }
-    }
-
-    private void stopEncryption(String account, String user) {
-        try {
-            OTRManager.getInstance().endSession(account, user);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
-    }
-
-    private void restartEncryption(String account, String user) {
-        try {
-            OTRManager.getInstance().refreshSession(account, user);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
-    }
-
-    private void startEncryption(String account, String user) {
-        try {
-            OTRManager.getInstance().startSession(account, user);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
         }
     }
 
@@ -656,21 +585,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
 
         contactTitleActionBarInflater.update(abstractContact);
-
-        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
-        SettingsManager.SecurityOtrMode securityOtrMode = SettingsManager.securityOtrMode();
-
-        ImageView securityView = contactTitleActionBarInflater.getSecurityView();
-
-        if (securityLevel == SecurityLevel.plain
-                && (securityOtrMode == SettingsManager.SecurityOtrMode.disabled
-                || securityOtrMode == SettingsManager.SecurityOtrMode.manual)) {
-            securityView.setVisibility(View.GONE);
-        } else {
-            securityView.setVisibility(View.VISIBLE);
-            securityView.setImageLevel(securityLevel.getImageLevel());
-        }
-
     }
 
     private void updateRegisteredChats() {

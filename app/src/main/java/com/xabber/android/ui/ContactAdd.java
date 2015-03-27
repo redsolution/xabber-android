@@ -14,187 +14,68 @@
  */
 package com.xabber.android.ui;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.adapter.AccountChooseAdapter;
+import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
-public class ContactAdd extends GroupListActivity implements
-        View.OnClickListener, OnItemSelectedListener {
+public class ContactAdd extends ManagedActivity implements ContactAddFragment.Listener {
 
-    private static final String SAVED_ACCOUNT = "com.xabber.android.ui.ContactAdd.SAVED_ACCOUNT";
-    private static final String SAVED_USER = "com.xabber.android.ui.ContactAdd.SAVED_USER";
-    private static final String SAVED_NAME = "com.xabber.android.ui.ContactAdd.SAVED_NAME";
-
-    private String account;
-    private String user;
-
-    /**
-     * Views
-     */
-    private Spinner accountView;
-    private EditText userView;
-    private EditText nameView;
+    ActionBarPainter actionBarPainter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-    }
-
-    @Override
-    protected void onInflate(Bundle savedInstanceState) {
         setContentView(R.layout.contact_add);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getSupportActionBar().setTitle(null);
 
-        ListView listView = getListView();
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.contact_add_header, listView,
-                false);
-        listView.addHeaderView(view, null, false);
+        actionBarPainter = new ActionBarPainter(this);
 
-        accountView = (Spinner) view.findViewById(R.id.contact_account);
-        accountView.setAdapter(new AccountChooseAdapter(this));
-        accountView.setOnItemSelectedListener(this);
-        userView = (EditText) view.findViewById(R.id.contact_user);
-        nameView = (EditText) view.findViewById(R.id.contact_name);
-        ((Button) view.findViewById(R.id.ok)).setOnClickListener(this);
-
-        String name;
         Intent intent = getIntent();
-        if (savedInstanceState != null) {
-            account = savedInstanceState.getString(SAVED_ACCOUNT);
-            user = savedInstanceState.getString(SAVED_USER);
-            name = savedInstanceState.getString(SAVED_NAME);
-        } else {
-            account = getAccount(intent);
-            user = getUser(intent);
-            if (account == null || user == null)
-                name = null;
-            else {
-                name = RosterManager.getInstance().getName(account, user);
-                if (user.equals(name))
-                    name = null;
-            }
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
+                    .commit();
         }
-        if (account == null) {
-            Collection<String> accounts = AccountManager.getInstance()
-                    .getAccounts();
-            if (accounts.size() == 1)
-                account = accounts.iterator().next();
-        }
-        if (account != null) {
-            for (int position = 0; position < accountView.getCount(); position++)
-                if (account.equals(accountView.getItemAtPosition(position))) {
-                    accountView.setSelection(position);
-                    break;
-                }
-        }
-        if (user != null)
-            userView.setText(user);
-        if (name != null)
-            nameView.setText(name);
+
+    }
+
+    private void addContact() {
+        ((ContactAddFragment)getSupportFragmentManager().findFragmentById(R.id.container)).addContact();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(SAVED_ACCOUNT,
-                (String) accountView.getSelectedItem());
-        outState.putString(SAVED_USER, userView.getText().toString());
-        outState.putString(SAVED_NAME, nameView.getText().toString());
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.add_contact, menu);
+
+        return true;
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ok:
-                String user = userView.getText().toString();
-                if ("".equals(user)) {
-                    Toast.makeText(this, getString(R.string.EMPTY_USER_NAME),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                String account = (String) accountView.getSelectedItem();
-                if (account == null) {
-                    Toast.makeText(this, getString(R.string.EMPTY_ACCOUNT),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                try {
-                    RosterManager.getInstance().createContact(account, user,
-                            nameView.getText().toString(), getSelected());
-                    PresenceManager.getInstance()
-                            .requestSubscription(account, user);
-                } catch (NetworkException e) {
-                    Application.getInstance().onError(e);
-                    finish();
-                    return;
-                }
-                MessageManager.getInstance().openChat(account, user);
-                finish();
-                break;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_contact:
+                addContact();
+                return true;
+
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    Collection<String> getInitialGroups() {
-        String account = (String) accountView.getSelectedItem();
-        if (account == null)
-            return Collections.emptyList();
-        return RosterManager.getInstance().getGroups(account);
-    }
-
-    @Override
-    Collection<String> getInitialSelected() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position,
-                               long id) {
-        String account = (String) accountView.getSelectedItem();
-        if (account == null) {
-            onNothingSelected(parent);
-        } else {
-            HashSet<String> groups = new HashSet<String>(RosterManager
-                    .getInstance().getGroups(account));
-            groups.addAll(getSelected());
-            setGroups(groups, getSelected());
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        setGroups(getSelected(), getSelected());
     }
 
     public static Intent createIntent(Context context) {
@@ -205,10 +86,8 @@ public class ContactAdd extends GroupListActivity implements
         return createIntent(context, account, null);
     }
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
-        return new EntityIntentBuilder(context, ContactAdd.class)
-                .setAccount(account).setUser(user).build();
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, ContactAdd.class).setAccount(account).setUser(user).build();
     }
 
     private static String getAccount(Intent intent) {
@@ -219,4 +98,8 @@ public class ContactAdd extends GroupListActivity implements
         return EntityIntentBuilder.getUser(intent);
     }
 
+    @Override
+    public void onAccountSelected(String account) {
+        actionBarPainter.updateWithAccountName(account);
+    }
 }

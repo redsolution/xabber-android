@@ -92,7 +92,7 @@ public class OccupantListAdapter extends BaseAdapter implements
         final TextView statusTextView = (TextView) view
                 .findViewById(R.id.status);
         final ImageView statusModeView = (ImageView) view
-                .findViewById(R.id.status_mode);
+                .findViewById(R.id.status_icon);
         if (MUCManager.getInstance().getNickname(account, room)
                 .equalsIgnoreCase(occupant.getNickname()))
             avatarView.setImageDrawable(AvatarManager.getInstance()

@@ -326,33 +326,40 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         ConnectionManager.getInstance().sendPacket(account, packet);
     }
 
-    /**
-     * Requests to change contact's name and groups.
-     *
-     * @param account
-     * @param bareAddress
-     * @param name
-     * @param groups
-     * @throws NetworkException
-     */
-    public void setNameAndGroup(String account, String bareAddress,
-                                String name, Collection<String> groups) throws NetworkException {
+    public void setGroups(String account, String bareAddress, Collection<String> groups) throws NetworkException {
+        RosterContact contact = getRosterContact(account, bareAddress);
+        if (contact == null) {
+            throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
+        }
+
+        HashSet<String> check = new HashSet<>(contact.getGroupNames());
+        if (check.size() == groups.size()) {
+            check.removeAll(groups);
+            if (check.isEmpty())
+                return;
+        }
+
+        updateRosterContact(account, bareAddress, contact.getRealName(), groups);
+    }
+
+    public void setName(String account, String bareAddress, String name) throws NetworkException {
         RosterContact contact = getRosterContact(account, bareAddress);
         if (contact == null)
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
         if (contact.getRealName().equals(name)) {
-            HashSet<String> check = new HashSet<String>(contact.getGroupNames());
-            if (check.size() == groups.size()) {
-                check.removeAll(groups);
-                if (check.isEmpty())
-                    return;
-            }
+            return;
         }
+
+        updateRosterContact(account, bareAddress, name, contact.getGroupNames());
+    }
+
+    private void updateRosterContact(String account, String bareAddress, String name, Collection<String> groups) throws NetworkException {
         RosterPacket packet = new RosterPacket();
         packet.setType(IQ.Type.SET);
         RosterPacket.Item item = new RosterPacket.Item(bareAddress, name);
-        for (String group : groups)
+        for (String group : groups) {
             item.addGroupName(group);
+        }
         packet.addRosterItem(item);
         ConnectionManager.getInstance().sendPacket(account, packet);
     }

@@ -17,12 +17,11 @@
         android:visible="false"
         />
 
-    <item android:id="@+id/action_edit_contact"
-        android:title="@string/contact_editor"
+    <item android:id="@+id/action_view_contact"
+        android:title="@string/contact_viewer"
         app:showAsAction="never"
         android:orderInCategory="100"
         android:visible="false"
-        android:icon="@drawable/ic_create_white_24dp"
         />
 
     <item android:id="@+id/action_chat_list"
@@ -91,53 +90,6 @@
         app:showAsAction="never"
         android:orderInCategory="180"
         />
-
-    <item android:id="@+id/action_otr_encryption"
-        android:title="@string/otr_encryption"
-        app:showAsAction="never"
-        android:orderInCategory="190">
-
-        <menu>
-            <item android:id="@+id/action_start_encryption"
-                android:title="@string/otr_start"
-                app:showAsAction="never"
-                android:orderInCategory="100"
-                android:visible="false"
-                />
-
-            <item android:id="@+id/action_restart_encryption"
-                android:title="@string/otr_refresh"
-                app:showAsAction="never"
-                android:orderInCategory="105"
-                android:visible="false"
-                />
-
-            <item android:id="@+id/action_stop_encryption"
-                android:title="@string/otr_end"
-                app:showAsAction="never"
-                android:orderInCategory="110"
-                />
-
-            <item android:id="@+id/action_verify_with_fingerprint"
-                android:title="@string/otr_verify_fingerprint"
-                app:showAsAction="never"
-                android:orderInCategory="120"
-                />
-
-            <item android:id="@+id/action_verify_with_question"
-                android:title="@string/otr_verify_question"
-                app:showAsAction="never"
-                android:orderInCategory="130"
-                />
-
-            <item android:id="@+id/action_verify_with_shared_secret"
-                android:title="@string/otr_verify_secret"
-                app:showAsAction="never"
-                android:orderInCategory="140"
-                />
-        </menu>
-
-    </item>
 
     <item android:id="@+id/action_list_of_occupants"
         android:title="@string/occupant_list"

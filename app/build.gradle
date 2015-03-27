@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22.0.0"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 136
-        versionName '0.10.36'
+        versionCode 144
+        versionName '0.10.44'
     }
 
     compileOptions {
@@ -18,8 +18,13 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:support-v13:22.0.0'
+    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile project('otr4j')
 }
