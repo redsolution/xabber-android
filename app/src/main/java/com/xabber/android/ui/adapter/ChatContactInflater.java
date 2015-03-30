@@ -72,13 +72,17 @@ public class ChatContactInflater extends ClientContactInflater {
         final ViewHolder contactViewHolder = (ViewHolder) view.getTag();
         if (MessageManager.getInstance().hasActiveChat(
                 abstractContact.getAccount(), abstractContact.getUser())) {
-            contactViewHolder.panel
-                    .setBackgroundResource(R.drawable.active_chat);
+//            contactViewHolder.panel.setBackgroundResource(R.drawable.active_chat);
+            view.setBackgroundColor(activity.getResources()
+                    .getColor(R.color.grey_50));
             contactViewHolder.name.setTextColor(activity.getResources()
                     .getColor(android.R.color.primary_text_light));
             contactViewHolder.status.setTextColor(activity.getResources()
                     .getColor(android.R.color.secondary_text_light));
         } else {
+            view.setBackgroundColor(activity.getResources()
+                    .getColor(android.R.color.transparent));
+
             contactViewHolder.panel.setBackgroundDrawable(null);
             contactViewHolder.name.setTextColor(textColorPrimary);
             contactViewHolder.status.setTextColor(textColorSecondary);

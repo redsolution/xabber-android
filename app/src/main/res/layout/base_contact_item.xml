@@ -61,6 +61,7 @@
             android:layout_alignParentRight="true"
             android:paddingRight="@dimen/client_software_margin_left"
             android:src="@drawable/ic_client"
+            android:alpha="0.05"
             />
         <TextView
             android:id="@+id/name"

@@ -24,7 +24,9 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:drawSelectorOnTop="true" />
+        android:drawSelectorOnTop="true"
+        android:background="@color/grey_300"
+        />
 
     <RelativeLayout
         android:id="@+id/info"
