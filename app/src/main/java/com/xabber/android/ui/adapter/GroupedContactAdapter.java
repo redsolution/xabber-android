@@ -16,9 +16,10 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,16 +75,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     }
 
     /**
-     * Account's color.
-     */
-    private final ColorStateList expanderAccountTextColor;
-
-    /**
-     * Group's color.
-     */
-    private final ColorStateList expanderGroupTextColor;
-
-    /**
      * Group state provider.
      */
     final StateProvider groupStateProvider;
@@ -93,7 +84,11 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      */
     private final LayoutInflater layoutInflater;
 
-    private int[] accountActionBarColors;
+    private int[] accountColors;
+    private final int[] accountSubgroupColors;
+    private final int accountGroupElevation;
+    private final int accountSubgroupElevation;
+    private final int activeChatsColor;
 
     public GroupedContactAdapter(Activity activity, ListView listView,
                                  Inflater inflater, StateProvider groupStateProvider) {
@@ -101,13 +96,14 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.groupStateProvider = groupStateProvider;
 
-        accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
+        Resources resources = activity.getResources();
 
-        TypedArray typedArray;
-        typedArray = activity.getTheme().obtainStyledAttributes(R.styleable.ContactList);
-        expanderAccountTextColor = typedArray.getColorStateList(R.styleable.ContactList_expanderAccountColor);
-        expanderGroupTextColor = typedArray.getColorStateList(R.styleable.ContactList_expanderGroupColor);
-        typedArray.recycle();
+        accountColors = resources.getIntArray(R.array.account_action_bar);
+        accountSubgroupColors = resources.getIntArray(R.array.account_background);
+        activeChatsColor = resources.getColor(R.color.color_primary_light);
+
+        accountGroupElevation = resources.getDimensionPixelSize(R.dimen.account_group_elevation);
+        accountSubgroupElevation = resources.getDimensionPixelSize(R.dimen.account_subgroup_elevation);
     }
 
     @Override
@@ -150,19 +146,32 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 viewHolder = (GroupViewHolder) view.getTag();
             }
             final GroupConfiguration configuration = (GroupConfiguration) getItem(position);
-            final int level;
-            if (configuration instanceof AccountConfiguration) {
-                level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
-                view.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[level]));
+            final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
+
+            final String name = GroupManager.getInstance()
+                    .getGroupName(configuration.getAccount(), configuration.getUser());
+
+            int elevation;
+            int color;
+
+            if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
+                color = activeChatsColor;
+                elevation = accountGroupElevation;
+            } else if (configuration instanceof AccountConfiguration) {
+                color = accountColors[level];
+                elevation = accountGroupElevation;
             } else {
-                view.setBackgroundDrawable(
-                        new ColorDrawable(activity.getResources().getColor(R.color.group_expander)));
-                viewHolder.name.setTextColor(expanderGroupTextColor);
+                color = accountSubgroupColors[level];
+                elevation = accountSubgroupElevation;
+            }
+
+            view.setBackgroundDrawable(new ColorDrawable(color));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.setElevation(elevation);
             }
 
             viewHolder.name.getBackground().setLevel(configuration.getShowOfflineMode().ordinal());
-            final String name = GroupManager.getInstance().getGroupName(
-                    configuration.getAccount(), configuration.getUser());
             viewHolder.name.setText(name + " (" + configuration.getOnline()
                     + "/" + configuration.getTotal() + ")");
             viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);

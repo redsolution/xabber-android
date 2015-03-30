@@ -34,6 +34,20 @@
         <item>@color/teal_700</item>
     </array>
 
+    <array name="account_background">
+        <item>@color/green_100</item>
+        <item>@color/orange_100</item>
+        <item>@color/red_100</item>
+        <item>@color/blue_100</item>
+        <item>@color/indigo_100</item>
+        <item>@color/blue_grey_100</item>
+        <item>@color/cyan_100</item>
+        <item>@color/teal_100</item>
+    </array>
+
+
+    <color name="color_primary_light">@color/red_100</color>
+
     <color name="account_disabled">@color/black_dividers</color>
     <color name="group_expander">@color/blue_grey_100</color>
 </resources>
