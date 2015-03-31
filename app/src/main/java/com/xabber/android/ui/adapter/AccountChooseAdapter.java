@@ -43,8 +43,7 @@ public class AccountChooseAdapter extends BaseAdapter {
     public AccountChooseAdapter(Activity activity) {
         super();
         this.activity = activity;
-        accounts = new ArrayList<String>(AccountManager.getInstance()
-                .getAccounts());
+        accounts = new ArrayList<>(AccountManager.getInstance().getAccounts());
         Collections.sort(accounts);
 
         accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
@@ -99,13 +98,10 @@ public class AccountChooseAdapter extends BaseAdapter {
         }
         final String account = (String) getItem(position);
 
-        int accountColor = accountColors[accountManager.getColorLevel(account)];
-        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
         ((ImageView) view.findViewById(R.id.avatar))
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
-        ((TextView) view.findViewById(R.id.name)).setText(accountManager
-                .getVerboseName(account));
+        ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
         return view;
     }
 
