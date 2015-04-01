@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
 
@@ -92,15 +93,27 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
         }
 
         for (int index = 0; index < accounts.size(); index++) {
-            final CircleImageView circleImageView = (CircleImageView) linearLayout.getChildAt(index).findViewById(R.id.account_avatar);
+            View view = linearLayout.getChildAt(index);
+
+            final CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.account_avatar);
             final String account = accounts.get(index);
             circleImageView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
-            FloatingActionButton floatingActionButton = (FloatingActionButton) linearLayout.getChildAt(index).findViewById(R.id.fab);
+            FloatingActionButton backgroundActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
             int colorLevel = AccountManager.getInstance().getColorLevel(account);
-            floatingActionButton.setColorNormal(accountActionBarColors[colorLevel]);
-            floatingActionButton.setColorPressed(accountStatusBarColors[colorLevel]);
-            floatingActionButton.setColorRipple(accountBackgroundColors[colorLevel]);
+            backgroundActionButton.setColorNormal(accountActionBarColors[colorLevel]);
+            backgroundActionButton.setColorPressed(accountStatusBarColors[colorLevel]);
+            backgroundActionButton.setColorRipple(accountBackgroundColors[colorLevel]);
+
+            StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
+
+            int connectionIndicatorVisibility;
+            if (statusMode == StatusMode.connection) {
+                connectionIndicatorVisibility = View.VISIBLE;
+            } else {
+                connectionIndicatorVisibility = View.GONE;
+            }
+            view.findViewById(R.id.account_connection_indicator).setVisibility(connectionIndicatorVisibility);
         }
     }
 

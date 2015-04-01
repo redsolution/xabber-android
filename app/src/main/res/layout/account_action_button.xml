@@ -38,5 +38,19 @@
         android:layout_marginRight="16dp"
         />
 
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/account_connection_indicator"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@color/black"
+        android:alpha="0.5"
+        android:elevation="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"
+        />
+
 
 </FrameLayout>
