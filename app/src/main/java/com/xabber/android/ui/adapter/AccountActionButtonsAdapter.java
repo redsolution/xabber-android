@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
@@ -35,6 +36,8 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
      */
     private final ArrayList<String> accounts;
     private int[] accountActionBarColors;
+    private int[] accountStatusBarColors;
+    private int[] accountBackgroundColors;
 
     public AccountActionButtonsAdapter(Activity activity,
                                        View.OnClickListener onClickListener, LinearLayout linearLayout) {
@@ -47,6 +50,8 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
         Resources resources = activity.getResources();
 
         accountActionBarColors = resources.getIntArray(R.array.account_action_bar);
+        accountStatusBarColors = resources.getIntArray(R.array.account_status_bar);
+        accountBackgroundColors = resources.getIntArray(R.array.account_background);
     }
 
     /**
@@ -57,9 +62,14 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
     public void rebuild() {
         accounts.clear();
         accounts.addAll(AccountManager.getInstance().getAccounts());
+
+        if (accounts.size() <= 1) {
+            linearLayout.removeAllViews();
+            return;
+        }
+
         Collections.sort(accounts);
         final int size = accounts.size();
-
         final LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
@@ -77,13 +87,20 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
     @Override
     public void onChange() {
-        for (int index = 0; index < accounts.size(); index++) {
-            final CircleImageView floatingActionButton = (CircleImageView) linearLayout.getChildAt(index).findViewById(R.id.account_avatar);
-            final String account = accounts.get(index);
-            int colorLevel = AccountManager.getInstance().getColorLevel(account);
+        if (accounts.size() <= 1) {
+            return;
+        }
 
-            floatingActionButton.setBorderColor(accountActionBarColors[colorLevel]);
-            floatingActionButton.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+        for (int index = 0; index < accounts.size(); index++) {
+            final CircleImageView circleImageView = (CircleImageView) linearLayout.getChildAt(index).findViewById(R.id.account_avatar);
+            final String account = accounts.get(index);
+            circleImageView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+
+            FloatingActionButton floatingActionButton = (FloatingActionButton) linearLayout.getChildAt(index).findViewById(R.id.fab);
+            int colorLevel = AccountManager.getInstance().getColorLevel(account);
+            floatingActionButton.setColorNormal(accountActionBarColors[colorLevel]);
+            floatingActionButton.setColorPressed(accountStatusBarColors[colorLevel]);
+            floatingActionButton.setColorRipple(accountBackgroundColors[colorLevel]);
         }
     }
 
