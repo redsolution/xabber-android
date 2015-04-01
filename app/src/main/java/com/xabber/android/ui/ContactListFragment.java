@@ -104,6 +104,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                 this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
         accountActionButtonsAdapter.onChange();
 
+        view.findViewById(R.id.fab_up_container).setOnClickListener(this);
+
         return view;
     }
 
@@ -368,6 +370,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == R.id.fab_up_container) {
+            scrollUp();
+            return;
+        }
+
+
         String account = accountActionButtonsAdapter.getItemForView(view);
         if (account == null) { // Check for tap on account in the title
             return;
