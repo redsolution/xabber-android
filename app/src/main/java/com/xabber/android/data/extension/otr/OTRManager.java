@@ -48,8 +48,7 @@ import net.java.otr4j.OtrEngineHost;
 import net.java.otr4j.OtrEngineListener;
 import net.java.otr4j.OtrException;
 import net.java.otr4j.OtrPolicy;
-import net.java.otr4j.OtrPolicyImpl;
-import net.java.otr4j.crypto.OtrCryptoEngineImpl;
+import net.java.otr4j.crypto.OtrCryptoEngine;
 import net.java.otr4j.crypto.OtrCryptoException;
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.session.InstanceTag;
@@ -82,13 +81,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     static {
         POLICIES = new HashMap<SettingsManager.SecurityOtrMode, OtrPolicy>();
-        POLICIES.put(SecurityOtrMode.disabled, new OtrPolicyImpl(
+        POLICIES.put(SecurityOtrMode.disabled, new OtrPolicy(
                 OtrPolicy.NEVER));
-        POLICIES.put(SecurityOtrMode.manual, new OtrPolicyImpl(
+        POLICIES.put(SecurityOtrMode.manual, new OtrPolicy(
                 OtrPolicy.OTRL_POLICY_MANUAL & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.auto, new OtrPolicyImpl(
+        POLICIES.put(SecurityOtrMode.auto, new OtrPolicy(
                 OtrPolicy.OPPORTUNISTIC & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.required, new OtrPolicyImpl(
+        POLICIES.put(SecurityOtrMode.required, new OtrPolicy(
                 OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
     }
 
@@ -366,7 +365,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             PublicKey remotePublicKey = session.getRemotePublicKey();
             String value;
             try {
-                value = new OtrCryptoEngineImpl()
+                value = new OtrCryptoEngine()
                         .getFingerprint(remotePublicKey);
             } catch (OtrCryptoException e) {
                 LogManager.exception(this, e);
@@ -543,7 +542,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     public String getLocalFingerprint(String account) {
         try {
-            return new OtrCryptoEngineImpl().getFingerprint(getLocalKeyPair(
+            return new OtrCryptoEngine().getFingerprint(getLocalKeyPair(
                     account).getPublic());
         } catch (OtrCryptoException e) {
             LogManager.exception(this, e);
