@@ -53,4 +53,15 @@
         android:layout_toLeftOf="@id/group_offline_indicator"
         android:layout_toStartOf="@id/group_offline_indicator"
         />
+
+    <ImageView
+        android:id="@+id/account_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_status"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        />
+
 </RelativeLayout>

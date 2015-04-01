@@ -151,18 +151,38 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             final String name = GroupManager.getInstance()
                     .getGroupName(configuration.getAccount(), configuration.getUser());
 
+
+            viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
+            viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
+
             int elevation;
             int color;
+
+
+            viewHolder.accountStatus.setVisibility(View.GONE);
+            viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
 
             if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
                 color = activeChatsColor;
                 elevation = accountGroupElevation;
-            } else if (configuration instanceof AccountConfiguration) {
-                color = accountColors[level];
-                elevation = accountGroupElevation;
+                viewHolder.name.setText(name);
             } else {
-                color = accountSubgroupColors[level];
-                elevation = accountSubgroupElevation;
+                viewHolder.name.setText(name + " (" + configuration.getOnline()
+                        + "/" + configuration.getTotal() + ")");
+
+                if (configuration instanceof AccountConfiguration) {
+                    color = accountColors[level];
+                    elevation = accountGroupElevation;
+                    viewHolder.groupOfflineIndicator.setVisibility(View.INVISIBLE);
+                    viewHolder.accountStatus.setVisibility(View.VISIBLE);
+
+                    viewHolder.accountStatus.setImageLevel(AccountManager.getInstance()
+                            .getAccount(configuration.getAccount()).getDisplayStatusMode().getStatusLevel());
+                } else {
+                    color = accountSubgroupColors[level];
+                    elevation = accountSubgroupElevation;
+                    viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
+                }
             }
 
             view.setBackgroundDrawable(new ColorDrawable(color));
@@ -171,10 +191,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 view.setElevation(elevation);
             }
 
-            viewHolder.name.setText(name + " (" + configuration.getOnline()
-                    + "/" + configuration.getTotal() + ")");
-            viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
-            viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
+
             return view;
         } else {
             throw new IllegalStateException();
@@ -382,11 +399,13 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         final ImageView indicator;
         final TextView name;
         final ImageView groupOfflineIndicator;
+        final ImageView accountStatus;
 
         public GroupViewHolder(View view) {
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
+            accountStatus = (ImageView) view.findViewById(R.id.account_status);
         }
     }
 
