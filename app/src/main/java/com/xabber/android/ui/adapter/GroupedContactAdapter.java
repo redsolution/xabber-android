@@ -171,10 +171,10 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 view.setElevation(elevation);
             }
 
-            viewHolder.name.getBackground().setLevel(configuration.getShowOfflineMode().ordinal());
             viewHolder.name.setText(name + " (" + configuration.getOnline()
                     + "/" + configuration.getTotal() + ")");
             viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
+            viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
             return view;
         } else {
             throw new IllegalStateException();
@@ -381,10 +381,12 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     private static class GroupViewHolder {
         final ImageView indicator;
         final TextView name;
+        final ImageView groupOfflineIndicator;
 
         public GroupViewHolder(View view) {
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
+            groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
         }
     }
 

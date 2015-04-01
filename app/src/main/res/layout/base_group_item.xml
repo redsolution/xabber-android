@@ -16,8 +16,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/expander_height"
-    android:gravity="center_vertical|start"
+    android:paddingRight="@dimen/active_chat_padding_right"
+    android:paddingEnd="@dimen/active_chat_padding_right"
     >
+
     <ImageView
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
@@ -26,18 +28,29 @@
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:id="@+id/group_offline_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_show_offline"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:alpha="0.2"
+        />
+
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="@dimen/expander_height"
         android:gravity="center_vertical"
-        android:layout_marginRight="@dimen/expander_text_margin_right"
-        android:layout_marginEnd="@dimen/expander_text_margin_right"
         android:singleLine="true"
         android:ellipsize="marquee"
-        android:background="@drawable/ic_show_offline"
         android:text="name (0/0)"
         android:layout_toRightOf="@id/indicator"
         android:layout_toEndOf="@id/indicator"
+        android:layout_toLeftOf="@id/group_offline_indicator"
+        android:layout_toStartOf="@id/group_offline_indicator"
         />
 </RelativeLayout>
