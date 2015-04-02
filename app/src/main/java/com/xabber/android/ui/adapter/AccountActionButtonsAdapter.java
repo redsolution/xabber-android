@@ -64,11 +64,6 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
         accounts.clear();
         accounts.addAll(AccountManager.getInstance().getAccounts());
 
-        if (accounts.size() <= 1) {
-            linearLayout.removeAllViews();
-            return;
-        }
-
         Collections.sort(accounts);
         final int size = accounts.size();
         final LayoutInflater inflater = (LayoutInflater) activity
@@ -88,10 +83,6 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
     @Override
     public void onChange() {
-        if (accounts.size() <= 1) {
-            return;
-        }
-
         for (int index = 0; index < accounts.size(); index++) {
             View view = linearLayout.getChildAt(index);
 
