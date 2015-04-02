@@ -6,8 +6,6 @@
     android:layout_height="wrap_content"
     >
 
-
-
     <com.melnykov.fab.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -17,12 +15,12 @@
         fab:fab_colorPressed="@android:color/transparent"
         android:clickable="false"
 
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        />
 
+        />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/account_avatar"
@@ -32,8 +30,9 @@
         app:border_width="3dp"
         app:border_color="@android:color/transparent"
         android:elevation="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         />
@@ -45,11 +44,12 @@
         android:src="@color/black"
         android:alpha="0.5"
         android:elevation="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
+
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:visibility="gone"
         />
 
 

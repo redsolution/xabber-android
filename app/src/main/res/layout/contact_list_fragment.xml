@@ -19,8 +19,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -71,28 +69,14 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:orientation="vertical"
-        android:layout_marginRight="16dp"
-        android:id="@+id/account_action_buttons"
-        android:layout_above="@+id/fab_up_container"
-        >
-    </LinearLayout>
-
     <FrameLayout
         android:id="@+id/fab_up_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginRight="18dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/account_action_buttons"
         >
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/fab_up"
@@ -105,11 +89,25 @@
             android:src="@drawable/ic_arrow_up_white_24dp"
             android:clickable="false"
 
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             />
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:layout_marginRight="18dp"
+        android:id="@+id/account_action_buttons"
+        android:layout_marginBottom="4dp"
+        >
+    </LinearLayout>
 
 </RelativeLayout>
