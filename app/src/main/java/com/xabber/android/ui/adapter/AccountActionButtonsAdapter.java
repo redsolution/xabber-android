@@ -99,7 +99,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
             StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
 
             int connectionIndicatorVisibility;
-            if (statusMode == StatusMode.connection) {
+            if (statusMode == StatusMode.connection || statusMode == StatusMode.unavailable) {
                 connectionIndicatorVisibility = View.VISIBLE;
             } else {
                 connectionIndicatorVisibility = View.GONE;
