@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
@@ -53,6 +54,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      */
     static final Collection<Group> NO_GROUP_LIST;
 
+    static final int TYPE_COUNT = 3;
+
     /**
      * View type used for contact items.
      */
@@ -62,6 +65,9 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * View type used for groups and accounts expanders.
      */
     static final int TYPE_GROUP = 1;
+
+
+    static final int TYPE_ACCOUNT = 2;
 
     static {
         Collection<Group> groups = new ArrayList<>(1);
@@ -108,7 +114,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return TYPE_COUNT;
     }
 
     @Override
@@ -116,6 +122,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         Object object = getItem(position);
         if (object instanceof AbstractContact) {
             return TYPE_CONTACT;
+        } else if (object instanceof AccountConfiguration) {
+            return TYPE_ACCOUNT;
         } else if (object instanceof GroupConfiguration) {
             return TYPE_GROUP;
         } else {
@@ -125,76 +133,116 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (getItemViewType(position) == TYPE_CONTACT) {
-            return super.getView(position, convertView, parent);
-        } else if (getItemViewType(position) == TYPE_GROUP) {
-            final View view;
-            final GroupViewHolder viewHolder;
-            if (convertView == null) {
-                view = layoutInflater.inflate(R.layout.base_group_item, parent, false);
-                TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
-                view.setBackgroundDrawable(
-                        typedArray.getDrawable(R.styleable.ContactList_expanderBackground));
-                ((ImageView) view.findViewById(R.id.indicator)).setImageDrawable(
-                        typedArray.getDrawable(R.styleable.ContactList_expanderIndicator));
-                typedArray.recycle();
+        switch (getItemViewType(position)) {
+            case TYPE_CONTACT:
+                return super.getView(position, convertView, parent);
 
-                viewHolder = new GroupViewHolder(view);
-                view.setTag(viewHolder);
-            } else {
-                view = convertView;
-                viewHolder = (GroupViewHolder) view.getTag();
-            }
-            final GroupConfiguration configuration = (GroupConfiguration) getItem(position);
-            final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
+            case TYPE_GROUP:
+            {
+                final View view;
+                final GroupViewHolder viewHolder;
+                if (convertView == null) {
+                    view = layoutInflater.inflate(R.layout.base_group_item, parent, false);
+                    TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
+                    ((ImageView) view.findViewById(R.id.indicator)).setImageDrawable(
+                            typedArray.getDrawable(R.styleable.ContactList_expanderIndicator));
+                    typedArray.recycle();
 
-            final String name = GroupManager.getInstance()
-                    .getGroupName(configuration.getAccount(), configuration.getUser());
-
-
-            viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
-            viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
-
-            int elevation;
-            int color;
-
-
-            viewHolder.accountStatus.setVisibility(View.GONE);
-            viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
-
-            if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
-                color = activeChatsColor;
-                elevation = accountGroupElevation;
-                viewHolder.name.setText(name);
-            } else {
-                viewHolder.name.setText(name + " (" + configuration.getOnline()
-                        + "/" + configuration.getTotal() + ")");
-
-                if (configuration instanceof AccountConfiguration) {
-                    color = accountColors[level];
-                    elevation = accountGroupElevation;
-                    viewHolder.groupOfflineIndicator.setVisibility(View.INVISIBLE);
-                    viewHolder.accountStatus.setVisibility(View.VISIBLE);
-
-                    viewHolder.accountStatus.setImageLevel(AccountManager.getInstance()
-                            .getAccount(configuration.getAccount()).getDisplayStatusMode().getStatusLevel());
+                    viewHolder = new GroupViewHolder(view);
+                    view.setTag(viewHolder);
                 } else {
+                    view = convertView;
+                    viewHolder = (GroupViewHolder) view.getTag();
+                }
+
+                final GroupConfiguration configuration = (GroupConfiguration) getItem(position);
+                final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
+
+                final String name = GroupManager.getInstance()
+                        .getGroupName(configuration.getAccount(), configuration.getUser());
+
+
+                viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
+                viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
+
+                int elevation;
+                int color;
+
+
+                viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
+
+                if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
+                    color = activeChatsColor;
+                    elevation = accountGroupElevation;
+                    viewHolder.name.setText(name);
+                } else {
+                    viewHolder.name.setText(name + " (" + configuration.getOnline()
+                            + "/" + configuration.getTotal() + ")");
+
                     color = accountSubgroupColors[level];
                     elevation = accountSubgroupElevation;
                     viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
                 }
+
+                view.setBackgroundDrawable(new ColorDrawable(color));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    view.setElevation(elevation);
+                }
+
+                return view;
             }
 
-            view.setBackgroundDrawable(new ColorDrawable(color));
+            case TYPE_ACCOUNT:
+                final View view;
+                final AccountViewHolder viewHolder;
+                if (convertView == null) {
+                    view = layoutInflater.inflate(R.layout.account_group_item, parent, false);
+                    TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
+                    ((ImageView) view.findViewById(R.id.indicator)).setImageDrawable(
+                            typedArray.getDrawable(R.styleable.ContactList_expanderIndicator));
+                    typedArray.recycle();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.setElevation(elevation);
-            }
+                    viewHolder = new AccountViewHolder(view);
+                    view.setTag(viewHolder);
+                } else {
+                    view = convertView;
+                    viewHolder = (AccountViewHolder) view.getTag();
+                }
 
+                final AccountConfiguration configuration = (AccountConfiguration) getItem(position);
 
-            return view;
-        } else {
-            throw new IllegalStateException();
+                final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
+                view.setBackgroundDrawable(new ColorDrawable(accountColors[level]));
+
+                viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
+
+                final String name = GroupManager.getInstance()
+                        .getGroupName(configuration.getAccount(), configuration.getUser());
+
+                viewHolder.jid.setText(name + " (" + configuration.getOnline()
+                        + "/" + configuration.getTotal() + ")");
+
+                AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
+
+                viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
+
+                String statusText = accountItem.getStatusText().trim();
+
+                if (statusText.isEmpty()) {
+                    statusText = activity.getString(accountItem.getDisplayStatusMode().getStringID());
+                }
+
+                viewHolder.status.setText(statusText);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    view.setElevation(accountGroupElevation);
+                }
+
+                return view;
+
+            default:
+                throw new IllegalStateException();
         }
     }
 
@@ -399,14 +447,27 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         final ImageView indicator;
         final TextView name;
         final ImageView groupOfflineIndicator;
-        final ImageView accountStatus;
 
         public GroupViewHolder(View view) {
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
-            accountStatus = (ImageView) view.findViewById(R.id.account_status);
         }
     }
+
+    private static class AccountViewHolder {
+        final ImageView indicator;
+        final TextView jid;
+        final TextView status;
+        final ImageView statusIcon;
+
+        public AccountViewHolder(View view) {
+            indicator = (ImageView) view.findViewById(R.id.indicator);
+            jid = (TextView) view.findViewById(R.id.account_jid);
+            status = (TextView) view.findViewById(R.id.account_status);
+            statusIcon = (ImageView) view.findViewById(R.id.account_status_icon);
+        }
+    }
+
 
 }
