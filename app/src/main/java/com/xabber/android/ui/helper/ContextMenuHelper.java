@@ -56,9 +56,8 @@ public class ContextMenuHelper {
     private ContextMenuHelper() {
     }
 
-    public static void createContactContextMenu(
-            final FragmentActivity activity, final UpdatableAdapter adapter,
-            AbstractContact abstractContact, ContextMenu menu) {
+    public static void createContactContextMenu(final FragmentActivity activity,
+            final UpdatableAdapter adapter, AbstractContact abstractContact, ContextMenu menu) {
         final String account = abstractContact.getAccount();
         final String user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
@@ -68,7 +67,6 @@ public class ContextMenuHelper {
                         MUCEditor.createIntent(activity, account, user));
             menu.add(R.string.muc_delete).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
-
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             MUCDeleteDialogFragment.newInstance(account, user)
@@ -76,19 +74,16 @@ public class ContextMenuHelper {
                                             "MUC_DELETE");
                             return true;
                         }
-
                     });
             if (MUCManager.getInstance().isDisabled(account, user))
                 menu.add(R.string.muc_join).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
-
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 MUCManager.getInstance().joinRoom(account,
                                         user, true);
                                 return true;
                             }
-
                         });
             else
                 menu.add(R.string.muc_leave).setOnMenuItemClickListener(
@@ -194,52 +189,47 @@ public class ContextMenuHelper {
     }
 
     public static void createGroupContextMenu(final FragmentActivity activity,
-                                              UpdatableAdapter adapter, final String account, final String group,
-                                              ContextMenu menu) {
-        menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account,
-                group));
-        if (group != GroupManager.ACTIVE_CHATS && group != GroupManager.IS_ROOM) {
+              UpdatableAdapter adapter, final String account, final String group, ContextMenu menu) {
+        menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
+        if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             GroupRenameDialogFragment.newInstance(
-                                    account == GroupManager.NO_ACCOUNT ? null
-                                            : account,
-                                    group == GroupManager.NO_GROUP ? null
+                                    account.equals(GroupManager.NO_ACCOUNT) ? null : account,
+                                    group.equals(GroupManager.NO_GROUP) ? null
                                             : group).show(activity.getFragmentManager(),
                                     "GROUP_RENAME");
                             return true;
                         }
                     });
-            if (group != GroupManager.NO_GROUP)
+            if (!group.equals(GroupManager.NO_GROUP)) {
                 menu.add(R.string.group_remove).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
 
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                GroupDeleteDialogFragment
-                                        .newInstance(
-                                                account == GroupManager.NO_ACCOUNT ? null
-                                                        : account, group)
+                                GroupDeleteDialogFragment.newInstance(
+                                        account.equals(GroupManager.NO_ACCOUNT) ? null : account, group)
                                         .show(activity.getFragmentManager(), "GROUP_DELETE");
                                 return true;
                             }
                         });
+            }
         }
-        createOfflineModeContextMenu(adapter, account, group, menu);
+        if (!group.equals(GroupManager.ACTIVE_CHATS)) {
+            createOfflineModeContextMenu(adapter, account, group, menu);
+        }
     }
 
-    public static void createAccountContextMenu(
-            final FragmentActivity activity, UpdatableAdapter adapter,
-            final String account, ContextMenu menu) {
-        menu.setHeaderTitle(AccountManager.getInstance()
-                .getVerboseName(account));
-        AccountItem accountItem = AccountManager.getInstance().getAccount(
-                account);
+    public static void createAccountContextMenu( final FragmentActivity activity, UpdatableAdapter adapter,
+                                                 final String account, ContextMenu menu) {
+        menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         ConnectionState state = accountItem.getState();
-        if (state == ConnectionState.waiting)
+        if (state == ConnectionState.waiting) {
             menu.add(R.string.account_reconnect).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
@@ -253,67 +243,56 @@ public class ContextMenuHelper {
                         }
 
                     });
-        menu.add(R.string.status_editor).setIntent(
-                StatusEditor.createIntent(activity, account));
-        menu.add(R.string.account_editor).setIntent(
-                AccountEditor.createIntent(activity, account));
+        }
+        menu.add(R.string.status_editor).setIntent(StatusEditor.createIntent(activity, account));
+        menu.add(R.string.account_editor).setIntent(AccountEditor.createIntent(activity, account));
         if (state.isConnected()) {
             menu.add(R.string.contact_viewer).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
-
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            String user = AccountManager.getInstance()
-                                    .getAccount(account).getRealJid();
-                            if (user == null)
-                                Application.getInstance().onError(
-                                        R.string.NOT_CONNECTED);
-                            else {
-                                activity.startActivity(ContactViewer
-                                        .createIntent(activity, account, user));
+                            String user = AccountManager.getInstance().getAccount(account).getRealJid();
+                            if (user == null) {
+                                Application.getInstance().onError(R.string.NOT_CONNECTED);
+                            } else {
+                                activity.startActivity(ContactViewer.createIntent(activity, account, user));
                             }
                             return true;
                         }
                     });
-            menu.add(R.string.contact_add).setIntent(
-                    ContactAdd.createIntent(activity, account));
+            menu.add(R.string.contact_add).setIntent(ContactAdd.createIntent(activity, account));
         }
-        if (SettingsManager.contactsShowAccounts())
+        if (SettingsManager.contactsShowAccounts()) {
             createOfflineModeContextMenu(adapter, account, null, menu);
+        }
     }
 
     private static void createOfflineModeContextMenu(UpdatableAdapter adapter,
                                                      String account, String group, ContextMenu menu) {
         SubMenu mapMode = menu.addSubMenu(R.string.show_offline_settings);
         mapMode.setHeaderTitle(R.string.show_offline_settings);
-        MenuItem always = mapMode.add(R.string.show_offline_settings, 0, 0,
-                R.string.show_offline_always).setOnMenuItemClickListener(
-                new OfflineModeClickListener(adapter, account, group,
-                        ShowOfflineMode.always));
-        MenuItem normal = mapMode.add(R.string.show_offline_settings, 0, 0,
-                R.string.show_offline_normal).setOnMenuItemClickListener(
-                new OfflineModeClickListener(adapter, account, group,
-                        ShowOfflineMode.normal));
-        MenuItem never = mapMode.add(R.string.show_offline_settings, 0, 0,
-                R.string.show_offline_never).setOnMenuItemClickListener(
-                new OfflineModeClickListener(adapter, account, group,
-                        ShowOfflineMode.never));
+        MenuItem always = mapMode.add(R.string.show_offline_settings, 0, 0, R.string.show_offline_always)
+                .setOnMenuItemClickListener(
+                        new OfflineModeClickListener(adapter, account, group, ShowOfflineMode.always));
+        MenuItem normal = mapMode.add(R.string.show_offline_settings, 0, 0, R.string.show_offline_normal).setOnMenuItemClickListener(
+                new OfflineModeClickListener(adapter, account, group, ShowOfflineMode.normal));
+        MenuItem never = mapMode.add(R.string.show_offline_settings, 0, 0, R.string.show_offline_never).setOnMenuItemClickListener(
+                new OfflineModeClickListener(adapter, account, group, ShowOfflineMode.never));
         mapMode.setGroupCheckable(R.string.show_offline_settings, true, true);
-        ShowOfflineMode showOfflineMode = GroupManager.getInstance()
-                .getShowOfflineMode(account,
+        ShowOfflineMode showOfflineMode = GroupManager.getInstance().getShowOfflineMode(account,
                         group == null ? GroupManager.IS_ACCOUNT : group);
-        if (showOfflineMode == ShowOfflineMode.always)
+        if (showOfflineMode == ShowOfflineMode.always) {
             always.setChecked(true);
-        else if (showOfflineMode == ShowOfflineMode.normal)
+        } else if (showOfflineMode == ShowOfflineMode.normal) {
             normal.setChecked(true);
-        else if (showOfflineMode == ShowOfflineMode.never)
+        } else if (showOfflineMode == ShowOfflineMode.never) {
             never.setChecked(true);
-        else
+        } else {
             throw new IllegalStateException();
+        }
     }
 
-    private static class OfflineModeClickListener implements
-            MenuItem.OnMenuItemClickListener {
+    private static class OfflineModeClickListener implements MenuItem.OnMenuItemClickListener {
 
         private final UpdatableAdapter adapter;
         private final String account;
