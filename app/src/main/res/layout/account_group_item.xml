@@ -77,8 +77,10 @@
 
     <View
         android:layout_width="1px"
-        android:layout_height="@dimen/avatar_size_toolbar"
-        android:background="@color/grey_500"
+        android:layout_height="26dp"
+        android:background="@color/black"
+        android:alpha="0.1"
+        android:layout_gravity="center_vertical"
         />
 
     <ImageView
