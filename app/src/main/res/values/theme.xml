@@ -14,9 +14,6 @@
 -->
 <resources>
     <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="expanderGroupColor">?android:attr/textColorPrimary</item>
-        <item name="expanderAccountColor">?android:attr/textColorPrimaryInverse</item>
-        <item name="expanderIndicator">@drawable/expander_indicator_dark</item>
         <item name="windowActionBar">false</item>
 
         <!--for text selection toolbar to be above usual toolbar -->

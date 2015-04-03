@@ -24,10 +24,12 @@
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/expander_indicator_dark"
+        android:src="@drawable/ic_expander_indicator"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:alpha="0.2"
+        />
 
     <ImageView
         android:id="@+id/group_offline_indicator"

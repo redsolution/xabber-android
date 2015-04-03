@@ -17,7 +17,6 @@ package com.xabber.android.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -29,6 +28,7 @@ import android.widget.TextView;
 
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
@@ -97,8 +97,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     private final int activeChatsColor;
     private final OnAccountClickListener onAccountClickListener;
 
-    public GroupedContactAdapter(Activity activity, ListView listView,
-                                 Inflater inflater, StateProvider groupStateProvider, OnAccountClickListener onAccountClickListener) {
+    public GroupedContactAdapter(Activity activity, ListView listView, Inflater inflater,
+                                 StateProvider groupStateProvider, OnAccountClickListener onAccountClickListener) {
         super(activity, listView, inflater);
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.groupStateProvider = groupStateProvider;
@@ -146,11 +146,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 final GroupViewHolder viewHolder;
                 if (convertView == null) {
                     view = layoutInflater.inflate(R.layout.base_group_item, parent, false);
-                    TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
-                    ((ImageView) view.findViewById(R.id.indicator)).setImageDrawable(
-                            typedArray.getDrawable(R.styleable.ContactList_expanderIndicator));
-                    typedArray.recycle();
-
                     viewHolder = new GroupViewHolder(view);
                     view.setTag(viewHolder);
                 } else {
@@ -201,10 +196,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 final AccountViewHolder viewHolder;
                 if (convertView == null) {
                     view = layoutInflater.inflate(R.layout.account_group_item, parent, false);
-                    TypedArray typedArray = activity.obtainStyledAttributes(R.styleable.ContactList);
-                    ((ImageView) view.findViewById(R.id.indicator)).setImageDrawable(
-                            typedArray.getDrawable(R.styleable.ContactList_expanderIndicator));
-                    typedArray.recycle();
 
                     viewHolder = new AccountViewHolder(view);
                     view.setTag(viewHolder);
@@ -215,27 +206,26 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
                 final AccountConfiguration configuration = (AccountConfiguration) getItem(position);
 
+                final String account = configuration.getAccount();
 
                 viewHolder.statusIcon.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onAccountClickListener.onAccountClick(v, configuration.getAccount());
+                        onAccountClickListener.onAccountClick(v, account);
                     }
                 });
 
-                final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
+                final int level = AccountManager.getInstance().getColorLevel(account);
                 view.setBackgroundDrawable(new ColorDrawable(accountColors[level]));
 
-                viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
-
-                final String name = GroupManager.getInstance()
-                        .getGroupName(configuration.getAccount(), configuration.getUser());
+                final String name = GroupManager.getInstance().getGroupName(account, configuration.getUser());
 
                 viewHolder.jid.setText(name + " (" + configuration.getOnline()
                         + "/" + configuration.getTotal() + ")");
 
-                AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
+                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
 
+                viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
                 viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
 
                 String statusText = accountItem.getStatusText().trim();
@@ -441,10 +431,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
     /**
      * Sets whether group in specified account is expanded.
-     *
-     * @param account
-     * @param group    Use {@link #IS_ACCOUNT} to set expanded for account.
-     * @param expanded
      */
     public void setExpanded(String account, String group, boolean expanded) {
         groupStateProvider.setExpanded(account, group, expanded);
@@ -467,16 +453,16 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     }
 
     private static class AccountViewHolder {
-        final ImageView indicator;
         final TextView jid;
         final TextView status;
         final ImageView statusIcon;
+        final ImageView avatar;
 
         public AccountViewHolder(View view) {
-            indicator = (ImageView) view.findViewById(R.id.indicator);
             jid = (TextView) view.findViewById(R.id.account_jid);
             status = (TextView) view.findViewById(R.id.account_status);
             statusIcon = (ImageView) view.findViewById(R.id.account_status_icon);
+            avatar = (ImageView) view.findViewById(R.id.avatar);
         }
     }
 

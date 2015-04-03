@@ -13,6 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/material_blue_grey_900" />
-</selector>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_expander_indicator_right_black_24dp" android:minLevel="0" android:maxLevel="0" />
+    <item android:drawable="@drawable/ic_expander_indicator_down_black_24dp" android:minLevel="1" android:maxLevel="1" />
+</level-list>

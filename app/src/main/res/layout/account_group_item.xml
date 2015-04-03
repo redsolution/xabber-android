@@ -22,11 +22,27 @@
     >
 
     <ImageView
-        android:id="@+id/indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/expander_indicator_dark"
-    />
+        android:id="@+id/account_color_indicator"
+
+        android:layout_width="4dp"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+
+        android:layout_marginRight="2dp"
+        android:layout_marginEnd="2dp"
+        android:src="@color/red_500"
+        android:visibility="invisible"
+
+        />
+
+    <ImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_toolbar"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:src="@drawable/ic_avatar_1"
+        />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -34,6 +50,7 @@
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical"
+        android:paddingLeft="@dimen/active_chat_padding_left"
         >
         <TextView
             android:id="@+id/account_jid"
@@ -42,7 +59,10 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:text="name@example.com (0/0)"
-            />
+            android:textColor="?android:attr/textColorPrimary"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold"
+        />
 
         <TextView
             android:id="@+id/account_status"
@@ -54,6 +74,12 @@
             />
 
     </LinearLayout>
+
+    <View
+        android:layout_width="1px"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:background="@color/grey_500"
+        />
 
     <ImageView
         android:id="@+id/account_status_icon"
