@@ -14,10 +14,13 @@
  */
 package com.xabber.android.ui.helper;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -34,6 +37,7 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.ContactAdd;
+import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.MUCEditor;
 import com.xabber.android.ui.StatusEditor;
@@ -43,7 +47,6 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.preferences.AccountEditor;
-import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
 /**
@@ -189,7 +192,7 @@ public class ContextMenuHelper {
     }
 
     public static void createGroupContextMenu(final FragmentActivity activity,
-              UpdatableAdapter adapter, final String account, final String group, ContextMenu menu) {
+              final UpdatableAdapter adapter, final String account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
@@ -220,34 +223,47 @@ public class ContextMenuHelper {
             }
         }
         if (!group.equals(GroupManager.ACTIVE_CHATS)) {
-            createOfflineModeContextMenu(adapter, account, group, menu);
+                menu.add(R.string.show_offline_settings).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        createOfflineContactsDialog(activity, adapter, account, group).show();
+                        return true;
+                    }
+                });
         }
     }
 
-    public static void createAccountContextMenu( final FragmentActivity activity, UpdatableAdapter adapter,
+    public static void createAccountContextMenu( final FragmentActivity activity, final UpdatableAdapter adapter,
                                                  final String account, ContextMenu menu) {
+        activity.getMenuInflater().inflate(R.menu.account, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+
+        setUpAccountMenu(activity, adapter, account, menu);
+    }
+
+    public static void setUpAccountMenu(final FragmentActivity activity, final UpdatableAdapter adapter, final String account, Menu menu) {
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         ConnectionState state = accountItem.getState();
+
         if (state == ConnectionState.waiting) {
-            menu.add(R.string.account_reconnect).setOnMenuItemClickListener(
+            menu.findItem(R.id.action_reconnect_account).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            if (AccountManager.getInstance()
-                                    .getAccount(account).updateConnection(true))
-                                AccountManager.getInstance().onAccountChanged(
-                                        account);
+                            if (accountItem.updateConnection(true))
+                                AccountManager.getInstance().onAccountChanged(account);
                             return true;
                         }
 
                     });
         }
-        menu.add(R.string.status_editor).setIntent(StatusEditor.createIntent(activity, account));
-        menu.add(R.string.account_editor).setIntent(AccountEditor.createIntent(activity, account));
+
+        menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditor.createIntent(activity, account));
+        menu.findItem(R.id.action_edit_account).setIntent(AccountEditor.createIntent(activity, account));
+
         if (state.isConnected()) {
-            menu.add(R.string.contact_viewer).setOnMenuItemClickListener(
+            menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
@@ -260,62 +276,37 @@ public class ContextMenuHelper {
                             return true;
                         }
                     });
-            menu.add(R.string.contact_add).setIntent(ContactAdd.createIntent(activity, account));
+            menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAdd.createIntent(activity, account));
         }
+
         if (SettingsManager.contactsShowAccounts()) {
-            createOfflineModeContextMenu(adapter, account, null, menu);
+            menu.findItem(R.id.action_set_up_offline_contacts).setVisible(true)
+                    .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            ContextMenuHelper.createOfflineContactsDialog(activity, adapter,
+                                    account, GroupManager.IS_ACCOUNT).show();
+                            return true;
+                        }
+                    });
         }
     }
 
-    private static void createOfflineModeContextMenu(UpdatableAdapter adapter,
-                                                     String account, String group, ContextMenu menu) {
-        SubMenu mapMode = menu.addSubMenu(R.string.show_offline_settings);
-        mapMode.setHeaderTitle(R.string.show_offline_settings);
-        MenuItem always = mapMode.add(R.string.show_offline_settings, 0, 0, R.string.show_offline_always)
-                .setOnMenuItemClickListener(
-                        new OfflineModeClickListener(adapter, account, group, ShowOfflineMode.always));
-        MenuItem normal = mapMode.add(R.string.show_offline_settings, 0, 0, R.string.show_offline_normal).setOnMenuItemClickListener(
-                new OfflineModeClickListener(adapter, account, group, ShowOfflineMode.normal));
-        MenuItem never = mapMode.add(R.string.show_offline_settings, 0, 0, R.string.show_offline_never).setOnMenuItemClickListener(
-                new OfflineModeClickListener(adapter, account, group, ShowOfflineMode.never));
-        mapMode.setGroupCheckable(R.string.show_offline_settings, true, true);
-        ShowOfflineMode showOfflineMode = GroupManager.getInstance().getShowOfflineMode(account,
-                        group == null ? GroupManager.IS_ACCOUNT : group);
-        if (showOfflineMode == ShowOfflineMode.always) {
-            always.setChecked(true);
-        } else if (showOfflineMode == ShowOfflineMode.normal) {
-            normal.setChecked(true);
-        } else if (showOfflineMode == ShowOfflineMode.never) {
-            never.setChecked(true);
-        } else {
-            throw new IllegalStateException();
-        }
+    public static AlertDialog createOfflineContactsDialog(Context context, final UpdatableAdapter adapter,
+                                                          final String account, final String group) {
+        return new AlertDialog.Builder(context)
+                .setTitle(R.string.show_offline_settings)
+                .setSingleChoiceItems(
+                        R.array.offline_contacts_show_option,
+                        GroupManager.getInstance().getShowOfflineMode(account, group).ordinal(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                GroupManager.getInstance().setShowOfflineMode(account,
+                                        group, ShowOfflineMode.values()[which]);
+                                adapter.onChange();
+                                dialog.dismiss();
+                            }
+                        }).create();
     }
-
-    private static class OfflineModeClickListener implements MenuItem.OnMenuItemClickListener {
-
-        private final UpdatableAdapter adapter;
-        private final String account;
-        private final String group;
-        private final ShowOfflineMode mode;
-
-        public OfflineModeClickListener(UpdatableAdapter adapter,
-                                        String account, String group, ShowOfflineMode mode) {
-            super();
-            this.adapter = adapter;
-            this.account = account;
-            this.group = group;
-            this.mode = mode;
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            GroupManager.getInstance().setShowOfflineMode(account,
-                    group == null ? GroupManager.IS_ACCOUNT : group, mode);
-            adapter.onChange();
-            return true;
-        }
-
-    }
-
 }

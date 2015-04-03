@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_reconnect_account"
+        android:visible="false"
+        android:title="@string/account_reconnect" />
+
+    <item android:id="@+id/action_edit_account_status"
+        android:title="@string/status_editor" />
+
+    <item android:id="@+id/action_edit_account"
+        android:title="@string/account_editor" />
+
+    <item android:id="@+id/action_contact_info"
+        android:visible="false"
+        android:title="@string/contact_viewer" />
+
+    <item android:id="@+id/action_add_contact"
+        android:visible="false"
+        android:title="@string/contact_add" />
+
+    <item android:id="@+id/action_set_up_offline_contacts"
+        android:visible="false"
+        android:title="@string/show_offline_settings" />
+</menu>

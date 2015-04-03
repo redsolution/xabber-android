@@ -95,21 +95,24 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     private final int accountGroupElevation;
     private final int accountSubgroupElevation;
     private final int activeChatsColor;
+    private final OnAccountClickListener onAccountClickListener;
 
     public GroupedContactAdapter(Activity activity, ListView listView,
-                                 Inflater inflater, StateProvider groupStateProvider) {
+                                 Inflater inflater, StateProvider groupStateProvider, OnAccountClickListener onAccountClickListener) {
         super(activity, listView, inflater);
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.groupStateProvider = groupStateProvider;
 
         Resources resources = activity.getResources();
 
-        accountColors = resources.getIntArray(R.array.account_action_bar);
-        accountSubgroupColors = resources.getIntArray(R.array.account_background);
+        accountColors = resources.getIntArray(R.array.account_200);
+        accountSubgroupColors = resources.getIntArray(R.array.account_50);
         activeChatsColor = resources.getColor(R.color.color_primary_light);
 
         accountGroupElevation = resources.getDimensionPixelSize(R.dimen.account_group_elevation);
         accountSubgroupElevation = resources.getDimensionPixelSize(R.dimen.account_subgroup_elevation);
+
+        this.onAccountClickListener = onAccountClickListener;
     }
 
     @Override
@@ -211,6 +214,14 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 }
 
                 final AccountConfiguration configuration = (AccountConfiguration) getItem(position);
+
+
+                viewHolder.statusIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onAccountClickListener.onAccountClick(v, configuration.getAccount());
+                    }
+                });
 
                 final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
                 view.setBackgroundDrawable(new ColorDrawable(accountColors[level]));
@@ -469,5 +480,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         }
     }
 
+    public interface OnAccountClickListener {
+        void onAccountClick(View view, String account);
+    }
 
 }

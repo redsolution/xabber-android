@@ -16,6 +16,7 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ListView;
 
 import com.xabber.android.data.SettingsManager;
@@ -79,9 +80,9 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
 
     private final OnContactListChangedListener listener;
 
-    public ContactListAdapter(
-            Activity activity, ListView listView, OnContactListChangedListener listener) {
-        super(activity, listView, new ChatContactInflater(activity), GroupManager.getInstance());
+    public ContactListAdapter(Activity activity, ListView listView, OnContactListChangedListener listener,
+                              GroupedContactAdapter.OnAccountClickListener onAccountClickListener) {
+        super(activity, listView, new ChatContactInflater(activity), GroupManager.getInstance(), onAccountClickListener);
         this.listener = listener;
         handler = new Handler();
         refreshLock = new Object();

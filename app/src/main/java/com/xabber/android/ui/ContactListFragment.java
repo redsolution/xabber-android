@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.xabber.android.data.Application;
@@ -32,12 +33,13 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
+import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.ContactListAdapter;
 import com.xabber.android.ui.adapter.ContactListAdapter.OnContactListChangedListener;
 import com.xabber.android.ui.adapter.ContactListState;
 import com.xabber.android.ui.adapter.GroupConfiguration;
+import com.xabber.android.ui.adapter.GroupedContactAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
@@ -47,7 +49,7 @@ import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
         OnContactChangedListener, OnChatChangedListener, OnItemClickListener,
-        OnContactListChangedListener, OnClickListener {
+        OnContactListChangedListener, OnClickListener, GroupedContactAdapter.OnAccountClickListener {
 
     private ContactListAdapter adapter;
 
@@ -91,7 +93,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         listView.setOnItemClickListener(this);
         listView.setItemsCanFocus(true);
         registerForContextMenu(listView);
-        adapter = new ContactListAdapter(getActivity(), listView, this);
+        adapter = new ContactListAdapter(getActivity(), listView, this, this);
         listView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
@@ -398,6 +400,14 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     public void rebuild() {
         accountActionButtonsAdapter.rebuild();
+    }
+
+    @Override
+    public void onAccountClick(View view, final String account) {
+        PopupMenu popup = new PopupMenu(getActivity(), view);
+        popup.inflate(R.menu.account);
+        ContextMenuHelper.setUpAccountMenu(getActivity(), adapter, account, popup.getMenu());
+        popup.show();
     }
 
     public interface OnContactClickListener {
