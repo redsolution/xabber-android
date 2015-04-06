@@ -15,7 +15,6 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
-import android.content.res.TypedArray;
 import android.view.View;
 
 import com.xabber.android.data.message.MessageManager;
@@ -30,25 +29,8 @@ import com.xabber.androiddev.R;
  */
 public class ChatContactInflater extends ClientContactInflater {
 
-    /**
-     * Name's normal color.
-     */
-    private final int textColorPrimary;
-
-    /**
-     * Status's normal color.
-     */
-    private final int textColorSecondary;
-
     public ChatContactInflater(Activity activity) {
         super(activity);
-        TypedArray typedArray;
-        typedArray = activity.getTheme().obtainStyledAttributes(
-                new int[]{android.R.attr.textColorPrimary,
-                        android.R.attr.textColorSecondary,});
-        textColorPrimary = typedArray.getColor(0, 0);
-        textColorSecondary = typedArray.getColor(1, 0);
-        typedArray.recycle();
     }
 
     @Override
@@ -58,34 +40,22 @@ public class ChatContactInflater extends ClientContactInflater {
 
     @Override
     String getStatusText(AbstractContact abstractContact) {
-        if (MessageManager.getInstance().hasActiveChat(
-                abstractContact.getAccount(), abstractContact.getUser()))
-            return MessageManager.getInstance().getLastText(
-                    abstractContact.getAccount(), abstractContact.getUser());
-        else
+        if (MessageManager.getInstance()
+                .hasActiveChat(abstractContact.getAccount(), abstractContact.getUser())) {
+            return MessageManager.getInstance()
+                    .getLastText(abstractContact.getAccount(), abstractContact.getUser());
+        } else {
             return super.getStatusText(abstractContact);
+        }
     }
 
     @Override
     public void getView(View view, AbstractContact abstractContact) {
         super.getView(view, abstractContact);
-        final ViewHolder contactViewHolder = (ViewHolder) view.getTag();
-        if (MessageManager.getInstance().hasActiveChat(
-                abstractContact.getAccount(), abstractContact.getUser())) {
-//            contactViewHolder.panel.setBackgroundResource(R.drawable.active_chat);
-            view.setBackgroundColor(activity.getResources()
-                    .getColor(R.color.grey_50));
-            contactViewHolder.name.setTextColor(activity.getResources()
-                    .getColor(android.R.color.primary_text_light));
-            contactViewHolder.status.setTextColor(activity.getResources()
-                    .getColor(android.R.color.secondary_text_light));
+        if (MessageManager.getInstance().hasActiveChat(abstractContact.getAccount(), abstractContact.getUser())) {
+            view.setBackgroundColor(activity.getResources().getColor(R.color.grey_50));
         } else {
-            view.setBackgroundColor(activity.getResources()
-                    .getColor(android.R.color.transparent));
-
-            contactViewHolder.panel.setBackgroundDrawable(null);
-            contactViewHolder.name.setTextColor(textColorPrimary);
-            contactViewHolder.status.setTextColor(textColorSecondary);
+            view.setBackgroundColor(activity.getResources().getColor(R.color.grey_300));
         }
     }
 
@@ -97,7 +67,6 @@ public class ChatContactInflater extends ClientContactInflater {
             super(view);
             panel = view.findViewById(R.id.panel);
         }
-
     }
 
 }
