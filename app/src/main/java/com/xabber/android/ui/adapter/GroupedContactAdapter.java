@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,8 +92,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
     private int[] accountColors;
     private final int[] accountSubgroupColors;
-    private final int accountGroupElevation;
-    private final int accountSubgroupElevation;
     private final int activeChatsColor;
     private final OnAccountClickListener onAccountClickListener;
 
@@ -109,9 +106,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         accountColors = resources.getIntArray(R.array.account_200);
         accountSubgroupColors = resources.getIntArray(R.array.account_50);
         activeChatsColor = resources.getColor(R.color.color_primary_light);
-
-        accountGroupElevation = resources.getDimensionPixelSize(R.dimen.account_group_elevation);
-        accountSubgroupElevation = resources.getDimensionPixelSize(R.dimen.account_subgroup_elevation);
 
         this.onAccountClickListener = onAccountClickListener;
     }
@@ -164,30 +158,22 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
                 viewHolder.groupOfflineIndicator.setImageLevel(configuration.getShowOfflineMode().ordinal());
 
-                int elevation;
                 int color;
-
 
                 viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
 
                 if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
                     color = activeChatsColor;
-                    elevation = accountGroupElevation;
                     viewHolder.name.setText(name);
                 } else {
                     viewHolder.name.setText(name + " (" + configuration.getOnline()
                             + "/" + configuration.getTotal() + ")");
 
                     color = accountSubgroupColors[level];
-                    elevation = accountSubgroupElevation;
                     viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
                 }
 
                 view.setBackgroundDrawable(new ColorDrawable(color));
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    view.setElevation(elevation);
-                }
 
                 return view;
             }
@@ -244,10 +230,6 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 }
 
                 viewHolder.offlineContactsIndicator.setImageLevel(showOfflineMode.ordinal());
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    view.setElevation(accountGroupElevation);
-                }
 
                 return view;
 

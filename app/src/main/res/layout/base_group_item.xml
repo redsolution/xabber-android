@@ -18,6 +18,7 @@
     android:layout_height="@dimen/expander_height"
     android:paddingRight="@dimen/active_chat_padding_right"
     android:paddingEnd="@dimen/active_chat_padding_right"
+    android:elevation="2dp"
     >
 
     <ImageView

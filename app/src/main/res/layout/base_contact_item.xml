@@ -18,7 +18,8 @@
     android:layout_height="@dimen/contact_list_item_height"
     android:paddingTop="@dimen/contact_list_item_padding_top"
     android:paddingBottom="@dimen/contact_list_item_padding_bottom"
-
+    android:elevation="1dp"
+    android:background="@color/grey_300"
     >
     <ImageView
         android:id="@+id/color"
