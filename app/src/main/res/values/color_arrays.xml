@@ -68,8 +68,7 @@
     </array>
 
 
-    <color name="color_primary_light">@color/red_100</color>
+    <color name="color_primary_light">@color/grey_200</color>
 
     <color name="account_disabled">@color/black_dividers</color>
-    <color name="group_expander">@color/blue_grey_100</color>
 </resources>

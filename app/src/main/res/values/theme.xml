@@ -13,7 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources>
-    <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
 
         <!--for text selection toolbar to be above usual toolbar -->
@@ -21,7 +21,7 @@
         <!--for text selection toolbar color -->
         <item name="actionModeBackground">@drawable/myapp_action_mode_background</item>
 
-        <item name="colorPrimary">@color/red_500</item>
-        <item name="colorPrimaryDark">@color/red_700</item>
+        <item name="colorPrimary">@color/grey_500</item>
+        <item name="colorPrimaryDark">@color/grey_700</item>
     </style>
 </resources>
