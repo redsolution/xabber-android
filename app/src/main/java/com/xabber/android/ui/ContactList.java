@@ -116,7 +116,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         }
 
         setContentView(R.layout.contact_list);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setLogo(R.drawable.ic_launcher);
+        setSupportActionBar(toolbar);
 
         setTitle(getString(R.string.production_title));
 
