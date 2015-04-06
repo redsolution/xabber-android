@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -218,16 +219,10 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 final int level = AccountManager.getInstance().getColorLevel(account);
                 view.setBackgroundDrawable(new ColorDrawable(accountColors[level]));
 
-                final String name = GroupManager.getInstance().getGroupName(account, configuration.getUser());
-
-                viewHolder.jid.setText(name + " (" + configuration.getOnline()
-                        + "/" + configuration.getTotal() + ")");
+                viewHolder.jid.setText(GroupManager.getInstance().getGroupName(account, configuration.getUser()));
+                viewHolder.contactCounter.setText(configuration.getOnline() + "/" + configuration.getTotal());
 
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-
-                viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-                viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
-
                 String statusText = accountItem.getStatusText().trim();
 
                 if (statusText.isEmpty()) {
@@ -235,6 +230,20 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 }
 
                 viewHolder.status.setText(statusText);
+
+                viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+                viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
+
+                ShowOfflineMode showOfflineMode = configuration.getShowOfflineMode();
+                if (showOfflineMode == ShowOfflineMode.normal) {
+                    if (SettingsManager.contactsShowOffline()) {
+                        showOfflineMode = ShowOfflineMode.always;
+                    } else {
+                        showOfflineMode = ShowOfflineMode.never;
+                    }
+                }
+
+                viewHolder.offlineContactsIndicator.setImageLevel(showOfflineMode.ordinal());
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     view.setElevation(accountGroupElevation);
@@ -455,14 +464,21 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     private static class AccountViewHolder {
         final TextView jid;
         final TextView status;
+        final TextView contactCounter;
+
         final ImageView statusIcon;
         final ImageView avatar;
+        final ImageView offlineContactsIndicator;
+
 
         public AccountViewHolder(View view) {
             jid = (TextView) view.findViewById(R.id.account_jid);
             status = (TextView) view.findViewById(R.id.account_status);
+            contactCounter = (TextView) view.findViewById(R.id.contact_counter);
+
             statusIcon = (ImageView) view.findViewById(R.id.account_status_icon);
             avatar = (ImageView) view.findViewById(R.id.avatar);
+            offlineContactsIndicator = (ImageView) view.findViewById(R.id.offline_contacts_indicator);
         }
     }
 
