@@ -39,7 +39,8 @@ import com.xabber.androiddev.R;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provide grouping implementation for the list of contacts.
@@ -245,8 +246,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * @param name
      * @return
      */
-    protected GroupConfiguration getGroupConfiguration(
-            AccountConfiguration accountConfiguration, String name) {
+    protected GroupConfiguration getGroupConfiguration(AccountConfiguration accountConfiguration, String name) {
         GroupConfiguration groupConfiguration = accountConfiguration.getGroupConfiguration(name);
         if (groupConfiguration != null) {
             return groupConfiguration;
@@ -264,8 +264,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * @param name
      * @return
      */
-    protected GroupConfiguration getGroupConfiguration(
-            TreeMap<String, GroupConfiguration> groups, String name) {
+    protected GroupConfiguration getGroupConfiguration(Map<String, GroupConfiguration> groups, String name) {
         GroupConfiguration groupConfiguration = groups.get(name);
         if (groupConfiguration != null) {
             return groupConfiguration;
@@ -288,8 +287,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * @param showGroups
      */
     protected void addContact(AbstractContact abstractContact, String group, boolean online,
-        TreeMap<String, AccountConfiguration> accounts, TreeMap<String, GroupConfiguration> groups,
-        ArrayList<AbstractContact> contacts,   boolean showAccounts, boolean showGroups) {
+        Map<String, AccountConfiguration> accounts, Map<String, GroupConfiguration> groups,
+        List<AbstractContact> contacts, boolean showAccounts, boolean showGroups) {
         if (showAccounts) {
             final String account = abstractContact.getAccount();
             final AccountConfiguration accountConfiguration;
@@ -341,9 +340,9 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * @return whether contact is visible.
      */
     protected boolean addContact(AbstractContact abstractContact,
-                                 boolean online, TreeMap<String, AccountConfiguration> accounts,
-                                 TreeMap<String, GroupConfiguration> groups,
-                                 ArrayList<AbstractContact> contacts, boolean showAccounts,
+                                 boolean online, Map<String, AccountConfiguration> accounts,
+                                 Map<String, GroupConfiguration> groups,
+                                 List<AbstractContact> contacts, boolean showAccounts,
                                  boolean showGroups, boolean showOffline) {
         boolean hasVisible = false;
         if (showAccounts) {

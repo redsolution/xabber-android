@@ -37,6 +37,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -138,30 +140,21 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
         final CommonState commonState = AccountManager.getInstance().getCommonState();
         final String selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
-        /**
-         * Accounts.
-         */
-        final TreeMap<String, AccountConfiguration> accounts = new TreeMap<>();
 
         /**
          * Groups.
          */
-        final TreeMap<String, GroupConfiguration> groups;
+        final Map<String, GroupConfiguration> groups;
 
         /**
          * Contacts.
          */
-        final ArrayList<AbstractContact> contacts;
+        final List<AbstractContact> contacts;
 
         /**
          * List of active chats.
          */
         final GroupConfiguration activeChats;
-
-        /**
-         * List of rooms and active chats grouped by users inside accounts.
-         */
-        final TreeMap<String, TreeMap<String, AbstractChat>> abstractChats = new TreeMap<>();
 
         /**
          * Whether there is at least one contact.
@@ -173,15 +166,22 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
          */
         boolean hasVisibleContacts = false;
 
+        final Map<String, AccountConfiguration> accounts = new TreeMap<>();
+
         for (String account : AccountManager.getInstance().getAccounts()) {
             accounts.put(account, null);
         }
+
+        /**
+         * List of rooms and active chats grouped by users inside accounts.
+         */
+        final Map<String, Map<String, AbstractChat>> abstractChats = new TreeMap<>();
 
         for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
             if ((abstractChat instanceof RoomChat || abstractChat.isActive())
                     && accounts.containsKey(abstractChat.getAccount())) {
                 final String account = abstractChat.getAccount();
-                TreeMap<String, AbstractChat> users = abstractChats.get(account);
+                Map<String, AbstractChat> users = abstractChats.get(account);
                 if (users == null) {
                     users = new TreeMap<>();
                     abstractChats.put(account, users);
@@ -223,7 +223,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 hasContacts = true;
                 final boolean online = rosterContact.getStatusMode().isOnline();
                 final String account = rosterContact.getAccount();
-                final TreeMap<String, AbstractChat> users = abstractChats.get(account);
+                final Map<String, AbstractChat> users = abstractChats.get(account);
                 final AbstractChat abstractChat;
                 if (users == null) {
                     abstractChat = null;
@@ -249,7 +249,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                     hasVisibleContacts = true;
                 }
             }
-            for (TreeMap<String, AbstractChat> users : abstractChats.values()) {
+            for (Map<String, AbstractChat> users : abstractChats.values()) {
                 for (AbstractChat abstractChat : users.values()) {
                     final AbstractContact abstractContact;
                     if (abstractChat instanceof RoomChat) {
@@ -333,36 +333,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 }
             }
         } else { // Search
-            final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
-
-            // Build structure.
-            for (RosterContact rosterContact : rosterContacts) {
-                if (!rosterContact.isEnabled()) {
-                    continue;
-                }
-                final String account = rosterContact.getAccount();
-                final TreeMap<String, AbstractChat> users = abstractChats.get(account);
-                if (users != null) {
-                    users.remove(rosterContact.getUser());
-                }
-                if (rosterContact.getName().toLowerCase(locale).contains(filterString)) {
-                    baseEntities.add(rosterContact);
-                }
-            }
-            for (TreeMap<String, AbstractChat> users : abstractChats.values()) {
-                for (AbstractChat abstractChat : users.values()) {
-                    final AbstractContact abstractContact;
-                    if (abstractChat instanceof RoomChat) {
-                        abstractContact = new RoomContact((RoomChat) abstractChat);
-                    } else {
-                        abstractContact = new ChatContact(abstractChat);
-                    }
-                    if (abstractContact.getName().toLowerCase(locale).contains(filterString)) {
-                        baseEntities.add(abstractContact);
-                    }
-                }
-            }
-            Collections.sort(baseEntities, comparator);
+            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             this.baseEntities.clear();
             this.baseEntities.addAll(baseEntities);
             hasVisibleContacts = baseEntities.size() > 0;
@@ -380,6 +351,42 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 handler.postDelayed(this, REFRESH_INTERVAL);
             }
         }
+    }
+
+    private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
+                                                        Comparator<AbstractContact> comparator,
+                                                        Map<String, Map<String, AbstractChat>> abstractChats) {
+        final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
+
+        // Build structure.
+        for (RosterContact rosterContact : rosterContacts) {
+            if (!rosterContact.isEnabled()) {
+                continue;
+            }
+            final String account = rosterContact.getAccount();
+            final Map<String, AbstractChat> users = abstractChats.get(account);
+            if (users != null) {
+                users.remove(rosterContact.getUser());
+            }
+            if (rosterContact.getName().toLowerCase(locale).contains(filterString)) {
+                baseEntities.add(rosterContact);
+            }
+        }
+        for (Map<String, AbstractChat> users : abstractChats.values()) {
+            for (AbstractChat abstractChat : users.values()) {
+                final AbstractContact abstractContact;
+                if (abstractChat instanceof RoomChat) {
+                    abstractContact = new RoomContact((RoomChat) abstractChat);
+                } else {
+                    abstractContact = new ChatContact(abstractChat);
+                }
+                if (abstractContact.getName().toLowerCase(locale).contains(filterString)) {
+                    baseEntities.add(abstractContact);
+                }
+            }
+        }
+        Collections.sort(baseEntities, comparator);
+        return baseEntities;
     }
 
     @Override

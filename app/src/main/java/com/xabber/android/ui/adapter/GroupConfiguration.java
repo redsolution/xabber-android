@@ -63,7 +63,7 @@ public class GroupConfiguration extends BaseEntity {
     public GroupConfiguration(String account, String group,
                               GroupStateProvider groupStateProvider) {
         super(account, group);
-        abstractContacts = new ArrayList<AbstractContact>();
+        abstractContacts = new ArrayList<>();
         expanded = groupStateProvider.isExpanded(account, group);
         showOfflineMode = groupStateProvider.getShowOfflineMode(account, group);
         empty = true;
@@ -105,8 +105,9 @@ public class GroupConfiguration extends BaseEntity {
      */
     public void increment(boolean online) {
         this.total++;
-        if (online)
+        if (online) {
             this.online++;
+        }
     }
 
     /**
@@ -157,31 +158,41 @@ public class GroupConfiguration extends BaseEntity {
         int result = account.compareTo(another.getAccount());
         if (result != 0) {
             if (user.compareTo(another.getUser()) != 0) {
-                if (user == GroupManager.ACTIVE_CHATS)
+                if (user.equals(GroupManager.ACTIVE_CHATS)) {
                     return -1;
-                if (anotherUser == GroupManager.ACTIVE_CHATS)
+                }
+                if (anotherUser.equals(GroupManager.ACTIVE_CHATS)) {
                     return 1;
+                }
             }
             return result;
         }
         result = user.compareTo(anotherUser);
         if (result != 0) {
-            if (user == GroupManager.ACTIVE_CHATS)
+            if (user.equals(GroupManager.ACTIVE_CHATS)) {
                 return -1;
-            if (anotherUser == GroupManager.ACTIVE_CHATS)
+            }
+            if (anotherUser.equals(GroupManager.ACTIVE_CHATS)) {
                 return 1;
-            if (user == GroupManager.IS_ACCOUNT)
+            }
+            if (user.equals(GroupManager.IS_ACCOUNT)) {
                 return -1;
-            if (anotherUser == GroupManager.IS_ACCOUNT)
+            }
+            if (anotherUser.equals(GroupManager.IS_ACCOUNT)) {
                 return 1;
-            if (user == GroupManager.NO_GROUP)
+            }
+            if (user.equals(GroupManager.NO_GROUP)) {
                 return -1;
-            if (anotherUser == GroupManager.NO_GROUP)
+            }
+            if (anotherUser.equals(GroupManager.NO_GROUP)) {
                 return 1;
-            if (user == GroupManager.IS_ROOM)
+            }
+            if (user.equals(GroupManager.IS_ROOM)) {
                 return -1;
-            if (anotherUser == GroupManager.IS_ROOM)
+            }
+            if (anotherUser.equals(GroupManager.IS_ROOM)) {
                 return 1;
+            }
             return result;
         }
         return 0;
