@@ -55,7 +55,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      */
     static final Collection<Group> NO_GROUP_LIST;
 
-    static final int TYPE_COUNT = 4;
+    static final int TYPE_COUNT = 5;
 
     /**
      * View type used for contact items.
@@ -68,6 +68,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
     static final int TYPE_GROUP = 1;
     static final int TYPE_ACCOUNT = 2;
     static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
+    static final int TYPE_ACCOUNT_BOTTOM_SEPARATOR = 4;
 
     static {
         Collection<Group> groups = new ArrayList<>(1);
@@ -126,6 +127,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             return TYPE_GROUP;
         } else if (object instanceof ContactListAdapter.AccountTopSeparator) {
             return TYPE_ACCOUNT_TOP_SEPARATOR;
+        } else if (object instanceof ContactListAdapter.AccountBottomSeparator) {
+            return TYPE_ACCOUNT_BOTTOM_SEPARATOR;
         } else {
             throw new IllegalStateException();
         }
@@ -243,6 +246,23 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 } else {
                     view = convertView;
                 }
+
+                return view;
+            }
+
+            case TYPE_ACCOUNT_BOTTOM_SEPARATOR: {
+                final View view;
+                if (convertView == null) {
+                    view = layoutInflater.inflate(R.layout.account_group_item_bottom_separator, parent, false);
+                } else {
+                    view = convertView;
+                }
+
+                final ContactListAdapter.AccountBottomSeparator accountBottomSeparator = (ContactListAdapter.AccountBottomSeparator) getItem(position);
+                final int level = AccountManager.getInstance().getColorLevel(accountBottomSeparator.getAccount());
+
+                view.findViewById(R.id.bottom_layer).setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+                view.findViewById(R.id.top_layer).setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
 
                 return view;
             }

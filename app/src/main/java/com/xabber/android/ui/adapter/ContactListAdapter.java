@@ -308,6 +308,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                         }
 
                         baseEntities.add(rosterAccount);
+
                         if (showGroups) {
                             if (rosterAccount.isExpanded()) {
                                 for (GroupConfiguration rosterConfiguration : rosterAccount
@@ -322,6 +323,10 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                         } else {
                             rosterAccount.sortAbstractContacts(comparator);
                             baseEntities.addAll(rosterAccount.getAbstractContacts());
+                        }
+
+                        if (!rosterAccount.isExpanded()) {
+                            baseEntities.add(new AccountBottomSeparator(rosterAccount.getAccount(), null));
                         }
                     }
                 } else {
@@ -415,6 +420,12 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
 
     public static class AccountTopSeparator extends BaseEntity {
         public AccountTopSeparator(String account, String user) {
+            super(account, user);
+        }
+    }
+
+    public static class AccountBottomSeparator extends BaseEntity {
+        public AccountBottomSeparator(String account, String user) {
             super(account, user);
         }
     }
