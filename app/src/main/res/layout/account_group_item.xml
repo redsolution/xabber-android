@@ -97,7 +97,7 @@
                         android:id="@+id/offline_contacts_indicator"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/ic_show_offline"
+                        android:src="@drawable/ic_show_offline"
                         android:alpha="0.2"
                         />
                 </FrameLayout>
