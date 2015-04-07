@@ -13,7 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
@@ -112,6 +112,13 @@
             />
     </LinearLayout>
 
+<View
+    android:layout_width="wrap_content"
+    android:layout_height="1px"
+    android:background="@color/grey_400"
+    android:layout_alignParentBottom="true"
+    />
+
 <ImageView
     android:id="@+id/offline_shadow"
     android:layout_width="match_parent"
@@ -121,4 +128,4 @@
     android:visibility="gone"
     />
 
-</FrameLayout>
+</RelativeLayout>
