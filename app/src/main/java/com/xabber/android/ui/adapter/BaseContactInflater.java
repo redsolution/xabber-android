@@ -16,10 +16,6 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Shader.TileMode;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
@@ -45,12 +40,6 @@ public abstract class BaseContactInflater {
 
     final LayoutInflater layoutInflater;
 
-
-    /**
-     * Repeated shadow for drawable.
-     */
-    final BitmapDrawable shadowDrawable;
-
     /**
      * Managed adapter.
      */
@@ -60,10 +49,6 @@ public abstract class BaseContactInflater {
     public BaseContactInflater(Activity activity) {
         this.activity = activity;
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        Bitmap bitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.contact_shadow);
-        shadowDrawable = new BitmapDrawable(activity.getResources(), bitmap);
-        shadowDrawable.setTileModeXY(TileMode.REPEAT, TileMode.REPEAT);
 
         accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
     }
@@ -114,9 +99,9 @@ public abstract class BaseContactInflater {
     public void getView(View view, AbstractContact abstractContact) {
         final ViewHolder viewHolder = (ViewHolder) view.getTag();
         if (abstractContact.isConnected()) {
-            viewHolder.shadow.setVisibility(View.GONE);
+            viewHolder.offlineShadow.setVisibility(View.GONE);
         } else {
-            viewHolder.shadow.setVisibility(View.VISIBLE);
+            viewHolder.offlineShadow.setVisibility(View.VISIBLE);
         }
 
         int colorLevel = abstractContact.getColorLevel();
@@ -125,12 +110,8 @@ public abstract class BaseContactInflater {
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatar.setVisibility(View.VISIBLE);
             viewHolder.avatar.setImageDrawable(abstractContact.getAvatarForContactList());
-            ((RelativeLayout.LayoutParams) viewHolder.panel.getLayoutParams())
-                    .addRule(RelativeLayout.RIGHT_OF, R.id.avatar);
         } else {
             viewHolder.avatar.setVisibility(View.GONE);
-            ((RelativeLayout.LayoutParams) viewHolder.panel.getLayoutParams())
-                    .addRule(RelativeLayout.RIGHT_OF, R.id.color);
         }
 
         viewHolder.name.setText(abstractContact.getName());
@@ -147,8 +128,6 @@ public abstract class BaseContactInflater {
             viewHolder.status.setText(statusText);
             viewHolder.status.setVisibility(View.VISIBLE);
         }
-
-        viewHolder.shadow.setBackgroundDrawable(shadowDrawable);
     }
 
     /**
@@ -158,20 +137,17 @@ public abstract class BaseContactInflater {
 
         final ImageView color;
         final ImageView avatar;
-        final RelativeLayout panel;
         final TextView name;
         final TextView status;
-        final ImageView shadow;
+        final ImageView offlineShadow;
 
         public ViewHolder(View view) {
             color = (ImageView) view.findViewById(R.id.color);
             avatar = (ImageView) view.findViewById(R.id.avatar);
-            panel = (RelativeLayout) view.findViewById(R.id.panel);
             name = (TextView) view.findViewById(R.id.name);
             status = (TextView) view.findViewById(R.id.status);
-            shadow = (ImageView) view.findViewById(R.id.shadow);
+            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         }
-
     }
 
 }

@@ -12,97 +12,113 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<RelativeLayout
+
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
-    android:paddingTop="@dimen/contact_list_item_padding_top"
-    android:paddingBottom="@dimen/contact_list_item_padding_bottom"
     android:elevation="1dp"
     android:background="@color/grey_300"
-    >
-    <ImageView
-        android:id="@+id/color"
+>
 
-        android:layout_width="4dp"
-        android:layout_height="@dimen/avatar_size_toolbar"
-        android:layout_marginLeft="2dp"
-        android:layout_marginStart="2dp"
-
-        android:layout_marginRight="2dp"
-        android:layout_marginEnd="2dp"
-        android:src="@color/green_500"
-        />
-
-    <ImageView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size_toolbar"
-        android:layout_height="@dimen/avatar_size_toolbar"
-        android:layout_toRightOf="@id/color"
-        android:src="@drawable/ic_avatar_1"
-        />
-
-    <RelativeLayout
-        android:id="@+id/panel"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="@dimen/active_chat_padding_left"
-        android:paddingTop="@dimen/active_chat_padding_top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingRight="@dimen/active_chat_padding_right"
-        android:paddingBottom="@dimen/active_chat_padding_bottom"
-        android:layout_toRightOf="@id/avatar"
         >
         <ImageView
-            android:id="@+id/client_software"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:paddingRight="@dimen/client_software_margin_left"
-            android:src="@drawable/ic_client"
-            android:alpha="0.05"
+            android:id="@+id/color"
+
+            android:layout_width="4dp"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
+
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:src="@color/green_500"
             />
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/contact_name_height_show_status"
-            android:layout_marginRight="@dimen/status_icon_width"
-            android:gravity="bottom"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:text="name"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textStyle="bold"
+
+        <ImageView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size_toolbar"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:layout_toRightOf="@id/color"
+            android:src="@drawable/ic_avatar_1"
             />
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/contact_name_height_show_status"
-            android:layout_marginRight="@dimen/status_icon_width"
-            android:gravity="top"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:text="status"
-            android:visibility="visible"
-            android:layout_below="@id/name"
-            android:textColor="?android:attr/textColorSecondary"
-            />
+
+        <RelativeLayout
+            android:id="@+id/panel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/active_chat_padding_left"
+            >
+            <ImageView
+                android:id="@+id/client_software"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
+                android:src="@drawable/ic_client"
+                android:alpha="0.05"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                >
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:text="name"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:text="status"
+                    android:visibility="visible"
+                    android:textColor="?android:attr/textColorSecondary"
+                    />
+
+            </LinearLayout>
+        </RelativeLayout>
+
         <ImageView
             android:id="@+id/status_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:src="@drawable/ic_status"
             />
-    </RelativeLayout>
-	<ImageView
-	    android:id="@+id/shadow"
-	    android:layout_width="match_parent"
-	    android:layout_height="@dimen/contact_list_item_height"
-	    android:background="@drawable/contact_shadow"
-        android:visibility="gone"
-	    />
-</RelativeLayout>
+    </LinearLayout>
+
+<ImageView
+    android:id="@+id/offline_shadow"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:src="@color/black"
+    android:alpha="0.7"
+    android:visibility="gone"
+    />
+
+</FrameLayout>
