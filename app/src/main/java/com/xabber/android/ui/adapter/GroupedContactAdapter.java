@@ -55,7 +55,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      */
     static final Collection<Group> NO_GROUP_LIST;
 
-    static final int TYPE_COUNT = 3;
+    static final int TYPE_COUNT = 4;
 
     /**
      * View type used for contact items.
@@ -66,9 +66,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
      * View type used for groups and accounts expanders.
      */
     static final int TYPE_GROUP = 1;
-
-
     static final int TYPE_ACCOUNT = 2;
+    static final int TYPE_ACCOUNT_TOP_SEPARATOR = 3;
 
     static {
         Collection<Group> groups = new ArrayList<>(1);
@@ -125,6 +124,8 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             return TYPE_ACCOUNT;
         } else if (object instanceof GroupConfiguration) {
             return TYPE_GROUP;
+        } else if (object instanceof ContactListAdapter.AccountTopSeparator) {
+            return TYPE_ACCOUNT_TOP_SEPARATOR;
         } else {
             throw new IllegalStateException();
         }
@@ -179,7 +180,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 return view;
             }
 
-            case TYPE_ACCOUNT:
+            case TYPE_ACCOUNT: {
                 final View view;
                 final AccountViewHolder viewHolder;
                 if (convertView == null) {
@@ -233,6 +234,18 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 viewHolder.offlineContactsIndicator.setImageLevel(showOfflineMode.ordinal());
 
                 return view;
+            }
+
+            case TYPE_ACCOUNT_TOP_SEPARATOR: {
+                final View view;
+                if (convertView == null) {
+                    view = layoutInflater.inflate(R.layout.account_group_item_top_separator, parent, false);
+                } else {
+                    view = convertView;
+                }
+
+                return view;
+            }
 
             default:
                 throw new IllegalStateException();

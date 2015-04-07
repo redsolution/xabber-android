@@ -16,12 +16,12 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.view.View;
 import android.widget.ListView;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -299,7 +299,14 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                     }
                 }
                 if (showAccounts) {
+                    boolean isFirst = baseEntities.isEmpty();
                     for (AccountConfiguration rosterAccount : accounts.values()) {
+                        if (isFirst) {
+                            isFirst = false;
+                        } else {
+                            baseEntities.add(new AccountTopSeparator(null, null));
+                        }
+
                         baseEntities.add(rosterAccount);
                         if (showGroups) {
                             if (rosterAccount.isExpanded()) {
@@ -406,4 +413,9 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
 
     }
 
+    public static class AccountTopSeparator extends BaseEntity {
+        public AccountTopSeparator(String account, String user) {
+            super(account, user);
+        }
+    }
 }
