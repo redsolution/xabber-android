@@ -16,8 +16,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/expander_height"
-    android:paddingRight="@dimen/active_chat_padding_right"
-    android:paddingEnd="@dimen/active_chat_padding_right"
     android:elevation="2dp"
     >
 
@@ -41,6 +39,9 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:alpha="0.2"
+        android:paddingRight="@dimen/active_chat_padding_right"
+        android:paddingEnd="@dimen/active_chat_padding_right"
+
         />
 
     <TextView
@@ -55,6 +56,13 @@
         android:layout_toEndOf="@id/indicator"
         android:layout_toLeftOf="@id/group_offline_indicator"
         android:layout_toStartOf="@id/group_offline_indicator"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/grey_400"
+        android:layout_alignParentBottom="true"
         />
 
 </RelativeLayout>

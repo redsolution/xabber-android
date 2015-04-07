@@ -113,7 +113,7 @@
     </LinearLayout>
 
 <View
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="1px"
     android:background="@color/grey_400"
     android:layout_alignParentBottom="true"
