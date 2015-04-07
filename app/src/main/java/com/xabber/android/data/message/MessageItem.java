@@ -18,9 +18,9 @@ import java.util.Date;
 
 import android.text.Spannable;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.util.Linkify;
 
-import com.xabber.android.utils.Emoticons;
 import com.xabber.xmpp.uri.XMPPUri;
 
 /**
@@ -151,7 +151,7 @@ public class MessageItem implements Comparable<MessageItem> {
 
     public Spannable getSpannable() {
         if (spannable == null) {
-            spannable = Emoticons.newSpannable(Html.fromHtml(text));
+            spannable = new SpannableString(Html.fromHtml(text));
             Linkify.addLinks(this.spannable, Linkify.ALL);
             XMPPUri.addLinks(this.spannable);
         }

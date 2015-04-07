@@ -14,11 +14,6 @@
  */
 package com.xabber.android.data;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -39,8 +34,9 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
-import com.xabber.android.utils.Emoticons;
 import com.xabber.androiddev.R;
+
+import java.util.Comparator;
 
 /**
  * Manage operations with common settings.
@@ -607,20 +603,6 @@ public class SettingsManager implements OnInitializedListener,
         else if (Application.getInstance()
                 .getString(R.string.interface_theme_normal_value).equals(value))
             return InterfaceTheme.normal;
-        else
-            throw new IllegalStateException();
-    }
-
-    public static Map<Pattern, Integer> interfaceSmiles() {
-        String value = getString(R.string.interface_smiles_key,
-                R.string.interface_smiles_default);
-        if (Application.getInstance()
-                .getString(R.string.interface_smiles_none_value).equals(value))
-            return Collections.unmodifiableMap(Emoticons.NONE_EMOTICONS);
-        else if (Application.getInstance()
-                .getString(R.string.interface_smiles_android_value)
-                .equals(value))
-            return Collections.unmodifiableMap(Emoticons.ANDROID_EMOTICONS);
         else
             throw new IllegalStateException();
     }
