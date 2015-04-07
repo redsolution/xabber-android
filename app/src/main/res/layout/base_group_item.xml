@@ -65,4 +65,6 @@
         android:layout_alignParentBottom="true"
         />
 
+    <include layout="@layout/offline_shadow" />
+
 </RelativeLayout>

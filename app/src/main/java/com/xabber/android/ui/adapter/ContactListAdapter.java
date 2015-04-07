@@ -325,7 +325,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                             baseEntities.addAll(rosterAccount.getAbstractContacts());
                         }
 
-                        if (!rosterAccount.isExpanded()) {
+                        if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
                             baseEntities.add(new AccountBottomSeparator(rosterAccount.getAccount(), null));
                         }
                     }

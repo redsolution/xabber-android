@@ -18,7 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:background="@color/green_200"
-    android:elevation="3dp"
+    android:elevation="2.5dp"
     >
 
     <LinearLayout
@@ -143,5 +143,7 @@
         android:background="@color/grey_500"
         android:layout_alignParentBottom="true"
         />
+
+    <include layout="@layout/offline_shadow" />
 
 </RelativeLayout>

@@ -119,13 +119,6 @@
     android:layout_alignParentBottom="true"
     />
 
-<ImageView
-    android:id="@+id/offline_shadow"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:src="@color/black"
-    android:alpha="0.7"
-    android:visibility="gone"
-    />
+    <include layout="@layout/offline_shadow" />
 
 </RelativeLayout>

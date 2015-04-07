@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
@@ -178,6 +179,14 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                     viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
                 }
 
+                StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
+
+                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+                    viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.offlineShadow.setVisibility(View.GONE);
+                }
+
                 view.setBackgroundDrawable(new ColorDrawable(color));
 
                 return view;
@@ -236,6 +245,14 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
                 viewHolder.offlineContactsIndicator.setImageLevel(showOfflineMode.ordinal());
 
+                StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
+
+                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+                    viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.offlineShadow.setVisibility(View.GONE);
+                }
+
                 return view;
             }
 
@@ -261,8 +278,24 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
                 final ContactListAdapter.AccountBottomSeparator accountBottomSeparator = (ContactListAdapter.AccountBottomSeparator) getItem(position);
                 final int level = AccountManager.getInstance().getColorLevel(accountBottomSeparator.getAccount());
 
-                view.findViewById(R.id.bottom_layer).setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
-                view.findViewById(R.id.top_layer).setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+                View bottomLayer = view.findViewById(R.id.bottom_layer);
+                View topLayer = view.findViewById(R.id.top_layer);
+
+                bottomLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+                topLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
+
+                StatusMode statusMode = AccountManager.getInstance().getAccount(accountBottomSeparator.getAccount()).getDisplayStatusMode();
+
+                View offlineShadowBottom = view.findViewById(R.id.offline_shadow_top);
+                View offlineShadowTop = view.findViewById(R.id.offline_shadow_bottom);
+
+                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+                    offlineShadowBottom.setVisibility(View.VISIBLE);
+                    offlineShadowTop.setVisibility(View.VISIBLE);
+                } else {
+                    offlineShadowBottom.setVisibility(View.GONE);
+                    offlineShadowTop.setVisibility(View.GONE);
+                }
 
                 return view;
             }
@@ -467,11 +500,13 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         final ImageView indicator;
         final TextView name;
         final ImageView groupOfflineIndicator;
+        final ImageView offlineShadow;
 
         public GroupViewHolder(View view) {
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
+            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         }
     }
 
@@ -483,6 +518,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
         final ImageView statusIcon;
         final ImageView avatar;
         final ImageView offlineContactsIndicator;
+        final ImageView offlineShadow;
 
 
         public AccountViewHolder(View view) {
@@ -493,6 +529,7 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
             statusIcon = (ImageView) view.findViewById(R.id.account_status_icon);
             avatar = (ImageView) view.findViewById(R.id.avatar);
             offlineContactsIndicator = (ImageView) view.findViewById(R.id.offline_contacts_indicator);
+            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         }
     }
 

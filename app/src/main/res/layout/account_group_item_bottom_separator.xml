@@ -25,6 +25,10 @@
             android:layout_alignParentBottom="true"
             />
 
+        <include layout="@layout/offline_shadow"
+            android:id="@+id/offline_shadow_top"
+            />
+
     </RelativeLayout>
 
     <View
@@ -32,6 +36,10 @@
         android:layout_height="1px"
         android:background="@color/grey_400"
         android:layout_alignParentBottom="true"
+        />
+
+    <include layout="@layout/offline_shadow"
+        android:id="@+id/offline_shadow_bottom"
         />
 
 </RelativeLayout>
