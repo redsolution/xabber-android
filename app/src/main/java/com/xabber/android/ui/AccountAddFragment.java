@@ -18,6 +18,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountType;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.OrbotHelper;
+import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.androiddev.R;
 
 public class AccountAddFragment extends Fragment implements View.OnClickListener {
@@ -100,6 +101,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         }
 
         getActivity().setResult(Activity.RESULT_OK, AccountAdd.createAuthenticatorResult(account));
+        startActivity(AccountEditor.createIntent(getActivity(), account));
         getActivity().finish();
     }
 
