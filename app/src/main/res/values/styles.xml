@@ -109,7 +109,7 @@
 
     <dimen name="contact_list_item_padding_top">2dip</dimen>
     <dimen name="contact_list_item_padding_bottom">2dip</dimen>
-    <dimen name="contact_list_item_height">56dip</dimen>
+    <dimen name="contact_list_item_height">52dip</dimen>
     <!-- = avatar_size + contact_list_item_padding_top + contact_list_item_padding_bottom -->
 
     <dimen name="contact_list_status_mode_width">44dip</dimen>
