@@ -16,6 +16,8 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 
 import com.xabber.android.data.SettingsManager;
@@ -47,8 +49,7 @@ import java.util.TreeMap;
  *
  * @author alexander.ivanov
  */
-public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflater, GroupManager>
-        implements Runnable {
+public class ContactListAdapter extends GroupedContactAdapter implements Runnable, Filterable {
 
     /**
      * Number of milliseconds between lazy refreshes.
@@ -80,11 +81,21 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
      */
     private Date nextRefresh;
 
+    /**
+     * Contact filter.
+     */
+    ContactFilter contactFilter;
+
+    /**
+     * Filter string. Can be <code>null</code> if filter is disabled.
+     */
+    String filterString;
+
     private final OnContactListChangedListener listener;
 
-    public ContactListAdapter(Activity activity, ListView listView, OnContactListChangedListener listener,
+    public ContactListAdapter(Activity activity, OnContactListChangedListener listener,
                               GroupedContactAdapter.OnAccountClickListener onAccountClickListener) {
-        super(activity, listView, new ChatContactInflater(activity), GroupManager.getInstance(), onAccountClickListener);
+        super(activity, onAccountClickListener);
         this.listener = listener;
         handler = new Handler();
         refreshLock = new Object();
@@ -197,7 +208,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 contacts = null;
                 for (Entry<String, AccountConfiguration> entry : accounts.entrySet()) {
                     entry.setValue(new AccountConfiguration(entry.getKey(),
-                            GroupManager.IS_ACCOUNT, groupStateProvider));
+                            GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
                 }
             } else {
                 if (showGroups) {
@@ -210,7 +221,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
             }
             if (showActiveChats) {
                 activeChats = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                        GroupManager.ACTIVE_CHATS, groupStateProvider);
+                        GroupManager.ACTIVE_CHATS, GroupManager.getInstance());
             } else {
                 activeChats = null;
             }
@@ -428,5 +439,33 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
         public AccountBottomSeparator(String account, String user) {
             super(account, user);
         }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (contactFilter == null) {
+            contactFilter = new ContactFilter();
+        }
+        return contactFilter;
+    }
+
+    private class ContactFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            return null;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+            if (constraint == null || constraint.length() == 0) {
+                filterString = null;
+            } else {
+                filterString = constraint.toString().toLowerCase(locale);
+            }
+            onChange();
+        }
+
     }
 }

@@ -93,7 +93,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         listView.setOnItemClickListener(this);
         listView.setItemsCanFocus(true);
         registerForContextMenu(listView);
-        adapter = new ContactListAdapter(getActivity(), listView, this, this);
+        adapter = new ContactListAdapter(getActivity(), this, this);
         listView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
