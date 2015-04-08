@@ -14,14 +14,12 @@
  */
 package com.xabber.android.ui;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -39,8 +37,6 @@ import com.xabber.android.ui.helper.OrbotHelper;
 import com.xabber.androiddev.R;
 
 public class AccountAdd extends ManagedActivity implements View.OnClickListener {
-
-    private static final int ORBOT_DIALOG_ID = 9050;
 
     private CheckBox storePasswordView;
     private CheckBox useOrbotView;
@@ -98,7 +94,7 @@ public class AccountAdd extends ManagedActivity implements View.OnClickListener 
 
     private void addAccount() {
         if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
-            showDialog(ORBOT_DIALOG_ID);
+            OrbotInstallerDialogBuilder.show(this);
             return;
         }
 
@@ -126,14 +122,6 @@ public class AccountAdd extends ManagedActivity implements View.OnClickListener 
         }
         setResult(RESULT_OK, createAuthenticatorResult(account));
         finish();
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        if (id == ORBOT_DIALOG_ID) {
-            return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID).create();
-        }
-        return super.onCreateDialog(id);
     }
 
     public static Intent createIntent(Context context) {

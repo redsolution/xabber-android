@@ -14,7 +14,6 @@
  */
 package com.xabber.android.ui.preferences;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,8 +39,6 @@ public class AccountEditor extends ManagedActivity implements
     private static final String SAVED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.TOKEN";
 
     public static final String INVALIDATED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.INVALIDATED";
-
-    private static final int ORBOT_DIALOG_ID = 9050;
 
     private String account;
     private AccountItem accountItem;
@@ -122,14 +119,6 @@ public class AccountEditor extends ManagedActivity implements
         return false;
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        if (id == ORBOT_DIALOG_ID) {
-            return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID).create();
-        }
-        return super.onCreateDialog(id);
-    }
-
     private static String getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
@@ -161,7 +150,7 @@ public class AccountEditor extends ManagedActivity implements
 
     @Override
     public void showOrbotDialog() {
-        showDialog(ORBOT_DIALOG_ID);
+        OrbotInstallerDialogBuilder.show(this);
     }
 
     @Override
