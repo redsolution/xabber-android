@@ -18,30 +18,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountType;
 import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.android.ui.helper.OrbotHelper;
 import com.xabber.androiddev.R;
 
-public class AccountAdd extends ManagedActivity implements View.OnClickListener {
-
-    private CheckBox storePasswordView;
-    private CheckBox useOrbotView;
-    private CheckBox createAccount;
-    private AccountType accountType;
+public class AccountAdd extends ManagedActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,84 +36,43 @@ public class AccountAdd extends ManagedActivity implements View.OnClickListener 
 
         setContentView(R.layout.account_add);
 
-        accountType = AccountManager.getInstance().getAccountTypes().get(0);
-
-        storePasswordView = (CheckBox) findViewById(R.id.store_password);
-        useOrbotView = (CheckBox) findViewById(R.id.use_orbot);
-        createAccount = (CheckBox) findViewById(R.id.register_account);
-
-        findViewById(R.id.ok).setOnClickListener(this);
-        createAccount.setOnClickListener(this);
-        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(findViewById(R.id.ok)
-                .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.container, AccountAddFragment.newInstance()).commit();
+        }
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        findViewById(R.id.auth_panel).setVisibility(View.VISIBLE);
-        ((TextView) findViewById(R.id.account_user_name)).setHint(accountType.getHint());
-        ((TextView) findViewById(R.id.account_help)).setText(accountType.getHelp());
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getSupportActionBar().setTitle(null);
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ok:
-                addAccount();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.add_account, menu);
+        menu.findItem(R.id.action_add_account).setIcon(null);
 
-                break;
-
-            case R.id.register_account:
-                LinearLayout passwordConfirmView = (LinearLayout) findViewById(R.id.confirm_password_layout);
-                if(createAccount.isChecked()) {
-                    passwordConfirmView.setVisibility(View.VISIBLE);
-                }
-                else {
-                    passwordConfirmView.setVisibility(View.GONE);
-                }
-            default:
-                break;
-        }
+        return true;
     }
 
-    private void addAccount() {
-        if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
-            OrbotInstallerDialogBuilder.show(this);
-            return;
-        }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_account:
+                ((AccountAddFragment)getSupportFragmentManager().findFragmentById(R.id.container)).addAccount();
 
-        EditText userView = (EditText) findViewById(R.id.account_user_name);
-        EditText passwordView = (EditText) findViewById(R.id.account_password);
-        EditText passwordConfirmView = (EditText) findViewById(R.id.confirm_password);
-        if(createAccount.isChecked() &&
-           !passwordView.getText().toString().contentEquals(passwordConfirmView.getText().toString())) {
-            Toast.makeText(this, getString(R.string.CONFIRM_PASSWORD),
-                    Toast.LENGTH_LONG).show();
-            return;
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        String account;
-        try {
-            account = AccountManager.getInstance().addAccount(
-                    userView.getText().toString(),
-                    passwordView.getText().toString(), accountType,
-                    false,
-                    storePasswordView.isChecked(),
-                    useOrbotView.isChecked(),
-                    createAccount.isChecked());
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-            return;
-        }
-        setResult(RESULT_OK, createAuthenticatorResult(account));
-        finish();
     }
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountAdd.class);
     }
 
-    private static Intent createAuthenticatorResult(String account) {
+    public static Intent createAuthenticatorResult(String account) {
         return new AccountIntentBuilder(null, null).setAccount(account).build();
     }
 }
