@@ -118,6 +118,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         setContentView(R.layout.contact_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setLogo(R.drawable.ic_xabber_logo);
+        toolbar.setOnClickListener(this);
         setSupportActionBar(toolbar);
 
         setTitle(getString(R.string.production_title));
@@ -432,7 +433,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case android.R.id.title:
+            case R.id.toolbar_default:
                 getContactListFragment().scrollUp();
                 break;
         }
