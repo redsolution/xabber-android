@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.os.Handler;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ListView;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -94,8 +93,8 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
     private final OnContactListChangedListener listener;
 
     public ContactListAdapter(Activity activity, OnContactListChangedListener listener,
-                              GroupedContactAdapter.OnAccountClickListener onAccountClickListener) {
-        super(activity, onAccountClickListener);
+                              OnClickListener onClickListener) {
+        super(activity, onClickListener);
         this.listener = listener;
         handler = new Handler();
         refreshLock = new Object();

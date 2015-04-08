@@ -8,7 +8,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -49,7 +48,7 @@ import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
         OnContactChangedListener, OnChatChangedListener, OnItemClickListener,
-        OnContactListChangedListener, OnClickListener, GroupedContactAdapter.OnAccountClickListener {
+        OnContactListChangedListener, View.OnClickListener, GroupedContactAdapter.OnClickListener {
 
     private ContactListAdapter adapter;
 
@@ -187,7 +186,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         final int text;
         final int button;
         final ContactListState state;
-        final OnClickListener listener;
+        final View.OnClickListener listener;
         if (isFilterEnabled) {
             if (commonState == CommonState.online) {
                 state = ContactListState.online;
@@ -203,7 +202,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             state = ContactListState.online;
             text = R.string.application_state_no_online;
             button = R.string.application_action_no_online;
-            listener = new OnClickListener() {
+            listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     SettingsManager.setContactsShowOffline(true);
@@ -214,7 +213,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             state = ContactListState.online;
             text = R.string.application_state_no_contacts;
             button = R.string.application_action_no_contacts;
-            listener = new OnClickListener() {
+            listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     startActivity(ContactAdd.createIntent(getActivity()));
@@ -234,7 +233,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             state = ContactListState.offline;
             text = R.string.application_state_waiting;
             button = R.string.application_action_waiting;
-            listener = new OnClickListener() {
+            listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     ConnectionManager.getInstance().updateConnections(true);
@@ -244,7 +243,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             state = ContactListState.offline;
             text = R.string.application_state_offline;
             button = R.string.application_action_offline;
-            listener = new OnClickListener() {
+            listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     AccountManager.getInstance().setStatus(
@@ -255,7 +254,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             state = ContactListState.offline;
             text = R.string.application_state_disabled;
             button = R.string.application_action_disabled;
-            listener = new OnClickListener() {
+            listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     startActivity(AccountList.createIntent(getActivity()));
@@ -265,7 +264,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             state = ContactListState.offline;
             text = R.string.application_state_empty;
             button = R.string.application_action_empty;
-            listener = new OnClickListener() {
+            listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     startActivity(AccountAdd.createIntent(getActivity()));
@@ -403,7 +402,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
-    public void onAccountClick(View view, final String account) {
+    public void onAccountMenuClick(View view, final String account) {
         PopupMenu popup = new PopupMenu(getActivity(), view);
         popup.inflate(R.menu.account);
         ContextMenuHelper.setUpAccountMenu(getActivity(), adapter, account, popup.getMenu());

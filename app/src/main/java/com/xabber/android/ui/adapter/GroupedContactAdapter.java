@@ -22,11 +22,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -39,6 +38,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
@@ -96,12 +96,12 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
     private int[] accountGroupColors;
     private final int[] accountSubgroupColors;
     private final int activeChatsColor;
-    private final OnAccountClickListener onAccountClickListener;
+    private final OnClickListener onClickListener;
 
     final ArrayList<BaseEntity> baseEntities = new ArrayList<>();
     protected Locale locale = Locale.getDefault();
 
-    public GroupedContactAdapter(Activity activity, OnAccountClickListener onAccountClickListener) {
+    public GroupedContactAdapter(Activity activity, OnClickListener onClickListener) {
         this.activity = activity;
 
         layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -113,7 +113,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         accountSubgroupColors = resources.getIntArray(R.array.account_50);
         activeChatsColor = resources.getColor(R.color.color_primary_light);
 
-        this.onAccountClickListener = onAccountClickListener;
+        this.onClickListener = onClickListener;
     }
 
     @Override
@@ -240,7 +240,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.statusIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAccountClickListener.onAccountClick(v, account);
+                onClickListener.onAccountMenuClick(v, account);
             }
         });
 
@@ -260,6 +260,19 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.status.setText(statusText);
 
         viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+
+        viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String user = AccountManager.getInstance().getAccount(account).getRealJid();
+                if (user == null) {
+                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                } else {
+                    activity.startActivity(ContactViewer.createIntent(activity, account, user));
+                }
+            }
+        });
+
         viewHolder.statusIcon.setImageLevel(accountItem.getDisplayStatusMode().getStatusLevel());
 
         ShowOfflineMode showOfflineMode = configuration.getShowOfflineMode();
@@ -346,7 +359,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             viewHolder = (ContactViewHolder) view.getTag();
         }
 
-        AbstractContact abstractContact = (AbstractContact) getItem(position);
+        final AbstractContact abstractContact = (AbstractContact) getItem(position);
 
         if (abstractContact.isConnected()) {
             viewHolder.offlineShadow.setVisibility(View.GONE);
@@ -363,6 +376,14 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         } else {
             viewHolder.avatar.setVisibility(View.GONE);
         }
+
+        viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.startActivity(ContactViewer.createIntent(activity,
+                        abstractContact.getAccount(), abstractContact.getUser()));
+            }
+        });
 
         viewHolder.name.setText(abstractContact.getName());
         String statusText;
@@ -652,8 +673,8 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         }
     }
 
-    public interface OnAccountClickListener {
-        void onAccountClick(View view, String account);
+    public interface OnClickListener {
+        void onAccountMenuClick(View view, String account);
     }
 
 }
