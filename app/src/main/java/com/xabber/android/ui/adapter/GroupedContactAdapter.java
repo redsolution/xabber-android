@@ -177,14 +177,14 @@ public abstract class GroupedContactAdapter<Inflater extends BaseContactInflater
 
                     color = accountSubgroupColors[level];
                     viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
-                }
 
-                StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
+                    StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
 
-                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
-                    viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.offlineShadow.setVisibility(View.GONE);
+                    if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+                        viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+                    } else {
+                        viewHolder.offlineShadow.setVisibility(View.GONE);
+                    }
                 }
 
                 view.setBackgroundDrawable(new ColorDrawable(color));
