@@ -36,6 +36,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ContactAdd;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.ui.GroupEditor;
@@ -64,6 +65,18 @@ public class ContextMenuHelper {
         final String account = abstractContact.getAccount();
         final String user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
+        menu.add(R.string.chat_viewer).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MessageManager.getInstance().openChat(account, user);
+                        activity.startActivity(ChatViewer.createIntent(
+                                activity, account, user));
+                        return true;
+                    }
+                });
+
         if (MUCManager.getInstance().hasRoom(account, user)) {
             if (!MUCManager.getInstance().inUse(account, user))
                 menu.add(R.string.muc_edit).setIntent(
@@ -107,6 +120,11 @@ public class ContextMenuHelper {
 
                         });
         } else {
+            menu.add(R.string.contact_viewer).setIntent(
+                    ContactViewer.createIntent(activity, account, user));
+            menu.add(R.string.edit_contact_groups).setIntent(
+                    GroupEditor.createIntent(activity, account, user));
+
             menu.add(R.string.contact_delete).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
 
