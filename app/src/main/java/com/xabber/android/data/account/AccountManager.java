@@ -404,7 +404,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             resource = "android" + StringUtils.randomString(8);
         }
 
-        accountItem = addAccount(accountType.getProtocol(), true, host, port, serverName, userName,
+        accountItem = addAccount(accountType.getProtocol(), false, host, port, serverName, userName,
                 storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 false, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
