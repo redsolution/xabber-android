@@ -107,7 +107,7 @@
                     fab:fab_colorNormal="@color/red_500"
                     fab:fab_colorPressed="@color/red_700"
                     fab:fab_colorRipple="@color/color_primary_light"
-                    android:src="@drawable/ic_arrow_up_white_24dp"
+                    android:src="@drawable/ic_chat_white_24dp"
                     android:clickable="false"
 
                     android:layout_marginTop="34dp"
