@@ -84,6 +84,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      */
     private Animation animation;
     private AccountActionButtonsAdapter accountActionButtonsAdapter;
+    private View scrollToChatsActionButtonContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,7 +106,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                 this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
         accountActionButtonsAdapter.onChange();
 
-        view.findViewById(R.id.fab_up_container).setOnClickListener(this);
+        scrollToChatsActionButtonContainer = view.findViewById(R.id.fab_up_container);
+        scrollToChatsActionButtonContainer.setOnClickListener(this);
+        scrollToChatsActionButtonContainer.setVisibility(View.GONE);
 
         return view;
     }
@@ -177,6 +180,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onContactListChanged(CommonState commonState, boolean hasContacts,
                                      boolean hasVisibleContacts, boolean isFilterEnabled) {
+        if (adapter.isHasActiveChats()) {
+            scrollToChatsActionButtonContainer.setVisibility(View.VISIBLE);
+        } else {
+            scrollToChatsActionButtonContainer.setVisibility(View.GONE);
+        }
+
+
         if (hasVisibleContacts) {
             infoView.setVisibility(View.GONE);
             disconnectedView.clearAnimation();
@@ -296,6 +306,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             buttonView.setText(button);
         }
         buttonView.setOnClickListener(listener);
+
+
+
     }
 
     /**

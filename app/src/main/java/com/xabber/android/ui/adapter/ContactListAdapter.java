@@ -91,6 +91,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
     String filterString;
 
     private final OnContactListChangedListener listener;
+    private boolean hasActiveChats = false;
 
     public ContactListAdapter(Activity activity, OnContactListChangedListener listener,
                               OnClickListener onClickListener) {
@@ -296,6 +297,8 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                 }
             }
 
+            hasActiveChats = activeChats.getTotal() > 0;
+
             // Remove empty groups, sort and apply structure.
             baseEntities.clear();
             if (hasVisibleContacts) {
@@ -362,8 +365,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
         }
 
         super.onChange();
-        listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts,
-                filterString != null);
+        listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
 
         synchronized (refreshLock) {
             nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
@@ -466,5 +468,9 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
             onChange();
         }
 
+    }
+
+    public boolean isHasActiveChats() {
+        return hasActiveChats;
     }
 }
