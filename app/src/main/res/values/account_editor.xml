@@ -154,7 +154,7 @@
     <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
-    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol</string>
+    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol\nNot recommended for Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Are you sure you want to discard all the changes?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->

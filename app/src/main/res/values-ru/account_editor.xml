@@ -154,7 +154,7 @@
     <string name="account_type_names_odnoklassniki">Одноклассники</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
     <string name="account_type_names_wlm">Windows Live Messenger</string>
-    <string name="account_use_orbot">Использовать анонимное соединения через TOR и требовать TLS шифрования</string>
+    <string name="account_use_orbot">Использовать анонимное соединения через TOR и требовать TLS шифрования\nНе рекомендуется для Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Вы уверены, что хотите отменить все не сохраненные изменения?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->

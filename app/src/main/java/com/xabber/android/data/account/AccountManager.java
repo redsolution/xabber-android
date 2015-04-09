@@ -138,7 +138,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 servers.add(values.getString(i));
             }
             accountTypes.add(new AccountType(id, protocol, values.getString(1),
-                    values.getString(2), values.getString(3), null,
+                    values.getString(2), values.getString(3), values.getDrawable(4),
                     values.getBoolean(5, false), values.getString(6), values.getInt(7, 5222),
                     values.getBoolean(8, false), servers));
             values.recycle();
@@ -404,7 +404,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             resource = "android" + StringUtils.randomString(8);
         }
 
-        accountItem = addAccount(accountType.getProtocol(), false, host, port, serverName, userName,
+
+        boolean useCustomHost = false;
+
+        if (accountType.getProtocol() == AccountProtocol.gtalk) {
+            useCustomHost = true;
+        }
+
+        accountItem = addAccount(accountType.getProtocol(), useCustomHost, host, port, serverName, userName,
                 storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 false, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
