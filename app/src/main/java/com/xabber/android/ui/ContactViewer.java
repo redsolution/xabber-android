@@ -30,13 +30,16 @@ import android.widget.EditText;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -133,6 +136,8 @@ public class ContactViewer extends ManagedActivity implements
             throw new IllegalStateException();
     }
 
+    private boolean isAccount = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,8 +157,7 @@ public class ContactViewer extends ManagedActivity implements
                     }
                     if (id != null)
                         // FIXME: Will be empty while application is loading
-                        for (RosterContact rosterContact : RosterManager
-                                .getInstance().getContacts())
+                        for (RosterContact rosterContact : RosterManager.getInstance().getContacts())
                             if (id.equals(rosterContact.getViewId())) {
                                 account = rosterContact.getAccount();
                                 bareAddress = rosterContact.getUser();
@@ -165,6 +169,12 @@ public class ContactViewer extends ManagedActivity implements
             account = getAccount(getIntent());
             bareAddress = Jid.getBareAddress(getUser(getIntent()));
         }
+
+        if (bareAddress != null && bareAddress.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
+            isAccount = true;
+            bareAddress = Jid.getBareAddress(AccountManager.getInstance().getAccount(account).getRealJid());
+        }
+
         if (account == null || bareAddress == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
@@ -212,12 +222,11 @@ public class ContactViewer extends ManagedActivity implements
     protected void onResume() {
         super.onResume();
         Application.getInstance().addUIListener(OnVCardListener.class, this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class,
-                this);
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
-        if (vCard == null && !vCardError)
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        if (vCard == null && !vCardError) {
             VCardManager.getInstance().request(account, bareAddress, null);
+        }
 
         contactTitleExpandableToolbarInflater.onResume();
 
@@ -229,8 +238,17 @@ public class ContactViewer extends ManagedActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater=getMenuInflater();
+        if (isAccount || MUCManager.getInstance().hasRoom(account, bareAddress)) {
+            return true;
+        }
+
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.contact_viewer, menu);
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
+        if (rosterContact == null) {
+            menu.findItem(R.id.action_edit_alias).setVisible(false);
+        }
 
         return true;
     }
@@ -241,7 +259,6 @@ public class ContactViewer extends ManagedActivity implements
             case R.id.action_edit_alias:
                 editAlias();
                 return true;
-
 
             case R.id.action_edit_groups:
                 startActivity(GroupEditor.createIntent(this, account, bareAddress));
@@ -272,7 +289,7 @@ public class ContactViewer extends ManagedActivity implements
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    RosterManager.getInstance().setName(account, bareAddress,  input.getText().toString());
+                    RosterManager.getInstance().setName(account, bareAddress, input.getText().toString());
                 } catch (NetworkException e) {
                     Application.getInstance().onError(e);
                 }
@@ -289,33 +306,31 @@ public class ContactViewer extends ManagedActivity implements
     }
 
     private ContactViewerFragment getFragment() {
-        return (ContactViewerFragment) getFragmentManager()
-                .findFragmentById(R.id.scrollable_container);
+        return (ContactViewerFragment) getFragmentManager().findFragmentById(R.id.scrollable_container);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Application.getInstance().removeUIListener(OnVCardListener.class, this);
-        Application.getInstance().removeUIListener(
-                OnContactChangedListener.class, this);
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_VCARD_ERROR, vCardError);
-        if (vCard != null)
+        if (vCard != null) {
             outState.putString(SAVED_VCARD, vCard.getChildElementXML());
+        }
     }
 
     @Override
     public void onVCardReceived(String account, String bareAddress, VCard vCard) {
-        if (!this.account.equals(account)
-                || !this.bareAddress.equals(bareAddress))
+        if (!this.account.equals(account) || !this.bareAddress.equals(bareAddress)) {
             return;
+        }
         this.vCard = vCard;
         this.vCardError = false;
         getFragment().updateVCard(vCard);
@@ -348,8 +363,7 @@ public class ContactViewer extends ManagedActivity implements
     }
 
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
+    public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, ContactViewer.class)
                 .setAccount(account).setUser(user).build();
     }

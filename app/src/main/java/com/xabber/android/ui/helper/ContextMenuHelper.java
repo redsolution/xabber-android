@@ -285,12 +285,7 @@ public class ContextMenuHelper {
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            String user = AccountManager.getInstance().getAccount(account).getRealJid();
-                            if (user == null) {
-                                Application.getInstance().onError(R.string.NOT_CONNECTED);
-                            } else {
-                                activity.startActivity(ContactViewer.createIntent(activity, account, user));
-                            }
+                            activity.startActivity(ContactViewer.createIntent(activity, account, GroupManager.IS_ACCOUNT));
                             return true;
                         }
                     });
