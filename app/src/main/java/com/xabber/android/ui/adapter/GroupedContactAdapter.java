@@ -259,7 +259,12 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
         viewHolder.status.setText(statusText);
 
-        viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+        if (SettingsManager.contactsShowAvatars()) {
+            viewHolder.avatar.setVisibility(View.VISIBLE);
+            viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+        } else {
+            viewHolder.avatar.setVisibility(View.GONE);
+        }
 
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
