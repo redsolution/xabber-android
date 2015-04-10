@@ -38,7 +38,7 @@
         <item>@string/account_type_names_xmpp</item>
         <item>@string/account_type_hints_xmpp</item>
         <item>@string/account_type_helps_xmpp</item>
-        <item>@drawable/ic_xmpp_24dp</item>
+        <item>@drawable/ic_vcard_xmpp_24dp</item>
         <item>True</item>
         <item></item>
         <item>5222</item>

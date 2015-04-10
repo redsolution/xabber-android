@@ -8,19 +8,14 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
-import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.vcard.Address;
@@ -93,7 +88,7 @@ public class ContactViewerFragment extends Fragment {
         xmppItems.removeAllViews();
 
         View jabberIdView = createItemView(xmppItems,
-                getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_xmpp_24dp);
+                getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_vcard_xmpp_24dp);
 
         if (jabberIdView != null) {
             xmppItems.addView(jabberIdView);
@@ -168,7 +163,7 @@ public class ContactViewerFragment extends Fragment {
             resourcesList.add(resourceView);
         }
 
-        addItemGroup(resourcesList, xmppItems, R.drawable.ic_jabber_24dp);
+        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
     }
 
     public void updateVCard(VCard vCard) {
@@ -182,14 +177,14 @@ public class ContactViewerFragment extends Fragment {
 
         List<View> birthDayList = new ArrayList<>();
         addItem(birthDayList, contactInfoItems, getString(R.string.vcard_birth_date), vCard.getField(VCardProperty.BDAY));
-        addItemGroup(birthDayList, contactInfoItems, R.drawable.ic_birthday_24dp);
+        addItemGroup(birthDayList, contactInfoItems, R.drawable.ic_vcard_birthday_24dp);
 
 
         addOrganizationInfo(vCard);
 
         List<View> webList = new ArrayList<>();
         addItem(webList, contactInfoItems, getString(R.string.vcard_url), vCard.getField(VCardProperty.URL));
-        addItemGroup(webList, contactInfoItems, R.drawable.ic_web_24dp);
+        addItemGroup(webList, contactInfoItems, R.drawable.ic_vcard_web_24dp);
 
         addAdditionalInfo(vCard);
         addAddresses(vCard);
@@ -208,7 +203,7 @@ public class ContactViewerFragment extends Fragment {
             addItem(emailList, contactInfoItems, types, email.getValue());
         }
 
-        addItemGroup(emailList, contactInfoItems, R.drawable.ic_email_24dp);
+        addItemGroup(emailList, contactInfoItems, R.drawable.ic_vcard_email_24dp);
     }
 
     private void addPhones(VCard vCard) {
@@ -222,7 +217,7 @@ public class ContactViewerFragment extends Fragment {
             addItem(phoneList, contactInfoItems, types, telephone.getValue());
         }
 
-        addItemGroup(phoneList, contactInfoItems, R.drawable.ic_phone_24dp);
+        addItemGroup(phoneList, contactInfoItems, R.drawable.ic_vcard_phone_24dp);
     }
 
     private void addAddresses(VCard vCard) {
@@ -242,7 +237,7 @@ public class ContactViewerFragment extends Fragment {
             addItem(addressList, contactInfoItems, types, value);
         }
 
-        addItemGroup(addressList, contactInfoItems, R.drawable.ic_address_24dp);
+        addItemGroup(addressList, contactInfoItems, R.drawable.ic_vcard_address_24dp);
     }
 
     private void addAdditionalInfo(VCard vCard) {
@@ -255,7 +250,7 @@ public class ContactViewerFragment extends Fragment {
         addItem(notesList, contactInfoItems, getString(R.string.vcard_categories), categories);
         addItem(notesList, contactInfoItems, getString(R.string.vcard_note), vCard.getField(VCardProperty.NOTE));
         addItem(notesList, contactInfoItems, getString(R.string.vcard_decsription), vCard.getField(VCardProperty.DESC));
-        addItemGroup(notesList, contactInfoItems, R.drawable.ic_notes_24dp);
+        addItemGroup(notesList, contactInfoItems, R.drawable.ic_vcard_notes_24dp);
     }
 
     private void addOrganizationInfo(VCard vCard) {
@@ -277,7 +272,7 @@ public class ContactViewerFragment extends Fragment {
         }
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_organization), organization);
 
-        addItemGroup(organizationList, contactInfoItems, R.drawable.ic_job_title_24dp);
+        addItemGroup(organizationList, contactInfoItems, R.drawable.ic_vcard_job_title_24dp);
     }
 
     private void addNameInfo(VCard vCard) {
@@ -291,7 +286,7 @@ public class ContactViewerFragment extends Fragment {
         addItem(nameList, contactInfoItems, getString(R.string.vcard_family_name), vCard.getField(NameProperty.FAMILY));
         addItem(nameList, contactInfoItems, getString(R.string.vcard_suffix_name), vCard.getField(NameProperty.SUFFIX));
 
-        addItemGroup(nameList, contactInfoItems, R.drawable.ic_contact_info_24dp);
+        addItemGroup(nameList, contactInfoItems, R.drawable.ic_vcard_contact_info_24dp);
     }
 
     private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon) {
