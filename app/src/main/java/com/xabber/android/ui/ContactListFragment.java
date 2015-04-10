@@ -85,6 +85,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private Animation animation;
     private AccountActionButtonsAdapter accountActionButtonsAdapter;
     private View scrollToChatsActionButtonContainer;
+    private View actionButtonsContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -106,6 +107,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
                 this, (LinearLayout) view.findViewById(R.id.account_action_buttons));
         accountActionButtonsAdapter.onChange();
 
+        actionButtonsContainer = view.findViewById(R.id.account_action_buttons_container);
+
         scrollToChatsActionButtonContainer = view.findViewById(R.id.fab_up_container);
         scrollToChatsActionButtonContainer.setOnClickListener(this);
         scrollToChatsActionButtonContainer.setVisibility(View.GONE);
@@ -120,6 +123,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         adapter.onChange();
+
+        if (SettingsManager.contactsShowPanel()) {
+            actionButtonsContainer.setVisibility(View.VISIBLE);
+        } else {
+            actionButtonsContainer.setVisibility(View.GONE);
+        }
     }
 
     @Override
