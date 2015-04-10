@@ -15,10 +15,10 @@
 package com.xabber.android.ui.helper;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.TextView;
 
 import com.xabber.androiddev.R;
@@ -35,11 +35,13 @@ public abstract class ManagedDialog extends SingleActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setTheme(android.R.style.Theme_Dialog);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.dialog);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         findViewById(android.R.id.button1).setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -64,11 +66,11 @@ public abstract class ManagedDialog extends SingleActivity {
     }
 
     public void setDialogTitle(CharSequence title) {
-        ((TextView) findViewById(android.R.id.title)).setText(title);
+        getSupportActionBar().setTitle(title);
     }
 
     public void setDialogTitle(int resid) {
-        ((TextView) findViewById(android.R.id.title)).setText(resid);
+        getSupportActionBar().setTitle(resid);
     }
 
     public void setDialogMessage(CharSequence title) {
@@ -81,8 +83,9 @@ public abstract class ManagedDialog extends SingleActivity {
 
     public void setCustomView(View view, boolean hideContainer) {
         ((ViewGroup) findViewById(android.R.id.custom)).addView(view);
-        if (hideContainer)
+        if (hideContainer) {
             findViewById(R.id.container).setVisibility(View.GONE);
+        }
     }
 
     /**
