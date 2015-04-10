@@ -38,7 +38,7 @@
         android:layout_height="@dimen/avatar_size_toolbar"
         android:layout_marginLeft="2dip"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_affilation"
+        android:src="@drawable/ic_affiliation"
         />
 
     <RelativeLayout

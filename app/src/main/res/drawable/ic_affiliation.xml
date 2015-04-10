@@ -14,23 +14,23 @@
 -->
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@drawable/ic_affilation_none"
+        android:drawable="@android:color/transparent"
         android:minLevel="0"
         android:maxLevel="0" />
     <item
-        android:drawable="@drawable/ic_affilation_member"
+        android:drawable="@color/green_A400"
         android:minLevel="1"
         android:maxLevel="1" />
     <item
-        android:drawable="@drawable/ic_affilation_admin"
+        android:drawable="@color/amber_A100"
         android:minLevel="2"
         android:maxLevel="2" />
     <item
-        android:drawable="@drawable/ic_affilation_owner"
+        android:drawable="@color/deep_orange_A100"
         android:minLevel="3"
         android:maxLevel="3" />
     <item
-        android:drawable="@drawable/ic_affilation_outcast"
+        android:drawable="@android:color/transparent"
         android:minLevel="4"
         android:maxLevel="4" />
 </level-list>
