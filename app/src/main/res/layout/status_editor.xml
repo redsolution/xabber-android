@@ -12,20 +12,92 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-    <include layout="@layout/toolbar_default"/>
-
-    <ListView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@android:id/list"
+    <include layout="@layout/toolbar_default"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="4dip" />
+        android:layout_alignParentTop="true"
+        android:id="@+id/top_toolbar"
+        />
 
-</LinearLayout>
+
+    <include layout="@layout/toolbar_default"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bottom_toolbar"
+        />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_toolbar"
+        android:layout_above="@id/bottom_toolbar"
+        android:padding="8dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/top_panel"
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/new_status"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <Spinner
+                android:id="@+id/status_icon"
+                android:prompt="@string/status_editor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+            <EditText
+                android:id="@+id/status_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/status_text_hint"
+                android:paddingLeft="34dp"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/saved_statuses"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/saved_statuses_textview"
+                />
+
+        </LinearLayout>
+
+
+
+        <ListView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top_panel"
+            />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

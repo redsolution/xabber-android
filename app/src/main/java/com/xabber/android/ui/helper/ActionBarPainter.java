@@ -68,4 +68,9 @@ public class ActionBarPainter {
             }
         }
     }
+
+    public int getAccountColor(String account) {
+        return accountActionBarColors[AccountManager.getInstance().getColorLevel(account)];
+    }
+
 }

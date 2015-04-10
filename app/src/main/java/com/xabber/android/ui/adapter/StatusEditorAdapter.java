@@ -33,8 +33,7 @@ import com.xabber.androiddev.R;
  *
  * @author alexander.ivanov
  */
-public class StatusEditorAdapter extends BaseAdapter implements
-        UpdatableAdapter {
+public class StatusEditorAdapter extends BaseAdapter implements UpdatableAdapter {
 
     private final Activity activity;
     private final ArrayList<SavedStatus> statuses;
@@ -42,7 +41,7 @@ public class StatusEditorAdapter extends BaseAdapter implements
     public StatusEditorAdapter(Activity activity) {
         super();
         this.activity = activity;
-        statuses = new ArrayList<SavedStatus>();
+        statuses = new ArrayList<>();
     }
 
     @Override
@@ -64,17 +63,16 @@ public class StatusEditorAdapter extends BaseAdapter implements
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
-                    R.layout.status_editor_item, parent, false);
+            view = activity.getLayoutInflater().inflate(R.layout.status_editor_item, parent, false);
         } else {
             view = convertView;
         }
         final SavedStatus status = (SavedStatus) getItem(position);
-        ((ImageView) view.findViewById(R.id.icon)).setImageLevel(status
-                .getStatusMode().getStatusLevel());
+        ((ImageView) view.findViewById(R.id.icon)).setImageLevel(status.getStatusMode().getStatusLevel());
         String text = status.getStatusText();
-        if ("".equals(text))
+        if ("".equals(text)) {
             text = activity.getString(R.string.empty_status);
+        }
         ((TextView) view.findViewById(R.id.name)).setText(text);
         return view;
     }

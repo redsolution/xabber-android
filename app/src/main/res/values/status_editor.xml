@@ -21,15 +21,20 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
     <string name="select_status">Set status</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
-    <string name="status_editor">Change status</string>
+    <string name="status_editor">Set status</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
     <string name="status_editor_for">Change status for %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
-    <string name="status_text_hint">Set your status</string>
+    <string name="status_text_hint">Enter status message</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="unavailable">Offline</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="unsubscribed">Not authorized</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="xa">Away for a long time</string>
+
+    <string name="new_status">New status</string>
+    <string name="saved_statuses">Saved statuses</string>
+    <string name="clear_status_history">Clear status history</string>
+
 </resources>
