@@ -38,7 +38,7 @@
         />
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/account_connection_indicator"
+        android:id="@+id/account_shadow"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@color/black"

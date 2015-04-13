@@ -8,7 +8,6 @@ import android.widget.LinearLayout;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
 
@@ -96,15 +95,20 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
             backgroundActionButton.setColorPressed(accountStatusBarColors[colorLevel]);
             backgroundActionButton.setColorRipple(accountBackgroundColors[colorLevel]);
 
-            StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
+            String selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
-            int connectionIndicatorVisibility;
-            if (statusMode == StatusMode.connection || statusMode == StatusMode.unavailable) {
-                connectionIndicatorVisibility = View.VISIBLE;
+            int shadowVisibility;
+
+            if (selectedAccount == null) {
+                shadowVisibility = View.GONE;
             } else {
-                connectionIndicatorVisibility = View.GONE;
+                shadowVisibility = View.VISIBLE;
+                if (selectedAccount.equalsIgnoreCase(account)) {
+                    shadowVisibility = View.GONE;
+                }
             }
-            view.findViewById(R.id.account_connection_indicator).setVisibility(connectionIndicatorVisibility);
+
+            view.findViewById(R.id.account_shadow).setVisibility(shadowVisibility);
         }
     }
 
