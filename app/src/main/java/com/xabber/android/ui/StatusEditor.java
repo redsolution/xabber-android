@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,7 +45,7 @@ import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
-public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener {
+public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
     private static final String SAVED_TEXT = "com.xabber.android.ui.StatusEditor.SAVED_TEXT";
     private static final String SAVED_MODE = "com.xabber.android.ui.StatusEditor.SAVED_MODE";
@@ -56,7 +57,6 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
     private SavedStatus actionWithItem;
     private StatusEditorAdapter adapter;
     private View savedStatusesTextView;
-    private Toolbar bottomToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +74,11 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
         getSupportActionBar().setTitle(null);
 
-        bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
-        bottomToolbar.inflateMenu(R.menu.clear_status_history);
-        bottomToolbar.setOnMenuItemClickListener(this);
-
         Intent intent = getIntent();
         account = StatusEditor.getAccount(intent);
         if (account != null) {
             ActionBarPainter actionBarPainter = new ActionBarPainter(this);
             actionBarPainter.updateWithAccountName(account);
-            bottomToolbar.setBackgroundColor(actionBarPainter.getAccountColor(account));
         }
 
         ListView listView = getListView();
@@ -91,6 +86,10 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         registerForContextMenu(listView);
         adapter = new StatusEditorAdapter(this);
         setListAdapter(adapter);
+
+        View footerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.status_history_footer, null, false);
+        footerView.findViewById(R.id.clear_status_history_button).setOnClickListener(this);
+        listView.addFooterView(footerView);
 
         statusTextView = (EditText) findViewById(R.id.status_text);
         statusModeView = (Spinner) findViewById(R.id.status_icon);
@@ -160,7 +159,6 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
 
         getListView().setVisibility(visibility);
         savedStatusesTextView.setVisibility(visibility);
-        bottomToolbar.setVisibility(visibility);
     }
 
     @Override
@@ -179,12 +177,16 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
                 return true;
 
             case R.id.action_clear_status_history:
-                AccountManager.getInstance().clearSavedStatuses();
-                adapter.onChange();
-                setStatusHistoryVisibility();
+                clearStatusHistory();
                 return true;
         }
         return false;
+    }
+
+    private void clearStatusHistory() {
+        AccountManager.getInstance().clearSavedStatuses();
+        adapter.onChange();
+        setStatusHistoryVisibility();
     }
 
     @Override
@@ -246,5 +248,14 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         return onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.clear_status_history_button:
+                clearStatusHistory();
+            default:
+        }
     }
 }

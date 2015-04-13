@@ -36,5 +36,6 @@
     <string name="new_status">New status</string>
     <string name="saved_statuses">Saved statuses</string>
     <string name="clear_status_history">Clear status history</string>
+    <string name="status_message">Status message</string>
 
 </resources>

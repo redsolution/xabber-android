@@ -36,4 +36,5 @@
     <string name="new_status">Новый статус</string>
     <string name="saved_statuses">Сохранённые статусы</string>
     <string name="clear_status_history">Очистить историю статусов</string>
+    <string name="status_message">Статус-сообщение</string>
 </resources>

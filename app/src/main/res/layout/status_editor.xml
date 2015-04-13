@@ -12,12 +12,11 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <include layout="@layout/toolbar_default"
         android:layout_height="wrap_content"
@@ -26,19 +25,10 @@
         android:id="@+id/top_toolbar"
         />
 
-
-    <include layout="@layout/toolbar_default"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/bottom_toolbar"
-        />
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_below="@id/top_toolbar"
-        android:layout_above="@id/bottom_toolbar"
         android:padding="8dp"
         >
 
@@ -56,14 +46,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/new_status"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimary"
+                android:paddingLeft="8dp"
+                android:textStyle="bold" />
 
             <Spinner
                 android:id="@+id/status_icon"
                 android:prompt="@string/status_editor"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/status_message"
+                android:layout_marginLeft="34dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 />
 
             <EditText
@@ -71,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/status_text_hint"
-                android:paddingLeft="34dp"
+                android:layout_marginLeft="32dp"
                 android:singleLine="true"
                 />
 
@@ -79,15 +78,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/saved_statuses"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/saved_statuses_textview"
-                />
+                android:textColor="?attr/colorPrimary"
+                android:paddingLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold" />
 
         </LinearLayout>
-
-
 
         <ListView
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -95,7 +93,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/top_panel"
-            />
+            tools:listitem="@layout/status_editor_item"
+            tools:listfooter="@layout/status_history_footer" />
 
     </RelativeLayout>
 
