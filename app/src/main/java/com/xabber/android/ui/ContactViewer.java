@@ -48,10 +48,6 @@ import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.vcard.AddressProperty;
-import com.xabber.xmpp.vcard.AddressType;
-import com.xabber.xmpp.vcard.EmailType;
-import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProvider;
 
@@ -60,9 +56,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ContactViewer extends ManagedActivity implements
         OnVCardListener, OnContactChangedListener, OnAccountChangedListener {
@@ -75,66 +69,7 @@ public class ContactViewer extends ManagedActivity implements
     private VCard vCard;
     private boolean vCardError;
 
-
-    private static final Map<AddressType, Integer> ADDRESS_TYPE_MAP = new HashMap<>();
-    private static final Map<AddressProperty, Integer> ADDRESS_PROPERTY_MAP = new HashMap<>();
-    private static final Map<TelephoneType, Integer> TELEPHONE_TYPE_MAP = new HashMap<>();
-    private static final Map<EmailType, Integer> EMAIL_TYPE_MAP = new HashMap<>();
-
-    private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
-
-    static {
-        ADDRESS_TYPE_MAP.put(AddressType.DOM, R.string.vcard_type_dom);
-        ADDRESS_TYPE_MAP.put(AddressType.HOME, R.string.vcard_type_home);
-        ADDRESS_TYPE_MAP.put(AddressType.INTL, R.string.vcard_type_intl);
-        ADDRESS_TYPE_MAP.put(AddressType.PARCEL, R.string.vcard_type_parcel);
-        ADDRESS_TYPE_MAP.put(AddressType.POSTAL, R.string.vcard_type_postal);
-        ADDRESS_TYPE_MAP.put(AddressType.PREF, R.string.vcard_type_pref);
-        ADDRESS_TYPE_MAP.put(AddressType.WORK, R.string.vcard_type_work);
-        if (ADDRESS_TYPE_MAP.size() != AddressType.values().length)
-            throw new IllegalStateException();
-
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.CTRY,
-                R.string.vcard_address_ctry);
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.EXTADR,
-                R.string.vcard_address_extadr);
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.LOCALITY,
-                R.string.vcard_address_locality);
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.PCODE,
-                R.string.vcard_address_pcode);
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.POBOX,
-                R.string.vcard_address_pobox);
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.REGION,
-                R.string.vcard_address_region);
-        ADDRESS_PROPERTY_MAP.put(AddressProperty.STREET,
-                R.string.vcard_address_street);
-        if (ADDRESS_PROPERTY_MAP.size() != AddressProperty.values().length)
-            throw new IllegalStateException();
-
-        TELEPHONE_TYPE_MAP.put(TelephoneType.BBS, R.string.vcard_type_bbs);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.CELL, R.string.vcard_type_cell);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.FAX, R.string.vcard_type_fax);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.HOME, R.string.vcard_type_home);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.ISDN, R.string.vcard_type_isdn);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.MODEM, R.string.vcard_type_modem);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.MSG, R.string.vcard_type_msg);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.PAGER, R.string.vcard_type_pager);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.PCS, R.string.vcard_type_pcs);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.PREF, R.string.vcard_type_pref);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.VIDEO, R.string.vcard_type_video);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.VOICE, R.string.vcard_type_voice);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.WORK, R.string.vcard_type_work);
-        if (TELEPHONE_TYPE_MAP.size() != TelephoneType.values().length)
-            throw new IllegalStateException();
-
-        EMAIL_TYPE_MAP.put(EmailType.HOME, R.string.vcard_type_home);
-        EMAIL_TYPE_MAP.put(EmailType.INTERNET, R.string.vcard_type_internet);
-        EMAIL_TYPE_MAP.put(EmailType.PREF, R.string.vcard_type_pref);
-        EMAIL_TYPE_MAP.put(EmailType.WORK, R.string.vcard_type_work);
-        EMAIL_TYPE_MAP.put(EmailType.X400, R.string.vcard_type_x400);
-        if (EMAIL_TYPE_MAP.size() != EmailType.values().length)
-            throw new IllegalStateException();
-    }
+   private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
 
     private boolean isAccount = false;
 
@@ -183,24 +118,23 @@ public class ContactViewer extends ManagedActivity implements
         vCard = null;
         vCardError = false;
         if (savedInstanceState != null) {
-            vCardError = savedInstanceState
-                    .getBoolean(SAVED_VCARD_ERROR, false);
+            vCardError = savedInstanceState.getBoolean(SAVED_VCARD_ERROR, false);
             String xml = savedInstanceState.getString(SAVED_VCARD);
             if (xml != null)
                 try {
-                    XmlPullParser parser = XmlPullParserFactory.newInstance()
-                            .newPullParser();
-                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES,
-                            true);
+                    XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
+                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
                     parser.setInput(new StringReader(xml));
                     int eventType = parser.next();
-                    if (eventType != XmlPullParser.START_TAG)
-                        throw new IllegalStateException(
-                                String.valueOf(eventType));
-                    if (!VCard.ELEMENT_NAME.equals(parser.getName()))
+                    if (eventType != XmlPullParser.START_TAG) {
+                        throw new IllegalStateException(String.valueOf(eventType));
+                    }
+                    if (!VCard.ELEMENT_NAME.equals(parser.getName())) {
                         throw new IllegalStateException(parser.getName());
-                    if (!VCard.NAMESPACE.equals(parser.getNamespace()))
+                    }
+                    if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
                         throw new IllegalStateException(parser.getNamespace());
+                    }
                     vCard = (VCard) (new VCardProvider()).parseIQ(parser);
                 } catch (Exception e) {
                     LogManager.exception(this, e);
@@ -338,28 +272,29 @@ public class ContactViewer extends ManagedActivity implements
 
     @Override
     public void onVCardFailed(String account, String bareAddress) {
-        if (!this.account.equals(account)
-                || !this.bareAddress.equals(bareAddress))
+        if (!this.account.equals(account) || !this.bareAddress.equals(bareAddress)) {
             return;
+        }
         this.vCard = null;
         this.vCardError = true;
-        getFragment().updateVCard(vCard);
         Application.getInstance().onError(R.string.XMPP_EXCEPTION);
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        for (BaseEntity entity : entities)
+        for (BaseEntity entity : entities) {
             if (entity.equals(account, bareAddress)) {
                 getFragment().updateContact(account, bareAddress);
                 break;
             }
+        }
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        if (accounts.contains(account))
+        if (accounts.contains(account)) {
             getFragment().updateContact(account, bareAddress);
+        }
     }
 
 
@@ -375,23 +310,6 @@ public class ContactViewer extends ManagedActivity implements
     private static String getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
-
-    public static Map<AddressType, Integer> getAddressTypeMap() {
-        return ADDRESS_TYPE_MAP;
-    }
-
-    public static Map<AddressProperty, Integer> getAddressPropertyMap() {
-        return ADDRESS_PROPERTY_MAP;
-    }
-
-    public static Map<TelephoneType, Integer> getTelephoneTypeMap() {
-        return TELEPHONE_TYPE_MAP;
-    }
-
-    public static Map<EmailType, Integer> getEmailTypeMap() {
-        return EMAIL_TYPE_MAP;
-    }
-
 
     public View getContactTitleView() {
         return findViewById(R.id.expandable_contact_title);

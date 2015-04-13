@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.roster.PresenceManager;
@@ -72,10 +73,12 @@ public class ContactViewerFragment extends Fragment {
      * @return Concatenated source and value with splitter if necessary.
      */
     private String addString(String source, String value, String splitter) {
-        if (value == null || "".equals(value))
+        if (value == null || "".equals(value)) {
             return source;
-        if (source == null || "".equals(source))
+        }
+        if (source == null || "".equals(source)) {
             return value;
+        }
         return source + splitter + value;
     }
 
@@ -134,10 +137,7 @@ public class ContactViewerFragment extends Fragment {
 
             label += priority;
 
-
             String resource = getString(R.string.account_resource) + ": " + resourceItem.getVerbose();
-
-
 
             String status = resourceItem.getStatusText().trim();
             if (status.isEmpty()) {
@@ -197,7 +197,7 @@ public class ContactViewerFragment extends Fragment {
         for (Email email : vCard.getEmails()) {
             String types = null;
             for (EmailType type : email.getTypes()) {
-                types = addString(types, getString(ContactViewer.getEmailTypeMap().get(type)), ", ");
+                types = addString(types, getString(VcardMaps.getEmailTypeMap().get(type)), ", ");
             }
 
             addItem(emailList, contactInfoItems, types, email.getValue());
@@ -211,7 +211,7 @@ public class ContactViewerFragment extends Fragment {
         for (Telephone telephone : vCard.getTelephones()) {
             String types = null;
             for (TelephoneType type : telephone.getTypes()) {
-                types = addString(types, getString(ContactViewer.getTelephoneTypeMap().get(type)), ", ");
+                types = addString(types, getString(VcardMaps.getTelephoneTypeMap().get(type)), ", ");
             }
 
             addItem(phoneList, contactInfoItems, types, telephone.getValue());
@@ -226,7 +226,7 @@ public class ContactViewerFragment extends Fragment {
         for (Address address : vCard.getAddresses()) {
             String types = null;
             for (AddressType type : address.getTypes()) {
-                types = addString(types, getString(ContactViewer.getAddressTypeMap().get(type)), ", ");
+                types = addString(types, getString(VcardMaps.getAddressTypeMap().get(type)), ", ");
             }
 
             String value = null;
