@@ -333,12 +333,14 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             color = accountSubgroupColors[level];
             viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
 
-            StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
+            if (!configuration.getAccount().equalsIgnoreCase(GroupManager.NO_ACCOUNT)) {
+                StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
 
-            if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
-                viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.offlineShadow.setVisibility(View.GONE);
+                if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
+                    viewHolder.offlineShadow.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.offlineShadow.setVisibility(View.GONE);
+                }
             }
         }
 
