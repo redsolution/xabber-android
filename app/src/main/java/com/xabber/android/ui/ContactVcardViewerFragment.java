@@ -12,9 +12,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.VcardMaps;
+import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
+import com.xabber.android.data.extension.vcard.OnVCardListener;
+import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
 import com.xabber.androiddev.R;
@@ -29,20 +36,76 @@ import com.xabber.xmpp.vcard.Telephone;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
+import com.xabber.xmpp.vcard.VCardProvider;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class ContactVcardViewerFragment extends Fragment {
+public class ContactVcardViewerFragment extends Fragment implements OnVCardListener, OnContactChangedListener, OnAccountChangedListener {
+    private static final String SAVED_VCARD = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD";
+    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
+
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.ContactVcardViewerFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_USER = "com.xabber.android.ui.ContactVcardViewerFragment.ARGUMENT_USER";
+
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
 
     String account;
-    String bareAddress;
+    String user;
+
+    private VCard vCard;
+    private boolean vCardError;
+
+    public static ContactVcardViewerFragment newInstance(String account, String user) {
+        ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_USER, user);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        account = args.getString(ARGUMENT_ACCOUNT, null);
+        user = args.getString(ARGUMENT_USER, null);
+
+        vCard = null;
+        vCardError = false;
+        if (savedInstanceState != null) {
+            vCardError = savedInstanceState.getBoolean(SAVED_VCARD_ERROR, false);
+            String xml = savedInstanceState.getString(SAVED_VCARD);
+            if (xml != null)
+                try {
+                    XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
+                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+                    parser.setInput(new StringReader(xml));
+                    int eventType = parser.next();
+                    if (eventType != XmlPullParser.START_TAG) {
+                        throw new IllegalStateException(String.valueOf(eventType));
+                    }
+                    if (!VCard.ELEMENT_NAME.equals(parser.getName())) {
+                        throw new IllegalStateException(parser.getName());
+                    }
+                    if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
+                        throw new IllegalStateException(parser.getNamespace());
+                    }
+                    vCard = (VCard) (new VCardProvider()).parseIQ(parser);
+                } catch (Exception e) {
+                    LogManager.exception(this, e);
+                }
+        }
     }
 
     @Nullable
@@ -56,6 +119,74 @@ public class ContactVcardViewerFragment extends Fragment {
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Application.getInstance().addUIListener(OnVCardListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        if (vCard == null && !vCardError) {
+            VCardManager.getInstance().request(account, user, null);
+        }
+
+        updateContact(account, user);
+        updateVCard(vCard);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Application.getInstance().removeUIListener(OnVCardListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_VCARD_ERROR, vCardError);
+        if (vCard != null) {
+            outState.putString(SAVED_VCARD, vCard.getChildElementXML());
+        }
+    }
+
+    @Override
+    public void onVCardReceived(String account, String bareAddress, VCard vCard) {
+        if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
+            return;
+        }
+        this.vCard = vCard;
+        this.vCardError = false;
+        updateVCard(vCard);
+    }
+
+    @Override
+    public void onVCardFailed(String account, String bareAddress) {
+        if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
+            return;
+        }
+        this.vCard = null;
+        this.vCardError = true;
+        Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+    }
+
+    @Override
+    public void onContactsChanged(Collection<BaseEntity> entities) {
+        for (BaseEntity entity : entities) {
+            if (entity.equals(account, user)) {
+                updateContact(account, user);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onAccountsChanged(Collection<String> accounts) {
+        if (accounts.contains(account)) {
+            updateContact(account, user);
+        }
     }
 
     /**
@@ -76,7 +207,7 @@ public class ContactVcardViewerFragment extends Fragment {
 
     public void updateContact(String account, String bareAddress) {
         this.account = account;
-        this.bareAddress = bareAddress;
+        this.user = bareAddress;
 
         xmppItems.removeAllViews();
 

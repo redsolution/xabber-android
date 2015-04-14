@@ -6,10 +6,26 @@
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true" >
 
-    <FrameLayout
-        android:id="@+id/scrollable_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+
+        <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="vertical"
+
+            >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="@dimen/toolbar_height"
+                android:paddingBottom="8dp"
+                android:id="@+id/scrollable_container"
+            />
+
+        </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
 
     <include layout="@layout/expandable_fake_toolbar" />
 

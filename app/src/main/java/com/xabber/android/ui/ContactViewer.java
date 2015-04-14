@@ -22,12 +22,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.vcard.OnVCardListener;
-import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
@@ -39,26 +36,15 @@ import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.vcard.VCard;
-import com.xabber.xmpp.vcard.VCardProvider;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.List;
 
 public class ContactViewer extends ManagedActivity implements
-        OnVCardListener, OnContactChangedListener, OnAccountChangedListener {
-
-    private static final String SAVED_VCARD = "com.xabber.android.ui.ContactViewer.SAVED_VCARD";
-    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.ContactViewer.SAVED_VCARD_ERROR";
+        OnContactChangedListener, OnAccountChangedListener {
 
     private String account;
     private String bareAddress;
-    private VCard vCard;
-    private boolean vCardError;
 
     private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private TextView contactNameView;
@@ -104,35 +90,10 @@ public class ContactViewer extends ManagedActivity implements
             finish();
             return;
         }
-        vCard = null;
-        vCardError = false;
-        if (savedInstanceState != null) {
-            vCardError = savedInstanceState.getBoolean(SAVED_VCARD_ERROR, false);
-            String xml = savedInstanceState.getString(SAVED_VCARD);
-            if (xml != null)
-                try {
-                    XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
-                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
-                    parser.setInput(new StringReader(xml));
-                    int eventType = parser.next();
-                    if (eventType != XmlPullParser.START_TAG) {
-                        throw new IllegalStateException(String.valueOf(eventType));
-                    }
-                    if (!VCard.ELEMENT_NAME.equals(parser.getName())) {
-                        throw new IllegalStateException(parser.getName());
-                    }
-                    if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
-                        throw new IllegalStateException(parser.getNamespace());
-                    }
-                    vCard = (VCard) (new VCardProvider()).parseIQ(parser);
-                } catch (Exception e) {
-                    LogManager.exception(this, e);
-                }
-        }
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.scrollable_container, new ContactVcardViewerFragment()).commit();
+                    .add(R.id.scrollable_container, ContactVcardViewerFragment.newInstance(account, bareAddress)).commit();
         }
 
 
@@ -149,60 +110,17 @@ public class ContactViewer extends ManagedActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnVCardListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        if (vCard == null && !vCardError) {
-            VCardManager.getInstance().request(account, bareAddress, null);
-        }
 
         contactTitleExpandableToolbarInflater.onResume();
-
-        ContactVcardViewerFragment contactViewerFragment = getFragment();
-
-        contactViewerFragment.updateContact(account, bareAddress);
-        contactViewerFragment.updateVCard(vCard);
-    }
-
-    private ContactVcardViewerFragment getFragment() {
-        return (ContactVcardViewerFragment) getFragmentManager().findFragmentById(R.id.scrollable_container);
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnVCardListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_VCARD_ERROR, vCardError);
-        if (vCard != null) {
-            outState.putString(SAVED_VCARD, vCard.getChildElementXML());
-        }
-    }
-
-    @Override
-    public void onVCardReceived(String account, String bareAddress, VCard vCard) {
-        if (!this.account.equals(account) || !this.bareAddress.equals(bareAddress)) {
-            return;
-        }
-        this.vCard = vCard;
-        this.vCardError = false;
-        getFragment().updateVCard(vCard);
-    }
-
-    @Override
-    public void onVCardFailed(String account, String bareAddress) {
-        if (!this.account.equals(account) || !this.bareAddress.equals(bareAddress)) {
-            return;
-        }
-        this.vCard = null;
-        this.vCardError = true;
-        Application.getInstance().onError(R.string.XMPP_EXCEPTION);
     }
 
     @Override
@@ -210,7 +128,6 @@ public class ContactViewer extends ManagedActivity implements
         for (BaseEntity entity : entities) {
             if (entity.equals(account, bareAddress)) {
                 contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
-                getFragment().updateContact(account, bareAddress);
                 break;
             }
         }
@@ -220,7 +137,6 @@ public class ContactViewer extends ManagedActivity implements
     public void onAccountsChanged(Collection<String> accounts) {
         if (accounts.contains(account)) {
             contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
-            getFragment().updateContact(account, bareAddress);
         }
     }
 
