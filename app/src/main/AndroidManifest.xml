@@ -271,7 +271,13 @@
 
         <activity
             android:name="com.xabber.android.ui.ContactSubscription"
-            />
+            android:parentActivityName="com.xabber.android.ui.ContactList"
+            >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.ContactList" />
+        </activity>
         <activity
             android:name="com.xabber.android.ui.MUCInvite"
             />
