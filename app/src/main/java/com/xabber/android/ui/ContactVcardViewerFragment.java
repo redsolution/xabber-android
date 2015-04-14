@@ -17,7 +17,6 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
-import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.vcard.Address;
 import com.xabber.xmpp.vcard.AddressProperty;
@@ -34,13 +33,12 @@ import com.xabber.xmpp.vcard.VCardProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactViewerFragment extends Fragment {
+public class ContactVcardViewerFragment extends Fragment {
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
 
     String account;
     String bareAddress;
-    private TextView contactNameView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,16 +50,10 @@ public class ContactViewerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.contact_viewer_fragment, container, false);
+        View view = inflater.inflate(R.layout.contact_vcard_viewer_fragment, container, false);
 
         xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
-
-        View contactTitleView = ((ContactViewer) getActivity()).getContactTitleView();
-
-        contactTitleView.findViewById(R.id.status_icon).setVisibility(View.GONE);
-        contactTitleView.findViewById(R.id.status_text).setVisibility(View.GONE);
-        contactNameView = (TextView) contactTitleView.findViewById(R.id.name);
 
         return view;
     }
@@ -86,12 +78,10 @@ public class ContactViewerFragment extends Fragment {
         this.account = account;
         this.bareAddress = bareAddress;
 
-        contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
-
         xmppItems.removeAllViews();
 
-        View jabberIdView = createItemView(xmppItems,
-                getString(R.string.contact_viewer_jid), bareAddress, R.drawable.ic_vcard_xmpp_24dp);
+        View jabberIdView = createItemView(xmppItems, getString(R.string.contact_viewer_jid),
+                bareAddress, R.drawable.ic_vcard_xmpp_24dp);
 
         if (jabberIdView != null) {
             xmppItems.addView(jabberIdView);
@@ -124,7 +114,6 @@ public class ContactViewerFragment extends Fragment {
                     } else {
                         client = client + "/" + type;
                     }
-
                 }
             }
 
@@ -178,7 +167,6 @@ public class ContactViewerFragment extends Fragment {
         List<View> birthDayList = new ArrayList<>();
         addItem(birthDayList, contactInfoItems, getString(R.string.vcard_birth_date), vCard.getField(VCardProperty.BDAY));
         addItemGroup(birthDayList, contactInfoItems, R.drawable.ic_vcard_birthday_24dp);
-
 
         addOrganizationInfo(vCard);
 
@@ -258,7 +246,6 @@ public class ContactViewerFragment extends Fragment {
 
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_title), vCard.getField(VCardProperty.TITLE));
         addItem(organizationList, contactInfoItems, getString(R.string.vcard_role), vCard.getField(VCardProperty.ROLE));
-
 
         List<Organization> organizations = vCard.getOrganizations();
         String organization;

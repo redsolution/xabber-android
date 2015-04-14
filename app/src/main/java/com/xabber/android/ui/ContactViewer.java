@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -69,7 +70,9 @@ public class ContactViewer extends ManagedActivity implements
     private VCard vCard;
     private boolean vCardError;
 
-   private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
+    private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
+    private TextView contactNameView;
+
 
     private boolean isAccount = false;
 
@@ -143,13 +146,18 @@ public class ContactViewer extends ManagedActivity implements
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.scrollable_container, new ContactViewerFragment()).commit();
+                    .add(R.id.scrollable_container, new ContactVcardViewerFragment()).commit();
         }
 
 
         contactTitleExpandableToolbarInflater = new ContactTitleExpandableToolbarInflater(this);
         AbstractContact bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
         contactTitleExpandableToolbarInflater.onCreate(bestContact);
+
+        View contactTitleView = findViewById(R.id.expandable_contact_title);
+        contactTitleView.findViewById(R.id.status_icon).setVisibility(View.GONE);
+        contactTitleView.findViewById(R.id.status_text).setVisibility(View.GONE);
+        contactNameView = (TextView) contactTitleView.findViewById(R.id.name);
     }
 
     @Override
@@ -164,7 +172,7 @@ public class ContactViewer extends ManagedActivity implements
 
         contactTitleExpandableToolbarInflater.onResume();
 
-        ContactViewerFragment contactViewerFragment = getFragment();
+        ContactVcardViewerFragment contactViewerFragment = getFragment();
 
         contactViewerFragment.updateContact(account, bareAddress);
         contactViewerFragment.updateVCard(vCard);
@@ -239,8 +247,8 @@ public class ContactViewer extends ManagedActivity implements
         builder.show();
     }
 
-    private ContactViewerFragment getFragment() {
-        return (ContactViewerFragment) getFragmentManager().findFragmentById(R.id.scrollable_container);
+    private ContactVcardViewerFragment getFragment() {
+        return (ContactVcardViewerFragment) getFragmentManager().findFragmentById(R.id.scrollable_container);
     }
 
     @Override
@@ -284,6 +292,7 @@ public class ContactViewer extends ManagedActivity implements
     public void onContactsChanged(Collection<BaseEntity> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, bareAddress)) {
+                contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
                 getFragment().updateContact(account, bareAddress);
                 break;
             }
@@ -293,6 +302,7 @@ public class ContactViewer extends ManagedActivity implements
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
         if (accounts.contains(account)) {
+            contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
             getFragment().updateContact(account, bareAddress);
         }
     }
@@ -310,9 +320,4 @@ public class ContactViewer extends ManagedActivity implements
     private static String getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
-
-    public View getContactTitleView() {
-        return findViewById(R.id.expandable_contact_title);
-    }
-
 }
