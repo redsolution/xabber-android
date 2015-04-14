@@ -25,7 +25,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -33,11 +32,13 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.ClientSoftware;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
@@ -382,8 +383,13 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(ContactViewer.createIntent(activity,
-                        abstractContact.getAccount(), abstractContact.getUser()));
+                if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(), abstractContact.getUser())) {
+                    activity.startActivity(ContactViewer.createIntent(activity,
+                            abstractContact.getAccount(), abstractContact.getUser()));
+                } else {
+                    activity.startActivity(ContactEditor.createIntent(activity,
+                            abstractContact.getAccount(), abstractContact.getUser()));
+                }
             }
         });
 
@@ -410,9 +416,9 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.statusMode.setImageLevel(abstractContact.getStatusMode().getStatusLevel());
 
         ClientSoftware clientSoftware = abstractContact.getClientSoftware();
-        if (clientSoftware == ClientSoftware.unknown)
+        if (clientSoftware == ClientSoftware.unknown) {
             viewHolder.clientSoftware.setVisibility(View.INVISIBLE);
-        else {
+        } else {
             viewHolder.clientSoftware.setVisibility(View.VISIBLE);
             viewHolder.clientSoftware.setImageLevel(clientSoftware.ordinal());
         }

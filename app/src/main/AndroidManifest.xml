@@ -237,6 +237,17 @@
         </activity>
 
         <activity
+            android:label="@string/contact_viewer"
+            android:name="com.xabber.android.ui.ContactEditor"
+            android:parentActivityName="com.xabber.android.ui.ChatViewer"
+            >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.ChatViewer" />
+        </activity>
+
+        <activity
             android:name="com.xabber.android.ui.FingerprintViewer"
             android:label="@string/otr_verify_fingerprint"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"

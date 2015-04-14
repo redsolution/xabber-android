@@ -14,27 +14,18 @@
  */
 package com.xabber.android.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -44,7 +35,6 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
@@ -72,9 +62,6 @@ public class ContactViewer extends ManagedActivity implements
 
     private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private TextView contactNameView;
-
-
-    private boolean isAccount = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +96,6 @@ public class ContactViewer extends ManagedActivity implements
         }
 
         if (bareAddress != null && bareAddress.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
-            isAccount = true;
             bareAddress = Jid.getBareAddress(AccountManager.getInstance().getAccount(account).getRealJid());
         }
 
@@ -176,75 +162,6 @@ public class ContactViewer extends ManagedActivity implements
 
         contactViewerFragment.updateContact(account, bareAddress);
         contactViewerFragment.updateVCard(vCard);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (isAccount || MUCManager.getInstance().hasRoom(account, bareAddress)) {
-            return true;
-        }
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.contact_viewer, menu);
-
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
-        if (rosterContact == null) {
-            menu.findItem(R.id.action_edit_alias).setVisible(false);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_edit_alias:
-                editAlias();
-                return true;
-
-            case R.id.action_edit_groups:
-                startActivity(GroupEditor.createIntent(this, account, bareAddress));
-                return true;
-
-            case R.id.action_remove_contact:
-                ContactDeleteDialogFragment.newInstance(account, bareAddress)
-                        .show(getFragmentManager(), "CONTACT_DELETE");
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void editAlias() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.edit_alias);
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
-        input.setText(rosterContact.getName());
-        builder.setView(input);
-
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                try {
-                    RosterManager.getInstance().setName(account, bareAddress, input.getText().toString());
-                } catch (NetworkException e) {
-                    Application.getInstance().onError(e);
-                }
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
     }
 
     private ContactVcardViewerFragment getFragment() {
@@ -319,5 +236,13 @@ public class ContactViewer extends ManagedActivity implements
 
     private static String getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
+    }
+
+    protected String getAccount() {
+        return account;
+    }
+
+    protected String getBareAddress() {
+        return bareAddress;
     }
 }

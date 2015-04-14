@@ -38,6 +38,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ContactAdd;
+import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.MUCEditor;
@@ -91,7 +92,7 @@ public class ContextMenuHelper {
                             return true;
                         }
                     });
-            if (MUCManager.getInstance().isDisabled(account, user))
+            if (MUCManager.getInstance().isDisabled(account, user)) {
                 menu.add(R.string.muc_join).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
                             @Override
@@ -101,7 +102,7 @@ public class ContextMenuHelper {
                                 return true;
                             }
                         });
-            else
+            } else {
                 menu.add(R.string.muc_leave).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
 
@@ -119,9 +120,10 @@ public class ContextMenuHelper {
                             }
 
                         });
+            }
         } else {
             menu.add(R.string.contact_viewer).setIntent(
-                    ContactViewer.createIntent(activity, account, user));
+                    ContactEditor.createIntent(activity, account, user));
             menu.add(R.string.edit_contact_groups).setIntent(
                     GroupEditor.createIntent(activity, account, user));
 
@@ -137,7 +139,7 @@ public class ContextMenuHelper {
                         }
 
                     });
-            if (MessageManager.getInstance().hasActiveChat(account, user))
+            if (MessageManager.getInstance().hasActiveChat(account, user)) {
                 menu.add(R.string.close_chat).setOnMenuItemClickListener(
                         new MenuItem.OnMenuItemClickListener() {
 
@@ -153,7 +155,8 @@ public class ContextMenuHelper {
                             }
 
                         });
-            if (abstractContact.getStatusMode() == StatusMode.unsubscribed)
+            }
+            if (abstractContact.getStatusMode() == StatusMode.unsubscribed) {
                 menu.add(R.string.request_subscription)
                         .setOnMenuItemClickListener(
                                 new MenuItem.OnMenuItemClickListener() {
@@ -172,6 +175,7 @@ public class ContextMenuHelper {
                                     }
 
                                 });
+            }
         }
         if (PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
             menu.add(R.string.accept_subscription).setOnMenuItemClickListener(
