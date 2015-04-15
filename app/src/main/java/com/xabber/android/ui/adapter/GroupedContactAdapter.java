@@ -323,6 +323,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         int color;
 
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
+        viewHolder.offlineShadow.setVisibility(View.GONE);
 
         if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
             color = activeChatsColor;
@@ -334,13 +335,12 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             color = accountSubgroupColors[level];
             viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
 
-            if (!configuration.getAccount().equalsIgnoreCase(GroupManager.NO_ACCOUNT)) {
-                StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
+            AccountItem accountItem = AccountManager.getInstance().getAccount(configuration.getAccount());
 
+            if (accountItem != null) {
+                StatusMode statusMode = accountItem.getDisplayStatusMode();
                 if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
                     viewHolder.offlineShadow.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.offlineShadow.setVisibility(View.GONE);
                 }
             }
         }

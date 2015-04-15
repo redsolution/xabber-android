@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 
 import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.androiddev.R;
 
@@ -108,7 +109,17 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
                 }
             }
 
-            view.findViewById(R.id.account_shadow).setVisibility(shadowVisibility);
+            view.findViewById(R.id.account_unselected_shadow).setVisibility(shadowVisibility);
+
+            StatusMode statusMode = AccountManager.getInstance().getAccount(account).getDisplayStatusMode();
+            int offlineShadowVisibility;
+            if (statusMode == StatusMode.connection || statusMode == StatusMode.unavailable) {
+                offlineShadowVisibility = View.VISIBLE;
+            } else {
+                offlineShadowVisibility = View.GONE;
+            }
+            view.findViewById(R.id.account_offline_shadow).setVisibility(offlineShadowVisibility);
+
         }
     }
 
