@@ -23,7 +23,6 @@ import android.widget.TextView;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.utils.Emoticons;
 import com.xabber.androiddev.R;
 
 import org.jivesoftware.smackx.ChatState;
@@ -84,7 +83,7 @@ public class ContactTitleInflater {
         } else if (chatState == ChatState.paused) {
             statusText = activity.getString(R.string.chat_state_paused);
         } else {
-            statusText = Emoticons.getSmiledText(activity, abstractContact.getStatusText()).toString().trim();
+            statusText = abstractContact.getStatusText().trim();
             if (statusText.toString().isEmpty()) {
                 statusText = activity.getString(abstractContact.getStatusMode().getStringID());
             }

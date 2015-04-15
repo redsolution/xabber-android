@@ -117,7 +117,7 @@
 
     <dimen name="active_chat_padding_left">10dip</dimen>
     <dimen name="active_chat_padding_top">0dip</dimen>
-    <dimen name="active_chat_padding_right">10dip</dimen>
+    <dimen name="active_chat_padding_right">16dip</dimen>
     <dimen name="active_chat_padding_bottom">0dip</dimen>
 
     <dimen name="client_software_margin_left">34dip</dimen>

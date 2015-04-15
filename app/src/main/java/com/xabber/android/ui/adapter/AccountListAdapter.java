@@ -61,7 +61,6 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
         int accountColor = accountColors[accountManager.getColorLevel(account)];
 
         ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable(accountColor));
-        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
         ((ImageView) view.findViewById(R.id.avatar))
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 

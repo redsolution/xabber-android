@@ -15,6 +15,7 @@
 package com.xabber.android.ui.dialog;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,26 +28,25 @@ import com.xabber.androiddev.R;
  *
  * @author alexander.ivanov
  */
-public class OrbotInstallerDialogBuilder extends DialogBuilder {
+public class OrbotInstallerDialogBuilder {
 
     private final static String MARKET_SEARCH = "market://search?q=pname:%s";
 
-    public OrbotInstallerDialogBuilder(final Activity activity, int dialogId) {
-        super(activity, dialogId);
-        setIcon(android.R.drawable.ic_dialog_alert);
-        setTitle(R.string.orbot_required_title);
-        setMessage(R.string.orbot_required_message);
-        setPositiveButton(android.R.string.yes,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int w) {
-                        Uri uri = Uri.parse(String.format(MARKET_SEARCH,
-                                OrbotHelper.URI_ORBOT));
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        activity.startActivity(intent);
-                    }
-                });
-        setNegativeButton(android.R.string.no, null);
+    public static void show(final Activity activity) {
+        new AlertDialog.Builder(activity)
+                .setTitle(R.string.orbot_required_title)
+                .setMessage(R.string.orbot_required_message)
+                .setPositiveButton(android.R.string.yes,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int w) {
+                                Uri uri = Uri.parse(String.format(MARKET_SEARCH, OrbotHelper.URI_ORBOT));
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                activity.startActivity(intent);
+                            }
+                        })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
     }
 
 }

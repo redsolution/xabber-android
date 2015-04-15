@@ -62,32 +62,19 @@ public class AccountTypeAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         final View view;
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
-                    R.layout.account_type_item, parent, false);
+            view = activity.getLayoutInflater().inflate(R.layout.account_type_item, parent, false);
         } else {
             view = convertView;
         }
         final AccountType type = (AccountType) getItem(position);
-        ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(type
-                .getIcon());
+        ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(type.getIcon());
         ((TextView) view.findViewById(R.id.name)).setText(type.getName());
         return view;
     }
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        final View view;
-        if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
-                    R.layout.account_type_dropdown, parent, false);
-        } else {
-            view = convertView;
-        }
-        final AccountType type = (AccountType) getItem(position);
-        ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(type
-                .getIcon());
-        ((TextView) view.findViewById(R.id.name)).setText(type.getName());
-        return view;
+        return getView(position, convertView, parent);
     }
 
 }

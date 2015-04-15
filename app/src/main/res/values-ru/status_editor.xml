@@ -21,15 +21,20 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
     <string name="select_status">Установить статус</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
-    <string name="status_editor">Сменить статус</string>
+    <string name="status_editor">Установить статус</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
     <string name="status_editor_for">Сменить статус для %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
-    <string name="status_text_hint">Введите статус</string>
+    <string name="status_text_hint">Введите статус-сообщение</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="unavailable">Не в сети</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="unsubscribed">Не авторизован</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="xa">Давно отошел</string>
+
+    <string name="new_status">Новый статус</string>
+    <string name="saved_statuses">Сохранённые статусы</string>
+    <string name="clear_status_history">Очистить историю статусов</string>
+    <string name="status_message">Статус-сообщение</string>
 </resources>

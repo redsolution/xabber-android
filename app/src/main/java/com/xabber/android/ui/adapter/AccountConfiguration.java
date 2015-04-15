@@ -31,7 +31,7 @@ public class AccountConfiguration extends GroupConfiguration {
     public AccountConfiguration(String account, String user,
                                 GroupStateProvider groupStateProvider) {
         super(account, user, groupStateProvider);
-        groups = new TreeMap<String, GroupConfiguration>();
+        groups = new TreeMap<>();
     }
 
     /**

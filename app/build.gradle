@@ -8,8 +8,8 @@ android {
         applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 145
-        versionName '0.10.45'
+        versionCode 161
+        versionName '0.10.61'
     }
 
     compileOptions {
@@ -26,5 +26,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:support-v13:22.0.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
+    compile 'de.hdodenhof:circleimageview:1.2.2'
+    compile 'com.melnykov:floatingactionbutton:1.2.0'
     compile project('otr4j')
 }

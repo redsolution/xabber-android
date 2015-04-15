@@ -16,11 +16,13 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.widget.ListView;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -36,6 +38,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -44,8 +48,7 @@ import java.util.TreeMap;
  *
  * @author alexander.ivanov
  */
-public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflater, GroupManager>
-        implements Runnable {
+public class ContactListAdapter extends GroupedContactAdapter implements Runnable, Filterable {
 
     /**
      * Number of milliseconds between lazy refreshes.
@@ -77,11 +80,22 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
      */
     private Date nextRefresh;
 
-    private final OnContactListChangedListener listener;
+    /**
+     * Contact filter.
+     */
+    ContactFilter contactFilter;
 
-    public ContactListAdapter(
-            Activity activity, ListView listView, OnContactListChangedListener listener) {
-        super(activity, listView, new ChatContactInflater(activity), GroupManager.getInstance());
+    /**
+     * Filter string. Can be <code>null</code> if filter is disabled.
+     */
+    String filterString;
+
+    private final OnContactListChangedListener listener;
+    private boolean hasActiveChats = false;
+
+    public ContactListAdapter(Activity activity, OnContactListChangedListener listener,
+                              OnClickListener onClickListener) {
+        super(activity, onClickListener);
         this.listener = listener;
         handler = new Handler();
         refreshLock = new Object();
@@ -137,30 +151,21 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
         final CommonState commonState = AccountManager.getInstance().getCommonState();
         final String selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
-        /**
-         * Accounts.
-         */
-        final TreeMap<String, AccountConfiguration> accounts = new TreeMap<>();
 
         /**
          * Groups.
          */
-        final TreeMap<String, GroupConfiguration> groups;
+        final Map<String, GroupConfiguration> groups;
 
         /**
          * Contacts.
          */
-        final ArrayList<AbstractContact> contacts;
+        final List<AbstractContact> contacts;
 
         /**
          * List of active chats.
          */
         final GroupConfiguration activeChats;
-
-        /**
-         * List of rooms and active chats grouped by users inside accounts.
-         */
-        final TreeMap<String, TreeMap<String, AbstractChat>> abstractChats = new TreeMap<>();
 
         /**
          * Whether there is at least one contact.
@@ -172,15 +177,22 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
          */
         boolean hasVisibleContacts = false;
 
+        final Map<String, AccountConfiguration> accounts = new TreeMap<>();
+
         for (String account : AccountManager.getInstance().getAccounts()) {
             accounts.put(account, null);
         }
+
+        /**
+         * List of rooms and active chats grouped by users inside accounts.
+         */
+        final Map<String, Map<String, AbstractChat>> abstractChats = new TreeMap<>();
 
         for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
             if ((abstractChat instanceof RoomChat || abstractChat.isActive())
                     && accounts.containsKey(abstractChat.getAccount())) {
                 final String account = abstractChat.getAccount();
-                TreeMap<String, AbstractChat> users = abstractChats.get(account);
+                Map<String, AbstractChat> users = abstractChats.get(account);
                 if (users == null) {
                     users = new TreeMap<>();
                     abstractChats.put(account, users);
@@ -196,7 +208,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 contacts = null;
                 for (Entry<String, AccountConfiguration> entry : accounts.entrySet()) {
                     entry.setValue(new AccountConfiguration(entry.getKey(),
-                            GroupManager.IS_ACCOUNT, groupStateProvider));
+                            GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
                 }
             } else {
                 if (showGroups) {
@@ -209,7 +221,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
             }
             if (showActiveChats) {
                 activeChats = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-                        GroupManager.ACTIVE_CHATS, groupStateProvider);
+                        GroupManager.ACTIVE_CHATS, GroupManager.getInstance());
             } else {
                 activeChats = null;
             }
@@ -222,7 +234,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 hasContacts = true;
                 final boolean online = rosterContact.getStatusMode().isOnline();
                 final String account = rosterContact.getAccount();
-                final TreeMap<String, AbstractChat> users = abstractChats.get(account);
+                final Map<String, AbstractChat> users = abstractChats.get(account);
                 final AbstractChat abstractChat;
                 if (users == null) {
                     abstractChat = null;
@@ -248,7 +260,7 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                     hasVisibleContacts = true;
                 }
             }
-            for (TreeMap<String, AbstractChat> users : abstractChats.values()) {
+            for (Map<String, AbstractChat> users : abstractChats.values()) {
                 for (AbstractChat abstractChat : users.values()) {
                     final AbstractContact abstractContact;
                     if (abstractChat instanceof RoomChat) {
@@ -285,6 +297,8 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 }
             }
 
+            hasActiveChats = activeChats.getTotal() > 0;
+
             // Remove empty groups, sort and apply structure.
             baseEntities.clear();
             if (hasVisibleContacts) {
@@ -298,8 +312,16 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                     }
                 }
                 if (showAccounts) {
+                    boolean isFirst = baseEntities.isEmpty();
                     for (AccountConfiguration rosterAccount : accounts.values()) {
+                        if (isFirst) {
+                            isFirst = false;
+                        } else {
+                            baseEntities.add(new AccountTopSeparator(null, null));
+                        }
+
                         baseEntities.add(rosterAccount);
+
                         if (showGroups) {
                             if (rosterAccount.isExpanded()) {
                                 for (GroupConfiguration rosterConfiguration : rosterAccount
@@ -314,6 +336,10 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                         } else {
                             rosterAccount.sortAbstractContacts(comparator);
                             baseEntities.addAll(rosterAccount.getAbstractContacts());
+                        }
+
+                        if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
+                            baseEntities.add(new AccountBottomSeparator(rosterAccount.getAccount(), null));
                         }
                     }
                 } else {
@@ -332,44 +358,14 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 }
             }
         } else { // Search
-            final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
-
-            // Build structure.
-            for (RosterContact rosterContact : rosterContacts) {
-                if (!rosterContact.isEnabled()) {
-                    continue;
-                }
-                final String account = rosterContact.getAccount();
-                final TreeMap<String, AbstractChat> users = abstractChats.get(account);
-                if (users != null) {
-                    users.remove(rosterContact.getUser());
-                }
-                if (rosterContact.getName().toLowerCase(locale).contains(filterString)) {
-                    baseEntities.add(rosterContact);
-                }
-            }
-            for (TreeMap<String, AbstractChat> users : abstractChats.values()) {
-                for (AbstractChat abstractChat : users.values()) {
-                    final AbstractContact abstractContact;
-                    if (abstractChat instanceof RoomChat) {
-                        abstractContact = new RoomContact((RoomChat) abstractChat);
-                    } else {
-                        abstractContact = new ChatContact(abstractChat);
-                    }
-                    if (abstractContact.getName().toLowerCase(locale).contains(filterString)) {
-                        baseEntities.add(abstractContact);
-                    }
-                }
-            }
-            Collections.sort(baseEntities, comparator);
+            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
             this.baseEntities.clear();
             this.baseEntities.addAll(baseEntities);
             hasVisibleContacts = baseEntities.size() > 0;
         }
 
         super.onChange();
-        listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts,
-                filterString != null);
+        listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
 
         synchronized (refreshLock) {
             nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
@@ -379,6 +375,42 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
                 handler.postDelayed(this, REFRESH_INTERVAL);
             }
         }
+    }
+
+    private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
+                                                        Comparator<AbstractContact> comparator,
+                                                        Map<String, Map<String, AbstractChat>> abstractChats) {
+        final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
+
+        // Build structure.
+        for (RosterContact rosterContact : rosterContacts) {
+            if (!rosterContact.isEnabled()) {
+                continue;
+            }
+            final String account = rosterContact.getAccount();
+            final Map<String, AbstractChat> users = abstractChats.get(account);
+            if (users != null) {
+                users.remove(rosterContact.getUser());
+            }
+            if (rosterContact.getName().toLowerCase(locale).contains(filterString)) {
+                baseEntities.add(rosterContact);
+            }
+        }
+        for (Map<String, AbstractChat> users : abstractChats.values()) {
+            for (AbstractChat abstractChat : users.values()) {
+                final AbstractContact abstractContact;
+                if (abstractChat instanceof RoomChat) {
+                    abstractContact = new RoomContact((RoomChat) abstractChat);
+                } else {
+                    abstractContact = new ChatContact(abstractChat);
+                }
+                if (abstractContact.getName().toLowerCase(locale).contains(filterString)) {
+                    baseEntities.add(abstractContact);
+                }
+            }
+        }
+        Collections.sort(baseEntities, comparator);
+        return baseEntities;
     }
 
     @Override
@@ -398,4 +430,47 @@ public class ContactListAdapter extends GroupedContactAdapter<ChatContactInflate
 
     }
 
+    public static class AccountTopSeparator extends BaseEntity {
+        public AccountTopSeparator(String account, String user) {
+            super(account, user);
+        }
+    }
+
+    public static class AccountBottomSeparator extends BaseEntity {
+        public AccountBottomSeparator(String account, String user) {
+            super(account, user);
+        }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (contactFilter == null) {
+            contactFilter = new ContactFilter();
+        }
+        return contactFilter;
+    }
+
+    private class ContactFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            return null;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+            if (constraint == null || constraint.length() == 0) {
+                filterString = null;
+            } else {
+                filterString = constraint.toString().toLowerCase(locale);
+            }
+            onChange();
+        }
+
+    }
+
+    public boolean isHasActiveChats() {
+        return hasActiveChats;
+    }
 }

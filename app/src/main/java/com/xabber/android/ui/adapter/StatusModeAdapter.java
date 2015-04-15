@@ -38,13 +38,12 @@ public class StatusModeAdapter extends BaseAdapter {
     public StatusModeAdapter(Activity activity) {
         super();
         this.activity = activity;
-        statusModes = new ArrayList<StatusMode>();
+        statusModes = new ArrayList<>();
         statusModes.add(StatusMode.chat);
         statusModes.add(StatusMode.available);
         statusModes.add(StatusMode.away);
         statusModes.add(StatusMode.xa);
         statusModes.add(StatusMode.dnd);
-        // statusModes.add(StatusMode.invisible);
         statusModes.add(StatusMode.unavailable);
     }
 
@@ -65,18 +64,15 @@ public class StatusModeAdapter extends BaseAdapter {
 
     private void updateView(int position, View view) {
         StatusMode statusMode = (StatusMode) getItem(position);
-        ((ImageView) view.findViewById(R.id.icon)).setImageLevel(statusMode
-                .getStatusLevel());
-        ((TextView) view.findViewById(R.id.name)).setText(statusMode
-                .getStringID());
+        ((ImageView) view.findViewById(R.id.icon)).setImageLevel(statusMode.getStatusLevel());
+        ((TextView) view.findViewById(R.id.name)).setText(statusMode.getStringID());
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
-                    R.layout.status_mode_item, parent, false);
+            view = activity.getLayoutInflater().inflate(R.layout.status_mode_item, parent, false);
         } else {
             view = convertView;
         }
@@ -86,14 +82,6 @@ public class StatusModeAdapter extends BaseAdapter {
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        View view;
-        if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
-                    R.layout.status_mode_dropdown, parent, false);
-        } else {
-            view = convertView;
-        }
-        updateView(position, view);
-        return view;
+        return getView(position, convertView, parent);
     }
 }

@@ -43,8 +43,7 @@ public class AccountChooseAdapter extends BaseAdapter {
     public AccountChooseAdapter(Activity activity) {
         super();
         this.activity = activity;
-        accounts = new ArrayList<String>(AccountManager.getInstance()
-                .getAccounts());
+        accounts = new ArrayList<>(AccountManager.getInstance().getAccounts());
         Collections.sort(accounts);
 
         accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
@@ -78,7 +77,6 @@ public class AccountChooseAdapter extends BaseAdapter {
         final String account = (String) getItem(position);
 
         int accountColor = accountColors[accountManager.getColorLevel(account)];
-        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
         ((ImageView) view.findViewById(R.id.avatar))
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
@@ -89,24 +87,7 @@ public class AccountChooseAdapter extends BaseAdapter {
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        final View view;
-        final AccountManager accountManager = AccountManager.getInstance();
-        if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
-                    R.layout.account_choose_dropdown, parent, false);
-        } else {
-            view = convertView;
-        }
-        final String account = (String) getItem(position);
-
-        int accountColor = accountColors[accountManager.getColorLevel(account)];
-        ((ImageView) view.findViewById(R.id.avatar_background)).setImageDrawable(new ColorDrawable(accountColor));
-        ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-
-        ((TextView) view.findViewById(R.id.name)).setText(accountManager
-                .getVerboseName(account));
-        return view;
+        return getView(position, convertView, parent);
     }
 
 }

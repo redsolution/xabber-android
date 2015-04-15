@@ -18,25 +18,8 @@
     android:layout_height="wrap_content"
     android:padding="4dip">
 
+    <include layout="@layout/avatar_account" />
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:id="@+id/avatar_account"
-        >
-
-        <ImageView
-            android:id="@+id/avatar_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@color/material_deep_teal_500" />
-
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_avatar_1" />
-    </RelativeLayout>
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"

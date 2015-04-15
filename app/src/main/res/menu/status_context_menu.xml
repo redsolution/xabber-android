@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_select_status"
+        android:title="@string/select_status" />
+
+    <item android:id="@+id/action_edit_status"
+        android:title="@string/edit_status" />
+
+    <item android:id="@+id/action_remove_status"
+        android:title="@string/remove_status" />
+</menu>

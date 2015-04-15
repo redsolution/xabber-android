@@ -27,7 +27,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_offline">Show offline contacts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
-    <string name="contacts_show_panel">Show account\'s panel\nShow panel with account\'s avatars in the beginning of contact list</string>
+    <string name="contacts_show_panel">Show account\'s panel\nShow action buttons with account\'s avatars in the bottom right corner of contact list</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
     <string name="contacts_stay_active_chats">Duplicate active chats\nActive chats appear both on top of contact list and in home groups</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->

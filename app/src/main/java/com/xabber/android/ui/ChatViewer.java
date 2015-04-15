@@ -294,7 +294,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         switch (item.getItemId()) {
             case R.id.action_view_contact:
-                startActivity(ContactViewer.createIntent(this, account, user));
+                showContactInfo();
                 return true;
 
             case R.id.action_chat_list:
@@ -424,8 +424,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         return ACTION_ATTENTION.equals(intent.getAction());
     }
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
+    public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, ChatViewer.class).setAccount(account).setUser(user).build();
     }
 
@@ -433,8 +432,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         return new EntityIntentBuilder(context, ChatViewer.class).build();
     }
 
-    public static Intent createClearTopIntent(Context context, String account,
-                                              String user) {
+    public static Intent createClearTopIntent(Context context, String account, String user) {
         Intent intent = createIntent(context, account, user);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
@@ -452,24 +450,21 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
      *                of messages. Else only one message can be send.
      * @return
      */
-    public static Intent createSendIntent(Context context, String account,
-                                          String user, String text) {
+    public static Intent createSendIntent(Context context, String account, String user, String text) {
         Intent intent = ChatViewer.createIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
         return intent;
     }
 
-    public static Intent createAttentionRequestIntent(Context context,
-                                                      String account, String user) {
+    public static Intent createAttentionRequestIntent(Context context, String account, String user) {
         Intent intent = ChatViewer.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
         return intent;
     }
 
     @Override
-    public void onChatChanged(final String account, final String user,
-                              final boolean incoming) {
+    public void onChatChanged(final String account, final String user, final boolean incoming) {
 
         String currentAccount = null;
         String currentUser = null;
@@ -716,7 +711,15 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.avatar) {
+            showContactInfo();
+        }
+    }
+
+    private void showContactInfo() {
+        if (MUCManager.getInstance().hasRoom(actionWithAccount, actionWithUser)) {
             startActivity(ContactViewer.createIntent(this, actionWithAccount, actionWithUser));
+        } else {
+            startActivity(ContactEditor.createIntent(this, actionWithAccount, actionWithUser));
         }
     }
 }

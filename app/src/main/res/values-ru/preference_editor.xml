@@ -27,7 +27,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_offline">Отображать оффлайн контакты\nОтображать собеседников не в сети</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
-    <string name="contacts_show_panel">Отображать панель учетных записей\nПозволяет видеть панель с изображениями учетных записей вверху списка контактов</string>
+    <string name="contacts_show_panel">Отображать панель учетных записей\nПозволяет видеть кнопки с изображениями учетных записей в правом нижнем углу списка контактов</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
     <string name="contacts_stay_active_chats">Дублировать активные чаты\nОтображать контакты с активными чатами не только в начале списка контактов, но и в основном списке</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->

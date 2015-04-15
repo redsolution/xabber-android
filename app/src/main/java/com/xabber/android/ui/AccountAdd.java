@@ -14,48 +14,19 @@
  */
 package com.xabber.android.ui;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountType;
 import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.ui.adapter.AccountTypeAdapter;
-import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.android.ui.helper.OrbotHelper;
 import com.xabber.androiddev.R;
 
-public class AccountAdd extends ManagedActivity implements
-        View.OnClickListener, OnItemSelectedListener {
-
-    private static final String SAVED_ACCOUNT_TYPE = "com.xabber.android.ui.AccountAdd.ACCOUNT_TYPE";
-
-    private static final int OAUTH_WML_REQUEST_CODE = 1;
-
-    private static final int ORBOT_DIALOG_ID = 9050;
-
-    private CheckBox storePasswordView;
-    private CheckBox useOrbotView;
-    private CheckBox syncableView;
-    private CheckBox createAccount;
-    private Spinner accountTypeView;
+public class AccountAdd extends ManagedActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,178 +36,43 @@ public class AccountAdd extends ManagedActivity implements
 
         setContentView(R.layout.account_add);
 
-        storePasswordView = (CheckBox) findViewById(R.id.store_password);
-        useOrbotView = (CheckBox) findViewById(R.id.use_orbot);
-        syncableView = (CheckBox) findViewById(R.id.syncable);
-        if (!Application.getInstance().isContactsSupported()) {
-            syncableView.setVisibility(View.GONE);
-            syncableView.setChecked(false);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().add(R.id.container, AccountAddFragment.newInstance()).commit();
         }
-        createAccount = (CheckBox) findViewById(R.id.register_account);
-
-        accountTypeView = (Spinner) findViewById(R.id.account_type);
-        accountTypeView.setAdapter(new AccountTypeAdapter(this));
-        accountTypeView.setOnItemSelectedListener(this);
-
-        String accountType;
-        if (savedInstanceState == null)
-            accountType = null;
-        else
-            accountType = savedInstanceState.getString(SAVED_ACCOUNT_TYPE);
-        accountTypeView.setSelection(0);
-        for (int position = 0; position < accountTypeView.getCount(); position++)
-            if (((AccountType) accountTypeView.getItemAtPosition(position))
-                    .getName().equals(accountType)) {
-                accountTypeView.setSelection(position);
-                break;
-            }
-
-        ((Button) findViewById(R.id.ok)).setOnClickListener(this);
-        createAccount.setOnClickListener(this);
-        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(findViewById(R.id.ok)
-                .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getSupportActionBar().setTitle(null);
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(SAVED_ACCOUNT_TYPE,
-                ((AccountType) accountTypeView.getSelectedItem()).getName());
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.add_account, menu);
+        menu.findItem(R.id.action_add_account).setIcon(null);
+
+        return true;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == OAUTH_WML_REQUEST_CODE) {
-            if (resultCode == RESULT_OK && !OAuthActivity.isInvalidated(data)) {
-                String token = OAuthActivity.getToken(data);
-                if (token == null) {
-                    Application.getInstance().onError(
-                            R.string.AUTHENTICATION_FAILED);
-                } else {
-                    String account;
-                    try {
-                        account = AccountManager.getInstance()
-                                .addAccount(
-                                        null,
-                                        token,
-                                        (AccountType) accountTypeView
-                                                .getSelectedItem(),
-                                        syncableView.isChecked(),
-                                        storePasswordView.isChecked(),
-                                        useOrbotView.isChecked(),
-                                        false);
-                    } catch (NetworkException e) {
-                        Application.getInstance().onError(e);
-                        return;
-                    }
-                    setResult(RESULT_OK,
-                            createAuthenticatorResult(this, account));
-                    finish();
-                }
-            }
-        }
-    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_account:
+                ((AccountAddFragment)getSupportFragmentManager().findFragmentById(R.id.container)).addAccount();
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ok:
-                if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
-                    showDialog(ORBOT_DIALOG_ID);
-                    return;
-                }
-                AccountType accountType = (AccountType) accountTypeView
-                        .getSelectedItem();
-                if (accountType.getProtocol().isOAuth()) {
-                    startActivityForResult(
-                            OAuthActivity.createIntent(this,
-                                    accountType.getProtocol()),
-                            OAUTH_WML_REQUEST_CODE);
-                } else {
-                    EditText userView = (EditText) findViewById(R.id.account_user_name);
-                    EditText passwordView = (EditText) findViewById(R.id.account_password);
-                    EditText passwordConfirmView = (EditText) findViewById(R.id.confirm_password);
-                    if(createAccount.isChecked() &&
-                       !passwordView.getText().toString().contentEquals(passwordConfirmView.getText().toString())) {
-                        Toast.makeText(this, getString(R.string.CONFIRM_PASSWORD),
-                            Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    String account;
-                    try {
-                        account = AccountManager.getInstance().addAccount(
-                                userView.getText().toString(),
-                                passwordView.getText().toString(), accountType,
-                                syncableView.isChecked(),
-                                storePasswordView.isChecked(),
-                                useOrbotView.isChecked(),
-                                createAccount.isChecked());
-                    } catch (NetworkException e) {
-                        Application.getInstance().onError(e);
-                        return;
-                    }
-                    setResult(RESULT_OK, createAuthenticatorResult(this, account));
-                    finish();
-                }
-                break;
-            case R.id.register_account:
-                LinearLayout passwordConfirmView = (LinearLayout) findViewById(R.id.confirm_password_layout);
-                if(createAccount.isChecked()) {
-                    passwordConfirmView.setVisibility(View.VISIBLE);
-                }
-                else {
-                    passwordConfirmView.setVisibility(View.GONE);
-                }
+                return true;
+
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view,
-                               int position, long id) {
-        AccountType accountType = (AccountType) accountTypeView
-                .getSelectedItem();
-        if (accountType.getProtocol().isOAuth())
-            findViewById(R.id.auth_panel).setVisibility(View.GONE);
-        else
-            findViewById(R.id.auth_panel).setVisibility(View.VISIBLE);
-        ((TextView) findViewById(R.id.account_user_name)).setHint(accountType
-                .getHint());
-        ((TextView) findViewById(R.id.account_help)).setText(accountType
-                .getHelp());
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-        accountTypeView.setSelection(0);
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        if (id == ORBOT_DIALOG_ID) {
-            return new OrbotInstallerDialogBuilder(this, ORBOT_DIALOG_ID)
-                    .create();
-        }
-        return super.onCreateDialog(id);
     }
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountAdd.class);
     }
 
-    private static Intent createAuthenticatorResult(Context context,
-                                                    String account) {
+    public static Intent createAuthenticatorResult(String account) {
         return new AccountIntentBuilder(null, null).setAccount(account).build();
     }
-
-    public static String getAuthenticatorResultAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
 }

@@ -9,4 +9,7 @@
     <dimen name="avatar_large_size">72dp</dimen>
     <dimen name="avatar_normal_size">48dp</dimen>
     <dimen name="avatar_radius">56dp</dimen>
+
+    <dimen name="account_group_elevation">2dp</dimen>
+    <dimen name="account_subgroup_elevation">1dp</dimen>
 </resources>

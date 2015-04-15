@@ -118,8 +118,6 @@ class StatusTable extends AbstractTable {
     }
 
     void write(StatusMode statusMode, String statusText) {
-        if (statusText == null)
-            statusText = "";
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();

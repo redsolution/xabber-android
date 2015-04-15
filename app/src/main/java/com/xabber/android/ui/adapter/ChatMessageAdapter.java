@@ -37,7 +37,6 @@ import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 
@@ -171,14 +170,10 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 
             ChatAction action = messageItem.getAction();
 
-            Spannable text = Emoticons.newSpannable(
-                    action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
-
-            Emoticons.getSmiledText(activity.getApplication(), text);
-
             String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
 
-            ((TextView)view.findViewById(R.id.action_message_text)).setText(time + ": " + text);
+            ((TextView)view.findViewById(R.id.action_message_text)).setText(time + ": "
+                    + action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
 
             return view;
         }
@@ -229,7 +224,6 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         }
 
         Spannable text = messageItem.getSpannable();
-        Emoticons.getSmiledText(activity.getApplication(), text);
         if (messageItem.getTag() == null) {
             builder.append(text);
         } else {

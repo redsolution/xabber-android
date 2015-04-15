@@ -46,7 +46,7 @@ public class AccountList extends BaseListEditor<String> implements
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts)));
+        getSupportActionBar().setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts)));
     }
 
     @Override

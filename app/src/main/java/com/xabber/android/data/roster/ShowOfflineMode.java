@@ -22,9 +22,9 @@ package com.xabber.android.data.roster;
 public enum ShowOfflineMode {
 
     /**
-     * Never show offline contacts.
+     * Always show offline contacts.
      */
-    never,
+    always,
 
     /**
      * Show offline contacts according to global settings.
@@ -32,8 +32,7 @@ public enum ShowOfflineMode {
     normal,
 
     /**
-     * Always show offline contacts.
+     * Never show offline contacts.
      */
-    always;
-
+    never
 }

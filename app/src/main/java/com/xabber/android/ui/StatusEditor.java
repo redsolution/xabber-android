@@ -22,6 +22,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,18 +41,14 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
+import com.xabber.android.ui.helper.ActionBarPainter;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
-public class StatusEditor extends ManagedListActivity implements
-        View.OnClickListener, OnItemClickListener {
+public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
     private static final String SAVED_TEXT = "com.xabber.android.ui.StatusEditor.SAVED_TEXT";
     private static final String SAVED_MODE = "com.xabber.android.ui.StatusEditor.SAVED_MODE";
-
-    static final public int CONTEXT_MENU_SELECT_STATUS_ID = 10;
-    static final public int CONTEXT_MENU_EDIT_STATUS_ID = 11;
-    static final public int CONTEXT_MENU_REMOVE_STATUS_ID = 12;
 
     private String account;
     private Spinner statusModeView;
@@ -59,42 +56,46 @@ public class StatusEditor extends ManagedListActivity implements
 
     private SavedStatus actionWithItem;
     private StatusEditorAdapter adapter;
+    private View savedStatusesTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         actionWithItem = null;
 
         setContentView(R.layout.status_editor);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        setSupportActionBar((Toolbar) findViewById(R.id.top_toolbar));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
+        getSupportActionBar().setTitle(null);
 
         Intent intent = getIntent();
         account = StatusEditor.getAccount(intent);
-        if (account == null)
-            setTitle(getString(R.string.status_editor));
-        else
-            setTitle(getString(R.string.status_editor_for, AccountManager
-                    .getInstance().getVerboseName(account)));
+        if (account != null) {
+            ActionBarPainter actionBarPainter = new ActionBarPainter(this);
+            actionBarPainter.updateWithAccountName(account);
+        }
 
         ListView listView = getListView();
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View header = inflater.inflate(R.layout.status_editor_header, listView,
-                false);
-        listView.addHeaderView(header, null, false);
         listView.setOnItemClickListener(this);
         registerForContextMenu(listView);
         adapter = new StatusEditorAdapter(this);
         setListAdapter(adapter);
 
-        statusTextView = (EditText) header.findViewById(R.id.status_text);
-        statusModeView = (Spinner) header.findViewById(R.id.status_icon);
+        View footerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.status_history_footer, null, false);
+        footerView.findViewById(R.id.clear_status_history_button).setOnClickListener(this);
+        listView.addFooterView(footerView);
+
+        statusTextView = (EditText) findViewById(R.id.status_text);
+        statusModeView = (Spinner) findViewById(R.id.status_icon);
         statusModeView.setAdapter(new StatusModeAdapter(this));
-        findViewById(R.id.ok).setOnClickListener(this);
+
+        savedStatusesTextView = findViewById(R.id.saved_statuses_textview);
 
         StatusMode statusMode;
         String statusText;
@@ -103,8 +104,7 @@ public class StatusEditor extends ManagedListActivity implements
                 statusMode = SettingsManager.statusMode();
                 statusText = SettingsManager.statusText();
             } else {
-                AccountItem accountItem = AccountManager.getInstance()
-                        .getAccount(account);
+                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem == null) {
                     Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
                     finish();
@@ -114,8 +114,7 @@ public class StatusEditor extends ManagedListActivity implements
                 statusText = accountItem.getStatusText();
             }
         } else {
-            statusMode = StatusMode.valueOf(savedInstanceState
-                    .getString(SAVED_MODE));
+            statusMode = StatusMode.valueOf(savedInstanceState.getString(SAVED_MODE));
             statusText = savedInstanceState.getString(SAVED_TEXT);
         }
         showStatus(statusMode, statusText);
@@ -131,17 +130,19 @@ public class StatusEditor extends ManagedListActivity implements
 
     private void setStatus(StatusMode statusMode, String statusText) {
         AccountManager accountManager = AccountManager.getInstance();
-        if (account != null)
+        if (account != null) {
             accountManager.setStatus(account, statusMode, statusText);
-        else {
+        } else {
             accountManager.setStatus(statusMode, statusText);
         }
     }
 
     private void showStatus(StatusMode statusMode, String statusText) {
-        for (int index = 0; index < statusModeView.getCount(); index++)
-            if (statusMode == statusModeView.getAdapter().getItem(index))
+        for (int index = 0; index < statusModeView.getCount(); index++) {
+            if (statusMode == statusModeView.getAdapter().getItem(index)) {
                 statusModeView.setSelection(index);
+            }
+        }
         statusTextView.setText(statusText);
     }
 
@@ -149,14 +150,21 @@ public class StatusEditor extends ManagedListActivity implements
     protected void onResume() {
         super.onResume();
         adapter.onChange();
+        setStatusHistoryVisibility();
+    }
+
+    private void setStatusHistoryVisibility() {
+        boolean isHistoryEmpty = AccountManager.getInstance().getSavedStatuses().isEmpty();
+        int visibility = isHistoryEmpty ? View.GONE : View.VISIBLE;
+
+        getListView().setVisibility(visibility);
+        savedStatusesTextView.setVisibility(visibility);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.status, menu);
-
-
+        getMenuInflater().inflate(R.menu.set_status, menu);
         return true;
     }
 
@@ -168,78 +176,59 @@ public class StatusEditor extends ManagedListActivity implements
                 changeStatus();
                 return true;
 
-            case R.id.action_delete_status_message:
-                AccountManager.getInstance().clearSavedStatuses();
-                adapter.onChange();
+            case R.id.action_clear_status_history:
+                clearStatusHistory();
                 return true;
         }
         return false;
     }
 
+    private void clearStatusHistory() {
+        AccountManager.getInstance().clearSavedStatuses();
+        adapter.onChange();
+        setStatusHistoryVisibility();
+    }
+
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        actionWithItem = (SavedStatus) getListView().getItemAtPosition(
-                info.position);
-        if (actionWithItem == null) // Header
-            return;
-        menu.add(0, CONTEXT_MENU_SELECT_STATUS_ID, 0,
-                getResources().getText(R.string.select_status));
-        menu.add(0, CONTEXT_MENU_EDIT_STATUS_ID, 0,
-                getResources().getText(R.string.edit_status));
-        menu.add(0, CONTEXT_MENU_REMOVE_STATUS_ID, 0,
-                getResources().getText(R.string.remove_status));
+        actionWithItem = (SavedStatus) getListView().getItemAtPosition(info.position);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.status_context_menu, menu);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         super.onContextItemSelected(item);
         switch (item.getItemId()) {
-            case CONTEXT_MENU_SELECT_STATUS_ID:
-                setStatus(actionWithItem.getStatusMode(),
-                        actionWithItem.getStatusText());
+            case R.id.action_select_status:
+                setStatus(actionWithItem.getStatusMode(), actionWithItem.getStatusText());
                 finish();
                 return true;
-            case CONTEXT_MENU_EDIT_STATUS_ID:
-                showStatus(actionWithItem.getStatusMode(),
-                        actionWithItem.getStatusText());
+            case R.id.action_edit_status:
+                showStatus(actionWithItem.getStatusMode(), actionWithItem.getStatusText());
                 return true;
-            case CONTEXT_MENU_REMOVE_STATUS_ID:
+            case R.id.action_remove_status:
                 AccountManager.getInstance().removeSavedStatus(actionWithItem);
                 adapter.onChange();
+                setStatusHistoryVisibility();
                 return true;
         }
         return false;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ok:
-                changeStatus();
-                break;
-            default:
-                break;
-        }
-    }
-
     private void changeStatus() {
-        StatusMode statusMode = (StatusMode) statusModeView
-                .getSelectedItem();
+        StatusMode statusMode = (StatusMode) statusModeView.getSelectedItem();
         String statusText = statusTextView.getText().toString();
         setStatus(statusMode, statusText);
         finish();
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
-                            long id) {
-        SavedStatus savedStatus = (SavedStatus) parent.getAdapter().getItem(
-                position);
-        if (savedStatus == null) // Header
-            return;
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        SavedStatus savedStatus = (SavedStatus) parent.getAdapter().getItem(position);
         setStatus(savedStatus.getStatusMode(), savedStatus.getStatusText());
         finish();
     }
@@ -249,11 +238,24 @@ public class StatusEditor extends ManagedListActivity implements
     }
 
     public static Intent createIntent(Context context, String account) {
-        return new AccountIntentBuilder(context, StatusEditor.class)
-                .setAccount(account).build();
+        return new AccountIntentBuilder(context, StatusEditor.class).setAccount(account).build();
     }
 
     private static String getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        return onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.clear_status_history_button:
+                clearStatusHistory();
+            default:
+        }
     }
 }

@@ -6,13 +6,6 @@
     android:layout_height="@dimen/avatar_size_toolbar"
     android:id="@+id/avatar_account"
     >
-
-    <ImageView
-        android:id="@+id/avatar_background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@color/material_deep_teal_500" />
-
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="match_parent"

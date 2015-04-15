@@ -404,7 +404,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             resource = "android" + StringUtils.randomString(8);
         }
 
-        accountItem = addAccount(accountType.getProtocol(), true, host, port, serverName, userName,
+
+        boolean useCustomHost = false;
+
+        if (accountType.getProtocol() == AccountProtocol.gtalk) {
+            useCustomHost = true;
+        }
+
+        accountItem = addAccount(accountType.getProtocol(), useCustomHost, host, port, serverName, userName,
                 storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 false, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
@@ -850,7 +857,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param statusText
      */
     public void setStatus(String account, StatusMode statusMode, String statusText) {
-        addSavedStatus(statusMode, statusText);
+        if (statusText != null && !statusText.trim().isEmpty()) {
+            addSavedStatus(statusMode, statusText);
+        }
+
         AccountItem accountItem = getAccount(account);
         setStatus(accountItem, statusMode, statusText);
         try {

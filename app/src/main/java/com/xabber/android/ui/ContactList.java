@@ -26,16 +26,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -57,7 +54,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ContactListFragment.OnContactClickListener;
-import com.xabber.android.ui.adapter.AccountToggleAdapter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
@@ -94,11 +90,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
 
     /**
-     * Adapter for account list.
-     */
-    private AccountToggleAdapter accountToggleAdapter;
-
-    /**
      * Current action.
      */
     private String action;
@@ -109,7 +100,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     private String sendText;
 
     private SearchView searchView;
-    private View actionBarView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,24 +116,12 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         }
 
         setContentView(R.layout.contact_list);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setLogo(R.drawable.ic_xabber_logo);
+        toolbar.setOnClickListener(this);
+        setSupportActionBar(toolbar);
 
         setTitle(getString(R.string.production_title));
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
-
-        actionBarView = LayoutInflater.from(this).inflate(R.layout.contact_list_action_bar, null);
-        actionBarView.setOnClickListener(this);
-
-        actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(
-                ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
-
-        accountToggleAdapter = new AccountToggleAdapter(this, this,
-                (LinearLayout) actionBarView.findViewById(R.id.account_list));
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -455,24 +433,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case android.R.id.title:
+            case R.id.toolbar_default:
                 getContactListFragment().scrollUp();
-                break;
-            default:
-                String account = accountToggleAdapter.getItemForView(view);
-                if (account == null) { // Check for tap on account in the title
-                    break;
-                }
-                if (!SettingsManager.contactsShowAccounts()) {
-                    if (AccountManager.getInstance().getAccounts().size() < 2) {
-                        getContactListFragment().scrollUp();
-                    } else {
-                        getContactListFragment().setSelectedAccount(account);
-                        rebuildAccountToggle();
-                    }
-                } else {
-                    getContactListFragment().scrollTo(account);
-                }
                 break;
         }
     }
@@ -537,7 +499,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        accountToggleAdapter.onChange();
+        ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
     }
 
     @Override
@@ -546,14 +508,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     private void rebuildAccountToggle() {
-        accountToggleAdapter.rebuild();
-        if (SettingsManager.contactsShowPanel() && accountToggleAdapter.getCount() > 0) {
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-            actionBarView.setVisibility(View.VISIBLE);
-        } else {
-            actionBarView.setVisibility(View.GONE);
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-        }
+        ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).rebuild();
     }
 
     public static Intent createPersistentIntent(Context context) {
