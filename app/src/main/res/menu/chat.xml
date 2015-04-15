@@ -29,6 +29,7 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="110"
         android:icon="@drawable/ic_list_white_24dp"
+        android:visible="false"
         />
 
     <item android:id="@+id/action_chat_settings"

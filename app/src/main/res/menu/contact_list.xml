@@ -11,14 +11,14 @@
 
     <item android:id="@+id/action_add_contact"
         android:title="@string/contact_add"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:icon="@drawable/ic_person_add_white_24dp"
         android:orderInCategory="110"
         />
 
     <item android:id="@+id/action_join_conference"
         android:title="@string/muc_add"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:icon="@drawable/ic_group_white_24dp"
         android:orderInCategory="120"
         />
@@ -31,7 +31,7 @@
 
     <item android:id="@+id/action_chat_list"
         android:title="@string/chat_list"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         android:orderInCategory="140"
         android:icon="@drawable/ic_list_white_24dp"
         />
