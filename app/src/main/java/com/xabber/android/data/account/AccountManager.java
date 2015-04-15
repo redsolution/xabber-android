@@ -857,7 +857,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param statusText
      */
     public void setStatus(String account, StatusMode statusMode, String statusText) {
-        addSavedStatus(statusMode, statusText);
+        if (statusText != null && !statusText.trim().isEmpty()) {
+            addSavedStatus(statusMode, statusText);
+        }
+
         AccountItem accountItem = getAccount(account);
         setStatus(accountItem, statusMode, statusText);
         try {
