@@ -451,8 +451,9 @@ public abstract class AbstractChat extends BaseEntity {
         for (int index = messages.size() - 1; index >= 0; index--) {
             MessageItem messageItem = messages.get(index);
             if (messageItem.getAction() == null) {
-                lastText = messageItem.isIncoming() ? messageItem.getText()
-                        : "";
+                String lastMessage = messageItem.getText();
+
+                lastText = messageItem.isIncoming() ? "< " + lastMessage : "> " + lastMessage;
                 lastTime = messageItem.getTimestamp();
                 return;
             }
@@ -467,8 +468,7 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                MessageTable.getInstance().removeMessages(
-                        MessageManager.getMessageIds(messageItems, true));
+                MessageTable.getInstance().removeMessages(MessageManager.getMessageIds(messageItems, true));
             }
         });
     }
@@ -482,8 +482,7 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                MessageTable.getInstance().removeMessages(
-                        MessageManager.getMessageIds(messageItems, true));
+                MessageTable.getInstance().removeMessages(MessageManager.getMessageIds(messageItems, true));
                 MessageTable.getInstance().removeMessages(historyIds);
                 historyIds.clear();
             }

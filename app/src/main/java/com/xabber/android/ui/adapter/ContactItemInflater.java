@@ -15,7 +15,10 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
+import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
+
+import java.util.Date;
 
 public class ContactItemInflater {
     static class ContactViewHolder {
@@ -78,13 +81,7 @@ public class ContactItemInflater {
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(), abstractContact.getUser())) {
-                    context.startActivity(ContactViewer.createIntent(context,
-                            abstractContact.getAccount(), abstractContact.getUser()));
-                } else {
-                    context.startActivity(ContactEditor.createIntent(context,
-                            abstractContact.getAccount(), abstractContact.getUser()));
-                }
+                onAvatarClick(abstractContact);
             }
         });
 
@@ -93,8 +90,12 @@ public class ContactItemInflater {
 
         if (MessageManager.getInstance()
                 .hasActiveChat(abstractContact.getAccount(), abstractContact.getUser())) {
-            statusText =  MessageManager.getInstance()
+            String lastMessage = MessageManager.getInstance()
                     .getLastText(abstractContact.getAccount(), abstractContact.getUser());
+            Date lastTime = MessageManager.getInstance()
+                    .getLastTime(abstractContact.getAccount(), abstractContact.getUser());
+            statusText = StringUtils.getSmartTimeText(context, lastTime) + " " + lastMessage;
+
         } else {
             statusText = abstractContact.getStatusText();
         }
@@ -125,5 +126,15 @@ public class ContactItemInflater {
         }
 
         return view;
+    }
+
+    private void onAvatarClick(AbstractContact contact) {
+        if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
+            context.startActivity(ContactViewer.createIntent(context,
+                    contact.getAccount(), contact.getUser()));
+        } else {
+            context.startActivity(ContactEditor.createIntent(context,
+                    contact.getAccount(), contact.getUser()));
+        }
     }
 }
