@@ -67,7 +67,7 @@ public class RecentChatFragment extends ListFragment {
         }
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
-        toolbar.setTitle(R.string.group_active_chat);
+        toolbar.setTitle(R.string.recent_chats);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
