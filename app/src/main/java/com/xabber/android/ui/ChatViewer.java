@@ -408,51 +408,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatViewAdapterFinishUpdate() {
         insertExtraText();
-
         updateRegisteredChats();
-
-        Fragment currentFragment = chatViewerAdapter.getCurrentFragment();
-
-        if (isChatSelected) {
-            if (!(currentFragment instanceof ChatViewerFragment)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Debug message")
-                        .setMessage("Recent chats selected, but contact chat expected.")
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                builder.create().show();
-            } else if (!((ChatViewerFragment) currentFragment).isEqual(actionWithAccount, actionWithUser)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Debug message")
-                        .setMessage("Wrong contact chat selected.")
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                builder.create().show();
-            }
-
-        } else {
-            if (!(currentFragment instanceof RecentChatFragment)) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Debug message")
-                        .setMessage("Contact chat selected, but recent chats expected.")
-                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                builder.create().show();
-            }
-        }
     }
 
     private void insertExtraText() {
