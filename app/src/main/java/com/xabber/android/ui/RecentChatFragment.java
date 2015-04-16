@@ -3,6 +3,8 @@ package com.xabber.android.ui;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,7 @@ public class RecentChatFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.recent_chats, container, false);
 
         ArrayList<AbstractChat> activeChats = ((ChatViewer) getActivity()).getChatViewerAdapter().getActiveChats();
         ((ChatListAdapter) getListAdapter()).updateChats(activeChats);
@@ -63,7 +66,17 @@ public class RecentChatFragment extends ListFragment {
             activity.finish();
         }
 
-        return inflater.inflate(R.layout.recent_chats, container, false);
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
+        toolbar.setTitle(R.string.group_active_chat);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(getActivity());
+            }
+        });
+
+        return rootView;
     }
 
     @Override
@@ -97,7 +110,7 @@ public class RecentChatFragment extends ListFragment {
     }
 
     public interface RecentChatFragmentInteractionListener {
-        public void onChatSelected(AbstractChat chat);
+        void onChatSelected(AbstractChat chat);
     }
 
     public void updateChats(List<AbstractChat> chats) {

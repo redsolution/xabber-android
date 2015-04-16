@@ -3,6 +3,7 @@ package com.xabber.android.ui.helper;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,7 +36,6 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
 
     private int toolbarHeight;
     private int paddingLeftMin;
-    private int paddingRight;
     private int actionBarSize;
     private int toolbarHeightDelta;
     private int avatarLargeSize;
@@ -58,6 +58,12 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
         contactNamePanel = activity.findViewById(R.id.contact_name_panel);
 
         titleView = activity.findViewById(R.id.expandable_contact_title);
+
+        int[] accountActionBarColors = activity.getResources().getIntArray(R.array.account_action_bar);
+
+        titleView.setBackgroundDrawable(new ColorDrawable(accountActionBarColors[
+                AccountManager.getInstance().getColorLevel(abstractContact.getAccount())]));
+
         ContactTitleInflater.updateTitle(titleView, activity, abstractContact);
 
         int[] accountStatusBarColors = activity.getResources().getIntArray(R.array.account_status_bar);
@@ -73,7 +79,6 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
     public void onResume() {
         Resources resources = activity.getResources();
         paddingLeftMin = resources.getDimensionPixelSize(R.dimen.contact_title_padding_left);
-        paddingRight = resources.getDimensionPixelSize(R.dimen.contact_title_padding_right);
         avatarLargeSize = resources.getDimensionPixelSize(R.dimen.avatar_large_size);
         avatarNormalSize = resources.getDimensionPixelSize(R.dimen.avatar_normal_size);
         avatarRadius = resources.getDimensionPixelSize(R.dimen.avatar_radius);

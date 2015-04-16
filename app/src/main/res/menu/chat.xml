@@ -59,12 +59,6 @@
         android:visible="false"
         />
 
-    <item android:id="@+id/action_clear_text"
-        android:title="@string/clear_message"
-        app:showAsAction="never"
-        android:orderInCategory="150"
-        />
-
     <item android:id="@+id/action_clear_history"
         android:title="@string/clear_history"
         app:showAsAction="never"

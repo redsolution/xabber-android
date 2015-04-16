@@ -19,6 +19,26 @@
     android:layout_height="match_parent"
     android:background="@drawable/chat_background_repeat"
     >
+
+    <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar_default"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="52dp"
+
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:background="?attr/colorPrimary"
+        android:elevation="8dp"
+        >
+
+        <include layout="@layout/contact_title"
+            android:id="@+id/contact_title"
+            />
+
+    </android.support.v7.widget.Toolbar>
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -32,6 +52,7 @@
         android:layout_above="@+id/input_layout"
         tools:listitem="@layout/chat_viewer_outgoing_message"
         android:listSelector="@android:color/transparent"
+        android:layout_below="@+id/toolbar_default"
         />
 
     <LinearLayout
