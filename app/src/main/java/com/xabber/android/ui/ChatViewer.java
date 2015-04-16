@@ -129,6 +129,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.setOnPageChangeListener(this);
+        viewPager.getBackground().setAlpha(30);
 
         selectPage(account, user, false);
     }

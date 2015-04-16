@@ -18,8 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:elevation="1dp"
-    android:background="@color/grey_300"
->
+    >
 
     <LinearLayout
         android:layout_width="match_parent"

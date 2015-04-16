@@ -125,8 +125,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
             }
         });
 
-        view.getBackground().setAlpha(40);
-
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
 

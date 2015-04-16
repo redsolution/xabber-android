@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/chat_background_repeat"
+    android:background="@color/grey_300"
     >
 
     <include layout="@layout/toolbar_default" />
@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@android:id/list"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         />
 </LinearLayout>
