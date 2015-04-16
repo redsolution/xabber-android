@@ -19,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -75,6 +77,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     private Toolbar toolbar;
 
     private ChatViewerFragmentListener listener;
+    private Animation shakeAnimation = null;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -449,13 +452,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         skipOnTextChanges = false;
     }
 
-    public void scrollChat() {
-        int size = listView.getCount();
-        if (size > 0) {
-            listView.setSelection(size - 1);
-        }
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         registerForContextMenu(listView);
@@ -619,5 +615,12 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     public interface ChatViewerFragmentListener {
         void onCloseChat();
+    }
+
+    public void playIncomingAnimation() {
+        if (shakeAnimation == null) {
+            shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+        }
+        toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
     }
 }

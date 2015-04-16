@@ -32,7 +32,6 @@ import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
-import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -56,10 +55,8 @@ import java.util.HashSet;
  */
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
         OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener, View.OnClickListener,
-
-        ChatViewerFragment.ChatViewerFragmentListener
-{
+        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener,
+        ChatViewerFragment.ChatViewerFragmentListener {
 
     /**
      * Attention request.
@@ -154,7 +151,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         if (actionWithAccount != null && actionWithUser != null) {
-            updateActionBar(actionWithAccount, actionWithUser);
+            updateActionBar(actionWithAccount);
         }
     }
 
@@ -191,7 +188,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         selectPage(account, user, false);
-
     }
 
     private void selectPage(String account, String user, boolean smoothScroll) {
@@ -265,7 +261,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     @Override
     public void onChatChanged(final String account, final String user, final boolean incoming) {
-
         String currentAccount = null;
         String currentUser = null;
         AbstractChat chatByPageNumber = chatViewerAdapter.getChatByPageNumber(viewPager.getCurrentItem());
@@ -285,17 +280,14 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
             for (ChatViewerFragment chat : registeredChats) {
                 if (chat.isEqual(account, user)) {
-                    chat.updateChat();
+                    chat.playIncomingAnimation();
                 }
             }
         }
 
         if (actionWithAccount != null && actionWithAccount.equals(account)
                 && actionWithUser != null && actionWithUser.equals(user)) {
-            updateActionBar(account, user);
-            if (incoming) {
-//                contactTitleActionBarInflater.playIncomingAnimation();
-            }
+            updateActionBar(account);
         }
     }
 
@@ -305,7 +297,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         updateRegisteredRecentChatsFragments();
 
         if (actionWithAccount != null && actionWithUser != null) {
-            updateActionBar(actionWithAccount, actionWithUser);
+            updateActionBar(actionWithAccount);
         }
     }
 
@@ -315,7 +307,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         updateRegisteredRecentChatsFragments();
 
         if (actionWithAccount != null && actionWithUser != null) {
-            updateActionBar(actionWithAccount, actionWithUser);
+            updateActionBar(actionWithAccount);
         }
     }
 
@@ -363,7 +355,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
         }
 
-        updateActionBar(actionWithAccount, actionWithUser);
+        updateActionBar(actionWithAccount);
 
         MessageManager.getInstance().setVisibleChat(actionWithAccount, actionWithUser);
 
@@ -374,7 +366,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         NotificationManager.getInstance().removeMessageNotification(actionWithAccount, actionWithUser);
     }
 
-    private void updateActionBar(String account, String user) {
+    private void updateActionBar(String account) {
         statusBarPainter.updateWithAccountName(account);
     }
 
@@ -496,21 +488,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         if (view != null) {
             InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.avatar) {
-            showContactInfo();
-        }
-    }
-
-    private void showContactInfo() {
-        if (MUCManager.getInstance().hasRoom(actionWithAccount, actionWithUser)) {
-            startActivity(ContactViewer.createIntent(this, actionWithAccount, actionWithUser));
-        } else {
-            startActivity(ContactEditor.createIntent(this, actionWithAccount, actionWithUser));
         }
     }
 

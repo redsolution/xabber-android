@@ -4,8 +4,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.xabber.android.data.roster.AbstractContact;
@@ -16,7 +14,7 @@ public class ContactTitleActionBarInflater {
     private final ActionBarActivity activity;
     private View actionBarView;
 
-    private Animation shakeAnimation = null;
+
 
     private ActionBarPainter actionBarPainter;
 
@@ -46,34 +44,6 @@ public class ContactTitleActionBarInflater {
         actionBarView.setVisibility(View.VISIBLE);
 
         ContactTitleInflater.updateTitle(actionBarView, activity, abstractContact);
-    }
-
-    public void restoreDefaultTitleView(String title) {
-        actionBarPainter.restore();
-
-        activity.getSupportActionBar().setDisplayShowCustomEnabled(false);
-        activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
-        actionBarView.setVisibility(View.GONE);
-        activity.setTitle(title);
-    }
-
-    public void playIncomingAnimation() {
-        if (shakeAnimation == null) {
-            shakeAnimation = AnimationUtils.loadAnimation(activity, R.anim.shake);
-        }
-        actionBarView.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
-    }
-
-    public void setOnClickListener(View.OnClickListener onClickListener) {
-        actionBarView.setOnClickListener(onClickListener);
-    }
-
-    public void setOnAvatarClickListener(View.OnClickListener onClickListener) {
-        actionBarView.findViewById(R.id.avatar).setOnClickListener(onClickListener);
-    }
-
-    public void setName(String name) {
-        ((TextView) actionBarView.findViewById(R.id.name)).setText(name);
     }
 
     public void setStatusText(String user) {
