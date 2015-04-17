@@ -681,8 +681,7 @@ public class MessageArchiveManager implements OnPacketListener,
      * @param newCount
      * @param incomingCount
      */
-    public void requestHistory(String account, String bareAddress,
-                               int newCount, int incomingCount) {
+    public void requestHistory(String account, String bareAddress, int newCount, int incomingCount) {
         if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.server
                 || (newCount <= 0 && incomingCount <= 0))
             return;

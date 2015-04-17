@@ -366,7 +366,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 startActivity(MUCEditor.createIntent(this));
                 return true;
             case R.id.action_chat_list:
-                startActivity(ChatViewer.createIntent(this));
+                startActivity(ChatViewer.createRecentChatsIntent(this));
                 return true;
             case R.id.action_settings:
                 startActivity(PreferenceEditor.createIntent(this));

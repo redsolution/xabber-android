@@ -90,6 +90,18 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            listener = (ChatViewerFragmentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ChatViewerFragmentListener");
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -210,17 +222,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         return view;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        try {
-            listener = (ChatViewerFragmentListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement ChatViewerFragmentListener");
-        }
-    }
 
     @Override
     public void onDetach() {
@@ -273,7 +274,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public void onResume() {
         super.onResume();
-        ((ChatViewer)getActivity()).registerChat(this);
+        listener.registerChat(this);
 
         updateChat();
 
@@ -299,7 +300,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     public void onPause() {
         super.onPause();
         saveInputState();
-        ((ChatViewer)getActivity()).unregisterChat(this);
+        listener.unregisterChat(this);
     }
 
     public void saveInputState() {
@@ -318,7 +319,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         sendMessage(text);
 
-        ((ChatViewer) getActivity()).onSent();
+        listener.onMessageSent();
 
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
@@ -613,6 +614,9 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     public interface ChatViewerFragmentListener {
         void onCloseChat();
+        void onMessageSent();
+        void registerChat(ChatViewerFragment chat);
+        void unregisterChat(ChatViewerFragment chat);
     }
 
     public void playIncomingAnimation() {
