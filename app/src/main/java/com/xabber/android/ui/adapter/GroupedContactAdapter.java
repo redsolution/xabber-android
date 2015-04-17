@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +32,10 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.capability.ClientSoftware;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.androiddev.R;
 
@@ -102,6 +99,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
     final ArrayList<BaseEntity> baseEntities = new ArrayList<>();
     protected Locale locale = Locale.getDefault();
     private final ContactItemInflater contactItemInflater;
+    private final int accountElevation;
 
     public GroupedContactAdapter(Activity activity, OnClickListener onClickListener) {
         this.activity = activity;
@@ -116,6 +114,8 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         activeChatsColor = resources.getColor(R.color.color_primary_light);
 
         contactItemInflater = new ContactItemInflater(activity);
+
+        accountElevation = activity.getResources().getDimensionPixelSize(R.dimen.account_group_elevation);
 
         this.onClickListener = onClickListener;
     }
@@ -226,15 +226,22 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
     private View getAccountView(int position, View convertView, ViewGroup parent) {
         final View view;
-        final AccountViewHolder viewHolder;
+        final ContactListItemViewHolder viewHolder;
         if (convertView == null) {
-            view = layoutInflater.inflate(R.layout.account_group_item, parent, false);
+            view = layoutInflater.inflate(R.layout.contact_list_item, parent, false);
 
-            viewHolder = new AccountViewHolder(view);
+            viewHolder = new ContactListItemViewHolder(view);
+            viewHolder.outgoingMessageIndicator.setVisibility(View.GONE);
+            viewHolder.color.setVisibility(View.INVISIBLE);
+            viewHolder.largeClientIcon.setVisibility(View.GONE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.setElevation(accountElevation);
+            }
             view.setTag(viewHolder);
         } else {
             view = convertView;
-            viewHolder = (AccountViewHolder) view.getTag();
+            viewHolder = (ContactListItemViewHolder) view.getTag();
         }
 
         final AccountConfiguration configuration = (AccountConfiguration) getItem(position);
@@ -251,8 +258,8 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         final int level = AccountManager.getInstance().getColorLevel(account);
         view.setBackgroundDrawable(new ColorDrawable(accountGroupColors[level]));
 
-        viewHolder.jid.setText(GroupManager.getInstance().getGroupName(account, configuration.getUser()));
-        viewHolder.contactCounter.setText(configuration.getOnline() + "/" + configuration.getTotal());
+        viewHolder.name.setText(GroupManager.getInstance().getGroupName(account, configuration.getUser()));
+        viewHolder.smallRightText.setText(configuration.getOnline() + "/" + configuration.getTotal());
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         String statusText = accountItem.getStatusText().trim();
@@ -261,7 +268,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             statusText = activity.getString(accountItem.getDisplayStatusMode().getStringID());
         }
 
-        viewHolder.status.setText(statusText);
+        viewHolder.secondLineMessage.setText(statusText);
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatar.setVisibility(View.VISIBLE);
@@ -288,7 +295,8 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             }
         }
 
-        viewHolder.offlineContactsIndicator.setImageLevel(showOfflineMode.ordinal());
+        viewHolder.smallRightIcon.setImageLevel(showOfflineMode.ordinal());
+
 
         StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
 
@@ -559,29 +567,6 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             indicator = (ImageView) view.findViewById(R.id.indicator);
             name = (TextView) view.findViewById(R.id.name);
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
-            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
-        }
-    }
-
-    private static class AccountViewHolder {
-        final TextView jid;
-        final TextView status;
-        final TextView contactCounter;
-
-        final ImageView statusIcon;
-        final ImageView avatar;
-        final ImageView offlineContactsIndicator;
-        final ImageView offlineShadow;
-
-
-        public AccountViewHolder(View view) {
-            jid = (TextView) view.findViewById(R.id.account_jid);
-            status = (TextView) view.findViewById(R.id.account_status);
-            contactCounter = (TextView) view.findViewById(R.id.contact_counter);
-
-            statusIcon = (ImageView) view.findViewById(R.id.account_status_icon);
-            avatar = (ImageView) view.findViewById(R.id.avatar);
-            offlineContactsIndicator = (ImageView) view.findViewById(R.id.offline_contacts_indicator);
             offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         }
     }

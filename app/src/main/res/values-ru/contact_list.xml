@@ -112,4 +112,6 @@
     <string name="start_at_boot_suggest">Вы хотите запускать Xabber при включении телефона?\nИзменить эту настройку можно в меню "Настройки" → "Настройки подключения" → "Запускать при включении телефона"</string>
 
     <string name="contact_search_hint">Поиск контактов</string>
+
+    <string name="sender_is_you">Вы</string>
 </resources>

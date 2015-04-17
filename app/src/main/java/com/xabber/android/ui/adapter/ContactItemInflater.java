@@ -2,15 +2,15 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.ContactEditor;
@@ -18,62 +18,48 @@ import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 
-import java.util.Date;
-
 public class ContactItemInflater {
-    static class ContactViewHolder {
-
-        final ImageView color;
-        final ImageView avatar;
-        final TextView name;
-        final TextView status;
-        final ImageView offlineShadow;
-        final ImageView statusMode;
-        final ImageView clientSoftware;
-
-        public ContactViewHolder(View view) {
-            color = (ImageView) view.findViewById(R.id.color);
-            avatar = (ImageView) view.findViewById(R.id.avatar);
-            name = (TextView) view.findViewById(R.id.name);
-            status = (TextView) view.findViewById(R.id.status);
-            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
-            statusMode = (ImageView) view.findViewById(R.id.status_icon);
-            clientSoftware = (ImageView) view.findViewById(R.id.client_software);
-        }
-    }
 
     final Context context;
     private int[] accountMainColors;
+    private final int elevation;
 
     public ContactItemInflater(Context context) {
         this.context = context;
         accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
+        elevation = context.getResources().getDimensionPixelSize(R.dimen.contact_elevation);
     }
 
-    public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact abstractContact) {
+    public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact contact) {
         final View view;
-        final ContactViewHolder viewHolder;
+        final ContactListItemViewHolder viewHolder;
         if (convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.base_contact_item, parent, false);
-            viewHolder = new ContactViewHolder(view);
+            view = LayoutInflater.from(context).inflate(R.layout.contact_list_item, parent, false);
+            viewHolder = new ContactListItemViewHolder(view);
+            viewHolder.statusIconSeparator.setVisibility(View.INVISIBLE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                view.setElevation(elevation);
+            }
             view.setTag(viewHolder);
         } else {
             view = convertView;
-            viewHolder = (ContactViewHolder) view.getTag();
+            viewHolder = (ContactListItemViewHolder) view.getTag();
         }
 
-        if (abstractContact.isConnected()) {
+        if (contact.isConnected()) {
             viewHolder.offlineShadow.setVisibility(View.GONE);
         } else {
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
         }
 
-        int colorLevel = abstractContact.getColorLevel();
+        int colorLevel = contact.getColorLevel();
         viewHolder.color.setImageDrawable(new ColorDrawable(accountMainColors[colorLevel]));
+        viewHolder.color.setVisibility(View.VISIBLE);
 
         if (SettingsManager.contactsShowAvatars()) {
             viewHolder.avatar.setVisibility(View.VISIBLE);
-            viewHolder.avatar.setImageDrawable(abstractContact.getAvatarForContactList());
+            viewHolder.avatar.setImageDrawable(contact.getAvatarForContactList());
         } else {
             viewHolder.avatar.setVisibility(View.GONE);
         }
@@ -81,50 +67,54 @@ public class ContactItemInflater {
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAvatarClick(abstractContact);
+                onAvatarClick(contact);
             }
         });
 
-        viewHolder.name.setText(abstractContact.getName());
+        viewHolder.name.setText(contact.getName());
         String statusText;
 
-        if (MessageManager.getInstance()
-                .hasActiveChat(abstractContact.getAccount(), abstractContact.getUser())) {
-            String lastMessage = MessageManager.getInstance()
-                    .getLastText(abstractContact.getAccount(), abstractContact.getUser());
-            Date lastTime = MessageManager.getInstance()
-                    .getLastTime(abstractContact.getAccount(), abstractContact.getUser());
-            statusText = StringUtils.getSmartTimeText(context, lastTime) + " " + lastMessage;
+        viewHolder.outgoingMessageIndicator.setVisibility(View.GONE);
 
-        } else {
-            statusText = abstractContact.getStatusText();
-        }
+        ClientSoftware clientSoftware = contact.getClientSoftware();
 
-        statusText = statusText.trim();
+        MessageManager messageManager = MessageManager.getInstance();
 
-        if ("".equals(statusText)) {
-            viewHolder.status.setVisibility(View.GONE);
-        } else {
-            viewHolder.status.setText(statusText);
-            viewHolder.status.setVisibility(View.VISIBLE);
-        }
+        if (messageManager.hasActiveChat(contact.getAccount(), contact.getUser())) {
 
-        viewHolder.statusMode.setImageLevel(abstractContact.getStatusMode().getStatusLevel());
+            AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
 
-        ClientSoftware clientSoftware = abstractContact.getClientSoftware();
-        if (clientSoftware == ClientSoftware.unknown) {
-            viewHolder.clientSoftware.setVisibility(View.INVISIBLE);
-        } else {
-            viewHolder.clientSoftware.setVisibility(View.VISIBLE);
-            viewHolder.clientSoftware.setImageLevel(clientSoftware.ordinal());
-        }
+            statusText = chat.getLastText();
 
-        if (MessageManager.getInstance().hasActiveChat(abstractContact.getAccount(), abstractContact.getUser())) {
+            viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
+            viewHolder.smallRightText.setVisibility(View.VISIBLE);
+
+            if (!chat.isLastMessageIncoming()) {
+                viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
+                viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
+                viewHolder.outgoingMessageIndicator.setTextColor(accountMainColors[colorLevel]);
+
+            }
             view.setBackgroundColor(context.getResources().getColor(R.color.grey_50));
+            viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
+            viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
+            viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
+            viewHolder.largeClientIcon.setVisibility(View.GONE);
         } else {
+            statusText = contact.getStatusText().trim();
+            if (statusText.isEmpty()) {
+                statusText = context.getString(contact.getStatusMode().getStringID());
+            }
+            viewHolder.smallRightText.setVisibility(View.GONE);
             view.setBackgroundColor(context.getResources().getColor(R.color.grey_300));
+            viewHolder.smallRightIcon.setVisibility(View.GONE);
+            viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
+            viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
 
+        viewHolder.secondLineMessage.setText(statusText.trim());
+
+        viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
         return view;
     }
 
