@@ -66,9 +66,8 @@ import com.xabber.xmpp.delay.Delay;
  *
  * @author alexander.ivanov
  */
-public class MessageManager implements OnLoadListener, OnPacketListener,
-        OnDisconnectListener, OnAccountRemovedListener,
-        OnRosterReceivedListener, OnAccountArchiveModeChangedListener,
+public class MessageManager implements OnLoadListener, OnPacketListener, OnDisconnectListener,
+        OnAccountRemovedListener, OnRosterReceivedListener, OnAccountArchiveModeChangedListener,
         OnStatusChangeListener {
 
     /**
@@ -95,7 +94,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
     }
 
     private MessageManager() {
-        chats = new NestedMap<AbstractChat>();
+        chats = new NestedMap<>();
     }
 
     @Override
@@ -106,8 +105,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    loadChats.add(new BaseEntity(MessageTable
-                            .getAccount(cursor), MessageTable.getUser(cursor)));
+                    loadChats.add(new BaseEntity(MessageTable.getAccount(cursor), MessageTable.getUser(cursor)));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -122,10 +120,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
     }
 
     private void onLoaded(Set<BaseEntity> loadChats) {
-        for (BaseEntity baseEntity : loadChats)
-            if (getChat(baseEntity.getAccount(),
-                    Jid.getBareAddress(baseEntity.getUser())) == null)
+        for (BaseEntity baseEntity : loadChats) {
+            if (getChat(baseEntity.getAccount(), Jid.getBareAddress(baseEntity.getUser())) == null) {
                 createChat(baseEntity.getAccount(), baseEntity.getUser());
+            }
+        }
     }
 
     /**
@@ -160,8 +159,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      * @param chat
      */
     public void addChat(AbstractChat chat) {
-        if (getChat(chat.getAccount(), chat.getUser()) != null)
+        if (getChat(chat.getAccount(), chat.getUser()) != null) {
             throw new IllegalStateException();
+        }
         chats.put(chat.getAccount(), chat.getUser(), chat);
     }
 
@@ -183,8 +183,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public void sendMessage(String account, String user, String text) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             chat = createChat(account, user);
+        }
         MessageItem messageItem = chat.newMessage(text);
         chat.sendQueue(messageItem);
     }
@@ -196,19 +197,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public boolean hasActiveChat(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
-            return false;
-        return chat.isActive();
+        return chat != null && chat.isActive();
     }
 
     /**
      * @return Collection with active chats.
      */
     public Collection<AbstractChat> getActiveChats() {
-        Collection<AbstractChat> collection = new ArrayList<AbstractChat>();
-        for (AbstractChat chat : chats.values())
-            if (chat.isActive())
+        Collection<AbstractChat> collection = new ArrayList<>();
+        for (AbstractChat chat : chats.values()) {
+            if (chat.isActive()) {
                 collection.add(chat);
+            }
+        }
         return Collections.unmodifiableCollection(collection);
     }
 
@@ -221,8 +222,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public AbstractChat getOrCreateChat(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             chat = createChat(account, user);
+        }
         return chat;
     }
 
@@ -244,15 +246,17 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public void closeChat(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             return;
+        }
         chat.closeChat();
     }
 
     public void requestToLoadLocalHistory(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             chat = createChat(account, user);
+        }
         chat.requestToLoadLocalHistory();
     }
 
@@ -264,8 +268,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public String getLastText(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             return "";
+        }
         return chat.getLastText();
     }
 
@@ -276,8 +281,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public Date getLastTime(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             return null;
+        }
         return chat.getLastTime();
     }
 
@@ -288,12 +294,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      * @param user
      */
     public void setVisibleChat(String account, String user) {
-        final boolean remove = !AccountManager.getInstance()
-                .getArchiveMode(account).saveLocally();
+        final boolean remove = !AccountManager.getInstance().getArchiveMode(account).saveLocally();
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             chat = createChat(account, user);
-        else {
+        } else {
             // Mark messages as read and them delete from db if necessary.
             final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
             for (MessageItem messageItem : chat.getMessages()) {
@@ -306,10 +311,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
                 @Override
                 public void run() {
                     Collection<Long> ids = getMessageIds(messageItems, remove);
-                    if (remove)
+                    if (remove) {
                         MessageTable.getInstance().removeMessages(ids);
-                    else
+                    } else {
                         MessageTable.getInstance().markAsRead(ids);
+                    }
                 }
             });
         }
@@ -339,8 +345,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public void clearHistory(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             return;
+        }
         chat.removeAllMessages();
         onChatChanged(chat.getAccount(), chat.getUser(), false);
     }
@@ -363,8 +370,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      */
     public Collection<MessageItem> getMessages(String account, String user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null)
+        if (chat == null) {
             return Collections.emptyList();
+        }
         return chat.getMessages();
     }
 
@@ -372,41 +380,46 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      * Called on action settings change.
      */
     public void onSettingsChanged() {
-        ChatsShowStatusChange showStatusChange = SettingsManager
-                .chatsShowStatusChange();
-        Collection<BaseEntity> changedEntities = new ArrayList<BaseEntity>();
-        for (AbstractChat chat : chats.values())
+        ChatsShowStatusChange showStatusChange = SettingsManager.chatsShowStatusChange();
+        Collection<BaseEntity> changedEntities = new ArrayList<>();
+        for (AbstractChat chat : chats.values()) {
             if ((chat instanceof RegularChat && showStatusChange != ChatsShowStatusChange.always)
                     || (chat instanceof RoomChat && showStatusChange == ChatsShowStatusChange.never)) {
                 // Remove actions with status change.
-                ArrayList<MessageItem> remove = new ArrayList<MessageItem>();
-                for (MessageItem messageItem : chat.getMessages())
-                    if (messageItem.getAction() != null
-                            && messageItem.getAction().isStatusChage())
+                ArrayList<MessageItem> remove = new ArrayList<>();
+                for (MessageItem messageItem : chat.getMessages()) {
+                    if (messageItem.getAction() != null && messageItem.getAction().isStatusChage()) {
                         remove.add(messageItem);
-                if (remove.isEmpty())
+                    }
+                }
+                if (remove.isEmpty()) {
                     continue;
-                for (MessageItem messageItem : remove)
+                }
+                for (MessageItem messageItem : remove) {
                     chat.removeMessage(messageItem);
+                }
                 changedEntities.add(chat);
             }
+        }
         RosterManager.getInstance().onContactsChanged(changedEntities);
     }
 
     @Override
     public void onAccountArchiveModeChanged(AccountItem accountItem) {
-        final ArchiveMode archiveMode = AccountManager.getInstance()
-                .getArchiveMode(accountItem.getAccount());
-        if (archiveMode.saveLocally())
+        final ArchiveMode archiveMode = AccountManager.getInstance().getArchiveMode(accountItem.getAccount());
+        if (archiveMode.saveLocally()) {
             return;
+        }
         final String account = accountItem.getAccount();
         final ArrayList<MessageItem> removeMessageItems = new ArrayList<MessageItem>();
-        for (AbstractChat chat : chats.getNested(account).values())
-            for (MessageItem messageItem : chat.getMessages())
-                if (archiveMode == ArchiveMode.dontStore
-                        || ((messageItem.isRead() || archiveMode != ArchiveMode.unreadOnly) && messageItem
-                        .isSent()))
+        for (AbstractChat chat : chats.getNested(account).values()) {
+            for (MessageItem messageItem : chat.getMessages()) {
+                if (archiveMode == ArchiveMode.dontStore || ((messageItem.isRead()
+                        || archiveMode != ArchiveMode.unreadOnly) && messageItem.isSent())) {
                     removeMessageItems.add(messageItem);
+                }
+            }
+        }
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -415,51 +428,57 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
                 // such message will have no effect as if it was removed.
                 // History ids becomes invalid and will be cleared on next
                 // history load.
-                MessageTable.getInstance().removeMessages(
-                        getMessageIds(removeMessageItems, true));
-                if (archiveMode == ArchiveMode.dontStore)
+                MessageTable.getInstance().removeMessages(getMessageIds(removeMessageItems, true));
+                if (archiveMode == ArchiveMode.dontStore) {
                     MessageTable.getInstance().removeAccount(account);
-                else if (archiveMode == ArchiveMode.unreadOnly)
+                } else if (archiveMode == ArchiveMode.unreadOnly) {
                     MessageTable.getInstance().removeReadAndSent(account);
-                else
+                } else {
                     MessageTable.getInstance().removeSent(account);
+                }
             }
         });
         AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
-        if (!(connection instanceof AccountItem))
+    public void onPacket(ConnectionItem connection, String bareAddress, Packet packet) {
+        if (!(connection instanceof AccountItem)) {
             return;
+        }
         String account = ((AccountItem) connection).getAccount();
-        if (bareAddress == null)
+        if (bareAddress == null) {
             return;
+        }
         if (packet instanceof Message
-                && MessageArchiveManager.getInstance().isModificationsSucceed(
-                account)
-                && Delay.isOfflineMessage(Jid.getServer(account), packet))
+                && MessageArchiveManager.getInstance().isModificationsSucceed(account)
+                && Delay.isOfflineMessage(Jid.getServer(account), packet)) {
             // Ignore offline message if modification from server side message
             // archive have been received.
             return;
+        }
         final String user = packet.getFrom();
         boolean processed = false;
-        for (AbstractChat chat : chats.getNested(account).values())
+        for (AbstractChat chat : chats.getNested(account).values()) {
             if (chat.onPacket(bareAddress, packet)) {
                 processed = true;
                 break;
             }
-        if (getChat(account, user) != null)
+        }
+        if (getChat(account, user) != null) {
             return;
+        }
         if (!processed && packet instanceof Message) {
             final Message message = (Message) packet;
             final String body = message.getBody();
-            if (body == null)
+            if (body == null) {
                 return;
-            for (PacketExtension packetExtension : message.getExtensions())
-                if (packetExtension instanceof MUCUser)
+            }
+            for (PacketExtension packetExtension : message.getExtensions()) {
+                if (packetExtension instanceof MUCUser) {
                     return;
+                }
+            }
             createChat(account, user).onPacket(bareAddress, packet);
         }
     }
@@ -467,17 +486,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         String account = accountItem.getAccount();
-        for (AbstractChat chat : chats.getNested(account).values())
+        for (AbstractChat chat : chats.getNested(account).values()) {
             chat.onComplete();
+        }
     }
 
     @Override
     public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
+        if (!(connection instanceof AccountItem)) {
             return;
+        }
         String account = ((AccountItem) connection).getAccount();
-        for (AbstractChat chat : chats.getNested(account).values())
+        for (AbstractChat chat : chats.getNested(account).values()) {
             chat.onDisconnect();
+        }
     }
 
     @Override
@@ -493,42 +515,37 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      * @param fileName
      * @throws NetworkException
      */
-    public File exportChat(String account, String user, String fileName)
-            throws NetworkException {
-        final File file = new File(Environment.getExternalStorageDirectory(),
-                fileName);
+    public File exportChat(String account, String user, String fileName) throws NetworkException {
+        final File file = new File(Environment.getExternalStorageDirectory(), fileName);
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
-            final String titleName = RosterManager.getInstance().getName(
-                    account, user)
-                    + " (" + user + ")";
+            final String titleName = RosterManager.getInstance().getName(account, user) + " (" + user + ")";
             out.write("<html><head><title>");
             out.write(StringUtils.escapeHtml(titleName));
             out.write("</title></head><body>");
             final AbstractChat abstractChat = getChat(account, user);
             if (abstractChat != null) {
                 final boolean isMUC = abstractChat instanceof RoomChat;
-                final String accountName = AccountManager.getInstance()
-                        .getNickName(account);
-                final String userName = RosterManager.getInstance().getName(
-                        account, user);
+                final String accountName = AccountManager.getInstance().getNickName(account);
+                final String userName = RosterManager.getInstance().getName(account, user);
                 for (MessageItem messageItem : abstractChat.getMessages()) {
-                    if (messageItem.getAction() != null)
+                    if (messageItem.getAction() != null) {
                         continue;
+                    }
                     final String name;
                     if (isMUC) {
                         name = messageItem.getResource();
                     } else {
-                        if (messageItem.isIncoming())
+                        if (messageItem.isIncoming()) {
                             name = userName;
-                        else
+                        } else {
                             name = accountName;
+                        }
                     }
                     out.write("<b>");
                     out.write(StringUtils.escapeHtml(name));
                     out.write("</b>&nbsp;(");
-                    out.write(StringUtils.getDateTimeText(messageItem
-                            .getTimestamp()));
+                    out.write(StringUtils.getDateTimeText(messageItem.getTimestamp()));
                     out.write(")<br />\n<p>");
                     out.write(StringUtils.escapeHtml(messageItem.getText()));
                     out.write("</p><hr />\n");
@@ -554,11 +571,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (OnChatChangedListener onChatChangedListener : Application
-                        .getInstance().getUIListeners(
-                                OnChatChangedListener.class))
-                    onChatChangedListener
-                            .onChatChanged(account, user, incoming);
+                for (OnChatChangedListener onChatChangedListener
+                        : Application.getInstance().getUIListeners(OnChatChangedListener.class)) {
+                    onChatChangedListener.onChatChanged(account, user, incoming);
+                }
             }
         });
     }
@@ -568,42 +584,42 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
      * @param clearId      Whether message id must be set to the <code>null</code>.
      * @return Collection with ids for specified messages.
      */
-    static Collection<Long> getMessageIds(Collection<MessageItem> messageItems,
-                                          boolean clearId) {
-        ArrayList<Long> ids = new ArrayList<Long>();
+    static Collection<Long> getMessageIds(Collection<MessageItem> messageItems, boolean clearId) {
+        ArrayList<Long> ids = new ArrayList<>();
         for (MessageItem messageItem : messageItems) {
             Long id = messageItem.getId();
-            if (id == null)
+            if (id == null) {
                 continue;
+            }
             ids.add(id);
-            if (clearId)
+            if (clearId) {
                 messageItem.setId(null);
+            }
         }
         return ids;
     }
 
     private boolean isStatusTrackingEnabled(String account, String bareAddress) {
-        if (SettingsManager.chatsShowStatusChange() != ChatsShowStatusChange.always)
+        if (SettingsManager.chatsShowStatusChange() != ChatsShowStatusChange.always) {
             return false;
+        }
         AbstractChat abstractChat = getChat(account, bareAddress);
-        return abstractChat != null && abstractChat instanceof RegularChat
-                && abstractChat.isStatusTrackingEnabled();
+        return abstractChat != null && abstractChat instanceof RegularChat && abstractChat.isStatusTrackingEnabled();
     }
 
     @Override
-    public void onStatusChanged(String account, String bareAddress,
-                                String resource, String statusText) {
-        if (isStatusTrackingEnabled(account, bareAddress))
-            getChat(account, bareAddress).newAction(resource, statusText,
-                    ChatAction.status);
+    public void onStatusChanged(String account, String bareAddress, String resource, String statusText) {
+        if (isStatusTrackingEnabled(account, bareAddress)) {
+            getChat(account, bareAddress).newAction(resource, statusText, ChatAction.status);
+        }
     }
 
     @Override
-    public void onStatusChanged(String account, String bareAddress,
-                                String resource, StatusMode statusMode, String statusText) {
-        if (isStatusTrackingEnabled(account, bareAddress))
-            getChat(account, bareAddress).newAction(resource, statusText,
-                    ChatAction.getChatAction(statusMode));
+    public void onStatusChanged(String account, String bareAddress, String resource,
+                                StatusMode statusMode, String statusText) {
+        if (isStatusTrackingEnabled(account, bareAddress)) {
+            getChat(account, bareAddress).newAction(resource, statusText, ChatAction.getChatAction(statusMode));
+        }
     }
 
 }
