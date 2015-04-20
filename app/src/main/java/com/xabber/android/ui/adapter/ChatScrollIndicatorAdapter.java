@@ -1,13 +1,16 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
 
 public class ChatScrollIndicatorAdapter {
 
@@ -29,37 +32,44 @@ public class ChatScrollIndicatorAdapter {
         }
     }
 
-    public void update(int size) {
-
+    public void update(ArrayList<AbstractChat> activeChats) {
         final LayoutInflater inflater
                 = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        while (linearLayout.getChildCount() < size) {
+        final int size = activeChats.size() + 1;
+
+        linearLayout.removeAllViews();
+
+        for (int i = 0; i < size; i++) {
             View view;
-            if (linearLayout.getChildCount() == 0) {
+            if (i == 0) {
                 view = inflater.inflate(R.layout.chat_scroll_indicator_item_square, linearLayout, false);
             } else {
                 view = inflater.inflate(R.layout.chat_scroll_indicator_item_circle, linearLayout, false);
             }
 
+
+
             linearLayout.addView(view);
             final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
 
-            view.setTag(accountViewHolder);
-        }
+            if (i > 0) {
+                int colorLevel = AccountManager.getInstance().getColorLevel(activeChats.get(i - 1).getAccount());
+                accountViewHolder.body.setImageLevel(colorLevel);
+                accountViewHolder.selection.setImageLevel(colorLevel);
+            }
 
-        while (linearLayout.getChildCount() > size) {
-            linearLayout.removeViewAt(size);
+            view.setTag(accountViewHolder);
         }
     }
 
     private static class AccountViewHolder {
-        final View body;
-        final View selection;
+        final ImageView body;
+        final ImageView selection;
 
         public AccountViewHolder(View view) {
-            body = view.findViewById(R.id.indicator_item_body);
-            selection = view.findViewById(R.id.indicator_item_selection);
+            body = (ImageView) view.findViewById(R.id.indicator_item_body);
+            selection = (ImageView) view.findViewById(R.id.indicator_item_selection);
         }
     }
 }

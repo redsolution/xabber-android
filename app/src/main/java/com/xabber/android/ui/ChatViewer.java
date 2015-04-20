@@ -122,7 +122,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
                 (LinearLayout)findViewById(R.id.chat_scroll_indicator));
-        chatScrollIndicatorAdapter.update(chatViewerAdapter.getRealCount());
+        chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
@@ -139,7 +139,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
 
         chatViewerAdapter.updateChats();
-        chatScrollIndicatorAdapter.update(chatViewerAdapter.getRealCount());
+        ;
+        chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
 
         String account = getAccount(intent);
         String user = getUser(intent);
@@ -212,7 +213,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         if (chatViewerAdapter.updateChats()) {
             selectPage(currentAccount, currentUser, false);
-            chatScrollIndicatorAdapter.update(chatViewerAdapter.getRealCount());
+            chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
 
         } else {
             updateRegisteredChats();
