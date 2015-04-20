@@ -15,13 +15,14 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
+import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.CharacterStyle;
 import android.text.style.TextAppearanceSpan;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,16 +46,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Adapter for the list of messages in the chat.
- *
- * @author alexander.ivanov
- */
-public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter {
+public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
-    private static final int VIEW_TYPE_COUNT = 5;
-
-    private static final int VIEW_TYPE_EMPTY = 0;
     private static final int VIEW_TYPE_HINT = 1;
     public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
@@ -81,6 +74,58 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
      */
     private String hint;
 
+    public static class HintMessage extends RecyclerView.ViewHolder {
+
+        public TextView info;
+
+        public HintMessage(View itemView) {
+            super(itemView);
+            info = (TextView) itemView.findViewById(R.id.info);
+        }
+    }
+
+    public static class ActionMessage extends RecyclerView.ViewHolder {
+
+        public TextView actionMessage;
+
+        public ActionMessage(View itemView) {
+            super(itemView);
+            actionMessage = (TextView) itemView.findViewById(R.id.action_message_text);
+        }
+    }
+
+    public static abstract class Message extends RecyclerView.ViewHolder {
+
+        public TextView messageText;
+        public TextView messageTime;
+
+        public Message(View itemView) {
+            super(itemView);
+            messageText = (TextView) itemView.findViewById(R.id.message_text);
+            messageTime = (TextView) itemView.findViewById(R.id.message_time);
+        }
+    }
+
+    public static class IncomingMessage extends Message {
+
+        public ImageView avatar;
+
+        public IncomingMessage(View itemView) {
+            super(itemView);
+            avatar = (ImageView) itemView.findViewById(R.id.avatar);
+        }
+    }
+
+    public static class OutgoingMessage extends Message {
+
+        public ImageView statusIcon;
+
+        public OutgoingMessage(View itemView) {
+            super(itemView);
+            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
+        }
+    }
+
     public ChatMessageAdapter(Activity activity, String account, String user) {
         this.activity = activity;
         messages = Collections.emptyList();
@@ -99,11 +144,64 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
     }
 
     @Override
-    public int getCount() {
-        return messages.size() + 1;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_HINT:
+                return new HintMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_info, parent, false));
+
+            case VIEW_TYPE_ACTION_MESSAGE:
+                return new ActionMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_action_message, parent, false));
+
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                return new IncomingMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_incoming_message, parent, false));
+
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                return new OutgoingMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false));
+            default:
+                return null;
+        }
+
     }
 
     @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final int viewType = getItemViewType(position);
+
+        MessageItem messageItem = (MessageItem) getItem(position);
+
+        switch (viewType) {
+            case VIEW_TYPE_HINT:
+                ((HintMessage)holder).info.setText(hint);
+                break;
+
+            case VIEW_TYPE_ACTION_MESSAGE:
+                ChatAction action = messageItem.getAction();
+                String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+                ((ActionMessage)holder).actionMessage.setText(time + ": "
+                        + action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
+                break;
+
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                setUpMessage(messageItem, (Message) holder);
+                setUpAvatar(messageItem, (IncomingMessage) holder);
+                break;
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                setUpMessage(messageItem, (Message) holder);
+                setStatusIcon(messageItem, (OutgoingMessage) holder);
+                break;
+        }
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return messages.size() + 1;
+    }
+
     public Object getItem(int position) {
         if (position < messages.size()) {
             return messages.get(position);
@@ -118,14 +216,9 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
     }
 
     @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
-    }
-
-    @Override
     public int getItemViewType(int position) {
         if (position >= messages.size()) {
-            return hint == null ? VIEW_TYPE_EMPTY : VIEW_TYPE_HINT;
+            return VIEW_TYPE_HINT;
         }
 
         MessageItem messageItem = (MessageItem) getItem(position);
@@ -136,78 +229,9 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         return messageItem.isIncoming() ? VIEW_TYPE_INCOMING_MESSAGE : VIEW_TYPE_OUTGOING_MESSAGE;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final int type = getItemViewType(position);
-
-        if (type == VIEW_TYPE_EMPTY) {
-            if (convertView == null) {
-                return activity.getLayoutInflater().inflate(R.layout.chat_viewer_empty, parent, false);
-            } else {
-                return convertView;
-            }
-        }
-
-        if (type == VIEW_TYPE_HINT) {
-            View view = convertView;
-            if (convertView == null) {
-                view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_info, parent, false);
-            }
-
-            TextView textView = ((TextView) view.findViewById(R.id.info));
-            textView.setText(hint);
-            textView.setTextAppearance(activity, R.style.ChatInfo_Warning);
-            return view;
-        }
-
-        MessageItem messageItem = (MessageItem) getItem(position);
-
-        if (type == VIEW_TYPE_ACTION_MESSAGE) {
-            View view = convertView;
-            if (convertView == null) {
-                view = activity.getLayoutInflater().inflate(R.layout.chat_viewer_action_message, parent, false);
-            }
-
-            ChatAction action = messageItem.getAction();
-
-            String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
-
-            ((TextView)view.findViewById(R.id.action_message_text)).setText(time + ": "
-                    + action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
-
-            return view;
-        }
-
-        View view = convertView;
-
-        if (convertView == null) {
-            final int layoutId;
-
-            if (type == VIEW_TYPE_INCOMING_MESSAGE) {
-                layoutId = R.layout.chat_viewer_incoming_message;
-            } else if (type == VIEW_TYPE_OUTGOING_MESSAGE) {
-                layoutId = R.layout.chat_viewer_outgoing_message;
-            } else {
-                throw new IllegalStateException();
-            }
-
-            view = activity.getLayoutInflater().inflate(layoutId, parent, false);
-        }
-
-        setUpMessageView(messageItem, view);
-        return view;
-    }
-
-    private void setUpMessageView(MessageItem messageItem, View view) {
-        final boolean incoming = messageItem.isIncoming();
-
-
+    private void setUpMessage(MessageItem messageItem, Message message) {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         final String resource = messageItem.getResource();
-
-        if (!incoming) {
-            setStatusIcon(messageItem, view);
-        }
 
         if (isMUC) {
             append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
@@ -230,29 +254,23 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
             append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
         }
 
-        TextView textView = (TextView) view.findViewById(R.id.message_text);
-        textView.setTextAppearance(activity, appearanceStyle);
-        textView.setText(builder);
-        textView.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+        message.messageText.setTextAppearance(activity, appearanceStyle);
+        message.messageText.setText(builder);
+        message.messageText.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
         String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
 
         if (delayTimestamp != null) {
-            String delay = activity.getString(incoming ? R.string.chat_delay : R.string.chat_typed,
+            String delay = activity.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
                     StringUtils.getSmartTimeText(activity, delayTimestamp));
             time += " (" + delay + ")";
         }
 
-        ((TextView)view.findViewById(R.id.message_time)).setText(time);
-
-        if (incoming) {
-            setUpAvatar(messageItem, view);
-        }
+        message.messageTime.setText(time);
     }
 
-    private void setStatusIcon(MessageItem messageItem, View view) {
-        ImageView messageStatusIcon = (ImageView) view.findViewById(R.id.message_status_icon);
-        messageStatusIcon.setVisibility(View.VISIBLE);
+    private void setStatusIcon(MessageItem messageItem, OutgoingMessage message) {
+        message.statusIcon.setVisibility(View.VISIBLE);
 
         int messageIcon = R.drawable.ic_message_delivered_18dp;
         if (messageItem.isError()) {
@@ -260,10 +278,10 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         } else if (!messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_18dp;
         } else if (!messageItem.isDelivered()) {
-            messageStatusIcon.setVisibility(View.INVISIBLE);
+            message.statusIcon.setVisibility(View.INVISIBLE);
         }
 
-        messageStatusIcon.setImageResource(messageIcon);
+        message.statusIcon.setImageResource(messageIcon);
     }
 
     private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
@@ -272,30 +290,28 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
         builder.setSpan(span, start, start + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    private void setUpAvatar(MessageItem messageItem, View view) {
-        ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
-
+    private void setUpAvatar(MessageItem messageItem, IncomingMessage message) {
         if (SettingsManager.chatsShowAvatars()) {
             final String account = messageItem.getChat().getAccount();
             final String user = messageItem.getChat().getUser();
             final String resource = messageItem.getResource();
 
-            avatarView.setVisibility(View.VISIBLE);
+            message.avatar.setVisibility(View.VISIBLE);
             if ((isMUC && MUCManager.getInstance().getNickname(account, user).equalsIgnoreCase(resource))) {
-                avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+                message.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
             } else {
                 if (isMUC) {
                     if ("".equals(resource)) {
-                        avatarView.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
+                        message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                     } else {
-                        avatarView.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
+                        message.avatar.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
                     }
                 } else {
-                    avatarView.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
+                    message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
                 }
             }
         } else {
-            avatarView.setVisibility(View.GONE);
+            message.avatar.setVisibility(View.GONE);
         }
     }
 

@@ -8,6 +8,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,7 +26,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 
 import com.xabber.android.data.Application;
@@ -63,7 +64,8 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
 
     private EditText inputView;
-    private ListView listView;
+
+    private RecyclerView recyclerView;
     private ChatMessageAdapter chatMessageAdapter;
 
     private boolean skipOnTextChanges;
@@ -156,10 +158,12 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
 
-        listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setAdapter(chatMessageAdapter);
-        listView.setOnItemClickListener(this);
+        recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
+        recyclerView.setAdapter(chatMessageAdapter);
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(layoutManager);
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
@@ -369,7 +373,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         super.onCreateContextMenu(menu, view, menuInfo);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
-        ChatMessageAdapter chatMessageAdapter = (ChatMessageAdapter) listView.getAdapter();
+        ChatMessageAdapter chatMessageAdapter = (ChatMessageAdapter) recyclerView.getAdapter();
 
         int itemViewType = chatMessageAdapter.getItemViewType(info.position);
 
@@ -388,7 +392,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        final MessageItem message = (MessageItem) listView.getAdapter().getItem(info.position);
+        final MessageItem message = (MessageItem) chatMessageAdapter.getItem(info.position);
 
         switch (item.getItemId()) {
             case R.id.action_message_repeat:
@@ -453,9 +457,9 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        registerForContextMenu(listView);
-        listView.showContextMenuForChild(view);
-        unregisterForContextMenu(listView);
+        registerForContextMenu(recyclerView);
+        recyclerView.showContextMenuForChild(view);
+        unregisterForContextMenu(recyclerView);
     }
 
     @Override
