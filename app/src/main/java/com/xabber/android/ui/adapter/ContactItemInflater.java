@@ -84,7 +84,7 @@ public class ContactItemInflater {
 
             AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
 
-            statusText = chat.getLastText();
+            statusText = chat.getLastText().trim();
 
             viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
             viewHolder.smallRightText.setVisibility(View.VISIBLE);
@@ -102,9 +102,6 @@ public class ContactItemInflater {
             viewHolder.largeClientIcon.setVisibility(View.GONE);
         } else {
             statusText = contact.getStatusText().trim();
-            if (statusText.isEmpty()) {
-                statusText = context.getString(contact.getStatusMode().getStringID());
-            }
             viewHolder.smallRightText.setVisibility(View.GONE);
             view.setBackgroundColor(context.getResources().getColor(R.color.grey_300));
             viewHolder.smallRightIcon.setVisibility(View.GONE);
@@ -112,7 +109,12 @@ public class ContactItemInflater {
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
 
-        viewHolder.secondLineMessage.setText(statusText.trim());
+        if (statusText.isEmpty()) {
+            viewHolder.secondLineMessage.setVisibility(View.GONE);
+        } else {
+            viewHolder.secondLineMessage.setVisibility(View.VISIBLE);
+            viewHolder.secondLineMessage.setText(statusText.trim());
+        }
 
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
         return view;
