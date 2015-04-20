@@ -297,7 +297,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                 }
             }
 
-            hasActiveChats = activeChats.getTotal() > 0;
+            hasActiveChats = activeChats != null && activeChats.getTotal() > 0;
 
             // Remove empty groups, sort and apply structure.
             baseEntities.clear();
