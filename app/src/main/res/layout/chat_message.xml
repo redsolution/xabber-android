@@ -5,7 +5,10 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/message_layout"
-    tools:showIn="@layout/chat_viewer_outgoing_message">
+    android:minWidth="160dp"
+    tools:showIn="@layout/chat_viewer_outgoing_message"
+    android:descendantFocusability="blocksDescendants"
+    >
 
     <TextView
         android:id="@+id/message_header"
@@ -25,8 +28,7 @@
         android:id="@+id/message_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:minWidth="160dp"
+        android:autoLink="all"
 
         android:text="Some text\n line \nrgregrere" />
 
