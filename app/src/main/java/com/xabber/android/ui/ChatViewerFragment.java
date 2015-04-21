@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -56,7 +55,8 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
 
-public class ChatViewerFragment extends Fragment implements AdapterView.OnItemClickListener, PopupMenu.OnMenuItemClickListener, View.OnClickListener, Toolbar.OnMenuItemClickListener {
+public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
+        View.OnClickListener, Toolbar.OnMenuItemClickListener, ChatMessageAdapter.Message.MessageClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -65,7 +65,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     private EditText inputView;
 
-    private RecyclerView recyclerView;
     private ChatMessageAdapter chatMessageAdapter;
 
     private boolean skipOnTextChanges;
@@ -80,6 +79,7 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
 
     private ChatViewerFragmentListener listener;
     private Animation shakeAnimation = null;
+    private int contextMenuItemPosition;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -156,9 +156,9 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
             securityButton.setVisibility(View.GONE);
         }
 
-        chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user);
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
         recyclerView.setAdapter(chatMessageAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -271,7 +271,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
                 sendButton.setImageResource(R.drawable.ic_button_send);
                 sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
             }
-
         }
     }
 
@@ -368,14 +367,9 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view,
-                                    ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-
-        ChatMessageAdapter chatMessageAdapter = (ChatMessageAdapter) recyclerView.getAdapter();
-
-        int itemViewType = chatMessageAdapter.getItemViewType(info.position);
+        int itemViewType = chatMessageAdapter.getItemViewType(contextMenuItemPosition);
 
         if (itemViewType == ChatMessageAdapter.VIEW_TYPE_INCOMING_MESSAGE
                 || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
@@ -383,16 +377,16 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
             MenuInflater inflater = getActivity().getMenuInflater();
             inflater.inflate(R.menu.chat_context_menu, menu);
 
-            if (((MessageItem) chatMessageAdapter.getItem(info.position)).isError()) {
+            if (chatMessageAdapter.getMessageItem(contextMenuItemPosition).isError()) {
                 menu.findItem(R.id.action_message_repeat).setVisible(true);
+
             }
         }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        final MessageItem message = (MessageItem) chatMessageAdapter.getItem(info.position);
+        final MessageItem message = chatMessageAdapter.getMessageItem(contextMenuItemPosition);
 
         switch (item.getItemId()) {
             case R.id.action_message_repeat:
@@ -453,13 +447,6 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         skipOnTextChanges = true;
         inputView.getText().clear();
         skipOnTextChanges = false;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        registerForContextMenu(recyclerView);
-        recyclerView.showContextMenuForChild(view);
-        unregisterForContextMenu(recyclerView);
     }
 
     @Override
@@ -614,6 +601,15 @@ public class ChatViewerFragment extends Fragment implements AdapterView.OnItemCl
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }
+    }
+
+    @Override
+    public void onMessageClick(View caller, int position) {
+        registerForContextMenu(caller);
+        this.contextMenuItemPosition = position;
+        caller.setOnCreateContextMenuListener(this);
+        caller.showContextMenu();
+        unregisterForContextMenu(caller);
     }
 
     public interface ChatViewerFragmentListener {

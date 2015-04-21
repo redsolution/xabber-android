@@ -14,7 +14,7 @@
  */
 package com.xabber.android.ui.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -53,7 +53,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
     private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
 
-    private final Activity activity;
+    private final Context context;
+    private final Message.MessageClickListener messageClickListener;
     private String account;
     private String user;
     private boolean isMUC;
@@ -94,24 +95,40 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public static abstract class Message extends RecyclerView.ViewHolder {
+    public static abstract class Message extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView messageText;
         public TextView messageTime;
 
-        public Message(View itemView) {
+        MessageClickListener onClickListener;
+
+        public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
+            this.onClickListener = onClickListener;
+
             messageText = (TextView) itemView.findViewById(R.id.message_text);
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
+
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            onClickListener.onMessageClick(v, getPosition());
+        }
+
+        public interface MessageClickListener {
+            void onMessageClick(View caller, int position);
+        }
+
     }
 
     public static class IncomingMessage extends Message {
 
         public ImageView avatar;
 
-        public IncomingMessage(View itemView) {
-            super(itemView);
+        public IncomingMessage(View itemView, MessageClickListener listener) {
+            super(itemView, listener);
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
         }
     }
@@ -120,23 +137,25 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public ImageView statusIcon;
 
-        public OutgoingMessage(View itemView) {
-            super(itemView);
+        public OutgoingMessage(View itemView, MessageClickListener listener) {
+            super(itemView, listener);
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
         }
     }
 
-    public ChatMessageAdapter(Activity activity, String account, String user) {
-        this.activity = activity;
+    public ChatMessageAdapter(Context context, String account, String user, Message.MessageClickListener messageClickListener) {
+        this.context = context;
         messages = Collections.emptyList();
         this.account = account;
         this.user = user;
+        this.messageClickListener = messageClickListener;
+
         isMUC = MUCManager.getInstance().hasRoom(account, user);
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
         ChatsDivide chatsDivide = SettingsManager.chatsDivide();
         if (chatsDivide == ChatsDivide.always || (chatsDivide == ChatsDivide.portial
-                && !activity.getResources().getBoolean(R.bool.landscape))) {
+                && !context.getResources().getBoolean(R.bool.landscape))) {
             divider = "\n";
         } else {
             divider = " ";
@@ -156,11 +175,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_incoming_message, parent, false));
+                        .inflate(R.layout.chat_viewer_incoming_message, parent, false), messageClickListener);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false));
+                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false), messageClickListener);
             default:
                 return null;
         }
@@ -171,7 +190,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final int viewType = getItemViewType(position);
 
-        MessageItem messageItem = (MessageItem) getItem(position);
+        MessageItem messageItem = getMessageItem(position);
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
@@ -180,9 +199,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             case VIEW_TYPE_ACTION_MESSAGE:
                 ChatAction action = messageItem.getAction();
-                String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+                String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
                 ((ActionMessage)holder).actionMessage.setText(time + ": "
-                        + action.getText(activity, messageItem.getResource(), messageItem.getSpannable().toString()));
+                        + action.getText(context, messageItem.getResource(), messageItem.getSpannable().toString()));
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
@@ -202,7 +221,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return messages.size() + 1;
     }
 
-    public Object getItem(int position) {
+    public MessageItem getMessageItem(int position) {
         if (position < messages.size()) {
             return messages.get(position);
         } else {
@@ -221,7 +240,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return VIEW_TYPE_HINT;
         }
 
-        MessageItem messageItem = (MessageItem) getItem(position);
+        MessageItem messageItem = getMessageItem(position);
         if (messageItem.getAction() != null) {
             return VIEW_TYPE_ACTION_MESSAGE;
         }
@@ -234,35 +253,34 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final String resource = messageItem.getResource();
 
         if (isMUC) {
-            append(builder, resource, new TextAppearanceSpan(activity, R.style.ChatHeader_Time));
-            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+            append(builder, resource, new TextAppearanceSpan(context, R.style.ChatHeader_Time));
+            append(builder, divider, new TextAppearanceSpan(context, R.style.ChatHeader));
         }
 
         Date delayTimestamp = messageItem.getDelayTimestamp();
 
-
         if (messageItem.isUnencypted()) {
-            append(builder, activity.getString(R.string.otr_unencrypted_message),
-                    new TextAppearanceSpan(activity, R.style.ChatHeader_Delay));
-            append(builder, divider, new TextAppearanceSpan(activity, R.style.ChatHeader));
+            append(builder, context.getString(R.string.otr_unencrypted_message),
+                    new TextAppearanceSpan(context, R.style.ChatHeader_Delay));
+            append(builder, divider, new TextAppearanceSpan(context, R.style.ChatHeader));
         }
 
         Spannable text = messageItem.getSpannable();
         if (messageItem.getTag() == null) {
             builder.append(text);
         } else {
-            append(builder, text, new TextAppearanceSpan(activity, R.style.ChatRead));
+            append(builder, text, new TextAppearanceSpan(context, R.style.ChatRead));
         }
 
-        message.messageText.setTextAppearance(activity, appearanceStyle);
+        message.messageText.setTextAppearance(context, appearanceStyle);
         message.messageText.setText(builder);
         message.messageText.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
-        String time = StringUtils.getSmartTimeText(activity, messageItem.getTimestamp());
+        String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
 
         if (delayTimestamp != null) {
-            String delay = activity.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
-                    StringUtils.getSmartTimeText(activity, delayTimestamp));
+            String delay = context.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
+                    StringUtils.getSmartTimeText(context, delayTimestamp));
             time += " (" + delay + ")";
         }
 
@@ -331,15 +349,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         if (!online) {
             if (abstractContact instanceof RoomContact) {
-                return activity.getString(R.string.muc_is_unavailable);
+                return context.getString(R.string.muc_is_unavailable);
             } else {
-                return activity.getString(R.string.account_is_offline);
+                return context.getString(R.string.account_is_offline);
             }
         } else if (!abstractContact.getStatusMode().isOnline()) {
             if (abstractContact instanceof RoomContact) {
-                return activity.getString(R.string.muc_is_unavailable);
+                return context.getString(R.string.muc_is_unavailable);
             } else {
-                return activity.getString(R.string.contact_is_offline, abstractContact.getName());
+                return context.getString(R.string.contact_is_offline, abstractContact.getName());
             }
         }
         return null;
