@@ -80,6 +80,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private ChatViewerFragmentListener listener;
     private Animation shakeAnimation = null;
     private int contextMenuItemPosition;
+    private RecyclerView recyclerView;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -158,7 +159,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
+        recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
         recyclerView.setAdapter(chatMessageAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -414,6 +415,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         chatMessageAdapter.onChange();
+        recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
 
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();

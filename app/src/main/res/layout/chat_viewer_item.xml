@@ -44,8 +44,6 @@
         android:layout_height="wrap_content"
         android:scrollbars="vertical"
 
-        android:transcriptMode="normal"
-        android:smoothScrollbar="false"
         android:divider="@null"
         android:dividerHeight="0dp"
         android:layout_above="@+id/input_layout"
