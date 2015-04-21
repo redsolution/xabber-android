@@ -16,10 +16,6 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.CharacterStyle;
-import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.SettingsManager.ChatsDivide;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -66,11 +61,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final int appearanceStyle;
 
     /**
-     * Divider between header and body.
-     */
-    private final String divider;
-
-    /**
      * Text with extra information.
      */
     private String hint;
@@ -99,6 +89,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public TextView messageText;
         public TextView messageTime;
+        public TextView messageHeader;
+        public TextView messageUnencrypted;
+        public View messageBalloon;
 
         MessageClickListener onClickListener;
 
@@ -108,6 +101,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             messageText = (TextView) itemView.findViewById(R.id.message_text);
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
+            messageHeader = (TextView) itemView.findViewById(R.id.message_header);
+            messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
+            messageBalloon = itemView.findViewById(R.id.message_balloon);
 
             itemView.setOnClickListener(this);
         }
@@ -153,13 +149,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         isMUC = MUCManager.getInstance().hasRoom(account, user);
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
-        ChatsDivide chatsDivide = SettingsManager.chatsDivide();
-        if (chatsDivide == ChatsDivide.always || (chatsDivide == ChatsDivide.portial
-                && !context.getResources().getBoolean(R.bool.landscape))) {
-            divider = "\n";
-        } else {
-            divider = " ";
-        }
     }
 
     @Override
@@ -249,35 +238,36 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void setUpMessage(MessageItem messageItem, Message message) {
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        final String resource = messageItem.getResource();
 
         if (isMUC) {
-            append(builder, resource, new TextAppearanceSpan(context, R.style.ChatHeader_Time));
-            append(builder, divider, new TextAppearanceSpan(context, R.style.ChatHeader));
+            message.messageHeader.setText(messageItem.getResource());
+            message.messageHeader.setVisibility(View.VISIBLE);
+        } else {
+            message.messageHeader.setVisibility(View.GONE);
         }
-
-        Date delayTimestamp = messageItem.getDelayTimestamp();
 
         if (messageItem.isUnencypted()) {
-            append(builder, context.getString(R.string.otr_unencrypted_message),
-                    new TextAppearanceSpan(context, R.style.ChatHeader_Delay));
-            append(builder, divider, new TextAppearanceSpan(context, R.style.ChatHeader));
-        }
-
-        Spannable text = messageItem.getSpannable();
-        if (messageItem.getTag() == null) {
-            builder.append(text);
+            message.messageUnencrypted.setVisibility(View.VISIBLE);
         } else {
-            append(builder, text, new TextAppearanceSpan(context, R.style.ChatRead));
+            message.messageUnencrypted.setVisibility(View.GONE);
         }
 
         message.messageText.setTextAppearance(context, appearanceStyle);
-        message.messageText.setText(builder);
-        message.messageText.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+
+        String text = messageItem.getText().trim();
+
+        if (text.isEmpty()) {
+            message.itemView.setVisibility(View.GONE);
+        } else {
+            message.itemView.setVisibility(View.VISIBLE);
+            message.messageText.setText(text);
+        }
+
+        message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
         String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
 
+        Date delayTimestamp = messageItem.getDelayTimestamp();
         if (delayTimestamp != null) {
             String delay = context.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
                     StringUtils.getSmartTimeText(context, delayTimestamp));
@@ -300,12 +290,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         message.statusIcon.setImageResource(messageIcon);
-    }
-
-    private void append(SpannableStringBuilder builder, CharSequence text, CharacterStyle span) {
-        int start = builder.length();
-        builder.append(text);
-        builder.setSpan(span, start, start + text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     private void setUpAvatar(MessageItem messageItem, IncomingMessage message) {
