@@ -85,8 +85,6 @@
         android:maxLines="4"
         android:scrollbars="vertical"
         android:fadingEdge="vertical"
-        android:focusable="true"
-        android:descendantFocusability="beforeDescendants"
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:background="@android:color/transparent"

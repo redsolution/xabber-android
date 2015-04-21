@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
@@ -111,6 +112,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         setContentView(R.layout.activity_chat_viewer);
 
         statusBarPainter = new StatusBarPainter(this);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         if (account != null && user != null) {
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), account, user, this);
