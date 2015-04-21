@@ -190,15 +190,25 @@ public class ConnectionThread implements
             runOnConnectionThread(new Runnable() {
                 @Override
                 public void run() {
-                    addressResolve(null, defaultHost, defaultPort, true);
+                    if(proxyType == ProxyType.socks5) {
+                      onReady(defaultHost, defaultPort);
+                    }
+                    else {
+                      addressResolve(null, defaultHost, defaultPort, true);
+                    }
                 }
             });
         } else {
             runOnConnectionThread(new Runnable() {
                 @Override
                 public void run() {
-                    addressResolve(fqdn, target.getHost(), target.getPort(),
-                            true);
+                    if(proxyType == ProxyType.socks5) {
+                      onReady(target.getHost(), target.getPort());
+                    }
+                    else {
+                      addressResolve(fqdn, target.getHost(), target.getPort(),
+                              true);
+                    }
                 }
             });
         }
@@ -284,6 +294,19 @@ public class ConnectionThread implements
                 proxyUser, proxyPassword);
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
                 address.getHostAddress(), port, serverName, proxy);
+        onReady(connectionConfiguration);
+    }
+
+    private void onReady(final String host, final int port) {
+        LogManager.i(this, "Use remote DNS for " + host);
+        ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort,
+                proxyUser, proxyPassword);
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+                host, port, serverName, proxy);
+        onReady(connectionConfiguration);
+    }
+
+    private void onReady(ConnectionConfiguration connectionConfiguration) {
         if (Build.VERSION.SDK_INT >= 14) {
             connectionConfiguration.setTruststoreType("AndroidCAStore");
             connectionConfiguration.setTruststorePassword(null);
@@ -680,8 +703,14 @@ public class ConnectionThread implements
             public void run() {
                 if (useSRVLookup)
                     srvResolve(fqdn, fqdn, port);
-                else
-                    addressResolve(null, fqdn, port, true);
+                else {
+                    if(proxyType == ProxyType.socks5) {
+                      onReady(fqdn, port);
+                    }
+                    else {
+                      addressResolve(null, fqdn, port, true);
+                    }
+                }
             }
         });
     }
