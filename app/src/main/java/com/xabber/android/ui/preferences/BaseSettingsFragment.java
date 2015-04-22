@@ -9,6 +9,9 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.android.ui.widget.RingtonePreference;
@@ -20,8 +23,8 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         onInflate(savedInstanceState);
 
@@ -42,6 +45,8 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
                 onPreferenceChange(preference,
                         ((ListPreference) preference).getValue());
         }
+
+        return view;
     }
 
     /**
