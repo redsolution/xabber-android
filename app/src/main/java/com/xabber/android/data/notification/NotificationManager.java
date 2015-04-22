@@ -493,10 +493,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         return messageNotification.getCount();
     }
 
-    public void removeMessageNotification(final String account,
-                                          final String user) {
-        MessageNotification messageNotification = getMessageNotification(
-                account, user);
+    public void removeMessageNotification(final String account, final String user) {
+        MessageNotification messageNotification = getMessageNotification(account, user);
         if (messageNotification == null)
             return;
         messageNotifications.remove(messageNotification);
