@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:minHeight="52dp"
 
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:background="?attr/colorPrimary"
         android:elevation="8dp"
