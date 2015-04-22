@@ -365,8 +365,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             PublicKey remotePublicKey = session.getRemotePublicKey();
             String value;
             try {
-                value = new OtrCryptoEngine()
-                        .getFingerprint(remotePublicKey);
+                value = OtrCryptoEngine.getFingerprint(remotePublicKey);
             } catch (OtrCryptoException e) {
                 LogManager.exception(this, e);
                 value = null;
@@ -542,7 +541,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     public String getLocalFingerprint(String account) {
         try {
-            return new OtrCryptoEngine().getFingerprint(getLocalKeyPair(
+            return OtrCryptoEngine.getFingerprint(getLocalKeyPair(
                     account).getPublic());
         } catch (OtrCryptoException e) {
             LogManager.exception(this, e);
