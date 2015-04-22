@@ -15,6 +15,7 @@
 <resources>
     <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
