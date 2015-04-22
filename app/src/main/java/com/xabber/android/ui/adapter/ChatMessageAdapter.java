@@ -183,7 +183,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
-                ((HintMessage)holder).info.setText(hint);
+                HintMessage hintMessage = (HintMessage) holder;
+                if (hint == null || hint.trim().isEmpty()) {
+                    (hintMessage).info.setVisibility(View.GONE);
+                } else {
+                    (hintMessage).info.setText(hint);
+                    (hintMessage).info.setVisibility(View.VISIBLE);
+                }
                 break;
 
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -194,13 +200,28 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
 
             case VIEW_TYPE_INCOMING_MESSAGE:
-                setUpMessage(messageItem, (Message) holder);
-                setUpAvatar(messageItem, (IncomingMessage) holder);
+                setUpIncomingMessage((IncomingMessage) holder, messageItem);
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 setUpMessage(messageItem, (Message) holder);
                 setStatusIcon(messageItem, (OutgoingMessage) holder);
                 break;
+        }
+
+    }
+
+    private void setUpIncomingMessage(IncomingMessage incomingMessage, MessageItem messageItem) {
+        setUpMessage(messageItem, incomingMessage);
+
+        setUpAvatar(messageItem, incomingMessage);
+
+        if (messageItem.getText().trim().isEmpty()) {
+            incomingMessage.messageBalloon.setVisibility(View.GONE);
+            incomingMessage.messageTime.setVisibility(View.GONE);
+            incomingMessage.avatar.setVisibility(View.GONE);
+        } else {
+            incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
+            incomingMessage.messageTime.setVisibility(View.VISIBLE);
         }
 
     }
@@ -254,14 +275,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         message.messageText.setTextAppearance(context, appearanceStyle);
 
-        String text = messageItem.getText().trim();
-
-        if (text.isEmpty()) {
-            message.itemView.setVisibility(View.GONE);
-        } else {
-            message.itemView.setVisibility(View.VISIBLE);
-            message.messageText.setText(text);
-        }
+        message.messageText.setText(messageItem.getText().trim());
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
