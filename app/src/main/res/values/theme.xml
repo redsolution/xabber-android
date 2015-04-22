@@ -22,5 +22,7 @@
         <!--for text selection toolbar color -->
         <item name="actionModeBackground">@drawable/myapp_action_mode_background</item>
 
+        <!-- for hardware button menu -->
+        <item name="panelBackground">?attr/colorPrimary</item>
     </style>
 </resources>
