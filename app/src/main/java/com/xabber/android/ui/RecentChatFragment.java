@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -18,7 +19,7 @@ import com.xabber.androiddev.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecentChatFragment extends ListFragment {
+public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuItemClickListener {
     private RecentChatFragmentInteractionListener listener;
 
     public static RecentChatFragment newInstance() {
@@ -75,6 +76,8 @@ public class RecentChatFragment extends ListFragment {
                 NavUtils.navigateUpFromSameTask(getActivity());
             }
         });
+        toolbar.inflateMenu(R.menu.recent_chats);
+        toolbar.setOnMenuItemClickListener(this);
 
         return rootView;
     }
@@ -107,6 +110,15 @@ public class RecentChatFragment extends ListFragment {
         if (null != listener) {
             listener.onChatSelected((AbstractChat) getListAdapter().getItem(position));
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.action_under_construction) {
+            Toast.makeText(getActivity(), getActivity().getString(R.string.under_construction_message), Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
     }
 
     public interface RecentChatFragmentInteractionListener {

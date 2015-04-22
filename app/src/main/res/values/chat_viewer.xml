@@ -149,4 +149,7 @@
     <string name="otr_verify_secret">Verify with shared secret</string>
 
     <string name="recent_chats">Recent chats</string>
+
+    <string name="under_construction">Under construction</string>
+    <string name="under_construction_message">This screen is under construction</string>
 </resources>

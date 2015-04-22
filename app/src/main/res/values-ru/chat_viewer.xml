@@ -149,4 +149,7 @@
     <string name="otr_verify_secret">Проверка секретным ключом</string>
 
     <string name="recent_chats">Недавние чаты</string>
+
+    <string name="under_construction">В разработке</string>
+    <string name="under_construction_message">Этот экран находится в разработке</string>
 </resources>
