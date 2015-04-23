@@ -28,10 +28,10 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -212,8 +212,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void afterTextChanged(Editable text) {
-                LogManager.i(this, "afterTextChanged");
-
                 setSendButtonColor();
 
                 if (!skipOnTextChanges) {
@@ -426,8 +424,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         securityButton.setImageLevel(securityLevel.getImageLevel());
     }
 
-    public boolean isEqual(String account, String user) {
-        return this.account.equals(account) && this.user.equals(user);
+    public boolean isEqual(BaseEntity chat) {
+        return chat != null && this.account.equals(chat.getAccount()) && this.user.equals(chat.getUser());
     }
 
     public void setInputText(String additional) {

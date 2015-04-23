@@ -289,15 +289,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     /**
      * Sets currently visible chat.
-     *
-     * @param account
-     * @param user
      */
-    public void setVisibleChat(String account, String user) {
-        final boolean remove = !AccountManager.getInstance().getArchiveMode(account).saveLocally();
-        AbstractChat chat = getChat(account, user);
+    public void setVisibleChat(BaseEntity visibleChat) {
+        final boolean remove = !AccountManager.getInstance().getArchiveMode(visibleChat.getAccount()).saveLocally();
+        AbstractChat chat = getChat(visibleChat.getAccount(), visibleChat.getUser());
         if (chat == null) {
-            chat = createChat(account, user);
+            chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
         } else {
             // Mark messages as read and them delete from db if necessary.
             final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();

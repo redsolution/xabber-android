@@ -442,7 +442,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            startActivity(ChatViewer.createIntent(this,
+            startActivity(ChatViewer.createSpecificChatIntent(this,
                     abstractContact.getAccount(), abstractContact.getUser()));
             return;
         }
@@ -474,7 +474,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 break;
             }
             default:
-                startActivity(ChatViewer.createIntent(this,
+                startActivity(ChatViewer.createSpecificChatIntent(this,
                         abstractContact.getAccount(), abstractContact.getUser()));
                 break;
         }
