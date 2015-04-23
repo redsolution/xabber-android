@@ -146,7 +146,7 @@ public class MessageItem implements Comparable<MessageItem> {
     }
 
     public String getText() {
-        return text;
+        return Html.fromHtml(text).toString();
     }
 
     public Spannable getSpannable() {
