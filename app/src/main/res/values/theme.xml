@@ -23,4 +23,8 @@
         <!-- for hardware button menu -->
         <item name="panelBackground">?attr/colorPrimary</item>
     </style>
+
+    <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">17sp</item>
+    </style>
 </resources>

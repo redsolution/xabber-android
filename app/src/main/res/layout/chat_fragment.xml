@@ -22,9 +22,8 @@
     <android.support.v7.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar_default"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
-        android:minHeight="52dp"
 
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -62,42 +61,42 @@
         android:elevation="8dp"
         >
 
-    <ImageButton
-        android:id="@+id/button_security"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:src="@drawable/ic_security_grey_24dp"
-        android:background="@null"
-        android:contentDescription="@string/otr_encryption"
-        android:layout_gravity="bottom"
-        />
+        <ImageButton
+            android:id="@+id/button_security"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_security_grey_24dp"
+            android:background="@null"
+            android:contentDescription="@string/otr_encryption"
+            android:layout_gravity="bottom"
+            />
 
-    <EditText
-        android:id="@+id/chat_input"
-        android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
-        android:cursorVisible="true"
-        android:hint="@string/chat_input_hint"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:maxLines="4"
-        android:scrollbars="vertical"
-        android:fadingEdge="vertical"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:background="@android:color/transparent"
-     />
+        <EditText
+            android:id="@+id/chat_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+            android:cursorVisible="true"
+            android:hint="@string/chat_input_hint"
+            android:maxLines="4"
+            android:scrollbars="vertical"
+            android:fadingEdge="vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+         />
 
-    <ImageButton
-        android:id="@+id/button_send_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:src="@drawable/ic_button_send"
-        android:background="@null"
-        android:contentDescription="@string/chat_send"
-        android:layout_gravity="bottom"
-        />
+        <ImageButton
+            android:id="@+id/button_send_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:src="@drawable/ic_button_send"
+            android:background="@null"
+            android:contentDescription="@string/chat_send"
+            android:layout_gravity="bottom"
+            />
     </LinearLayout>
 
 </RelativeLayout>

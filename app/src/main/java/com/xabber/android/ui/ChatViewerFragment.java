@@ -117,7 +117,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.chat_viewer_item, container, false);
+        View view = inflater.inflate(R.layout.chat_fragment, container, false);
 
 
         View contactTitle = view.findViewById(R.id.contact_title);

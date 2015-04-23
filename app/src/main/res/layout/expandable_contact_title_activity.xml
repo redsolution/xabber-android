@@ -33,6 +33,7 @@
         android:id="@+id/toolbar_overlay"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        app:titleTextAppearance="@style/ToolbarTitle"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:elevation="8dp"
