@@ -275,7 +275,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         message.messageText.setTextAppearance(context, appearanceStyle);
 
-        message.messageText.setText(messageItem.getText().trim());
+        message.messageText.setText(messageItem.getSpannable());
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
