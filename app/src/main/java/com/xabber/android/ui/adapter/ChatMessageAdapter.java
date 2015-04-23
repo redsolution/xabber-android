@@ -228,7 +228,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        return messages.size() + 1;
+        if (hint == null) {
+            return messages.size();
+        } else {
+            return messages.size() + 1;
+        }
     }
 
     public MessageItem getMessageItem(int position) {
