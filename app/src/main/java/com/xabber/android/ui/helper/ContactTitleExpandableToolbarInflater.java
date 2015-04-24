@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.View;
@@ -13,7 +13,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -28,7 +27,7 @@ import static java.lang.Math.sqrt;
 
 public class ContactTitleExpandableToolbarInflater implements ObservableScrollViewCallbacks {
 
-    private final ActionBarActivity activity;
+    private final AppCompatActivity activity;
 
     private View avatarView;
     private View titleView;
@@ -44,7 +43,7 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
     private int contactTitlePaddingBottomBig;
     private int contactTitlePaddingBottomSmall;
 
-    public ContactTitleExpandableToolbarInflater(ActionBarActivity activity) {
+    public ContactTitleExpandableToolbarInflater(AppCompatActivity activity) {
         this.activity = activity;
     }
 

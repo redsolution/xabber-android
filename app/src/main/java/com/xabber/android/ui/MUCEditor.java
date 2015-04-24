@@ -37,7 +37,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
@@ -67,7 +67,24 @@ public class MUCEditor extends ManagedActivity implements OnItemSelectedListener
     private EditText nickView;
     private EditText passwordView;
 
-    private ActionBarPainter actionBarPainter;
+    private BarPainter barPainter;
+
+    public static Intent createIntent(Context context) {
+        return MUCEditor.createIntent(context, null, null);
+    }
+
+    public static Intent createIntent(Context context, String account,
+                                      String room) {
+        return new EntityIntentBuilder(context, MUCEditor.class).setAccount(account).setUser(room).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +94,15 @@ public class MUCEditor extends ManagedActivity implements OnItemSelectedListener
         }
 
         setContentView(R.layout.muc_editor);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
-        getSupportActionBar().setTitle(null);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        setTitle(null);
+
+        setSupportActionBar(toolbar);
+
+        barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
 
         accountView = (Spinner) findViewById(R.id.contact_account);
         serverView = (EditText) findViewById(R.id.muc_server);
@@ -126,10 +147,8 @@ public class MUCEditor extends ManagedActivity implements OnItemSelectedListener
             }
         }
 
-        actionBarPainter = new ActionBarPainter(this);
-
         if (account != null) {
-            actionBarPainter.updateWithAccountName(account);
+            barPainter.updateWithAccountName(account);
 
             for (int position = 0; position < accountView.getCount(); position++) {
                 if (account.equals(accountView.getItemAtPosition(position))) {
@@ -244,28 +263,11 @@ public class MUCEditor extends ManagedActivity implements OnItemSelectedListener
         }
         selectedAccount = accountView.getSelectedItemPosition();
 
-        actionBarPainter.updateWithAccountName((String) accountView.getSelectedItem());
+        barPainter.updateWithAccountName((String) accountView.getSelectedItem());
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         selectedAccount = accountView.getSelectedItemPosition();
-    }
-
-    public static Intent createIntent(Context context) {
-        return MUCEditor.createIntent(context, null, null);
-    }
-
-    public static Intent createIntent(Context context, String account,
-                                      String room) {
-        return new EntityIntentBuilder(context, MUCEditor.class).setAccount(account).setUser(room).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 }

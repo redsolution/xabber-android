@@ -38,6 +38,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 import com.xabber.androiddev.R;
@@ -71,26 +72,91 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private static final String SAVED_SELECTED_USER = "com.xabber.android.ui.ChatViewer.SAVED_SELECTED_USER";
 
     private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.ChatViewer.EXIT_ON_SEND";
-
-
-    private boolean exitOnSend;
-
-    private String extraText = null;
-
     ChatScrollIndicatorAdapter chatScrollIndicatorAdapter;
     ChatViewerAdapter chatViewerAdapter;
-
     ViewPager viewPager;
-
     Collection<ChatViewerFragment> registeredChats = new HashSet<>();
     Collection<RecentChatFragment> recentChatFragments = new HashSet<>();
-
+    private boolean exitOnSend;
+    private String extraText = null;
     private BaseEntity initialChat = null;
     private BaseEntity selectedChat = null;
 
     private StatusBarPainter statusBarPainter;
 
     private boolean isRecentChatsSelected;
+
+    public static void hideKeyboard(Activity activity) {
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    private static String getAccount(Intent intent) {
+        String value = EntityIntentBuilder.getAccount(intent);
+        if (value != null)
+            return value;
+        // Backward compatibility.
+        return intent.getStringExtra("com.xabber.android.data.account");
+    }
+
+    private static String getUser(Intent intent) {
+        String value = EntityIntentBuilder.getUser(intent);
+        if (value != null)
+            return value;
+        // Backward compatibility.
+        return intent.getStringExtra("com.xabber.android.data.user");
+    }
+
+    private static boolean hasAttention(Intent intent) {
+        return ACTION_ATTENTION.equals(intent.getAction());
+    }
+
+    public static Intent createSpecificChatIntent(Context context, String account, String user) {
+        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).setAccount(account).setUser(user).build();
+        intent.setAction(ACTION_SPECIFIC_CHAT);
+        return intent;
+    }
+
+    public static Intent createRecentChatsIntent(Context context) {
+        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).build();
+        intent.setAction(ACTION_RECENT_CHATS);
+        return intent;
+    }
+
+    public static Intent createClearTopIntent(Context context, String account, String user) {
+        Intent intent = createSpecificChatIntent(context, account, user);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
+    }
+
+    /**
+     * Create intent to send message.
+     * <p/>
+     * Contact list will not be shown on when chat will be closed.
+     *
+     * @param context
+     * @param account
+     * @param user
+     * @param text    if <code>null</code> then user will be able to send a number
+     *                of messages. Else only one message can be send.
+     * @return
+     */
+    public static Intent createSendIntent(Context context, String account, String user, String text) {
+        Intent intent = ChatViewer.createSpecificChatIntent(context, account, user);
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, text);
+        return intent;
+    }
+
+    public static Intent createAttentionRequestIntent(Context context, String account, String user) {
+        Intent intent = ChatViewer.createClearTopIntent(context, account, user);
+        intent.setAction(ACTION_ATTENTION);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -318,11 +384,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     private void updateStatusBar() {
+        String account;
         if (isRecentChatsSelected) {
-            statusBarPainter.restore();
+            account = BarPainter.getFirstAccount();
         } else {
-            statusBarPainter.updateWithAccountName(selectedChat.getAccount());
+            account = selectedChat.getAccount();
         }
+        statusBarPainter.updateWithAccountName(account);
     }
 
     private void updateRegisteredChats() {
@@ -348,7 +416,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     public void unregisterRecentChatsList(RecentChatFragment recentChatFragment) {
         recentChatFragments.remove(recentChatFragment);
     }
-
 
     @Override
     public void onChatViewAdapterFinishUpdate() {
@@ -380,17 +447,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     public void onChatSelected(AbstractChat chat) {
         selectChatPage(chat, true);
     }
+
     public ChatViewerAdapter getChatViewerAdapter() {
         return chatViewerAdapter;
-    }
-
-    public static void hideKeyboard(Activity activity) {
-        // Check if no view has focus:
-        View view = activity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
     }
 
     @Override
@@ -415,7 +474,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         registeredChats.remove(chat);
     }
 
-
     private void close() {
         finish();
         if (!Intent.ACTION_SEND.equals(getIntent().getAction())) {
@@ -424,69 +482,5 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 startActivity(ContactList.createIntent(this));
             }
         }
-    }
-
-
-    private static String getAccount(Intent intent) {
-        String value = EntityIntentBuilder.getAccount(intent);
-        if (value != null)
-            return value;
-        // Backward compatibility.
-        return intent.getStringExtra("com.xabber.android.data.account");
-    }
-
-    private static String getUser(Intent intent) {
-        String value = EntityIntentBuilder.getUser(intent);
-        if (value != null)
-            return value;
-        // Backward compatibility.
-        return intent.getStringExtra("com.xabber.android.data.user");
-    }
-
-    private static boolean hasAttention(Intent intent) {
-        return ACTION_ATTENTION.equals(intent.getAction());
-    }
-
-    public static Intent createSpecificChatIntent(Context context, String account, String user) {
-        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).setAccount(account).setUser(user).build();
-        intent.setAction(ACTION_SPECIFIC_CHAT);
-        return intent;
-    }
-
-    public static Intent createRecentChatsIntent(Context context) {
-        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).build();
-        intent.setAction(ACTION_RECENT_CHATS);
-        return intent;
-    }
-
-    public static Intent createClearTopIntent(Context context, String account, String user) {
-        Intent intent = createSpecificChatIntent(context, account, user);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        return intent;
-    }
-
-    /**
-     * Create intent to send message.
-     * <p/>
-     * Contact list will not be shown on when chat will be closed.
-     *
-     * @param context
-     * @param account
-     * @param user
-     * @param text    if <code>null</code> then user will be able to send a number
-     *                of messages. Else only one message can be send.
-     * @return
-     */
-    public static Intent createSendIntent(Context context, String account, String user, String text) {
-        Intent intent = ChatViewer.createSpecificChatIntent(context, account, user);
-        intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, text);
-        return intent;
-    }
-
-    public static Intent createAttentionRequestIntent(Context context, String account, String user) {
-        Intent intent = ChatViewer.createClearTopIntent(context, account, user);
-        intent.setAction(ACTION_ATTENTION);
-        return intent;
     }
 }

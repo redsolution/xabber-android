@@ -37,18 +37,31 @@ import java.util.Collection;
 public class GroupEditor extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener {
 
+    ContactTitleActionBarInflater contactTitleActionBarInflater;
     private String account;
     private String user;
 
-    ContactTitleActionBarInflater contactTitleActionBarInflater;
+    public static Intent createIntent(Context context, String account, String user) {
+        Intent intent = new EntityIntentBuilder(context, GroupEditor.class)
+                .setAccount(account).setUser(user).build();
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        return intent;
+    }
+
+    private static String getAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.group_editor);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
         contactTitleActionBarInflater.setUpActionBarView();
 
         Intent intent = getIntent();
@@ -105,21 +118,6 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
         if (accounts.contains(account)) {
             update();
         }
-    }
-
-    public static Intent createIntent(Context context, String account, String user) {
-        Intent intent = new EntityIntentBuilder(context, GroupEditor.class)
-                .setAccount(account).setUser(user).build();
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        return intent;
-    }
-
-    private static String getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
 }

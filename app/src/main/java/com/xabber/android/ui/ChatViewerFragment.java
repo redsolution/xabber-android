@@ -7,7 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -50,7 +50,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatEditor;
 import com.xabber.androiddev.R;
@@ -62,17 +62,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
     private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
-
+    boolean isInputEmpty = true;
     private EditText inputView;
-
     private ChatMessageAdapter chatMessageAdapter;
-
     private boolean skipOnTextChanges;
-
     private String account;
     private String user;
-
-    boolean isInputEmpty = true;
     private ImageButton sendButton;
     private ImageButton securityButton;
     private Toolbar toolbar;
@@ -127,10 +122,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
 
-        ActionBarPainter actionBarPainter = new ActionBarPainter((ActionBarActivity) getActivity());
-
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
-        toolbar.setBackgroundColor(actionBarPainter.getAccountColor(account));
         toolbar.inflateMenu(R.menu.chat);
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
@@ -140,6 +132,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 NavUtils.navigateUpFromSameTask(getActivity());
             }
         });
+
+        BarPainter barPainter = new BarPainter((AppCompatActivity) getActivity(), toolbar);
+        toolbar.setBackgroundColor(barPainter.getAccountColor(account));
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
@@ -613,17 +608,20 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         unregisterForContextMenu(caller);
     }
 
-    public interface ChatViewerFragmentListener {
-        void onCloseChat();
-        void onMessageSent();
-        void registerChat(ChatViewerFragment chat);
-        void unregisterChat(ChatViewerFragment chat);
-    }
-
     public void playIncomingAnimation() {
         if (shakeAnimation == null) {
             shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
         }
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    public interface ChatViewerFragmentListener {
+        void onCloseChat();
+
+        void onMessageSent();
+
+        void registerChat(ChatViewerFragment chat);
+
+        void unregisterChat(ChatViewerFragment chat);
     }
 }

@@ -23,7 +23,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
@@ -33,6 +33,20 @@ public class ChatEditor extends ManagedActivity
     private String account;
     private String user;
     private AccountItem accountItem;
+
+    public static Intent createIntent(Context context, String account,
+                                      String user) {
+        return new EntityIntentBuilder(context, ChatEditor.class)
+                .setAccount(account).setUser(user).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,30 +63,17 @@ public class ChatEditor extends ManagedActivity
         }
 
         setContentView(R.layout.activity_preferences);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ActionBarPainter actionBarPainter = new ActionBarPainter(this);
-        actionBarPainter.updateWithAccountName(account);
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.preferences_activity_container, new ChatEditorFragment()).commit();
         }
-    }
-
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
-        return new EntityIntentBuilder(context, ChatEditor.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
     @Override

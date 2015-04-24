@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
@@ -22,15 +24,15 @@ import java.util.List;
 public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuItemClickListener {
     private RecentChatFragmentInteractionListener listener;
 
-    public static RecentChatFragment newInstance() {
-        return  new RecentChatFragment();
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public RecentChatFragment() {
+    }
+
+    public static RecentChatFragment newInstance() {
+        return  new RecentChatFragment();
     }
 
     @Override
@@ -79,6 +81,9 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         toolbar.inflateMenu(R.menu.recent_chats);
         toolbar.setOnMenuItemClickListener(this);
 
+        BarPainter barPainter = new BarPainter((AppCompatActivity) getActivity(), toolbar);
+        toolbar.setBackgroundColor(barPainter.getDefaultColor());
+
         return rootView;
     }
 
@@ -121,11 +126,11 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         return false;
     }
 
-    public interface RecentChatFragmentInteractionListener {
-        void onChatSelected(AbstractChat chat);
-    }
-
     public void updateChats(List<AbstractChat> chats) {
         ((ChatListAdapter) getListAdapter()).updateChats(chats);
+    }
+
+    public interface RecentChatFragmentInteractionListener {
+        void onChatSelected(AbstractChat chat);
     }
 }

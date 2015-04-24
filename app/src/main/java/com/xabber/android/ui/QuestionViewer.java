@@ -52,14 +52,53 @@ public class QuestionViewer extends ManagedActivity implements
     private static final String EXTRA_FIELD_SHOW_QUESTION = "com.xabber.android.data.ui.QuestionViewer.SHOW_QUESTION";
     private static final String EXTRA_FIELD_ANSWER_REQUEST = "com.xabber.android.data.ui.QuestionViewer.ANSWER_REQUEST";
     private static final String EXTRA_FIELD_CANCEL = "com.xabber.android.data.ui.QuestionViewer.CANCEL";
-
+    ContactTitleActionBarInflater contactTitleActionBarInflater;
     private String account;
     private String user;
     private boolean showQuestion;
     private boolean answerRequest;
     private EditText questionView;
 
-    ContactTitleActionBarInflater contactTitleActionBarInflater;
+    /**
+     * @param context
+     * @param account
+     * @param user
+     * @return Intent to cancel negotiation.
+     */
+    public static Intent createCancelIntent(Context context, String account, String user) {
+        Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
+                .setAccount(account).setUser(user).build();
+        intent.putExtra(EXTRA_FIELD_CANCEL, true);
+        return intent;
+    }
+
+    /**
+     * @param context
+     * @param account
+     * @param user
+     * @param showQuestion  <code>false</code> is used for shared secret.
+     * @param answerRequest <code>false</code> is used to ask a question.
+     * @param question      must be not <code>null</code> if showQuestion and
+     *                      answerRequest are <code>true</code>.
+     * @return
+     */
+    public static Intent createIntent(Context context, String account, String user,
+                                      boolean showQuestion, boolean answerRequest, String question) {
+        Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
+                .setAccount(account).setUser(user).build();
+        intent.putExtra(EXTRA_FIELD_SHOW_QUESTION, showQuestion);
+        intent.putExtra(EXTRA_FIELD_ANSWER_REQUEST, answerRequest);
+        intent.putExtra(Intent.EXTRA_TEXT, question);
+        return intent;
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +128,6 @@ public class QuestionViewer extends ManagedActivity implements
         answerRequest = intent.getBooleanExtra(EXTRA_FIELD_ANSWER_REQUEST, false);
         if (showQuestion) {
             setContentView(R.layout.question_viewer);
-            setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
             questionView = (EditText) findViewById(R.id.question);
             questionView.setEnabled(!answerRequest);
             if (answerRequest) {
@@ -99,12 +137,12 @@ public class QuestionViewer extends ManagedActivity implements
             }
         } else {
             setContentView(R.layout.secret_viewer);
-            setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
         }
         findViewById(R.id.cancel).setOnClickListener(this);
         findViewById(R.id.send).setOnClickListener(this);
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
         contactTitleActionBarInflater.setUpActionBarView();
     }
 
@@ -173,47 +211,6 @@ public class QuestionViewer extends ManagedActivity implements
     private void update() {
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
-    }
-
-    /**
-     * @param context
-     * @param account
-     * @param user
-     * @return Intent to cancel negotiation.
-     */
-    public static Intent createCancelIntent(Context context, String account, String user) {
-        Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
-                .setAccount(account).setUser(user).build();
-        intent.putExtra(EXTRA_FIELD_CANCEL, true);
-        return intent;
-    }
-
-    /**
-     * @param context
-     * @param account
-     * @param user
-     * @param showQuestion  <code>false</code> is used for shared secret.
-     * @param answerRequest <code>false</code> is used to ask a question.
-     * @param question      must be not <code>null</code> if showQuestion and
-     *                      answerRequest are <code>true</code>.
-     * @return
-     */
-    public static Intent createIntent(Context context, String account, String user,
-                                      boolean showQuestion, boolean answerRequest, String question) {
-        Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
-                .setAccount(account).setUser(user).build();
-        intent.putExtra(EXTRA_FIELD_SHOW_QUESTION, showQuestion);
-        intent.putExtra(EXTRA_FIELD_ANSWER_REQUEST, answerRequest);
-        intent.putExtra(Intent.EXTRA_TEXT, question);
-        return intent;
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
 }

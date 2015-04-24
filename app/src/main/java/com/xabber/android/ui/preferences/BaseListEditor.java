@@ -31,6 +31,7 @@ import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
@@ -47,10 +48,9 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 
     private static final int CONTEXT_MENU_DELETE_ID = 0x10;
     private static final int DIALOG_DELETE_ID = 0x100;
-
-    private T actionWith;
-
     protected BaseListEditorAdapter<T> adapter;
+    private T actionWith;
+    private BarPainter barPainter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,12 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
      */
     protected void onInflate(Bundle savedInstanceState) {
         setContentView(R.layout.list);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+
+        setSupportActionBar(toolbar);
+
+        barPainter = new BarPainter(this, toolbar);
     }
 
     protected abstract T getSavedValue(Bundle bundle, String key);
@@ -108,6 +113,7 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
     protected void onResume() {
         super.onResume();
         adapter.onChange();
+        barPainter.setDefaultColor();
     }
 
     @Override

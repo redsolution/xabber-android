@@ -58,6 +58,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.androiddev.R;
@@ -100,6 +101,34 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     private String sendText;
 
     private SearchView searchView;
+    private BarPainter barPainter;
+
+    public static Intent createPersistentIntent(Context context) {
+        Intent intent = new Intent(context, ContactList.class);
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.LAUNCHER");
+        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context) {
+        return new Intent(context, ContactList.class);
+    }
+
+    public static Intent createRoomInviteIntent(Context context, String account, String room) {
+        Intent intent = new EntityIntentBuilder(context, ContactList.class)
+                .setAccount(account).setUser(room).build();
+        intent.setAction(ACTION_ROOM_INVITE);
+        return intent;
+    }
+
+    private static String getRoomInviteAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static String getRoomInviteUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,9 +146,11 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
         setContentView(R.layout.contact_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setLogo(R.drawable.ic_xabber_logo);
         toolbar.setOnClickListener(this);
         setSupportActionBar(toolbar);
+
+        barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
 
         setTitle(getString(R.string.production_title));
 
@@ -214,6 +245,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     protected void onResume() {
         super.onResume();
+        barPainter.setDefaultColor();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
@@ -500,6 +532,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
         ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
+        barPainter.setDefaultColor();
     }
 
     @Override
@@ -509,33 +542,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private void rebuildAccountToggle() {
         ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).rebuild();
-    }
-
-    public static Intent createPersistentIntent(Context context) {
-        Intent intent = new Intent(context, ContactList.class);
-        intent.setAction("android.intent.action.MAIN");
-        intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
-    }
-
-    public static Intent createIntent(Context context) {
-        return new Intent(context, ContactList.class);
-    }
-
-    public static Intent createRoomInviteIntent(Context context, String account, String room) {
-        Intent intent = new EntityIntentBuilder(context, ContactList.class)
-                .setAccount(account).setUser(room).build();
-        intent.setAction(ACTION_ROOM_INVITE);
-        return intent;
-    }
-
-    private static String getRoomInviteAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static String getRoomInviteUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
 }

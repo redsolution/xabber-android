@@ -25,16 +25,25 @@ import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
 public class AboutViewer extends ManagedActivity {
 
+    public static Intent createIntent(Context context) {
+        return new Intent(context, AboutViewer.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_viewer);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        setSupportActionBar(toolbar);
+
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
 
         ((TextView) findViewById(R.id.about_version))
                 .setText(getString(R.string.about_version, getVersionName()));
@@ -52,10 +61,6 @@ public class AboutViewer extends ManagedActivity {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public static Intent createIntent(Context context) {
-        return new Intent(context, AboutViewer.class);
     }
 
     @Override

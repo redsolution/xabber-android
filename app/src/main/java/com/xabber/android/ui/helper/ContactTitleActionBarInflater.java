@@ -1,7 +1,8 @@
 package com.xabber.android.ui.helper;
 
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -11,21 +12,23 @@ import com.xabber.androiddev.R;
 
 public class ContactTitleActionBarInflater {
 
-    private final ActionBarActivity activity;
+    private final AppCompatActivity activity;
+    private final Toolbar toolbar;
     private View actionBarView;
 
 
+    private BarPainter barPainter;
 
-    private ActionBarPainter actionBarPainter;
-
-    public ContactTitleActionBarInflater(ActionBarActivity activity) {
+    public ContactTitleActionBarInflater(AppCompatActivity activity, Toolbar toolbar) {
         this.activity = activity;
+        this.toolbar = toolbar;
     }
 
     public void setUpActionBarView() {
 
-        actionBarPainter = new ActionBarPainter(activity);
+        barPainter = new BarPainter(activity, toolbar);
 
+        activity.setSupportActionBar(toolbar);
         ActionBar actionBar = activity.getSupportActionBar();
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -37,7 +40,7 @@ public class ContactTitleActionBarInflater {
     }
 
     public void update(AbstractContact abstractContact) {
-        actionBarPainter.updateWithAccountName(abstractContact.getAccount());
+        barPainter.updateWithAccountName(abstractContact.getAccount());
 
         activity.getSupportActionBar().setDisplayShowCustomEnabled(true);
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);

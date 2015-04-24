@@ -23,10 +23,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
 public class AccountAdd extends ManagedActivity {
+
+    public static Intent createIntent(Context context) {
+        return new Intent(context, AccountAdd.class);
+    }
+
+    public static Intent createAuthenticatorResult(String account) {
+        return new AccountIntentBuilder(null, null).setAccount(account).build();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +49,15 @@ public class AccountAdd extends ManagedActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.container, AccountAddFragment.newInstance()).commit();
         }
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
         getSupportActionBar().setTitle(null);
+
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
     }
 
     @Override
@@ -66,13 +80,5 @@ public class AccountAdd extends ManagedActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    public static Intent createIntent(Context context) {
-        return new Intent(context, AccountAdd.class);
-    }
-
-    public static Intent createAuthenticatorResult(String account) {
-        return new AccountIntentBuilder(null, null).setAccount(account).build();
     }
 }
