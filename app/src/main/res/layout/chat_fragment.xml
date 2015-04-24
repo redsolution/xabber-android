@@ -76,6 +76,7 @@
             android:id="@+id/chat_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
             android:cursorVisible="true"
             android:hint="@string/chat_input_hint"
@@ -83,7 +84,7 @@
             android:scrollbars="vertical"
             android:fadingEdge="vertical"
             android:layout_weight="1"
-            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
             android:background="@android:color/transparent"
          />
 
