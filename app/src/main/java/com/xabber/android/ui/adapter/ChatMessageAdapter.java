@@ -184,12 +184,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         switch (viewType) {
             case VIEW_TYPE_HINT:
                 HintMessage hintMessage = (HintMessage) holder;
-                if (hint == null || hint.trim().isEmpty()) {
-                    (hintMessage).info.setVisibility(View.GONE);
-                } else {
-                    (hintMessage).info.setText(hint);
-                    (hintMessage).info.setVisibility(View.VISIBLE);
-                }
+                hintMessage.info.setText(hint);
                 break;
 
             case VIEW_TYPE_ACTION_MESSAGE:
