@@ -81,6 +81,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private Animation shakeAnimation = null;
     private int contextMenuItemPosition;
     private RecyclerView recyclerView;
+    private View contactTitleView;
+    private AbstractContact abstractContact;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -120,11 +122,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         View view = inflater.inflate(R.layout.chat_fragment, container, false);
 
 
-        View contactTitle = view.findViewById(R.id.contact_title);
+        contactTitleView = view.findViewById(R.id.contact_title);
 
-        final AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
-        ContactTitleInflater.updateTitle(contactTitle, getActivity(), abstractContact);
-        contactTitle.findViewById(R.id.avatar).setOnClickListener(this);
+        abstractContact = RosterManager.getInstance().getBestContact(account, user);
+        contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
 
         ActionBarPainter actionBarPainter = new ActionBarPainter((ActionBarActivity) getActivity());
 
@@ -412,9 +413,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     public void updateChat() {
+        ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
         chatMessageAdapter.onChange();
         recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
-
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
     }
