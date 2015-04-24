@@ -65,80 +65,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      */
     private String hint;
 
-    public static class HintMessage extends RecyclerView.ViewHolder {
-
-        public TextView info;
-
-        public HintMessage(View itemView) {
-            super(itemView);
-            info = (TextView) itemView.findViewById(R.id.info);
-        }
-    }
-
-    public static class ActionMessage extends RecyclerView.ViewHolder {
-
-        public TextView actionMessage;
-
-        public ActionMessage(View itemView) {
-            super(itemView);
-            actionMessage = (TextView) itemView.findViewById(R.id.action_message_text);
-        }
-    }
-
-    public static abstract class Message extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        public TextView messageText;
-        public TextView messageTime;
-        public TextView messageHeader;
-        public TextView messageUnencrypted;
-        public View messageBalloon;
-
-        MessageClickListener onClickListener;
-
-        public Message(View itemView, MessageClickListener onClickListener) {
-            super(itemView);
-            this.onClickListener = onClickListener;
-
-            messageText = (TextView) itemView.findViewById(R.id.message_text);
-            messageTime = (TextView) itemView.findViewById(R.id.message_time);
-            messageHeader = (TextView) itemView.findViewById(R.id.message_header);
-            messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
-            messageBalloon = itemView.findViewById(R.id.message_balloon);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            onClickListener.onMessageClick(v, getPosition());
-        }
-
-        public interface MessageClickListener {
-            void onMessageClick(View caller, int position);
-        }
-
-    }
-
-    public static class IncomingMessage extends Message {
-
-        public ImageView avatar;
-
-        public IncomingMessage(View itemView, MessageClickListener listener) {
-            super(itemView, listener);
-            avatar = (ImageView) itemView.findViewById(R.id.avatar);
-        }
-    }
-
-    public static class OutgoingMessage extends Message {
-
-        public ImageView statusIcon;
-
-        public OutgoingMessage(View itemView, MessageClickListener listener) {
-            super(itemView, listener);
-            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
-        }
-    }
-
     public ChatMessageAdapter(Context context, String account, String user, Message.MessageClickListener messageClickListener) {
         this.context = context;
         messages = Collections.emptyList();
@@ -155,11 +81,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case VIEW_TYPE_HINT:
-                return new HintMessage(LayoutInflater.from(parent.getContext())
+                return new BasicMessage(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_viewer_info, parent, false));
 
             case VIEW_TYPE_ACTION_MESSAGE:
-                return new ActionMessage(LayoutInflater.from(parent.getContext())
+                return new BasicMessage(LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_viewer_action_message, parent, false));
 
             case VIEW_TYPE_INCOMING_MESSAGE:
@@ -183,14 +109,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
-                HintMessage hintMessage = (HintMessage) holder;
-                hintMessage.info.setText(hint);
+                ((BasicMessage) holder).messageText.setText(hint);
                 break;
 
             case VIEW_TYPE_ACTION_MESSAGE:
                 ChatAction action = messageItem.getAction();
                 String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
-                ((ActionMessage)holder).actionMessage.setText(time + ": "
+                ((BasicMessage)holder).messageText.setText(time + ": "
                         + action.getText(context, messageItem.getResource(), messageItem.getSpannable().toString()));
                 break;
 
@@ -358,5 +283,69 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
         }
         return null;
+    }
+
+    public static class BasicMessage  extends RecyclerView.ViewHolder {
+
+        public TextView messageText;
+
+        public BasicMessage(View itemView) {
+            super(itemView);
+
+            messageText = (TextView) itemView.findViewById(R.id.message_text);
+        }
+    }
+
+    public static abstract class Message extends BasicMessage implements View.OnClickListener {
+
+        public TextView messageTime;
+        public TextView messageHeader;
+        public TextView messageUnencrypted;
+        public View messageBalloon;
+
+        MessageClickListener onClickListener;
+
+        public Message(View itemView, MessageClickListener onClickListener) {
+            super(itemView);
+            this.onClickListener = onClickListener;
+
+
+            messageTime = (TextView) itemView.findViewById(R.id.message_time);
+            messageHeader = (TextView) itemView.findViewById(R.id.message_header);
+            messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
+            messageBalloon = itemView.findViewById(R.id.message_balloon);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            onClickListener.onMessageClick(v, getPosition());
+        }
+
+        public interface MessageClickListener {
+            void onMessageClick(View caller, int position);
+        }
+
+    }
+
+    public static class IncomingMessage extends Message {
+
+        public ImageView avatar;
+
+        public IncomingMessage(View itemView, MessageClickListener listener) {
+            super(itemView, listener);
+            avatar = (ImageView) itemView.findViewById(R.id.avatar);
+        }
+    }
+
+    public static class OutgoingMessage extends Message {
+
+        public ImageView statusIcon;
+
+        public OutgoingMessage(View itemView, MessageClickListener listener) {
+            super(itemView, listener);
+            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
+        }
     }
 }
