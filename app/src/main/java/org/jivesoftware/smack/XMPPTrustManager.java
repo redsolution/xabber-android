@@ -78,7 +78,7 @@ class XMPPTrustManager implements X509TrustManager {
 	private void checkChain(X509Certificate[] chain, String authType)
 			throws CertificateException {
 		try {
-			trustManager.checkClientTrusted(chain, authType);
+			trustManager.checkServerTrusted(chain, authType);
 		} catch (CertificateException e) {
 			if (allowSelfSigned && isSelfSigned(chain)) {
 				if (listener.onSelfSigned(chain[0], e))
