@@ -1,5 +1,8 @@
 package org.jivesoftware.smack;
 
+import org.apache.http.conn.ssl.AbstractVerifier;
+import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
+
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -11,9 +14,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-
-import org.apache.http.conn.ssl.AbstractVerifier;
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 
 class XMPPTrustManager implements X509TrustManager {
 
@@ -78,7 +78,7 @@ class XMPPTrustManager implements X509TrustManager {
     private void checkChain(X509Certificate[] chain, String authType)
             throws CertificateException {
         try {
-            trustManager.checkClientTrusted(chain, authType);
+            trustManager.checkServerTrusted(chain, authType);
         } catch (CertificateException e) {
             if (allowSelfSigned && isSelfSigned(chain)) {
                 if (listener.onSelfSigned(chain[0], e))
