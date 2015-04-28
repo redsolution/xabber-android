@@ -46,7 +46,7 @@
             android:layout_marginLeft="32dp"
             android:text="@string/preference_editor"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"
+            android:textColor="?android:attr/textColorPrimary"
 
             />
 
@@ -72,7 +72,7 @@
             android:layout_marginLeft="32dp"
             android:text="@string/preference_about"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black" />
+            android:textColor="?android:attr/textColorPrimary" />
 
     </LinearLayout>
 
@@ -96,7 +96,7 @@
             android:layout_marginLeft="32dp"
             android:text="@string/exit"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black" />
+            android:textColor="?android:attr/textColorPrimary" />
 
     </LinearLayout>
 
