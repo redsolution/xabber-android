@@ -326,8 +326,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatChanged(final String account, final String user, final boolean incoming) {
         if (chatViewerAdapter.updateChats()) {
-            selectPage();
             chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
+            selectPage();
         } else {
             updateRegisteredChats();
             updateRegisteredRecentChatsFragments();
