@@ -115,5 +115,5 @@
 
     <string name="sender_is_you">Вы</string>
 
-    <string name="xmpp_accounts">XMPP accounts</string>
+    <string name="xmpp_accounts">Учётные записи XMPP</string>
 </resources>

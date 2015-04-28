@@ -11,5 +11,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:text="@string/xmpp_accounts"
-        android:textSize="16sp" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 </LinearLayout>
