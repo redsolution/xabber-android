@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -40,6 +41,7 @@ import com.xabber.android.ui.adapter.ContactListState;
 import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.adapter.GroupedContactAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.androiddev.R;
@@ -86,6 +88,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private AccountActionButtonsAdapter accountActionButtonsAdapter;
     private View scrollToChatsActionButtonContainer;
     private View actionButtonsContainer;
+    private FloatingActionButton scrollToChatsActionButton;
+    private AccountPainter accountPainter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -113,6 +117,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         scrollToChatsActionButtonContainer.setOnClickListener(this);
         scrollToChatsActionButtonContainer.setVisibility(View.GONE);
 
+        scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
+
+        accountPainter = new AccountPainter(getActivity());
+        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
+        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
+
         return view;
     }
 
@@ -123,6 +133,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         adapter.onChange();
+        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
+        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
 
         if (SettingsManager.contactsShowPanel()) {
             actionButtonsContainer.setVisibility(View.VISIBLE);
@@ -177,6 +189,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
         adapter.refreshRequest();
+        scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
+        scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
     }
 
     @Override
