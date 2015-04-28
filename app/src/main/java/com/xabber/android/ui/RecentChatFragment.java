@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
-import com.xabber.android.ui.helper.BarPainter;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
@@ -81,8 +80,8 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         toolbar.inflateMenu(R.menu.recent_chats);
         toolbar.setOnMenuItemClickListener(this);
 
-        BarPainter barPainter = new BarPainter((AppCompatActivity) getActivity(), toolbar);
-        toolbar.setBackgroundColor(barPainter.getDefaultColor());
+        AccountPainter accountPainter = new AccountPainter(getActivity());
+        toolbar.setBackgroundColor(accountPainter.getDefaultMainColor());
 
         return rootView;
     }

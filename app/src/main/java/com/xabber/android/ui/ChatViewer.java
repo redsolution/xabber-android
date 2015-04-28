@@ -38,7 +38,6 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
-import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 import com.xabber.androiddev.R;
@@ -384,13 +383,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     }
 
     private void updateStatusBar() {
-        String account;
         if (isRecentChatsSelected) {
-            account = BarPainter.getFirstAccount();
+            statusBarPainter.updateWithDefaultColor();
         } else {
-            account = selectedChat.getAccount();
+            statusBarPainter.updateWithAccountName(selectedChat.getAccount());
         }
-        statusBarPainter.updateWithAccountName(account);
     }
 
     private void updateRegisteredChats() {

@@ -30,6 +30,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.SubscriptionRequest;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.SingleActivity;
 import com.xabber.androiddev.R;
@@ -77,10 +78,11 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
+        AccountPainter accountPainter = new AccountPainter(this);
 
         View fakeToolbar = findViewById(R.id.fake_toolbar);
 
-        fakeToolbar.setBackgroundColor(barPainter.getAccountColor(account));
+        fakeToolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
         toolbar.setBackgroundResource(android.R.color.transparent);
 
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
@@ -90,7 +92,7 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
         ((TextView)fakeToolbar.findViewById(R.id.dialog_message)).setText(subscriptionRequest.getConfirmation());
 
         Button acceptButton = (Button) findViewById(R.id.accept_button);
-        acceptButton.setTextColor(barPainter.getAccountColor(account));
+        acceptButton.setTextColor(accountPainter.getAccountMainColor(account));
         acceptButton.setOnClickListener(this);
 
         findViewById(R.id.decline_button).setOnClickListener(this);

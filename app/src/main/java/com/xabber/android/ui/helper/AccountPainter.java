@@ -13,6 +13,7 @@ import java.util.List;
 public class AccountPainter {
     private final int themeMainColor;
     private final int themeDarkColor;
+    private final String[] accountColorNames;
 
     private int[] accountMainColors;
     private int[] accountDarkColors;
@@ -21,6 +22,8 @@ public class AccountPainter {
 
         accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
         accountDarkColors = context.getResources().getIntArray(R.array.account_status_bar);
+
+        accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
         themeMainColor = getThemeMainColor(context);
         themeDarkColor = getThemeDarkColor(context);
@@ -75,5 +78,23 @@ public class AccountPainter {
         } else {
             return getAccountDarkColor(firstAccount);
         }
+    }
+
+    public int getAccountMainColorByColorName(String targetColorName) {
+        return accountMainColors[getColorIndexByName(targetColorName)];
+    }
+
+    public int getAccountDarkColorByColorName(String targetColorName) {
+        return accountDarkColors[getColorIndexByName(targetColorName)];
+    }
+
+    private Integer getColorIndexByName(String targetColorName) {
+        for (int i = 0; i < accountColorNames.length; i++) {
+            String accountColorName = accountColorNames[i];
+            if (accountColorName.equals(targetColorName)) {
+                return i;
+            }
+        }
+        return null;
     }
 }
