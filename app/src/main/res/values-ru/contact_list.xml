@@ -114,4 +114,6 @@
     <string name="contact_search_hint">Поиск контактов</string>
 
     <string name="sender_is_you">Вы</string>
+
+    <string name="xmpp_accounts">XMPP accounts</string>
 </resources>

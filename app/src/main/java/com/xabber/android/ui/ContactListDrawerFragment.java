@@ -23,6 +23,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     ContactListDrawerListener listener;
     private NavigationDrawerAccountAdapter adapter;
+    private ListView listView;
+    private View divider;
+    private View headerTitle;
 
     @Override
     public void onAttach(Activity activity) {
@@ -36,11 +39,18 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         View view = inflater.inflate(R.layout.contact_list_drawer, container, false);
 
 
-        ListView listView = (ListView) view.findViewById(R.id.drawer_account_list);
+        listView = (ListView) view.findViewById(R.id.drawer_account_list);
 
         View footerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .inflate(R.layout.contact_list_drawer_footer, null, false);
+                .inflate(R.layout.contact_list_drawer_footer, listView, false);
         listView.addFooterView(footerView);
+
+        View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .inflate(R.layout.contact_list_drawer_header, listView, false);
+        headerTitle = headerView.findViewById(R.id.drawer_header_title);
+
+
+        listView.addHeaderView(headerView);
 
         adapter = new NavigationDrawerAccountAdapter(getActivity());
         listView.setAdapter(adapter);
@@ -50,6 +60,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         footerView.findViewById(R.id.drawer_action_about).setOnClickListener(this);
         footerView.findViewById(R.id.drawer_action_exit).setOnClickListener(this);
 
+        divider = footerView.findViewById(R.id.drawer_divider);
+
         return view;
     }
 
@@ -58,6 +70,14 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         super.onResume();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         adapter.onChange();
+
+        if (adapter.getCount() == 0) {
+            headerTitle.setVisibility(View.GONE);
+            divider.setVisibility(View.GONE);
+        } else {
+            headerTitle.setVisibility(View.VISIBLE);
+            divider.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -84,7 +104,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        listener.onAccountSelected(adapter.getItem(position));
+        listener.onAccountSelected((String) listView.getItemAtPosition(position));
     }
 
     interface ContactListDrawerListener {

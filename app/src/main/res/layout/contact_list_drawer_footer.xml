@@ -7,6 +7,26 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/drawer_divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/grey_300" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/drawer_action_settings"
         android:layout_width="match_parent"
         android:layout_height="48dp"

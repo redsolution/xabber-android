@@ -33,7 +33,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
         View view;
         AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
-            view = getActivity().getLayoutInflater().inflate(R.layout.navigation_drawer_account_item, parent, false);
+            view = getActivity().getLayoutInflater().inflate(R.layout.contact_list_drawer_account_item, parent, false);
         } else {
             view = convertView;
         }

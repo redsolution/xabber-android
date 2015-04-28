@@ -11,17 +11,34 @@
         android:layout_height="170dp"
         android:background="@color/grey_300">
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/ic_connect" />
+            android:layout_marginTop="16dp">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/ic_connect" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/production_title"
+                android:textSize="32sp" />
+        </LinearLayout>
 
     </RelativeLayout>
 
     <ListView
         android:id="@+id/drawer_account_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        />
 </LinearLayout>
