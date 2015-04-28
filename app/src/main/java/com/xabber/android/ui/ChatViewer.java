@@ -85,6 +85,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private boolean isRecentChatsSelected;
 
+    private boolean isVisible;
+
     public static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
         View view = activity.getCurrentFocus();
@@ -255,6 +257,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     protected void onResume() {
         super.onResume();
+        isVisible = true;
+
         Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
@@ -308,6 +312,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         MessageManager.getInstance().removeVisibleChat();
+        isVisible = false;
     }
 
     private void selectChatPage(BaseEntity chat, boolean smoothScroll) {
@@ -371,7 +376,9 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         if (isRecentChatsSelected) {
             MessageManager.getInstance().removeVisibleChat();
         } else {
-            MessageManager.getInstance().setVisibleChat(selectedChat);
+            if (isVisible) {
+                MessageManager.getInstance().setVisibleChat(selectedChat);
+            }
 
             MessageArchiveManager.getInstance().requestHistory(selectedChat.getAccount(), selectedChat.getUser(), 0,
                     MessageManager.getInstance().getChat(selectedChat.getAccount(), selectedChat.getUser()).getRequiredMessageCount());

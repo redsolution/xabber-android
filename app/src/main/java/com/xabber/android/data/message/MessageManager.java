@@ -14,22 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.MUCUser;
-
 import android.database.Cursor;
 import android.os.Environment;
 
@@ -51,13 +35,29 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
+import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
+
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.packet.MUCUser;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Manage chats and its messages.
@@ -70,18 +70,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         OnAccountRemovedListener, OnRosterReceivedListener, OnAccountArchiveModeChangedListener,
         OnStatusChangeListener {
 
-    /**
-     * Registered chats for bareAddresses in accounts.
-     */
-    private final NestedMap<AbstractChat> chats;
-
-    /**
-     * Visible chat.
-     * <p/>
-     * Will be <code>null</code> if there is no one.
-     */
-    private AbstractChat visibleChat;
-
     private final static MessageManager instance;
 
     static {
@@ -89,12 +77,43 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         Application.getInstance().addManager(instance);
     }
 
+    /**
+     * Registered chats for bareAddresses in accounts.
+     */
+    private final NestedMap<AbstractChat> chats;
+    /**
+     * Visible chat.
+     * <p/>
+     * Will be <code>null</code> if there is no one.
+     */
+    private AbstractChat visibleChat;
+
+    private MessageManager() {
+        chats = new NestedMap<>();
+    }
+
     public static MessageManager getInstance() {
         return instance;
     }
 
-    private MessageManager() {
-        chats = new NestedMap<>();
+    /**
+     * @param messageItems
+     * @param clearId      Whether message id must be set to the <code>null</code>.
+     * @return Collection with ids for specified messages.
+     */
+    static Collection<Long> getMessageIds(Collection<MessageItem> messageItems, boolean clearId) {
+        ArrayList<Long> ids = new ArrayList<>();
+        for (MessageItem messageItem : messageItems) {
+            Long id = messageItem.getId();
+            if (id == null) {
+                continue;
+            }
+            ids.add(id);
+            if (clearId) {
+                messageItem.setId(null);
+            }
+        }
+        return ids;
     }
 
     @Override
@@ -316,7 +335,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             });
         }
-        visibleChat = chat;
+        this.visibleChat = chat;
     }
 
     /**
@@ -574,26 +593,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
         });
-    }
-
-    /**
-     * @param messageItems
-     * @param clearId      Whether message id must be set to the <code>null</code>.
-     * @return Collection with ids for specified messages.
-     */
-    static Collection<Long> getMessageIds(Collection<MessageItem> messageItems, boolean clearId) {
-        ArrayList<Long> ids = new ArrayList<>();
-        for (MessageItem messageItem : messageItems) {
-            Long id = messageItem.getId();
-            if (id == null) {
-                continue;
-            }
-            ids.add(id);
-            if (clearId) {
-                messageItem.setId(null);
-            }
-        }
-        return ids;
     }
 
     private boolean isStatusTrackingEnabled(String account, String bareAddress) {
