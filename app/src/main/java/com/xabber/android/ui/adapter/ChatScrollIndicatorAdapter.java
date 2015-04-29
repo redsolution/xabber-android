@@ -7,16 +7,23 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
 
 public class ChatScrollIndicatorAdapter {
 
     private final Activity activity;
     private final LinearLayout linearLayout;
+    private final AccountPainter accountPainter;
 
     public ChatScrollIndicatorAdapter(Activity activity, LinearLayout linearLayout) {
         this.activity = activity;
         this.linearLayout = linearLayout;
+        accountPainter = new AccountPainter(activity);
     }
 
     public void select(int selectedPosition) {
@@ -24,42 +31,52 @@ public class ChatScrollIndicatorAdapter {
             final View view = linearLayout.getChildAt(index);
             final AccountViewHolder accountViewHolder = (AccountViewHolder) view.getTag();
 
-            accountViewHolder.selection.setVisibility(index == selectedPosition ? View.VISIBLE : View.GONE);
-            accountViewHolder.body.setVisibility(index == selectedPosition ? View.GONE : View.VISIBLE);
+            accountViewHolder.selection.setVisibility(index == selectedPosition ? View.VISIBLE : View.INVISIBLE);
+            accountViewHolder.body.setVisibility(index == selectedPosition ? View.INVISIBLE : View.VISIBLE);
         }
     }
 
-    public void update(int size) {
-
+    public void update(ArrayList<AbstractChat> activeChats) {
         final LayoutInflater inflater
                 = (LayoutInflater) activity.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        while (linearLayout.getChildCount() < size) {
+        final int size = activeChats.size() + 1;
+
+        linearLayout.removeAllViews();
+
+        for (int i = 0; i < size; i++) {
             View view;
-            if (linearLayout.getChildCount() == 0) {
+            if (i == 0) {
                 view = inflater.inflate(R.layout.chat_scroll_indicator_item_square, linearLayout, false);
             } else {
                 view = inflater.inflate(R.layout.chat_scroll_indicator_item_circle, linearLayout, false);
             }
 
+
+
             linearLayout.addView(view);
             final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
 
-            view.setTag(accountViewHolder);
-        }
+            if (i > 0) {
+                int colorLevel = AccountManager.getInstance().getColorLevel(activeChats.get(i - 1).getAccount());
+                accountViewHolder.body.setImageLevel(colorLevel);
+                accountViewHolder.selection.setImageLevel(colorLevel);
+            } else {
+                accountViewHolder.body.setImageDrawable(new ColorDrawable(accountPainter.getDefaultMainColor()));
+                accountViewHolder.selection.setImageDrawable(new ColorDrawable(accountPainter.getDefaultMainColor()));
+            }
 
-        while (linearLayout.getChildCount() > size) {
-            linearLayout.removeViewAt(size);
+            view.setTag(accountViewHolder);
         }
     }
 
     private static class AccountViewHolder {
-        final View body;
-        final View selection;
+        final ImageView body;
+        final ImageView selection;
 
         public AccountViewHolder(View view) {
-            body = view.findViewById(R.id.indicator_item_body);
-            selection = view.findViewById(R.id.indicator_item_selection);
+            body = (ImageView) view.findViewById(R.id.indicator_item_body);
+            selection = (ImageView) view.findViewById(R.id.indicator_item_selection);
         }
     }
 }

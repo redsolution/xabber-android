@@ -16,7 +16,7 @@ package com.xabber.android.ui.helper;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.xabber.android.data.ActivityManager;
 
@@ -27,7 +27,7 @@ import com.xabber.android.data.ActivityManager;
  *
  * @author alexander.ivanov
  */
-public abstract class ManagedActivity extends ActionBarActivity {
+public abstract class ManagedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

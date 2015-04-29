@@ -16,7 +16,7 @@ package com.xabber.android.ui.helper;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -29,7 +29,7 @@ import com.xabber.android.data.ActivityManager;
  *
  * @author alexander.ivanov
  */
-public abstract class ManagedListActivity extends ActionBarActivity {
+public abstract class ManagedListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

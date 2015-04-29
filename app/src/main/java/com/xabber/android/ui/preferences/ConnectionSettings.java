@@ -3,6 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
@@ -16,7 +17,13 @@ public class ConnectionSettings extends ManagedActivity {
             return;
 
         setContentView(R.layout.activity_preferences);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+
+        setSupportActionBar(toolbar);
+
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
 
         setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_connection)));
 

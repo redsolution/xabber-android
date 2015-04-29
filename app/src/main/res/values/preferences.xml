@@ -132,7 +132,7 @@
     <bool name="contacts_show_groups_default">true</bool>
             
     <string name="contacts_show_accounts_key">contacts_show_accounts</string>
-    <bool name="contacts_show_accounts_default">false</bool>
+    <bool name="contacts_show_accounts_default">true</bool>
 
     <string name="contacts_show_active_chats_key">contacts_show_active_chats</string>
     <bool name="contacts_show_active_chats_default">true</bool>

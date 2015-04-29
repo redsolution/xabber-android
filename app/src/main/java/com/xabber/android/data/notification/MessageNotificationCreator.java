@@ -18,6 +18,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ChatViewer;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 
@@ -26,12 +27,13 @@ import java.util.List;
 public class MessageNotificationCreator {
 
     private final Application application;
-
+    private final AccountPainter accountPainter;
     private List<MessageNotification> messageNotifications;
     private NotificationCompat.Builder notificationBuilder;
 
     public MessageNotificationCreator() {
         application = Application.getInstance();
+        accountPainter = new AccountPainter(application);
 
     }
 
@@ -65,7 +67,7 @@ public class MessageNotificationCreator {
         notificationBuilder.setLargeIcon(getLargeIcon(message));
 
         notificationBuilder.setWhen(message.getTimestamp().getTime());
-        notificationBuilder.setColor(NotificationManager.COLOR_MATERIAL_RED_500);
+        notificationBuilder.setColor(accountPainter.getAccountMainColor(message.getAccount()));
         notificationBuilder.setStyle(getStyle(message, messageCount, showText));
 
         notificationBuilder.setContentIntent(getIntent(message));

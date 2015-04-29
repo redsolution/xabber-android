@@ -21,11 +21,18 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
 public class PreferenceEditor extends ManagedActivity
         implements PreferencesFragment.OnPreferencesFragmentInteractionListener {
+
+    private BarPainter barPainter;
+
+    public static Intent createIntent(Context context) {
+        return new Intent(context, PreferenceEditor.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +41,10 @@ public class PreferenceEditor extends ManagedActivity
             return;
 
         setContentView(R.layout.activity_preferences);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        setSupportActionBar(toolbar);
+        barPainter = new BarPainter(this, toolbar);
+
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -48,8 +58,10 @@ public class PreferenceEditor extends ManagedActivity
         SettingsManager.chatsAttentionSound();
     }
 
-    public static Intent createIntent(Context context) {
-        return new Intent(context, PreferenceEditor.class);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        barPainter.setDefaultColor();
     }
 
     @Override

@@ -14,22 +14,19 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/chat_message_incoming"
+    android:id="@+id/chat_message_outgoing"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants"
     >
 
-    <TextView
-        android:id="@+id/message_text"
+    <FrameLayout
+        android:id="@+id/message_balloon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:paddingLeft="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingRight="16dp"
-        android:paddingEnd="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
 
         android:layout_marginLeft="48dp"
         android:layout_marginStart="48dp"
@@ -37,28 +34,30 @@
         android:layout_marginRight="6dp"
         android:layout_marginEnd="6dp"
 
-        android:autoLink="all"
+        android:paddingLeft="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
 
-        android:minWidth="160dp"
-
-        android:text="Some text\n line \nrgregrere"
         android:background="@drawable/message_outgoing_states"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        >
+
+        <include layout="@layout/chat_message"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/message_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/message_text"
+        android:layout_below="@+id/message_balloon"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
 
         android:paddingRight="16dp"
         android:paddingEnd="16dp"
 
-        android:textAppearance="@style/ChatHeader.Time"
         android:textSize="10sp"
 
         android:text="Feb 19, 2015 4:39 PM"

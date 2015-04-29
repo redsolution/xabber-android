@@ -62,28 +62,36 @@ public class FingerprintViewer extends ManagedActivity implements
 
     private static final String SAVED_REMOTE_FINGERPRINT = "com.xabber.android.ui.FingerprintViewer.SAVED_REMOTE_FINGERPRINT";
     private static final String SAVED_LOCAL_FINGERPRINT = "com.xabber.android.ui.FingerprintViewer.SAVED_LOCAL_FINGERPRINT";
-
+    ContactTitleActionBarInflater contactTitleActionBarInflater;
     private String account;
     private String user;
     private String remoteFingerprint;
     private String localFingerprint;
-
     /**
      * UI update is in progress.
      */
     private boolean isUpdating;
-
     private CheckBox verifiedView;
     private View scanView;
     private View showView;
     private View copyView;
-
     /**
      * QR code scanner and generator.
      */
     private IntentIntegrator integrator;
 
-    ContactTitleActionBarInflater contactTitleActionBarInflater;
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, FingerprintViewer.class)
+                .setAccount(account).setUser(user).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +101,6 @@ public class FingerprintViewer extends ManagedActivity implements
         }
 
         setContentView(R.layout.fingerprint_viewer);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
 
         integrator = new IntentIntegrator(this);
         Intent intent = getIntent();
@@ -121,7 +128,7 @@ public class FingerprintViewer extends ManagedActivity implements
         copyView.setOnClickListener(this);
         isUpdating = false;
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
         contactTitleActionBarInflater.setUpActionBarView();
     }
 
@@ -296,19 +303,6 @@ public class FingerprintViewer extends ManagedActivity implements
         contactTitleActionBarInflater.update(abstractContact);
 
         isUpdating = false;
-    }
-
-    public static Intent createIntent(Context context, String account, String user) {
-        return new EntityIntentBuilder(context, FingerprintViewer.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
 }

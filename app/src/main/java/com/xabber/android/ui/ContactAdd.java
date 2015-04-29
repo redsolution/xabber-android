@@ -23,25 +23,47 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
 public class ContactAdd extends ManagedActivity implements ContactAddFragment.Listener {
 
-    ActionBarPainter actionBarPainter;
+    BarPainter barPainter;
+
+    public static Intent createIntent(Context context) {
+        return createIntent(context, null);
+    }
+
+    public static Intent createIntent(Context context, String account) {
+        return createIntent(context, account, null);
+    }
+
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, ContactAdd.class).setAccount(account).setUser(user).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.contact_add);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
-        getSupportActionBar().setTitle(null);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        setTitle(null);
+        barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
 
-        actionBarPainter = new ActionBarPainter(this);
+        setSupportActionBar(toolbar);
+
 
         Intent intent = getIntent();
 
@@ -78,28 +100,8 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
         }
     }
 
-    public static Intent createIntent(Context context) {
-        return createIntent(context, null);
-    }
-
-    public static Intent createIntent(Context context, String account) {
-        return createIntent(context, account, null);
-    }
-
-    public static Intent createIntent(Context context, String account, String user) {
-        return new EntityIntentBuilder(context, ContactAdd.class).setAccount(account).setUser(user).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
-    }
-
     @Override
     public void onAccountSelected(String account) {
-        actionBarPainter.updateWithAccountName(account);
+        barPainter.updateWithAccountName(account);
     }
 }

@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui.preferences;
 
-import java.util.Collection;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,11 +32,16 @@ import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 import com.xabber.androiddev.R;
 
-public class AccountList extends BaseListEditor<String> implements
-        OnAccountChangedListener {
+import java.util.Collection;
+
+public class AccountList extends BaseListEditor<String> implements OnAccountChangedListener {
 
     private static final int CONTEXT_MENU_VIEW_ACCOUNT_ID = 0x20;
     private static final int CONTEXT_MENU_STATUS_EDITOR_ID = 0x30;
+
+    public static Intent createIntent(Context context) {
+        return new Intent(context, AccountList.class);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,7 @@ public class AccountList extends BaseListEditor<String> implements
 
     @Override
     protected String getRemoveConfirmation(String actionWith) {
-        return getString(R.string.account_delete_confirm, AccountManager
-                .getInstance().getVerboseName(actionWith));
+        return getString(R.string.account_delete_confirm, AccountManager.getInstance().getVerboseName(actionWith));
     }
 
     @Override
@@ -93,29 +95,24 @@ public class AccountList extends BaseListEditor<String> implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
     }
 
     @Override
     protected void onCreateContextMenu(ContextMenu menu, String actionWith) {
-        final AccountItem accountItem = AccountManager.getInstance()
-                .getAccount(actionWith);
-        menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(
-                actionWith));
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(actionWith);
+        menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(actionWith));
         if (accountItem.isEnabled()) {
             menu.add(0, CONTEXT_MENU_STATUS_EDITOR_ID, 0, getResources()
                     .getText(R.string.status_editor));
         }
-        menu.add(0, CONTEXT_MENU_VIEW_ACCOUNT_ID, 0,
-                getString(R.string.account_editor));
+        menu.add(0, CONTEXT_MENU_VIEW_ACCOUNT_ID, 0, getString(R.string.account_editor));
         super.onCreateContextMenu(menu, actionWith);
     }
 
@@ -146,10 +143,6 @@ public class AccountList extends BaseListEditor<String> implements
     @Override
     protected void putSavedValue(Bundle bundle, String key, String actionWith) {
         bundle.putString(key, actionWith);
-    }
-
-    public static Intent createIntent(Context context) {
-        return new Intent(context, AccountList.class);
     }
 
 }

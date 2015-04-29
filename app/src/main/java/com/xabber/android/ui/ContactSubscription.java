@@ -30,17 +30,30 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.SubscriptionRequest;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.SingleActivity;
 import com.xabber.androiddev.R;
-
-import org.w3c.dom.Text;
 
 public class ContactSubscription extends SingleActivity implements View.OnClickListener {
 
     private String account;
     private String user;
     private SubscriptionRequest subscriptionRequest;
+
+    public static Intent createIntent(Context context, String account,
+                                      String user) {
+        return new EntityIntentBuilder(context, ContactSubscription.class)
+                .setAccount(account).setUser(user).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +74,15 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getString(R.string.subscription_request_message));
+        toolbar.setTitle(getString(R.string.subscription_request_message));
 
-        ActionBarPainter actionBarPainter = new ActionBarPainter(this);
-        actionBarPainter.updateWithAccountName(account);
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.updateWithAccountName(account);
+        AccountPainter accountPainter = new AccountPainter(this);
 
         View fakeToolbar = findViewById(R.id.fake_toolbar);
 
-        fakeToolbar.setBackgroundColor(actionBarPainter.getAccountColor(account));
+        fakeToolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
         toolbar.setBackgroundResource(android.R.color.transparent);
 
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
@@ -78,7 +92,7 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
         ((TextView)fakeToolbar.findViewById(R.id.dialog_message)).setText(subscriptionRequest.getConfirmation());
 
         Button acceptButton = (Button) findViewById(R.id.accept_button);
-        acceptButton.setTextColor(actionBarPainter.getAccountColor(account));
+        acceptButton.setTextColor(accountPainter.getAccountMainColor(account));
         acceptButton.setOnClickListener(this);
 
         findViewById(R.id.decline_button).setOnClickListener(this);
@@ -126,20 +140,6 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
             Application.getInstance().onError(e);
         }
         finish();
-    }
-
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
-        return new EntityIntentBuilder(context, ContactSubscription.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
 }

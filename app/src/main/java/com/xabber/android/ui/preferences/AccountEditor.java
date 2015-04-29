@@ -27,24 +27,29 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.OAuthActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.androiddev.R;
 
 public class AccountEditor extends ManagedActivity implements
         OnPreferenceClickListener, AccountEditorFragment.AccountEditorFragmentInteractionListener {
 
-    private static final int OAUTH_WML_REQUEST_CODE = 1;
-
-    private static final String SAVED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.TOKEN";
-
     public static final String INVALIDATED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.INVALIDATED";
-
+    private static final int OAUTH_WML_REQUEST_CODE = 1;
+    private static final String SAVED_TOKEN = "com.xabber.android.ui.preferences.AccountEditor.TOKEN";
     private String account;
     private AccountItem accountItem;
 
     private String token;
-    private ActionBarPainter actionBarPainter;
+    private BarPainter barPainter;
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
+
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, AccountEditor.class).setAccount(account).build();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +77,13 @@ public class AccountEditor extends ManagedActivity implements
         }
 
         setContentView(R.layout.activity_preferences);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(AccountManager.getInstance().getVerboseName(account));
+        toolbar.setTitle(AccountManager.getInstance().getVerboseName(account));
 
-        actionBarPainter = new ActionBarPainter(this);
-        actionBarPainter.updateWithAccountName(account);
+        barPainter = new BarPainter(this, toolbar);
+        barPainter.updateWithAccountName(account);
     }
 
     @Override
@@ -108,7 +114,6 @@ public class AccountEditor extends ManagedActivity implements
         }
     }
 
-
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (getString(R.string.account_oauth_key).equals(preference.getKey())) {
@@ -117,14 +122,6 @@ public class AccountEditor extends ManagedActivity implements
             return true;
         }
         return false;
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    public static Intent createIntent(Context context, String account) {
-        return new AccountIntentBuilder(context, AccountEditor.class).setAccount(account).build();
     }
 
     @Override
@@ -155,6 +152,6 @@ public class AccountEditor extends ManagedActivity implements
 
     @Override
     public void onColorChange(String colorName) {
-        actionBarPainter.updateWithColorName(colorName);
+        barPainter.updateWithColorName(colorName);
     }
 }

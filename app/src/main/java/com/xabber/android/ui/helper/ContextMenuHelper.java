@@ -72,7 +72,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         MessageManager.getInstance().openChat(account, user);
-                        activity.startActivity(ChatViewer.createIntent(
+                        activity.startActivity(ChatViewer.createSpecificChatIntent(
                                 activity, account, user));
                         return true;
                     }

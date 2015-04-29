@@ -43,6 +43,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ClearNotifications;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.ReconnectionActivity;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 
@@ -66,18 +67,17 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
+    private final static NotificationManager instance;
 
-    public static final int COLOR_MATERIAL_RED_500 = 0xF44336;
+    static {
+        instance = new NotificationManager();
+        Application.getInstance().addManager(instance);
+    }
 
     private final Application application;
     private final android.app.NotificationManager notificationManager;
     private final PendingIntent clearNotifications;
     private final Handler handler;
-
-    private NotificationCompat.Builder persistentNotificationBuilder;
-
-    private MessageNotificationCreator messageNotificationCreator;
-
     /**
      * Runnable to start vibration.
      */
@@ -97,17 +97,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
      * List of
      */
     private final List<MessageNotification> messageNotifications;
-
-    private final static NotificationManager instance;
-
-    static {
-        instance = new NotificationManager();
-        Application.getInstance().addManager(instance);
-    }
-
-    public static NotificationManager getInstance() {
-        return instance;
-    }
+    private final AccountPainter accountPainter;
+    private NotificationCompat.Builder persistentNotificationBuilder;
+    private MessageNotificationCreator messageNotificationCreator;
+    private int persistentNotificationColor;
 
     private NotificationManager() {
         this.application = Application.getInstance();
@@ -151,6 +144,13 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
 
         messageNotificationCreator = new MessageNotificationCreator();
+
+        accountPainter = new AccountPainter(application);
+        persistentNotificationColor = application.getResources().getColor(R.color.red_500);
+    }
+
+    public static NotificationManager getInstance() {
+        return instance;
     }
 
     private void initPersistentNotification() {
@@ -272,7 +272,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         notificationBuilder.setDeleteIntent(clearNotifications);
 
-        notificationBuilder.setColor(COLOR_MATERIAL_RED_500);
+        notificationBuilder.setColor(accountPainter.getDefaultMainColor());
 
         notify(id, notificationBuilder.build());
     }
@@ -361,7 +361,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
 
         if (connected > 0) {
-            persistentNotificationBuilder.setColor(COLOR_MATERIAL_RED_500);
+            persistentNotificationBuilder.setColor(persistentNotificationColor);
             persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_online);
         } else {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
@@ -493,10 +493,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         return messageNotification.getCount();
     }
 
-    public void removeMessageNotification(final String account,
-                                          final String user) {
-        MessageNotification messageNotification = getMessageNotification(
-                account, user);
+    public void removeMessageNotification(final String account, final String user) {
+        MessageNotification messageNotification = getMessageNotification(account, user);
         if (messageNotification == null)
             return;
         messageNotifications.remove(messageNotification);

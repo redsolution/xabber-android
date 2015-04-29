@@ -14,10 +14,8 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/chat_message_incoming"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:descendantFocusability="blocksDescendants"
     >
     <ImageView
         android:id="@+id/avatar"
@@ -34,15 +32,13 @@
         android:src="@drawable/ic_avatar_1"
         />
 
-    <TextView
-        android:id="@+id/message_text"
+    <FrameLayout
+        android:id="@+id/message_balloon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
         android:layout_toRightOf="@id/avatar"
         android:layout_toEndOf="@id/avatar"
-
-        android:autoLink="all"
 
         android:minWidth="142dp"
 
@@ -53,6 +49,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
 
+        android:autoLink="all"
 
         android:layout_marginLeft="6dp"
         android:layout_marginStart="6dp"
@@ -60,10 +57,11 @@
         android:layout_marginRight="48dp"
         android:layout_marginEnd="48dp"
 
-        android:background="@drawable/message_incoming"
+        android:background="@drawable/message_incoming">
 
-        android:text="Some text\n line \nrgregrere"
-        />
+        <include layout="@layout/chat_message"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/message_time"
@@ -72,11 +70,10 @@
 
         android:layout_toRightOf="@+id/avatar"
         android:layout_toEndOf="@+id/avatar"
-        android:layout_below="@id/message_text"
+        android:layout_below="@+id/message_balloon"
 
         android:paddingLeft="16dp"
 
-        android:textAppearance="@style/ChatHeader.Time"
         android:textSize="10sp"
 
         android:text="Feb 19, 2015 4:39 PM"

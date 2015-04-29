@@ -3,7 +3,10 @@ package com.xabber.android.ui;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -11,23 +14,24 @@ import android.widget.Toast;
 
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecentChatFragment extends ListFragment {
+public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuItemClickListener {
     private RecentChatFragmentInteractionListener listener;
-
-    public static RecentChatFragment newInstance() {
-        return  new RecentChatFragment();
-    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public RecentChatFragment() {
+    }
+
+    public static RecentChatFragment newInstance() {
+        return  new RecentChatFragment();
     }
 
     @Override
@@ -53,6 +57,7 @@ public class RecentChatFragment extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        View rootView = inflater.inflate(R.layout.recent_chats, container, false);
 
         ArrayList<AbstractChat> activeChats = ((ChatViewer) getActivity()).getChatViewerAdapter().getActiveChats();
         ((ChatListAdapter) getListAdapter()).updateChats(activeChats);
@@ -63,7 +68,22 @@ public class RecentChatFragment extends ListFragment {
             activity.finish();
         }
 
-        return inflater.inflate(R.layout.recent_chats, container, false);
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
+        toolbar.setTitle(R.string.recent_chats);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(getActivity());
+            }
+        });
+        toolbar.inflateMenu(R.menu.recent_chats);
+        toolbar.setOnMenuItemClickListener(this);
+
+        AccountPainter accountPainter = new AccountPainter(getActivity());
+        toolbar.setBackgroundColor(accountPainter.getDefaultMainColor());
+
+        return rootView;
     }
 
     @Override
@@ -96,11 +116,20 @@ public class RecentChatFragment extends ListFragment {
         }
     }
 
-    public interface RecentChatFragmentInteractionListener {
-        public void onChatSelected(AbstractChat chat);
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.action_under_construction) {
+            Toast.makeText(getActivity(), getActivity().getString(R.string.under_construction_message), Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
     }
 
     public void updateChats(List<AbstractChat> chats) {
         ((ChatListAdapter) getListAdapter()).updateChats(chats);
+    }
+
+    public interface RecentChatFragmentInteractionListener {
+        void onChatSelected(AbstractChat chat);
     }
 }

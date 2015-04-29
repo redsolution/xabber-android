@@ -27,6 +27,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.message.AbstractChat;
@@ -201,8 +202,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         chat.newAction(null, null, ChatAction.attention_called);
     }
 
-    public void removeAccountNotifications(String account, String user) {
-        attentionRequestProvider.remove(account, user);
+    public void removeAccountNotifications(BaseEntity chat) {
+        attentionRequestProvider.remove(chat.getAccount(), chat.getUser());
     }
 
 }

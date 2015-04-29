@@ -105,9 +105,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="chat_settings">Chat settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
-    <string name="chat_state_composing">Typing …</string>
+    <string name="chat_state_composing">Typing…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
-    <string name="chat_state_paused">Entered text …</string>
+    <string name="chat_state_paused">Entered text…</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_typed">entered at %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
@@ -147,4 +147,9 @@
     <string name="otr_verify_question">Verify with question</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_verify_secret">Verify with shared secret</string>
+
+    <string name="recent_chats">Recent chats</string>
+
+    <string name="under_construction">Under construction</string>
+    <string name="under_construction_message">This screen is under construction</string>
 </resources>

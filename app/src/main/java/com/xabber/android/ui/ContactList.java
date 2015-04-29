@@ -20,15 +20,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +62,10 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.preferences.AboutViewer;
+import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
@@ -73,7 +80,7 @@ import java.util.Collection;
  * @author alexander.ivanov
  */
 public class ContactList extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, OnContactClickListener {
+        View.OnClickListener, OnChoosedListener, OnContactClickListener, ContactListDrawerFragment.ContactListDrawerListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -100,6 +107,36 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     private String sendText;
 
     private SearchView searchView;
+    private BarPainter barPainter;
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
+
+    public static Intent createPersistentIntent(Context context) {
+        Intent intent = new Intent(context, ContactList.class);
+        intent.setAction("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.LAUNCHER");
+        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context) {
+        return new Intent(context, ContactList.class);
+    }
+
+    public static Intent createRoomInviteIntent(Context context, String account, String room) {
+        Intent intent = new EntityIntentBuilder(context, ContactList.class)
+                .setAccount(account).setUser(room).build();
+        intent.setAction(ACTION_ROOM_INVITE);
+        return intent;
+    }
+
+    private static String getRoomInviteAccount(Intent intent) {
+        return EntityIntentBuilder.getAccount(intent);
+    }
+
+    private static String getRoomInviteUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,9 +154,18 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
         setContentView(R.layout.contact_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setLogo(R.drawable.ic_xabber_logo);
         toolbar.setOnClickListener(this);
         setSupportActionBar(toolbar);
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.production_title, R.string.production_title);
+        drawerLayout.setDrawerListener(drawerToggle);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+
+        barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
 
         setTitle(getString(R.string.production_title));
 
@@ -214,6 +260,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     protected void onResume() {
         super.onResume();
+        barPainter.setDefaultColor();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
@@ -349,6 +396,10 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         switch (item.getItemId()) {
             case R.id.action_search:
                 searchView.setIconified(false);
@@ -366,17 +417,32 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 startActivity(MUCEditor.createIntent(this));
                 return true;
             case R.id.action_chat_list:
-                startActivity(ChatViewer.createIntent(this));
-                return true;
-            case R.id.action_settings:
-                startActivity(PreferenceEditor.createIntent(this));
-                return true;
-            case R.id.action_exit:
-                exit();
+                startActivity(ChatViewer.createRecentChatsIntent(this));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(Gravity.START | Gravity.LEFT)) {
+            drawerLayout.closeDrawers();
+            return;
+        }
+        super.onBackPressed();
     }
 
     private void exit() {
@@ -442,7 +508,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            startActivity(ChatViewer.createIntent(this,
+            startActivity(ChatViewer.createSpecificChatIntent(this,
                     abstractContact.getAccount(), abstractContact.getUser()));
             return;
         }
@@ -474,7 +540,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 break;
             }
             default:
-                startActivity(ChatViewer.createIntent(this,
+                startActivity(ChatViewer.createSpecificChatIntent(this,
                         abstractContact.getAccount(), abstractContact.getUser()));
                 break;
         }
@@ -500,6 +566,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
         ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
+        barPainter.setDefaultColor();
     }
 
     @Override
@@ -511,31 +578,26 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).rebuild();
     }
 
-    public static Intent createPersistentIntent(Context context) {
-        Intent intent = new Intent(context, ContactList.class);
-        intent.setAction("android.intent.action.MAIN");
-        intent.addCategory("android.intent.category.LAUNCHER");
-        intent.setFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
+    @Override
+    public void onContactListDrawerListener(int viewId) {
+        drawerLayout.closeDrawers();
+        switch (viewId) {
+            case R.id.drawer_action_settings:
+                startActivity(PreferenceEditor.createIntent(this));
+                break;
+            case R.id.drawer_action_about:
+                startActivity(AboutViewer.createIntent(this));
+                break;
+            case R.id.drawer_action_exit:
+                exit();
+                break;
+
+        }
     }
 
-    public static Intent createIntent(Context context) {
-        return new Intent(context, ContactList.class);
+    @Override
+    public void onAccountSelected(String account) {
+        drawerLayout.closeDrawers();
+        startActivity(AccountEditor.createIntent(this, account));
     }
-
-    public static Intent createRoomInviteIntent(Context context, String account, String room) {
-        Intent intent = new EntityIntentBuilder(context, ContactList.class)
-                .setAccount(account).setUser(room).build();
-        intent.setAction(ACTION_ROOM_INVITE);
-        return intent;
-    }
-
-    private static String getRoomInviteAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static String getRoomInviteUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
-    }
-
 }

@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
@@ -34,16 +35,13 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     private Fragment currentFragment;
 
-    public ChatViewerAdapter(FragmentManager fragmentManager, String account, String user, FinishUpdateListener finishUpdateListener) {
+    public ChatViewerAdapter(FragmentManager fragmentManager, BaseEntity chat, FinishUpdateListener finishUpdateListener) {
         super(fragmentManager);
         this.finishUpdateListener = finishUpdateListener;
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = MessageManager.getInstance().getOrCreateChat(account, Jid.getBareAddress(user));
+        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), Jid.getBareAddress(chat.getUser()));
 
-        if (!activeChats.contains(intent)) {
-            intent.updateCreationTime();
-        }
         updateChats();
     }
 
@@ -121,11 +119,11 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         return true;
     }
 
-    public int getPageNumber(String account, String user) {
+    public int getPageNumber(BaseEntity chat) {
         int realPosition = 0;
 
         for (int chatIndex = 0; chatIndex < activeChats.size(); chatIndex++) {
-            if (activeChats.get(chatIndex).equals(account, user)) {
+            if (activeChats.get(chatIndex).equals(chat)) {
                 realPosition = chatIndex + 1;
                 break;
             }

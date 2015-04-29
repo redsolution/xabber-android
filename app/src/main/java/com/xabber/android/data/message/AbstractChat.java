@@ -111,6 +111,8 @@ public abstract class AbstractChat extends BaseEntity {
 
     protected Date creationTime = new Date();
 
+    private boolean isLastMessageIncoming;
+
     protected AbstractChat(final String account, final String user) {
         super(account, user);
         threadId = StringUtils.randomString(12);
@@ -341,8 +343,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param action
      */
     public void newAction(String resource, String text, ChatAction action) {
-        newMessage(resource, text, action, null, true, false, false, false,
-                true);
+        newMessage(resource, text, action, null, true, false, false, false, true);
     }
 
     /**
@@ -451,9 +452,9 @@ public abstract class AbstractChat extends BaseEntity {
         for (int index = messages.size() - 1; index >= 0; index--) {
             MessageItem messageItem = messages.get(index);
             if (messageItem.getAction() == null) {
-                lastText = messageItem.isIncoming() ? messageItem.getText()
-                        : "";
+                lastText = messageItem.getText();
                 lastTime = messageItem.getTimestamp();
+                isLastMessageIncoming = messageItem.isIncoming();
                 return;
             }
         }
@@ -467,8 +468,7 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                MessageTable.getInstance().removeMessages(
-                        MessageManager.getMessageIds(messageItems, true));
+                MessageTable.getInstance().removeMessages(MessageManager.getMessageIds(messageItems, true));
             }
         });
     }
@@ -482,8 +482,7 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                MessageTable.getInstance().removeMessages(
-                        MessageManager.getMessageIds(messageItems, true));
+                MessageTable.getInstance().removeMessages(MessageManager.getMessageIds(messageItems, true));
                 MessageTable.getInstance().removeMessages(historyIds);
                 historyIds.clear();
             }
@@ -517,7 +516,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @return Last incoming message's text. Empty string if last message is
      * outgoing.
      */
-    protected String getLastText() {
+    public String getLastText() {
         return lastText;
     }
 
@@ -684,5 +683,9 @@ public abstract class AbstractChat extends BaseEntity {
 
     public void updateCreationTime() {
         creationTime.setTime(System.currentTimeMillis());
+    }
+
+    public boolean isLastMessageIncoming() {
+        return isLastMessageIncoming;
     }
 }

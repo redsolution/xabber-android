@@ -41,7 +41,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
-import com.xabber.android.ui.helper.ActionBarPainter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.androiddev.R;
 
@@ -58,6 +58,18 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
     private StatusEditorAdapter adapter;
     private View savedStatusesTextView;
 
+    public static Intent createIntent(Context context) {
+        return StatusEditor.createIntent(context, null);
+    }
+
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, StatusEditor.class).setAccount(account).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,17 +80,21 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         actionWithItem = null;
 
         setContentView(R.layout.status_editor);
-        setSupportActionBar((Toolbar) findViewById(R.id.top_toolbar));
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
-        getSupportActionBar().setTitle(null);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.top_toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        setTitle(null);
+        setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         account = StatusEditor.getAccount(intent);
+
+        BarPainter barPainter = new BarPainter(this, toolbar);
+
         if (account != null) {
-            ActionBarPainter actionBarPainter = new ActionBarPainter(this);
-            actionBarPainter.updateWithAccountName(account);
+            barPainter.updateWithAccountName(account);
+        } else {
+            barPainter.setDefaultColor();
         }
 
         ListView listView = getListView();
@@ -231,18 +247,6 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         SavedStatus savedStatus = (SavedStatus) parent.getAdapter().getItem(position);
         setStatus(savedStatus.getStatusMode(), savedStatus.getStatusText());
         finish();
-    }
-
-    public static Intent createIntent(Context context) {
-        return StatusEditor.createIntent(context, null);
-    }
-
-    public static Intent createIntent(Context context, String account) {
-        return new AccountIntentBuilder(context, StatusEditor.class).setAccount(account).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
     }
 
     @Override
