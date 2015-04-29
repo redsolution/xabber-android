@@ -100,6 +100,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     private final AccountPainter accountPainter;
     private NotificationCompat.Builder persistentNotificationBuilder;
     private MessageNotificationCreator messageNotificationCreator;
+    private int persistentNotificationColor;
 
     private NotificationManager() {
         this.application = Application.getInstance();
@@ -145,6 +146,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         messageNotificationCreator = new MessageNotificationCreator();
 
         accountPainter = new AccountPainter(application);
+        persistentNotificationColor = application.getResources().getColor(R.color.red_500);
     }
 
     public static NotificationManager getInstance() {
@@ -359,7 +361,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
 
         if (connected > 0) {
-            persistentNotificationBuilder.setColor(accountPainter.getDefaultMainColor());
+            persistentNotificationBuilder.setColor(persistentNotificationColor);
             persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_online);
         } else {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
