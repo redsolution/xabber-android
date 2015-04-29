@@ -7,9 +7,10 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="170dp"
-        android:background="@color/grey_300">
+        android:background="@drawable/drawer_image">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,8 +29,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:shadowColor="@color/grey_700"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
                 android:text="@string/production_title"
-                android:textSize="32sp" />
+                android:textColor="@color/grey_50"
+                android:textSize="40sp" />
         </LinearLayout>
 
     </RelativeLayout>

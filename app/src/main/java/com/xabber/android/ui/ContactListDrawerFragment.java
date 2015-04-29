@@ -15,6 +15,7 @@ import android.widget.ListView;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.ui.adapter.NavigationDrawerAccountAdapter;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.androiddev.R;
 
 import java.util.Collection;
@@ -26,6 +27,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private ListView listView;
     private View divider;
     private View headerTitle;
+    private View drawerHeader;
 
     @Override
     public void onAttach(Activity activity) {
@@ -38,6 +40,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_list_drawer, container, false);
 
+        drawerHeader = view.findViewById(R.id.drawer_header);
 
         listView = (ListView) view.findViewById(R.id.drawer_account_list);
 
@@ -69,15 +72,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public void onResume() {
         super.onResume();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        adapter.onChange();
-
-        if (adapter.getCount() == 0) {
-            headerTitle.setVisibility(View.GONE);
-            divider.setVisibility(View.GONE);
-        } else {
-            headerTitle.setVisibility(View.VISIBLE);
-            divider.setVisibility(View.VISIBLE);
-        }
+        update();
     }
 
     @Override
@@ -99,7 +94,20 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
+        update();
+    }
+
+    private void update() {
         adapter.onChange();
+        drawerHeader.getBackground().setLevel(AccountPainter.getDefaultAccountColorLevel());
+
+        if (adapter.getCount() == 0) {
+            headerTitle.setVisibility(View.GONE);
+            divider.setVisibility(View.GONE);
+        } else {
+            headerTitle.setVisibility(View.VISIBLE);
+            divider.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

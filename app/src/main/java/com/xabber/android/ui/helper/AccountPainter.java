@@ -40,6 +40,19 @@ public class AccountPainter {
         }
     }
 
+    private static int getAccountColorLevel(String account) {
+        return AccountManager.getInstance().getColorLevel(account);
+    }
+
+    public static int getDefaultAccountColorLevel() {
+        String firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return 5;
+        } else {
+            return getAccountColorLevel(firstAccount);
+        }
+    }
+
     private int getThemeMainColor(Context context) {
         TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{R.attr.colorPrimary});
         int attributeResourceId = a.getResourceId(0, 0);
@@ -55,7 +68,7 @@ public class AccountPainter {
     }
 
     public int getAccountMainColor(String account) {
-        return accountMainColors[AccountManager.getInstance().getColorLevel(account)];
+        return accountMainColors[getAccountColorLevel(account)];
     }
 
     public int getDefaultMainColor() {
@@ -68,7 +81,7 @@ public class AccountPainter {
     }
 
     public int getAccountDarkColor(String account) {
-        return accountDarkColors[AccountManager.getInstance().getColorLevel(account)];
+        return accountDarkColors[getAccountColorLevel(account)];
     }
 
     public int getDefaultDarkColor() {
