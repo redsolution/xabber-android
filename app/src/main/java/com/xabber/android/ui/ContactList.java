@@ -167,7 +167,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
-        setTitle(getString(R.string.production_title));
+        setTitle(getString(R.string.application_name));
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
