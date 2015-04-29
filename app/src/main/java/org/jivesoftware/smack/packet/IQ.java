@@ -27,14 +27,14 @@ import org.jivesoftware.smack.util.StringUtils;
  * on the server, including authentication, roster operations, and creating
  * accounts. Each IQ packet has a specific type that indicates what type of action
  * is being taken: "get", "set", "result", or "error".<p>
- *
+ * <p/>
  * IQ packets can contain a single child element that exists in a specific XML
  * namespace. The combination of the element name and namespace determines what
  * type of IQ packet it is. Some example IQ subpacket snippets:<ul>
- *
- *  <li>&lt;query xmlns="jabber:iq:auth"&gt; -- an authentication IQ.
- *  <li>&lt;query xmlns="jabber:iq:private"&gt; -- a private storage IQ.
- *  <li>&lt;pubsub xmlns="http://jabber.org/protocol/pubsub"&gt; -- a pubsub IQ.
+ * <p/>
+ * <li>&lt;query xmlns="jabber:iq:auth"&gt; -- an authentication IQ.
+ * <li>&lt;query xmlns="jabber:iq:private"&gt; -- a private storage IQ.
+ * <li>&lt;pubsub xmlns="http://jabber.org/protocol/pubsub"&gt; -- a pubsub IQ.
  * </ul>
  *
  * @author Matt Tucker
@@ -60,8 +60,7 @@ public abstract class IQ extends Packet {
     public void setType(Type type) {
         if (type == null) {
             this.type = Type.GET;
-        }
-        else {
+        } else {
             this.type = type;
         }
     }
@@ -80,8 +79,7 @@ public abstract class IQ extends Packet {
         }
         if (type == null) {
             buf.append("type=\"get\">");
-        }
-        else {
+        } else {
             buf.append("type=\"").append(getType()).append("\">");
         }
         // Add the query section if there is one.
@@ -101,7 +99,7 @@ public abstract class IQ extends Packet {
     /**
      * Returns the sub-element XML section of the IQ packet, or <tt>null</tt> if there
      * isn't one. Packet extensions <b>must</b> be included, if any are defined.<p>
-     *
+     * <p/>
      * Extensions of this class must override this method.
      *
      * @return the child element section of the IQ XML.
@@ -112,17 +110,17 @@ public abstract class IQ extends Packet {
      * Convenience method to create a new empty {@link Type#RESULT IQ.Type.RESULT}
      * IQ based on a {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}
      * IQ. The new packet will be initialized with:<ul>
-     *      <li>The sender set to the recipient of the originating IQ.
-     *      <li>The recipient set to the sender of the originating IQ.
-     *      <li>The type set to {@link Type#RESULT IQ.Type.RESULT}.
-     *      <li>The id set to the id of the originating IQ.
-     *      <li>No child element of the IQ element.
+     * <li>The sender set to the recipient of the originating IQ.
+     * <li>The recipient set to the sender of the originating IQ.
+     * <li>The type set to {@link Type#RESULT IQ.Type.RESULT}.
+     * <li>The id set to the id of the originating IQ.
+     * <li>No child element of the IQ element.
      * </ul>
      *
      * @param iq the {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET} IQ packet.
-     * @throws IllegalArgumentException if the IQ packet does not have a type of
-     *      {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}.
      * @return a new {@link Type#RESULT IQ.Type.RESULT} IQ based on the originating IQ.
+     * @throws IllegalArgumentException if the IQ packet does not have a type of
+     *                                  {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}.
      */
     public static IQ createResultIQ(final IQ request) {
         if (!(request.getType() == Type.GET || request.getType() == Type.SET)) {
@@ -145,19 +143,19 @@ public abstract class IQ extends Packet {
      * Convenience method to create a new {@link Type#ERROR IQ.Type.ERROR} IQ
      * based on a {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}
      * IQ. The new packet will be initialized with:<ul>
-     *      <li>The sender set to the recipient of the originating IQ.
-     *      <li>The recipient set to the sender of the originating IQ.
-     *      <li>The type set to {@link Type#ERROR IQ.Type.ERROR}.
-     *      <li>The id set to the id of the originating IQ.
-     *      <li>The child element contained in the associated originating IQ.
-     *      <li>The provided {@link XMPPError XMPPError}.
+     * <li>The sender set to the recipient of the originating IQ.
+     * <li>The recipient set to the sender of the originating IQ.
+     * <li>The type set to {@link Type#ERROR IQ.Type.ERROR}.
+     * <li>The id set to the id of the originating IQ.
+     * <li>The child element contained in the associated originating IQ.
+     * <li>The provided {@link XMPPError XMPPError}.
      * </ul>
      *
-     * @param iq the {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET} IQ packet.
+     * @param iq    the {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET} IQ packet.
      * @param error the error to associate with the created IQ packet.
-     * @throws IllegalArgumentException if the IQ packet does not have a type of
-     *      {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}.
      * @return a new {@link Type#ERROR IQ.Type.ERROR} IQ based on the originating IQ.
+     * @throws IllegalArgumentException if the IQ packet does not have a type of
+     *                                  {@link Type#GET IQ.Type.GET} or {@link Type#SET IQ.Type.SET}.
      */
     public static IQ createErrorResponse(final IQ request, final XMPPError error) {
         if (!(request.getType() == Type.GET || request.getType() == Type.SET)) {
@@ -179,12 +177,12 @@ public abstract class IQ extends Packet {
 
     /**
      * A class to represent the type of the IQ packet. The types are:
-     *
+     * <p/>
      * <ul>
-     *      <li>IQ.Type.GET
-     *      <li>IQ.Type.SET
-     *      <li>IQ.Type.RESULT
-     *      <li>IQ.Type.ERROR
+     * <li>IQ.Type.GET
+     * <li>IQ.Type.SET
+     * <li>IQ.Type.RESULT
+     * <li>IQ.Type.ERROR
      * </ul>
      */
     public static class Type {
@@ -208,17 +206,13 @@ public abstract class IQ extends Packet {
             type = type.toLowerCase();
             if (GET.toString().equals(type)) {
                 return GET;
-            }
-            else if (SET.toString().equals(type)) {
+            } else if (SET.toString().equals(type)) {
                 return SET;
-            }
-            else if (ERROR.toString().equals(type)) {
+            } else if (ERROR.toString().equals(type)) {
                 return ERROR;
-            }
-            else if (RESULT.toString().equals(type)) {
+            } else if (RESULT.toString().equals(type)) {
                 return RESULT;
-            }
-            else {
+            } else {
                 return null;
             }
         }

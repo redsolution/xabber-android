@@ -39,8 +39,8 @@ import java.util.Set;
 /**
  * Allows creation and management of accounts on an XMPP server.
  *
- * @see Connection#getAccountManager()
  * @author Matt Tucker
+ * @see Connection#getAccountManager()
  */
 public class AccountManager {
 
@@ -96,8 +96,7 @@ public class AccountManager {
                 accountCreationSupported = info.getType() != IQ.Type.ERROR;
             }
             return accountCreationSupported;
-        }
-        catch (XMPPException xe) {
+        } catch (XMPPException xe) {
             return false;
         }
     }
@@ -106,21 +105,21 @@ public class AccountManager {
      * Returns an unmodifiable collection of the names of the required account attributes.
      * All attributes must be set when creating new accounts. The standard set of possible
      * attributes are as follows: <ul>
-     *      <li>name -- the user's name.
-     *      <li>first -- the user's first name.
-     *      <li>last -- the user's last name.
-     *      <li>email -- the user's email address.
-     *      <li>city -- the user's city.
-     *      <li>state -- the user's state.
-     *      <li>zip -- the user's ZIP code.
-     *      <li>phone -- the user's phone number.
-     *      <li>url -- the user's website.
-     *      <li>date -- the date the registration took place.
-     *      <li>misc -- other miscellaneous information to associate with the account.
-     *      <li>text -- textual information to associate with the account.
-     *      <li>remove -- empty flag to remove account.
+     * <li>name -- the user's name.
+     * <li>first -- the user's first name.
+     * <li>last -- the user's last name.
+     * <li>email -- the user's email address.
+     * <li>city -- the user's city.
+     * <li>state -- the user's state.
+     * <li>zip -- the user's ZIP code.
+     * <li>phone -- the user's phone number.
+     * <li>url -- the user's website.
+     * <li>date -- the date the registration took place.
+     * <li>misc -- other miscellaneous information to associate with the account.
+     * <li>text -- textual information to associate with the account.
+     * <li>remove -- empty flag to remove account.
      * </ul><p>
-     *
+     * <p/>
      * Typically, servers require no attributes when creating new accounts, or just
      * the user's email address.
      *
@@ -135,8 +134,7 @@ public class AccountManager {
             if (attributes != null) {
                 return Collections.unmodifiableSet(attributes.keySet());
             }
-        }
-        catch (XMPPException xe) {
+        } catch (XMPPException xe) {
             xe.printStackTrace();
         }
         return Collections.emptySet();
@@ -156,8 +154,7 @@ public class AccountManager {
                 getRegistrationInfo();
             }
             return info.getAttributes().get(name);
-        }
-        catch (XMPPException xe) {
+        } catch (XMPPException xe) {
             xe.printStackTrace();
         }
         return null;
@@ -176,8 +173,7 @@ public class AccountManager {
                 getRegistrationInfo();
             }
             return info.getInstructions();
-        }
-        catch (XMPPException xe) {
+        } catch (XMPPException xe) {
             return null;
         }
     }
@@ -211,35 +207,33 @@ public class AccountManager {
      * The attributes Map must contain only String name/value pairs and must also have values
      * for all required attributes.
      *
-     * @param username the username.
-     * @param password the password.
+     * @param username   the username.
+     * @param password   the password.
      * @param attributes the account attributes.
      * @throws XMPPException if an error occurs creating the account.
      * @see #getAccountAttributes()
      */
     public void createAccount(String username, String password, Map<String, String> attributes)
-            throws XMPPException
-    {
+            throws XMPPException {
         if (!supportsAccountCreation()) {
             throw new XMPPException("Server does not support account creation.");
         }
         Registration reg = new Registration();
         reg.setType(IQ.Type.SET);
         reg.setTo(connection.getServiceName());
-        attributes.put("username",username);
-        attributes.put("password",password);
+        attributes.put("username", username);
+        attributes.put("password", password);
         reg.setAttributes(attributes);
         PacketFilter filter = new AndFilter(new PacketIDFilter(reg.getPacketID()),
                 new PacketTypeFilter(IQ.class));
         PacketCollector collector = connection.createPacketCollector(filter);
         connection.sendPacket(reg);
-        IQ result = (IQ)collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         // Stop queuing results
         collector.cancel();
         if (result == null) {
             throw new XMPPException("No response from server.");
-        }
-        else if (result.getType() == IQ.Type.ERROR) {
+        } else if (result.getType() == IQ.Type.ERROR) {
             throw new XMPPException(result.getError());
         }
     }
@@ -250,27 +244,26 @@ public class AccountManager {
      * support changing passwords; an XMPPException will be thrown when that is the case.
      *
      * @throws IllegalStateException if not currently logged-in to the server.
-     * @throws XMPPException if an error occurs when changing the password.
+     * @throws XMPPException         if an error occurs when changing the password.
      */
     public void changePassword(String newPassword) throws XMPPException {
         Registration reg = new Registration();
         reg.setType(IQ.Type.SET);
         reg.setTo(connection.getServiceName());
         Map<String, String> map = new HashMap<String, String>();
-        map.put("username",StringUtils.parseName(connection.getUser()));
-        map.put("password",newPassword);
+        map.put("username", StringUtils.parseName(connection.getUser()));
+        map.put("password", newPassword);
         reg.setAttributes(map);
         PacketFilter filter = new AndFilter(new PacketIDFilter(reg.getPacketID()),
                 new PacketTypeFilter(IQ.class));
         PacketCollector collector = connection.createPacketCollector(filter);
         connection.sendPacket(reg);
-        IQ result = (IQ)collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         // Stop queuing results
         collector.cancel();
         if (result == null) {
             throw new XMPPException("No response from server.");
-        }
-        else if (result.getType() == IQ.Type.ERROR) {
+        } else if (result.getType() == IQ.Type.ERROR) {
             throw new XMPPException(result.getError());
         }
     }
@@ -281,7 +274,7 @@ public class AccountManager {
      * support deleting accounts; an XMPPException will be thrown when that is the case.
      *
      * @throws IllegalStateException if not currently logged-in to the server.
-     * @throws XMPPException if an error occurs when deleting the account.
+     * @throws XMPPException         if an error occurs when deleting the account.
      */
     public void deleteAccount() throws XMPPException {
         if (!connection.isAuthenticated()) {
@@ -298,13 +291,12 @@ public class AccountManager {
                 new PacketTypeFilter(IQ.class));
         PacketCollector collector = connection.createPacketCollector(filter);
         connection.sendPacket(reg);
-        IQ result = (IQ)collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         // Stop queuing results
         collector.cancel();
         if (result == null) {
             throw new XMPPException("No response from server.");
-        }
-        else if (result.getType() == IQ.Type.ERROR) {
+        } else if (result.getType() == IQ.Type.ERROR) {
             throw new XMPPException(result.getError());
         }
     }
@@ -321,17 +313,15 @@ public class AccountManager {
                 new PacketTypeFilter(IQ.class));
         PacketCollector collector = connection.createPacketCollector(filter);
         connection.sendPacket(reg);
-        IQ result = (IQ)collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         // Stop queuing results
         collector.cancel();
         if (result == null) {
             throw new XMPPException("No response from server.");
-        }
-        else if (result.getType() == IQ.Type.ERROR) {
+        } else if (result.getType() == IQ.Type.ERROR) {
             throw new XMPPException(result.getError());
-        }
-        else {
-            info = (Registration)result;
+        } else {
+            info = (Registration) result;
         }
     }
 }

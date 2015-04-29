@@ -27,21 +27,21 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Represents extended presence information whose sole purpose is to signal the ability of 
- * the occupant to speak the MUC protocol when joining a room. If the room requires a password 
+ * Represents extended presence information whose sole purpose is to signal the ability of
+ * the occupant to speak the MUC protocol when joining a room. If the room requires a password
  * then the MUCInitialPresence should include one.<p>
- * 
- * The amount of discussion history provided on entering a room (perhaps because the 
+ * <p/>
+ * The amount of discussion history provided on entering a room (perhaps because the
  * user is on a low-bandwidth connection or is using a small-footprint client) could be managed by
- * setting a configured History instance to the MUCInitialPresence instance. 
- * @see MUCInitialPresence#setHistory(MUCInitialPresence.History).
+ * setting a configured History instance to the MUCInitialPresence instance.
  *
  * @author Gaston Dombiak
+ * @see MUCInitialPresence#setHistory(MUCInitialPresence.History).
  */
 public class MUCInitialPresence implements PacketExtension {
 
     private String password;
-    private History history; 
+    private History history;
 
     public String getElementName() {
         return "x";
@@ -54,7 +54,7 @@ public class MUCInitialPresence implements PacketExtension {
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
-            "\">");
+                "\">");
         if (getPassword() != null) {
             buf.append("<password>").append(getPassword()).append("</password>");
         }
@@ -66,10 +66,10 @@ public class MUCInitialPresence implements PacketExtension {
     }
 
     /**
-     * Returns the history that manages the amount of discussion history provided on 
+     * Returns the history that manages the amount of discussion history provided on
      * entering a room.
-     * 
-     * @return the history that manages the amount of discussion history provided on 
+     *
+     * @return the history that manages the amount of discussion history provided on
      * entering a room.
      */
     public History getHistory() {
@@ -78,7 +78,7 @@ public class MUCInitialPresence implements PacketExtension {
 
     /**
      * Returns the password to use when the room requires a password.
-     * 
+     *
      * @return the password to use when the room requires a password.
      */
     public String getPassword() {
@@ -86,11 +86,11 @@ public class MUCInitialPresence implements PacketExtension {
     }
 
     /**
-     * Sets the History that manages the amount of discussion history provided on 
+     * Sets the History that manages the amount of discussion history provided on
      * entering a room.
-     * 
-     * @param history that manages the amount of discussion history provided on 
-     * entering a room.
+     *
+     * @param history that manages the amount of discussion history provided on
+     *                entering a room.
      */
     public void setHistory(History history) {
         this.history = history;
@@ -98,7 +98,7 @@ public class MUCInitialPresence implements PacketExtension {
 
     /**
      * Sets the password to use when the room requires a password.
-     * 
+     *
      * @param password the password to use when the room requires a password.
      */
     public void setPassword(String password) {
@@ -108,19 +108,19 @@ public class MUCInitialPresence implements PacketExtension {
     /**
      * The History class controls the number of characters or messages to receive
      * when entering a room.
-     * 
+     *
      * @author Gaston Dombiak
      */
     public static class History {
 
         private int maxChars = -1;
-        private int maxStanzas = -1; 
-        private int seconds = -1; 
-        private Date since; 
+        private int maxStanzas = -1;
+        private int seconds = -1;
+        private Date since;
 
         /**
          * Returns the total number of characters to receive in the history.
-         * 
+         *
          * @return total number of characters to receive in the history.
          */
         public int getMaxChars() {
@@ -129,7 +129,7 @@ public class MUCInitialPresence implements PacketExtension {
 
         /**
          * Returns the total number of messages to receive in the history.
-         * 
+         *
          * @return the total number of messages to receive in the history.
          */
         public int getMaxStanzas() {
@@ -137,10 +137,10 @@ public class MUCInitialPresence implements PacketExtension {
         }
 
         /**
-         * Returns the number of seconds to use to filter the messages received during that time. 
-         * In other words, only the messages received in the last "X" seconds will be included in 
+         * Returns the number of seconds to use to filter the messages received during that time.
+         * In other words, only the messages received in the last "X" seconds will be included in
          * the history.
-         * 
+         *
          * @return the number of seconds to use to filter the messages received during that time.
          */
         public int getSeconds() {
@@ -148,10 +148,10 @@ public class MUCInitialPresence implements PacketExtension {
         }
 
         /**
-         * Returns the since date to use to filter the messages received during that time. 
-         * In other words, only the messages received since the datetime specified will be 
+         * Returns the since date to use to filter the messages received during that time.
+         * In other words, only the messages received since the datetime specified will be
          * included in the history.
-         * 
+         *
          * @return the since date to use to filter the messages received during that time.
          */
         public Date getSince() {
@@ -160,7 +160,7 @@ public class MUCInitialPresence implements PacketExtension {
 
         /**
          * Sets the total number of characters to receive in the history.
-         * 
+         *
          * @param maxChars the total number of characters to receive in the history.
          */
         public void setMaxChars(int maxChars) {
@@ -169,7 +169,7 @@ public class MUCInitialPresence implements PacketExtension {
 
         /**
          * Sets the total number of messages to receive in the history.
-         * 
+         *
          * @param maxStanzas the total number of messages to receive in the history.
          */
         public void setMaxStanzas(int maxStanzas) {
@@ -177,22 +177,22 @@ public class MUCInitialPresence implements PacketExtension {
         }
 
         /**
-         * Sets the number of seconds to use to filter the messages received during that time. 
-         * In other words, only the messages received in the last "X" seconds will be included in 
+         * Sets the number of seconds to use to filter the messages received during that time.
+         * In other words, only the messages received in the last "X" seconds will be included in
          * the history.
-         * 
-         * @param seconds the number of seconds to use to filter the messages received during 
-         * that time.
+         *
+         * @param seconds the number of seconds to use to filter the messages received during
+         *                that time.
          */
         public void setSeconds(int seconds) {
             this.seconds = seconds;
         }
 
         /**
-         * Sets the since date to use to filter the messages received during that time. 
-         * In other words, only the messages received since the datetime specified will be 
+         * Sets the since date to use to filter the messages received during that time.
+         * In other words, only the messages received since the datetime specified will be
          * included in the history.
-         * 
+         *
          * @param since the since date to use to filter the messages received during that time.
          */
         public void setSince(Date since) {

@@ -96,14 +96,13 @@ public class MultipleRecipientManager {
      *                       some JEP-33 specific features were requested.
      */
     public static void send(Connection connection, Packet packet, List to, List cc, List bcc,
-            String replyTo, String replyRoom, boolean noReply) throws XMPPException {
+                            String replyTo, String replyRoom, boolean noReply) throws XMPPException {
         String serviceAddress = getMultipleRecipienServiceAddress(connection);
         if (serviceAddress != null) {
             // Send packet to target users using multiple recipient service provided by the server
             sendThroughService(connection, packet, to, cc, bcc, replyTo, replyRoom, noReply,
                     serviceAddress);
-        }
-        else {
+        } else {
             // Server does not support JEP-33 so try to send the packet to each recipient
             if (noReply || (replyTo != null && replyTo.trim().length() > 0) ||
                     (replyRoom != null && replyRoom.trim().length() > 0)) {
@@ -148,16 +147,15 @@ public class MultipleRecipientManager {
             // Send reply to the reply_to address
             reply.setTo(replyAddress.getJid());
             connection.sendPacket(reply);
-        }
-        else {
+        } else {
             // Send reply to multiple recipients
             List to = new ArrayList();
             List cc = new ArrayList();
-            for (Iterator it = info.getTOAddresses().iterator(); it.hasNext();) {
+            for (Iterator it = info.getTOAddresses().iterator(); it.hasNext(); ) {
                 String jid = ((MultipleAddresses.Address) it.next()).getJid();
                 to.add(jid);
             }
-            for (Iterator it = info.getCCAddresses().iterator(); it.hasNext();) {
+            for (Iterator it = info.getCCAddresses().iterator(); it.hasNext(); ) {
                 String jid = ((MultipleAddresses.Address) it.next()).getJid();
                 cc.add(jid);
             }
@@ -178,8 +176,7 @@ public class MultipleRecipientManager {
                 // Send packet to target users using multiple recipient service provided by the server
                 sendThroughService(connection, reply, to, cc, null, null, null, false,
                         serviceAddress);
-            }
-            else {
+            } else {
                 // Server does not support JEP-33 so try to send the packet to each recipient
                 sendToIndividualRecipients(connection, reply, to, cc, null);
             }
@@ -193,7 +190,7 @@ public class MultipleRecipientManager {
      *
      * @param packet the packet to check.
      * @return the MultipleRecipientInfo contained in the specified packet or <tt>null</tt>
-     *         if none was found.
+     * if none was found.
      */
     public static MultipleRecipientInfo getMultipleRecipientInfo(Packet packet) {
         MultipleAddresses extension = (MultipleAddresses) packet
@@ -202,23 +199,23 @@ public class MultipleRecipientManager {
     }
 
     private static void sendToIndividualRecipients(Connection connection, Packet packet,
-            List to, List cc, List bcc) {
+                                                   List to, List cc, List bcc) {
         if (to != null) {
-            for (Iterator it = to.iterator(); it.hasNext();) {
+            for (Iterator it = to.iterator(); it.hasNext(); ) {
                 String jid = (String) it.next();
                 packet.setTo(jid);
                 connection.sendPacket(new PacketCopy(packet.toXML()));
             }
         }
         if (cc != null) {
-            for (Iterator it = cc.iterator(); it.hasNext();) {
+            for (Iterator it = cc.iterator(); it.hasNext(); ) {
                 String jid = (String) it.next();
                 packet.setTo(jid);
                 connection.sendPacket(new PacketCopy(packet.toXML()));
             }
         }
         if (bcc != null) {
-            for (Iterator it = bcc.iterator(); it.hasNext();) {
+            for (Iterator it = bcc.iterator(); it.hasNext(); ) {
                 String jid = (String) it.next();
                 packet.setTo(jid);
                 connection.sendPacket(new PacketCopy(packet.toXML()));
@@ -227,32 +224,31 @@ public class MultipleRecipientManager {
     }
 
     private static void sendThroughService(Connection connection, Packet packet, List to,
-            List cc, List bcc, String replyTo, String replyRoom, boolean noReply,
-            String serviceAddress) {
+                                           List cc, List bcc, String replyTo, String replyRoom, boolean noReply,
+                                           String serviceAddress) {
         // Create multiple recipient extension
         MultipleAddresses multipleAddresses = new MultipleAddresses();
         if (to != null) {
-            for (Iterator it = to.iterator(); it.hasNext();) {
+            for (Iterator it = to.iterator(); it.hasNext(); ) {
                 String jid = (String) it.next();
                 multipleAddresses.addAddress(MultipleAddresses.TO, jid, null, null, false, null);
             }
         }
         if (cc != null) {
-            for (Iterator it = cc.iterator(); it.hasNext();) {
+            for (Iterator it = cc.iterator(); it.hasNext(); ) {
                 String jid = (String) it.next();
                 multipleAddresses.addAddress(MultipleAddresses.CC, jid, null, null, false, null);
             }
         }
         if (bcc != null) {
-            for (Iterator it = bcc.iterator(); it.hasNext();) {
+            for (Iterator it = bcc.iterator(); it.hasNext(); ) {
                 String jid = (String) it.next();
                 multipleAddresses.addAddress(MultipleAddresses.BCC, jid, null, null, false, null);
             }
         }
         if (noReply) {
             multipleAddresses.setNoReply();
-        }
-        else {
+        } else {
             if (replyTo != null && replyTo.trim().length() > 0) {
                 multipleAddresses
                         .addAddress(MultipleAddresses.REPLY_TO, replyTo, null, null, false, null);
@@ -295,12 +291,11 @@ public class MultipleRecipientManager {
                         // Check if the server supports JEP-33
                         if (info.containsFeature("http://jabber.org/protocol/address")) {
                             serviceAddress = serviceName;
-                        }
-                        else {
+                        } else {
                             // Get the disco items and send the disco packet to each server item
                             DiscoverItems items = ServiceDiscoveryManager.getInstanceFor(connection)
                                     .discoverItems(serviceName);
-                            for (Iterator it = items.getItems(); it.hasNext();) {
+                            for (Iterator it = items.getItems(); it.hasNext(); ) {
                                 DiscoverItems.Item item = (DiscoverItems.Item) it.next();
                                 info = ServiceDiscoveryManager.getInstanceFor(connection)
                                         .discoverInfo(item.getEntityID(), item.getNode());
@@ -313,8 +308,7 @@ public class MultipleRecipientManager {
                         }
                         // Cache the discovered information
                         services.put(serviceName, serviceAddress == null ? "" : serviceAddress);
-                    }
-                    catch (XMPPException e) {
+                    } catch (XMPPException e) {
                         e.printStackTrace();
                     }
                 }

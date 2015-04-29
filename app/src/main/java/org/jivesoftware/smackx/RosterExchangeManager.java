@@ -36,10 +36,9 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.packet.RosterExchange;
 
 /**
- *
- * Manages Roster exchanges. A RosterExchangeManager provides a high level access to send 
+ * Manages Roster exchanges. A RosterExchangeManager provides a high level access to send
  * rosters, roster groups and roster entries to XMPP clients. It also provides an easy way
- * to hook up custom logic when entries are received from another XMPP client through 
+ * to hook up custom logic when entries are received from another XMPP client through
  * RosterExchangeListeners.
  *
  * @author Gaston Dombiak
@@ -78,7 +77,7 @@ public class RosterExchangeManager {
     }
 
     /**
-     * Removes a listener from roster exchanges. The listener will be fired anytime roster 
+     * Removes a listener from roster exchanges. The listener will be fired anytime roster
      * entries are received from remote XMPP clients.
      *
      * @param rosterExchangeListener a roster exchange listener..
@@ -92,8 +91,8 @@ public class RosterExchangeManager {
     /**
      * Sends a roster to userID. All the entries of the roster will be sent to the
      * target user.
-     * 
-     * @param roster the roster to send
+     *
+     * @param roster       the roster to send
      * @param targetUserID the user that will receive the roster entries
      */
     public void send(Roster roster, String targetUserID) {
@@ -109,8 +108,8 @@ public class RosterExchangeManager {
 
     /**
      * Sends a roster entry to userID.
-     * 
-     * @param rosterEntry the roster entry to send
+     *
+     * @param rosterEntry  the roster entry to send
      * @param targetUserID the user that will receive the roster entries
      */
     public void send(RosterEntry rosterEntry, String targetUserID) {
@@ -126,10 +125,10 @@ public class RosterExchangeManager {
     }
 
     /**
-     * Sends a roster group to userID. All the entries of the group will be sent to the 
+     * Sends a roster group to userID. All the entries of the group will be sent to the
      * target user.
-     * 
-     * @param rosterGroup the roster group to send
+     *
+     * @param rosterGroup  the roster group to send
      * @param targetUserID the user that will receive the roster entries
      */
     public void send(RosterGroup rosterGroup, String targetUserID) {
@@ -166,10 +165,12 @@ public class RosterExchangeManager {
             public void processPacket(Packet packet) {
                 Message message = (Message) packet;
                 RosterExchange rosterExchange =
-                    (RosterExchange) message.getExtension("x", "jabber:x:roster");
+                        (RosterExchange) message.getExtension("x", "jabber:x:roster");
                 // Fire event for roster exchange listeners
                 fireRosterExchangeListeners(message.getFrom(), rosterExchange.getRosterEntries());
-            };
+            }
+
+            ;
 
         };
         con.addPacketListener(packetListener, packetFilter);
@@ -180,6 +181,7 @@ public class RosterExchangeManager {
             con.removePacketListener(packetListener);
 
     }
+
     protected void finalize() throws Throwable {
         destroy();
         super.finalize();

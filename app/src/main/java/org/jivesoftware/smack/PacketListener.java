@@ -29,14 +29,14 @@ import org.jivesoftware.smack.packet.Packet;
  * opposite approach to the functionality provided by a {@link PacketCollector}
  * which lets you block while waiting for results.
  *
- * @see Connection#addPacketListener(PacketListener, org.jivesoftware.smack.filter.PacketFilter)
  * @author Matt Tucker
+ * @see Connection#addPacketListener(PacketListener, org.jivesoftware.smack.filter.PacketFilter)
  */
 public interface PacketListener {
 
     /**
      * Process the next packet sent to this packet listener.<p>
-     *
+     * <p/>
      * A single thread is responsible for invoking all listeners, so
      * it's very important that implementations of this method not block
      * for any extended period of time.

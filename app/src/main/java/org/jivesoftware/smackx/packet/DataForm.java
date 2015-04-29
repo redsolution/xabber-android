@@ -42,43 +42,43 @@ import java.util.List;
 public class DataForm implements PacketExtension, Instance {
 
     public static final String ELEMENT_NAME = "x";
-	public static final String NAMESPACE = "jabber:x:data";
-    
-	private String type;
+    public static final String NAMESPACE = "jabber:x:data";
+
+    private String type;
     private String title;
     private List<String> instructions = new ArrayList<String>();
     private ReportedData reportedData;
     private final List<Item> items = new ArrayList<Item>();
     private final List<FormField> fields = new ArrayList<FormField>();
-    
+
     public DataForm(String type) {
         this.type = type;
     }
-    
+
     /**
      * Returns the meaning of the data within the context. The data could be part of a form
      * to fill out, a form submission or data results.<p>
-     * 
+     * <p/>
      * Possible form types are:
      * <ul>
-     *  <li>form -> This packet contains a form to fill out. Display it to the user (if your 
+     * <li>form -> This packet contains a form to fill out. Display it to the user (if your
      * program can).</li>
-     *  <li>submit -> The form is filled out, and this is the data that is being returned from 
+     * <li>submit -> The form is filled out, and this is the data that is being returned from
      * the form.</li>
-     *  <li>cancel -> The form was cancelled. Tell the asker that piece of information.</li>
-     *  <li>result -> Data results being returned from a search, or some other query.</li>
+     * <li>cancel -> The form was cancelled. Tell the asker that piece of information.</li>
+     * <li>result -> Data results being returned from a search, or some other query.</li>
      * </ul>
-     * 
+     *
      * @return the form's type.
      */
     public String getType() {
-        return type; 
+        return type;
     }
-    
+
     /**
-     * Returns the description of the data. It is similar to the title on a web page or an X 
+     * Returns the description of the data. It is similar to the title on a web page or an X
      * window.  You can put a <title/> on either a form to fill out, or a set of data results.
-     * 
+     *
      * @return description of the data.
      */
     public String getTitle() {
@@ -86,11 +86,11 @@ public class DataForm implements PacketExtension, Instance {
     }
 
     /**
-     * Returns an Iterator for the list of instructions that explain how to fill out the form and 
-     * what the form is about. The dataform could include multiple instructions since each 
-     * instruction could not contain newlines characters. Join the instructions together in order 
-     * to show them to the user.    
-     * 
+     * Returns an Iterator for the list of instructions that explain how to fill out the form and
+     * what the form is about. The dataform could include multiple instructions since each
+     * instruction could not contain newlines characters. Join the instructions together in order
+     * to show them to the user.
+     *
      * @return an Iterator for the list of instructions that explain how to fill out the form.
      */
     public Iterator<String> getInstructions() {
@@ -101,7 +101,7 @@ public class DataForm implements PacketExtension, Instance {
 
     /**
      * Returns the fields that will be returned from a search.
-     * 
+     *
      * @return fields that will be returned from a search.
      */
     public ReportedData getReportedData() {
@@ -141,7 +141,7 @@ public class DataForm implements PacketExtension, Instance {
     /**
      * Sets the description of the data. It is similar to the title on a web page or an X window.
      * You can put a <title/> on either a form to fill out, or a set of data results.
-     * 
+     *
      * @param title description of the data.
      */
     public void setTitle(String title) {
@@ -149,10 +149,10 @@ public class DataForm implements PacketExtension, Instance {
     }
 
     /**
-     * Sets the list of instructions that explain how to fill out the form and what the form is 
-     * about. The dataform could include multiple instructions since each instruction could not 
-     * contain newlines characters. 
-     * 
+     * Sets the list of instructions that explain how to fill out the form and what the form is
+     * about. The dataform could include multiple instructions since each instruction could not
+     * contain newlines characters.
+     *
      * @param instructions list of instructions that explain how to fill out the form.
      */
     public void setInstructions(List<String> instructions) {
@@ -161,7 +161,7 @@ public class DataForm implements PacketExtension, Instance {
 
     /**
      * Sets the fields that will be returned from a search.
-     * 
+     *
      * @param reportedData the fields that will be returned from a search.
      */
     public void setReportedData(ReportedData reportedData) {
@@ -170,7 +170,7 @@ public class DataForm implements PacketExtension, Instance {
 
     /**
      * Adds a new field as part of the form.
-     * 
+     *
      * @param field the field to add to the form.
      */
     public void addField(FormField field) {
@@ -178,12 +178,12 @@ public class DataForm implements PacketExtension, Instance {
             fields.add(field);
         }
     }
-    
+
     /**
-     * Adds a new instruction to the list of instructions that explain how to fill out the form 
-     * and what the form is about. The dataform could include multiple instructions since each 
-     * instruction could not contain newlines characters. 
-     * 
+     * Adds a new instruction to the list of instructions that explain how to fill out the form
+     * and what the form is about. The dataform could include multiple instructions since each
+     * instruction could not contain newlines characters.
+     *
      * @param instruction the new instruction that explain how to fill out the form.
      */
     public void addInstruction(String instruction) {
@@ -194,7 +194,7 @@ public class DataForm implements PacketExtension, Instance {
 
     /**
      * Adds a new item returned from a search.
-     * 
+     *
      * @param item the item returned from a search.
      */
     public void addItem(Item item) {
@@ -203,125 +203,123 @@ public class DataForm implements PacketExtension, Instance {
         }
     }
 
-	@Override
-	public void serialize(XmlSerializer serializer) throws IOException {
-		serializer.setPrefix("", getNamespace());
-		serializer.startTag(getNamespace(), getElementName());
-		SerializerUtils.setTextAttribute(serializer, "type", getType());
+    @Override
+    public void serialize(XmlSerializer serializer) throws IOException {
+        serializer.setPrefix("", getNamespace());
+        serializer.startTag(getNamespace(), getElementName());
+        SerializerUtils.setTextAttribute(serializer, "type", getType());
         if (getTitle() != null) {
-        	SerializerUtils.addTextTag(serializer, "title", getTitle());
+            SerializerUtils.addTextTag(serializer, "title", getTitle());
         }
-        for (Iterator<String> it=getInstructions(); it.hasNext();) {
-        	SerializerUtils.addTextTag(serializer, "instructions", it.next());
+        for (Iterator<String> it = getInstructions(); it.hasNext(); ) {
+            SerializerUtils.addTextTag(serializer, "instructions", it.next());
         }
         // Append the list of fields returned from a search
         if (getReportedData() != null) {
             getReportedData().serialize(serializer);
         }
         // Loop through all the items returned from a search and append them to the string buffer
-        for (Iterator<Item> i = getItems(); i.hasNext();) {
-        	i.next().serialize(serializer);
+        for (Iterator<Item> i = getItems(); i.hasNext(); ) {
+            i.next().serialize(serializer);
         }
         // Loop through all the form fields and append them to the string buffer
-        for (Iterator<FormField> i = getFields(); i.hasNext();) {
-        	i.next().serialize(serializer);
+        for (Iterator<FormField> i = getFields(); i.hasNext(); ) {
+            i.next().serialize(serializer);
         }
-		serializer.endTag(getNamespace(), getElementName());
-	}
+        serializer.endTag(getNamespace(), getElementName());
+    }
 
     public String toXML() {
-    	return SerializerUtils.toXml(this);
+        return SerializerUtils.toXml(this);
     }
 
     /**
-     * 
-     * Represents the fields that will be returned from a search. This information is useful when 
+     * Represents the fields that will be returned from a search. This information is useful when
      * you try to use the jabber:iq:search namespace to return dynamic form information.
      *
      * @author Gaston Dombiak
      */
     public static class ReportedData implements Instance {
         private List<FormField> fields = new ArrayList<FormField>();
-        
+
         public ReportedData(List<FormField> fields) {
             this.fields = fields;
         }
-        
+
         /**
          * Returns the fields returned from a search.
-         * 
+         *
          * @return the fields returned from a search.
          */
         public Iterator<FormField> getFields() {
             return Collections.unmodifiableList(new ArrayList<FormField>(fields)).iterator();
         }
-        
-    	@Override
-    	public void serialize(XmlSerializer serializer) throws IOException {
-    		serializer.startTag(null, "reported");
+
+        @Override
+        public void serialize(XmlSerializer serializer) throws IOException {
+            serializer.startTag(null, "reported");
             // Loop through all the form items and append them to the string buffer
-            for (Iterator<FormField> i = getFields(); i.hasNext();) {
+            for (Iterator<FormField> i = getFields(); i.hasNext(); ) {
                 i.next().serialize(serializer);
             }
             serializer.endTag(null, "reported");
-    	}
-
-        public String toXML() {
-        	return SerializerUtils.toXml(this);
         }
 
-		@Override
-		public boolean isValid() {
-			return true;
-		}
+        public String toXML() {
+            return SerializerUtils.toXml(this);
+        }
+
+        @Override
+        public boolean isValid() {
+            return true;
+        }
 
     }
-    
+
     /**
-     * 
      * Represents items of reported data.
      *
      * @author Gaston Dombiak
      */
     public static class Item implements Instance {
         private List<FormField> fields = new ArrayList<FormField>();
-        
+
         public Item(List<FormField> fields) {
             this.fields = fields;
         }
-        
+
         /**
          * Returns the fields that define the data that goes with the item.
-         * 
+         *
          * @return the fields that define the data that goes with the item.
          */
         public Iterator<FormField> getFields() {
             return Collections.unmodifiableList(new ArrayList<FormField>(fields)).iterator();
         }
-        
-    	@Override
-    	public void serialize(XmlSerializer serializer) throws IOException {
-    		serializer.startTag(null, "item");
+
+        @Override
+        public void serialize(XmlSerializer serializer) throws IOException {
+            serializer.startTag(null, "item");
             // Loop through all the form items and append them to the string buffer
-            for (Iterator<FormField> i = getFields(); i.hasNext();) {
+            for (Iterator<FormField> i = getFields(); i.hasNext(); ) {
                 i.next().serialize(serializer);
             }
             serializer.endTag(null, "item");
-    	}
-
-        public String toXML() {
-        	return SerializerUtils.toXml(this);
         }
 
-		@Override
-		public boolean isValid() {
-			return true;
-		}
+        public String toXML() {
+            return SerializerUtils.toXml(this);
+        }
+
+        @Override
+        public boolean isValid() {
+            return true;
+        }
     }
 
-	@Override
-	public boolean isValid() {
-		return true;
-	}
+    @Override
+    public boolean isValid() {
+        return true;
+    }
 
 }

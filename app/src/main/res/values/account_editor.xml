@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_compression">Use compression</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
@@ -10,6 +10,7 @@
     <string name="account_host">Host</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_password">Password</string>
+    <string name="confirm_password">Confirm password</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_port">Port</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
@@ -45,7 +46,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_vkontakte">You can enter you name (e.g. masha.v.kontakte) or id (e.g. id123456). You can not login to VKontakte chat using your email. To set up chat you have to provide your Vkontakte.ru username and password. Check http://vk.com/help.php?page=jabber for details.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org\nTo register new XMPP account please go to https://register.jabber.org, or any other Jabber server.</string>
+    <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_ya">If you don\'t have Ya.Online account you may create one at http://yandex.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
@@ -68,6 +69,7 @@
     <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
     <string name="EMPTY_USER_NAME">Username is not specified</string>
+    <string name="CONFIRM_PASSWORD">Passwords do not match</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_03.png -->
     <string name="account_archive_mode">Store message history</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_history.png -->
@@ -159,4 +161,16 @@
     <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
+    <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
+
+    <string name="account_color">Account color</string>
+    <string name="account_color_name_green">Green</string>
+    <string name="account_color_name_orange">Orange</string>
+    <string name="account_color_name_red">Red</string>
+    <string name="account_color_name_blue">Blue</string>
+    <string name="account_color_name_indigo">Indigo</string>
+    <string name="account_color_name_teal">Teal</string>
+    <string name="account_color_name_blue_grey">Blue grey</string>
+    <string name="account_color_name_cyan">Cyan</string>
+
 </resources>

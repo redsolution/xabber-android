@@ -19,8 +19,8 @@ package org.apache.harmony.javax.security.sasl;
 
 import java.security.Provider;
 import java.security.Security;
-import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
 
+import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
 
 
 import java.util.Collection;
@@ -132,7 +132,7 @@ public class Sasl {
     }
 
     public static SaslServer createSaslServer(String mechanism, String protocol,
-            String serverName, Map<String, ?> prop, CallbackHandler cbh) throws SaslException {
+                                              String serverName, Map<String, ?> prop, CallbackHandler cbh) throws SaslException {
         if (mechanism == null) {
             throw new NullPointerException("auth.32"); //$NON-NLS-1$
         }
@@ -166,7 +166,7 @@ public class Sasl {
     }
 
     public static SaslClient createSaslClient(String[] mechanisms, String authanticationID,
-            String protocol, String serverName, Map<String, ?> prop, CallbackHandler cbh)
+                                              String protocol, String serverName, Map<String, ?> prop, CallbackHandler cbh)
             throws SaslException {
         if (mechanisms == null) {
             throw new NullPointerException("auth.33"); //$NON-NLS-1$

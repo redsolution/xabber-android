@@ -21,49 +21,41 @@ import org.jivesoftware.smack.packet.PacketExtension;
 
 /**
  * Extension representing a list of headers as specified in <a href="http://xmpp.org/extensions/xep-0131">Stanza Headers and Internet Metadata (SHIM)</a>
- * 
- * @see Header
- * 
+ *
  * @author Robin Collier
+ * @see Header
  */
-public class HeadersExtension implements PacketExtension
-{
-	public static final String NAMESPACE = "http://jabber.org/protocol/shim";
-	
-	private Collection<Header> headers = Collections.EMPTY_LIST;
-	
-	public HeadersExtension(Collection<Header> headerList)
-	{
-		if (headerList != null)
-			headers = headerList;
-	}
-	
-	public Collection<Header> getHeaders()
-	{
-		return headers;
-	}
+public class HeadersExtension implements PacketExtension {
+    public static final String NAMESPACE = "http://jabber.org/protocol/shim";
 
-	public String getElementName()
-	{
-		return "headers";
-	}
+    private Collection<Header> headers = Collections.EMPTY_LIST;
 
-	public String getNamespace()
-	{
-		return NAMESPACE;
-	}
+    public HeadersExtension(Collection<Header> headerList) {
+        if (headerList != null)
+            headers = headerList;
+    }
 
-	public String toXML()
-	{
-		StringBuilder builder = new StringBuilder("<" + getElementName() + " xmlns='" + getNamespace() + "'>");
-		
-		for (Header header : headers)
-		{
-			builder.append(header.toXML());
-		}
-		builder.append("</" + getElementName() + '>');
+    public Collection<Header> getHeaders() {
+        return headers;
+    }
 
-		return builder.toString();
-	}
+    public String getElementName() {
+        return "headers";
+    }
+
+    public String getNamespace() {
+        return NAMESPACE;
+    }
+
+    public String toXML() {
+        StringBuilder builder = new StringBuilder("<" + getElementName() + " xmlns='" + getNamespace() + "'>");
+
+        for (Header header : headers) {
+            builder.append(header.toXML());
+        }
+        builder.append("</" + getElementName() + '>');
+
+        return builder.toString();
+    }
 
 }

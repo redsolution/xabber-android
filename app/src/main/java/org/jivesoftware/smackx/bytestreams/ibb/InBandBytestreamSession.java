@@ -42,15 +42,15 @@ import org.jivesoftware.smackx.packet.SyncPacketSend;
 
 /**
  * InBandBytestreamSession class represents an In-Band Bytestream session.
- * <p>
+ * <p/>
  * In-band bytestreams are bidirectional and this session encapsulates the streams for both
  * directions.
- * <p>
+ * <p/>
  * Note that closing the In-Band Bytestream session will close both streams. If both streams are
  * closed individually the session will be closed automatically once the second stream is closed.
  * Use the {@link #setCloseBothStreamsEnabled(boolean)} method if both streams should be closed
  * automatically if one of them is closed.
- * 
+ *
  * @author Henning Staib
  */
 public class InBandBytestreamSession implements BytestreamSession {
@@ -82,27 +82,27 @@ public class InBandBytestreamSession implements BytestreamSession {
 
     /**
      * Constructor.
-     * 
-     * @param connection the XMPP connection
+     *
+     * @param connection        the XMPP connection
      * @param byteStreamRequest the In-Band Bytestream open request for this session
-     * @param remoteJID JID of the remote peer
+     * @param remoteJID         JID of the remote peer
      */
     protected InBandBytestreamSession(Connection connection, Open byteStreamRequest,
-                    String remoteJID) {
+                                      String remoteJID) {
         this.connection = connection;
         this.byteStreamRequest = byteStreamRequest;
         this.remoteJID = remoteJID;
 
         // initialize streams dependent to the uses stanza type
         switch (byteStreamRequest.getStanza()) {
-        case IQ:
-            this.inputStream = new IQIBBInputStream();
-            this.outputStream = new IQIBBOutputStream();
-            break;
-        case MESSAGE:
-            this.inputStream = new MessageIBBInputStream();
-            this.outputStream = new MessageIBBOutputStream();
-            break;
+            case IQ:
+                this.inputStream = new IQIBBInputStream();
+                this.outputStream = new IQIBBOutputStream();
+                break;
+            case MESSAGE:
+                this.inputStream = new MessageIBBInputStream();
+                this.outputStream = new MessageIBBOutputStream();
+                break;
         }
 
     }
@@ -129,9 +129,9 @@ public class InBandBytestreamSession implements BytestreamSession {
     /**
      * Returns whether both streams should be closed automatically if one of the streams is closed.
      * Default is <code>false</code>.
-     * 
+     *
      * @return <code>true</code> if both streams will be closed if one of the streams is closed,
-     *         <code>false</code> if both streams can be closed independently.
+     * <code>false</code> if both streams can be closed independently.
      */
     public boolean isCloseBothStreamsEnabled() {
         return closeBothStreamsEnabled;
@@ -140,10 +140,10 @@ public class InBandBytestreamSession implements BytestreamSession {
     /**
      * Sets whether both streams should be closed automatically if one of the streams is closed.
      * Default is <code>false</code>.
-     * 
+     *
      * @param closeBothStreamsEnabled <code>true</code> if both streams should be closed if one of
-     *        the streams is closed, <code>false</code> if both streams should be closed
-     *        independently
+     *                                the streams is closed, <code>false</code> if both streams should be closed
+     *                                independently
      */
     public void setCloseBothStreamsEnabled(boolean closeBothStreamsEnabled) {
         this.closeBothStreamsEnabled = closeBothStreamsEnabled;
@@ -156,7 +156,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
     /**
      * This method is invoked if a request to close the In-Band Bytestream has been received.
-     * 
+     *
      * @param closeRequest the close request from the remote peer
      */
     protected void closeByPeer(Close closeRequest) {
@@ -178,7 +178,7 @@ public class InBandBytestreamSession implements BytestreamSession {
     /**
      * This method is invoked if one of the streams has been closed locally, if an error occurred
      * locally or if the whole session should be closed.
-     * 
+     *
      * @throws IOException if an error occurs while sending the close request
      */
     protected synchronized void closeByLocal(boolean in) throws IOException {
@@ -189,12 +189,10 @@ public class InBandBytestreamSession implements BytestreamSession {
         if (this.closeBothStreamsEnabled) {
             this.inputStream.closeInternal();
             this.outputStream.closeInternal(true);
-        }
-        else {
+        } else {
             if (in) {
                 this.inputStream.closeInternal();
-            }
-            else {
+            } else {
                 // close stream but try to send any data left
                 this.outputStream.closeInternal(true);
             }
@@ -208,8 +206,7 @@ public class InBandBytestreamSession implements BytestreamSession {
             close.setTo(this.remoteJID);
             try {
                 SyncPacketSend.getReply(this.connection, close);
-            }
-            catch (XMPPException e) {
+            } catch (XMPPException e) {
                 throw new IOException("Error while closing stream: " + e.getMessage());
             }
 
@@ -263,14 +260,14 @@ public class InBandBytestreamSession implements BytestreamSession {
 
         /**
          * Returns the packet listener that processes In-Band Bytestream data packets.
-         * 
+         *
          * @return the data packet listener
          */
         protected abstract PacketListener getDataPacketListener();
 
         /**
          * Returns the packet filter that accepts In-Band Bytestream data packets.
-         * 
+         *
          * @return the data packet filter
          */
         protected abstract PacketFilter getDataPacketFilter();
@@ -293,12 +290,10 @@ public class InBandBytestreamSession implements BytestreamSession {
         public synchronized int read(byte[] b, int off, int len) throws IOException {
             if (b == null) {
                 throw new NullPointerException();
-            }
-            else if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length)
-                            || ((off + len) < 0)) {
+            } else if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length)
+                    || ((off + len) < 0)) {
                 throw new IndexOutOfBoundsException();
-            }
-            else if (len == 0) {
+            } else if (len == 0) {
                 return 0;
             }
 
@@ -330,7 +325,7 @@ public class InBandBytestreamSession implements BytestreamSession {
         /**
          * This method blocks until a data packet is received, the stream is closed or the current
          * thread is interrupted.
-         * 
+         *
          * @return <code>true</code> if data was received, otherwise <code>false</code>
          * @throws IOException if data packets are out of sequence
          */
@@ -346,15 +341,13 @@ public class InBandBytestreamSession implements BytestreamSession {
                         }
                         data = this.dataQueue.poll(1000, TimeUnit.MILLISECONDS);
                     }
-                }
-                else {
+                } else {
                     data = this.dataQueue.poll(this.readTimeout, TimeUnit.MILLISECONDS);
                     if (data == null) {
                         throw new SocketTimeoutException();
                     }
                 }
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 // Restore the interrupted status
                 Thread.currentThread().interrupt();
                 return false;
@@ -371,8 +364,7 @@ public class InBandBytestreamSession implements BytestreamSession {
                 // packets out of order; close stream/session
                 InBandBytestreamSession.this.close();
                 throw new IOException("Packets out of sequence");
-            }
-            else {
+            } else {
                 this.seq = seq;
             }
 
@@ -384,7 +376,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
         /**
          * Checks if this stream is closed and throws an IOException if necessary
-         * 
+         *
          * @throws IOException if stream is closed and no data should be read anymore
          */
         private void checkClosed() throws IOException {
@@ -443,15 +435,15 @@ public class InBandBytestreamSession implements BytestreamSession {
                 public void processPacket(Packet packet) {
                     // get data packet extension
                     DataPacketExtension data = (DataPacketExtension) packet.getExtension(
-                                    DataPacketExtension.ELEMENT_NAME,
-                                    InBandBytestreamManager.NAMESPACE);
+                            DataPacketExtension.ELEMENT_NAME,
+                            InBandBytestreamManager.NAMESPACE);
 
                     /*
                      * check if sequence was not used already (see XEP-0047 Section 2.2)
                      */
                     if (data.getSeq() <= this.lastSequence) {
                         IQ unexpectedRequest = IQ.createErrorResponse((IQ) packet, new XMPPError(
-                                        XMPPError.Condition.unexpected_request));
+                                XMPPError.Condition.unexpected_request));
                         connection.sendPacket(unexpectedRequest);
                         return;
 
@@ -461,7 +453,7 @@ public class InBandBytestreamSession implements BytestreamSession {
                     if (data.getDecodedData() == null) {
                         // data is invalid; respond with bad-request error
                         IQ badRequest = IQ.createErrorResponse((IQ) packet, new XMPPError(
-                                        XMPPError.Condition.bad_request));
+                                XMPPError.Condition.bad_request));
                         connection.sendPacket(badRequest);
                         return;
                     }
@@ -506,8 +498,8 @@ public class InBandBytestreamSession implements BytestreamSession {
                 public void processPacket(Packet packet) {
                     // get data packet extension
                     DataPacketExtension data = (DataPacketExtension) packet.getExtension(
-                                    DataPacketExtension.ELEMENT_NAME,
-                                    InBandBytestreamManager.NAMESPACE);
+                            DataPacketExtension.ELEMENT_NAME,
+                            InBandBytestreamManager.NAMESPACE);
 
                     // check if encoded data is valid
                     if (data.getDecodedData() == null) {
@@ -556,7 +548,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
             // stanza contains data packet extension
             PacketExtension packetExtension = packet.getExtension(DataPacketExtension.ELEMENT_NAME,
-                            InBandBytestreamManager.NAMESPACE);
+                    InBandBytestreamManager.NAMESPACE);
             if (packetExtension == null || !(packetExtension instanceof DataPacketExtension)) {
                 return false;
             }
@@ -599,7 +591,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
         /**
          * Writes the given data packet to the XMPP stream.
-         * 
+         *
          * @param data the data packet
          * @throws IOException if an I/O error occurred while sending or if the stream is closed
          */
@@ -621,12 +613,10 @@ public class InBandBytestreamSession implements BytestreamSession {
         public synchronized void write(byte b[], int off, int len) throws IOException {
             if (b == null) {
                 throw new NullPointerException();
-            }
-            else if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length)
-                            || ((off + len) < 0)) {
+            } else if ((off < 0) || (off > b.length) || (len < 0) || ((off + len) > b.length)
+                    || ((off + len) < 0)) {
                 throw new IndexOutOfBoundsException();
-            }
-            else if (len == 0) {
+            } else if (len == 0) {
                 return;
             }
 
@@ -642,8 +632,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
                 // recursively call this method with the lesser amount
                 write(b, off + buffer.length, len - buffer.length);
-            }
-            else {
+            } else {
                 writeOut(b, off, len);
             }
         }
@@ -656,8 +645,8 @@ public class InBandBytestreamSession implements BytestreamSession {
          * Fills the buffer with the given data and sends it over the XMPP stream if the buffers
          * capacity has been reached. This method is only called from this class so it is assured
          * that the amount of data to send is <= buffer capacity
-         * 
-         * @param b the data
+         *
+         * @param b   the data
          * @param off the data
          * @param len the number of bytes to write
          * @throws IOException if an I/O error occurred while sending or if the stream is closed
@@ -701,7 +690,7 @@ public class InBandBytestreamSession implements BytestreamSession {
             // create data packet
             String enc = StringUtils.encodeBase64(buffer, 0, bufferPointer, false);
             DataPacketExtension data = new DataPacketExtension(byteStreamRequest.getSessionID(),
-                            this.seq, enc);
+                    this.seq, enc);
 
             // write to XMPP stream
             writeToXML(data);
@@ -723,7 +712,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
         /**
          * Sets the close flag and optionally flushes the stream.
-         * 
+         *
          * @param flush if <code>true</code> flushes the stream
          */
         protected void closeInternal(boolean flush) {
@@ -736,8 +725,7 @@ public class InBandBytestreamSession implements BytestreamSession {
                 if (flush) {
                     flushBuffer();
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 /*
                  * ignore, because writeToXML() will not throw an exception if stream is already
                  * closed
@@ -761,8 +749,7 @@ public class InBandBytestreamSession implements BytestreamSession {
 
             try {
                 SyncPacketSend.getReply(connection, iq);
-            }
-            catch (XMPPException e) {
+            } catch (XMPPException e) {
                 // close session unless it is already closed
                 if (!this.isClosed) {
                     InBandBytestreamSession.this.close();

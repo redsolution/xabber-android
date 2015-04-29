@@ -25,35 +25,35 @@ import java.io.*;
 import org.jivesoftware.smack.*;
 
 /**
- * Interface that allows for implementing classes to debug XML traffic. That is a GUI window that 
+ * Interface that allows for implementing classes to debug XML traffic. That is a GUI window that
  * displays XML traffic.<p>
- * 
- * Every implementation of this interface <b>must</b> have a public constructor with the following 
+ * <p/>
+ * Every implementation of this interface <b>must</b> have a public constructor with the following
  * arguments: Connection, Writer, Reader.
- * 
+ *
  * @author Gaston Dombiak
  */
 public interface SmackDebugger {
 
     /**
-     * Called when a user has logged in to the server. The user could be an anonymous user, this 
-     * means that the user would be of the form host/resource instead of the form 
+     * Called when a user has logged in to the server. The user could be an anonymous user, this
+     * means that the user would be of the form host/resource instead of the form
      * user@host/resource.
-     * 
+     *
      * @param user the user@host/resource that has just logged in
      */
     public abstract void userHasLogged(String user);
 
     /**
      * Returns the special Reader that wraps the main Reader and logs data to the GUI.
-     * 
+     *
      * @return the special Reader that wraps the main Reader and logs data to the GUI.
      */
     public abstract Reader getReader();
 
     /**
      * Returns the special Writer that wraps the main Writer and logs data to the GUI.
-     * 
+     *
      * @return the special Writer that wraps the main Writer and logs data to the GUI.
      */
     public abstract Writer getWriter();
@@ -79,19 +79,19 @@ public interface SmackDebugger {
     public abstract Writer newConnectionWriter(Writer writer);
 
     /**
-     * Returns the thread that will listen for all incoming packets and write them to the GUI. 
-     * This is what we call "interpreted" packet data, since it's the packet data as Smack sees 
+     * Returns the thread that will listen for all incoming packets and write them to the GUI.
+     * This is what we call "interpreted" packet data, since it's the packet data as Smack sees
      * it and not as it's coming in as raw XML.
-     * 
-     * @return the PacketListener that will listen for all incoming packets and write them to 
+     *
+     * @return the PacketListener that will listen for all incoming packets and write them to
      * the GUI
      */
     public abstract PacketListener getReaderListener();
 
     /**
-     * Returns the thread that will listen for all outgoing packets and write them to the GUI. 
-     * 
-     * @return the PacketListener that will listen for all sent packets and write them to 
+     * Returns the thread that will listen for all outgoing packets and write them to the GUI.
+     *
+     * @return the PacketListener that will listen for all sent packets and write them to
      * the GUI
      */
     public abstract PacketListener getWriterListener();

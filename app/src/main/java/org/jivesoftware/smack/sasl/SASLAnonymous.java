@@ -22,6 +22,7 @@ package org.jivesoftware.smack.sasl;
 import org.jivesoftware.smack.SASLAuthentication;
 
 import java.io.IOException;
+
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
 
 /**

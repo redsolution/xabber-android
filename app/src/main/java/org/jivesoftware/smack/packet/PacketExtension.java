@@ -27,9 +27,9 @@ package org.jivesoftware.smack.packet;
  * packet extensions include message events, message properties, and extra presence data.
  * IQ packets cannot contain packet extensions.
  *
+ * @author Matt Tucker
  * @see DefaultPacketExtension
  * @see org.jivesoftware.smack.provider.PacketExtensionProvider
- * @author Matt Tucker
  */
 public interface PacketExtension {
 

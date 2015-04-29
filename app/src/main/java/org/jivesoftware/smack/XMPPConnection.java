@@ -35,6 +35,7 @@ import javax.net.ssl.TrustManager;
 import org.apache.harmony.javax.security.auth.callback.Callback;
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
 import org.apache.harmony.javax.security.auth.callback.PasswordCallback;
+
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -49,9 +50,9 @@ import java.util.Collection;
 /**
  * Creates a socket connection to a XMPP server. This is the default connection
  * to a Jabber server and is specified in the XMPP Core (RFC 3920).
- * 
- * @see Connection
+ *
  * @author Matt Tucker
+ * @see Connection
  */
 public class XMPPConnection extends Connection {
 
@@ -112,7 +113,7 @@ public class XMPPConnection extends Connection {
      * an SSL certificate to the server. The CallbackHandler must handle the PasswordCallback
      * to prompt for a password to unlock the keystore containing the SSL certificate.
      *
-     * @param serviceName the name of the XMPP server to connect to; e.g. <tt>example.com</tt>.
+     * @param serviceName     the name of the XMPP server to connect to; e.g. <tt>example.com</tt>.
      * @param callbackHandler the CallbackHandler used to prompt for the password to the keystore.
      */
     public XMPPConnection(String serviceName, CallbackHandler callbackHandler) {
@@ -125,9 +126,9 @@ public class XMPPConnection extends Connection {
     }
 
     /**
-     * Creates a new XMPP connection in the same way {@link #XMPPConnection(String,CallbackHandler)} does, but
+     * Creates a new XMPP connection in the same way {@link #XMPPConnection(String, CallbackHandler)} does, but
      * with no callback handler for password prompting of the keystore.  This will work
-     * in most cases, provided the client is not required to provide a certificate to 
+     * in most cases, provided the client is not required to provide a certificate to
      * the server.
      *
      * @param serviceName the name of the XMPP server to connect to; e.g. <tt>example.com</tt>.
@@ -141,11 +142,10 @@ public class XMPPConnection extends Connection {
     }
 
     /**
-     * Creates a new XMPP connection in the same way {@link #XMPPConnection(ConnectionConfiguration,CallbackHandler)} does, but
+     * Creates a new XMPP connection in the same way {@link #XMPPConnection(ConnectionConfiguration, CallbackHandler)} does, but
      * with no callback handler for password prompting of the keystore.  This will work
-     * in most cases, provided the client is not required to provide a certificate to 
+     * in most cases, provided the client is not required to provide a certificate to
      * the server.
-     *
      *
      * @param config the connection configuration.
      */
@@ -163,12 +163,12 @@ public class XMPPConnection extends Connection {
      * Note that XMPPConnection constructors do not establish a connection to the server
      * and you must call {@link #connect()}.<p>
      * <p/>
-     *
+     * <p/>
      * The CallbackHandler will only be used if the connection requires the client provide
      * an SSL certificate to the server. The CallbackHandler must handle the PasswordCallback
      * to prompt for a password to unlock the keystore containing the SSL certificate.
      *
-     * @param config the connection configuration.
+     * @param config          the connection configuration.
      * @param callbackHandler the CallbackHandler used to prompt for the password to the keystore.
      */
     public XMPPConnection(ConnectionConfiguration config, CallbackHandler callbackHandler) {
@@ -201,9 +201,9 @@ public class XMPPConnection extends Connection {
         // Do partial version of nameprep on the username.
         username = username.toLowerCase().trim();
 
-		// Pause keep alive process while authentication and compression is in
-		// progress
-		packetWriter.stopKeepAliveProcess();
+        // Pause keep alive process while authentication and compression is in
+        // progress
+        packetWriter.stopKeepAliveProcess();
 
         String response;
         if (config.isSASLAuthenticationEnabled() &&
@@ -211,13 +211,11 @@ public class XMPPConnection extends Connection {
             // Authenticate using SASL
             if (password != null) {
                 response = saslAuthentication.authenticate(username, password, resource);
-            }
-            else {
+            } else {
                 response = saslAuthentication
                         .authenticate(username, resource, config.getCallbackHandler());
             }
-        }
-        else {
+        } else {
             // Authenticate using Non-SASL
             response = new NonSASLAuthentication(this).authenticate(username, password, resource);
         }
@@ -227,8 +225,7 @@ public class XMPPConnection extends Connection {
             this.user = response;
             // Update the serviceName with the one returned by the server
             config.setServiceName(StringUtils.parseServer(response));
-        }
-        else {
+        } else {
             this.user = username + "@" + getServiceName();
             if (resource != null) {
                 this.user += "/" + resource;
@@ -240,24 +237,24 @@ public class XMPPConnection extends Connection {
             useCompression();
         }
 
-		// Resume keep alive process (after authentication and compression was
-		// complited)
-		packetWriter.resumeKeepAliveProcess();
+        // Resume keep alive process (after authentication and compression was
+        // complited)
+        packetWriter.resumeKeepAliveProcess();
 
         // Indicate that we're now authenticated.
         authenticated = true;
         anonymous = false;
 
-		if (config.isRosterLoadedAtLogin()) {
-			// Create the roster if it is not a reconnection or roster already
-			// created by getRoster()
-			if (this.roster == null) {
-				if (rosterStorage == null) {
-					this.roster = new Roster(this);
-				} else {
-					this.roster = new Roster(this, rosterStorage);
-				}
-        	}
+        if (config.isRosterLoadedAtLogin()) {
+            // Create the roster if it is not a reconnection or roster already
+            // created by getRoster()
+            if (this.roster == null) {
+                if (rosterStorage == null) {
+                    this.roster = new Roster(this);
+                } else {
+                    this.roster = new Roster(this, rosterStorage);
+                }
+            }
             this.roster.reload();
         }
 
@@ -291,8 +288,7 @@ public class XMPPConnection extends Connection {
         if (config.isSASLAuthenticationEnabled() &&
                 saslAuthentication.hasAnonymousAuthentication()) {
             response = saslAuthentication.authenticateAnonymously();
-        }
-        else {
+        } else {
             // Authenticate using Non-SASL
             response = new NonSASLAuthentication(this).authenticateAnonymously();
         }
@@ -325,7 +321,7 @@ public class XMPPConnection extends Connection {
 
     public Roster getRoster() {
         // synchronize against login()
-        synchronized(this) {
+        synchronized (this) {
             // if connection is authenticated the roster is already set by login() 
             // or a previous call to getRoster()
             if (!isAuthenticated() || isAnonymous()) {
@@ -337,9 +333,9 @@ public class XMPPConnection extends Connection {
         }
 
         if (!config.isRosterLoadedAtLogin()) {
-			if (roster == null) {
-				roster = new Roster(this);
-			}
+            if (roster == null) {
+                roster = new Roster(this);
+            }
             roster.reload();
         }
         // If this is the first time the user has asked for the roster after calling
@@ -364,8 +360,7 @@ public class XMPPConnection extends Connection {
                         start = now;
                     }
                 }
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 // Ignore.
             }
         }
@@ -376,7 +371,7 @@ public class XMPPConnection extends Connection {
      * Returns roster immediately without waiting for initialization.
      *
      * @return the user's roster, or <tt>null</tt> if the user has not logged in
-     *      or has not received roster yet.
+     * or has not received roster yet.
      */
     public Roster getRosterImmediately() {
         return roster;
@@ -387,7 +382,6 @@ public class XMPPConnection extends Connection {
     }
 
     /**
-     *
      * Returns true if the connection to the server is using legacy SSL or has successfully
      * negotiated TLS. Once TLS has been negotiatied the connection has been secured. @see #isUsingTLS. @see #isUsingSSL.
      *
@@ -417,27 +411,26 @@ public class XMPPConnection extends Connection {
     protected void shutdown(Presence unavailablePresence) {
         // Set presence to offline.
         PacketWriter packetWriter = this.packetWriter;
-    	if (packetWriter!=null){
-    		packetWriter.sendPacket(unavailablePresence);
-    	}
+        if (packetWriter != null) {
+            packetWriter.sendPacket(unavailablePresence);
+        }
 
         this.setWasAuthenticated(authenticated);
         authenticated = false;
         connected = false;
-        
+
         PacketReader packetReader = this.packetReader;
-        if (packetReader!=null){
-        	packetReader.shutdown();
+        if (packetReader != null) {
+            packetReader.shutdown();
         }
         packetWriter = this.packetWriter;
-        if (packetWriter!=null){
-        	packetWriter.shutdown();
+        if (packetWriter != null) {
+            packetWriter.shutdown();
         }
         // Wait 150 ms for processes to clean-up, then shutdown.
         try {
             Thread.sleep(150);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Ignore.
         }
 
@@ -446,23 +439,20 @@ public class XMPPConnection extends Connection {
         if (reader != null) {
             try {
                 reader.close();
-            }
-            catch (Throwable ignore) { /* ignore */ }
+            } catch (Throwable ignore) { /* ignore */ }
             this.reader = null;
         }
         Writer writer = this.writer;
         if (writer != null) {
             try {
                 writer.close();
-            }
-            catch (Throwable ignore) { /* ignore */ }
+            } catch (Throwable ignore) { /* ignore */ }
             this.writer = null;
         }
 
         try {
             socket.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Ignore.
         }
 
@@ -514,7 +504,7 @@ public class XMPPConnection extends Connection {
      * @deprecated replaced by {@link Connection#addPacketInterceptor(PacketInterceptor, PacketFilter)}.
      */
     public void addPacketWriterInterceptor(PacketInterceptor packetInterceptor,
-            PacketFilter packetFilter) {
+                                           PacketFilter packetFilter) {
         addPacketInterceptor(packetInterceptor, packetFilter);
     }
 
@@ -560,8 +550,7 @@ public class XMPPConnection extends Connection {
         try {
             if (config.getSocketFactory() == null) {
                 this.socket = new Socket(host, port);
-            }
-            else {
+            } else {
                 this.socket = config.getSocketFactory().createSocket(host, port);
             }
             if (ConnectionConfiguration.SecurityMode.legacy == config.getSecurityMode()) {
@@ -575,14 +564,12 @@ public class XMPPConnection extends Connection {
                 }
                 usingSSL = true;
             }
-        }
-        catch (UnknownHostException uhe) {
+        } catch (UnknownHostException uhe) {
             String errorMessage = "Could not connect to " + host + ":" + port + ".";
             throw new XMPPException(errorMessage, new XMPPError(
                     XMPPError.Condition.remote_server_timeout, errorMessage),
                     uhe);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             String errorMessage = "XMPPError connecting to " + host + ":"
                     + port + ".";
             throw new XMPPException(errorMessage, new XMPPError(
@@ -619,8 +606,7 @@ public class XMPPConnection extends Connection {
                         addPacketSendingListener(debugger.getWriterListener(), null);
                     }
                 }
-            }
-            else {
+            } else {
                 packetWriter.init();
                 packetReader.init();
             }
@@ -643,49 +629,42 @@ public class XMPPConnection extends Connection {
                 for (ConnectionCreationListener listener : getConnectionCreationListeners()) {
                     listener.connectionCreated(this);
                 }
-            }
-            else if (!wasAuthenticated) {
+            } else if (!wasAuthenticated) {
                 packetReader.notifyReconnection();
             }
 
-        }
-        catch (XMPPException ex) {
+        } catch (XMPPException ex) {
             // An exception occurred in setting up the connection. Make sure we shut down the
             // readers and writers and close the socket.
 
             if (packetWriter != null) {
                 try {
                     packetWriter.shutdown();
-                }
-                catch (Throwable ignore) { /* ignore */ }
+                } catch (Throwable ignore) { /* ignore */ }
                 this.packetWriter = null;
             }
             if (packetReader != null) {
                 try {
                     packetReader.shutdown();
-                }
-                catch (Throwable ignore) { /* ignore */ }
+                } catch (Throwable ignore) { /* ignore */ }
                 this.packetReader = null;
             }
             if (reader != null) {
                 try {
                     reader.close();
-                }
-                catch (Throwable ignore) { /* ignore */ }
+                } catch (Throwable ignore) { /* ignore */ }
                 reader = null;
             }
             if (writer != null) {
                 try {
                     writer.close();
-                }
-                catch (Throwable ignore) {  /* ignore */}
+                } catch (Throwable ignore) {  /* ignore */}
                 writer = null;
             }
             if (socket != null) {
                 try {
                     socket.close();
-                }
-                catch (Exception e) { /* ignore */ }
+                } catch (Exception e) { /* ignore */ }
                 socket = null;
             }
             this.setWasAuthenticated(authenticated);
@@ -704,8 +683,7 @@ public class XMPPConnection extends Connection {
                         new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
                 writer = new BufferedWriter(
                         new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
-            }
-            else {
+            } else {
                 try {
                     Class<?> zoClass = Class.forName("com.jcraft.jzlib.ZOutputStream");
                     Constructor<?> constructor =
@@ -722,8 +700,7 @@ public class XMPPConnection extends Connection {
                     method = ziClass.getMethod("setFlushMode", Integer.TYPE);
                     method.invoke(in, 2);
                     reader = new BufferedReader(new InputStreamReader((InputStream) in, "UTF-8"));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     reader = new BufferedReader(
                             new InputStreamReader(socket.getInputStream(), "UTF-8"));
@@ -731,8 +708,7 @@ public class XMPPConnection extends Connection {
                             new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
                 }
             }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             throw new XMPPException(
                     "XMPPError establishing connection with server.",
                     new XMPPError(XMPPError.Condition.remote_server_error,
@@ -743,7 +719,7 @@ public class XMPPConnection extends Connection {
         // If debugging is enabled, we open a window and write out all network traffic.
         initDebugger();
 
-		reader = new AliveReader(reader);
+        reader = new AliveReader(reader);
     }
 
     /***********************************************
@@ -790,7 +766,7 @@ public class XMPPConnection extends Connection {
         }
 
         if ((config.getSecurityMode() == ConnectionConfiguration.SecurityMode.disabled) ||
-            (config.getSecurityMode() == ConnectionConfiguration.SecurityMode.legacy)) {
+                (config.getSecurityMode() == ConnectionConfiguration.SecurityMode.legacy)) {
             // Do not secure the connection using TLS since TLS was disabled or we are using SSL.
             return;
         }
@@ -798,8 +774,7 @@ public class XMPPConnection extends Connection {
         try {
             writer.write("<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"/>");
             writer.flush();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             packetReader.notifyConnectionError(e);
         }
     }
@@ -810,55 +785,50 @@ public class XMPPConnection extends Connection {
         KeyManager[] kms = null;
         PasswordCallback pcb = null;
 
-        if(config.getCallbackHandler() == null) {
-           ks = null;
+        if (config.getCallbackHandler() == null) {
+            ks = null;
         } else if (context == null) {
             //System.out.println("Keystore type: "+configuration.getKeystoreType());
-            if(config.getKeystoreType().equals("NONE")) {
+            if (config.getKeystoreType().equals("NONE")) {
                 ks = null;
                 pcb = null;
-            }
-            else if(config.getKeystoreType().equals("PKCS11")) {
+            } else if (config.getKeystoreType().equals("PKCS11")) {
                 try {
                     Constructor c = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(InputStream.class);
-                    String pkcs11Config = "name = SmartCard\nlibrary = "+config.getPKCS11Library();
+                    String pkcs11Config = "name = SmartCard\nlibrary = " + config.getPKCS11Library();
                     ByteArrayInputStream config = new ByteArrayInputStream(pkcs11Config.getBytes());
-                    Provider p = (Provider)c.newInstance(config);
+                    Provider p = (Provider) c.newInstance(config);
                     Security.addProvider(p);
-                    ks = KeyStore.getInstance("PKCS11",p);
-                    pcb = new PasswordCallback("PKCS11 Password: ",false);
+                    ks = KeyStore.getInstance("PKCS11", p);
+                    pcb = new PasswordCallback("PKCS11 Password: ", false);
                     this.config.getCallbackHandler().handle(new Callback[]{pcb});
-                    ks.load(null,pcb.getPassword());
-                }
-                catch (Exception e) {
+                    ks.load(null, pcb.getPassword());
+                } catch (Exception e) {
                     ks = null;
                     pcb = null;
                 }
-            }
-            else if(config.getKeystoreType().equals("Apple")) {
-                ks = KeyStore.getInstance("KeychainStore","Apple");
-                ks.load(null,null);
+            } else if (config.getKeystoreType().equals("Apple")) {
+                ks = KeyStore.getInstance("KeychainStore", "Apple");
+                ks.load(null, null);
                 //pcb = new PasswordCallback("Apple Keychain",false);
                 //pcb.setPassword(null);
-            }
-            else {
+            } else {
                 ks = KeyStore.getInstance(config.getKeystoreType());
                 try {
-                    pcb = new PasswordCallback("Keystore Password: ",false);
+                    pcb = new PasswordCallback("Keystore Password: ", false);
                     config.getCallbackHandler().handle(new Callback[]{pcb});
                     ks.load(new FileInputStream(config.getKeystorePath()), pcb.getPassword());
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     ks = null;
                     pcb = null;
                 }
             }
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             try {
-                if(pcb == null) {
-                    kmf.init(ks,null);
+                if (pcb == null) {
+                    kmf.init(ks, null);
                 } else {
-                    kmf.init(ks,pcb.getPassword());
+                    kmf.init(ks, pcb.getPassword());
                     pcb.clearPassword();
                 }
                 kms = kmf.getKeyManagers();
@@ -868,25 +838,25 @@ public class XMPPConnection extends Connection {
         }
 
         // Verify certificate presented by the server
-	if (context == null) {
-		context = SSLContext.getInstance("TLS");
-		boolean chainCheck = config.isVerifyChainEnabled();
-		boolean domainCheck = config.isNotMatchingDomainCheckEnabled();
-		boolean allowSelfSigned = config.isSelfSignedCertificateEnabled();
-		if (config.isExpiredCertificatesCheckEnabled() != chainCheck
-				|| config.isVerifyRootCAEnabled() != chainCheck)
-			throw new IllegalStateException();
-		context.init(kms, new TrustManager[] { new XMPPTrustManager(
-				KeyStoreManager.getOrCreateKeyStore(config),
-				getServiceName(), config.getCertificateListener(),
-				chainCheck,domainCheck, allowSelfSigned) }, SECURE_RANDOM);
-	}
+        if (context == null) {
+            context = SSLContext.getInstance("TLS");
+            boolean chainCheck = config.isVerifyChainEnabled();
+            boolean domainCheck = config.isNotMatchingDomainCheckEnabled();
+            boolean allowSelfSigned = config.isSelfSignedCertificateEnabled();
+            if (config.isExpiredCertificatesCheckEnabled() != chainCheck
+                    || config.isVerifyRootCAEnabled() != chainCheck)
+                throw new IllegalStateException();
+            context.init(kms, new TrustManager[]{new XMPPTrustManager(
+                    KeyStoreManager.getOrCreateKeyStore(config),
+                    getServiceName(), config.getCertificateListener(),
+                    chainCheck, domainCheck, allowSelfSigned)}, SECURE_RANDOM);
+        }
         Socket plain = socket;
         // Secure the plain connection
         socket = context.getSocketFactory().createSocket(plain,
                 plain.getInetAddress().getHostAddress(), plain.getPort(), true);
-		// socket.setSoTimeout(0);
-		// socket.setKeepAlive(true);
+        // socket.setSoTimeout(0);
+        // socket.setKeepAlive(true);
     }
 
     /**
@@ -910,7 +880,7 @@ public class XMPPConnection extends Connection {
         //}
         //else {
         //    System.err.println("Connection does not require client auth");
-       // }
+        // }
         // Set that TLS was successful
         usingTLS = true;
 
@@ -965,8 +935,7 @@ public class XMPPConnection extends Connection {
         }
         try {
             Class.forName("com.jcraft.jzlib.ZOutputStream");
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new IllegalStateException("Cannot use compression. Add smackx.jar to the classpath");
         }
         if (hasAvailableCompressionMethod("zlib")) {
@@ -975,8 +944,7 @@ public class XMPPConnection extends Connection {
             synchronized (this) {
                 try {
                     this.wait(SmackConfiguration.getPacketReplyTimeout());
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     // Ignore.
                 }
             }
@@ -995,8 +963,7 @@ public class XMPPConnection extends Connection {
             writer.write("<compress xmlns='http://jabber.org/protocol/compress'>");
             writer.write("<method>zlib</method></compress>");
             writer.flush();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             packetReader.notifyConnectionError(e);
         }
     }
@@ -1041,10 +1008,10 @@ public class XMPPConnection extends Connection {
      * occurs after an abrupt termination.
      *
      * @throws XMPPException if an error occurs while trying to establish the connection.
-     *      Two possible errors can occur which will be wrapped by an XMPPException --
-     *      UnknownHostException (XMPP error code 504), and IOException (XMPP error code
-     *      502). The error codes and wrapped exceptions can be used to present more
-     *      appropiate error messages to end-users.
+     *                       Two possible errors can occur which will be wrapped by an XMPPException --
+     *                       UnknownHostException (XMPP error code 504), and IOException (XMPP error code
+     *                       502). The error codes and wrapped exceptions can be used to present more
+     *                       appropiate error messages to end-users.
      */
     public void connect() throws XMPPException {
         // Stablishes the connection, readers and writers
@@ -1057,14 +1024,12 @@ public class XMPPConnection extends Connection {
                 if (isAnonymous()) {
                     // Make the anonymous login
                     loginAnonymously();
-                }
-                else {
+                } else {
                     login(config.getUsername(), config.getPassword(),
                             config.getResource());
                 }
                 packetReader.notifyReconnection();
-            }
-            catch (XMPPException e) {
+            } catch (XMPPException e) {
                 e.printStackTrace();
             }
         }
@@ -1081,83 +1046,82 @@ public class XMPPConnection extends Connection {
         }
     }
 
-	@Override
-	public void setRosterStorage(RosterStorage storage)
-			throws IllegalStateException {
-		if(roster!=null){
-			throw new IllegalStateException("Roster is already initialized");
-		}
-		this.rosterStorage = storage;
-	}
+    @Override
+    public void setRosterStorage(RosterStorage storage)
+            throws IllegalStateException {
+        if (roster != null) {
+            throw new IllegalStateException("Roster is already initialized");
+        }
+        this.rosterStorage = storage;
+    }
 
-	/**
-	 * Returns whether connection with server is alive.
-	 * 
-	 * @return <code>false</code> if timeout occur.
-	 */
-	public boolean isAlive() {
-		PacketWriter packetWriter = this.packetWriter;
-		return packetWriter == null || packetWriter.isAlive();
-	}
+    /**
+     * Returns whether connection with server is alive.
+     *
+     * @return <code>false</code> if timeout occur.
+     */
+    public boolean isAlive() {
+        PacketWriter packetWriter = this.packetWriter;
+        return packetWriter == null || packetWriter.isAlive();
+    }
 
-	/**
-	 * Wrapper for server keep alive.
-	 * 
-	 * @author alexander.ivanov
-	 * 
-	 */
-	private class AliveReader extends Reader {
-		final Reader wrappedReader;
+    /**
+     * Wrapper for server keep alive.
+     *
+     * @author alexander.ivanov
+     */
+    private class AliveReader extends Reader {
+        final Reader wrappedReader;
 
-		public AliveReader(Reader wrappedReader) {
-			this.wrappedReader = wrappedReader;
-		}
+        public AliveReader(Reader wrappedReader) {
+            this.wrappedReader = wrappedReader;
+        }
 
-		private void onRead() {
-			packetWriter.responseReceived();
-		}
+        private void onRead() {
+            packetWriter.responseReceived();
+        }
 
-		@Override
-		public int read(char[] buf, int offset, int count) throws IOException {
-			final int result = wrappedReader.read(buf, offset, count);
-			onRead();
-			return result;
-		}
+        @Override
+        public int read(char[] buf, int offset, int count) throws IOException {
+            final int result = wrappedReader.read(buf, offset, count);
+            onRead();
+            return result;
+        }
 
-		public void close() throws IOException {
-			wrappedReader.close();
-		}
+        public void close() throws IOException {
+            wrappedReader.close();
+        }
 
-		public int read() throws IOException {
-			final int result = wrappedReader.read();
-			onRead();
-			return result;
-		}
+        public int read() throws IOException {
+            final int result = wrappedReader.read();
+            onRead();
+            return result;
+        }
 
-		public int read(char buf[]) throws IOException {
-			final int result = wrappedReader.read(buf);
-			onRead();
-			return result;
-		}
+        public int read(char buf[]) throws IOException {
+            final int result = wrappedReader.read(buf);
+            onRead();
+            return result;
+        }
 
-		public long skip(long n) throws IOException {
-			return wrappedReader.skip(n);
-		}
+        public long skip(long n) throws IOException {
+            return wrappedReader.skip(n);
+        }
 
-		public boolean ready() throws IOException {
-			return wrappedReader.ready();
-		}
+        public boolean ready() throws IOException {
+            return wrappedReader.ready();
+        }
 
-		public boolean markSupported() {
-			return wrappedReader.markSupported();
-		}
+        public boolean markSupported() {
+            return wrappedReader.markSupported();
+        }
 
-		public void mark(int readAheadLimit) throws IOException {
-			wrappedReader.mark(readAheadLimit);
-		}
+        public void mark(int readAheadLimit) throws IOException {
+            wrappedReader.mark(readAheadLimit);
+        }
 
-		public void reset() throws IOException {
-			wrappedReader.reset();
-		}
-	}
+        public void reset() throws IOException {
+            wrappedReader.reset();
+        }
+    }
 }

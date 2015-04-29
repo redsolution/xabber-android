@@ -48,7 +48,7 @@ public class XHTMLExtensionProvider implements PacketExtensionProvider {
      * @throws Exception if a parsing error occurs.
      */
     public PacketExtension parseExtension(XmlPullParser parser)
-        throws Exception {
+            throws Exception {
         XHTMLExtension xhtmlExtension = new XHTMLExtension();
         boolean done = false;
         StringBuilder buffer = new StringBuilder();
@@ -73,15 +73,13 @@ public class XHTMLExtensionProvider implements PacketExtensionProvider {
                 if (parser.getName().equals("body") && parser.getDepth() <= depth) {
                     buffer.append(parser.getText());
                     xhtmlExtension.addBody(buffer.toString());
-                }
-                else if (parser.getName().equals(xhtmlExtension.getElementName())
+                } else if (parser.getName().equals(xhtmlExtension.getElementName())
                         && parser.getDepth() <= startDepth) {
                     done = true;
-                }
-                else {
+                } else {
                     // This is a check for tags that are both a start and end tag like <br/>
                     // So that they aren't doubled
-                    if(lastTag == null || !lastTag.equals(parser.getText())) {
+                    if (lastTag == null || !lastTag.equals(parser.getText())) {
                         buffer.append(parser.getText());
                     }
                 }

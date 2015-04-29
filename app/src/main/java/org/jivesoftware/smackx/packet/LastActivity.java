@@ -49,12 +49,12 @@ public class LastActivity extends IQ {
 
     public String getChildElementXML() {
         StringBuilder buf = new StringBuilder();
-		buf.append("<query xmlns=\"jabber:iq:last\"");
-		if (lastActivity != -1) {
-			buf.append(" seconds=\"").append(lastActivity).append("\"");
+        buf.append("<query xmlns=\"jabber:iq:last\"");
+        if (lastActivity != -1) {
+            buf.append(" seconds=\"").append(lastActivity).append("\"");
 
-		}
-		buf.append("></query>");
+        }
+        buf.append("></query>");
         return buf.toString();
     }
 
@@ -111,14 +111,13 @@ public class LastActivity extends IQ {
                 String message = parser.nextText();
                 if (seconds != null) {
                     long xmlSeconds = new Double(seconds).longValue();
-                    lastActivity.setLastActivity((int)xmlSeconds);
+                    lastActivity.setLastActivity((int) xmlSeconds);
                 }
 
                 if (message != null) {
                     lastActivity.setMessage(message);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return lastActivity;
@@ -127,11 +126,12 @@ public class LastActivity extends IQ {
 
     /**
      * Retrieve the last activity of a particular jid.
+     *
      * @param con the current Connection.
      * @param jid the JID of the user.
      * @return the LastActivity packet of the jid.
      * @throws XMPPException thrown if a server error has occured.
-     * @deprecated This method only retreives the lapsed time since the last logout of a particular jid. 
+     * @deprecated This method only retreives the lapsed time since the last logout of a particular jid.
      * Replaced by {@link  org.jivesoftware.smackx.LastActivityManager#getLastActivity(Connection, String)  getLastActivity}
      */
     public static LastActivity getLastActivity(Connection con, String jid) throws XMPPException {

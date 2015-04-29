@@ -1,38 +1,28 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * 
+ *
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- * 
+ *
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
-import android.app.ListActivity;
+import android.app.Activity;
 import android.os.Handler;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -42,477 +32,445 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Adapter for contact list in the main activity.
- * 
+ *
  * @author alexander.ivanov
- * 
  */
-public class ContactListAdapter extends
-		GroupedContactAdapter<ChatContactInflater, GroupManager> implements
-		Runnable {
+public class ContactListAdapter extends GroupedContactAdapter implements Runnable, Filterable {
 
-	/**
-	 * Number of milliseconds between lazy refreshes.
-	 */
-	private static final long REFRESH_INTERVAL = 1000;
+    /**
+     * Number of milliseconds between lazy refreshes.
+     */
+    private static final long REFRESH_INTERVAL = 1000;
 
-	/**
-	 * View with information shown on empty contact list.
-	 */
-	private final View infoView;
+    /**
+     * Handler for deferred refresh.
+     */
+    private final Handler handler;
 
-	/**
-	 * Image view with connected icon.
-	 */
-	private View connectedView;
+    /**
+     * Lock for refresh requests.
+     */
+    private final Object refreshLock;
 
-	/**
-	 * Image view with disconnected icon.
-	 */
-	private View disconnectedView;
+    /**
+     * Whether refresh was requested.
+     */
+    private boolean refreshRequested;
 
-	/**
-	 * View with help text.
-	 */
-	private TextView textView;
+    /**
+     * Whether refresh is in progress.
+     */
+    private boolean refreshInProgress;
 
-	/**
-	 * Button to apply help text.
-	 */
-	private Button buttonView;
+    /**
+     * Minimal time when next refresh can be executed.
+     */
+    private Date nextRefresh;
 
-	/**
-	 * Animation for disconnected view.
-	 */
-	private Animation animation;
+    /**
+     * Contact filter.
+     */
+    ContactFilter contactFilter;
 
-	/**
-	 * Handler for deferred refresh.
-	 */
-	private final Handler handler;
+    /**
+     * Filter string. Can be <code>null</code> if filter is disabled.
+     */
+    String filterString;
 
-	/**
-	 * Lock for refresh requests.
-	 */
-	private final Object refreshLock;
+    private final OnContactListChangedListener listener;
+    private boolean hasActiveChats = false;
 
-	/**
-	 * Whether refresh was requested.
-	 */
-	private boolean refreshRequested;
+    public ContactListAdapter(Activity activity, OnContactListChangedListener listener,
+                              OnClickListener onClickListener) {
+        super(activity, onClickListener);
+        this.listener = listener;
+        handler = new Handler();
+        refreshLock = new Object();
+        refreshRequested = false;
+        refreshInProgress = false;
+        nextRefresh = new Date();
+    }
 
-	/**
-	 * Whether refresh is in progress.
-	 */
-	private boolean refreshInProgess;
+    /**
+     * Requests refresh in some time in future.
+     */
+    public void refreshRequest() {
+        synchronized (refreshLock) {
+            if (refreshRequested) {
+                return;
+            }
+            if (refreshInProgress) {
+                refreshRequested = true;
+            } else {
+                long delay = nextRefresh.getTime() - new Date().getTime();
+                handler.postDelayed(this, delay > 0 ? delay : 0);
+            }
+        }
+    }
 
-	/**
-	 * Minimal time when next refresh can be executed.
-	 */
-	private Date nextRefresh;
+    /**
+     * Remove refresh requests.
+     */
+    public void removeRefreshRequests() {
+        synchronized (refreshLock) {
+            refreshRequested = false;
+            refreshInProgress = false;
+            handler.removeCallbacks(this);
+        }
+    }
 
-	public ContactListAdapter(ListActivity activity) {
-		super(activity, activity.getListView(), new ChatContactInflater(
-				activity), GroupManager.getInstance());
-		infoView = activity.findViewById(R.id.info);
-		if (infoView != null) {
-			connectedView = infoView.findViewById(R.id.connected);
-			disconnectedView = infoView.findViewById(R.id.disconnected);
-			textView = (TextView) infoView.findViewById(R.id.text);
-			buttonView = (Button) infoView.findViewById(R.id.button);
-			animation = AnimationUtils.loadAnimation(activity,
-					R.anim.connection);
-		} else {
-			connectedView = null;
-			disconnectedView = null;
-			textView = null;
-			buttonView = null;
-			animation = null;
-		}
-		handler = new Handler();
-		refreshLock = new Object();
-		refreshRequested = false;
-		refreshInProgess = false;
-		nextRefresh = new Date();
-	}
+    @Override
+    public void onChange() {
+        synchronized (refreshLock) {
+            refreshRequested = false;
+            refreshInProgress = true;
+            handler.removeCallbacks(this);
+        }
 
-	/**
-	 * Requests refresh in some time in future.
-	 */
-	public void refreshRequest() {
-		synchronized (refreshLock) {
-			if (refreshRequested)
-				return;
-			if (refreshInProgess)
-				refreshRequested = true;
-			else {
-				long delay = nextRefresh.getTime() - new Date().getTime();
-				handler.postDelayed(this, delay > 0 ? delay : 0);
-			}
-		}
-	}
+        final Collection<RosterContact> rosterContacts = RosterManager.getInstance().getContacts();
+        final boolean showOffline = SettingsManager.contactsShowOffline();
+        final boolean showGroups = SettingsManager.contactsShowGroups();
+        final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();
+        final boolean showActiveChats = SettingsManager.contactsShowActiveChats();
+        final boolean stayActiveChats = SettingsManager.contactsStayActiveChats();
+        final boolean showAccounts = SettingsManager.contactsShowAccounts();
+        final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
+        final CommonState commonState = AccountManager.getInstance().getCommonState();
+        final String selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
-	/**
-	 * Remove refresh requests.
-	 */
-	public void removeRefreshRequests() {
-		synchronized (refreshLock) {
-			refreshRequested = false;
-			refreshInProgess = false;
-			handler.removeCallbacks(this);
-		}
-	}
 
-	@Override
-	public void onChange() {
-		synchronized (refreshLock) {
-			refreshRequested = false;
-			refreshInProgess = true;
-			handler.removeCallbacks(this);
-		}
+        /**
+         * Groups.
+         */
+        final Map<String, GroupConfiguration> groups;
 
-		final Collection<RosterContact> rosterContacts = RosterManager
-				.getInstance().getContacts();
-		final boolean showOffline = SettingsManager.contactsShowOffline();
-		final boolean showGroups = SettingsManager.contactsShowGroups();
-		final boolean showEmptyGroups = SettingsManager
-				.contactsShowEmptyGroups();
-		final boolean showActiveChats = SettingsManager
-				.contactsShowActiveChats();
-		final boolean stayActiveChats = SettingsManager
-				.contactsStayActiveChats();
-		final boolean showAccounts = SettingsManager.contactsShowAccounts();
-		final Comparator<AbstractContact> comparator = SettingsManager
-				.contactsOrder();
-		final CommonState commonState = AccountManager.getInstance()
-				.getCommonState();
-		final String selectedAccount = AccountManager.getInstance()
-				.getSelectedAccount();
+        /**
+         * Contacts.
+         */
+        final List<AbstractContact> contacts;
 
-		/**
-		 * Accounts.
-		 */
-		final TreeMap<String, AccountConfiguration> accounts = new TreeMap<String, AccountConfiguration>();
+        /**
+         * List of active chats.
+         */
+        final GroupConfiguration activeChats;
 
-		/**
-		 * Groups.
-		 */
-		final TreeMap<String, GroupConfiguration> groups;
+        /**
+         * Whether there is at least one contact.
+         */
+        boolean hasContacts = false;
 
-		/**
-		 * Contacts.
-		 */
-		final ArrayList<AbstractContact> contacts;
+        /**
+         * Whether there is at least one visible contact.
+         */
+        boolean hasVisibleContacts = false;
 
-		/**
-		 * List of active chats.
-		 */
-		final GroupConfiguration activeChats;
+        final Map<String, AccountConfiguration> accounts = new TreeMap<>();
 
-		/**
-		 * List of rooms and active chats grouped by users inside accounts.
-		 */
-		final TreeMap<String, TreeMap<String, AbstractChat>> abstractChats = new TreeMap<String, TreeMap<String, AbstractChat>>();
+        for (String account : AccountManager.getInstance().getAccounts()) {
+            accounts.put(account, null);
+        }
 
-		/**
-		 * Whether there is at least one contact.
-		 */
-		boolean hasContact = false;
+        /**
+         * List of rooms and active chats grouped by users inside accounts.
+         */
+        final Map<String, Map<String, AbstractChat>> abstractChats = new TreeMap<>();
 
-		/**
-		 * Whether there is at least one visible contact.
-		 */
-		boolean hasVisible = false;
+        for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
+            if ((abstractChat instanceof RoomChat || abstractChat.isActive())
+                    && accounts.containsKey(abstractChat.getAccount())) {
+                final String account = abstractChat.getAccount();
+                Map<String, AbstractChat> users = abstractChats.get(account);
+                if (users == null) {
+                    users = new TreeMap<>();
+                    abstractChats.put(account, users);
+                }
+                users.put(abstractChat.getUser(), abstractChat);
+            }
+        }
 
-		for (String account : AccountManager.getInstance().getAccounts())
-			accounts.put(account, null);
+        if (filterString == null) {
+            // Create arrays.
+            if (showAccounts) {
+                groups = null;
+                contacts = null;
+                for (Entry<String, AccountConfiguration> entry : accounts.entrySet()) {
+                    entry.setValue(new AccountConfiguration(entry.getKey(),
+                            GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
+                }
+            } else {
+                if (showGroups) {
+                    groups = new TreeMap<>();
+                    contacts = null;
+                } else {
+                    groups = null;
+                    contacts = new ArrayList<>();
+                }
+            }
+            if (showActiveChats) {
+                activeChats = new GroupConfiguration(GroupManager.NO_ACCOUNT,
+                        GroupManager.ACTIVE_CHATS, GroupManager.getInstance());
+            } else {
+                activeChats = null;
+            }
 
-		for (AbstractChat abstractChat : MessageManager.getInstance()
-				.getChats()) {
-			if ((abstractChat instanceof RoomChat || abstractChat.isActive())
-					&& accounts.containsKey(abstractChat.getAccount())) {
-				final String account = abstractChat.getAccount();
-				TreeMap<String, AbstractChat> users = abstractChats
-						.get(account);
-				if (users == null) {
-					users = new TreeMap<String, AbstractChat>();
-					abstractChats.put(account, users);
-				}
-				users.put(abstractChat.getUser(), abstractChat);
-			}
-		}
+            // Build structure.
+            for (RosterContact rosterContact : rosterContacts) {
+                if (!rosterContact.isEnabled()) {
+                    continue;
+                }
+                hasContacts = true;
+                final boolean online = rosterContact.getStatusMode().isOnline();
+                final String account = rosterContact.getAccount();
+                final Map<String, AbstractChat> users = abstractChats.get(account);
+                final AbstractChat abstractChat;
+                if (users == null) {
+                    abstractChat = null;
+                } else {
+                    abstractChat = users.remove(rosterContact.getUser());
+                }
+                if (showActiveChats && abstractChat != null && abstractChat.isActive()) {
+                    activeChats.setNotEmpty();
+                    hasVisibleContacts = true;
+                    if (activeChats.isExpanded()) {
+                        activeChats.addAbstractContact(rosterContact);
+                    }
+                    activeChats.increment(online);
+                    if (!stayActiveChats || (!showAccounts && !showGroups)) {
+                        continue;
+                    }
+                }
+                if (selectedAccount != null && !selectedAccount.equals(account)) {
+                    continue;
+                }
+                if (addContact(rosterContact, online, accounts, groups,
+                        contacts, showAccounts, showGroups, showOffline)) {
+                    hasVisibleContacts = true;
+                }
+            }
+            for (Map<String, AbstractChat> users : abstractChats.values()) {
+                for (AbstractChat abstractChat : users.values()) {
+                    final AbstractContact abstractContact;
+                    if (abstractChat instanceof RoomChat) {
+                        abstractContact = new RoomContact((RoomChat) abstractChat);
+                    } else {
+                        abstractContact = new ChatContact(abstractChat);
+                    }
+                    if (showActiveChats && abstractChat.isActive()) {
+                        activeChats.setNotEmpty();
+                        hasVisibleContacts = true;
+                        if (activeChats.isExpanded()) {
+                            activeChats.addAbstractContact(abstractContact);
+                        }
+                        activeChats.increment(false);
+                        if (!stayActiveChats || (!showAccounts && !showGroups)) {
+                            continue;
+                        }
+                    }
+                    if (selectedAccount != null && !selectedAccount.equals(abstractChat.getAccount())) {
+                        continue;
+                    }
+                    final String group;
+                    final boolean online;
+                    if (abstractChat instanceof RoomChat) {
+                        group = GroupManager.IS_ROOM;
+                        online = abstractContact.getStatusMode().isOnline();
+                    } else {
+                        group = GroupManager.NO_GROUP;
+                        online = false;
+                    }
+                    hasVisibleContacts = true;
+                    addContact(abstractContact, group, online, accounts, groups, contacts,
+                            showAccounts, showGroups);
+                }
+            }
 
-		if (filterString == null) {
-			// Create arrays.
-			if (showAccounts) {
-				groups = null;
-				contacts = null;
-				for (Entry<String, AccountConfiguration> entry : accounts
-						.entrySet()) {
-					entry.setValue(new AccountConfiguration(entry.getKey(),
-							GroupManager.IS_ACCOUNT, groupStateProvider));
-				}
-			} else {
-				if (showGroups) {
-					groups = new TreeMap<String, GroupConfiguration>();
-					contacts = null;
-				} else {
-					groups = null;
-					contacts = new ArrayList<AbstractContact>();
-				}
-			}
-			if (showActiveChats)
-				activeChats = new GroupConfiguration(GroupManager.NO_ACCOUNT,
-						GroupManager.ACTIVE_CHATS, groupStateProvider);
-			else
-				activeChats = null;
+            hasActiveChats = activeChats != null && activeChats.getTotal() > 0;
 
-			// Build structure.
-			for (RosterContact rosterContact : rosterContacts) {
-				if (!rosterContact.isEnabled())
-					continue;
-				hasContact = true;
-				final boolean online = rosterContact.getStatusMode().isOnline();
-				final String account = rosterContact.getAccount();
-				final TreeMap<String, AbstractChat> users = abstractChats
-						.get(account);
-				final AbstractChat abstractChat;
-				if (users == null)
-					abstractChat = null;
-				else
-					abstractChat = users.remove(rosterContact.getUser());
-				if (showActiveChats && abstractChat != null
-						&& abstractChat.isActive()) {
-					activeChats.setNotEmpty();
-					hasVisible = true;
-					if (activeChats.isExpanded())
-						activeChats.addAbstractContact(rosterContact);
-					activeChats.increment(online);
-					if (!stayActiveChats || (!showAccounts && !showGroups))
-						continue;
-				}
-				if (selectedAccount != null && !selectedAccount.equals(account))
-					continue;
-				if (addContact(rosterContact, online, accounts, groups,
-						contacts, showAccounts, showGroups, showOffline))
-					hasVisible = true;
-			}
-			for (TreeMap<String, AbstractChat> users : abstractChats.values())
-				for (AbstractChat abstractChat : users.values()) {
-					final AbstractContact abstractContact;
-					if (abstractChat instanceof RoomChat)
-						abstractContact = new RoomContact(
-								(RoomChat) abstractChat);
-					else
-						abstractContact = new ChatContact(abstractChat);
-					if (showActiveChats && abstractChat.isActive()) {
-						activeChats.setNotEmpty();
-						hasVisible = true;
-						if (activeChats.isExpanded())
-							activeChats.addAbstractContact(abstractContact);
-						activeChats.increment(false);
-						if (!stayActiveChats || (!showAccounts && !showGroups))
-							continue;
-					}
-					if (selectedAccount != null
-							&& !selectedAccount.equals(abstractChat
-									.getAccount()))
-						continue;
-					final String group;
-					final boolean online;
-					if (abstractChat instanceof RoomChat) {
-						group = GroupManager.IS_ROOM;
-						online = abstractContact.getStatusMode().isOnline();
-					} else {
-						group = GroupManager.NO_GROUP;
-						online = false;
-					}
-					hasVisible = true;
-					addContact(abstractContact, group, online, accounts,
-							groups, contacts, showAccounts, showGroups);
-				}
+            // Remove empty groups, sort and apply structure.
+            baseEntities.clear();
+            if (hasVisibleContacts) {
+                if (showActiveChats) {
+                    if (!activeChats.isEmpty()) {
+                        if (showAccounts || showGroups) {
+                            baseEntities.add(activeChats);
+                        }
+                        activeChats.sortAbstractContacts(ComparatorByChat.COMPARATOR_BY_CHAT);
+                        baseEntities.addAll(activeChats.getAbstractContacts());
+                    }
+                }
+                if (showAccounts) {
+                    boolean isFirst = baseEntities.isEmpty();
+                    for (AccountConfiguration rosterAccount : accounts.values()) {
+                        if (isFirst) {
+                            isFirst = false;
+                        } else {
+                            baseEntities.add(new AccountTopSeparator(null, null));
+                        }
 
-			// Remove empty groups, sort and apply structure.
-			baseEntities.clear();
-			if (hasVisible) {
-				if (showActiveChats) {
-					if (!activeChats.isEmpty()) {
-						if (showAccounts || showGroups)
-							baseEntities.add(activeChats);
-						activeChats
-								.sortAbstractContacts(ComparatorByChat.COMPARATOR_BY_CHAT);
-						baseEntities.addAll(activeChats.getAbstractContacts());
-					}
-				}
-				if (showAccounts) {
-					for (AccountConfiguration rosterAccount : accounts.values()) {
-						baseEntities.add(rosterAccount);
-						if (showGroups) {
-							if (rosterAccount.isExpanded())
-								for (GroupConfiguration rosterConfiguration : rosterAccount
-										.getSortedGroupConfigurations())
-									if (showEmptyGroups
-											|| !rosterConfiguration.isEmpty()) {
-										baseEntities.add(rosterConfiguration);
-										rosterConfiguration
-												.sortAbstractContacts(comparator);
-										baseEntities.addAll(rosterConfiguration
-												.getAbstractContacts());
-									}
-						} else {
-							rosterAccount.sortAbstractContacts(comparator);
-							baseEntities.addAll(rosterAccount
-									.getAbstractContacts());
-						}
-					}
-				} else {
-					if (showGroups) {
-						for (GroupConfiguration rosterConfiguration : groups
-								.values())
-							if (showEmptyGroups
-									|| !rosterConfiguration.isEmpty()) {
-								baseEntities.add(rosterConfiguration);
-								rosterConfiguration
-										.sortAbstractContacts(comparator);
-								baseEntities.addAll(rosterConfiguration
-										.getAbstractContacts());
-							}
-					} else {
-						Collections.sort(contacts, comparator);
-						baseEntities.addAll(contacts);
-					}
-				}
-			}
-		} else { // Search
-			final ArrayList<AbstractContact> baseEntities = new ArrayList<AbstractContact>();
+                        baseEntities.add(rosterAccount);
 
-			// Build structure.
-			for (RosterContact rosterContact : rosterContacts) {
-				if (!rosterContact.isEnabled())
-					continue;
-				final String account = rosterContact.getAccount();
-				final TreeMap<String, AbstractChat> users = abstractChats
-						.get(account);
-				if (users != null)
-					users.remove(rosterContact.getUser());
-				if (rosterContact.getName().toLowerCase(locale)
-						.contains(filterString))
-					baseEntities.add(rosterContact);
-			}
-			for (TreeMap<String, AbstractChat> users : abstractChats.values())
-				for (AbstractChat abstractChat : users.values()) {
-					final AbstractContact abstractContact;
-					if (abstractChat instanceof RoomChat)
-						abstractContact = new RoomContact(
-								(RoomChat) abstractChat);
-					else
-						abstractContact = new ChatContact(abstractChat);
-					if (abstractContact.getName().toLowerCase(locale)
-							.contains(filterString))
-						baseEntities.add(abstractContact);
-				}
-			Collections.sort(baseEntities, comparator);
-			this.baseEntities.clear();
-			this.baseEntities.addAll(baseEntities);
-			hasVisible = baseEntities.size() > 0;
-		}
+                        if (showGroups) {
+                            if (rosterAccount.isExpanded()) {
+                                for (GroupConfiguration rosterConfiguration : rosterAccount
+                                        .getSortedGroupConfigurations()) {
+                                    if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
+                                        baseEntities.add(rosterConfiguration);
+                                        rosterConfiguration.sortAbstractContacts(comparator);
+                                        baseEntities.addAll(rosterConfiguration.getAbstractContacts());
+                                    }
+                                }
+                            }
+                        } else {
+                            rosterAccount.sortAbstractContacts(comparator);
+                            baseEntities.addAll(rosterAccount.getAbstractContacts());
+                        }
 
-		if (infoView != null) {
-			if (hasVisible) {
-				infoView.setVisibility(View.GONE);
-				disconnectedView.clearAnimation();
-			} else {
-				infoView.setVisibility(View.VISIBLE);
-				final int text;
-				final int button;
-				final ContactListState state;
-				if (filterString != null) {
-					if (commonState == CommonState.online)
-						state = ContactListState.online;
-					else if (commonState == CommonState.roster
-							|| commonState == CommonState.connecting)
-						state = ContactListState.connecting;
-					else
-						state = ContactListState.offline;
-					text = R.string.application_state_no_online;
-					button = 0;
-				} else if (hasContact) {
-					state = ContactListState.online;
-					text = R.string.application_state_no_online;
-					button = R.string.application_action_no_online;
-				} else if (commonState == CommonState.online) {
-					state = ContactListState.online;
-					text = R.string.application_state_no_contacts;
-					button = R.string.application_action_no_contacts;
-				} else if (commonState == CommonState.roster) {
-					state = ContactListState.connecting;
-					text = R.string.application_state_roster;
-					button = 0;
-				} else if (commonState == CommonState.connecting) {
-					state = ContactListState.connecting;
-					text = R.string.application_state_connecting;
-					button = 0;
-				} else if (commonState == CommonState.waiting) {
-					state = ContactListState.offline;
-					text = R.string.application_state_waiting;
-					button = R.string.application_action_waiting;
-				} else if (commonState == CommonState.offline) {
-					state = ContactListState.offline;
-					text = R.string.application_state_offline;
-					button = R.string.application_action_offline;
-				} else if (commonState == CommonState.disabled) {
-					state = ContactListState.offline;
-					text = R.string.application_state_disabled;
-					button = R.string.application_action_disabled;
-				} else if (commonState == CommonState.empty) {
-					state = ContactListState.offline;
-					text = R.string.application_state_empty;
-					button = R.string.application_action_empty;
-				} else {
-					throw new IllegalStateException();
-				}
-				if (state == ContactListState.offline) {
-					connectedView.setVisibility(View.INVISIBLE);
-					disconnectedView.setVisibility(View.VISIBLE);
-					disconnectedView.clearAnimation();
-				} else if (state == ContactListState.connecting) {
-					connectedView.setVisibility(View.VISIBLE);
-					disconnectedView.setVisibility(View.VISIBLE);
-					if (disconnectedView.getAnimation() == null)
-						disconnectedView.startAnimation(animation);
-				} else if (state == ContactListState.online) {
-					connectedView.setVisibility(View.VISIBLE);
-					disconnectedView.setVisibility(View.INVISIBLE);
-					disconnectedView.clearAnimation();
-				}
-				textView.setText(text);
-				if (button == 0) {
-					buttonView.setVisibility(View.GONE);
-				} else {
-					buttonView.setVisibility(View.VISIBLE);
-					buttonView.setText(button);
-					buttonView.setTag(Integer.valueOf(button));
-				}
-			}
-		}
+                        if (rosterAccount.getTotal() > 0 && !rosterAccount.isExpanded()) {
+                            baseEntities.add(new AccountBottomSeparator(rosterAccount.getAccount(), null));
+                        }
+                    }
+                } else {
+                    if (showGroups) {
+                        for (GroupConfiguration rosterConfiguration : groups.values()) {
+                            if (showEmptyGroups || !rosterConfiguration.isEmpty()) {
+                                baseEntities.add(rosterConfiguration);
+                                rosterConfiguration.sortAbstractContacts(comparator);
+                                baseEntities.addAll(rosterConfiguration.getAbstractContacts());
+                            }
+                        }
+                    } else {
+                        Collections.sort(contacts, comparator);
+                        baseEntities.addAll(contacts);
+                    }
+                }
+            }
+        } else { // Search
+            final ArrayList<AbstractContact> baseEntities = getSearchResults(rosterContacts, comparator, abstractChats);
+            this.baseEntities.clear();
+            this.baseEntities.addAll(baseEntities);
+            hasVisibleContacts = baseEntities.size() > 0;
+        }
 
-		super.onChange();
+        super.onChange();
+        listener.onContactListChanged(commonState, hasContacts, hasVisibleContacts, filterString != null);
 
-		synchronized (refreshLock) {
-			nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
-			refreshInProgess = false;
-			handler.removeCallbacks(this); // Just to be sure.
-			if (refreshRequested)
-				handler.postDelayed(this, REFRESH_INTERVAL);
-		}
-	}
+        synchronized (refreshLock) {
+            nextRefresh = new Date(new Date().getTime() + REFRESH_INTERVAL);
+            refreshInProgress = false;
+            handler.removeCallbacks(this); // Just to be sure.
+            if (refreshRequested) {
+                handler.postDelayed(this, REFRESH_INTERVAL);
+            }
+        }
+    }
 
-	@Override
-	public void run() {
-		onChange();
-	}
+    private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
+                                                        Comparator<AbstractContact> comparator,
+                                                        Map<String, Map<String, AbstractChat>> abstractChats) {
+        final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
 
+        // Build structure.
+        for (RosterContact rosterContact : rosterContacts) {
+            if (!rosterContact.isEnabled()) {
+                continue;
+            }
+            final String account = rosterContact.getAccount();
+            final Map<String, AbstractChat> users = abstractChats.get(account);
+            if (users != null) {
+                users.remove(rosterContact.getUser());
+            }
+            if (rosterContact.getName().toLowerCase(locale).contains(filterString)) {
+                baseEntities.add(rosterContact);
+            }
+        }
+        for (Map<String, AbstractChat> users : abstractChats.values()) {
+            for (AbstractChat abstractChat : users.values()) {
+                final AbstractContact abstractContact;
+                if (abstractChat instanceof RoomChat) {
+                    abstractContact = new RoomContact((RoomChat) abstractChat);
+                } else {
+                    abstractContact = new ChatContact(abstractChat);
+                }
+                if (abstractContact.getName().toLowerCase(locale).contains(filterString)) {
+                    baseEntities.add(abstractContact);
+                }
+            }
+        }
+        Collections.sort(baseEntities, comparator);
+        return baseEntities;
+    }
+
+    @Override
+    public void run() {
+        onChange();
+    }
+
+    /**
+     * Listener for contact list appearance changes.
+     *
+     * @author alexander.ivanov
+     */
+    public interface OnContactListChangedListener {
+
+        void onContactListChanged(CommonState commonState, boolean hasContacts,
+                                  boolean hasVisibleContacts, boolean isFilterEnabled);
+
+    }
+
+    public static class AccountTopSeparator extends BaseEntity {
+        public AccountTopSeparator(String account, String user) {
+            super(account, user);
+        }
+    }
+
+    public static class AccountBottomSeparator extends BaseEntity {
+        public AccountBottomSeparator(String account, String user) {
+            super(account, user);
+        }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (contactFilter == null) {
+            contactFilter = new ContactFilter();
+        }
+        return contactFilter;
+    }
+
+    private class ContactFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            return null;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+            if (constraint == null || constraint.length() == 0) {
+                filterString = null;
+            } else {
+                filterString = constraint.toString().toLowerCase(locale);
+            }
+            onChange();
+        }
+
+    }
+
+    public boolean isHasActiveChats() {
+        return hasActiveChats;
+    }
 }

@@ -24,8 +24,8 @@ package org.jivesoftware.smackx.packet;
  * Interface to represent private data. Each private data chunk is an XML sub-document
  * with a root element name and namespace.
  *
- * @see org.jivesoftware.smackx.PrivateDataManager
  * @author Matt Tucker
+ * @see org.jivesoftware.smackx.PrivateDataManager
  */
 public interface PrivateData {
 

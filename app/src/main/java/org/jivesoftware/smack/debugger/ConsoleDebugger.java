@@ -25,10 +25,10 @@ import java.util.Date;
 public class ConsoleDebugger implements SmackDebugger {
 
     public static boolean printInterpreted = false;
-	protected SimpleDateFormat dateFormatter = new SimpleDateFormat(
-			"hh:mm:ss aaa");
+    protected SimpleDateFormat dateFormatter = new SimpleDateFormat(
+            "hh:mm:ss aaa");
 
-	protected Connection connection = null;
+    protected Connection connection = null;
 
     private PacketListener listener = null;
     private ConnectionListener connListener = null;
@@ -46,58 +46,58 @@ public class ConsoleDebugger implements SmackDebugger {
     }
 
     /**
-	 * Creates reader listeners.
-	 * 
-	 * @return
-	 */
-	protected ReaderListener createReaderListener() {
-		return new ReaderListener() {
+     * Creates reader listeners.
+     *
+     * @return
+     */
+    protected ReaderListener createReaderListener() {
+        return new ReaderListener() {
             public void read(String str) {
                 System.out.println(
                         dateFormatter.format(new Date()) + " RCV  (" + connection.hashCode() +
-                        "): " +
-                        str);
+                                "): " +
+                                str);
             }
 
             public void close() {
             }
         };
-	}
+    }
 
-	/**
-	 * Creates writer listeners.
-	 * 
-	 * @return
-	 */
-	protected WriterListener createWriterListener() {
-		return new WriterListener() {
+    /**
+     * Creates writer listeners.
+     *
+     * @return
+     */
+    protected WriterListener createWriterListener() {
+        return new WriterListener() {
             public void write(String str) {
                 System.out.println(
                         dateFormatter.format(new Date()) + " SENT (" + connection.hashCode() +
-                        "): " +
-                        str);
+                                "): " +
+                                str);
             }
 
             public void close() {
             }
-		};
-	}
+        };
+    }
 
-	/**
-	 * Creates the listeners that will print in the console when new activity is
-	 * detected.
-	 */
-	private void createDebug() {
-		// Create a special Reader that wraps the main Reader and logs data to
-		// the GUI.
-		ObservableReader debugReader = new ObservableReader(reader);
-		readerListener = createReaderListener();
-		debugReader.addReaderListener(readerListener);
+    /**
+     * Creates the listeners that will print in the console when new activity is
+     * detected.
+     */
+    private void createDebug() {
+        // Create a special Reader that wraps the main Reader and logs data to
+        // the GUI.
+        ObservableReader debugReader = new ObservableReader(reader);
+        readerListener = createReaderListener();
+        debugReader.addReaderListener(readerListener);
 
-		// Create a special Writer that wraps the main Writer and logs data to
-		// the GUI.
-		ObservableWriter debugWriter = new ObservableWriter(writer);
-		writerListener = createWriterListener();
+        // Create a special Writer that wraps the main Writer and logs data to
+        // the GUI.
+        ObservableWriter debugWriter = new ObservableWriter(writer);
+        writerListener = createWriterListener();
         debugWriter.addWriterListener(writerListener);
 
         // Assign the reader/writer objects to use the debug versions. The packet reader
@@ -113,9 +113,9 @@ public class ConsoleDebugger implements SmackDebugger {
                 if (printInterpreted) {
                     System.out.println(
                             dateFormatter.format(new Date()) + " RCV PKT (" +
-                            connection.hashCode() +
-                            "): " +
-                            packet.toXML());
+                                    connection.hashCode() +
+                                    "): " +
+                                    packet.toXML());
                 }
             }
         };
@@ -124,43 +124,46 @@ public class ConsoleDebugger implements SmackDebugger {
             public void connectionClosed() {
                 System.out.println(
                         dateFormatter.format(new Date()) + " Connection closed (" +
-                        connection.hashCode() +
-                        ")");
+                                connection.hashCode() +
+                                ")");
             }
 
             public void connectionClosedOnError(Exception e) {
                 System.out.println(
                         dateFormatter.format(new Date()) +
-                        " Connection closed due to an exception (" +
-                        connection.hashCode() +
-                        ")");
+                                " Connection closed due to an exception (" +
+                                connection.hashCode() +
+                                ")");
                 e.printStackTrace();
             }
+
             public void reconnectionFailed(Exception e) {
                 System.out.println(
                         dateFormatter.format(new Date()) +
-                        " Reconnection failed due to an exception (" +
-                        connection.hashCode() +
-                        ")");
+                                " Reconnection failed due to an exception (" +
+                                connection.hashCode() +
+                                ")");
                 e.printStackTrace();
             }
+
             public void reconnectionSuccessful() {
                 System.out.println(
                         dateFormatter.format(new Date()) + " Connection reconnected (" +
-                        connection.hashCode() +
-                        ")");
+                                connection.hashCode() +
+                                ")");
             }
+
             public void reconnectingIn(int seconds) {
                 System.out.println(
                         dateFormatter.format(new Date()) + " Connection (" +
-                        connection.hashCode() +
-                        ") will reconnect in " + seconds);
+                                connection.hashCode() +
+                                ") will reconnect in " + seconds);
             }
         };
     }
 
     public Reader newConnectionReader(Reader newReader) {
-        ((ObservableReader)reader).removeReaderListener(readerListener);
+        ((ObservableReader) reader).removeReaderListener(readerListener);
         ObservableReader debugReader = new ObservableReader(newReader);
         debugReader.addReaderListener(readerListener);
         reader = debugReader;
@@ -168,7 +171,7 @@ public class ConsoleDebugger implements SmackDebugger {
     }
 
     public Writer newConnectionWriter(Writer newWriter) {
-        ((ObservableWriter)writer).removeWriterListener(writerListener);
+        ((ObservableWriter) writer).removeWriterListener(writerListener);
         ObservableWriter debugWriter = new ObservableWriter(newWriter);
         debugWriter.addWriterListener(writerListener);
         writer = debugWriter;
@@ -179,11 +182,11 @@ public class ConsoleDebugger implements SmackDebugger {
         boolean isAnonymous = "".equals(StringUtils.parseName(user));
         String title =
                 "User logged (" + connection.hashCode() + "): "
-                + (isAnonymous ? "" : StringUtils.parseBareAddress(user))
-                + "@"
-                + connection.getServiceName()
-                + ":"
-                + connection.getPort();
+                        + (isAnonymous ? "" : StringUtils.parseBareAddress(user))
+                        + "@"
+                        + connection.getServiceName()
+                        + ":"
+                        + connection.getPort();
         title += "/" + StringUtils.parseResource(user);
         System.out.println(title);
         // Add the connection listener to the connection so that the debugger can be notified

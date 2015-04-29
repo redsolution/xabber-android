@@ -16,6 +16,7 @@ package com.novell.sasl.client;
 
 import org.apache.harmony.javax.security.sasl.*;
 import org.apache.harmony.javax.security.auth.callback.*;
+
 import java.security.SecureRandom;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,30 +27,29 @@ import java.util.*;
 /**
  * Implements the Client portion of DigestMD5 Sasl mechanism.
  */
-public class DigestMD5SaslClient implements SaslClient
-{
-    private String           m_authorizationId = "";
-    private String           m_protocol = "";
-    private String           m_serverName = "";
-    private Map              m_props;
-    private CallbackHandler  m_cbh;
-    private int              m_state;
-    private String           m_qopValue = "";
-    private char[]              m_HA1 = null;
-    private String           m_digestURI;
-    private DigestChallenge  m_dc;
-    private String           m_clientNonce = "";
-    private String           m_realm = "";
-    private String           m_name = "";
+public class DigestMD5SaslClient implements SaslClient {
+    private String m_authorizationId = "";
+    private String m_protocol = "";
+    private String m_serverName = "";
+    private Map m_props;
+    private CallbackHandler m_cbh;
+    private int m_state;
+    private String m_qopValue = "";
+    private char[] m_HA1 = null;
+    private String m_digestURI;
+    private DigestChallenge m_dc;
+    private String m_clientNonce = "";
+    private String m_realm = "";
+    private String m_name = "";
 
-    private static final int   STATE_INITIAL = 0;
-    private static final int   STATE_DIGEST_RESPONSE_SENT = 1;
-    private static final int   STATE_VALID_SERVER_RESPONSE = 2;
-    private static final int   STATE_INVALID_SERVER_RESPONSE = 3;
-    private static final int   STATE_DISPOSED = 4;
+    private static final int STATE_INITIAL = 0;
+    private static final int STATE_DIGEST_RESPONSE_SENT = 1;
+    private static final int STATE_VALID_SERVER_RESPONSE = 2;
+    private static final int STATE_INVALID_SERVER_RESPONSE = 3;
+    private static final int STATE_DISPOSED = 4;
 
-    private static final int   NONCE_BYTE_COUNT = 32;
-    private static final int   NONCE_HEX_COUNT = 2*NONCE_BYTE_COUNT;
+    private static final int NONCE_BYTE_COUNT = 32;
+    private static final int NONCE_HEX_COUNT = 2 * NONCE_BYTE_COUNT;
 
     private static final String DIGEST_METHOD = "AUTHENTICATE";
 
@@ -58,57 +58,50 @@ public class DigestMD5SaslClient implements SaslClient
      * Assumes that the QOP, STRENGTH, and SERVER_AUTH properties are
      * contained in props
      *
-     * @param authorizationId  The possibly null protocol-dependent
-     *                     identification to be used for authorization. If
-     *                     null or empty, the server derives an authorization
-     *                     ID from the client's authentication credentials.
-     *                     When the SASL authentication completes
-     *                     successfully, the specified entity is granted
-     *                     access.
-     *
-     * @param protocol     The non-null string name of the protocol for which
-     *                     the authentication is being performed (e.g. "ldap")
-     *
-     * @param serverName   The non-null fully qualified host name of the server
-     *                     to authenticate to
-     *
-     * @param props        The possibly null set of properties used to select
-     *                     the SASL mechanism and to configure the
-     *                     authentication exchange of the selected mechanism.
-     *                     See the Sasl class for a list of standard properties.
-     *                     Other, possibly mechanism-specific, properties can
-     *                     be included. Properties not relevant to the selected
-     *                     mechanism are ignored.
-     *
-     * @param cbh          The possibly null callback handler to used by the
-     *                     SASL mechanisms to get further information from the
-     *                     application/library to complete the authentication.
-     *                     For example, a SASL mechanism might require the
-     *                     authentication ID, password and realm from the
-     *                     caller. The authentication ID is requested by using
-     *                     a NameCallback. The password is requested by using
-     *                     a PasswordCallback. The realm is requested by using
-     *                     a RealmChoiceCallback if there is a list of realms
-     *                     to choose from, and by using a RealmCallback if the
-     *                     realm must be entered.
-     *
-     * @return            A possibly null SaslClient created using the
-     *                     parameters supplied. If null, this factory cannot
-     *                     produce a SaslClient using the parameters supplied.
-     *
-     * @exception SaslException  If a SaslClient instance cannot be created
-     *                     because of an error
+     * @param authorizationId The possibly null protocol-dependent
+     *                        identification to be used for authorization. If
+     *                        null or empty, the server derives an authorization
+     *                        ID from the client's authentication credentials.
+     *                        When the SASL authentication completes
+     *                        successfully, the specified entity is granted
+     *                        access.
+     * @param protocol        The non-null string name of the protocol for which
+     *                        the authentication is being performed (e.g. "ldap")
+     * @param serverName      The non-null fully qualified host name of the server
+     *                        to authenticate to
+     * @param props           The possibly null set of properties used to select
+     *                        the SASL mechanism and to configure the
+     *                        authentication exchange of the selected mechanism.
+     *                        See the Sasl class for a list of standard properties.
+     *                        Other, possibly mechanism-specific, properties can
+     *                        be included. Properties not relevant to the selected
+     *                        mechanism are ignored.
+     * @param cbh             The possibly null callback handler to used by the
+     *                        SASL mechanisms to get further information from the
+     *                        application/library to complete the authentication.
+     *                        For example, a SASL mechanism might require the
+     *                        authentication ID, password and realm from the
+     *                        caller. The authentication ID is requested by using
+     *                        a NameCallback. The password is requested by using
+     *                        a PasswordCallback. The realm is requested by using
+     *                        a RealmChoiceCallback if there is a list of realms
+     *                        to choose from, and by using a RealmCallback if the
+     *                        realm must be entered.
+     * @return A possibly null SaslClient created using the
+     * parameters supplied. If null, this factory cannot
+     * produce a SaslClient using the parameters supplied.
+     * @throws SaslException If a SaslClient instance cannot be created
+     *                       because of an error
      */
     public static SaslClient getClient(
-        String          authorizationId,
-        String          protocol,
-        String          serverName,
-        Map             props,
-        CallbackHandler cbh)
-    {
-        String desiredQOP = (String)props.get(Sasl.QOP);
-        String desiredStrength = (String)props.get(Sasl.STRENGTH);
-        String serverAuth = (String)props.get(Sasl.SERVER_AUTH);
+            String authorizationId,
+            String protocol,
+            String serverName,
+            Map props,
+            CallbackHandler cbh) {
+        String desiredQOP = (String) props.get(Sasl.QOP);
+        String desiredStrength = (String) props.get(Sasl.STRENGTH);
+        String serverAuth = (String) props.get(Sasl.SERVER_AUTH);
 
         //only support qop equal to auth
         if ((desiredQOP != null) && !"auth".equals(desiredQOP))
@@ -123,7 +116,7 @@ public class DigestMD5SaslClient implements SaslClient
             return null;
 
         return new DigestMD5SaslClient(authorizationId, protocol,
-                                       serverName, props, cbh);
+                serverName, props, cbh);
     }
 
     /**
@@ -131,48 +124,42 @@ public class DigestMD5SaslClient implements SaslClient
      * Assumes that the QOP, STRENGTH, and SERVER_AUTH properties are
      * contained in props
      *
-     * @param authorizationId  The possibly null protocol-dependent
-     *                     identification to be used for authorization. If
-     *                     null or empty, the server derives an authorization
-     *                     ID from the client's authentication credentials.
-     *                     When the SASL authentication completes
-     *                     successfully, the specified entity is granted
-     *                     access.
-     *
-     * @param protocol     The non-null string name of the protocol for which
-     *                     the authentication is being performed (e.g. "ldap")
-     *
-     * @param serverName   The non-null fully qualified host name of the server
-     *                     to authenticate to
-     *
-     * @param props        The possibly null set of properties used to select
-     *                     the SASL mechanism and to configure the
-     *                     authentication exchange of the selected mechanism.
-     *                     See the Sasl class for a list of standard properties.
-     *                     Other, possibly mechanism-specific, properties can
-     *                     be included. Properties not relevant to the selected
-     *                     mechanism are ignored.
-     *
-     * @param cbh          The possibly null callback handler to used by the
-     *                     SASL mechanisms to get further information from the
-     *                     application/library to complete the authentication.
-     *                     For example, a SASL mechanism might require the
-     *                     authentication ID, password and realm from the
-     *                     caller. The authentication ID is requested by using
-     *                     a NameCallback. The password is requested by using
-     *                     a PasswordCallback. The realm is requested by using
-     *                     a RealmChoiceCallback if there is a list of realms
-     *                     to choose from, and by using a RealmCallback if the
-     *                     realm must be entered.
-     *
+     * @param authorizationId The possibly null protocol-dependent
+     *                        identification to be used for authorization. If
+     *                        null or empty, the server derives an authorization
+     *                        ID from the client's authentication credentials.
+     *                        When the SASL authentication completes
+     *                        successfully, the specified entity is granted
+     *                        access.
+     * @param protocol        The non-null string name of the protocol for which
+     *                        the authentication is being performed (e.g. "ldap")
+     * @param serverName      The non-null fully qualified host name of the server
+     *                        to authenticate to
+     * @param props           The possibly null set of properties used to select
+     *                        the SASL mechanism and to configure the
+     *                        authentication exchange of the selected mechanism.
+     *                        See the Sasl class for a list of standard properties.
+     *                        Other, possibly mechanism-specific, properties can
+     *                        be included. Properties not relevant to the selected
+     *                        mechanism are ignored.
+     * @param cbh             The possibly null callback handler to used by the
+     *                        SASL mechanisms to get further information from the
+     *                        application/library to complete the authentication.
+     *                        For example, a SASL mechanism might require the
+     *                        authentication ID, password and realm from the
+     *                        caller. The authentication ID is requested by using
+     *                        a NameCallback. The password is requested by using
+     *                        a PasswordCallback. The realm is requested by using
+     *                        a RealmChoiceCallback if there is a list of realms
+     *                        to choose from, and by using a RealmCallback if the
+     *                        realm must be entered.
      */
-    private  DigestMD5SaslClient(
-        String          authorizationId,
-        String          protocol,
-        String          serverName,
-        Map             props,
-        CallbackHandler cbh)
-    {
+    private DigestMD5SaslClient(
+            String authorizationId,
+            String protocol,
+            String serverName,
+            Map props,
+            CallbackHandler cbh) {
         m_authorizationId = authorizationId;
         m_protocol = protocol;
         m_serverName = serverName;
@@ -187,10 +174,9 @@ public class DigestMD5SaslClient implements SaslClient
      * caller should call evaluateChallenge() with an empty array to get the
      * initial response.
      *
-     * @return  true if this mechanism has an initial response
+     * @return true if this mechanism has an initial response
      */
-    public boolean hasInitialResponse()
-    {
+    public boolean hasInitialResponse() {
         return false;
     }
 
@@ -200,14 +186,13 @@ public class DigestMD5SaslClient implements SaslClient
      * the caller has received indication from the server (in a protocol-
      * specific manner) that the exchange has completed.
      *
-     * @return  true if the authentication exchange has completed;
-     *           false otherwise.
+     * @return true if the authentication exchange has completed;
+     * false otherwise.
      */
-    public boolean isComplete()
-    {
+    public boolean isComplete() {
         if ((m_state == STATE_VALID_SERVER_RESPONSE) ||
-            (m_state == STATE_INVALID_SERVER_RESPONSE) ||
-            (m_state == STATE_DISPOSED))
+                (m_state == STATE_INVALID_SERVER_RESPONSE) ||
+                (m_state == STATE_DISPOSED))
             return true;
         else
             return false;
@@ -219,28 +204,24 @@ public class DigestMD5SaslClient implements SaslClient
      * isComplete() returns true) and only if the authentication exchange has
      * negotiated integrity and/or privacy as the quality of protection;
      * otherwise, an IllegalStateException is thrown.
-     *
+     * <p/>
      * incoming is the contents of the SASL buffer as defined in RFC 2222
      * without the leading four octet field that represents the length.
      * offset and len specify the portion of incoming to use.
      *
-     * @param incoming   A non-null byte array containing the encoded bytes
-     *                   from the server
-     * @param offset     The starting position at incoming of the bytes to use
-     *
-     * @param len        The number of bytes from incoming to use
-     *
-     * @return           A non-null byte array containing the decoded bytes
-     *
+     * @param incoming A non-null byte array containing the encoded bytes
+     *                 from the server
+     * @param offset   The starting position at incoming of the bytes to use
+     * @param len      The number of bytes from incoming to use
+     * @return A non-null byte array containing the decoded bytes
      */
     public byte[] unwrap(
-        byte[] incoming,
-        int    offset,
-        int    len)
-            throws SaslException
-    {
+            byte[] incoming,
+            int offset,
+            int len)
+            throws SaslException {
         throw new IllegalStateException(
-         "unwrap: QOP has neither integrity nor privacy>");
+                "unwrap: QOP has neither integrity nor privacy>");
     }
 
     /**
@@ -249,31 +230,27 @@ public class DigestMD5SaslClient implements SaslClient
      * isComplete() returns true) and only if the authentication exchange has
      * negotiated integrity and/or privacy as the quality of protection;
      * otherwise, an IllegalStateException is thrown.
-     *
+     * <p/>
      * The result of this method will make up the contents of the SASL buffer as
      * defined in RFC 2222 without the leading four octet field that represents
      * the length. offset and len specify the portion of outgoing to use.
      *
-     * @param outgoing   A non-null byte array containing the bytes to encode
-     * @param offset     The starting position at outgoing of the bytes to use
-     * @param len        The number of bytes from outgoing to use
-     *
+     * @param outgoing A non-null byte array containing the bytes to encode
+     * @param offset   The starting position at outgoing of the bytes to use
+     * @param len      The number of bytes from outgoing to use
      * @return A non-null byte array containing the encoded bytes
-     *
-     * @exception SaslException  if incoming cannot be successfully unwrapped.
-     *
-     * @exception IllegalStateException   if the authentication exchange has
-     *                   not completed, or if the negotiated quality of
-     *                   protection has neither integrity nor privacy.
+     * @throws SaslException         if incoming cannot be successfully unwrapped.
+     * @throws IllegalStateException if the authentication exchange has
+     *                               not completed, or if the negotiated quality of
+     *                               protection has neither integrity nor privacy.
      */
     public byte[] wrap(
-        byte[]  outgoing,
-        int     offset,
-        int     len)
-            throws SaslException
-    {
+            byte[] outgoing,
+            int offset,
+            int len)
+            throws SaslException {
         throw new IllegalStateException(
-         "wrap: QOP has neither integrity nor privacy>");
+                "wrap: QOP has neither integrity nor privacy>");
     }
 
     /**
@@ -281,20 +258,17 @@ public class DigestMD5SaslClient implements SaslClient
      * the authentication exchange has completed (i.e., when isComplete()
      * returns true); otherwise, an IllegalStateException is thrown.
      *
-     * @param propName   The non-null property name
-     *
-     * @return  The value of the negotiated property. If null, the property was
-     *          not negotiated or is not applicable to this mechanism.
-     *
-     * @exception IllegalStateException   if this authentication exchange has
-     *                                    not completed
+     * @param propName The non-null property name
+     * @return The value of the negotiated property. If null, the property was
+     * not negotiated or is not applicable to this mechanism.
+     * @throws IllegalStateException if this authentication exchange has
+     *                               not completed
      */
     public Object getNegotiatedProperty(
-        String propName)
-    {
+            String propName) {
         if (m_state != STATE_VALID_SERVER_RESPONSE)
             throw new IllegalStateException(
-             "getNegotiatedProperty: authentication exchange not complete.");
+                    "getNegotiatedProperty: authentication exchange not complete.");
 
         if (Sasl.QOP.equals(propName))
             return "auth";
@@ -307,14 +281,12 @@ public class DigestMD5SaslClient implements SaslClient
      * SaslClient might be using. Invoking this method invalidates the
      * SaslClient instance. This method is idempotent.
      *
-     * @exception SaslException  if a problem was encountered while disposing
-     *                           of the resources
+     * @throws SaslException if a problem was encountered while disposing
+     *                       of the resources
      */
     public void dispose()
-            throws SaslException
-    {
-        if (m_state != STATE_DISPOSED)
-        {
+            throws SaslException {
+        if (m_state != STATE_DISPOSED) {
             m_state = STATE_DISPOSED;
         }
     }
@@ -325,61 +297,53 @@ public class DigestMD5SaslClient implements SaslClient
      * method is called to prepare an appropriate next response to submit to
      * the server.
      *
-     * @param challenge  The non-null challenge sent from the server. The
-     *                   challenge array may have zero length.
-     *
-     * @return    The possibly null reponse to send to the server. It is null
-     *            if the challenge accompanied a "SUCCESS" status and the
-     *            challenge only contains data for the client to update its
-     *            state and no response needs to be sent to the server.
-     *            The response is a zero-length byte array if the client is to
-     *            send a response with no data.
-     *
-     * @exception SaslException   If an error occurred while processing the
-     *                            challenge or generating a response.
+     * @param challenge The non-null challenge sent from the server. The
+     *                  challenge array may have zero length.
+     * @return The possibly null reponse to send to the server. It is null
+     * if the challenge accompanied a "SUCCESS" status and the
+     * challenge only contains data for the client to update its
+     * state and no response needs to be sent to the server.
+     * The response is a zero-length byte array if the client is to
+     * send a response with no data.
+     * @throws SaslException If an error occurred while processing the
+     *                       challenge or generating a response.
      */
     public byte[] evaluateChallenge(
-        byte[] challenge)
-            throws SaslException
-    {
+            byte[] challenge)
+            throws SaslException {
         byte[] response = null;
 
         //printState();
-        switch (m_state)
-        {
-        case STATE_INITIAL:
-            if (challenge.length == 0)
-                throw new SaslException("response = byte[0]");
-            else
-                try
-                {
-                    response = createDigestResponse(challenge).
-                                                           getBytes("UTF-8");
-                    m_state = STATE_DIGEST_RESPONSE_SENT;
+        switch (m_state) {
+            case STATE_INITIAL:
+                if (challenge.length == 0)
+                    throw new SaslException("response = byte[0]");
+                else
+                    try {
+                        response = createDigestResponse(challenge).
+                                getBytes("UTF-8");
+                        m_state = STATE_DIGEST_RESPONSE_SENT;
+                    } catch (java.io.UnsupportedEncodingException e) {
+                        throw new SaslException(
+                                "UTF-8 encoding not suppported by platform", e);
+                    }
+                break;
+            case STATE_DIGEST_RESPONSE_SENT:
+                if (checkServerResponseAuth(challenge))
+                    m_state = STATE_VALID_SERVER_RESPONSE;
+                else {
+                    m_state = STATE_INVALID_SERVER_RESPONSE;
+                    throw new SaslException("Could not validate response-auth " +
+                            "value from server");
                 }
-                catch (java.io.UnsupportedEncodingException e)
-                {
-                    throw new SaslException(
-                     "UTF-8 encoding not suppported by platform", e);
-                }
-            break;
-        case STATE_DIGEST_RESPONSE_SENT:
-            if (checkServerResponseAuth(challenge))
-                m_state = STATE_VALID_SERVER_RESPONSE;
-            else
-            {
-                m_state = STATE_INVALID_SERVER_RESPONSE;
-                throw new SaslException("Could not validate response-auth " +
-                                        "value from server");
-            }
-            break;
-        case STATE_VALID_SERVER_RESPONSE:
-        case STATE_INVALID_SERVER_RESPONSE:
-            throw new SaslException("Authentication sequence is complete");
-        case STATE_DISPOSED:
-            throw new SaslException("Client has been disposed");
-        default:
-            throw new SaslException("Unknown client state.");
+                break;
+            case STATE_VALID_SERVER_RESPONSE:
+            case STATE_INVALID_SERVER_RESPONSE:
+                throw new SaslException("Authentication sequence is complete");
+            case STATE_DISPOSED:
+                throw new SaslException("Client has been disposed");
+            default:
+                throw new SaslException("Unknown client state.");
         }
 
         return response;
@@ -387,28 +351,25 @@ public class DigestMD5SaslClient implements SaslClient
 
     /**
      * This function takes a 16 byte binary md5-hash value and creates a 32
-     * character (plus    a terminating null character) hex-digit 
+     * character (plus    a terminating null character) hex-digit
      * representation of binary data.
      *
-     * @param hash  16 byte binary md5-hash value in bytes
-     * 
-     * @return   32 character (plus    a terminating null character) hex-digit
-     *           representation of binary data.
+     * @param hash 16 byte binary md5-hash value in bytes
+     * @return 32 character (plus    a terminating null character) hex-digit
+     * representation of binary data.
      */
     char[] convertToHex(
-        byte[] hash)
-    {
-        int          i;
-        byte         j;
-        byte         fifteen = 15;
-        char[]      hex = new char[32];
+            byte[] hash) {
+        int i;
+        byte j;
+        byte fifteen = 15;
+        char[] hex = new char[32];
 
-        for (i = 0; i < 16; i++)
-        {
+        for (i = 0; i < 16; i++) {
             //convert value of top 4 bits to hex char
-            hex[i*2] = getHexChar((byte)((hash[i] & 0xf0) >> 4));
+            hex[i * 2] = getHexChar((byte) ((hash[i] & 0xf0) >> 4));
             //convert value of bottom 4 bits to hex char
-            hex[(i*2)+1] = getHexChar((byte)(hash[i] & 0x0f));
+            hex[(i * 2) + 1] = getHexChar((byte) (hash[i] & 0x0f));
         }
 
         return hex;
@@ -417,29 +378,25 @@ public class DigestMD5SaslClient implements SaslClient
     /**
      * Calculates the HA1 portion of the response
      *
-     * @param  algorithm   Algorith to use.
-     * @param  userName    User being authenticated
-     * @param  realm       realm information
-     * @param  password    password of teh user
-     * @param  nonce       nonce value
-     * @param  clientNonce Clients Nonce value
-     *
-     * @return  HA1 portion of the response in a character array
-     *
-     * @exception SaslException  If an error occurs
+     * @param algorithm   Algorith to use.
+     * @param userName    User being authenticated
+     * @param realm       realm information
+     * @param password    password of teh user
+     * @param nonce       nonce value
+     * @param clientNonce Clients Nonce value
+     * @return HA1 portion of the response in a character array
+     * @throws SaslException If an error occurs
      */
     char[] DigestCalcHA1(
-        String   algorithm,
-        String   userName,
-        String   realm,
-        String   password,
-        String   nonce,
-        String   clientNonce) throws SaslException
-    {
-        byte[]        hash;
+            String algorithm,
+            String userName,
+            String realm,
+            String password,
+            String nonce,
+            String clientNonce) throws SaslException {
+        byte[] hash;
 
-        try
-        {
+        try {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
             md.update(userName.getBytes("UTF-8"));
@@ -449,8 +406,7 @@ public class DigestMD5SaslClient implements SaslClient
             md.update(password.getBytes("UTF-8"));
             hash = md.digest();
 
-            if ("md5-sess".equals(algorithm))
-            {
+            if ("md5-sess".equals(algorithm)) {
                 md.update(hash);
                 md.update(":".getBytes("UTF-8"));
                 md.update(nonce.getBytes("UTF-8"));
@@ -458,15 +414,11 @@ public class DigestMD5SaslClient implements SaslClient
                 md.update(clientNonce.getBytes("UTF-8"));
                 hash = md.digest();
             }
-        }
-        catch(NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             throw new SaslException("No provider found for MD5 hash", e);
-        }
-        catch(UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             throw new SaslException(
-             "UTF-8 encoding not supported by platform.", e);
+                    "UTF-8 encoding not supported by platform.", e);
         }
 
         return convertToHex(hash);
@@ -477,44 +429,39 @@ public class DigestMD5SaslClient implements SaslClient
      * This function calculates the response-value of the response directive of
      * the digest-response as documented in RFC 2831
      *
-     * @param  HA1           H(A1)
-     * @param  serverNonce   nonce from server
-     * @param  nonceCount    8 hex digits
-     * @param  clientNonce   client nonce 
-     * @param  qop           qop-value: "", "auth", "auth-int"
-     * @param  method        method from the request
-     * @param  digestUri     requested URL
-     * @param  clientResponseFlag request-digest or response-digest
-     *
+     * @param HA1                H(A1)
+     * @param serverNonce        nonce from server
+     * @param nonceCount         8 hex digits
+     * @param clientNonce        client nonce
+     * @param qop                qop-value: "", "auth", "auth-int"
+     * @param method             method from the request
+     * @param digestUri          requested URL
+     * @param clientResponseFlag request-digest or response-digest
      * @return Response-value of the response directive of the digest-response
-     *
-     * @exception SaslException  If an error occurs
+     * @throws SaslException If an error occurs
      */
     char[] DigestCalcResponse(
-        char[]      HA1,            /* H(A1) */
-        String      serverNonce,    /* nonce from server */
-        String      nonceCount,     /* 8 hex digits */
-        String      clientNonce,    /* client nonce */
-        String      qop,            /* qop-value: "", "auth", "auth-int" */
-        String      method,         /* method from the request */
-        String      digestUri,      /* requested URL */
-        boolean     clientResponseFlag) /* request-digest or response-digest */
-            throws SaslException
-    {
-        byte[]             HA2;
-        byte[]             respHash;
-        char[]             HA2Hex;
+            char[] HA1,            /* H(A1) */
+            String serverNonce,    /* nonce from server */
+            String nonceCount,     /* 8 hex digits */
+            String clientNonce,    /* client nonce */
+            String qop,            /* qop-value: "", "auth", "auth-int" */
+            String method,         /* method from the request */
+            String digestUri,      /* requested URL */
+            boolean clientResponseFlag) /* request-digest or response-digest */
+            throws SaslException {
+        byte[] HA2;
+        byte[] respHash;
+        char[] HA2Hex;
 
         // calculate H(A2)
-        try
-        {
+        try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             if (clientResponseFlag)
-                  md.update(method.getBytes("UTF-8"));
+                md.update(method.getBytes("UTF-8"));
             md.update(":".getBytes("UTF-8"));
             md.update(digestUri.getBytes("UTF-8"));
-            if ("auth-int".equals(qop))
-            {
+            if ("auth-int".equals(qop)) {
                 md.update(":".getBytes("UTF-8"));
                 md.update("00000000000000000000000000000000".getBytes("UTF-8"));
             }
@@ -526,8 +473,7 @@ public class DigestMD5SaslClient implements SaslClient
             md.update(":".getBytes("UTF-8"));
             md.update(serverNonce.getBytes("UTF-8"));
             md.update(":".getBytes("UTF-8"));
-            if (qop.length() > 0)
-            {
+            if (qop.length() > 0) {
                 md.update(nonceCount.getBytes("UTF-8"));
                 md.update(":".getBytes("UTF-8"));
                 md.update(clientNonce.getBytes("UTF-8"));
@@ -537,15 +483,11 @@ public class DigestMD5SaslClient implements SaslClient
             }
             md.update(new String(HA2Hex).getBytes("UTF-8"));
             respHash = md.digest();
-        }
-        catch(NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             throw new SaslException("No provider found for MD5 hash", e);
-        }
-        catch(UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             throw new SaslException(
-             "UTF-8 encoding not supported by platform.", e);
+                    "UTF-8 encoding not supported by platform.", e);
         }
 
         return convertToHex(respHash);
@@ -555,24 +497,22 @@ public class DigestMD5SaslClient implements SaslClient
     /**
      * Creates the intial response to be sent to the server.
      *
-     * @param challenge  Challenge in bytes recived form the Server
-     *
+     * @param challenge Challenge in bytes recived form the Server
      * @return Initial response to be sent to the server
      */
     private String createDigestResponse(
-        byte[] challenge)
-            throws SaslException
-    {
-        char[]            response;
-        StringBuffer    digestResponse = new StringBuffer(512);
-        int             realmSize;
+            byte[] challenge)
+            throws SaslException {
+        char[] response;
+        StringBuffer digestResponse = new StringBuffer(512);
+        int realmSize;
 
         m_dc = new DigestChallenge(challenge);
 
         m_digestURI = m_protocol + "/" + m_serverName;
 
         if ((m_dc.getQop() & DigestChallenge.QOP_AUTH)
-            == DigestChallenge.QOP_AUTH )
+                == DigestChallenge.QOP_AUTH)
             m_qopValue = "auth";
         else
             throw new SaslException("Client only supports qop of 'auth'");
@@ -581,25 +521,20 @@ public class DigestMD5SaslClient implements SaslClient
         Callback[] callbacks = new Callback[3];
         ArrayList realms = m_dc.getRealms();
         realmSize = realms.size();
-        if (realmSize == 0)
-        {
+        if (realmSize == 0) {
             callbacks[0] = new RealmCallback("Realm");
-        }
-        else if (realmSize == 1)
-        {
-            callbacks[0] = new RealmCallback("Realm", (String)realms.get(0));
-        }
-        else
-        {
+        } else if (realmSize == 1) {
+            callbacks[0] = new RealmCallback("Realm", (String) realms.get(0));
+        } else {
             callbacks[0] =
-             new RealmChoiceCallback(
-                         "Realm",
-                         (String[])realms.toArray(new String[realmSize]),
-                          0,      //the default choice index
-                          false); //no multiple selections
+                    new RealmChoiceCallback(
+                            "Realm",
+                            (String[]) realms.toArray(new String[realmSize]),
+                            0,      //the default choice index
+                            false); //no multiple selections
         }
 
-        callbacks[1] = new PasswordCallback("Password", false); 
+        callbacks[1] = new PasswordCallback("Password", false);
         //false = no echo
 
         if (m_authorizationId == null || m_authorizationId.length() == 0)
@@ -607,63 +542,55 @@ public class DigestMD5SaslClient implements SaslClient
         else
             callbacks[2] = new NameCallback("Name", m_authorizationId);
 
-        try
-        {
+        try {
             m_cbh.handle(callbacks);
-        }
-        catch(UnsupportedCallbackException e)
-        {
+        } catch (UnsupportedCallbackException e) {
             throw new SaslException("Handler does not support" +
-                                          " necessary callbacks",e);
-        }
-        catch(IOException e)
-        {
+                    " necessary callbacks", e);
+        } catch (IOException e) {
             throw new SaslException("IO exception in CallbackHandler.", e);
         }
 
-        if (realmSize > 1)
-        {
+        if (realmSize > 1) {
             int[] selections =
-             ((RealmChoiceCallback)callbacks[0]).getSelectedIndexes();
+                    ((RealmChoiceCallback) callbacks[0]).getSelectedIndexes();
 
             if (selections.length > 0)
                 m_realm =
-                ((RealmChoiceCallback)callbacks[0]).getChoices()[selections[0]];
+                        ((RealmChoiceCallback) callbacks[0]).getChoices()[selections[0]];
             else
-                m_realm = ((RealmChoiceCallback)callbacks[0]).getChoices()[0];
-        }
-        else
-            m_realm = ((RealmCallback)callbacks[0]).getText();
+                m_realm = ((RealmChoiceCallback) callbacks[0]).getChoices()[0];
+        } else
+            m_realm = ((RealmCallback) callbacks[0]).getText();
 
         m_clientNonce = getClientNonce();
 
-        m_name = ((NameCallback)callbacks[2]).getName();
+        m_name = ((NameCallback) callbacks[2]).getName();
         if (m_name == null)
-            m_name = ((NameCallback)callbacks[2]).getDefaultName();
+            m_name = ((NameCallback) callbacks[2]).getDefaultName();
         if (m_name == null)
             throw new SaslException("No user name was specified.");
 
         m_HA1 = DigestCalcHA1(
-                      m_dc.getAlgorithm(),
-                      m_name,
-                      m_realm,
-                      new String(((PasswordCallback)callbacks[1]).getPassword()),
-                      m_dc.getNonce(),
-                      m_clientNonce);
+                m_dc.getAlgorithm(),
+                m_name,
+                m_realm,
+                new String(((PasswordCallback) callbacks[1]).getPassword()),
+                m_dc.getNonce(),
+                m_clientNonce);
 
         response = DigestCalcResponse(m_HA1,
-                                      m_dc.getNonce(),
-                                      "00000001",
-                                      m_clientNonce,
-                                      m_qopValue,
-                                      "AUTHENTICATE",
-                                      m_digestURI,
-                                      true);
+                m_dc.getNonce(),
+                "00000001",
+                m_clientNonce,
+                m_qopValue,
+                "AUTHENTICATE",
+                m_digestURI,
+                true);
 
         digestResponse.append("username=\"");
         digestResponse.append(m_authorizationId);
-        if (0 != m_realm.length())
-        {
+        if (0 != m_realm.length()) {
             digestResponse.append("\",realm=\"");
             digestResponse.append(m_realm);
         }
@@ -674,7 +601,7 @@ public class DigestMD5SaslClient implements SaslClient
         digestResponse.append(",qop=");
         digestResponse.append(m_qopValue);
         digestResponse.append(",digest-uri=\"");
-	digestResponse.append(m_digestURI);
+        digestResponse.append(m_digestURI);
         digestResponse.append("\",response=");
         digestResponse.append(response);
         digestResponse.append(",charset=utf-8,nonce=\"");
@@ -682,38 +609,35 @@ public class DigestMD5SaslClient implements SaslClient
         digestResponse.append("\"");
 
         return digestResponse.toString();
-     }
-     
-     
+    }
+
+
     /**
-     * This function validates the server response. This step performs a 
+     * This function validates the server response. This step performs a
      * modicum of mutual authentication by verifying that the server knows
      * the user's password
      *
-     * @param  serverResponse  Response recived form Server
-     *
-     * @return  true if the mutual authentication succeeds;
-     *          else return false
-     *
-     * @exception SaslException  If an error occurs
+     * @param serverResponse Response recived form Server
+     * @return true if the mutual authentication succeeds;
+     * else return false
+     * @throws SaslException If an error occurs
      */
     boolean checkServerResponseAuth(
-            byte[]  serverResponse) throws SaslException
-    {
-        char[]           response;
-        ResponseAuth  responseAuth = null;
-        String        responseStr;
+            byte[] serverResponse) throws SaslException {
+        char[] response;
+        ResponseAuth responseAuth = null;
+        String responseStr;
 
         responseAuth = new ResponseAuth(serverResponse);
 
         response = DigestCalcResponse(m_HA1,
-                                  m_dc.getNonce(),
-                                  "00000001",
-                                  m_clientNonce,
-                                  m_qopValue,
-                                  DIGEST_METHOD,
-                                  m_digestURI,
-                                  false);
+                m_dc.getNonce(),
+                "00000001",
+                m_clientNonce,
+                m_qopValue,
+                DIGEST_METHOD,
+                m_digestURI,
+                false);
 
         responseStr = new String(response);
 
@@ -723,96 +647,86 @@ public class DigestMD5SaslClient implements SaslClient
 
     /**
      * This function returns hex character representing the value of the input
-     * 
-     * @param value Input value in byte
      *
+     * @param value Input value in byte
      * @return Hex value of the Input byte value
      */
     private static char getHexChar(
-        byte    value)
-    {
-        switch (value)
-        {
-        case 0:
-            return '0';
-        case 1:
-            return '1';
-        case 2:
-            return '2';
-        case 3:
-            return '3';
-        case 4:
-            return '4';
-        case 5:
-            return '5';
-        case 6:
-            return '6';
-        case 7:
-            return '7';
-        case 8:
-            return '8';
-        case 9:
-            return '9';
-        case 10:
-            return 'a';
-        case 11:
-            return 'b';
-        case 12:
-            return 'c';
-        case 13:
-            return 'd';
-        case 14:
-            return 'e';
-        case 15:
-            return 'f';
-        default:
-            return 'Z';
+            byte value) {
+        switch (value) {
+            case 0:
+                return '0';
+            case 1:
+                return '1';
+            case 2:
+                return '2';
+            case 3:
+                return '3';
+            case 4:
+                return '4';
+            case 5:
+                return '5';
+            case 6:
+                return '6';
+            case 7:
+                return '7';
+            case 8:
+                return '8';
+            case 9:
+                return '9';
+            case 10:
+                return 'a';
+            case 11:
+                return 'b';
+            case 12:
+                return 'c';
+            case 13:
+                return 'd';
+            case 14:
+                return 'e';
+            case 15:
+                return 'f';
+            default:
+                return 'Z';
         }
     }
 
     /**
      * Calculates the Nonce value of the Client
-     * 
-     * @return   Nonce value of the client
      *
-     * @exception   SaslException If an error Occurs
+     * @return Nonce value of the client
+     * @throws SaslException If an error Occurs
      */
-    String getClientNonce() throws SaslException
-    {
-        byte[]          nonceBytes = new byte[NONCE_BYTE_COUNT];
-        SecureRandom    prng;
-        byte            nonceByte;
-        char[]          hexNonce = new char[NONCE_HEX_COUNT];
+    String getClientNonce() throws SaslException {
+        byte[] nonceBytes = new byte[NONCE_BYTE_COUNT];
+        SecureRandom prng;
+        byte nonceByte;
+        char[] hexNonce = new char[NONCE_HEX_COUNT];
 
-        try
-        {
+        try {
             prng = SecureRandom.getInstance("SHA1PRNG");
             prng.nextBytes(nonceBytes);
-            for(int i=0; i<NONCE_BYTE_COUNT; i++)
-            {
+            for (int i = 0; i < NONCE_BYTE_COUNT; i++) {
                 //low nibble
-                hexNonce[i*2] = getHexChar((byte)(nonceBytes[i] & 0x0f));
+                hexNonce[i * 2] = getHexChar((byte) (nonceBytes[i] & 0x0f));
                 //high nibble
-                hexNonce[(i*2)+1] = getHexChar((byte)((nonceBytes[i] & 0xf0)
-                                                                      >> 4));
+                hexNonce[(i * 2) + 1] = getHexChar((byte) ((nonceBytes[i] & 0xf0)
+                        >> 4));
             }
             return new String(hexNonce);
-        }
-        catch(NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             throw new SaslException("No random number generator available", e);
         }
     }
 
     /**
      * Returns the IANA-registered mechanism name of this SASL client.
-     *  (e.g. "CRAM-MD5", "GSSAPI")
+     * (e.g. "CRAM-MD5", "GSSAPI")
      *
-     * @return  "DIGEST-MD5"the IANA-registered mechanism name of this SASL
-     *          client.
+     * @return "DIGEST-MD5"the IANA-registered mechanism name of this SASL
+     * client.
      */
-    public String getMechanismName()
-    {
+    public String getMechanismName() {
         return "DIGEST-MD5";
     }
 

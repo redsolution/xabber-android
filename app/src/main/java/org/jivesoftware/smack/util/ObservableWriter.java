@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * An ObservableWriter is a wrapper on a Writer that notifies to its listeners when
  * writing to character streams.
- * 
+ *
  * @author Gaston Dombiak
  */
 public class ObservableWriter extends Writer {
@@ -50,14 +50,14 @@ public class ObservableWriter extends Writer {
 
     public void close() throws IOException {
         wrappedWriter.close();
-		WriterListener[] writerListeners = null;
-		synchronized (listeners) {
-			writerListeners = new WriterListener[listeners.size()];
-			listeners.toArray(writerListeners);
-		}
-		for (int i = 0; i < writerListeners.length; i++) {
-			writerListeners[i].close();
-		}
+        WriterListener[] writerListeners = null;
+        synchronized (listeners) {
+            writerListeners = new WriterListener[listeners.size()];
+            listeners.toArray(writerListeners);
+        }
+        for (int i = 0; i < writerListeners.length; i++) {
+            writerListeners[i].close();
+        }
     }
 
     public void write(int c) throws IOException {
@@ -83,8 +83,8 @@ public class ObservableWriter extends Writer {
 
     /**
      * Notify that a new string has been written.
-     * 
-     * @param str the written String to notify 
+     *
+     * @param str the written String to notify
      */
     private void notifyListeners(String str) {
         WriterListener[] writerListeners = null;

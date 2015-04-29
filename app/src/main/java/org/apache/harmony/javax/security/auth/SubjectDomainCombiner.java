@@ -38,8 +38,7 @@ public class SubjectDomainCombiner implements DomainCombiner {
     /**
      * Creates a domain combiner for the entity provided in {@code subject}.
      *
-     * @param subject
-     *            the entity to which this domain combiner is associated.
+     * @param subject the entity to which this domain combiner is associated.
      */
     public SubjectDomainCombiner(Subject subject) {
         super();
@@ -67,20 +66,18 @@ public class SubjectDomainCombiner implements DomainCombiner {
      * Merges the {@code ProtectionDomain} with the {@code Principal}s
      * associated with the subject of this {@code SubjectDomainCombiner}.
      *
-     * @param currentDomains
-     *            the {@code ProtectionDomain}s associated with the context of
-     *            the current thread. The domains must be sorted according to
-     *            the execution order, the most recent residing at the
-     *            beginning.
-     * @param assignedDomains
-     *            the {@code ProtectionDomain}s from the parent thread based on
-     *            code source and signers.
+     * @param currentDomains  the {@code ProtectionDomain}s associated with the context of
+     *                        the current thread. The domains must be sorted according to
+     *                        the execution order, the most recent residing at the
+     *                        beginning.
+     * @param assignedDomains the {@code ProtectionDomain}s from the parent thread based on
+     *                        code source and signers.
      * @return a single {@code ProtectionDomain} array computed from the two
-     *         provided arrays, or {@code null}.
+     * provided arrays, or {@code null}.
      * @see ProtectionDomain
      */
     public ProtectionDomain[] combine(ProtectionDomain[] currentDomains,
-            ProtectionDomain[] assignedDomains) {
+                                      ProtectionDomain[] assignedDomains) {
         // get array length for combining protection domains
         int len = 0;
         if (currentDomains != null) {
@@ -107,7 +104,7 @@ public class SubjectDomainCombiner implements DomainCombiner {
                     ProtectionDomain newPD;
                     newPD = new ProtectionDomain(currentDomains[cur].getCodeSource(),
                             currentDomains[cur].getPermissions(), currentDomains[cur]
-                                    .getClassLoader(), p);
+                            .getClassLoader(), p);
                     pd[cur] = newPD;
                 }
             }

@@ -29,28 +29,28 @@ import org.xmlpull.v1.XmlPullParser;
  * users to a group chat room. To invite a user to a group chat room, address
  * a new message to the user and set the room name appropriately, as in the
  * following code example:
- *
+ * <p/>
  * <pre>
  * Message message = new Message("user@chat.example.com");
  * message.setBody("Join me for a group chat!");
  * message.addExtension(new GroupChatInvitation("room@chat.example.com"););
  * con.sendPacket(message);
  * </pre>
- *
+ * <p/>
  * To listen for group chat invitations, use a PacketExtensionFilter for the
  * <tt>x</tt> element name and <tt>jabber:x:conference</tt> namespace, as in the
  * following code example:
- *
+ * <p/>
  * <pre>
  * PacketFilter filter = new PacketExtensionFilter("x", "jabber:x:conference");
  * // Create a packet collector or packet listeners using the filter...
  * </pre>
- *
+ * <p/>
  * <b>Note</b>: this protocol is outdated now that the Multi-User Chat (MUC) JEP is available
  * (<a href="http://www.jabber.org/jeps/jep-0045.html">JEP-45</a>). However, most
  * existing clients still use this older protocol. Once MUC support becomes more
  * widespread, this API may be deprecated.
- * 
+ *
  * @author Matt Tucker
  */
 public class GroupChatInvitation implements PacketExtension {
@@ -105,7 +105,7 @@ public class GroupChatInvitation implements PacketExtension {
     }
 
     public static class Provider implements PacketExtensionProvider {
-        public PacketExtension parseExtension (XmlPullParser parser) throws Exception {
+        public PacketExtension parseExtension(XmlPullParser parser) throws Exception {
             String roomAddress = parser.getAttributeValue("", "jid");
             // Advance to end of extension.
             parser.next();

@@ -10,7 +10,7 @@ import org.jivesoftware.smackx.bytestreams.BytestreamSession;
 
 /**
  * Socks5BytestreamSession class represents a SOCKS5 Bytestream session.
- * 
+ *
  * @author Henning Staib
  */
 public class Socks5BytestreamSession implements BytestreamSession {
@@ -29,9 +29,9 @@ public class Socks5BytestreamSession implements BytestreamSession {
     /**
      * Returns <code>true</code> if the session is established through a direct connection between
      * the initiator and target, <code>false</code> if the session is mediated over a SOCKS proxy.
-     * 
+     *
      * @return <code>true</code> if session is a direct connection, <code>false</code> if session is
-     *         mediated over a SOCKS5 proxy
+     * mediated over a SOCKS5 proxy
      */
     public boolean isDirect() {
         return this.isDirect;
@@ -40,9 +40,9 @@ public class Socks5BytestreamSession implements BytestreamSession {
     /**
      * Returns <code>true</code> if the session is mediated over a SOCKS proxy, <code>false</code>
      * if this session is established through a direct connection between the initiator and target.
-     * 
+     *
      * @return <code>true</code> if session is mediated over a SOCKS5 proxy, <code>false</code> if
-     *         session is a direct connection
+     * session is a direct connection
      */
     public boolean isMediated() {
         return !this.isDirect;
@@ -59,8 +59,7 @@ public class Socks5BytestreamSession implements BytestreamSession {
     public int getReadTimeout() throws IOException {
         try {
             return this.socket.getSoTimeout();
-        }
-        catch (SocketException e) {
+        } catch (SocketException e) {
             throw new IOException("Error on underlying Socket");
         }
     }
@@ -68,8 +67,7 @@ public class Socks5BytestreamSession implements BytestreamSession {
     public void setReadTimeout(int timeout) throws IOException {
         try {
             this.socket.setSoTimeout(timeout);
-        }
-        catch (SocketException e) {
+        } catch (SocketException e) {
             throw new IOException("Error on underlying Socket");
         }
     }

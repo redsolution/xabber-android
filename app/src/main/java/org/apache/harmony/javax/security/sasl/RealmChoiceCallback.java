@@ -24,7 +24,7 @@ public class RealmChoiceCallback extends ChoiceCallback {
     private static final long serialVersionUID = -8588141348846281332L;
 
     public RealmChoiceCallback(String prompt, String[] choices, int defaultChoice,
-            boolean multiple) {
+                               boolean multiple) {
         super(prompt, choices, defaultChoice, multiple);
     }
 }

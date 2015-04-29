@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="12dp"
+    android:layout_height="12dp"
+    android:layout_marginEnd="3dp"
+    android:layout_marginLeft="3dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginStart="3dp"
+    android:orientation="vertical"
+    >
+
+    <ImageView
+        android:id="@+id/indicator_item_body"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:layout_centerInParent="true"
+        android:alpha="0.5"
+        android:src="@color/green_500"
+        />
+
+    <ImageView
+        android:id="@+id/indicator_item_selection"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_centerInParent="true"
+        android:alpha="0.5"
+        android:src="@color/green_500"
+        android:visibility="invisible"
+        />
+
+</RelativeLayout>

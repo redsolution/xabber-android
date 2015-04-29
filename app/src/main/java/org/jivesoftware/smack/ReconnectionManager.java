@@ -4,16 +4,17 @@ import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.packet.StreamError.Type;
 
 import java.util.Random;
+
 /**
  * Handles the automatic reconnection process. Every time a connection is dropped without
  * the application explictly closing it, the manager automatically tries to reconnect to
  * the server.<p>
- *
+ * <p/>
  * The reconnection mechanism will try to reconnect periodically:
  * <ol>
- *  <li>For the first minute it will attempt to connect once every ten seconds.
- *  <li>For the next five minutes it will attempt to connect once a minute.
- *  <li>If that fails it will indefinitely try to connect once every five minutes.
+ * <li>For the first minute it will attempt to connect once every ten seconds.
+ * <li>For the next five minutes it will attempt to connect once a minute.
+ * <li>If that fails it will indefinitely try to connect once every five minutes.
  * </ol>
  *
  * @author Francisco Vives
@@ -24,7 +25,7 @@ public class ReconnectionManager implements ConnectionListener {
     private Connection connection;
     private Thread reconnectionThread;
     private int randomBase = new Random().nextInt(11) + 5; // between 5 and 15 seconds
-    
+
     // Holds the state of the reconnection
     boolean done = false;
 
@@ -70,10 +71,10 @@ public class ReconnectionManager implements ConnectionListener {
             // Since there is no thread running, creates a new one to attempt
             // the reconnection.
             // avoid to run duplicated reconnectionThread -- fd: 16/09/2010
-            if (reconnectionThread!=null && reconnectionThread.isAlive()) return;
-            
+            if (reconnectionThread != null && reconnectionThread.isAlive()) return;
+
             reconnectionThread = new Thread() {
-             			
+
                 /**
                  * Holds the current number of reconnection attempts
                  */
@@ -87,10 +88,10 @@ public class ReconnectionManager implements ConnectionListener {
                 private int timeDelay() {
                     attempts++;
                     if (attempts > 13) {
-                	return randomBase*6*5;      // between 2.5 and 7.5 minutes (~5 minutes)
+                        return randomBase * 6 * 5;      // between 2.5 and 7.5 minutes (~5 minutes)
                     }
                     if (attempts > 7) {
-                	return randomBase*6;       // between 30 and 90 seconds (~1 minutes)
+                        return randomBase * 6;       // between 30 and 90 seconds (~1 minutes)
                     }
                     return randomBase;       // 10 seconds
                 }
@@ -109,15 +110,13 @@ public class ReconnectionManager implements ConnectionListener {
                         // listeners once per second about how much time remains before the next
                         // reconnection attempt.
                         while (ReconnectionManager.this.isReconnectionAllowed() &&
-                                remainingSeconds > 0)
-                        {
+                                remainingSeconds > 0) {
                             try {
                                 Thread.sleep(1000);
                                 remainingSeconds--;
                                 ReconnectionManager.this
                                         .notifyAttemptToReconnectIn(remainingSeconds);
-                            }
-                            catch (InterruptedException e1) {
+                            } catch (InterruptedException e1) {
                                 e1.printStackTrace();
                                 // Notify the reconnection has failed
                                 ReconnectionManager.this.notifyReconnectionFailed(e1);
@@ -129,8 +128,7 @@ public class ReconnectionManager implements ConnectionListener {
                             if (ReconnectionManager.this.isReconnectionAllowed()) {
                                 connection.connect();
                             }
-                        }
-                        catch (XMPPException e) {
+                        } catch (XMPPException e) {
                             // Fires the failed reconnection notification
                             ReconnectionManager.this.notifyReconnectionFailed(e);
                         }

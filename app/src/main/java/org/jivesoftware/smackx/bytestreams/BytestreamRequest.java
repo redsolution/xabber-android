@@ -19,35 +19,35 @@ import org.jivesoftware.smackx.bytestreams.socks5.Socks5BytestreamRequest;
 
 /**
  * BytestreamRequest provides an interface to handle incoming bytestream requests.
- * <p>
+ * <p/>
  * There are two implementations of the interface. See {@link Socks5BytestreamRequest} and
  * {@link InBandBytestreamRequest}.
- * 
+ *
  * @author Henning Staib
  */
 public interface BytestreamRequest {
 
     /**
      * Returns the sender of the bytestream open request.
-     * 
+     *
      * @return the sender of the bytestream open request
      */
     public String getFrom();
 
     /**
      * Returns the session ID of the bytestream open request.
-     * 
+     *
      * @return the session ID of the bytestream open request
      */
     public String getSessionID();
 
     /**
      * Accepts the bytestream open request and returns the session to send/receive data.
-     * 
+     *
      * @return the session to send/receive data
-     * @throws XMPPException if an error occurred while accepting the bytestream request
+     * @throws XMPPException        if an error occurred while accepting the bytestream request
      * @throws InterruptedException if the thread was interrupted while waiting in a blocking
-     *         operation
+     *                              operation
      */
     public BytestreamSession accept() throws XMPPException, InterruptedException;
 

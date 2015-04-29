@@ -33,7 +33,7 @@ import org.jivesoftware.smackx.packet.LastActivity;
  * A last activity manager for handling information about the last activity associated
  * with a Jabber ID. A manager handles incoming LastActivity requests of existing
  * Connections. It also allows to request last activity information of other users.<p>
- *
+ * <p/>
  * LastActivity (JEP-012) based on the sending JID's type allows for retrieval of:
  * <ol>
  * <li>How long a particular user has been idle
@@ -41,25 +41,25 @@ import org.jivesoftware.smackx.packet.LastActivity;
  * <li>How long a host has been up.
  * </ol>
  * <p/>
- *
+ * <p/>
  * For example to get the idle time of a user logged in a resource, simple send the
  * LastActivity packet to them, as in the following code:<p>
- *
+ * <p/>
  * <pre>
  * Connection con = new XMPPConnection("jabber.org");
  * con.login("john", "doe");
  * LastActivity activity = LastActivity.getLastActivity(con, "xray@jabber.org/Smack");
  * </pre>
- *
+ * <p/>
  * To get the lapsed time since the last user logout is the same as above but with
  * out the resource:
  * <pre>
  * LastActivity activity = LastActivity.getLastActivity(con, "xray@jabber.org");
  * </pre>
- *
+ * <p/>
  * To get the uptime of a host, you simple send the LastActivity packet to it, as in the
  * following code example:<p>
- *
+ * <p/>
  * <pre>
  * LastActivity activity = LastActivity.getLastActivity(con, "jabber.org");
  * </pre>
@@ -167,6 +167,6 @@ public class LastActivityManager {
             throw new XMPPException(response.getError());
         }
         return response;
-	}
+    }
 
 }

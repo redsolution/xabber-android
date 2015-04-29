@@ -30,26 +30,26 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Represents a set of data results returned as part of a search. The report is structured 
+ * Represents a set of data results returned as part of a search. The report is structured
  * in columns and rows.
- * 
+ *
  * @author Gaston Dombiak
  */
 public class ReportedData {
-    
+
     private List<Column> columns = new ArrayList<Column>();
     private List<Row> rows = new ArrayList<Row>();
     private String title = "";
-    
+
     /**
-     * Returns a new ReportedData if the packet is used for reporting data and includes an 
+     * Returns a new ReportedData if the packet is used for reporting data and includes an
      * extension that matches the elementName and namespace "x","jabber:x:data".
-     * 
+     *
      * @param packet the packet used for reporting data.
      */
     public static ReportedData getReportedDataFrom(Packet packet) {
         // Check if the packet includes the DataForm extension
-        PacketExtension packetExtension = packet.getExtension("x","jabber:x:data");
+        PacketExtension packetExtension = packet.getExtension("x", "jabber:x:data");
         if (packetExtension != null) {
             // Check if the existing DataForm is a result of a search
             DataForm dataForm = (DataForm) packetExtension;
@@ -63,27 +63,27 @@ public class ReportedData {
 
     /**
      * Creates a new ReportedData based on the returned dataForm from a search
-     *(namespace "jabber:iq:search").
+     * (namespace "jabber:iq:search").
      *
      * @param dataForm the dataForm returned from a search (namespace "jabber:iq:search").
      */
     private ReportedData(DataForm dataForm) {
         // Add the columns to the report based on the reported data fields
-        for (Iterator fields = dataForm.getReportedData().getFields(); fields.hasNext();) {
-            FormField field = (FormField)fields.next();
+        for (Iterator fields = dataForm.getReportedData().getFields(); fields.hasNext(); ) {
+            FormField field = (FormField) fields.next();
             columns.add(new Column(field.getLabel(), field.getVariable(), field.getType()));
         }
 
         // Add the rows to the report based on the form's items
-        for (Iterator items = dataForm.getItems(); items.hasNext();) {
-            DataForm.Item item = (DataForm.Item)items.next();
+        for (Iterator items = dataForm.getItems(); items.hasNext(); ) {
+            DataForm.Item item = (DataForm.Item) items.next();
             List<Field> fieldList = new ArrayList<Field>(columns.size());
             FormField field;
-            for (Iterator fields = item.getFields(); fields.hasNext();) {
+            for (Iterator fields = item.getFields(); fields.hasNext(); ) {
                 field = (FormField) fields.next();
                 // The field is created with all the values of the data form's field
                 List<String> values = new ArrayList<String>();
-                for (Iterator<String> it=field.getValues(); it.hasNext();) {
+                for (Iterator<String> it = field.getValues(); it.hasNext(); ) {
                     values.add(it.next());
                 }
                 fieldList.add(new Field(field.getVariable(), values));
@@ -96,23 +96,25 @@ public class ReportedData {
     }
 
 
-    public ReportedData(){
+    public ReportedData() {
         // Allow for model creation of ReportedData.
     }
 
     /**
      * Adds a new <code>Row</code>.
+     *
      * @param row the new row to add.
      */
-    public void addRow(Row row){
+    public void addRow(Row row) {
         rows.add(row);
     }
 
     /**
      * Adds a new <code>Column</code>
+     *
      * @param column the column to add.
      */
-    public void addColumn(Column column){
+    public void addColumn(Column column) {
         columns.add(column);
     }
 
@@ -147,7 +149,6 @@ public class ReportedData {
     }
 
     /**
-     *
      * Represents the columns definition of the reported data.
      *
      * @author Gaston Dombiak
@@ -160,9 +161,9 @@ public class ReportedData {
         /**
          * Creates a new column with the specified definition.
          *
-         * @param label the columns's label.
+         * @param label    the columns's label.
          * @param variable the variable name of the column.
-         * @param type the format for the returned data.
+         * @param type     the format for the returned data.
          */
         public Column(String label, String variable, String type) {
             this.label = label;
@@ -182,21 +183,21 @@ public class ReportedData {
 
         /**
          * Returns the column's data format. Valid formats are:
-         *
+         * <p/>
          * <ul>
-         *  <li>text-single -> single line or word of text
-         *  <li>text-private -> instead of showing the user what they typed, you show ***** to
+         * <li>text-single -> single line or word of text
+         * <li>text-private -> instead of showing the user what they typed, you show ***** to
          * protect it
-         *  <li>text-multi -> multiple lines of text entry
-         *  <li>list-single -> given a list of choices, pick one
-         *  <li>list-multi -> given a list of choices, pick one or more
-         *  <li>boolean -> 0 or 1, true or false, yes or no. Default value is 0
-         *  <li>fixed -> fixed for putting in text to show sections, or just advertise your web
+         * <li>text-multi -> multiple lines of text entry
+         * <li>list-single -> given a list of choices, pick one
+         * <li>list-multi -> given a list of choices, pick one or more
+         * <li>boolean -> 0 or 1, true or false, yes or no. Default value is 0
+         * <li>fixed -> fixed for putting in text to show sections, or just advertise your web
          * site in the middle of the form
-         *  <li>hidden -> is not given to the user at all, but returned with the questionnaire
-         *  <li>jid-single -> Jabber ID - choosing a JID from your roster, and entering one based
+         * <li>hidden -> is not given to the user at all, but returned with the questionnaire
+         * <li>jid-single -> Jabber ID - choosing a JID from your roster, and entering one based
          * on the rules for a JID.
-         *  <li>jid-multi -> multiple entries for JIDs
+         * <li>jid-multi -> multiple entries for JIDs
          * </ul>
          *
          * @return format for the returned data.
@@ -232,7 +233,7 @@ public class ReportedData {
          * @return the values of the field whose variable matches the requested variable.
          */
         public Iterator getValues(String variable) {
-            for(Iterator<Field> it=getFields();it.hasNext();) {
+            for (Iterator<Field> it = getFields(); it.hasNext(); ) {
                 Field field = it.next();
                 if (variable.equalsIgnoreCase(field.getVariable())) {
                     return field.getValues();
@@ -262,7 +263,7 @@ public class ReportedData {
 
         /**
          * Returns the variable name that the field represents.
-         * 
+         *
          * @return the variable name of the field.
          */
         public String getVariable() {
@@ -271,7 +272,7 @@ public class ReportedData {
 
         /**
          * Returns an iterator on the values reported as part of the search.
-         * 
+         *
          * @return the returned values of the search.
          */
         public Iterator<String> getValues() {

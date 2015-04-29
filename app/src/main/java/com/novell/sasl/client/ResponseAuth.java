@@ -15,30 +15,26 @@
 package com.novell.sasl.client;
 
 import java.util.*;
+
 import org.apache.harmony.javax.security.sasl.*;
 
 /**
  * Implements the ResponseAuth class used by the DigestMD5SaslClient mechanism
  */
-class ResponseAuth
-{
+class ResponseAuth {
 
     private String m_responseValue;
 
     ResponseAuth(
-        byte[] responseAuth)
-            throws SaslException
-    {
+            byte[] responseAuth)
+            throws SaslException {
         m_responseValue = null;
 
         DirectiveList dirList = new DirectiveList(responseAuth);
-        try
-        {
+        try {
             dirList.parseDirectives();
             checkSemantics(dirList);
-        }
-        catch (SaslException e)
-        {
+        } catch (SaslException e) {
         }
     }
 
@@ -46,20 +42,17 @@ class ResponseAuth
      * Checks the semantics of the directives in the directive list as parsed
      * from the digest challenge byte array.
      *
-     * @param dirList  the list of directives parsed from the digest challenge
-     *
-     * @exception SaslException   If a semantic error occurs
+     * @param dirList the list of directives parsed from the digest challenge
+     * @throws SaslException If a semantic error occurs
      */
     void checkSemantics(
-        DirectiveList dirList) throws SaslException
-    {
-        Iterator        directives = dirList.getIterator();
+            DirectiveList dirList) throws SaslException {
+        Iterator directives = dirList.getIterator();
         ParsedDirective directive;
-        String          name;
+        String name;
 
-        while (directives.hasNext())
-        {
-            directive = (ParsedDirective)directives.next();
+        while (directives.hasNext()) {
+            directive = (ParsedDirective) directives.next();
             name = directive.getName();
             if (name.equals("rspauth"))
                 m_responseValue = directive.getValue();
@@ -75,8 +68,7 @@ class ResponseAuth
      *
      * @return the ResponseValue as a String.
      */
-    public String getResponseValue()
-    {
+    public String getResponseValue() {
         return m_responseValue;
     }
 }

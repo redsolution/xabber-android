@@ -27,7 +27,7 @@ package org.jivesoftware.smack.util.collections;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:32 $
  * @since Commons Collections 3.0
  */
-public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {
+public abstract class AbstractKeyValue<K, V> implements KeyValue<K, V> {
 
     /**
      * The key

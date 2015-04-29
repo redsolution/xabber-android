@@ -49,7 +49,7 @@ public class FaultTolerantNegotiator extends StreamNegotiator {
     private PacketFilter secondaryFilter;
 
     public FaultTolerantNegotiator(Connection connection, StreamNegotiator primary,
-            StreamNegotiator secondary) {
+                                   StreamNegotiator secondary) {
         this.primaryNegotiator = primary;
         this.secondaryNegotiator = secondary;
         this.connection = connection;
@@ -94,8 +94,7 @@ public class FaultTolerantNegotiator extends StreamNegotiator {
                 try {
                     i++;
                     future = service.poll(10, TimeUnit.SECONDS);
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     continue;
                 }
 
@@ -105,16 +104,13 @@ public class FaultTolerantNegotiator extends StreamNegotiator {
 
                 try {
                     stream = future.get();
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     /* Do Nothing */
-                }
-                catch (ExecutionException e) {
+                } catch (ExecutionException e) {
                     exception = new XMPPException(e.getCause());
                 }
             }
-        }
-        finally {
+        } finally {
             for (Future<InputStream> future : futures) {
                 future.cancel(true);
             }
@@ -123,8 +119,7 @@ public class FaultTolerantNegotiator extends StreamNegotiator {
         if (stream == null) {
             if (exception != null) {
                 throw exception;
-            }
-            else {
+            } else {
                 throw new XMPPException("File transfer negotiation failed.");
             }
         }
@@ -141,8 +136,7 @@ public class FaultTolerantNegotiator extends StreamNegotiator {
         OutputStream stream;
         try {
             stream = primaryNegotiator.createOutgoingStream(streamID, initiator, target);
-        }
-        catch (XMPPException ex) {
+        } catch (XMPPException ex) {
             stream = secondaryNegotiator.createOutgoingStream(streamID, initiator, target);
         }
 

@@ -46,7 +46,7 @@ public class OfflineMessageRequest extends IQ {
      * view or delete.
      *
      * @return an Iterator for item childs that holds information about offline messages to
-     *         view or delete.
+     * view or delete.
      */
     public Iterator getItems() {
         synchronized (items) {
@@ -150,7 +150,7 @@ public class OfflineMessageRequest extends IQ {
          * offline message or delete it.
          *
          * @return "view" or "remove" that indicate if the server should return the specified
-         *         offline message or delete it.
+         * offline message or delete it.
          */
         public String getAction() {
             return action;
@@ -201,11 +201,9 @@ public class OfflineMessageRequest extends IQ {
                 if (eventType == XmlPullParser.START_TAG) {
                     if (parser.getName().equals("item")) {
                         request.addItem(parseItem(parser));
-                    }
-                    else if (parser.getName().equals("purge")) {
+                    } else if (parser.getName().equals("purge")) {
                         request.setPurge(true);
-                    }
-                    else if (parser.getName().equals("fetch")) {
+                    } else if (parser.getName().equals("fetch")) {
                         request.setFetch(true);
                     }
                 } else if (eventType == XmlPullParser.END_TAG) {

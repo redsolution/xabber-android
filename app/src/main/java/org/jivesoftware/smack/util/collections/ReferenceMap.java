@@ -64,7 +64,7 @@ import java.io.Serializable;
  * @see java.lang.ref.Reference
  * @since Commons Collections 3.0 (previously in main package v2.1)
  */
-public class ReferenceMap <K,V> extends AbstractReferenceMap<K, V> implements Serializable {
+public class ReferenceMap<K, V> extends AbstractReferenceMap<K, V> implements Serializable {
 
     /**
      * Serialization version
@@ -142,6 +142,7 @@ public class ReferenceMap <K,V> extends AbstractReferenceMap<K, V> implements Se
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * Write the map out using a custom routine.
      */

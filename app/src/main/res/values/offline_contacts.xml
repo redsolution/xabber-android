@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="offline_contacts_show_option">
+        <item>@string/show_offline_always</item>
+        <item>@string/show_offline_normal</item>
+        <item>@string/show_offline_never</item>
+    </string-array>
+</resources>

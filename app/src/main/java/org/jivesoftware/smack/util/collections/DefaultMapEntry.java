@@ -30,7 +30,7 @@ import java.util.Map;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:32 $
  * @since Commons Collections 3.0
  */
-public final class DefaultMapEntry <K,V> extends AbstractMapEntry<K, V> {
+public final class DefaultMapEntry<K, V> extends AbstractMapEntry<K, V> {
 
     /**
      * Constructs a new entry with the specified key and given value.

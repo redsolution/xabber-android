@@ -18,7 +18,7 @@ import org.jivesoftware.smack.packet.IQ;
 /**
  * Represents a chunk of data sent over an In-Band Bytestream encapsulated in an
  * IQ stanza.
- * 
+ *
  * @author Henning Staib
  */
 public class Data extends IQ {
@@ -28,7 +28,7 @@ public class Data extends IQ {
 
     /**
      * Constructor.
-     * 
+     *
      * @param data data packet extension containing the encoded data
      */
     public Data(DataPacketExtension data) {
@@ -47,10 +47,10 @@ public class Data extends IQ {
 
     /**
      * Returns the data packet extension.
-     * <p>
+     * <p/>
      * Convenience method for <code>packet.getExtension("data",
      * "http://jabber.org/protocol/ibb")</code>.
-     * 
+     *
      * @return the data packet extension
      */
     public DataPacketExtension getDataPacketExtension() {

@@ -21,25 +21,25 @@ import org.jivesoftware.smackx.bytestreams.socks5.Socks5BytestreamManager;
 /**
  * BytestreamListener are notified if a remote user wants to initiate a bytestream. Implement this
  * interface to handle incoming bytestream requests.
- * <p>
+ * <p/>
  * BytestreamListener can be registered at the {@link Socks5BytestreamManager} or the
  * {@link InBandBytestreamManager}.
- * <p>
+ * <p/>
  * There are two ways to add this listener. See
  * {@link BytestreamManager#addIncomingBytestreamListener(BytestreamListener)} and
  * {@link BytestreamManager#addIncomingBytestreamListener(BytestreamListener, String)} for further
  * details.
- * <p>
+ * <p/>
  * {@link Socks5BytestreamListener} or {@link InBandBytestreamListener} provide a more specific
  * interface of the BytestreamListener.
- * 
+ *
  * @author Henning Staib
  */
 public interface BytestreamListener {
 
     /**
      * This listener is notified if a bytestream request from another user has been received.
-     * 
+     *
      * @param request the incoming bytestream request
      */
     public void incomingBytestreamRequest(BytestreamRequest request);

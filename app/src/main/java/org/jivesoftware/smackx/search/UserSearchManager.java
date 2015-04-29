@@ -104,8 +104,7 @@ public class UserSearchManager {
                 DiscoverInfo info;
                 try {
                     info = discoManager.discoverInfo(item.getEntityID());
-                }
-                catch (XMPPException e) {
+                } catch (XMPPException e) {
                     // Ignore Case
                     continue;
                 }
@@ -113,8 +112,7 @@ public class UserSearchManager {
                 if (info.containsFeature("jabber:iq:search")) {
                     searchServices.add(item.getEntityID());
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // No info found.
                 break;
             }

@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Map;
 
 
-
 public class AppConfigurationEntry {
 
     // the login module options
@@ -34,7 +33,7 @@ public class AppConfigurationEntry {
     private final String loginModuleName;
 
     public AppConfigurationEntry(String loginModuleName,
-            AppConfigurationEntry.LoginModuleControlFlag controlFlag, Map<String, ?> options) {
+                                 AppConfigurationEntry.LoginModuleControlFlag controlFlag, Map<String, ?> options) {
 
         if (loginModuleName == null || loginModuleName.length() == 0) {
             throw new IllegalArgumentException("auth.26"); //$NON-NLS-1$

@@ -26,9 +26,9 @@ import org.jivesoftware.smack.packet.Packet;
  * Filters for packets of a particular type. The type is given as a Class object, so
  * example types would:
  * <ul>
- *      <li><tt>Message.class</tt>
- *      <li><tt>IQ.class</tt>
- *      <li><tt>Presence.class</tt>
+ * <li><tt>Message.class</tt>
+ * <li><tt>IQ.class</tt>
+ * <li><tt>Presence.class</tt>
  * </ul>
  *
  * @author Matt Tucker

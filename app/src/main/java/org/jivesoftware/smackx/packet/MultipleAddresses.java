@@ -46,16 +46,16 @@ public class MultipleAddresses implements PacketExtension {
     /**
      * Adds a new address to which the packet is going to be sent or was sent.
      *
-     * @param type on of the static type (BCC, CC, NO_REPLY, REPLY_ROOM, etc.)
-     * @param jid the JID address of the recipient.
-     * @param node used to specify a sub-addressable unit at a particular JID, corresponding to
-     *             a Service Discovery node.
-     * @param desc used to specify human-readable information for this address.
+     * @param type      on of the static type (BCC, CC, NO_REPLY, REPLY_ROOM, etc.)
+     * @param jid       the JID address of the recipient.
+     * @param node      used to specify a sub-addressable unit at a particular JID, corresponding to
+     *                  a Service Discovery node.
+     * @param desc      used to specify human-readable information for this address.
      * @param delivered true when the packet was already delivered to this address.
-     * @param uri used to specify an external system address, such as a sip:, sips:, or im: URI.
+     * @param uri       used to specify an external system address, such as a sip:, sips:, or im: URI.
      */
     public void addAddress(String type, String jid, String node, String desc, boolean delivered,
-            String uri) {
+                           String uri) {
         // Create a new address with the specificed configuration
         Address address = new Address(type);
         address.setJid(jid);
@@ -86,7 +86,7 @@ public class MultipleAddresses implements PacketExtension {
      */
     public List getAddressesOfType(String type) {
         List answer = new ArrayList(addresses.size());
-        for (Iterator it = addresses.iterator(); it.hasNext();) {
+        for (Iterator it = addresses.iterator(); it.hasNext(); ) {
             Address address = (Address) it.next();
             if (address.getType().equals(type)) {
                 answer.add(address);
@@ -109,7 +109,7 @@ public class MultipleAddresses implements PacketExtension {
         buf.append("<").append(getElementName());
         buf.append(" xmlns=\"").append(getNamespace()).append("\">");
         // Loop through all the addresses and append them to the string buffer
-        for (Iterator i = addresses.iterator(); i.hasNext();) {
+        for (Iterator i = addresses.iterator(); i.hasNext(); ) {
             Address address = (Address) i.next();
             buf.append(address.toXML());
         }

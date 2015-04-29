@@ -33,7 +33,7 @@ public interface ChatStateListener extends MessageListener {
     /**
      * Fired when the state of a chat with another user changes.
      *
-     * @param chat the chat in which the state has changed.
+     * @param chat  the chat in which the state has changed.
      * @param state the new state of the participant.
      */
     void stateChanged(Chat chat, ChatState state);

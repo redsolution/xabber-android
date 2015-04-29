@@ -20,7 +20,6 @@ package org.apache.harmony.javax.security.auth.callback;
 import java.io.Serializable;
 
 
-
 public class ChoiceCallback implements Callback, Serializable {
 
     private static final long serialVersionUID = -3975664071579892167L;
@@ -64,7 +63,7 @@ public class ChoiceCallback implements Callback, Serializable {
     }
 
     public ChoiceCallback(String prompt, String[] choices, int defaultChoice,
-            boolean multipleSelectionsAllowed) {
+                          boolean multipleSelectionsAllowed) {
         super();
         setPrompt(prompt);
         setChoices(choices);

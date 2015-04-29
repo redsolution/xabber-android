@@ -34,7 +34,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * don't send thread IDs at all. Therefore, if a message without a thread ID
  * arrives it is routed to the most recently created Chat with the message
  * sender.
- * 
+ *
  * @author Matt Tucker
  */
 public class Chat {
@@ -49,7 +49,7 @@ public class Chat {
      *
      * @param chatManager the chatManager the chat will use.
      * @param participant the user to chat with.
-     * @param threadID the thread ID to use.
+     * @param threadID    the thread ID to use.
      */
     Chat(ChatManager chatManager, String participant, String threadID) {
         this.chatManager = chatManager;
@@ -80,7 +80,7 @@ public class Chat {
     /**
      * Sends the specified text as a message to the other chat participant.
      * This is a convenience method for:
-     *
+     * <p/>
      * <pre>
      *     Message message = chat.createMessage();
      *     message.setBody(messageText);
@@ -120,7 +120,7 @@ public class Chat {
      * @param listener a packet listener.
      */
     public void addMessageListener(MessageListener listener) {
-        if(listener == null) {
+        if (listener == null) {
             return;
         }
         // TODO these references should be weak.
@@ -174,7 +174,7 @@ public class Chat {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Chat
-                && threadID.equals(((Chat)obj).getThreadID())
-                && participant.equals(((Chat)obj).getParticipant());
+                && threadID.equals(((Chat) obj).getThreadID())
+                && participant.equals(((Chat) obj).getParticipant());
     }
 }

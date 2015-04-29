@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/input_holder"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+
+    android:paddingLeft="12dp"
+    android:paddingRight="16dp"
+
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    >
+
+    <EditText
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/group_add_input"
+        android:layout_weight="1"
+        android:hint="@string/add_new_group"
+        android:textColorHint="@color/grey_400"
+        android:singleLine="true" />
+
+    <CheckBox
+        android:id="@+id/group_add_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+</LinearLayout>

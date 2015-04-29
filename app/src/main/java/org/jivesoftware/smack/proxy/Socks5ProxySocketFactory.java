@@ -6,58 +6,52 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
 import javax.net.SocketFactory;
 
 /**
  * Socket factory for Socks5 proxy
- * 
+ *
  * @author Atul Aggarwal
  */
-public class Socks5ProxySocketFactory 
-    extends SocketFactory
-{
+public class Socks5ProxySocketFactory
+        extends SocketFactory {
     private ProxyInfo proxy;
-    
-    public Socks5ProxySocketFactory(ProxyInfo proxy)
-    {
+
+    public Socks5ProxySocketFactory(ProxyInfo proxy) {
         this.proxy = proxy;
     }
 
-    public Socket createSocket(String host, int port) 
-        throws IOException, UnknownHostException
-    {
-        return socks5ProxifiedSocket(host,port);
+    public Socket createSocket(String host, int port)
+            throws IOException, UnknownHostException {
+        return socks5ProxifiedSocket(host, port);
     }
 
-    public Socket createSocket(String host ,int port, InetAddress localHost,
-                                int localPort)
-        throws IOException, UnknownHostException
-    {
-        
-        return socks5ProxifiedSocket(host,port);
-        
+    public Socket createSocket(String host, int port, InetAddress localHost,
+                               int localPort)
+            throws IOException, UnknownHostException {
+
+        return socks5ProxifiedSocket(host, port);
+
     }
 
     public Socket createSocket(InetAddress host, int port)
-        throws IOException
-    {
-        
-        return socks5ProxifiedSocket(host.getHostAddress(),port);
-        
+            throws IOException {
+
+        return socks5ProxifiedSocket(host.getHostAddress(), port);
+
     }
 
-    public Socket createSocket( InetAddress address, int port, 
-                                InetAddress localAddress, int localPort) 
-        throws IOException
-    {
-        
-        return socks5ProxifiedSocket(address.getHostAddress(),port);
-        
+    public Socket createSocket(InetAddress address, int port,
+                               InetAddress localAddress, int localPort)
+            throws IOException {
+
+        return socks5ProxifiedSocket(address.getHostAddress(), port);
+
     }
-    
-    private Socket socks5ProxifiedSocket(String host, int port) 
-        throws IOException
-    {
+
+    private Socket socks5ProxifiedSocket(String host, int port)
+            throws IOException {
         Socket socket = null;
         InputStream in = null;
         OutputStream out = null;
@@ -65,17 +59,16 @@ public class Socks5ProxySocketFactory
         int proxy_port = proxy.getProxyPort();
         String user = proxy.getProxyUsername();
         String passwd = proxy.getProxyPassword();
-        
-        try
-        {
-            socket=new Socket(proxy_host, proxy_port);    
-            in=socket.getInputStream();
-            out=socket.getOutputStream();
+
+        try {
+            socket = new Socket(proxy_host, proxy_port);
+            in = socket.getInputStream();
+            out = socket.getOutputStream();
 
             socket.setTcpNoDelay(true);
 
-            byte[] buf=new byte[1024];
-            int index=0;
+            byte[] buf = new byte[1024];
+            int index = 0;
 
 /*
                    +----+----------+----------+
@@ -98,11 +91,11 @@ public class Socks5ProxySocketFactory
           o  X'FF' NO ACCEPTABLE METHODS
 */
 
-            buf[index++]=5;
+            buf[index++] = 5;
 
-            buf[index++]=2;
-            buf[index++]=0;           // NO AUTHENTICATION REQUIRED
-            buf[index++]=2;           // USERNAME/PASSWORD
+            buf[index++] = 2;
+            buf[index++] = 0;           // NO AUTHENTICATION REQUIRED
+            buf[index++] = 2;           // USERNAME/PASSWORD
 
             out.write(buf, 0, index);
 
@@ -116,18 +109,16 @@ public class Socks5ProxySocketFactory
                          | 1  |   1    |
                          +----+--------+
 */
-      //in.read(buf, 0, 2);
+            //in.read(buf, 0, 2);
             fill(in, buf, 2);
 
-            boolean check=false;
-            switch((buf[1])&0xff)
-            {
+            boolean check = false;
+            switch ((buf[1]) & 0xff) {
                 case 0:                // NO AUTHENTICATION REQUIRED
-                    check=true;
+                    check = true;
                     break;
                 case 2:                // USERNAME/PASSWORD
-                    if(user==null || passwd==null)
-                    {
+                    if (user == null || passwd == null) {
                         break;
                     }
 
@@ -150,16 +141,16 @@ public class Socks5ProxySocketFactory
    PASSWD field that follows. The PASSWD field contains the password
    association with the given UNAME.
 */
-                    index=0;
-                    buf[index++]=1;
-                    buf[index++]=(byte)(user.length());
-                    System.arraycopy(user.getBytes(), 0, buf, index, 
-                        user.length());
-                    index+=user.length();
-                    buf[index++]=(byte)(passwd.length());
-                    System.arraycopy(passwd.getBytes(), 0, buf, index, 
-                        passwd.length());
-                    index+=passwd.length();
+                    index = 0;
+                    buf[index++] = 1;
+                    buf[index++] = (byte) (user.length());
+                    System.arraycopy(user.getBytes(), 0, buf, index,
+                            user.length());
+                    index += user.length();
+                    buf[index++] = (byte) (passwd.length());
+                    System.arraycopy(passwd.getBytes(), 0, buf, index,
+                            passwd.length());
+                    index += passwd.length();
 
                     out.write(buf, 0, index);
 
@@ -179,25 +170,20 @@ public class Socks5ProxySocketFactory
 */
                     //in.read(buf, 0, 2);
                     fill(in, buf, 2);
-                    if(buf[1]==0)
-                    {
-                        check=true;
+                    if (buf[1] == 0) {
+                        check = true;
                     }
                     break;
                 default:
             }
 
-            if(!check)
-            {
-                try
-                {
+            if (!check) {
+                try {
                     socket.close();
-                }
-                catch(Exception eee)
-                {
+                } catch (Exception eee) {
                 }
                 throw new ProxyException(ProxyInfo.ProxyType.SOCKS5,
-                    "fail in SOCKS5 proxy");
+                        "fail in SOCKS5 proxy");
             }
 
 /*
@@ -225,20 +211,20 @@ public class Socks5ProxySocketFactory
       o  DST.PORT desired destination port in network octet
          order
 */
-     
-            index=0;
-            buf[index++]=5;
-            buf[index++]=1;       // CONNECT
-            buf[index++]=0;
 
-            byte[] hostb=host.getBytes();
-            int len=hostb.length;
-            buf[index++]=3;      // DOMAINNAME
-            buf[index++]=(byte)(len);
+            index = 0;
+            buf[index++] = 5;
+            buf[index++] = 1;       // CONNECT
+            buf[index++] = 0;
+
+            byte[] hostb = host.getBytes();
+            int len = hostb.length;
+            buf[index++] = 3;      // DOMAINNAME
+            buf[index++] = (byte) (len);
             System.arraycopy(hostb, 0, buf, index, len);
-            index+=len;
-            buf[index++]=(byte)(port>>>8);
-            buf[index++]=(byte)(port&0xff);
+            index += len;
+            buf[index++] = (byte) (port >>> 8);
+            buf[index++] = (byte) (port & 0xff);
 
             out.write(buf, 0, index);
 
@@ -277,24 +263,19 @@ public class Socks5ProxySocketFactory
     o  BND.PORT       server bound port in network octet order
 */
 
-      //in.read(buf, 0, 4);
+            //in.read(buf, 0, 4);
             fill(in, buf, 4);
 
-            if(buf[1]!=0)
-            {
-                try
-                {
+            if (buf[1] != 0) {
+                try {
                     socket.close();
+                } catch (Exception eee) {
                 }
-                catch(Exception eee)
-                {
-                }
-                throw new ProxyException(ProxyInfo.ProxyType.SOCKS5, 
-                    "server returns "+buf[1]);
+                throw new ProxyException(ProxyInfo.ProxyType.SOCKS5,
+                        "server returns " + buf[1]);
             }
 
-            switch(buf[3]&0xff)
-            {
+            switch (buf[3] & 0xff) {
                 case 1:
                     //in.read(buf, 0, 6);
                     fill(in, buf, 6);
@@ -303,7 +284,7 @@ public class Socks5ProxySocketFactory
                     //in.read(buf, 0, 1);
                     fill(in, buf, 1);
                     //in.read(buf, 0, buf[0]+2);
-                    fill(in, buf, (buf[0]&0xff)+2);
+                    fill(in, buf, (buf[0] & 0xff) + 2);
                     break;
                 case 4:
                     //in.read(buf, 0, 18);
@@ -312,47 +293,35 @@ public class Socks5ProxySocketFactory
                 default:
             }
             return socket;
-            
-        }
-        catch(RuntimeException e)
-        {
+
+        } catch (RuntimeException e) {
             throw e;
-        }
-        catch(Exception e)
-        {
-            try
-            {
-                if(socket!=null)
-                {
-                    socket.close(); 
+        } catch (Exception e) {
+            try {
+                if (socket != null) {
+                    socket.close();
                 }
+            } catch (Exception eee) {
             }
-            catch(Exception eee)
-            {
-            }
-            String message="ProxySOCKS5: "+e.toString();
-            if(e instanceof Throwable)
-            {
-                throw new ProxyException(ProxyInfo.ProxyType.SOCKS5,message, 
-                    (Throwable)e);
+            String message = "ProxySOCKS5: " + e.toString();
+            if (e instanceof Throwable) {
+                throw new ProxyException(ProxyInfo.ProxyType.SOCKS5, message,
+                        (Throwable) e);
             }
             throw new IOException(message);
         }
     }
-    
-    private void fill(InputStream in, byte[] buf, int len) 
-      throws IOException
-    {
-        int s=0;
-        while(s<len)
-        {
-            int i=in.read(buf, s, len-s);
-            if(i<=0)
-            {
+
+    private void fill(InputStream in, byte[] buf, int len)
+            throws IOException {
+        int s = 0;
+        while (s < len) {
+            int i = in.read(buf, s, len - s);
+            if (i <= 0) {
                 throw new ProxyException(ProxyInfo.ProxyType.SOCKS5, "stream " +
-                    "is closed");
+                        "is closed");
             }
-            s+=i;
+            s += i;
         }
     }
 }

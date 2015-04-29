@@ -37,13 +37,12 @@ import java.util.LinkedList;
 import java.util.Set;
 
 
-
 /**
  * The central class of the {@code javax.security.auth} package representing an
  * authenticated user or entity (both referred to as "subject"). IT defines also
  * the static methods that allow code to be run, and do modifications according
  * to the subject's permissions.
- * <p>
+ * <p/>
  * A subject has the following features:
  * <ul>
  * <li>A set of {@code Principal} objects specifying the identities bound to a
@@ -55,7 +54,7 @@ import java.util.Set;
 public final class Subject implements Serializable {
 
     private static final long serialVersionUID = -8308522755600156056L;
-    
+
     private static final AuthPermission _AS = new AuthPermission("doAs"); //$NON-NLS-1$
 
     private static final AuthPermission _AS_PRIVILEGED = new AuthPermission(
@@ -79,13 +78,13 @@ public final class Subject implements Serializable {
     private final Set<Principal> principals;
 
     private boolean readOnly;
-    
+
     // set of private credentials
     private transient SecureSet<Object> privateCredentials;
 
     // set of public credentials
     private transient SecureSet<Object> publicCredentials;
-    
+
     /**
      * The default constructor initializing the sets of public and private
      * credentials and principals with the empty set.
@@ -103,21 +102,17 @@ public final class Subject implements Serializable {
      * The constructor for the subject, setting its public and private
      * credentials and principals according to the arguments.
      *
-     * @param readOnly
-     *            {@code true} if this {@code Subject} is read-only, thus
-     *            preventing any modifications to be done.
-     * @param subjPrincipals
-     *            the set of Principals that are attributed to this {@code
-     *            Subject}.
-     * @param pubCredentials
-     *            the set of public credentials that distinguish this {@code
-     *            Subject}.
-     * @param privCredentials
-     *            the set of private credentials that distinguish this {@code
-     *            Subject}.
+     * @param readOnly        {@code true} if this {@code Subject} is read-only, thus
+     *                        preventing any modifications to be done.
+     * @param subjPrincipals  the set of Principals that are attributed to this {@code
+     *                        Subject}.
+     * @param pubCredentials  the set of public credentials that distinguish this {@code
+     *                        Subject}.
+     * @param privCredentials the set of private credentials that distinguish this {@code
+     *                        Subject}.
      */
     public Subject(boolean readOnly, Set<? extends Principal> subjPrincipals,
-            Set<?> pubCredentials, Set<?> privCredentials) {
+                   Set<?> pubCredentials, Set<?> privCredentials) {
 
         if (subjPrincipals == null || pubCredentials == null || privCredentials == null) {
             throw new NullPointerException();
@@ -134,10 +129,8 @@ public final class Subject implements Serializable {
      * Runs the code defined by {@code action} using the permissions granted to
      * the {@code Subject} itself and to the code as well.
      *
-     * @param subject
-     *            the distinguished {@code Subject}.
-     * @param action
-     *            the code to be run.
+     * @param subject the distinguished {@code Subject}.
+     * @param action  the code to be run.
      * @return the {@code Object} returned when running the {@code action}.
      */
     @SuppressWarnings("unchecked")
@@ -153,19 +146,16 @@ public final class Subject implements Serializable {
      * the {@code Subject} and to the code itself, additionally providing a more
      * specific context.
      *
-     * @param subject
-     *            the distinguished {@code Subject}.
-     * @param action
-     *            the code to be run.
-     * @param context
-     *            the specific context in which the {@code action} is invoked.
-     *            if {@code null} a new {@link AccessControlContext} is
-     *            instantiated.
+     * @param subject the distinguished {@code Subject}.
+     * @param action  the code to be run.
+     * @param context the specific context in which the {@code action} is invoked.
+     *                if {@code null} a new {@link AccessControlContext} is
+     *                instantiated.
      * @return the {@code Object} returned when running the {@code action}.
      */
     @SuppressWarnings("unchecked")
     public static Object doAsPrivileged(Subject subject, PrivilegedAction action,
-            AccessControlContext context) {
+                                        AccessControlContext context) {
 
         checkPermission(_AS_PRIVILEGED);
 
@@ -179,7 +169,7 @@ public final class Subject implements Serializable {
     // instantiates a new context and passes it to AccessController
     @SuppressWarnings("unchecked")
     private static Object doAs_PrivilegedAction(Subject subject, PrivilegedAction action,
-            final AccessControlContext context) {
+                                                final AccessControlContext context) {
 
         AccessControlContext newContext;
 
@@ -208,13 +198,10 @@ public final class Subject implements Serializable {
      * Runs the code defined by {@code action} using the permissions granted to
      * the subject and to the code itself.
      *
-     * @param subject
-     *            the distinguished {@code Subject}.
-     * @param action
-     *            the code to be run.
+     * @param subject the distinguished {@code Subject}.
+     * @param action  the code to be run.
      * @return the {@code Object} returned when running the {@code action}.
-     * @throws PrivilegedActionException
-     *             if running the {@code action} throws an exception.
+     * @throws PrivilegedActionException if running the {@code action} throws an exception.
      */
     @SuppressWarnings("unchecked")
     public static Object doAs(Subject subject, PrivilegedExceptionAction action)
@@ -230,21 +217,17 @@ public final class Subject implements Serializable {
      * the subject and to the code itself, additionally providing a more
      * specific context.
      *
-     * @param subject
-     *            the distinguished {@code Subject}.
-     * @param action
-     *            the code to be run.
-     * @param context
-     *            the specific context in which the {@code action} is invoked.
-     *            if {@code null} a new {@link AccessControlContext} is
-     *            instantiated.
+     * @param subject the distinguished {@code Subject}.
+     * @param action  the code to be run.
+     * @param context the specific context in which the {@code action} is invoked.
+     *                if {@code null} a new {@link AccessControlContext} is
+     *                instantiated.
      * @return the {@code Object} returned when running the {@code action}.
-     * @throws PrivilegedActionException
-     *             if running the {@code action} throws an exception.
+     * @throws PrivilegedActionException if running the {@code action} throws an exception.
      */
     @SuppressWarnings("unchecked")
     public static Object doAsPrivileged(Subject subject,
-            PrivilegedExceptionAction action, AccessControlContext context)
+                                        PrivilegedExceptionAction action, AccessControlContext context)
             throws PrivilegedActionException {
 
         checkPermission(_AS_PRIVILEGED);
@@ -259,7 +242,7 @@ public final class Subject implements Serializable {
     // instantiates a new context and passes it to AccessController
     @SuppressWarnings("unchecked")
     private static Object doAs_PrivilegedExceptionAction(Subject subject,
-            PrivilegedExceptionAction action, final AccessControlContext context)
+                                                         PrivilegedExceptionAction action, final AccessControlContext context)
             throws PrivilegedActionException {
 
         AccessControlContext newContext;
@@ -289,11 +272,10 @@ public final class Subject implements Serializable {
      * public and private credentials are equal, equality for two {@code
      * Subjects} is implied.
      *
-     * @param obj
-     *            the {@code Object} checked for equality with this {@code
+     * @param obj the {@code Object} checked for equality with this {@code
      *            Subject}.
      * @return {@code true} if the specified {@code Subject} is equal to this
-     *         one.
+     * one.
      */
     @Override
     public boolean equals(Object obj) {
@@ -330,12 +312,11 @@ public final class Subject implements Serializable {
      * Returns this {@code Subject}'s {@link Principal} which is a subclass of
      * the {@code Class} provided.
      *
-     * @param c
-     *            the {@code Class} as a criteria which the {@code Principal}
-     *            returned must satisfy.
+     * @param c the {@code Class} as a criteria which the {@code Principal}
+     *          returned must satisfy.
      * @return this {@code Subject}'s {@link Principal}. Modifications to the
-     *         returned set of {@code Principal}s do not affect this {@code
-     *         Subject}'s set.
+     * returned set of {@code Principal}s do not affect this {@code
+     * Subject}'s set.
      */
     public <T extends Principal> Set<T> getPrincipals(Class<T> c) {
         return ((SecureSet<Principal>) principals).get(c);
@@ -354,12 +335,11 @@ public final class Subject implements Serializable {
      * Returns this {@code Subject}'s private credentials which are a subclass
      * of the {@code Class} provided.
      *
-     * @param c
-     *            the {@code Class} as a criteria which the private credentials
-     *            returned must satisfy.
+     * @param c the {@code Class} as a criteria which the private credentials
+     *          returned must satisfy.
      * @return this {@code Subject}'s private credentials. Modifications to the
-     *         returned set of credentials do not affect this {@code Subject}'s
-     *         credentials.
+     * returned set of credentials do not affect this {@code Subject}'s
+     * credentials.
      */
     public <T> Set<T> getPrivateCredentials(Class<T> c) {
         return privateCredentials.get(c);
@@ -379,12 +359,11 @@ public final class Subject implements Serializable {
      * Returns this {@code Subject}'s public credentials which are a subclass of
      * the {@code Class} provided.
      *
-     * @param c
-     *            the {@code Class} as a criteria which the public credentials
-     *            returned must satisfy.
+     * @param c the {@code Class} as a criteria which the public credentials
+     *          returned must satisfy.
      * @return this {@code Subject}'s public credentials. Modifications to the
-     *         returned set of credentials do not affect this {@code Subject}'s
-     *         credentials.
+     * returned set of credentials do not affect this {@code Subject}'s
+     * credentials.
      */
     public <T> Set<T> getPublicCredentials(Class<T> c) {
         return publicCredentials.get(c);
@@ -478,11 +457,10 @@ public final class Subject implements Serializable {
      * Returns the {@code Subject} that was last associated with the {@code
      * context} provided as argument.
      *
-     * @param context
-     *            the {@code context} that was associated with the
-     *            {@code Subject}.
+     * @param context the {@code context} that was associated with the
+     *                {@code Subject}.
      * @return the {@code Subject} that was last associated with the {@code
-     *         context} provided as argument.
+     * context} provided as argument.
      */
     public static Subject getSubject(final AccessControlContext context) {
         checkPermission(_SUBJECT);
@@ -569,8 +547,8 @@ public final class Subject implements Serializable {
 
             // Subject's constructor receives a Set, we can trusts if a set is from bootclasspath,
             // and not to check whether it contains duplicates or not
-            boolean trust = s.getClass().getClassLoader() == null; 
-            
+            boolean trust = s.getClass().getClassLoader() == null;
+
             Iterator<? extends SST> it = s.iterator();
             while (it.hasNext()) {
                 SST o = it.next();
@@ -700,7 +678,7 @@ public final class Subject implements Serializable {
             };
 
             // FIXME must have permissions for requested priv. credentials
-            for (Iterator<SST> it = iterator(); it.hasNext();) {
+            for (Iterator<SST> it = iterator(); it.hasNext(); ) {
                 SST o = it.next();
                 if (c.isAssignableFrom(o.getClass())) {
                     s.add(c.cast(o));
@@ -714,17 +692,17 @@ public final class Subject implements Serializable {
             in.defaultReadObject();
 
             switch (setType) {
-            case SET_Principal:
-                permission = _PRINCIPALS;
-                break;
-            case SET_PrivCred:
-                permission = _PRIVATE_CREDENTIALS;
-                break;
-            case SET_PubCred:
-                permission = _PUBLIC_CREDENTIALS;
-                break;
-            default:
-                throw new IllegalArgumentException();
+                case SET_Principal:
+                    permission = _PRINCIPALS;
+                    break;
+                case SET_PrivCred:
+                    permission = _PRIVATE_CREDENTIALS;
+                    break;
+                case SET_PubCred:
+                    permission = _PUBLIC_CREDENTIALS;
+                    break;
+                default:
+                    throw new IllegalArgumentException();
             }
 
             Iterator<SST> it = elements.iterator();
@@ -737,7 +715,7 @@ public final class Subject implements Serializable {
 
             if (permission == _PRIVATE_CREDENTIALS) {
                 // does security check for each private credential
-                for (Iterator<SST> it = iterator(); it.hasNext();) {
+                for (Iterator<SST> it = iterator(); it.hasNext(); ) {
                     it.next();
                 }
                 setType = SET_PrivCred;

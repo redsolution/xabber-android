@@ -26,4 +26,10 @@
     <string name="required">Обязательно</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_otr.png -->
     <string name="auto">Автоматически</string>
+
+    <string name="save">Сохранить</string>
+
+    <string name="ok">Ok</string>
+    <string name="cancel">Отмена</string>
+
 </resources>

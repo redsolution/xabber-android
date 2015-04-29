@@ -26,31 +26,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Represents message events relating to the delivery, display, composition and cancellation of 
+ * Represents message events relating to the delivery, display, composition and cancellation of
  * messages.<p>
- * 
+ * <p/>
  * There are four message events currently defined in this namespace:
  * <ol>
  * <li>Offline<br>
- * Indicates that the message has been stored offline by the intended recipient's server. This 
- * event is triggered only if the intended recipient's server supports offline storage, has that 
+ * Indicates that the message has been stored offline by the intended recipient's server. This
+ * event is triggered only if the intended recipient's server supports offline storage, has that
  * support enabled, and the recipient is offline when the server receives the message for delivery.</li>
- * 
+ * <p/>
  * <li>Delivered<br>
  * Indicates that the message has been delivered to the recipient. This signifies that the message
- * has reached the recipient's XMPP client, but does not necessarily mean that the message has 
+ * has reached the recipient's XMPP client, but does not necessarily mean that the message has
  * been displayed. This event is to be raised by the XMPP client.</li>
- * 
+ * <p/>
  * <li>Displayed<br>
  * Once the message has been received by the recipient's XMPP client, it may be displayed to the
- * user. This event indicates that the message has been displayed, and is to be raised by the 
- * XMPP client. Even if a message is displayed multiple times, this event should be raised only 
+ * user. This event indicates that the message has been displayed, and is to be raised by the
+ * XMPP client. Even if a message is displayed multiple times, this event should be raised only
  * once.</li>
- * 
+ * <p/>
  * <li>Composing<br>
- * In threaded chat conversations, this indicates that the recipient is composing a reply to a 
+ * In threaded chat conversations, this indicates that the recipient is composing a reply to a
  * message. The event is to be raised by the recipient's XMPP client. A XMPP client is allowed
- * to raise this event multiple times in response to the same request, providing the original 
+ * to raise this event multiple times in response to the same request, providing the original
  * event is cancelled first.</li>
  * </ol>
  *
@@ -73,16 +73,16 @@ public class MessageEvent implements PacketExtension {
     private String packetID = null;
 
     /**
-    * Returns the XML element name of the extension sub-packet root element.
-    * Always returns "x"
-    *
-    * @return the XML element name of the packet extension.
-    */
+     * Returns the XML element name of the extension sub-packet root element.
+     * Always returns "x"
+     *
+     * @return the XML element name of the packet extension.
+     */
     public String getElementName() {
         return "x";
     }
 
-    /** 
+    /**
      * Returns the XML namespace of the extension sub-packet root element.
      * According the specification the namespace is always "jabber:x:event"
      *
@@ -95,9 +95,9 @@ public class MessageEvent implements PacketExtension {
     /**
      * When the message is a request returns if the sender of the message requests to be notified
      * when the receiver is composing a reply.
-     * When the message is a notification returns if the receiver of the message is composing a 
+     * When the message is a notification returns if the receiver of the message is composing a
      * reply.
-     * 
+     *
      * @return true if the sender is requesting to be notified when composing or when notifying
      * that the receiver of the message is composing a reply
      */
@@ -109,9 +109,9 @@ public class MessageEvent implements PacketExtension {
      * When the message is a request returns if the sender of the message requests to be notified
      * when the message is delivered.
      * When the message is a notification returns if the message was delivered or not.
-     * 
-     * @return true if the sender is requesting to be notified when delivered or when notifying 
-     * that the message was delivered 
+     *
+     * @return true if the sender is requesting to be notified when delivered or when notifying
+     * that the message was delivered
      */
     public boolean isDelivered() {
         return delivered;
@@ -121,8 +121,8 @@ public class MessageEvent implements PacketExtension {
      * When the message is a request returns if the sender of the message requests to be notified
      * when the message is displayed.
      * When the message is a notification returns if the message was displayed or not.
-     * 
-     * @return true if the sender is requesting to be notified when displayed or when notifying 
+     *
+     * @return true if the sender is requesting to be notified when displayed or when notifying
      * that the message was displayed
      */
     public boolean isDisplayed() {
@@ -133,8 +133,8 @@ public class MessageEvent implements PacketExtension {
      * When the message is a request returns if the sender of the message requests to be notified
      * when the receiver of the message is offline.
      * When the message is a notification returns if the receiver of the message was offline.
-     * 
-     * @return true if the sender is requesting to be notified when offline or when notifying 
+     *
+     * @return true if the sender is requesting to be notified when offline or when notifying
      * that the receiver of the message is offline
      */
     public boolean isOffline() {
@@ -142,9 +142,9 @@ public class MessageEvent implements PacketExtension {
     }
 
     /**
-     * When the message is a notification returns if the receiver of the message cancelled 
+     * When the message is a notification returns if the receiver of the message cancelled
      * composing a reply.
-     * 
+     *
      * @return true if the receiver of the message cancelled composing a reply
      */
     public boolean isCancelled() {
@@ -190,11 +190,11 @@ public class MessageEvent implements PacketExtension {
     /**
      * When the message is a request sets if the sender of the message requests to be notified
      * when the receiver is composing a reply.
-     * When the message is a notification sets if the receiver of the message is composing a 
+     * When the message is a notification sets if the receiver of the message is composing a
      * reply.
-     * 
-     * @param composing sets if the sender is requesting to be notified when composing or when 
-     * notifying that the receiver of the message is composing a reply
+     *
+     * @param composing sets if the sender is requesting to be notified when composing or when
+     *                  notifying that the receiver of the message is composing a reply
      */
     public void setComposing(boolean composing) {
         this.composing = composing;
@@ -205,9 +205,9 @@ public class MessageEvent implements PacketExtension {
      * When the message is a request sets if the sender of the message requests to be notified
      * when the message is delivered.
      * When the message is a notification sets if the message was delivered or not.
-     * 
-     * @param delivered sets if the sender is requesting to be notified when delivered or when 
-     * notifying that the message was delivered 
+     *
+     * @param delivered sets if the sender is requesting to be notified when delivered or when
+     *                  notifying that the message was delivered
      */
     public void setDelivered(boolean delivered) {
         this.delivered = delivered;
@@ -218,9 +218,9 @@ public class MessageEvent implements PacketExtension {
      * When the message is a request sets if the sender of the message requests to be notified
      * when the message is displayed.
      * When the message is a notification sets if the message was displayed or not.
-     * 
-     * @param displayed sets if the sender is requesting to be notified when displayed or when 
-     * notifying that the message was displayed
+     *
+     * @param displayed sets if the sender is requesting to be notified when displayed or when
+     *                  notifying that the message was displayed
      */
     public void setDisplayed(boolean displayed) {
         this.displayed = displayed;
@@ -231,9 +231,9 @@ public class MessageEvent implements PacketExtension {
      * When the message is a request sets if the sender of the message requests to be notified
      * when the receiver of the message is offline.
      * When the message is a notification sets if the receiver of the message was offline.
-     * 
-     * @param offline sets if the sender is requesting to be notified when offline or when 
-     * notifying that the receiver of the message is offline
+     *
+     * @param offline sets if the sender is requesting to be notified when offline or when
+     *                notifying that the receiver of the message is offline
      */
     public void setOffline(boolean offline) {
         this.offline = offline;
@@ -241,11 +241,11 @@ public class MessageEvent implements PacketExtension {
     }
 
     /**
-     * When the message is a notification sets if the receiver of the message cancelled 
+     * When the message is a notification sets if the receiver of the message cancelled
      * composing a reply.
      * The Cancelled event is never requested explicitly. It is requested implicitly when
      * requesting to be notified of the Composing event.
-     * 
+     *
      * @param cancelled sets if the receiver of the message cancelled composing a reply
      */
     public void setCancelled(boolean cancelled) {
@@ -266,7 +266,7 @@ public class MessageEvent implements PacketExtension {
      * Returns true if this MessageEvent is a request for notifications.
      * Returns false if this MessageEvent is a notification of an event.
      *
-    * @return true if this message is a request for notifications.
+     * @return true if this message is a request for notifications.
      */
     public boolean isMessageEventRequest() {
         return this.packetID == null;
@@ -274,10 +274,10 @@ public class MessageEvent implements PacketExtension {
 
     /**
      * Returns the XML representation of a Message Event according the specification.
-     * 
+     * <p/>
      * Usually the XML representation will be inside of a Message XML representation like
      * in the following examples:<p>
-     * 
+     * <p/>
      * Request to be notified when displayed:
      * <pre>
      * &lt;message
@@ -289,7 +289,7 @@ public class MessageEvent implements PacketExtension {
      * &lt;/x&gt;
      * &lt;/message&gt;
      * </pre>
-     * 
+     * <p/>
      * Notification of displayed:
      * <pre>
      * &lt;message
@@ -301,12 +301,11 @@ public class MessageEvent implements PacketExtension {
      * &lt;/x&gt;
      * &lt;/message&gt;
      * </pre>
-     * 
      */
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(getElementName()).append(" xmlns=\"").append(getNamespace()).append(
-            "\">");
+                "\">");
         // Note: Cancellation events don't specify any tag. They just send the packetID
 
         // Add the offline tag if the sender requests to be notified of offline events or if 

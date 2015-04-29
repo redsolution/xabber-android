@@ -41,7 +41,7 @@ import org.jivesoftware.smack.util.StringUtils;
  * Base class for XMPP packets. Every packet has a unique ID (which is automatically
  * generated, but can be overriden). Optionally, the "to" and "from" fields can be set,
  * as well as an arbitrary number of properties.
- *
+ * <p/>
  * Properties provide an easy mechanism for clients to share data. Each property has a
  * String name, and a value that is a Java primitive (int, long, float, double, boolean)
  * or any Serializable object (a Java object is Serializable when it implements the
@@ -62,16 +62,17 @@ public abstract class Packet {
      * answer will be <tt>null</tt>.
      */
     public static final String ID_NOT_AVAILABLE = "ID_NOT_AVAILABLE";
-    
+
     /**
      * Date format as defined in XEP-0082 - XMPP Date and Time Profiles.
      * The time zone is set to UTC.
-     * <p>
+     * <p/>
      * Date formats are not synchronized. Since multiple threads access the format concurrently,
-     * it must be synchronized externally. 
+     * it must be synchronized externally.
      */
     public static final DateFormat XEP_0082_UTC_FORMAT = new SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     static {
         XEP_0082_UTC_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
@@ -110,7 +111,7 @@ public abstract class Packet {
     private final List<PacketExtension> packetExtensions
             = new CopyOnWriteArrayList<PacketExtension>();
 
-    private final Map<String,Object> properties = new HashMap<String, Object>();
+    private final Map<String, Object> properties = new HashMap<String, Object>();
     private XMPPError error = null;
 
     /**
@@ -144,16 +145,16 @@ public abstract class Packet {
      * Returns who the packet is being sent "to", or <tt>null</tt> if
      * the value is not set. The XMPP protocol often makes the "to"
      * attribute optional, so it does not always need to be set.<p>
-     *
+     * <p/>
      * The StringUtils class provides several useful methods for dealing with
      * XMPP addresses such as parsing the
      * {@link StringUtils#parseBareAddress(String) bare address},
      * {@link StringUtils#parseName(String) user name},
      * {@link StringUtils#parseServer(String) server}, and
-     * {@link StringUtils#parseResource(String) resource}.  
+     * {@link StringUtils#parseResource(String) resource}.
      *
      * @return who the packet is being sent to, or <tt>null</tt> if the
-     *      value has not been set.
+     * value has not been set.
      */
     public String getTo() {
         return to;
@@ -173,16 +174,16 @@ public abstract class Packet {
      * Returns who the packet is being sent "from" or <tt>null</tt> if
      * the value is not set. The XMPP protocol often makes the "from"
      * attribute optional, so it does not always need to be set.<p>
-     *
+     * <p/>
      * The StringUtils class provides several useful methods for dealing with
      * XMPP addresses such as parsing the
      * {@link StringUtils#parseBareAddress(String) bare address},
      * {@link StringUtils#parseName(String) user name},
      * {@link StringUtils#parseServer(String) server}, and
-     * {@link StringUtils#parseResource(String) resource}.  
+     * {@link StringUtils#parseResource(String) resource}.
      *
      * @return who the packet is being sent from, or <tt>null</tt> if the
-     *      value has not been set.
+     * value has not been set.
      */
     public String getFrom() {
         return from;
@@ -244,15 +245,15 @@ public abstract class Packet {
      * Returns the first packet extension that matches the specified element name and
      * namespace, or <tt>null</tt> if it doesn't exist. If the provided elementName is null
      * than only the provided namespace is attempted to be matched. Packet extensions are
-     * are arbitrary XML sub-documents in standard XMPP packets. By default, a 
-     * DefaultPacketExtension instance will be returned for each extension. However, 
-     * PacketExtensionProvider instances can be registered with the 
+     * are arbitrary XML sub-documents in standard XMPP packets. By default, a
+     * DefaultPacketExtension instance will be returned for each extension. However,
+     * PacketExtensionProvider instances can be registered with the
      * {@link org.jivesoftware.smack.provider.ProviderManager ProviderManager}
      * class to handle custom parsing. In that case, the type of the Object
      * will be determined by the provider.
      *
      * @param elementName the XML element name of the packet extension. (May be null)
-     * @param namespace the XML element namespace of the packet extension.
+     * @param namespace   the XML element namespace of the packet extension.
      * @return the extension, or <tt>null</tt> if it doesn't exist.
      */
     public PacketExtension getExtension(String elementName, String namespace) {
@@ -261,8 +262,7 @@ public abstract class Packet {
         }
         for (PacketExtension ext : packetExtensions) {
             if ((elementName == null || elementName.equals(ext.getElementName()))
-                    && namespace.equals(ext.getNamespace()))
-            {
+                    && namespace.equals(ext.getNamespace())) {
                 return ext;
             }
         }
@@ -283,7 +283,7 @@ public abstract class Packet {
      *
      * @param extension the packet extension to remove.
      */
-    public void removeExtension(PacketExtension extension)  {
+    public void removeExtension(PacketExtension extension) {
         packetExtensions.remove(extension);
     }
 
@@ -307,7 +307,7 @@ public abstract class Packet {
      * Sets a property with an Object as the value. The value must be Serializable
      * or an IllegalArgumentException will be thrown.
      *
-     * @param name the name of the property.
+     * @param name  the name of the property.
      * @param value the value of the property.
      */
     public synchronized void setProperty(String name, Object value) {
@@ -374,22 +374,17 @@ public abstract class Packet {
                 buf.append("<value type=\"");
                 if (value instanceof Integer) {
                     buf.append("integer\">").append(value).append("</value>");
-                }
-                else if (value instanceof Long) {
+                } else if (value instanceof Long) {
                     buf.append("long\">").append(value).append("</value>");
-                }
-                else if (value instanceof Float) {
+                } else if (value instanceof Float) {
                     buf.append("float\">").append(value).append("</value>");
-                }
-                else if (value instanceof Double) {
+                } else if (value instanceof Double) {
                     buf.append("double\">").append(value).append("</value>");
-                }
-                else if (value instanceof Boolean) {
+                } else if (value instanceof Boolean) {
                     buf.append("boolean\">").append(value).append("</value>");
-                }
-                else if (value instanceof String) {
+                } else if (value instanceof String) {
                     buf.append("string\">");
-                    buf.append(StringUtils.escapeForXML((String)value));
+                    buf.append(StringUtils.escapeForXML((String) value));
                     buf.append("</value>");
                 }
                 // Otherwise, it's a generic Serializable object. Serialized objects are in
@@ -405,24 +400,20 @@ public abstract class Packet {
                         buf.append("java-object\">");
                         String encodedVal = StringUtils.encodeBase64(byteStream.toByteArray());
                         buf.append(encodedVal).append("</value>");
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
-                    }
-                    finally {
+                    } finally {
                         if (out != null) {
                             try {
                                 out.close();
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 // Ignore.
                             }
                         }
                         if (byteStream != null) {
                             try {
                                 byteStream.close();
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 // Ignore.
                             }
                         }
@@ -441,7 +432,7 @@ public abstract class Packet {
 
     /**
      * Returns the default language used for all messages containing localized content.
-     * 
+     *
      * @return the default language
      */
     public static String getDefaultLanguage() {
@@ -454,9 +445,15 @@ public abstract class Packet {
 
         Packet packet = (Packet) o;
 
-        if (error != null ? !error.equals(packet.error) : packet.error != null) { return false; }
-        if (from != null ? !from.equals(packet.from) : packet.from != null) { return false; }
-        if (!packetExtensions.equals(packet.packetExtensions)) { return false; }
+        if (error != null ? !error.equals(packet.error) : packet.error != null) {
+            return false;
+        }
+        if (from != null ? !from.equals(packet.from) : packet.from != null) {
+            return false;
+        }
+        if (!packetExtensions.equals(packet.packetExtensions)) {
+            return false;
+        }
         if (packetID != null ? !packetID.equals(packet.packetID) : packet.packetID != null) {
             return false;
         }
@@ -464,7 +461,9 @@ public abstract class Packet {
                 : packet.properties != null) {
             return false;
         }
-        if (to != null ? !to.equals(packet.to) : packet.to != null)  { return false; }
+        if (to != null ? !to.equals(packet.to) : packet.to != null) {
+            return false;
+        }
         return !(xmlns != null ? !xmlns.equals(packet.xmlns) : packet.xmlns != null);
     }
 

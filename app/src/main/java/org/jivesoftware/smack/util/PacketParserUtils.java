@@ -68,14 +68,13 @@ public class PacketParserUtils {
         message.setFrom(parser.getAttributeValue("", "from"));
         message.setType(Message.Type.fromString(parser.getAttributeValue("", "type")));
         String language = getLanguageAttribute(parser);
-        
+
         // determine message's default language
         String defaultLanguage = null;
         if (language != null && !"".equals(language.trim())) {
             message.setLanguage(language);
             defaultLanguage = language;
-        } 
-        else {
+        } else {
             defaultLanguage = Packet.getDefaultLanguage();
         }
 
@@ -101,39 +100,33 @@ public class PacketParserUtils {
                     if (message.getSubject(xmlLang) == null) {
                         message.addSubject(xmlLang, subject);
                     }
-                }
-                else if (elementName.equals("body")) {
+                } else if (elementName.equals("body")) {
                     String xmlLang = getLanguageAttribute(parser);
                     if (xmlLang == null) {
                         xmlLang = defaultLanguage;
                     }
 
                     String body = parseContent(parser);
-                    
+
                     if (message.getBody(xmlLang) == null) {
                         message.addBody(xmlLang, body);
                     }
-                }
-                else if (elementName.equals("thread")) {
+                } else if (elementName.equals("thread")) {
                     if (thread == null) {
                         thread = parser.nextText();
                     }
-                }
-                else if (elementName.equals("error")) {
+                } else if (elementName.equals("error")) {
                     message.setError(parseError(parser));
-                }
-                else if (elementName.equals("properties") &&
-                        namespace.equals(PROPERTIES_NAMESPACE))
-                {
+                } else if (elementName.equals("properties") &&
+                        namespace.equals(PROPERTIES_NAMESPACE)) {
                     properties = parseProperties(parser);
                 }
                 // Otherwise, it must be a packet extension.
                 else {
                     message.addExtension(
-                    PacketParserUtils.parsePacketExtension(elementName, namespace, parser));
+                            PacketParserUtils.parsePacketExtension(elementName, namespace, parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("message")) {
                     done = true;
                 }
@@ -152,18 +145,18 @@ public class PacketParserUtils {
 
     /**
      * Returns the content of a tag as string regardless of any tags included.
-     * 
+     *
      * @param parser the XML pull parser
      * @return the content of a tag as string
      * @throws XmlPullParserException if parser encounters invalid XML
-     * @throws IOException if an IO error occurs
+     * @throws IOException            if an IO error occurs
      */
     private static String parseContent(XmlPullParser parser)
-                    throws XmlPullParserException, IOException {
+            throws XmlPullParserException, IOException {
         String content = "";
         int parserDepth = parser.getDepth();
         while (!(parser.next() == XmlPullParser.END_TAG && parser
-                        .getDepth() == parserDepth)) {
+                .getDepth() == parserDepth)) {
             content += parser.getText();
         }
         return content;
@@ -182,8 +175,7 @@ public class PacketParserUtils {
         if (typeString != null && !typeString.equals("")) {
             try {
                 type = Presence.Type.valueOf(typeString);
-            }
-            catch (IllegalArgumentException iae) {
+            } catch (IllegalArgumentException iae) {
                 System.err.println("Found invalid presence type " + typeString);
             }
         }
@@ -195,7 +187,7 @@ public class PacketParserUtils {
 
         String language = getLanguageAttribute(parser);
         if (language != null && !"".equals(language.trim())) {
-        	presence.setLanguage(language);
+            presence.setLanguage(language);
         }
         presence.setPacketID(id == null ? Packet.ID_NOT_AVAILABLE : id);
 
@@ -208,36 +200,28 @@ public class PacketParserUtils {
                 String namespace = parser.getNamespace();
                 if (elementName.equals("status")) {
                     presence.setStatus(parser.nextText());
-                }
-                else if (elementName.equals("priority")) {
+                } else if (elementName.equals("priority")) {
                     try {
                         int priority = Integer.parseInt(parser.nextText());
                         presence.setPriority(priority);
-                    }
-                    catch (NumberFormatException nfe) {
+                    } catch (NumberFormatException nfe) {
                         // Ignore.
-                    }
-                    catch (IllegalArgumentException iae) {
+                    } catch (IllegalArgumentException iae) {
                         // Presence priority is out of range so assume priority to be zero
                         presence.setPriority(0);
                     }
-                }
-                else if (elementName.equals("show")) {
+                } else if (elementName.equals("show")) {
                     String modeText = parser.nextText();
                     try {
                         presence.setMode(Presence.Mode.valueOf(modeText));
-                    }
-                    catch (IllegalArgumentException iae) {
+                    } catch (IllegalArgumentException iae) {
                         System.err.println("Found invalid presence mode " + modeText);
                     }
-                }
-                else if (elementName.equals("error")) {
+                } else if (elementName.equals("error")) {
                     presence.setError(parseError(parser));
-                }
-                else if (elementName.equals("properties") &&
-                        namespace.equals(PROPERTIES_NAMESPACE))
-                {
-                    Map<String,Object> properties = parseProperties(parser);
+                } else if (elementName.equals("properties") &&
+                        namespace.equals(PROPERTIES_NAMESPACE)) {
+                    Map<String, Object> properties = parseProperties(parser);
                     // Set packet properties.
                     for (String name : properties.keySet()) {
                         presence.setProperty(name, properties.get(name));
@@ -246,10 +230,9 @@ public class PacketParserUtils {
                 // Otherwise, it must be a packet extension.
                 else {
                     presence.addExtension(
-                        PacketParserUtils.parsePacketExtension(elementName, namespace, parser));
+                            PacketParserUtils.parsePacketExtension(elementName, namespace, parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("presence")) {
                     done = true;
                 }
@@ -283,17 +266,13 @@ public class PacketParserUtils {
                 String namespace = parser.getNamespace();
                 if (elementName.equals("error")) {
                     error = PacketParserUtils.parseError(parser);
-                }
-                else if (elementName.equals("query") && namespace.equals("jabber:iq:auth")) {
+                } else if (elementName.equals("query") && namespace.equals("jabber:iq:auth")) {
                     iqPacket = parseAuthentication(parser);
-                }
-                else if (elementName.equals("query") && namespace.equals("jabber:iq:roster")) {
+                } else if (elementName.equals("query") && namespace.equals("jabber:iq:roster")) {
                     iqPacket = parseRoster(parser);
-                }
-                else if (elementName.equals("query") && namespace.equals("jabber:iq:register")) {
+                } else if (elementName.equals("query") && namespace.equals("jabber:iq:register")) {
                     iqPacket = parseRegistration(parser);
-                }
-                else if (elementName.equals("bind") &&
+                } else if (elementName.equals("bind") &&
                         namespace.equals("urn:ietf:params:xml:ns:xmpp-bind")) {
                     iqPacket = parseResourceBinding(parser);
                 }
@@ -303,16 +282,14 @@ public class PacketParserUtils {
                     Object provider = ProviderManager.getInstance().getIQProvider(elementName, namespace);
                     if (provider != null) {
                         if (provider instanceof IQProvider) {
-                            iqPacket = ((IQProvider)provider).parseIQ(parser);
-                        }
-                        else if (provider instanceof Class) {
-                            iqPacket = (IQ)PacketParserUtils.parseWithIntrospection(elementName,
-                                    (Class)provider, parser);
+                            iqPacket = ((IQProvider) provider).parseIQ(parser);
+                        } else if (provider instanceof Class) {
+                            iqPacket = (IQ) PacketParserUtils.parseWithIntrospection(elementName,
+                                    (Class) provider, parser);
                         }
                     }
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("iq")) {
                     done = true;
                 }
@@ -320,7 +297,7 @@ public class PacketParserUtils {
         }
         // Decide what to do when an IQ packet was not understood
         if (iqPacket == null) {
-            if (IQ.Type.GET == type || IQ.Type.SET == type ) {
+            if (IQ.Type.GET == type || IQ.Type.SET == type) {
                 // If the IQ stanza is of type "get" or "set" containing a child element
                 // qualified by a namespace it does not understand, then answer an IQ of
                 // type "error" with code 501 ("feature-not-implemented")
@@ -336,8 +313,7 @@ public class PacketParserUtils {
                 iqPacket.setError(new XMPPError(XMPPError.Condition.feature_not_implemented));
                 connection.sendPacket(iqPacket);
                 return null;
-            }
-            else {
+            } else {
                 // If an IQ packet wasn't created above, create an empty IQ packet.
                 iqPacket = new IQ() {
                     public String getChildElementXML() {
@@ -365,18 +341,14 @@ public class PacketParserUtils {
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("username")) {
                     authentication.setUsername(parser.nextText());
-                }
-                else if (parser.getName().equals("password")) {
+                } else if (parser.getName().equals("password")) {
                     authentication.setPassword(parser.nextText());
-                }
-                else if (parser.getName().equals("digest")) {
+                } else if (parser.getName().equals("digest")) {
                     authentication.setDigest(parser.nextText());
-                }
-                else if (parser.getName().equals("resource")) {
+                } else if (parser.getName().equals("resource")) {
                     authentication.setResource(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }
@@ -390,11 +362,11 @@ public class PacketParserUtils {
         boolean done = false;
         RosterPacket.Item item = null;
         while (!done) {
-        	if(parser.getEventType()==XmlPullParser.START_TAG && 
-        			parser.getName().equals("query")){
-        		String version = parser.getAttributeValue(null, "ver");
-        		roster.setVersion(version);
-        	}
+            if (parser.getEventType() == XmlPullParser.START_TAG &&
+                    parser.getName().equals("query")) {
+                String version = parser.getAttributeValue(null, "ver");
+                roster.setVersion(version);
+            }
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("item")) {
@@ -411,14 +383,13 @@ public class PacketParserUtils {
                     RosterPacket.ItemType type = RosterPacket.ItemType.valueOf(subscription != null ? subscription : "none");
                     item.setItemType(type);
                 }
-                if (parser.getName().equals("group") && item!= null) {
+                if (parser.getName().equals("group") && item != null) {
                     final String groupName = parser.nextText();
                     if (groupName != null && groupName.trim().length() > 0) {
                         item.addGroupName(groupName);
                     }
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("item")) {
                     roster.addRosterItem(item);
                 }
@@ -430,7 +401,7 @@ public class PacketParserUtils {
         return roster;
     }
 
-     private static Registration parseRegistration(XmlPullParser parser) throws Exception {
+    private static Registration parseRegistration(XmlPullParser parser) throws Exception {
         Registration registration = new Registration();
         Map<String, String> fields = null;
         boolean done = false;
@@ -452,21 +423,19 @@ public class PacketParserUtils {
                     // Ignore instructions, but anything else should be added to the map.
                     if (!name.equals("instructions")) {
                         fields.put(name, value);
-                    }
-                    else {
+                    } else {
                         registration.setInstructions(value);
                     }
                 }
                 // Otherwise, it must be a packet extension.
                 else {
                     registration.addExtension(
-                        PacketParserUtils.parsePacketExtension(
-                            parser.getName(),
-                            parser.getNamespace(),
-                            parser));
+                            PacketParserUtils.parsePacketExtension(
+                                    parser.getName(),
+                                    parser.getNamespace(),
+                                    parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }
@@ -485,8 +454,7 @@ public class PacketParserUtils {
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("resource")) {
                     bind.setResource(parser.nextText());
-                }
-                else if (parser.getName().equals("jid")) {
+                } else if (parser.getName().equals("jid")) {
                     bind.setJid(parser.nextText());
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
@@ -517,8 +485,7 @@ public class PacketParserUtils {
                 if (elementName.equals("mechanism")) {
                     mechanisms.add(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("mechanisms")) {
                     done = true;
                 }
@@ -546,8 +513,7 @@ public class PacketParserUtils {
                 if (elementName.equals("method")) {
                     methods.add(parser.nextText());
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("compression")) {
                     done = true;
                 }
@@ -584,39 +550,30 @@ public class PacketParserUtils {
                         String elementName = parser.getName();
                         if (elementName.equals("name")) {
                             name = parser.nextText();
-                        }
-                        else if (elementName.equals("value")) {
+                        } else if (elementName.equals("value")) {
                             type = parser.getAttributeValue("", "type");
                             valueText = parser.nextText();
                         }
-                    }
-                    else if (eventType == XmlPullParser.END_TAG) {
+                    } else if (eventType == XmlPullParser.END_TAG) {
                         if (parser.getName().equals("property")) {
                             if ("integer".equals(type)) {
                                 value = Integer.valueOf(valueText);
-                            }
-                            else if ("long".equals(type))  {
+                            } else if ("long".equals(type)) {
                                 value = Long.valueOf(valueText);
-                            }
-                            else if ("float".equals(type)) {
+                            } else if ("float".equals(type)) {
                                 value = Float.valueOf(valueText);
-                            }
-                            else if ("double".equals(type)) {
+                            } else if ("double".equals(type)) {
                                 value = Double.valueOf(valueText);
-                            }
-                            else if ("boolean".equals(type)) {
+                            } else if ("boolean".equals(type)) {
                                 value = Boolean.valueOf(valueText);
-                            }
-                            else if ("string".equals(type)) {
+                            } else if ("string".equals(type)) {
                                 value = valueText;
-                            }
-                            else if ("java-object".equals(type)) {
+                            } else if ("java-object".equals(type)) {
                                 try {
-                                    byte [] bytes = StringUtils.decodeBase64(valueText);
+                                    byte[] bytes = StringUtils.decodeBase64(valueText);
                                     ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
                                     value = in.readObject();
-                                }
-                                catch (Exception e) {
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -627,8 +584,7 @@ public class PacketParserUtils {
                         }
                     }
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("properties")) {
                     break;
                 }
@@ -639,7 +595,7 @@ public class PacketParserUtils {
 
     /**
      * Parses SASL authentication error packets.
-     * 
+     *
      * @param parser the XML parser.
      * @return a SASL Failure packet.
      * @throws Exception if an exception occurs while parsing the packet.
@@ -654,8 +610,7 @@ public class PacketParserUtils {
                 if (!parser.getName().equals("failure")) {
                     condition = parser.getName();
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("failure")) {
                     done = true;
                 }
@@ -673,30 +628,29 @@ public class PacketParserUtils {
      */
     public static StreamError parseStreamError(XmlPullParser parser) throws IOException,
             XmlPullParserException {
-    StreamError streamError = new StreamError();
-    boolean done = false;
-    while (!done) {
-        int eventType = parser.next();
+        StreamError streamError = new StreamError();
+        boolean done = false;
+        while (!done) {
+            int eventType = parser.next();
 
-        if (eventType == XmlPullParser.START_TAG) {
-            String name = parser.getName();
-            StreamError.Type type;
-            try {
-                type = StreamError.Type.fromString(name);
-            } catch (NoSuchElementException e) {
-                continue;
+            if (eventType == XmlPullParser.START_TAG) {
+                String name = parser.getName();
+                StreamError.Type type;
+                try {
+                    type = StreamError.Type.fromString(name);
+                } catch (NoSuchElementException e) {
+                    continue;
+                }
+                streamError.setType(type);
+                streamError.setBody(parseStreamErrorBody(parser));
+            } else if (eventType == XmlPullParser.END_TAG) {
+                if (parser.getName().equals("error")) {
+                    done = true;
+                }
             }
-            streamError.setType(type);
-            streamError.setBody(parseStreamErrorBody(parser));
         }
-        else if (eventType == XmlPullParser.END_TAG) {
-            if (parser.getName().equals("error")) {
-                done = true;
-            }
-        }
+        return streamError;
     }
-    return streamError;
-}
 
     /**
      * Parses stream error body.
@@ -707,17 +661,17 @@ public class PacketParserUtils {
      */
     public static String parseStreamErrorBody(XmlPullParser parser)
             throws IOException, XmlPullParserException {
-	    int level = 0;
-	    StringBuilder builder = new StringBuilder();
-	    while (level >= 0) {
-	        int eventType = parser.next();
-	        if (eventType == XmlPullParser.START_TAG)
-	            level += 1;
-	        else if (eventType == XmlPullParser.END_TAG)
-	            level -= 1;
-	        else if (eventType == XmlPullParser.TEXT)
-	            builder.append(parser.getText());
-	    }
+        int level = 0;
+        StringBuilder builder = new StringBuilder();
+        while (level >= 0) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG)
+                level += 1;
+            else if (eventType == XmlPullParser.END_TAG)
+                level -= 1;
+            else if (eventType == XmlPullParser.TEXT)
+                builder.append(parser.getText());
+        }
         return builder.toString();
     }
 
@@ -730,19 +684,19 @@ public class PacketParserUtils {
      */
     public static XMPPError parseError(XmlPullParser parser) throws Exception {
         final String errorNamespace = "urn:ietf:params:xml:ns:xmpp-stanzas";
-    	String errorCode = "-1";
+        String errorCode = "-1";
         String type = null;
         String message = null;
         String condition = null;
         List<PacketExtension> extensions = new ArrayList<PacketExtension>();
 
         // Parse the error header
-        for (int i=0; i<parser.getAttributeCount(); i++) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
             if (parser.getAttributeName(i).equals("code")) {
                 errorCode = parser.getAttributeValue("", "code");
             }
             if (parser.getAttributeName(i).equals("type")) {
-            	type = parser.getAttributeValue("", "type");
+                type = parser.getAttributeValue("", "type");
             }
         }
         boolean done = false;
@@ -752,24 +706,21 @@ public class PacketParserUtils {
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("text")) {
                     message = parser.nextText();
-                }
-                else {
-                	// Condition tag, it can be xmpp error or an application defined error.
+                } else {
+                    // Condition tag, it can be xmpp error or an application defined error.
                     String elementName = parser.getName();
                     String namespace = parser.getNamespace();
                     if (errorNamespace.equals(namespace)) {
-                    	condition = elementName;
+                        condition = elementName;
+                    } else {
+                        extensions.add(parsePacketExtension(elementName, namespace, parser));
                     }
-                    else {
-                    	extensions.add(parsePacketExtension(elementName, namespace, parser));
-                    }
+                }
+            } else if (eventType == XmlPullParser.END_TAG) {
+                if (parser.getName().equals("error")) {
+                    done = true;
                 }
             }
-                else if (eventType == XmlPullParser.END_TAG) {
-                    if (parser.getName().equals("error")) {
-                        done = true;
-                    }
-                }
         }
         // Parse the error type.
         XMPPError.Type errorType = XMPPError.Type.CANCEL;
@@ -777,8 +728,7 @@ public class PacketParserUtils {
             if (type != null) {
                 errorType = XMPPError.Type.valueOf(type.toUpperCase());
             }
-        }
-        catch (IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             // Print stack trace. We shouldn't be getting an illegal error type.
             iae.printStackTrace();
         }
@@ -789,23 +739,21 @@ public class PacketParserUtils {
      * Parses a packet extension sub-packet.
      *
      * @param elementName the XML element name of the packet extension.
-     * @param namespace the XML namespace of the packet extension.
-     * @param parser the XML parser, positioned at the starting element of the extension.
+     * @param namespace   the XML namespace of the packet extension.
+     * @param parser      the XML parser, positioned at the starting element of the extension.
      * @return a PacketExtension.
      * @throws Exception if a parsing error occurs.
      */
     public static PacketExtension parsePacketExtension(String elementName, String namespace, XmlPullParser parser)
-            throws Exception
-    {
+            throws Exception {
         // See if a provider is registered to handle the extension.
         Object provider = ProviderManager.getInstance().getExtensionProvider(elementName, namespace);
         if (provider != null) {
             if (provider instanceof PacketExtensionProvider) {
-                return ((PacketExtensionProvider)provider).parseExtension(parser);
-            }
-            else if (provider instanceof Class) {
-                return (PacketExtension)parseWithIntrospection(
-                        elementName, (Class)provider, parser);
+                return ((PacketExtensionProvider) provider).parseExtension(parser);
+            } else if (provider instanceof Class) {
+                return (PacketExtension) parseWithIntrospection(
+                        elementName, (Class) provider, parser);
             }
         }
         // No providers registered, so use a default extension.
@@ -817,7 +765,7 @@ public class PacketParserUtils {
                 String name = parser.getName();
                 // If an empty element, set the value with the empty string.
                 if (parser.isEmptyElementTag()) {
-                    extension.setValue(name,"");
+                    extension.setValue(name, "");
                 }
                 // Otherwise, get the the element text.
                 else {
@@ -827,8 +775,7 @@ public class PacketParserUtils {
                         extension.setValue(name, value);
                     }
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals(elementName)) {
                     done = true;
                 }
@@ -838,20 +785,19 @@ public class PacketParserUtils {
     }
 
     public static String getLanguageAttribute(XmlPullParser parser) {
-    	for (int i = 0; i < parser.getAttributeCount(); i++) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
             String attributeName = parser.getAttributeName(i);
-            if ( "xml:lang".equals(attributeName) ||
+            if ("xml:lang".equals(attributeName) ||
                     ("lang".equals(attributeName) &&
                             "xml".equals(parser.getAttributePrefix(i)))) {
-    			return parser.getAttributeValue(i);
-    		}
-    	}
-    	return null;
+                return parser.getAttributeValue(i);
+            }
+        }
+        return null;
     }
 
     public static Object parseWithIntrospection(String elementName,
-            Class objectClass, XmlPullParser parser) throws Exception
-    {
+                                                Class objectClass, XmlPullParser parser) throws Exception {
         boolean done = false;
         Object object = objectClass.newInstance();
         while (!done) {
@@ -860,15 +806,14 @@ public class PacketParserUtils {
                 String name = parser.getName();
                 String stringValue = parser.nextText();
                 Class propertyType = object.getClass().getMethod(
-                    "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1)).getReturnType();
+                        "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1)).getReturnType();
                 // Get the value of the property by converting it from a
                 // String to the correct object type.
                 Object value = decode(propertyType, stringValue);
                 // Set the value of the bean.
                 object.getClass().getMethod("set" + Character.toUpperCase(name.charAt(0)) + name.substring(1), propertyType)
-                .invoke(object, value);
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+                        .invoke(object, value);
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals(elementName)) {
                     done = true;
                 }
@@ -881,7 +826,7 @@ public class PacketParserUtils {
      * Decodes a String into an object of the specified type. If the object
      * type is not supported, null will be returned.
      *
-     * @param type the type of the property.
+     * @param type  the type of the property.
      * @param value the encode String value to decode.
      * @return the String value decoded into the specified type.
      * @throws Exception If decoding failed due to an error.

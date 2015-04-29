@@ -37,7 +37,7 @@ import java.util.WeakHashMap;
  * Handles chat state for all chats on a particular Connection. This class manages both the
  * packet extensions and the disco response neccesary for compliance with
  * <a href="http://www.xmpp.org/extensions/xep-0085.html">XEP-0085</a>.
- *
+ * <p/>
  * NOTE: {@link org.jivesoftware.smackx.ChatStateManager#getInstance(org.jivesoftware.smack.Connection)}
  * needs to be called in order for the listeners to be registered appropriately with the connection.
  * If this does not occur you will not receive the update notifications.
@@ -52,7 +52,7 @@ public class ChatStateManager {
             new WeakHashMap<Connection, ChatStateManager>();
 
     private static final PacketFilter filter = new NotFilter(
-                new PacketExtensionFilter("http://jabber.org/protocol/chatstates"));
+            new PacketExtensionFilter("http://jabber.org/protocol/chatstates"));
 
     /**
      * Returns the ChatStateManager related to the Connection and it will create one if it does
@@ -62,7 +62,7 @@ public class ChatStateManager {
      * @return the ChatStateManager related the the connection.
      */
     public static ChatStateManager getInstance(final Connection connection) {
-        if(connection == null) {
+        if (connection == null) {
             return null;
         }
         synchronized (managers) {
@@ -108,16 +108,15 @@ public class ChatStateManager {
      * and only if the new chat state is different than the last state.
      *
      * @param newState the new state of the chat
-     * @param chat the chat.
-     * @throws org.jivesoftware.smack.XMPPException
-     *          when there is an error sending the message
-     *          packet.
+     * @param chat     the chat.
+     * @throws org.jivesoftware.smack.XMPPException when there is an error sending the message
+     *                                              packet.
      */
     public void setCurrentState(ChatState newState, Chat chat) throws XMPPException {
-        if(chat == null || newState == null) {
+        if (chat == null || newState == null) {
             throw new IllegalArgumentException("Arguments cannot be null.");
         }
-        if(!updateChatState(chat, newState)) {
+        if (!updateChatState(chat, newState)) {
             return;
         }
         Message message = new Message();
@@ -189,8 +188,7 @@ public class ChatStateManager {
             ChatState state;
             try {
                 state = ChatState.valueOf(extension.getElementName());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 return;
             }
 

@@ -5,3 +5,4 @@ build
 .gradle
 *.apk
 app/manifest-merger-release-report.txt
+*~*

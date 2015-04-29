@@ -31,11 +31,11 @@ import org.jivesoftware.smackx.bytestreams.ibb.packet.Open;
  * listeners for a In-Band Bytestream request InitiationListener will always refuse the request and
  * reply with a &lt;not-acceptable/&gt; error (<a
  * href="http://xmpp.org/extensions/xep-0047.html#example-5" >XEP-0047</a> Section 2.1).
- * <p>
+ * <p/>
  * All In-Band Bytestream request having a block size greater than the maximum allowed block size
  * for this connection are rejected with an &lt;resource-constraint/&gt; error. The maximum block
  * size can be set by invoking {@link InBandBytestreamManager#setMaximumBlockSize(int)}.
- * 
+ *
  * @author Henning Staib
  */
 class InitiationListener implements PacketListener {
@@ -45,14 +45,14 @@ class InitiationListener implements PacketListener {
 
     /* packet filter for all In-Band Bytestream requests */
     private final PacketFilter initFilter = new AndFilter(new PacketTypeFilter(Open.class),
-                    new IQTypeFilter(IQ.Type.SET));
+            new IQTypeFilter(IQ.Type.SET));
 
     /* executor service to process incoming requests concurrently */
     private final ExecutorService initiationListenerExecutor;
 
     /**
      * Constructor.
-     * 
+     *
      * @param manager the In-Band Bytestream manager
      */
     protected InitiationListener(InBandBytestreamManager manager) {
@@ -90,8 +90,7 @@ class InitiationListener implements PacketListener {
         if (userListener != null) {
             userListener.incomingBytestreamRequest(request);
 
-        }
-        else if (!this.manager.getAllRequestListeners().isEmpty()) {
+        } else if (!this.manager.getAllRequestListeners().isEmpty()) {
             /*
              * if there is no user specific listener inform listeners for all initiation requests
              */
@@ -99,8 +98,7 @@ class InitiationListener implements PacketListener {
                 listener.incomingBytestreamRequest(request);
             }
 
-        }
-        else {
+        } else {
             /*
              * if there is no listener for this initiation request, reply with reject message
              */
@@ -110,7 +108,7 @@ class InitiationListener implements PacketListener {
 
     /**
      * Returns the packet filter for In-Band Bytestream open requests.
-     * 
+     *
      * @return the packet filter for In-Band Bytestream open requests
      */
     protected PacketFilter getFilter() {

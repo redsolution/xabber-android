@@ -29,7 +29,6 @@ import org.jivesoftware.smackx.packet.*;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- *
  * The RosterExchangeProvider parses RosterExchange packets.
  *
  * @author Gaston Dombiak
@@ -55,26 +54,26 @@ public class RosterExchangeProvider implements PacketExtensionProvider {
         RosterExchange rosterExchange = new RosterExchange();
         boolean done = false;
         RemoteRosterEntry remoteRosterEntry = null;
-		String jid = "";
-		String name = "";
-		ArrayList groupsName = new ArrayList();
+        String jid = "";
+        String name = "";
+        ArrayList groupsName = new ArrayList();
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("item")) {
-                	// Reset this variable since they are optional for each item
-					groupsName = new ArrayList();
-					// Initialize the variables from the parsed XML
+                    // Reset this variable since they are optional for each item
+                    groupsName = new ArrayList();
+                    // Initialize the variables from the parsed XML
                     jid = parser.getAttributeValue("", "jid");
                     name = parser.getAttributeValue("", "name");
                 }
                 if (parser.getName().equals("group")) {
-					groupsName.add(parser.nextText());
+                    groupsName.add(parser.nextText());
                 }
             } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("item")) {
-					// Create packet.
-					remoteRosterEntry = new RemoteRosterEntry(jid, name, (String[]) groupsName.toArray(new String[groupsName.size()]));
+                    // Create packet.
+                    remoteRosterEntry = new RemoteRosterEntry(jid, name, (String[]) groupsName.toArray(new String[groupsName.size()]));
                     rosterExchange.addRosterEntry(remoteRosterEntry);
                 }
                 if (parser.getName().equals("x")) {

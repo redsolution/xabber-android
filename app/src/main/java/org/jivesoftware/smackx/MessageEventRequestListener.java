@@ -21,11 +21,10 @@
 package org.jivesoftware.smackx;
 
 /**
- *
  * A listener that is fired anytime a message event request is received.
- * Message event requests are received when the received message includes an extension 
+ * Message event requests are received when the received message includes an extension
  * like this:
- * 
+ * <p/>
  * <pre>
  * &lt;x xmlns='jabber:x:event'&gt;
  *  &lt;offline/&gt;
@@ -33,10 +32,10 @@ package org.jivesoftware.smackx;
  *  &lt;composing/&gt;
  * &lt;/x&gt;
  * </pre>
- * 
+ * <p/>
  * In this example you can see that the sender of the message requests to be notified
- * when the user couldn't receive the message because he/she is offline, the message 
- * was delivered or when the receiver of the message is composing a reply. 
+ * when the user couldn't receive the message because he/she is offline, the message
+ * was delivered or when the receiver of the message is composing a reply.
  *
  * @author Gaston Dombiak
  */
@@ -44,43 +43,43 @@ public interface MessageEventRequestListener {
 
     /**
      * Called when a request for message delivered notification is received.
-     *  
-     * @param from the user that sent the notification.
-     * @param packetID the id of the message that was sent.
+     *
+     * @param from                the user that sent the notification.
+     * @param packetID            the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
     public void deliveredNotificationRequested(String from, String packetID,
-            MessageEventManager messageEventManager);
+                                               MessageEventManager messageEventManager);
 
     /**
      * Called when a request for message displayed notification is received.
-     *  
-     * @param from the user that sent the notification.
-     * @param packetID the id of the message that was sent.
+     *
+     * @param from                the user that sent the notification.
+     * @param packetID            the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
     public void displayedNotificationRequested(String from, String packetID,
-            MessageEventManager messageEventManager);
+                                               MessageEventManager messageEventManager);
 
     /**
-     * Called when a request that the receiver of the message is composing a reply notification is 
+     * Called when a request that the receiver of the message is composing a reply notification is
      * received.
-     *  
-     * @param from the user that sent the notification.
-     * @param packetID the id of the message that was sent.
+     *
+     * @param from                the user that sent the notification.
+     * @param packetID            the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
     public void composingNotificationRequested(String from, String packetID,
-                MessageEventManager messageEventManager);
+                                               MessageEventManager messageEventManager);
 
     /**
      * Called when a request that the receiver of the message is offline is received.
-     *  
-     * @param from the user that sent the notification.
-     * @param packetID the id of the message that was sent.
+     *
+     * @param from                the user that sent the notification.
+     * @param packetID            the id of the message that was sent.
      * @param messageEventManager the messageEventManager that fired the listener.
      */
     public void offlineNotificationRequested(String from, String packetID,
-            MessageEventManager messageEventManager);
+                                             MessageEventManager messageEventManager);
 
 }

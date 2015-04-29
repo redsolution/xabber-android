@@ -22,11 +22,11 @@ package org.jivesoftware.smackx.muc;
 
 /**
  * Default implementation of the ParticipantStatusListener interface.<p>
- *
+ * <p/>
  * This class does not provide any behavior by default. It just avoids having
  * to implement all the inteface methods if the user is only interested in implementing
  * some of the methods.
- * 
+ *
  * @author Gaston Dombiak
  */
 public class DefaultParticipantStatusListener implements ParticipantStatusListener {

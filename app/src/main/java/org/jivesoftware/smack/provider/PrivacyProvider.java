@@ -11,17 +11,17 @@ import java.util.ArrayList;
 /**
  * The PrivacyProvider parses {@link Privacy} packets. {@link Privacy}
  * Parses the <tt>query</tt> sub-document and creates an instance of {@link Privacy}.
- * For each <tt>item</tt> in the <tt>list</tt> element, it creates an instance 
+ * For each <tt>item</tt> in the <tt>list</tt> element, it creates an instance
  * of {@link PrivacyItem} and {@link org.jivesoftware.smack.packet.PrivacyItem.PrivacyRule}.
- * 
+ *
  * @author Francisco Vives
  */
 public class PrivacyProvider implements IQProvider {
 
-	public PrivacyProvider() {
-	}
+    public PrivacyProvider() {
+    }
 
-	public IQ parseIQ(XmlPullParser parser) throws Exception {
+    public IQ parseIQ(XmlPullParser parser) throws Exception {
         Privacy privacy = new Privacy();
         /* privacy.addExtension(PacketParserUtils.parsePacketExtension(parser
                 .getName(), parser.getNamespace(), parser)); */
@@ -31,26 +31,23 @@ public class PrivacyProvider implements IQProvider {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("active")) {
-                	String activeName = parser.getAttributeValue("", "name");
-                	if (activeName == null) {
-                		privacy.setDeclineActiveList(true);
-                	} else {
-                		privacy.setActiveName(activeName);
-                	}
-                }
-                else if (parser.getName().equals("default")) {
-                	String defaultName = parser.getAttributeValue("", "name");
-                	if (defaultName == null) {
-                		privacy.setDeclineDefaultList(true);
-                	} else {
-                		privacy.setDefaultName(defaultName);
-                	}
-                }
-                else if (parser.getName().equals("list")) {
+                    String activeName = parser.getAttributeValue("", "name");
+                    if (activeName == null) {
+                        privacy.setDeclineActiveList(true);
+                    } else {
+                        privacy.setActiveName(activeName);
+                    }
+                } else if (parser.getName().equals("default")) {
+                    String defaultName = parser.getAttributeValue("", "name");
+                    if (defaultName == null) {
+                        privacy.setDeclineDefaultList(true);
+                    } else {
+                        privacy.setDefaultName(defaultName);
+                    }
+                } else if (parser.getName().equals("list")) {
                     parseList(parser, privacy);
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("query")) {
                     done = true;
                 }
@@ -58,10 +55,10 @@ public class PrivacyProvider implements IQProvider {
         }
 
         return privacy;
-	}
-	
-	// Parse the list complex type
-	public void parseList(XmlPullParser parser, Privacy privacy) throws Exception {
+    }
+
+    // Parse the list complex type
+    public void parseList(XmlPullParser parser, Privacy privacy) throws Exception {
         boolean done = false;
         String listName = parser.getAttributeValue("", "name");
         ArrayList<PrivacyItem> items = new ArrayList<PrivacyItem>();
@@ -69,10 +66,9 @@ public class PrivacyProvider implements IQProvider {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("item")) {
-                	items.add(parseItem(parser));
+                    items.add(parseItem(parser));
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("list")) {
                     done = true;
                 }
@@ -80,10 +76,10 @@ public class PrivacyProvider implements IQProvider {
         }
 
         privacy.setPrivacyList(listName, items);
-	}
-	
-	// Parse the list complex type
-	public PrivacyItem parseItem(XmlPullParser parser) throws Exception {
+    }
+
+    // Parse the list complex type
+    public PrivacyItem parseItem(XmlPullParser parser) throws Exception {
         boolean done = false;
         // Retrieves the required attributes
         String actionValue = parser.getAttributeValue("", "action");
@@ -96,9 +92,9 @@ public class PrivacyProvider implements IQProvider {
          */
         boolean allow = true;
         if ("allow".equalsIgnoreCase(actionValue)) {
-        	allow = true;
+            allow = true;
         } else if ("deny".equalsIgnoreCase(actionValue)) {
-        	allow = false;
+            allow = false;
         }
         // Set the order number
         int order = Integer.parseInt(orderValue);
@@ -111,24 +107,23 @@ public class PrivacyProvider implements IQProvider {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
                 if (parser.getName().equals("iq")) {
-                	item.setFilterIQ(true);
+                    item.setFilterIQ(true);
                 }
                 if (parser.getName().equals("message")) {
-                	item.setFilterMessage(true);
+                    item.setFilterMessage(true);
                 }
                 if (parser.getName().equals("presence-in")) {
-                	item.setFilterPresence_in(true);
+                    item.setFilterPresence_in(true);
                 }
                 if (parser.getName().equals("presence-out")) {
-                	item.setFilterPresence_out(true);
+                    item.setFilterPresence_out(true);
                 }
-            }
-            else if (eventType == XmlPullParser.END_TAG) {
+            } else if (eventType == XmlPullParser.END_TAG) {
                 if (parser.getName().equals("item")) {
                     done = true;
                 }
             }
         }
         return item;
-	}
+    }
 }

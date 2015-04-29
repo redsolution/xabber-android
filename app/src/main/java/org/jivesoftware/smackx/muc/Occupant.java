@@ -96,17 +96,17 @@ public class Occupant {
      * from a presence then the answer will be null.
      *
      * @return the current nickname of the occupant in the room or null if this information was
-     *         obtained from a presence.
+     * obtained from a presence.
      */
     public String getNick() {
         return nick;
     }
 
     public boolean equals(Object obj) {
-        if(!(obj instanceof Occupant)) {
+        if (!(obj instanceof Occupant)) {
             return false;
         }
-        Occupant occupant = (Occupant)obj;
+        Occupant occupant = (Occupant) obj;
         return jid.equals(occupant.jid);
     }
 

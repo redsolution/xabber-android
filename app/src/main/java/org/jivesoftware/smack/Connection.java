@@ -42,7 +42,7 @@ import org.jivesoftware.smack.packet.Presence;
  * The abstract Connection class provides an interface for connections to a
  * XMPP server and implements shared methods which are used by the
  * different types of connections (e.g. XMPPConnection or BoshConnection).
- * 
+ * <p/>
  * To create a connection to a XMPP server a simple usage of this API might
  * look like the following:
  * <pre>
@@ -54,7 +54,7 @@ import org.jivesoftware.smack.packet.Presence;
  * con.login("jsmith", "mypass");
  * // Start a new conversation with John Doe and send him a message.
  * Chat chat = connection.getChatManager().createChat("jdoe@igniterealtime.org"</font>, new MessageListener() {
- * <p/>
+ *
  *     public void processMessage(Chat chat, Message message) {
  *         // Print out any messages we get back to standard out.
  *         System.out.println(<font color="green">"Received message: "</font> + message);
@@ -72,14 +72,14 @@ import org.jivesoftware.smack.packet.Presence;
  * If a connected Connection gets disconnected abruptly then it will try to reconnect
  * again. To stop the reconnection process, use {@link #disconnect()}. Once stopped
  * you can use {@link #connect()} to manually connect to the server.
- * 
- * @see XMPPConnection
+ *
  * @author Matt Tucker
  * @author Guenther Niess
+ * @see XMPPConnection
  */
 public abstract class Connection {
 
-    /** 
+    /**
      * Counter to uniquely identify connections that are created.
      */
     private final static AtomicInteger connectionCounter = new AtomicInteger(0);
@@ -110,8 +110,7 @@ public abstract class Connection {
         // property (for example, when an applet).
         try {
             DEBUG_ENABLED = Boolean.getBoolean("smack.debugEnabled");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Ignore.
         }
         // Ensure the SmackConfiguration class is loaded by calling a method in it.
@@ -175,7 +174,7 @@ public abstract class Connection {
      * The Writer which is used for the {@see debugger}.
      */
     protected Writer writer;
-    
+
     /**
      * The permanent storage for the roster
      */
@@ -200,7 +199,7 @@ public abstract class Connection {
 
     /**
      * Create a new Connection to a XMPP server.
-     * 
+     *
      * @param configuration The configuration which is used to establish the connection.
      */
     protected Connection(ConnectionConfiguration configuration) {
@@ -209,7 +208,7 @@ public abstract class Connection {
 
     /**
      * Returns the configuration used to connect to the server.
-     * 
+     *
      * @return the configuration used to connect to the server.
      */
     protected ConnectionConfiguration getConfiguration() {
@@ -220,7 +219,7 @@ public abstract class Connection {
      * Returns the name of the service provided by the XMPP server for this connection.
      * This is also called XMPP domain of the connected server. After
      * authenticating with the server the returned value may be different.
-     * 
+     *
      * @return the name of the service provided by the XMPP server.
      */
     public String getServiceName() {
@@ -230,21 +229,21 @@ public abstract class Connection {
     /**
      * Returns the host name of the server where the XMPP server is running. This would be the
      * IP address of the server or a name that may be resolved by a DNS server.
-     * 
+     *
      * @return the host name of the server where the XMPP server is running.
      */
     public String getHost() {
         return config.getHost();
     }
-    
-    public String getCapsNode(){
-    	return config.getCapsNode();
+
+    public String getCapsNode() {
+        return config.getCapsNode();
     }
 
     /**
      * Returns the port number of the XMPP server for this connection. The default port
      * for normal connections is 5222. The default port for SSL connections is 5223.
-     * 
+     *
      * @return the port number of the XMPP server.
      */
     public int getPort() {
@@ -255,7 +254,7 @@ public abstract class Connection {
      * Returns the full XMPP address of the user that is logged in to the connection or
      * <tt>null</tt> if not logged in yet. An XMPP address is in the form
      * username@server/resource.
-     * 
+     *
      * @return the full XMPP address of the user logged in.
      */
     public abstract String getUser();
@@ -264,36 +263,36 @@ public abstract class Connection {
      * Returns the connection ID for this connection, which is the value set by the server
      * when opening a XMPP stream. If the server does not set a connection ID, this value
      * will be null. This value will be <tt>null</tt> if not connected to the server.
-     * 
+     *
      * @return the ID of this connection returned from the XMPP server or <tt>null</tt> if
-     *      not connected to the server.
+     * not connected to the server.
      */
     public abstract String getConnectionID();
 
     /**
      * Returns true if currently connected to the XMPP server.
-     * 
+     *
      * @return true if connected.
      */
     public abstract boolean isConnected();
 
     /**
      * Returns true if currently authenticated by successfully calling the login method.
-     * 
+     *
      * @return true if authenticated.
      */
     public abstract boolean isAuthenticated();
 
     /**
      * Returns true if currently authenticated anonymously.
-     * 
+     *
      * @return true if authenticated anonymously.
      */
     public abstract boolean isAnonymous();
 
     /**
-     * Returns true if the connection to the server has successfully negotiated encryption. 
-     * 
+     * Returns true if the connection to the server has successfully negotiated encryption.
+     *
      * @return true if a secure connection to the server.
      */
     public abstract boolean isSecureConnection();
@@ -301,7 +300,7 @@ public abstract class Connection {
     /**
      * Returns if the reconnection mechanism is allowed to be used. By default
      * reconnection is allowed.
-     * 
+     *
      * @return true if the reconnection mechanism is allowed to be used.
      */
     protected boolean isReconnectionAllowed() {
@@ -313,7 +312,7 @@ public abstract class Connection {
      * traffic can be reduced up to 90%. Therefore, stream compression is ideal when using a slow
      * speed network connection. However, the server will need to use more CPU time in order to
      * un/compress network data so under high load the server performance might be affected.
-     * 
+     *
      * @return true if network traffic is being compressed.
      */
     public abstract boolean isUsingCompression();
@@ -325,21 +324,21 @@ public abstract class Connection {
      * <p/>
      * Listeners will be preserved from a previous connection if the reconnection
      * occurs after an abrupt termination.
-     * 
+     *
      * @throws XMPPException if an error occurs while trying to establish the connection.
      */
     public abstract void connect() throws XMPPException;
 
     /**
      * Logs in to the server using the strongest authentication mode supported by
-     * the server, then sets presence to available. If the server supports SASL authentication 
-     * then the user will be authenticated using SASL if not Non-SASL authentication will 
-     * be tried. If more than five seconds (default timeout) elapses in each step of the 
-     * authentication process without a response from the server, or if an error occurs, a 
+     * the server, then sets presence to available. If the server supports SASL authentication
+     * then the user will be authenticated using SASL if not Non-SASL authentication will
+     * be tried. If more than five seconds (default timeout) elapses in each step of the
+     * authentication process without a response from the server, or if an error occurs, a
      * XMPPException will be thrown.<p>
-     * 
+     * <p/>
      * Before logging in (i.e. authenticate) to the server the connection must be connected.
-     * 
+     * <p/>
      * It is possible to log in without sending an initial available presence by using
      * {@link ConnectionConfiguration#setSendPresence(boolean)}. If this connection is
      * not interested in loading its roster upon login then use
@@ -348,7 +347,7 @@ public abstract class Connection {
      * while using SASL then you may be interested in using
      * {@link ConnectionConfiguration#setCallbackHandler(javax.security.auth.callback.CallbackHandler)}.
      * For more advanced login settings see {@link ConnectionConfiguration}.
-     * 
+     *
      * @param username the username.
      * @param password the password or <tt>null</tt> if using a CallbackHandler.
      * @throws XMPPException if an error occurs.
@@ -359,14 +358,14 @@ public abstract class Connection {
 
     /**
      * Logs in to the server using the strongest authentication mode supported by
-     * the server, then sets presence to available. If the server supports SASL authentication 
-     * then the user will be authenticated using SASL if not Non-SASL authentication will 
-     * be tried. If more than five seconds (default timeout) elapses in each step of the 
-     * authentication process without a response from the server, or if an error occurs, a 
+     * the server, then sets presence to available. If the server supports SASL authentication
+     * then the user will be authenticated using SASL if not Non-SASL authentication will
+     * be tried. If more than five seconds (default timeout) elapses in each step of the
+     * authentication process without a response from the server, or if an error occurs, a
      * XMPPException will be thrown.<p>
-     * 
+     * <p/>
      * Before logging in (i.e. authenticate) to the server the connection must be connected.
-     * 
+     * <p/>
      * It is possible to log in without sending an initial available presence by using
      * {@link ConnectionConfiguration#setSendPresence(boolean)}. If this connection is
      * not interested in loading its roster upon login then use
@@ -375,13 +374,13 @@ public abstract class Connection {
      * while using SASL then you may be interested in using
      * {@link ConnectionConfiguration#setCallbackHandler(javax.security.auth.callback.CallbackHandler)}.
      * For more advanced login settings see {@link ConnectionConfiguration}.
-     * 
+     *
      * @param username the username.
      * @param password the password or <tt>null</tt> if using a CallbackHandler.
      * @param resource the resource.
-     * @throws XMPPException if an error occurs.
+     * @throws XMPPException         if an error occurs.
      * @throws IllegalStateException if not connected to the server, or already logged in
-     *      to the serrver.
+     *                               to the serrver.
      */
     public abstract void login(String username, String password, String resource) throws XMPPException;
 
@@ -390,23 +389,23 @@ public abstract class Connection {
      * authentication, so it's fairly likely logging in anonymously will fail. If anonymous login
      * does succeed, your XMPP address will likely be in the form "123ABC@server/789XYZ" or
      * "server/123ABC" (where "123ABC" and "789XYZ" is a random value generated by the server).
-     * 
-     * @throws XMPPException if an error occurs or anonymous logins are not supported by the server.
+     *
+     * @throws XMPPException         if an error occurs or anonymous logins are not supported by the server.
      * @throws IllegalStateException if not connected to the server, or already logged in
-     *      to the serrver.
+     *                               to the serrver.
      */
     public abstract void loginAnonymously() throws XMPPException;
 
     /**
      * Sends the specified packet to the server.
-     * 
+     *
      * @param packet the packet to send.
      */
     public abstract void sendPacket(Packet packet);
 
     /**
      * Returns an account manager instance for this connection.
-     * 
+     *
      * @return an account manager for this connection.
      */
     public AccountManager getAccountManager() {
@@ -419,7 +418,7 @@ public abstract class Connection {
     /**
      * Returns a chat manager instance for this connection. The ChatManager manages all incoming and
      * outgoing chats on the current connection.
-     * 
+     *
      * @return a chat manager instance for this connection.
      */
     public synchronized ChatManager getChatManager() {
@@ -431,31 +430,32 @@ public abstract class Connection {
 
     /**
      * Returns the roster for the user.
-     * <p>
+     * <p/>
      * This method will never return <code>null</code>, instead if the user has not yet logged into
      * the server or is logged in anonymously all modifying methods of the returned roster object
      * like {@link Roster#createEntry(String, String, String[])},
      * {@link Roster#removeEntry(RosterEntry)} , etc. except adding or removing
      * {@link RosterListener}s will throw an IllegalStateException.
-     * 
+     *
      * @return the user's roster.
      */
     public abstract Roster getRoster();
-    
+
     /**
      * Set the store for the roster of this connection. If you set the roster storage
      * of a connection you enable support for XEP-0237 (RosterVersioning)
+     *
      * @param store the store used for roster versioning
      * @throws IllegalStateException if you add a roster store when roster is initializied
      */
     public abstract void setRosterStorage(RosterStorage storage) throws IllegalStateException;
-    
+
     /**
      * Returns the SASLAuthentication manager that is responsible for authenticating with
      * the server.
-     * 
+     *
      * @return the SASLAuthentication manager that is responsible for authenticating with
-     *         the server.
+     * the server.
      */
     public SASLAuthentication getSASLAuthentication() {
         return saslAuthentication;
@@ -489,7 +489,7 @@ public abstract class Connection {
      * on this connection again. This is unlike the behavior during unexpected disconnects
      * (and subsequent connections). In that case, all state is preserved to allow for
      * more seamless error recovery.
-     * 
+     *
      * @param unavailablePresence the presence packet to send during shutdown.
      */
     public abstract void disconnect(Presence unavailablePresence);
@@ -497,7 +497,7 @@ public abstract class Connection {
     /**
      * Adds a new listener that will be notified when new Connections are created. Note
      * that newly created connections will not be actually connected to the server.
-     * 
+     *
      * @param connectionCreationListener a listener interested on new connections.
      */
     public static void addConnectionCreationListener(
@@ -507,7 +507,7 @@ public abstract class Connection {
 
     /**
      * Removes a listener that was interested in connection creation events.
-     * 
+     *
      * @param connectionCreationListener a listener interested on new connections.
      */
     public static void removeConnectionCreationListener(
@@ -517,7 +517,7 @@ public abstract class Connection {
 
     /**
      * Get the collection of listeners that are interested in connection creation events.
-     * 
+     *
      * @return a collection of listeners interested on new connections.
      */
     protected static Collection<ConnectionCreationListener> getConnectionCreationListeners() {
@@ -528,7 +528,7 @@ public abstract class Connection {
      * Adds a connection listener to this connection that will be notified when
      * the connection closes or fails. The connection needs to already be connected
      * or otherwise an IllegalStateException will be thrown.
-     * 
+     *
      * @param connectionListener a connection listener.
      */
     @Deprecated
@@ -547,7 +547,7 @@ public abstract class Connection {
     /**
      * Adds a connection listener to this connection that will be notified when
      * the connection closes or fails.
-     * 
+     *
      * @param connectionListener a connection listener.
      */
     public void forceAddConnectionListener(ConnectionListener connectionListener) {
@@ -561,7 +561,7 @@ public abstract class Connection {
 
     /**
      * Removes a connection listener from this connection.
-     * 
+     *
      * @param connectionListener a connection listener.
      */
     public void removeConnectionListener(ConnectionListener connectionListener) {
@@ -570,7 +570,7 @@ public abstract class Connection {
 
     /**
      * Get the collection of listeners that are interested in connection events.
-     * 
+     *
      * @return a collection of listeners interested on connection events.
      */
     protected Collection<ConnectionListener> getConnectionListeners() {
@@ -582,7 +582,7 @@ public abstract class Connection {
      * which packets will be accumulated by the collector. A PacketCollector is
      * more suitable to use than a {@link PacketListener} when you need to wait for
      * a specific result.
-     * 
+     *
      * @param packetFilter the packet filter to use.
      * @return a new packet collector.
      */
@@ -595,7 +595,7 @@ public abstract class Connection {
 
     /**
      * Remove a packet collector of this connection.
-     * 
+     *
      * @param collector a packet collectors which was created for this connection.
      */
     protected void removePacketCollector(PacketCollector collector) {
@@ -604,7 +604,7 @@ public abstract class Connection {
 
     /**
      * Get the collection of all packet collectors for this connection.
-     * 
+     *
      * @return a collection of packet collectors for this connection.
      */
     protected Collection<PacketCollector> getPacketCollectors() {
@@ -615,7 +615,7 @@ public abstract class Connection {
      * Registers a packet listener with this connection. A packet filter determines
      * which packets will be delivered to the listener. If the same packet listener
      * is added again with a different filter, only the new filter will be used.
-     * 
+     *
      * @param packetListener the packet listener to notify of new received packets.
      * @param packetFilter   the packet filter to use.
      */
@@ -629,7 +629,7 @@ public abstract class Connection {
 
     /**
      * Removes a packet listener for received packets from this connection.
-     * 
+     *
      * @param packetListener the packet listener to remove.
      */
     public void removePacketListener(PacketListener packetListener) {
@@ -638,7 +638,7 @@ public abstract class Connection {
 
     /**
      * Get a map of all packet listeners for received packets of this connection.
-     * 
+     *
      * @return a map of all packet listeners for received packets.
      */
     protected Map<PacketListener, ListenerWrapper> getPacketListeners() {
@@ -652,7 +652,7 @@ public abstract class Connection {
      * that writes packets will be used to invoke the listeners. Therefore, each
      * packet listener should complete all operations quickly or use a different
      * thread for processing.
-     * 
+     *
      * @param packetListener the packet listener to notify of sent packets.
      * @param packetFilter   the packet filter to use.
      */
@@ -666,7 +666,7 @@ public abstract class Connection {
 
     /**
      * Removes a packet listener for sending packets from this connection.
-     * 
+     *
      * @param packetListener the packet listener to remove.
      */
     public void removePacketSendingListener(PacketListener packetListener) {
@@ -675,7 +675,7 @@ public abstract class Connection {
 
     /**
      * Get a map of all packet listeners for sending packets of this connection.
-     * 
+     *
      * @return a map of all packet listeners for sent packets.
      */
     protected Map<PacketListener, ListenerWrapper> getPacketSendingListeners() {
@@ -685,7 +685,7 @@ public abstract class Connection {
 
     /**
      * Process all packet listeners for sending packets.
-     * 
+     *
      * @param packet the packet to process.
      */
     protected void firePacketSendingListeners(Packet packet) {
@@ -705,7 +705,7 @@ public abstract class Connection {
      * @param packetFilter      the packet filter to use.
      */
     public void addPacketInterceptor(PacketInterceptor packetInterceptor,
-            PacketFilter packetFilter) {
+                                     PacketFilter packetFilter) {
         if (packetInterceptor == null) {
             throw new NullPointerException("Packet interceptor is null.");
         }
@@ -720,14 +720,14 @@ public abstract class Connection {
     public void removePacketInterceptor(PacketInterceptor packetInterceptor) {
         interceptors.remove(packetInterceptor);
     }
-    
+
     public boolean isSendPresence() {
         return config.isSendPresence();
     }
 
     /**
      * Get a map of all packet interceptors for sending packets of this connection.
-     * 
+     *
      * @return a map of all packet interceptors for sending packets.
      */
     protected Map<PacketInterceptor, InterceptorWrapper> getPacketInterceptors() {
@@ -739,7 +739,7 @@ public abstract class Connection {
      * Since the thread that requested to send the packet will invoke all interceptors, it
      * is important that interceptors perform their work as soon as possible so that the
      * thread does not remain blocked for a long period.
-     * 
+     *
      * @param packet the packet that is going to be sent to the server
      */
     protected void firePacketInterceptors(Packet packet) {
@@ -753,8 +753,8 @@ public abstract class Connection {
     /**
      * Initialize the {@link #debugger}. You can specify a customized {@link SmackDebugger}
      * by setup the system property <code>smack.debuggerClass</code> to the implementation.
-     * 
-     * @throws IllegalStateException if the reader or writer isn't yet initialized.
+     *
+     * @throws IllegalStateException    if the reader or writer isn't yet initialized.
      * @throws IllegalArgumentException if the SmackDebugger can't be loaded.
      */
     protected void initDebugger() {
@@ -770,16 +770,14 @@ public abstract class Connection {
                 // property (for example, when an applet).
                 try {
                     className = System.getProperty("smack.debuggerClass");
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     // Ignore.
                 }
                 Class<?> debuggerClass = null;
                 if (className != null) {
                     try {
                         debuggerClass = Class.forName(className);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -787,13 +785,11 @@ public abstract class Connection {
                     try {
                         debuggerClass =
                                 Class.forName("de.measite.smack.AndroidDebugger");
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         try {
                             debuggerClass =
                                     Class.forName("org.jivesoftware.smack.debugger.ConsoleDebugger");
-                        }
-                        catch (Exception ex2) {
+                        } catch (Exception ex2) {
                             ex2.printStackTrace();
                         }
                     }
@@ -806,20 +802,17 @@ public abstract class Connection {
                     debugger = (SmackDebugger) constructor.newInstance(this, writer, reader);
                     reader = debugger.getReader();
                     writer = debugger.getWriter();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     throw new IllegalArgumentException("Can't initialize the configured debugger!", e);
                 }
-            }
-            else {
+            } else {
                 // Obtain new reader and writer from the existing debugger
                 reader = debugger.newConnectionReader(reader);
                 writer = debugger.newConnectionWriter(writer);
             }
         }
-        
-    }
 
+    }
 
 
     /**
@@ -832,9 +825,9 @@ public abstract class Connection {
 
         /**
          * Create a class which associates a packet filter with a listener.
-         * 
+         *
          * @param packetListener the packet listener.
-         * @param packetFilter the associated filter or null if it listen for all packets.
+         * @param packetFilter   the associated filter or null if it listen for all packets.
          */
         public ListenerWrapper(PacketListener packetListener, PacketFilter packetFilter) {
             this.packetListener = packetListener;
@@ -843,7 +836,7 @@ public abstract class Connection {
 
         /**
          * Notify and process the packet listener if the filter matches the packet.
-         * 
+         *
          * @param packet the packet which was sent or received.
          */
         public void notifyListener(Packet packet) {
@@ -863,9 +856,9 @@ public abstract class Connection {
 
         /**
          * Create a class which associates a packet filter with an interceptor.
-         * 
+         *
          * @param packetInterceptor the interceptor.
-         * @param packetFilter the associated filter or null if it intercepts all packets.
+         * @param packetFilter      the associated filter or null if it intercepts all packets.
          */
         public InterceptorWrapper(PacketInterceptor packetInterceptor, PacketFilter packetFilter) {
             this.packetInterceptor = packetInterceptor;
@@ -879,8 +872,7 @@ public abstract class Connection {
             if (object instanceof InterceptorWrapper) {
                 return ((InterceptorWrapper) object).packetInterceptor
                         .equals(this.packetInterceptor);
-            }
-            else if (object instanceof PacketInterceptor) {
+            } else if (object instanceof PacketInterceptor) {
                 return object.equals(this.packetInterceptor);
             }
             return false;
@@ -888,7 +880,7 @@ public abstract class Connection {
 
         /**
          * Notify and process the packet interceptor if the filter matches the packet.
-         * 
+         *
          * @param packet the packet which will be sent.
          */
         public void notifyListener(Packet packet) {

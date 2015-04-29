@@ -21,7 +21,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
     <string name="contact_name">Alias (optional)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add_confirm.png -->
-    <string name="contact_subscribe_confirm">Share your %2$s account status with %1$s?</string>
+    <string name="contact_subscribe_confirm">Share your %1$s account status with contact?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_add.png -->
     <string name="contact_user">Contact username</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
@@ -40,4 +40,9 @@
     <string name="choose_account">Choose an account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="EMPTY_ACCOUNT">Please select an account</string>
+
+    <string name="add_new_group">Add new group…</string>
+
+    <string name="accept_contact">Authorize</string>
+    <string name="decline_contact">Discard</string>
 </resources>

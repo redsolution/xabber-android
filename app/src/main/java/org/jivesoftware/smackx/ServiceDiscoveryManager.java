@@ -48,8 +48,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * <li>Automatic response when this XMPP entity is queried for information.
  * <li>Ability to discover items and information of remote XMPP entities.
  * <li>Ability to publish publicly available items.
- * </ol>  
- * 
+ * </ol>
+ *
  * @author Gaston Dombiak
  */
 public class ServiceDiscoveryManager {
@@ -57,19 +57,19 @@ public class ServiceDiscoveryManager {
     private static String identityName = "aSmack";
     private static String identityType = "handheld";
     private static String entityNode = "http://www.igniterealtime.org/projects/smack/";
-    
-    private static boolean cacheNonCaps=true;
+
+    private static boolean cacheNonCaps = true;
 
     private String currentCapsVersion = null;
     private boolean sendPresence = false;
-    
-    private Map<String,DiscoverInfo> nonCapsCache =
-    	new ConcurrentHashMap<String,DiscoverInfo>();
+
+    private Map<String, DiscoverInfo> nonCapsCache =
+            new ConcurrentHashMap<String, DiscoverInfo>();
 
     private EntityCapsManager capsManager;
 
     private static Map<Connection, WeakReference<ServiceDiscoveryManager>> instances =
-        new WeakHashMap<Connection, WeakReference<ServiceDiscoveryManager>>();
+            new WeakHashMap<Connection, WeakReference<ServiceDiscoveryManager>>();
 
     private Connection connection;
     private final List<String> features = new ArrayList<String>();
@@ -88,10 +88,10 @@ public class ServiceDiscoveryManager {
     }
 
     /**
-     * Creates a new ServiceDiscoveryManager for a given connection. This means that the 
+     * Creates a new ServiceDiscoveryManager for a given connection. This means that the
      * service manager will respond to any service discovery request that the connection may
-     * receive. 
-     * 
+     * receive.
+     *
      * @param connection the connection to which a ServiceDiscoveryManager is going to be created.
      */
     public ServiceDiscoveryManager(Connection connection) {
@@ -110,7 +110,7 @@ public class ServiceDiscoveryManager {
 
     /**
      * Returns the ServiceDiscoveryManager instance associated with a given Connection.
-     * 
+     *
      * @param connection the connection used to look for the proper ServiceDiscoveryManager.
      * @return the ServiceDiscoveryManager associated with a given Connection.
      */
@@ -125,9 +125,9 @@ public class ServiceDiscoveryManager {
     /**
      * Returns the name of the client that will be returned when asked for the client identity
      * in a disco request. The name could be any value you need to identity this client.
-     * 
+     *
      * @return the name of the client that will be returned when asked for the client identity
-     *          in a disco request.
+     * in a disco request.
      */
     public static String getIdentityName() {
         return identityName;
@@ -136,54 +136,54 @@ public class ServiceDiscoveryManager {
     /**
      * Sets the name of the client that will be returned when asked for the client identity
      * in a disco request. The name could be any value you need to identity this client.
-     * 
+     *
      * @param name the name of the client that will be returned when asked for the client identity
-     *          in a disco request.
+     *             in a disco request.
      */
     public static void setIdentityName(String name) {
         identityName = name;
     }
 
     /**
-     * Returns the type of client that will be returned when asked for the client identity in a 
-     * disco request. The valid types are defined by the category client. Follow this link to learn 
+     * Returns the type of client that will be returned when asked for the client identity in a
+     * disco request. The valid types are defined by the category client. Follow this link to learn
      * the possible types: <a href="http://www.jabber.org/registrar/disco-categories.html#client">Jabber::Registrar</a>.
-     * 
-     * @return the type of client that will be returned when asked for the client identity in a 
-     *          disco request.
+     *
+     * @return the type of client that will be returned when asked for the client identity in a
+     * disco request.
      */
     public static String getIdentityType() {
         return identityType;
     }
 
     /**
-     * Sets the type of client that will be returned when asked for the client identity in a 
-     * disco request. The valid types are defined by the category client. Follow this link to learn 
+     * Sets the type of client that will be returned when asked for the client identity in a
+     * disco request. The valid types are defined by the category client. Follow this link to learn
      * the possible types: <a href="http://www.jabber.org/registrar/disco-categories.html#client">Jabber::Registrar</a>.
-     * 
-     * @param type the type of client that will be returned when asked for the client identity in a 
-     *          disco request.
+     *
+     * @param type the type of client that will be returned when asked for the client identity in a
+     *             disco request.
      */
     public static void setIdentityType(String type) {
         identityType = type;
     }
-    
+
     /**
-     * Enables caching of non caps entities to reduce traffic. If enabled discover infos of 
+     * Enables caching of non caps entities to reduce traffic. If enabled discover infos of
      * entities without xep-0115 are store in a String,DiscoverInfo map and
      * discoverInfo(String) queries this map before sending a real discover info to the
      * remote entity. Enabled by default.
      */
-    public static void setNonCapsCaching(boolean set){
-    	cacheNonCaps = true;
+    public static void setNonCapsCaching(boolean set) {
+        cacheNonCaps = true;
     }
-    
+
     /**
      * Check if caching of non caps entities is enabled
      */
-    
-    public static boolean isNonCapsCachingEnabled(){
-    	return cacheNonCaps;
+
+    public static boolean isNonCapsCachingEnabled() {
+        return cacheNonCaps;
     }
 
     /**
@@ -204,7 +204,7 @@ public class ServiceDiscoveryManager {
             // Add Entity Capabilities (XEP-0115) feature node.
             response.addFeature("http://jabber.org/protocol/caps");
 
-            for (Iterator<String> it = getFeatures(); it.hasNext();) {
+            for (Iterator<String> it = getFeatures(); it.hasNext(); ) {
                 response.addFeature(it.next());
             }
             if (extendedInfo != null) {
@@ -231,7 +231,7 @@ public class ServiceDiscoveryManager {
 
     /**
      * Initializes the packet listeners of the connection that will answer to any
-     * service discovery request. 
+     * service discovery request.
      */
     private void init() {
         // Register the new instance and associate it with the connection 
@@ -312,7 +312,7 @@ public class ServiceDiscoveryManager {
                                 response.addItem(item);
                             }
                         }
-                    } else if(discoverItems.getNode() != null) {
+                    } else if (discoverItems.getNode() != null) {
                         // Return <item-not-found/> error since client doesn't contain
                         // the specified node
                         response.setType(IQ.Type.ERROR);
@@ -339,13 +339,12 @@ public class ServiceDiscoveryManager {
                     response.setNode(discoverInfo.getNode());
                     // Add the client's identity and features if "node" is
                     // null or our entity caps version.
-                    if (discoverInfo.getNode() == null || 
+                    if (discoverInfo.getNode() == null ||
                             capsManager == null ||
-                             (capsManager.getNode() + "#" +
-                              getEntityCapsVersion()).equals(discoverInfo.getNode())) {
+                            (capsManager.getNode() + "#" +
+                                    getEntityCapsVersion()).equals(discoverInfo.getNode())) {
                         addDiscoverInfoTo(response);
-                    }
-                    else {
+                    } else {
                         // Disco#info was sent to a node. Check if we have information of the
                         // specified node
                         NodeInformationProvider nodeInformationProvider =
@@ -354,7 +353,7 @@ public class ServiceDiscoveryManager {
                             // Node was found. Add node features
                             List<String> features = nodeInformationProvider.getNodeFeatures();
                             if (features != null) {
-                                for(String feature : features) {
+                                for (String feature : features) {
                                     response.addFeature(feature);
                                 }
                             }
@@ -366,8 +365,7 @@ public class ServiceDiscoveryManager {
                                     response.addIdentity(identity);
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             // Return <item-not-found/> error since specified node was not found
                             response.setType(IQ.Type.ERROR);
                             response.setError(new XMPPError(XMPPError.Condition.item_not_found));
@@ -381,14 +379,14 @@ public class ServiceDiscoveryManager {
     }
 
     /**
-     * Returns the NodeInformationProvider responsible for providing information 
+     * Returns the NodeInformationProvider responsible for providing information
      * (ie items) related to a given node or <tt>null</null> if none.<p>
-     * 
+     * <p/>
      * In MUC, a node could be 'http://jabber.org/protocol/muc#rooms' which means that the
      * NodeInformationProvider will provide information about the rooms where the user has joined.
-     * 
+     *
      * @param node the node that contains items associated with an entity not addressable as a JID.
-     * @return the NodeInformationProvider responsible for providing information related 
+     * @return the NodeInformationProvider responsible for providing information related
      * to a given node.
      */
     private NodeInformationProvider getNodeInformationProvider(String node) {
@@ -399,30 +397,30 @@ public class ServiceDiscoveryManager {
     }
 
     /**
-     * Sets the NodeInformationProvider responsible for providing information 
+     * Sets the NodeInformationProvider responsible for providing information
      * (ie items) related to a given node. Every time this client receives a disco request
-     * regarding the items of a given node, the provider associated to that node will be the 
+     * regarding the items of a given node, the provider associated to that node will be the
      * responsible for providing the requested information.<p>
-     * 
+     * <p/>
      * In MUC, a node could be 'http://jabber.org/protocol/muc#rooms' which means that the
-     * NodeInformationProvider will provide information about the rooms where the user has joined. 
-     * 
-     * @param node the node whose items will be provided by the NodeInformationProvider.
+     * NodeInformationProvider will provide information about the rooms where the user has joined.
+     *
+     * @param node     the node whose items will be provided by the NodeInformationProvider.
      * @param listener the NodeInformationProvider responsible for providing items related
-     *      to the node.
+     *                 to the node.
      */
     public void setNodeInformationProvider(String node, NodeInformationProvider listener) {
         nodeInformationProviders.put(node, listener);
     }
 
     /**
-     * Removes the NodeInformationProvider responsible for providing information 
+     * Removes the NodeInformationProvider responsible for providing information
      * (ie items) related to a given node. This means that no more information will be
      * available for the specified node.
-     * 
+     * <p/>
      * In MUC, a node could be 'http://jabber.org/protocol/muc#rooms' which means that the
-     * NodeInformationProvider will provide information about the rooms where the user has joined. 
-     * 
+     * NodeInformationProvider will provide information about the rooms where the user has joined.
+     *
      * @param node the node to remove the associated NodeInformationProvider.
      */
     public void removeNodeInformationProvider(String node) {
@@ -431,7 +429,7 @@ public class ServiceDiscoveryManager {
 
     /**
      * Returns the supported features by this XMPP entity.
-     * 
+     *
      * @return an Iterator on the supported features by this XMPP entity.
      */
     public Iterator<String> getFeatures() {
@@ -441,9 +439,9 @@ public class ServiceDiscoveryManager {
     }
 
     /**
-     * Registers that a new feature is supported by this XMPP entity. When this client is 
+     * Registers that a new feature is supported by this XMPP entity. When this client is
      * queried for its information the registered features will be answered.<p>
-     *
+     * <p/>
      * Since no packet is actually sent to the server it is safe to perform this operation
      * before logging to the server. In fact, you may want to configure the supported features
      * before logging to the server so that the information is already available if it is required
@@ -460,7 +458,7 @@ public class ServiceDiscoveryManager {
 
     /**
      * Removes the specified feature from the supported features by this XMPP entity.<p>
-     *
+     * <p/>
      * Since no packet is actually sent to the server it is safe to perform this operation
      * before logging to the server.
      *
@@ -489,16 +487,15 @@ public class ServiceDiscoveryManager {
      * Registers extended discovery information of this XMPP entity. When this
      * client is queried for its information this data form will be returned as
      * specified by XEP-0128.
-     * <p>
-     *
+     * <p/>
+     * <p/>
      * Since no packet is actually sent to the server it is safe to perform this
      * operation before logging to the server. In fact, you may want to
      * configure the extended info before logging to the server so that the
      * information is already available if it is required upon login.
      *
-     * @param info
-     *            the data form that contains the extend service discovery
-     *            information.
+     * @param info the data form that contains the extend service discovery
+     *             information.
      */
     public void setExtendedInfo(DataForm info) {
         extendedInfo = info;
@@ -508,7 +505,7 @@ public class ServiceDiscoveryManager {
     /**
      * Removes the dataform containing extended service discovery information
      * from the information returned by this XMPP entity.<p>
-     *
+     * <p/>
      * Since no packet is actually sent to the server it is safe to perform this
      * operation before logging to the server.
      */
@@ -533,15 +530,14 @@ public class ServiceDiscoveryManager {
             DiscoverInfo newInfo = cloneDiscoverInfo(info);
             newInfo.setFrom(entityID);
             return newInfo;
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     /**
      * Returns the discovered information of a given XMPP entity addressed by its JID.
-     * 
+     *
      * @param entityID the address of the XMPP entity.
      * @return the discovered information.
      * @throws XMPPException if the operation failed for some reason.
@@ -552,8 +548,7 @@ public class ServiceDiscoveryManager {
 
         if (info != null) {
             return info;
-        }
-        else {
+        } else {
             // If the caps node is known, use it in the request.
             String node = null;
 
@@ -563,8 +558,8 @@ public class ServiceDiscoveryManager {
             }
 
             //Check if we cached DiscoverInfo for nonCaps entity
-            if(cacheNonCaps && node==null && nonCapsCache.containsKey(entityID)){
-            	return nonCapsCache.get(entityID);
+            if (cacheNonCaps && node == null && nonCapsCache.containsKey(entityID)) {
+                return nonCapsCache.get(entityID);
             }
             // Discover by requesting from the remote client
             info = discoverInfo(entityID, node);
@@ -574,8 +569,8 @@ public class ServiceDiscoveryManager {
                 EntityCapsManager.addDiscoverInfoByNode(node, info);
             }
             // If this is a non caps entity store the discover in nonCapsCache map
-            else if(cacheNonCaps && node == null){
-            	nonCapsCache.put(entityID, info);
+            else if (cacheNonCaps && node == null) {
+                nonCapsCache.put(entityID, info);
             }
             return info;
         }
@@ -583,11 +578,11 @@ public class ServiceDiscoveryManager {
 
     /**
      * Returns the discovered information of a given XMPP entity addressed by its JID and
-     * note attribute. Use this message only when trying to query information which is not 
+     * note attribute. Use this message only when trying to query information which is not
      * directly addressable.
-     * 
+     *
      * @param entityID the address of the XMPP entity.
-     * @param node the attribute that supplements the 'jid' attribute.
+     * @param node     the attribute that supplements the 'jid' attribute.
      * @return the discovered information.
      * @throws XMPPException if the operation failed for some reason.
      */
@@ -600,7 +595,7 @@ public class ServiceDiscoveryManager {
 
         // Create a packet collector to listen for a response.
         PacketCollector collector =
-            connection.createPacketCollector(new PacketIDFilter(disco.getPacketID()));
+                connection.createPacketCollector(new PacketIDFilter(disco.getPacketID()));
 
         connection.sendPacket(disco);
 
@@ -619,7 +614,7 @@ public class ServiceDiscoveryManager {
 
     /**
      * Returns the discovered items of a given XMPP entity addressed by its JID.
-     * 
+     *
      * @param entityID the address of the XMPP entity.
      * @return the discovered information.
      * @throws XMPPException if the operation failed for some reason.
@@ -630,11 +625,11 @@ public class ServiceDiscoveryManager {
 
     /**
      * Returns the discovered items of a given XMPP entity addressed by its JID and
-     * note attribute. Use this message only when trying to query information which is not 
+     * note attribute. Use this message only when trying to query information which is not
      * directly addressable.
-     * 
+     *
      * @param entityID the address of the XMPP entity.
-     * @param node the attribute that supplements the 'jid' attribute.
+     * @param node     the attribute that supplements the 'jid' attribute.
      * @return the discovered items.
      * @throws XMPPException if the operation failed for some reason.
      */
@@ -647,7 +642,7 @@ public class ServiceDiscoveryManager {
 
         // Create a packet collector to listen for a response.
         PacketCollector collector =
-            connection.createPacketCollector(new PacketIDFilter(disco.getPacketID()));
+                connection.createPacketCollector(new PacketIDFilter(disco.getPacketID()));
 
         connection.sendPacket(disco);
 
@@ -669,7 +664,7 @@ public class ServiceDiscoveryManager {
      * to the server so that the server can provide items associated to the client. These items will
      * be returned by the server whenever the server receives a disco request targeted to the bare
      * address of the client (i.e. user@host.com).
-     * 
+     *
      * @param entityID the address of the XMPP entity.
      * @return true if the server supports publishing of items.
      * @throws XMPPException if the operation failed for some reason.
@@ -684,7 +679,7 @@ public class ServiceDiscoveryManager {
      * to the server so that the server can provide items associated to the client. These items will
      * be returned by the server whenever the server receives a disco request targeted to the bare
      * address of the client (i.e. user@host.com).
-     * 
+     *
      * @param DiscoverInfo the discover info packet to check.
      * @return true if the server supports publishing of items.
      */
@@ -693,12 +688,12 @@ public class ServiceDiscoveryManager {
     }
 
     /**
-     * Publishes new items to a parent entity. The item elements to publish MUST have at least 
-     * a 'jid' attribute specifying the Entity ID of the item, and an action attribute which 
-     * specifies the action being taken for that item. Possible action values are: "update" and 
+     * Publishes new items to a parent entity. The item elements to publish MUST have at least
+     * a 'jid' attribute specifying the Entity ID of the item, and an action attribute which
+     * specifies the action being taken for that item. Possible action values are: "update" and
      * "remove".
-     * 
-     * @param entityID the address of the XMPP entity.
+     *
+     * @param entityID      the address of the XMPP entity.
      * @param discoverItems the DiscoveryItems to publish.
      * @throws XMPPException if the operation failed for some reason.
      */
@@ -708,13 +703,13 @@ public class ServiceDiscoveryManager {
     }
 
     /**
-     * Publishes new items to a parent entity and node. The item elements to publish MUST have at 
-     * least a 'jid' attribute specifying the Entity ID of the item, and an action attribute which 
-     * specifies the action being taken for that item. Possible action values are: "update" and 
+     * Publishes new items to a parent entity and node. The item elements to publish MUST have at
+     * least a 'jid' attribute specifying the Entity ID of the item, and an action attribute which
+     * specifies the action being taken for that item. Possible action values are: "update" and
      * "remove".
-     * 
-     * @param entityID the address of the XMPP entity.
-     * @param node the attribute that supplements the 'jid' attribute.
+     *
+     * @param entityID      the address of the XMPP entity.
+     * @param node          the attribute that supplements the 'jid' attribute.
      * @param discoverItems the DiscoveryItems to publish.
      * @throws XMPPException if the operation failed for some reason.
      */
@@ -726,7 +721,7 @@ public class ServiceDiscoveryManager {
 
         // Create a packet collector to listen for a response.
         PacketCollector collector =
-            connection.createPacketCollector(new PacketIDFilter(discoverItems.getPacketID()));
+                connection.createPacketCollector(new PacketIDFilter(discoverItems.getPacketID()));
 
         connection.sendPacket(discoverItems);
 
@@ -752,8 +747,8 @@ public class ServiceDiscoveryManager {
 
     public void setEntityCapsManager(EntityCapsManager manager) {
         capsManager = manager;
-        if(connection.getCapsNode()!=null && connection.getHost()!=null){
-        	capsManager.addUserCapsNode(connection.getHost(), connection.getCapsNode());
+        if (connection.getCapsNode() != null && connection.getHost() != null) {
+            capsManager.addUserCapsNode(connection.getHost(), connection.getCapsNode());
         }
         capsManager.addPacketListener(connection);
     }
@@ -774,14 +769,13 @@ public class ServiceDiscoveryManager {
     private String getEntityCapsVersion() {
         if (capsManager != null) {
             return capsManager.getCapsVersion();
-        }
-        else {
+        } else {
             return null;
         }
     }
-    
-    public EntityCapsManager getEntityCapsManager(){
-    	return capsManager;
+
+    public EntityCapsManager getEntityCapsManager() {
+        return capsManager;
     }
 
     private void setSendPresence() {
@@ -797,9 +791,9 @@ public class ServiceDiscoveryManager {
         public void capsVerUpdated(String ver) {
             // Send an empty presence, and let the packet interceptor
             // add a <c/> node to it.
-            if (((XMPPConnection)connection).isAuthenticated() &&
-                    (((XMPPConnection)connection).isSendPresence() ||
-                     isSendPresence())) {
+            if (((XMPPConnection) connection).isAuthenticated() &&
+                    (((XMPPConnection) connection).isSendPresence() ||
+                            isSendPresence())) {
                 Presence presence = new Presence(Presence.Type.available);
                 connection.sendPacket(presence);
             }

@@ -26,7 +26,7 @@ import java.util.*;
  * Represents a roster item, which consists of a JID and , their name and
  * the groups the roster item belongs to. This roster item does not belong
  * to the local roster. Therefore, it does not persist in the server.<p>
- *
+ * <p/>
  * The idea of a RemoteRosterEntry is to be used as part of a roster exchange.
  *
  * @author Gaston Dombiak
@@ -40,17 +40,17 @@ public class RemoteRosterEntry {
     /**
      * Creates a new remote roster entry.
      *
-     * @param user the user.
-     * @param name the user's name.
+     * @param user   the user.
+     * @param name   the user's name.
      * @param groups the list of group names the entry will belong to, or <tt>null</tt> if the
-     *      the roster entry won't belong to a group.
+     *               the roster entry won't belong to a group.
      */
-    public RemoteRosterEntry(String user, String name, String [] groups) {
+    public RemoteRosterEntry(String user, String name, String[] groups) {
         this.user = user;
         this.name = name;
-		if (groups != null) {
+        if (groups != null) {
             groupNames.addAll(Arrays.asList(groups));
-		}
+        }
     }
 
     /**

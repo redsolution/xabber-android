@@ -27,9 +27,9 @@ import java.util.Collection;
 /**
  * A listener that is fired any time a roster is changed or the presence of
  * a user in the roster is changed.
- * 
- * @see Roster#addRosterListener(RosterListener)
+ *
  * @author Matt Tucker
+ * @see Roster#addRosterListener(RosterListener)
  */
 public interface RosterListener {
 
@@ -62,16 +62,16 @@ public interface RosterListener {
      * mobile phone. If the user logs out of the IM client on their mobile phone, the
      * user should not be shown in the roster (contact list) as offline since they're
      * still available as another resource.<p>
-     *
+     * <p/>
      * To get the current "best presence" for a user after the presence update, query the roster:
      * <pre>
      *    String user = presence.getFrom();
      *    Presence bestPresence = roster.getPresence(user);
      * </pre>
-     *
+     * <p/>
      * That will return the presence value for the user with the highest priority and
      * availability.
-     *
+     * <p/>
      * Note that this listener is triggered for presence (mode) changes only
      * (e.g presence of types available and unavailable. Subscription-related
      * presence packets will not cause this method to be called.

@@ -43,10 +43,10 @@ public class RosterEntry {
     /**
      * Creates a new roster entry.
      *
-     * @param user the user.
-     * @param name the nickname for the entry.
-     * @param type the subscription type.
-     * @param status the subscription status (related to subscriptions pending to be approbed).
+     * @param user       the user.
+     * @param name       the nickname for the entry.
+     * @param type       the subscription type.
+     * @param status     the subscription status (related to subscriptions pending to be approbed).
      * @param connection a connection to the XMPP server.
      */
     RosterEntry(String user, String name, RosterPacket.ItemType type,
@@ -97,8 +97,8 @@ public class RosterEntry {
     /**
      * Updates the state of the entry with the new values.
      *
-     * @param name the nickname for the entry.
-     * @param type the subscription type.
+     * @param name   the nickname for the entry.
+     * @param type   the subscription type.
      * @param status the subscription status (related to subscriptions pending to be approbed).
      */
     void updateState(String name, RosterPacket.ItemType type, RosterPacket.ItemStatus status) {
@@ -116,7 +116,7 @@ public class RosterEntry {
         List<RosterGroup> results = new ArrayList<RosterGroup>();
         // Loop through all roster groups and find the ones that contain this
         // entry. This algorithm should be fine
-        for (RosterGroup group: roster.getGroups()) {
+        for (RosterGroup group : roster.getGroups()) {
             if (group.contains(this)) {
                 results.add(group);
             }
@@ -160,7 +160,7 @@ public class RosterEntry {
             RosterGroup group = iter.next();
             buf.append(group.getName());
             while (iter.hasNext()) {
-            buf.append(", ");
+                buf.append(", ");
                 group = iter.next();
                 buf.append(group.getName());
             }
@@ -174,21 +174,20 @@ public class RosterEntry {
             return true;
         }
         if (object != null && object instanceof RosterEntry) {
-            return user.equals(((RosterEntry)object).getUser());
-        }
-        else {
+            return user.equals(((RosterEntry) object).getUser());
+        } else {
             return false;
         }
     }
 
     /**
      * Indicates whether some other object is "equal to" this by comparing all members.
-     * <p>
+     * <p/>
      * The {@link #equals(Object)} method returns <code>true</code> if the user JIDs are equal.
-     * 
+     *
      * @param obj the reference object with which to compare.
      * @return <code>true</code> if this object is the same as the obj argument; <code>false</code>
-     *         otherwise.
+     * otherwise.
      */
     public boolean equalsDeep(Object obj) {
         if (this == obj)
@@ -201,30 +200,26 @@ public class RosterEntry {
         if (name == null) {
             if (other.name != null)
                 return false;
-        }
-        else if (!name.equals(other.name))
+        } else if (!name.equals(other.name))
             return false;
         if (status == null) {
             if (other.status != null)
                 return false;
-        }
-        else if (!status.equals(other.status))
+        } else if (!status.equals(other.status))
             return false;
         if (type == null) {
             if (other.type != null)
                 return false;
-        }
-        else if (!type.equals(other.type))
+        } else if (!type.equals(other.type))
             return false;
         if (user == null) {
             if (other.user != null)
                 return false;
-        }
-        else if (!user.equals(other.user))
+        } else if (!user.equals(other.user))
             return false;
         return true;
     }
-    
+
     static RosterPacket.Item toRosterItem(RosterEntry entry) {
         RosterPacket.Item item = new RosterPacket.Item(entry.getUser(), entry.getName());
         item.setItemType(entry.getType());

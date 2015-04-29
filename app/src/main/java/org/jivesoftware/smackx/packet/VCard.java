@@ -56,9 +56,9 @@ import java.util.Map;
  * <p/>
  * <b>Usage:</b>
  * <pre>
- * <p/>
+ *
  * // To save VCard:
- * <p/>
+ *
  * VCard vCard = new VCard();
  * vCard.setFirstName("kir");
  * vCard.setLastName("max");
@@ -66,16 +66,16 @@ import java.util.Map;
  * vCard.setJabberId("jabber@id.org");
  * vCard.setOrganization("Jetbrains, s.r.o");
  * vCard.setNickName("KIR");
- * <p/>
+ *
  * vCard.setField("TITLE", "Mr");
  * vCard.setAddressFieldHome("STREET", "Some street");
  * vCard.setAddressFieldWork("CTRY", "US");
  * vCard.setPhoneWork("FAX", "3443233");
- * <p/>
+ *
  * vCard.save(connection);
- * <p/>
+ *
  * // To load VCard:
- * <p/>
+ *
  * VCard vCard = new VCard();
  * vCard.load(conn); // load own VCard
  * vCard.load(conn, "joe@foo.bar"); // load someone's VCard
@@ -156,8 +156,7 @@ public class VCard extends IQ {
     public void setField(String field, String value, boolean isUnescapable) {
         if (!isUnescapable) {
             otherSimpleFields.put(field, value);
-        }
-        else {
+        } else {
             otherUnescapableFields.put(field, value);
         }
     }
@@ -328,8 +327,7 @@ public class VCard extends IQ {
         byte[] bytes = new byte[0];
         try {
             bytes = getBytes(avatarURL);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -358,7 +356,7 @@ public class VCard extends IQ {
     /**
      * Specify the bytes for the avatar to use as well as the mime type.
      *
-     * @param bytes the bytes of the avatar.
+     * @param bytes    the bytes of the avatar.
      * @param mimeType the mime type of the avatar.
      */
     public void setAvatar(byte[] bytes, String mimeType) {
@@ -392,10 +390,10 @@ public class VCard extends IQ {
      * <pre>
      * // Load Avatar from VCard
      * byte[] avatarBytes = vCard.getAvatar();
-     * <p/>
+     *
      * // To create an ImageIcon for Swing applications
      * ImageIcon icon = new ImageIcon(avatar);
-     * <p/>
+     *
      * // To create just an image object from the bytes
      * ByteArrayInputStream bais = new ByteArrayInputStream(avatar);
      * try {
@@ -441,8 +439,7 @@ public class VCard extends IQ {
                 throw new IOException("Entire file not read");
             }
             return buffer;
-        }
-        finally {
+        } finally {
             if (bis != null) {
                 bis.close();
             }
@@ -463,8 +460,7 @@ public class VCard extends IQ {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-1");
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
@@ -555,8 +551,7 @@ public class VCard extends IQ {
             if (result.getError() != null) {
                 throw new XMPPException(result.getError());
             }
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             System.out.println("No VCard for " + user);
         }
 
@@ -579,8 +574,7 @@ public class VCard extends IQ {
                 try {
                     field.setAccessible(true);
                     field.set(this, field.get(result));
-                }
-                catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     throw new RuntimeException("This cannot happen:" + field, e);
                 }
             }
@@ -810,7 +804,7 @@ public class VCard extends IQ {
         }
 
         private void appendTag(String tag, String attr, String attrValue, boolean hasContent,
-                ContentBuilder builder) {
+                               ContentBuilder builder) {
             sb.append('<').append(tag);
             if (attr != null) {
                 sb.append(' ').append(attr).append('=').append('\'').append(attrValue).append('\'');
@@ -820,8 +814,7 @@ public class VCard extends IQ {
                 sb.append('>');
                 builder.addTagContent();
                 sb.append("</").append(tag).append(">\n");
-            }
-            else {
+            } else {
                 sb.append("/>\n");
             }
         }

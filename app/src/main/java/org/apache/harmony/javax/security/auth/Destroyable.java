@@ -28,8 +28,7 @@ public interface Destroyable {
      * to its methods will throw an {@code IllegalStateException}. If it does
      * not succeed a DestroyFailedException is thrown.
      *
-     * @throws DestroyFailedException
-     *             if the information cannot be erased.
+     * @throws DestroyFailedException if the information cannot be erased.
      */
     void destroy() throws DestroyFailedException;
 

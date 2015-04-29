@@ -20,7 +20,6 @@ package org.apache.harmony.javax.security.auth.callback;
 import java.io.Serializable;
 
 
-
 public class NameCallback implements Callback, Serializable {
 
     private static final long serialVersionUID = 3770938795909392253L;

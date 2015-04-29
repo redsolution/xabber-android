@@ -102,7 +102,8 @@
     </style>
 
     <dimen name="status_icon_width">24dip</dimen>
-    <dimen name="avatar_size">48dip</dimen>
+    <dimen name="avatar_size">72dip</dimen>
+    <dimen name="avatar_size_toolbar">48dip</dimen>
 
     <dimen name="title_height">44dip</dimen>
 
@@ -116,7 +117,7 @@
 
     <dimen name="active_chat_padding_left">10dip</dimen>
     <dimen name="active_chat_padding_top">0dip</dimen>
-    <dimen name="active_chat_padding_right">10dip</dimen>
+    <dimen name="active_chat_padding_right">16dip</dimen>
     <dimen name="active_chat_padding_bottom">0dip</dimen>
 
     <dimen name="client_software_margin_left">34dip</dimen>

@@ -26,10 +26,10 @@ import org.jivesoftware.smackx.packet.*;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
-* The DiscoverInfoProvider parses Service Discovery items packets.
-*
-* @author Gaston Dombiak
-*/
+ * The DiscoverInfoProvider parses Service Discovery items packets.
+ *
+ * @author Gaston Dombiak
+ */
 public class DiscoverItemsProvider implements IQProvider {
 
     public IQ parseIQ(XmlPullParser parser) throws Exception {
@@ -50,16 +50,14 @@ public class DiscoverItemsProvider implements IQProvider {
                 name = parser.getAttributeValue("", "name");
                 node = parser.getAttributeValue("", "node");
                 action = parser.getAttributeValue("", "action");
-            }
-            else if (eventType == XmlPullParser.END_TAG && "item".equals(parser.getName())) {
+            } else if (eventType == XmlPullParser.END_TAG && "item".equals(parser.getName())) {
                 // Create a new Item and add it to DiscoverItems.
                 item = new DiscoverItems.Item(jid);
                 item.setName(name);
                 item.setNode(node);
                 item.setAction(action);
                 discoverItems.addItem(item);
-            }
-            else if (eventType == XmlPullParser.END_TAG && "query".equals(parser.getName())) {
+            } else if (eventType == XmlPullParser.END_TAG && "query".equals(parser.getName())) {
                 done = true;
             }
         }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_start_encryption"
+        android:title="@string/otr_start"
+        android:orderInCategory="100"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_restart_encryption"
+        android:title="@string/otr_refresh"
+        android:orderInCategory="105"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_stop_encryption"
+        android:title="@string/otr_end"
+        android:orderInCategory="110"
+        />
+
+    <item android:id="@+id/action_verify_with_fingerprint"
+        android:title="@string/otr_verify_fingerprint"
+        android:orderInCategory="120"
+        />
+
+    <item android:id="@+id/action_verify_with_question"
+        android:title="@string/otr_verify_question"
+        android:orderInCategory="130"
+        />
+
+    <item android:id="@+id/action_verify_with_shared_secret"
+        android:title="@string/otr_verify_secret"
+        android:orderInCategory="140"
+        />
+</menu>

@@ -14,7 +14,7 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:paddingLeft="6dip"
     android:paddingRight="6dip"
@@ -26,29 +26,29 @@
     <ImageView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        android:src="@drawable/avatar_1_1"
+        android:layout_width="@dimen/avatar_size_toolbar"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:src="@drawable/ic_avatar_1"
         />
 
     <ImageView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/affilation"
         android:layout_width="2dip"
-        android:layout_height="@dimen/avatar_size"
+        android:layout_height="@dimen/avatar_size_toolbar"
         android:layout_marginLeft="2dip"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_affilation"
+        android:src="@drawable/ic_affiliation"
         />
 
     <RelativeLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dip"
         >
         <TextView
             android:id="@+id/name"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/contact_name_height_show_status"
             android:layout_marginRight="@dimen/status_icon_width"
             android:gravity="bottom"
@@ -60,7 +60,7 @@
             />
         <TextView
             android:id="@+id/status"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/contact_name_height_show_status"
             android:layout_marginRight="@dimen/status_icon_width"
             android:gravity="top"
@@ -72,7 +72,7 @@
             android:textColor="?android:attr/textColorSecondary"
             />
         <ImageView
-            android:id="@+id/status_mode"
+            android:id="@+id/status_icon"
             android:layout_width="@dimen/status_icon_width"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

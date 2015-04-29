@@ -22,12 +22,12 @@ package org.jivesoftware.smack.packet;
 
 /**
  * IQ packet that will be sent to the server to establish a session.<p>
- *
+ * <p/>
  * If a server supports sessions, it MUST include a <i>session</i> element in the
  * stream features it advertises to a client after the completion of stream authentication.
  * Upon being informed that session establishment is required by the server the client MUST
  * establish a session if it desires to engage in instant messaging and presence functionality.<p>
- *
+ * <p/>
  * For more information refer to the following
  * <a href=http://www.xmpp.org/specs/rfc3921.html#session>link</a>.
  *

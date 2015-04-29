@@ -80,15 +80,13 @@ class PacketMultiplexListener implements PacketListener {
     public void processPacket(Packet p) {
         if (PRESENCE_FILTER.accept(p)) {
             presenceListener.processPacket(p);
-        }
-        else if (MESSAGE_FILTER.accept(p)) {
+        } else if (MESSAGE_FILTER.accept(p)) {
             messageCollector.processPacket(p);
 
             if (SUBJECT_FILTER.accept(p)) {
                 subjectListener.processPacket(p);
             }
-        }
-        else if (DECLINES_FILTER.accept(p)) {
+        } else if (DECLINES_FILTER.accept(p)) {
             declinesListener.processPacket(p);
         }
     }

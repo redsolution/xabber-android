@@ -37,7 +37,7 @@ import java.util.Map;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:19 $
  * @since Commons Collections 3.0
  */
-public interface IterableMap <K,V> extends Map<K, V> {
+public interface IterableMap<K, V> extends Map<K, V> {
 
     /**
      * Obtains a <code>MapIterator</code> over the map.

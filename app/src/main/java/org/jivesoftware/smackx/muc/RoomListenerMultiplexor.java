@@ -81,7 +81,7 @@ class RoomListenerMultiplexor implements ConnectionListener {
      * the static method {@link #getRoomMultiplexor(Connection)}.
      */
     private RoomListenerMultiplexor(Connection connection, RoomMultiplexFilter filter,
-            RoomMultiplexListener listener) {
+                                    RoomMultiplexListener listener) {
         if (connection == null) {
             throw new IllegalArgumentException("Connection is null");
         }

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="104dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="8dp"
+        android:id="@+id/fake_toolbar"
+        >
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size_toolbar"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:src="@drawable/ic_avatar_1"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="6dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="6dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:id="@+id/dialog_message"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_marginBottom="6dp"
+            />
+
+
+
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/top_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:elevation="8dp"
+        android:background="@android:color/transparent"
+        android:layout_alignParentTop="true"
+        >
+
+
+    </android.support.v7.widget.Toolbar>
+
+
+    <ScrollView
+        android:id="@+id/scrollable_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/fake_toolbar"
+        android:layout_above="@+id/bottom_bar"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bottom_bar"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/grey_400"
+            android:layout_alignParentTop="true"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right"
+            >
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/decline_contact"
+                android:background="@android:color/transparent"
+                android:id="@+id/decline_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/accept_contact"
+                android:id="@+id/accept_button"
+                android:background="@android:color/transparent"
+                android:textColor="@color/green_500"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+
+                />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

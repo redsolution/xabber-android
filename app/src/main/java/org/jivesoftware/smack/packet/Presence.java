@@ -26,35 +26,35 @@ import org.jivesoftware.smack.util.StringUtils;
  * Represents XMPP presence packets. Every presence packet has a type, which is one of
  * the following values:
  * <ul>
- *      <li>{@link Presence.Type#available available} -- (Default) indicates the user is available to
- *          receive messages.
- *      <li>{@link Presence.Type#unavailable unavailable} -- the user is unavailable to receive messages.
- *      <li>{@link Presence.Type#subscribe subscribe} -- request subscription to recipient's presence.
- *      <li>{@link Presence.Type#subscribed subscribed} -- grant subscription to sender's presence.
- *      <li>{@link Presence.Type#unsubscribe unsubscribe} -- request removal of subscription to
- *          sender's presence.
- *      <li>{@link Presence.Type#unsubscribed unsubscribed} -- grant removal of subscription to
- *          sender's presence.
- *      <li>{@link Presence.Type#error error} -- the presence packet contains an error message.
+ * <li>{@link Presence.Type#available available} -- (Default) indicates the user is available to
+ * receive messages.
+ * <li>{@link Presence.Type#unavailable unavailable} -- the user is unavailable to receive messages.
+ * <li>{@link Presence.Type#subscribe subscribe} -- request subscription to recipient's presence.
+ * <li>{@link Presence.Type#subscribed subscribed} -- grant subscription to sender's presence.
+ * <li>{@link Presence.Type#unsubscribe unsubscribe} -- request removal of subscription to
+ * sender's presence.
+ * <li>{@link Presence.Type#unsubscribed unsubscribed} -- grant removal of subscription to
+ * sender's presence.
+ * <li>{@link Presence.Type#error error} -- the presence packet contains an error message.
  * </ul><p>
- *
+ * <p/>
  * A number of attributes are optional:
  * <ul>
- *      <li>Status -- free-form text describing a user's presence (i.e., gone to lunch).
- *      <li>Priority -- non-negative numerical priority of a sender's resource. The
- *          highest resource priority is the default recipient of packets not addressed
- *          to a particular resource.
- *      <li>Mode -- one of five presence modes: {@link Mode#available available} (the default),
- *          {@link Mode#chat chat}, {@link Mode#away away}, {@link Mode#xa xa} (extended away), and
- *          {@link Mode#dnd dnd} (do not disturb).
+ * <li>Status -- free-form text describing a user's presence (i.e., gone to lunch).
+ * <li>Priority -- non-negative numerical priority of a sender's resource. The
+ * highest resource priority is the default recipient of packets not addressed
+ * to a particular resource.
+ * <li>Mode -- one of five presence modes: {@link Mode#available available} (the default),
+ * {@link Mode#chat chat}, {@link Mode#away away}, {@link Mode#xa xa} (extended away), and
+ * {@link Mode#dnd dnd} (do not disturb).
  * </ul><p>
- *
+ * <p/>
  * Presence packets are used for two purposes. First, to notify the server of our
  * the clients current presence status. Second, they are used to subscribe and
  * unsubscribe users from the roster.
  *
- * @see RosterPacket
  * @author Matt Tucker
+ * @see RosterPacket
  */
 public class Presence extends Packet {
 
@@ -76,10 +76,10 @@ public class Presence extends Packet {
     /**
      * Creates a new presence update with a specified status, priority, and mode.
      *
-     * @param type the type.
-     * @param status a text message describing the presence update.
+     * @param type     the type.
+     * @param status   a text message describing the presence update.
      * @param priority the priority of this presence update.
-     * @param mode the mode type for this presence update.
+     * @param mode     the mode type for this presence update.
      */
     public Presence(Type type, String status, int priority, Mode mode) {
         setType(type);
@@ -100,7 +100,7 @@ public class Presence extends Packet {
      * @return true if the presence type is available.
      */
     public boolean isAvailable() {
-        return type == Type.available;    
+        return type == Type.available;
     }
 
     /**
@@ -114,7 +114,7 @@ public class Presence extends Packet {
      * @return true if the presence type is available and the presence mode is away, xa, or dnd.
      */
     public boolean isAway() {
-        return type == Type.available && (mode == Mode.away || mode == Mode.xa || mode == Mode.dnd); 
+        return type == Type.available && (mode == Mode.away || mode == Mode.xa || mode == Mode.dnd);
     }
 
     /**
@@ -132,7 +132,7 @@ public class Presence extends Packet {
      * @param type the type of the presence packet.
      */
     public void setType(Type type) {
-        if(type == null) {
+        if (type == null) {
             throw new NullPointerException("Type cannot be null");
         }
         this.type = type;
@@ -226,7 +226,7 @@ public class Presence extends Packet {
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<presence");
-        if(getXmlns() != null) {
+        if (getXmlns() != null) {
             buf.append(" xmlns=\"").append(getXmlns()).append("\"");
         }
         if (language != null) {
@@ -264,7 +264,7 @@ public class Presence extends Packet {
         }
 
         buf.append("</presence>");
-        
+
         return buf.toString();
     }
 
@@ -289,9 +289,9 @@ public class Presence extends Packet {
      */
     public enum Type {
 
-       /**
-        * The user is available to receive messages (default).
-        */
+        /**
+         * The user is available to receive messages (default).
+         */
         available,
 
         /**

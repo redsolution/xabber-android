@@ -25,20 +25,19 @@ import org.jivesoftware.smack.util.PacketParserUtils;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
- * 
- * This class simplifies parsing of embedded elements by using the 
- * <a href="http://en.wikipedia.org/wiki/Template_method_pattern">Template Method Pattern</a>.  
- * After extracting the current element attributes and content of any child elements, the template method 
+ * This class simplifies parsing of embedded elements by using the
+ * <a href="http://en.wikipedia.org/wiki/Template_method_pattern">Template Method Pattern</a>.
+ * After extracting the current element attributes and content of any child elements, the template method
  * ({@link #createReturnExtension(String, String, Map, List)} is called.  Subclasses
  * then override this method to create the specific return type.
- * 
- * <p>To use this class, you simply register your subclasses as extension providers in the 
+ * <p/>
+ * <p>To use this class, you simply register your subclasses as extension providers in the
  * <b>smack.properties</b> file.  Then they will be automatically picked up and used to parse
- * any child elements.  
- * 
+ * any child elements.
+ * <p/>
  * <pre>
  * For example, given the following message
- * 
+ *
  * &lt;message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo&gt;
  *    &lt;event xmlns='http://jabber.org/protocol/pubsub#event&gt;
  *       &lt;items node='princely_musings'&gt;
@@ -52,16 +51,16 @@ import org.xmlpull.v1.XmlPullParser;
  *       &lt;/items&gt;
  *    &lt;/event&gt;
  * &lt;/message&gt;
- * 
+ *
  * I would have a classes
  * {@link ItemsProvider} extends {@link EmbeddedExtensionProvider}
  * {@link ItemProvider} extends {@link EmbeddedExtensionProvider}
  * and
  * AtomProvider extends {@link PacketExtensionProvider}
- * 
+ *
  * These classes are then registered in the meta-inf/smack.providers file
  * as follows.
- * 
+ *
  *   &lt;extensionProvider&gt;
  *      &lt;elementName&gt;items&lt;/elementName&gt;
  *      &lt;namespace&gt;http://jabber.org/protocol/pubsub#event&lt;/namespace&gt;
@@ -72,36 +71,32 @@ import org.xmlpull.v1.XmlPullParser;
  *       &lt;namespace&gt;http://jabber.org/protocol/pubsub#event&lt;/namespace&gt;
  *       &lt;className&gt;org.jivesoftware.smackx.provider.ItemProvider&lt;/className&gt;
  *   &lt;/extensionProvider&gt;
- * 
+ *
  * </pre>
- * 
+ *
  * @author Robin Collier
  */
-abstract public class EmbeddedExtensionProvider implements PacketExtensionProvider
-{
+abstract public class EmbeddedExtensionProvider implements PacketExtensionProvider {
 
-	final public PacketExtension parseExtension(XmlPullParser parser) throws Exception
-	{
+    final public PacketExtension parseExtension(XmlPullParser parser) throws Exception {
         String namespace = parser.getNamespace();
         String name = parser.getName();
         Map<String, String> attMap = new HashMap<String, String>();
-        
-        for(int i=0; i<parser.getAttributeCount(); i++)
-        {
-        	attMap.put(parser.getAttributeName(i), parser.getAttributeValue(i));
+
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            attMap.put(parser.getAttributeName(i), parser.getAttributeValue(i));
         }
         List<PacketExtension> extensions = new ArrayList<PacketExtension>();
-        
-        do
-        {
+
+        do {
             int tag = parser.next();
 
-            if (tag == XmlPullParser.START_TAG) 
-            	extensions.add(PacketParserUtils.parsePacketExtension(parser.getName(), parser.getNamespace(), parser));
+            if (tag == XmlPullParser.START_TAG)
+                extensions.add(PacketParserUtils.parsePacketExtension(parser.getName(), parser.getNamespace(), parser));
         } while (!name.equals(parser.getName()));
 
-		return createReturnExtension(name, namespace, attMap, extensions);
-	}
+        return createReturnExtension(name, namespace, attMap, extensions);
+    }
 
-	abstract protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends PacketExtension> content);
+    abstract protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends PacketExtension> content);
 }

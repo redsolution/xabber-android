@@ -20,25 +20,23 @@ import org.xmlpull.v1.XmlPullParser;
 
 /**
  * Parses the header element as defined in <a href="http://xmpp.org/extensions/xep-0131">Stanza Headers and Internet Metadata (SHIM)</a>.
- * 
+ *
  * @author Robin Collier
  */
-public class HeaderProvider implements PacketExtensionProvider
-{
-	public PacketExtension parseExtension(XmlPullParser parser) throws Exception
-	{
-		String name = parser.getAttributeValue(null, "name");
-		String value = null;
-		
-		parser.next();
-		
-		if (parser.getEventType() == XmlPullParser.TEXT)
-			value = parser.getText();
-		
-		while(parser.getEventType() != XmlPullParser.END_TAG)
-			parser.next();
-		
-		return new Header(name, value);
-	}
+public class HeaderProvider implements PacketExtensionProvider {
+    public PacketExtension parseExtension(XmlPullParser parser) throws Exception {
+        String name = parser.getAttributeValue(null, "name");
+        String value = null;
+
+        parser.next();
+
+        if (parser.getEventType() == XmlPullParser.TEXT)
+            value = parser.getText();
+
+        while (parser.getEventType() != XmlPullParser.END_TAG)
+            parser.next();
+
+        return new Header(name, value);
+    }
 
 }

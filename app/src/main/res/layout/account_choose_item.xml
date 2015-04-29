@@ -14,25 +14,19 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="4dip">
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="24dip"
-        android:layout_height="24dip"
-        android:src="@drawable/avatar_account_1"
-        />
+    <include layout="@layout/avatar_account" />
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginLeft="6dip"
         android:singleLine="true"
         android:ellipsize="marquee"
-        android:textColor="@android:color/primary_text_light"
         android:gravity="center_vertical"
         android:text="account"
         />

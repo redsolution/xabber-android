@@ -18,7 +18,7 @@ import org.jivesoftware.smackx.bytestreams.ibb.InBandBytestreamManager;
 
 /**
  * Represents a request to close an In-Band Bytestream.
- * 
+ *
  * @author Henning Staib
  */
 public class Close extends IQ {
@@ -28,7 +28,7 @@ public class Close extends IQ {
 
     /**
      * Creates a new In-Band Bytestream close request packet.
-     * 
+     *
      * @param sessionID unique session ID identifying this In-Band Bytestream
      */
     public Close(String sessionID) {
@@ -41,7 +41,7 @@ public class Close extends IQ {
 
     /**
      * Returns the unique session ID identifying this In-Band Bytestream.
-     * 
+     *
      * @return the unique session ID identifying this In-Band Bytestream
      */
     public String getSessionID() {

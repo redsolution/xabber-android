@@ -23,26 +23,25 @@ package org.apache.qpid.management.common.sasl;
 import java.util.Map;
 
 import org.apache.harmony.javax.security.auth.callback.CallbackHandler;
+
 import de.measite.smack.Sasl;
+
 import org.apache.harmony.javax.security.sasl.SaslClient;
 import org.apache.harmony.javax.security.sasl.SaslClientFactory;
 import org.apache.harmony.javax.security.sasl.SaslException;
 
-public class CRAMMD5HashedSaslClientFactory implements SaslClientFactory
-{
-    /** The name of this mechanism */
+public class CRAMMD5HashedSaslClientFactory implements SaslClientFactory {
+    /**
+     * The name of this mechanism
+     */
     public static final String MECHANISM = "CRAM-MD5-HASHED";
 
     public SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol,
                                        String serverName, Map<String, ?> props, CallbackHandler cbh)
-    throws SaslException
-    {
-        for (int i = 0; i < mechanisms.length; i++)
-        {
-            if (mechanisms[i].equals(MECHANISM))
-            {
-                if (cbh == null)
-                {
+            throws SaslException {
+        for (int i = 0; i < mechanisms.length; i++) {
+            if (mechanisms[i].equals(MECHANISM)) {
+                if (cbh == null) {
                     throw new SaslException("CallbackHandler must not be null");
                 }
 
@@ -53,8 +52,7 @@ public class CRAMMD5HashedSaslClientFactory implements SaslClientFactory
         return null;
     }
 
-    public String[] getMechanismNames(Map props)
-    { 
+    public String[] getMechanismNames(Map props) {
         return new String[]{MECHANISM};
     }
 }

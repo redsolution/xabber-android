@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
-    <string name="contact_viewer">View information</string>
+    <string name="contact_viewer">Contact info</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_for">View information about %s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
@@ -14,6 +14,7 @@
     <string name="contact_viewer_resources">Resources</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_resource_summary">Resource: %1$s\nPriority: %2$d\nClient: %3$s</string>
+    <string name="contact_viewer_client">Client</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_client_info">%1$s, type: %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
@@ -114,4 +115,10 @@
     <string name="please_wait">Please wait...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="unknown">Unknown</string>
+
+    <string name="edit_alias">Edit alias</string>
+    <string name="edit_contact_groups">Edit groups</string>
+    <string name="remove_contact">Remove contact</string>
+
+
 </resources>

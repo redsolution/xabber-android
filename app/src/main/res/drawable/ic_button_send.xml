@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_button_send_green_24dp" android:minLevel="0" android:maxLevel="0" />
+    <item android:drawable="@drawable/ic_button_send_orange_24dp" android:minLevel="1" android:maxLevel="1" />
+    <item android:drawable="@drawable/ic_button_send_red_24dp" android:minLevel="2" android:maxLevel="2" />
+    <item android:drawable="@drawable/ic_button_send_blue_24dp" android:minLevel="3" android:maxLevel="3" />
+    <item android:drawable="@drawable/ic_button_send_indigo_24dp" android:minLevel="4" android:maxLevel="4" />
+    <item android:drawable="@drawable/ic_button_send_blue_grey_24dp" android:minLevel="5" android:maxLevel="5" />
+    <item android:drawable="@drawable/ic_button_send_cyan_24dp" android:minLevel="6" android:maxLevel="6" />
+    <item android:drawable="@drawable/ic_button_send_teal_24dp" android:minLevel="7" android:maxLevel="7" />
+</level-list>

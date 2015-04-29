@@ -59,7 +59,7 @@ public class Sasl {
     public static final String SERVER_AUTH = "javax.security.sasl.server.authentication"; //$NON-NLS-1$
 
     public static Enumeration<SaslClientFactory> getSaslClientFactories() {
-        Hashtable<SaslClientFactory,Object> factories = new Hashtable<SaslClientFactory,Object>();
+        Hashtable<SaslClientFactory, Object> factories = new Hashtable<SaslClientFactory, Object>();
         factories.put(new SaslClientFactory(), new Object());
         return factories.keys();
     }
@@ -69,12 +69,12 @@ public class Sasl {
     }
 
     public static SaslServer createSaslServer(String mechanism, String protocol,
-            String serverName, Map<String, ?> prop, CallbackHandler cbh) throws SaslException {
+                                              String serverName, Map<String, ?> prop, CallbackHandler cbh) throws SaslException {
         return org.apache.harmony.javax.security.sasl.Sasl.createSaslServer(mechanism, protocol, serverName, prop, cbh);
     }
 
     public static SaslClient createSaslClient(String[] mechanisms, String authanticationID,
-            String protocol, String serverName, Map<String, ?> prop, CallbackHandler cbh)
+                                              String protocol, String serverName, Map<String, ?> prop, CallbackHandler cbh)
             throws SaslException {
         if (mechanisms == null) {
             throw new NullPointerException("auth.33"); //$NON-NLS-1$
@@ -94,12 +94,12 @@ public class Sasl {
         }
         if (is) {
             return fact.createSaslClient(
-                mechanisms,
-                authanticationID,
-                protocol,
-                serverName,
-                prop,
-                cbh
+                    mechanisms,
+                    authanticationID,
+                    protocol,
+                    serverName,
+                    prop,
+                    cbh
             );
         }
         return null;

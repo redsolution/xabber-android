@@ -23,15 +23,15 @@ import org.jivesoftware.smackx.bytestreams.ibb.packet.Data;
 /**
  * DataListener handles all In-Band Bytestream IQ stanzas containing a data
  * packet extension that don't belong to an existing session.
- * <p>
+ * <p/>
  * If a data packet is received it looks if a stored In-Band Bytestream session
  * exists. If no session with the given session ID exists an
  * &lt;item-not-found/&gt; error is returned to the sender.
- * <p>
+ * <p/>
  * Data packets belonging to a running In-Band Bytestream session are processed
  * by more specific listeners registered when an {@link InBandBytestreamSession}
  * is created.
- * 
+ *
  * @author Henning Staib
  */
 class DataListener implements PacketListener {
@@ -41,11 +41,11 @@ class DataListener implements PacketListener {
 
     /* packet filter for all In-Band Bytestream data packets */
     private final PacketFilter dataFilter = new AndFilter(
-                    new PacketTypeFilter(Data.class));
+            new PacketTypeFilter(Data.class));
 
     /**
      * Constructor.
-     * 
+     *
      * @param manager the In-Band Bytestream manager
      */
     public DataListener(InBandBytestreamManager manager) {
@@ -55,7 +55,7 @@ class DataListener implements PacketListener {
     public void processPacket(Packet packet) {
         Data data = (Data) packet;
         InBandBytestreamSession ibbSession = this.manager.getSessions().get(
-                        data.getDataPacketExtension().getSessionID());
+                data.getDataPacketExtension().getSessionID());
         if (ibbSession == null) {
             this.manager.replyItemNotFoundPacket(data);
         }
@@ -63,7 +63,7 @@ class DataListener implements PacketListener {
 
     /**
      * Returns the packet filter for In-Band Bytestream data packets.
-     * 
+     *
      * @return the packet filter for In-Band Bytestream data packets
      */
     protected PacketFilter getFilter() {

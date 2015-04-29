@@ -21,35 +21,30 @@
 package org.jivesoftware.smackx;
 
 /**
- *
  * Default implementation of the MessageEventRequestListener interface.<p>
- *
- * This class automatically sends a delivered notification to the sender of the message 
- * if the sender has requested to be notified when the message is delivered. 
+ * <p/>
+ * This class automatically sends a delivered notification to the sender of the message
+ * if the sender has requested to be notified when the message is delivered.
  *
  * @author Gaston Dombiak
  */
 public class DefaultMessageEventRequestListener implements MessageEventRequestListener {
 
     public void deliveredNotificationRequested(String from, String packetID,
-                MessageEventManager messageEventManager)
-    {
+                                               MessageEventManager messageEventManager) {
         // Send to the message's sender that the message has been delivered
         messageEventManager.sendDeliveredNotification(from, packetID);
     }
 
     public void displayedNotificationRequested(String from, String packetID,
-            MessageEventManager messageEventManager)
-    {
+                                               MessageEventManager messageEventManager) {
     }
 
     public void composingNotificationRequested(String from, String packetID,
-            MessageEventManager messageEventManager)
-    {
+                                               MessageEventManager messageEventManager) {
     }
 
     public void offlineNotificationRequested(String from, String packetID,
-            MessageEventManager messageEventManager)
-    {
+                                             MessageEventManager messageEventManager) {
     }
 }

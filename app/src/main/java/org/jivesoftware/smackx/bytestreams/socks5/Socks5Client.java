@@ -33,7 +33,7 @@ import org.jivesoftware.smackx.bytestreams.socks5.packet.Bytestream.StreamHost;
  * The SOCKS5 client class handles establishing a connection to a SOCKS5 proxy. Connecting to a
  * SOCKS5 proxy requires authentication. This implementation only supports the no-authentication
  * authentication method.
- * 
+ *
  * @author Henning Staib
  */
 class Socks5Client {
@@ -46,9 +46,9 @@ class Socks5Client {
 
     /**
      * Constructor for a SOCKS5 client.
-     * 
+     *
      * @param streamHost containing network settings of the SOCKS5 proxy
-     * @param digest identifying the SOCKS5 Bytestream
+     * @param digest     identifying the SOCKS5 Bytestream
      */
     public Socks5Client(StreamHost streamHost, String digest) {
         this.streamHost = streamHost;
@@ -58,16 +58,16 @@ class Socks5Client {
     /**
      * Returns the initialized socket that can be used to transfer data between peers via the SOCKS5
      * proxy.
-     * 
+     *
      * @param timeout timeout to connect to SOCKS5 proxy in milliseconds
      * @return socket the initialized socket
-     * @throws IOException if initializing the socket failed due to a network error
-     * @throws XMPPException if establishing connection to SOCKS5 proxy failed
-     * @throws TimeoutException if connecting to SOCKS5 proxy timed out
+     * @throws IOException          if initializing the socket failed due to a network error
+     * @throws XMPPException        if establishing connection to SOCKS5 proxy failed
+     * @throws TimeoutException     if connecting to SOCKS5 proxy timed out
      * @throws InterruptedException if the current thread was interrupted while waiting
      */
     public Socket getSocket(int timeout) throws IOException, XMPPException, InterruptedException,
-                    TimeoutException {
+            TimeoutException {
 
         // wrap connecting in future for timeout
         FutureTask<Socket> futureTask = new FutureTask<Socket>(new Callable<Socket>() {
@@ -77,7 +77,7 @@ class Socks5Client {
                 // initialize socket
                 Socket socket = new Socket();
                 SocketAddress socketAddress = new InetSocketAddress(streamHost.getAddress(),
-                                streamHost.getPort());
+                        streamHost.getPort());
                 socket.connect(socketAddress);
 
                 // initialize connection to SOCKS5 proxy
@@ -99,8 +99,7 @@ class Socks5Client {
         // get connection to initiator with timeout
         try {
             return futureTask.get(timeout, TimeUnit.MILLISECONDS);
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             Throwable cause = e.getCause();
             if (cause != null) {
                 // case exceptions to comply with method signature
@@ -122,13 +121,13 @@ class Socks5Client {
      * Initializes the connection to the SOCKS5 proxy by negotiating authentication method and
      * requesting a stream for the given digest. Currently only the no-authentication method is
      * supported by the Socks5Client.
-     * <p>
+     * <p/>
      * Returns <code>true</code> if a stream could be established, otherwise <code>false</code>. If
      * <code>false</code> is returned the given Socket should be closed.
-     * 
+     *
      * @param socket connected to a SOCKS5 proxy
      * @return <code>true</code> if if a stream could be established, otherwise <code>false</code>.
-     *         If <code>false</code> is returned the given Socket should be closed.
+     * If <code>false</code> is returned the given Socket should be closed.
      * @throws IOException if a network error occurred
      */
     protected boolean establish(Socket socket) throws IOException {
@@ -167,8 +166,7 @@ class Socks5Client {
         byte[] connectionResponse;
         try {
             connectionResponse = Socks5Utils.receiveSocks5Message(in);
-        }
-        catch (XMPPException e) {
+        } catch (XMPPException e) {
             return false; // server answered in an unsupported way
         }
 
@@ -180,9 +178,9 @@ class Socks5Client {
     /**
      * Returns a SOCKS5 connection request message. It contains the command "connect", the address
      * type "domain" and the digest as address.
-     * <p>
+     * <p/>
      * (see <a href="http://tools.ietf.org/html/rfc1928">RFC1928</a>)
-     * 
+     *
      * @return SOCKS5 connection request message
      */
     private byte[] createSocks5ConnectRequest() {

@@ -33,8 +33,8 @@ import java.util.List;
 /**
  * A group of roster entries.
  *
- * @see Roster#getGroup(String)
  * @author Matt Tucker
+ * @see Roster#getGroup(String)
  */
 public class RosterGroup {
 
@@ -45,7 +45,7 @@ public class RosterGroup {
     /**
      * Creates a new roster group instance.
      *
-     * @param name the name of the group.
+     * @param name       the name of the group.
      * @param connection the connection the group belongs to.
      */
     RosterGroup(String name, Connection connection) {
@@ -65,8 +65,8 @@ public class RosterGroup {
 
     /**
      * Sets the name of the group. Changing the group's name is like moving all the group entries
-     * of the group to a new group specified by the new name. Since this group won't have entries 
-     * it will be removed from the roster. This means that all the references to this object will 
+     * of the group to a new group specified by the new name. Since this group won't have entries
+     * it will be removed from the roster. This means that all the references to this object will
      * be invalid and will need to be updated to the new group specified by the new name.
      *
      * @param name the name of the group.
@@ -155,7 +155,7 @@ public class RosterGroup {
     }
 
     /**
-     * Adds a roster entry to this group. If the entry was unfiled then it will be removed from 
+     * Adds a roster entry to this group. If the entry was unfiled then it will be removed from
      * the unfiled list and will be added to this group.
      * Note that this is an asynchronous call -- Smack must wait for the server
      * to receive the updated roster.
@@ -193,14 +193,14 @@ public class RosterGroup {
     }
 
     /**
-     * Removes a roster entry from this group. If the entry does not belong to any other group 
-     * then it will be considered as unfiled, therefore it will be added to the list of unfiled 
+     * Removes a roster entry from this group. If the entry does not belong to any other group
+     * then it will be considered as unfiled, therefore it will be added to the list of unfiled
      * entries.
      * Note that this is an asynchronous call -- Smack must wait for the server
      * to receive the updated roster.
      *
      * @param entry a roster entry.
-     * @throws XMPPException if an error occured while trying to remove the entry from the group. 
+     * @throws XMPPException if an error occured while trying to remove the entry from the group.
      */
     public void removeEntry(RosterEntry entry) throws XMPPException {
         PacketCollector collector = null;
@@ -243,7 +243,7 @@ public class RosterGroup {
     }
 
     void removeEntryLocal(RosterEntry entry) {
-         // Only remove the entry if it's in the entry list.
+        // Only remove the entry if it's in the entry list.
         synchronized (entries) {
             if (entries.contains(entry)) {
                 entries.remove(entry);

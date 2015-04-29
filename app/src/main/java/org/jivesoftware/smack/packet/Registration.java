@@ -31,19 +31,19 @@ import java.util.Map;
  * existing account information. XMPP servers may require a number of attributes to be set
  * when creating a new account. The standard account attributes are as follows:
  * <ul>
- *      <li>name -- the user's name.
- *      <li>first -- the user's first name.
- *      <li>last -- the user's last name.
- *      <li>email -- the user's email address.
- *      <li>city -- the user's city.
- *      <li>state -- the user's state.
- *      <li>zip -- the user's ZIP code.
- *      <li>phone -- the user's phone number.
- *      <li>url -- the user's website.
- *      <li>date -- the date the registration took place.
- *      <li>misc -- other miscellaneous information to associate with the account.
- *      <li>text -- textual information to associate with the account.
- *      <li>remove -- empty flag to remove account.
+ * <li>name -- the user's name.
+ * <li>first -- the user's first name.
+ * <li>last -- the user's last name.
+ * <li>email -- the user's email address.
+ * <li>city -- the user's city.
+ * <li>state -- the user's state.
+ * <li>zip -- the user's ZIP code.
+ * <li>phone -- the user's phone number.
+ * <li>url -- the user's website.
+ * <li>date -- the date the registration took place.
+ * <li>misc -- other miscellaneous information to associate with the account.
+ * <li>text -- textual information to associate with the account.
+ * <li>remove -- empty flag to remove account.
  * </ul>
  *
  * @author Matt Tucker
@@ -51,7 +51,7 @@ import java.util.Map;
 public class Registration extends IQ {
 
     private String instructions = null;
-    private Map<String, String> attributes = new HashMap<String,String>();
+    private Map<String, String> attributes = new HashMap<String, String>();
     private List<String> requiredFields = new ArrayList<String>();
     private boolean registered = false;
     private boolean remove = false;
@@ -93,41 +93,41 @@ public class Registration extends IQ {
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     }
-    
-    public List<String> getRequiredFields(){
-    	return requiredFields;
+
+    public List<String> getRequiredFields() {
+        return requiredFields;
     }
-    
-    public void addAttribute(String key, String value){
-    	attributes.put(key, value);
+
+    public void addAttribute(String key, String value) {
+        attributes.put(key, value);
     }
-    
-    public void setRegistered(boolean registered){
-    	this.registered = registered;
+
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
     }
-    
-    public boolean isRegistered(){
-    	return this.registered;
+
+    public boolean isRegistered() {
+        return this.registered;
     }
-    
-    public String getField(String key){
-    	return attributes.get(key);
+
+    public String getField(String key) {
+        return attributes.get(key);
     }
-    
-    public List<String> getFieldNames(){
-    	return new ArrayList<String>(attributes.keySet());
+
+    public List<String> getFieldNames() {
+        return new ArrayList<String>(attributes.keySet());
     }
-    
-    public void setUsername(String username){
-    	attributes.put("username", username);
+
+    public void setUsername(String username) {
+        attributes.put("username", username);
     }
-    
-    public void setPassword(String password){
-    	attributes.put("password", password);
+
+    public void setPassword(String password) {
+        attributes.put("password", password);
     }
-    
-    public void setRemove(boolean remove){
-    	this.remove = remove;
+
+    public void setRemove(boolean remove) {
+        this.remove = remove;
     }
 
     public String getChildElementXML() {
@@ -143,9 +143,8 @@ public class Registration extends IQ {
                 buf.append(value);
                 buf.append("</").append(name).append(">");
             }
-        }
-        else if(remove){
-        	buf.append("</remove>");
+        } else if (remove) {
+            buf.append("</remove>");
         }
         // Add packet extensions, if any are defined.
         buf.append(getExtensionsXML());

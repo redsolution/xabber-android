@@ -30,13 +30,13 @@ import org.jivesoftware.smack.packet.Presence;
  * that the user wants to be a deaf occupant. A user can only indicate that he wants to be a
  * deaf occupant while joining the room. It is not possible to become deaf or stop being deaf
  * after the user joined the room.<p>
- *
+ * <p/>
  * Deaf occupants will not get messages broadcasted to all room occupants. However, they will
  * be able to get private messages, presences, IQ packets or room history. To use this
  * functionality you will need to send the message
  * {@link MultiUserChat#addPresenceInterceptor(org.jivesoftware.smack.PacketInterceptor)} and
  * pass this interceptor as the parameter.<p>
- *
+ * <p/>
  * Note that this is a custom extension to the MUC service so it may not work with other servers
  * than Wildfire.
  *

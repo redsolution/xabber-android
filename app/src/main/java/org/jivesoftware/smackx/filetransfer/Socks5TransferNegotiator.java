@@ -35,7 +35,7 @@ import org.jivesoftware.smackx.packet.StreamInitiation;
 /**
  * Negotiates a SOCKS5 Bytestream to be used for file transfers. The implementation is based on the
  * {@link Socks5BytestreamManager} and the {@link Socks5BytestreamRequest}.
- * 
+ *
  * @author Henning Staib
  * @see <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
  */
@@ -52,21 +52,19 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
 
     @Override
     public OutputStream createOutgoingStream(String streamID, String initiator, String target)
-                    throws XMPPException {
+            throws XMPPException {
         try {
             return this.manager.establishSession(target, streamID).getOutputStream();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new XMPPException("error establishing SOCKS5 Bytestream", e);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new XMPPException("error establishing SOCKS5 Bytestream", e);
         }
     }
 
     @Override
     public InputStream createIncomingStream(StreamInitiation initiation) throws XMPPException,
-                    InterruptedException {
+            InterruptedException {
         /*
          * SOCKS5 initiation listener must ignore next SOCKS5 Bytestream request with given session
          * ID
@@ -91,15 +89,15 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
 
     @Override
     public String[] getNamespaces() {
-        return new String[] { Socks5BytestreamManager.NAMESPACE };
+        return new String[]{Socks5BytestreamManager.NAMESPACE};
     }
 
     @Override
     InputStream negotiateIncomingStream(Packet streamInitiation) throws XMPPException,
-                    InterruptedException {
+            InterruptedException {
         // build SOCKS5 Bytestream request
         Socks5BytestreamRequest request = new ByteStreamRequest(this.manager,
-                        (Bytestream) streamInitiation);
+                (Bytestream) streamInitiation);
 
         // always accept the request
         Socks5BytestreamSession session = request.accept();
@@ -110,8 +108,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
             int firstByte = stream.read();
             stream.unread(firstByte);
             return stream;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new XMPPException("Error establishing input stream", e);
         }
     }
@@ -143,7 +140,7 @@ public class Socks5TransferNegotiator extends StreamNegotiator {
 
                 // packet must by of type SET and contains the given session ID
                 return this.sessionID.equals(bytestream.getSessionID())
-                                && IQ.Type.SET.equals(bytestream.getType());
+                        && IQ.Type.SET.equals(bytestream.getType());
             }
             return false;
         }

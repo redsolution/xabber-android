@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:24 $
  * @since Commons Collections 3.1
  */
-abstract class AbstractEmptyIterator <E> {
+abstract class AbstractEmptyIterator<E> {
 
     /**
      * Constructor.

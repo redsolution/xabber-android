@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="account_color_names">
+        <item>@string/account_color_name_green</item>
+        <item>@string/account_color_name_orange</item>
+        <item>@string/account_color_name_red</item>
+        <item>@string/account_color_name_blue</item>
+        <item>@string/account_color_name_indigo</item>
+        <item>@string/account_color_name_blue_grey</item>
+        <item>@string/account_color_name_cyan</item>
+        <item>@string/account_color_name_teal</item>
+    </array>
+
+    <array name="account_action_bar">
+        <item>@color/green_500</item>
+        <item>@color/orange_500</item>
+        <item>@color/red_500</item>
+        <item>@color/blue_500</item>
+        <item>@color/indigo_500</item>
+        <item>@color/blue_grey_500</item>
+        <item>@color/cyan_500</item>
+        <item>@color/teal_500</item>
+    </array>
+
+    <array name="account_status_bar">
+        <item>@color/green_700</item>
+        <item>@color/orange_700</item>
+        <item>@color/red_700</item>
+        <item>@color/blue_700</item>
+        <item>@color/indigo_700</item>
+        <item>@color/blue_grey_700</item>
+        <item>@color/cyan_700</item>
+        <item>@color/teal_700</item>
+    </array>
+
+    <array name="account_200">
+        <item>@color/green_200</item>
+        <item>@color/orange_200</item>
+        <item>@color/red_200</item>
+        <item>@color/blue_200</item>
+        <item>@color/indigo_200</item>
+        <item>@color/blue_grey_200</item>
+        <item>@color/cyan_200</item>
+        <item>@color/teal_200</item>
+    </array>
+
+    <array name="account_background">
+        <item>@color/green_100</item>
+        <item>@color/orange_100</item>
+        <item>@color/red_100</item>
+        <item>@color/blue_100</item>
+        <item>@color/indigo_100</item>
+        <item>@color/blue_grey_100</item>
+        <item>@color/cyan_100</item>
+        <item>@color/teal_100</item>
+    </array>
+
+    <array name="account_50">
+        <item>@color/green_50</item>
+        <item>@color/orange_50</item>
+        <item>@color/red_50</item>
+        <item>@color/blue_50</item>
+        <item>@color/indigo_50</item>
+        <item>@color/blue_grey_50</item>
+        <item>@color/cyan_50</item>
+        <item>@color/teal_50</item>
+    </array>
+
+
+    <color name="color_primary_light">@color/grey_200</color>
+
+    <color name="account_disabled">@color/black_dividers</color>
+</resources>

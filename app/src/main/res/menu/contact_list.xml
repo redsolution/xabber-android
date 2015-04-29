@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:orderInCategory="100"
+        android:title="@android:string/search_go"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always|collapseActionView"
+        />
+
+    <item android:id="@+id/action_add_contact"
+        android:icon="@drawable/ic_person_add_white_24dp"
+        android:orderInCategory="110"
+        android:title="@string/contact_add"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_join_conference"
+        android:icon="@drawable/ic_group_white_24dp"
+        android:orderInCategory="120"
+        android:title="@string/muc_add"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_change_status"
+        android:orderInCategory="130"
+        android:title="@string/status_editor"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_chat_list"
+        android:icon="@drawable/ic_list_white_24dp"
+        android:orderInCategory="140"
+        android:title="@string/chat_list"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_close_chats"
+        android:orderInCategory="150"
+        android:title="@string/close_chats"
+        app:showAsAction="never"
+        />
+</menu>

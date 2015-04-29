@@ -79,7 +79,7 @@ public class Affiliate {
      * If the user is not present in the room then the answer will be null.
      *
      * @return the current role of the affiliated user in the room or null if the user is not in
-     *         the room.
+     * the room.
      */
     public String getRole() {
         return role;
@@ -90,7 +90,7 @@ public class Affiliate {
      * If the user is not present in the room then the answer will be null.
      *
      * @return the current nickname of the affiliated user in the room or null if the user is not in
-     *         the room.
+     * the room.
      */
     public String getNick() {
         return nick;

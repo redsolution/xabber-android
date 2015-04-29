@@ -25,7 +25,7 @@ import org.jivesoftware.smack.packet.IQ;
 /**
  * A Version IQ packet, which is used by XMPP clients to discover version information
  * about the software running at another entity's JID.<p>
- *
+ * <p/>
  * An example to discover the version of the server:
  * <pre>
  * // Request the version from the server.

@@ -29,11 +29,11 @@ import java.util.Map;
  * Default implementation of the PrivateData interface. Unless a PrivateDataProvider
  * is registered with the PrivateDataManager class, instances of this class will be
  * returned when getting private data.<p>
- *
+ * <p/>
  * This class provides a very simple representation of an XML sub-document. Each element
  * is a key in a Map with its CDATA being the value. For example, given the following
  * XML sub-document:
- *
+ * <p/>
  * <pre>
  * &lt;foo xmlns="http://bar.com"&gt;
  *     &lt;color&gt;blue&lt;/color&gt;
@@ -57,14 +57,14 @@ public class DefaultPrivateData implements PrivateData {
      * Creates a new generic private data object.
      *
      * @param elementName the name of the element of the XML sub-document.
-     * @param namespace the namespace of the element.
+     * @param namespace   the namespace of the element.
      */
     public DefaultPrivateData(String elementName, String namespace) {
         this.elementName = elementName;
         this.namespace = namespace;
     }
 
-     /**
+    /**
      * Returns the XML element name of the private data sub-packet root element.
      *
      * @return the XML element name of the packet extension.
@@ -85,8 +85,8 @@ public class DefaultPrivateData implements PrivateData {
     public String toXML() {
         StringBuilder buf = new StringBuilder();
         buf.append("<").append(elementName).append(" xmlns=\"").append(namespace).append("\">");
-        for (Iterator i=getNames(); i.hasNext(); ) {
-            String name = (String)i.next();
+        for (Iterator i = getNames(); i.hasNext(); ) {
+            String name = (String) i.next();
             String value = getValue(name);
             buf.append("<").append(name).append(">");
             buf.append(value);
@@ -119,13 +119,13 @@ public class DefaultPrivateData implements PrivateData {
         if (map == null) {
             return null;
         }
-        return (String)map.get(name);
+        return (String) map.get(name);
     }
 
     /**
      * Sets a value given the name.
      *
-     * @param name the name.
+     * @param name  the name.
      * @param value the value.
      */
     public synchronized void setValue(String name, String value) {
