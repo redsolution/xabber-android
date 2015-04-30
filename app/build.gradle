@@ -10,6 +10,7 @@ android {
         targetSdkVersion 22
         versionCode 173
         versionName '1.0.1'
+        resValue 'string', 'application_package', applicationId
     }
 
     compileOptions {
