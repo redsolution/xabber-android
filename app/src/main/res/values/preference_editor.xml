@@ -147,6 +147,7 @@
     <string name="chats_attention">Attention\nReact for the incoming attention requests</string>
     <string name="chats_attention_sound">Attention sound\nChoose ring-tone</string>
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
+	<string name="connection_use_carbons">Carbon-copied mode\nWill share the sessions for the same account on this client. Disable to reduce traffic usage.</string>
     <string name="events_phrases">Key phrases\nCustom sound notifications about messages with preset phrases</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
     <string name="security_clear_certificate_warning">Do you really want to remove all the ignored certificates?</string>

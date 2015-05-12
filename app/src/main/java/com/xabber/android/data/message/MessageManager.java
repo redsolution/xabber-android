@@ -41,6 +41,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+import com.xabber.xmpp.carbon.CarbonManager.Direction;
 import com.xabber.xmpp.delay.Delay;
 
 import org.jivesoftware.smack.packet.Message;
@@ -499,6 +500,56 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
+    public void displayForwardedMessage(ConnectionItem connection, Message message, Direction direction) {
+
+        if (!(connection instanceof AccountItem))
+            return;
+        String account = ((AccountItem) connection).getAccount();
+        if (MessageArchiveManager.getInstance().isModificationsSucceed(account)
+                && Delay.isOfflineMessage(Jid.getServer(account), message)) {
+            // Ignore offline message if modification from server side message
+            // archive have been received.
+            return;
+        }
+
+        if (direction == Direction.sent) {
+            String companion = Jid.getBareAddress(message.getTo());
+            if (companion == null) {
+                return;
+            }
+            AbstractChat chat = getChat(account, companion);
+            if (chat == null) {
+                chat = createChat(account, companion);
+            }
+            String body = message.getBody();
+            if (body == null) {
+                return;
+            }
+            chat.newMessage(body);
+            return;
+        }
+
+        String companion = Jid.getBareAddress(message.getFrom());
+        boolean processed = false;
+        for (AbstractChat chat : chats.getNested(account).values()) {
+            if (chat.onPacket(companion, message)) {
+                processed = true;
+                break;
+            }
+        }
+        if (getChat(account, companion) != null) {
+            return;
+        }
+        if (processed) {
+            return;
+        }
+        final String body = message.getBody();
+        if (body == null) {
+            return;
+        }
+        createChat(account, companion).onPacket(companion, message);
+
+    }
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         String account = accountItem.getAccount();
