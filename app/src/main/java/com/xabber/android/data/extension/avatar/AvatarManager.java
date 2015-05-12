@@ -70,38 +70,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private static final String EMPTY_HASH = "";
     private static final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
-
-    private final Application application;
-
-    /**
-     * Map with hashes for specified users.
-     * <p/>
-     * {@link #EMPTY_HASH} is used to store <code>null</code> values.
-     */
-    private final Map<String, String> hashes;
-
-    /**
-     * Map with bitmaps for specified hashes.
-     * <p/>
-     * {@link #EMPTY_BITMAP} is used to store <code>null</code> values.
-     */
-    private final Map<String, Bitmap> bitmaps;
-
-    /**
-     * Map with drawable used in contact list only for specified uses.
-     */
-    private final Map<String, Drawable> contactListDrawables;
-
-    /**
-     * Users' default avatar set.
-     */
-    private final BaseAvatarSet userAvatarSet;
-
-    /**
-     * Rooms' default avatar set.
-     */
-    private final BaseAvatarSet roomAvatarSet;
-
     private final static AvatarManager instance;
 
     static {
@@ -109,11 +77,32 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         Application.getInstance().addManager(instance);
     }
 
+    private final Application application;
+    /**
+     * Map with hashes for specified users.
+     * <p/>
+     * {@link #EMPTY_HASH} is used to store <code>null</code> values.
+     */
+    private final Map<String, String> hashes;
+    /**
+     * Map with bitmaps for specified hashes.
+     * <p/>
+     * {@link #EMPTY_BITMAP} is used to store <code>null</code> values.
+     */
+    private final Map<String, Bitmap> bitmaps;
+    /**
+     * Map with drawable used in contact list only for specified uses.
+     */
+    private final Map<String, Drawable> contactListDrawables;
+    /**
+     * Users' default avatar set.
+     */
+    private final BaseAvatarSet userAvatarSet;
+    /**
+     * Rooms' default avatar set.
+     */
+    private final BaseAvatarSet roomAvatarSet;
     private final int[] accountColors;
-
-    public static AvatarManager getInstance() {
-        return instance;
-    }
 
     private AvatarManager() {
         this.application = Application.getInstance();
@@ -125,6 +114,61 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
+    }
+
+    public static AvatarManager getInstance() {
+        return instance;
+    }
+
+    /**
+     * Make {@link Bitmap} from array of bytes.
+     *
+     * @param value
+     * @return Bitmap. <code>null</code> can be returned if value is invalid or
+     * is <code>null</code>.
+     */
+    private static Bitmap makeBitmap(byte[] value) {
+        if (value == null) {
+            return null;
+        }
+
+        // Load only size values
+        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
+        sizeOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(value, 0, value.length, sizeOptions);
+
+        // Calculate factor to down scale image
+        int scale = 1;
+        int width_tmp = sizeOptions.outWidth;
+        int height_tmp = sizeOptions.outHeight;
+        while (width_tmp / 2 >= MAX_SIZE && height_tmp / 2 >= MAX_SIZE) {
+            scale *= 2;
+            width_tmp /= 2;
+            height_tmp /= 2;
+        }
+
+        // Load image
+        BitmapFactory.Options resultOptions = new BitmapFactory.Options();
+        resultOptions.inSampleSize = scale;
+        return BitmapFactory.decodeByteArray(value, 0, value.length, resultOptions);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        int width = drawable.getIntrinsicWidth();
+        width = width > 0 ? width : 1;
+        int height = drawable.getIntrinsicHeight();
+        height = height > 0 ? height : 1;
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
     @Override
@@ -175,39 +219,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                 AvatarTable.getInstance().write(bareAddress, hash);
             }
         });
-    }
-
-    /**
-     * Make {@link Bitmap} from array of bytes.
-     *
-     * @param value
-     * @return Bitmap. <code>null</code> can be returned if value is invalid or
-     * is <code>null</code>.
-     */
-    private static Bitmap makeBitmap(byte[] value) {
-        if (value == null) {
-            return null;
-        }
-
-        // Load only size values
-        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
-        sizeOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(value, 0, value.length, sizeOptions);
-
-        // Calculate factor to down scale image
-        int scale = 1;
-        int width_tmp = sizeOptions.outWidth;
-        int height_tmp = sizeOptions.outHeight;
-        while (width_tmp / 2 >= MAX_SIZE && height_tmp / 2 >= MAX_SIZE) {
-            scale *= 2;
-            width_tmp /= 2;
-            height_tmp /= 2;
-        }
-
-        // Load image
-        BitmapFactory.Options resultOptions = new BitmapFactory.Options();
-        resultOptions.inSampleSize = scale;
-        return BitmapFactory.decodeByteArray(value, 0, value.length, resultOptions);
     }
 
     /**
@@ -317,14 +328,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (value != null) {
             return value;
         } else {
-            Drawable drawable = getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
-
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-
-            return bitmap;
+            return drawableToBitmap(getDefaultAvatarDrawable(userAvatarSet.getResourceId(user)));
         }
     }
 
@@ -360,7 +364,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @return
      */
     public Bitmap getRoomBitmap(String user) {
-        return ((BitmapDrawable) getRoomAvatar(user)).getBitmap();
+        return drawableToBitmap(getRoomAvatar(user));
     }
 
     /**

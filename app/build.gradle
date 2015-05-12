@@ -8,14 +8,19 @@ android {
         applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 174
-        versionName '1.0.2'
+        versionCode 175
+        versionName '1.0.3'
         resValue 'string', 'application_package', applicationId
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        // problems with generated "applicationId" string resource
+        disable 'MissingTranslation'
     }
 }
 
@@ -24,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:support-v13:22.0.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile 'de.hdodenhof:circleimageview:1.2.2'

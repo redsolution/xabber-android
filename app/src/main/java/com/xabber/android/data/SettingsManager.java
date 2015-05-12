@@ -35,6 +35,7 @@ import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.androiddev.R;
+import com.xabber.xmpp.carbon.CarbonManager;
 
 import java.util.Comparator;
 
@@ -557,6 +558,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_load_vcard_default);
     }
 
+    public static boolean connectionUseCarbons() {
+        return getBoolean(R.string.connection_use_carbons_key,
+                R.bool.connection_use_carbons_default);
+    }
+
     public static boolean connectionAdjustPriority() {
         return getBoolean(R.string.connection_adjust_priority_key,
                 R.bool.connection_adjust_priority_default);
@@ -750,6 +756,9 @@ public class SettingsManager implements OnInitializedListener,
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_wifi_lock_key))) {
             NetworkManager.getInstance().onWifiLockSettingsChanged();
+        } else if (key.equals(Application.getInstance().getString(
+                R.string.connection_use_carbons_key))) {
+            CarbonManager.getInstance().onUseCarbonsSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.events_show_text_key))) {
             NotificationManager.getInstance().onMessageNotification();

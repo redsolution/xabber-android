@@ -50,6 +50,7 @@
         <item>com.xabber.android.data.extension.capability.ServerInfoManager</item>
         <item>com.xabber.android.data.extension.time.TimeManager</item>
         <item>com.xabber.android.data.extension.attention.AttentionManager</item>
+        <item>com.xabber.xmpp.carbon.CarbonManager</item>
     </string-array>
 
     <string-array name="contact_managers">
@@ -127,10 +128,10 @@
 
     <string name="contacts_show_offline_key">contacts_show_offline</string>
     <bool name="contacts_show_offline_default">false</bool>
-            
+
     <string name="contacts_show_groups_key">contacts_show_groups</string>
     <bool name="contacts_show_groups_default">true</bool>
-            
+
     <string name="contacts_show_accounts_key">contacts_show_accounts</string>
     <bool name="contacts_show_accounts_default">true</bool>
 
@@ -142,7 +143,7 @@
 
     <string name="contacts_show_empty_groups_key">contacts_show_empty_groups</string>
     <bool name="contacts_show_empty_groups_default">false</bool>
-        
+
     <string name="contacts_order_key">contacts_order</string>
     <string name="contacts_order_status_value">status</string>
     <string name="contacts_order_alphabet_value">alphabet</string>
@@ -198,7 +199,7 @@
 
     <string name="events_visible_chat_key">events_visible_chat</string>
     <bool name="events_visible_chat_default">false</bool>
-    
+
     <string name="events_first_only_key">events_first_only</string>
     <bool name="events_first_only_default">false</bool>
 
@@ -361,6 +362,9 @@
 
     <string name="connection_load_vcard_key">connection_load_vcard</string>
     <bool name="connection_load_vcard_default">true</bool>
+
+    <string name="connection_use_carbons_key">connection_use_carbons</string>
+    <bool name="connection_use_carbons_default">true</bool>
 
 <!-- preference_cache -->
     <string name="cache_clear_key">cache_clear</string>
