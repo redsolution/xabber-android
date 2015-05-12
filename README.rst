@@ -4,6 +4,19 @@ Xabber - XMPP client for Android
 Open source Jabber (XMPP) client with multi-account support, clean and simple interface.
 Being both free (as in freedom!) and ad-free, Xabber is designed to be the best Jabber client for Android.
 
+Build instrustions
+==================
+
+Xabber uses Gradle build system. The only specific thing is git submodule for otr4j library. To make it work use following commands:
+
+ ::
+ 
+ git submodule init
+ 
+ git submodule update
+ 
+And otr4j would be cloned to your local repository. 
+
 Supported protocols
 ===================
 
