@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
 
      This file is part of Xabber project; you can redistribute it and/or
      modify it under the terms of the GNU General Public License, Version 3.
@@ -12,9 +11,8 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:accountType="@string/sync_account_type"
-    android:icon="@drawable/ic_launcher"
-    android:label="@string/application_title_full"
-    android:smallIcon="@drawable/ic_launcher"
-    />
+<resources>
+    <string name="application_title_short">Xabber</string>
+    <string name="application_title_full">Xabber Dev</string>
+    <string name="client_name">Xabber</string>
+</resources>

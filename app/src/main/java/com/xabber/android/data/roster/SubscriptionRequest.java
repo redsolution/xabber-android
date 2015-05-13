@@ -16,12 +16,12 @@ package com.xabber.android.data.roster;
 
 import android.content.Intent;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.ui.ContactSubscription;
-import com.xabber.androiddev.R;
 
 public class SubscriptionRequest extends BaseEntity implements EntityNotificationItem {
 

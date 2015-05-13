@@ -9,6 +9,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -20,7 +21,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
 
 import java.util.List;
 

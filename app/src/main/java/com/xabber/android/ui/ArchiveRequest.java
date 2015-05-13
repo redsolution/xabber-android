@@ -19,12 +19,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.helper.ManagedDialog;
-import com.xabber.androiddev.R;
 
 /**
  * Dialog with request to enable message archive.
@@ -34,6 +34,15 @@ import com.xabber.androiddev.R;
 public class ArchiveRequest extends ManagedDialog {
 
     private String account;
+
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, ArchiveRequest.class)
+                .setAccount(account).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,15 +70,6 @@ public class ArchiveRequest extends ManagedDialog {
         super.onDecline();
         AccountManager.getInstance().setArchiveMode(account, ArchiveMode.local);
         finish();
-    }
-
-    public static Intent createIntent(Context context, String account) {
-        return new AccountIntentBuilder(context, ArchiveRequest.class)
-                .setAccount(account).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
     }
 
 }

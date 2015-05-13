@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
 import com.xabber.android.ui.helper.AccountPainter;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.List;

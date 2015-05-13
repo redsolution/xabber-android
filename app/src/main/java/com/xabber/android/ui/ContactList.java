@@ -40,6 +40,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -67,7 +68,6 @@ import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.AboutViewer;
 import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.android.ui.preferences.PreferenceEditor;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -158,7 +158,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         setSupportActionBar(toolbar);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.production_title, R.string.production_title);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short);
         drawerLayout.setDrawerListener(drawerToggle);
 
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -167,7 +167,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
-        setTitle(getString(R.string.application_name));
+        setTitle(getString(R.string.application_title_full));
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);

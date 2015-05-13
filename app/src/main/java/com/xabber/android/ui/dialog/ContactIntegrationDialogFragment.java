@@ -3,9 +3,9 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog.Builder;
 import android.app.DialogFragment;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.androiddev.R;
 
 public class ContactIntegrationDialogFragment extends ConfirmDialogFragment {
 

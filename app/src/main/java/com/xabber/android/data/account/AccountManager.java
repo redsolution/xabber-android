@@ -18,6 +18,7 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Build;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -32,7 +33,6 @@ import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.util.StringUtils;
@@ -60,47 +60,6 @@ import java.util.Map;
  */
 public class AccountManager implements OnLoadListener, OnWipeListener {
 
-    /**
-     * List of account presets.
-     */
-    private final List<AccountType> accountTypes;
-
-    /**
-     * List of saved statuses.
-     */
-    private final Collection<SavedStatus> savedStatuses;
-
-    /**
-     * Number of different account colors.
-     */
-    private final int colors;
-
-    /**
-     * List of accounts.
-     */
-    private final Map<String, AccountItem> accountItems;
-
-    /**
-     * List of enabled account.
-     */
-    private final Collection<String> enabledAccounts;
-
-    /**
-     * Whether away status mode is enabled.
-     */
-    private boolean away;
-
-    /**
-     * Whether extended away mode is enabled.
-     */
-    private boolean xa;
-
-    private final BaseAccountNotificationProvider<AccountAuthorizationError> authorizationErrorProvider;
-
-    private final BaseAccountNotificationProvider<PasswordRequest> passwordRequestProvider;
-
-    private final Application application;
-
     private final static AccountManager instance;
 
     static {
@@ -108,9 +67,39 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         Application.getInstance().addManager(instance);
     }
 
-    public static AccountManager getInstance() {
-        return instance;
-    }
+    /**
+     * List of account presets.
+     */
+    private final List<AccountType> accountTypes;
+    /**
+     * List of saved statuses.
+     */
+    private final Collection<SavedStatus> savedStatuses;
+    /**
+     * Number of different account colors.
+     */
+    private final int colors;
+    /**
+     * List of accounts.
+     */
+    private final Map<String, AccountItem> accountItems;
+    /**
+     * List of enabled account.
+     */
+    private final Collection<String> enabledAccounts;
+    private final BaseAccountNotificationProvider<AccountAuthorizationError> authorizationErrorProvider;
+
+    private final BaseAccountNotificationProvider<PasswordRequest> passwordRequestProvider;
+
+    private final Application application;
+    /**
+     * Whether away status mode is enabled.
+     */
+    private boolean away;
+    /**
+     * Whether extended away mode is enabled.
+     */
+    private boolean xa;
 
     private AccountManager() {
         this.application = Application.getInstance();
@@ -146,6 +135,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         types.recycle();
         away = false;
         xa = false;
+    }
+
+    public static AccountManager getInstance() {
+        return instance;
     }
 
     @Override

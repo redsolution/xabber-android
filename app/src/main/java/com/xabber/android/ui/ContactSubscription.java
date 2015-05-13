@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -33,7 +34,6 @@ import com.xabber.android.data.roster.SubscriptionRequest;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.SingleActivity;
-import com.xabber.androiddev.R;
 
 public class ContactSubscription extends SingleActivity implements View.OnClickListener {
 

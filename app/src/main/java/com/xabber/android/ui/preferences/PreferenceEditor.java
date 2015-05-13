@@ -20,10 +20,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 
 public class PreferenceEditor extends ManagedActivity
         implements PreferencesFragment.OnPreferencesFragmentInteractionListener {

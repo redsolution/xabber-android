@@ -24,12 +24,12 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.xabber.android.R;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 
 /**
  * Activity with WebView for OAuth authorization.
@@ -47,6 +47,39 @@ public class OAuthActivity extends ManagedActivity {
     private WebView webView;
     private String code;
     private boolean loaded;
+
+    private static Intent createResultIntent(Context context,
+                                             String refreshToken) {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_INVALIDATE, false);
+        intent.putExtra(EXTRA_REFRESH_TOKEN, refreshToken);
+        return intent;
+    }
+
+    private static Intent createInvalidateIntent(Context context) {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_INVALIDATE, true);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context, AccountProtocol protocol) {
+        Intent intent = new Intent(context, OAuthActivity.class);
+        intent.setData(Uri.parse(String.valueOf(protocol.ordinal())));
+        return intent;
+    }
+
+    public static boolean isInvalidated(Intent intent) {
+        return intent.getBooleanExtra(OAuthActivity.EXTRA_INVALIDATE, false);
+    }
+
+    public static String getToken(Intent intent) {
+        return intent.getStringExtra(OAuthActivity.EXTRA_REFRESH_TOKEN);
+    }
+
+    private static AccountProtocol getAccountProtocol(Intent intent) {
+        int index = Integer.valueOf(intent.getData().toString());
+        return AccountProtocol.values()[index];
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -83,39 +116,6 @@ public class OAuthActivity extends ManagedActivity {
         webView.setVisibility(progress ? View.INVISIBLE : View.VISIBLE);
         findViewById(R.id.progress_bar).setVisibility(
                 progress ? View.VISIBLE : View.GONE);
-    }
-
-    private static Intent createResultIntent(Context context,
-                                             String refreshToken) {
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_INVALIDATE, false);
-        intent.putExtra(EXTRA_REFRESH_TOKEN, refreshToken);
-        return intent;
-    }
-
-    private static Intent createInvalidateIntent(Context context) {
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_INVALIDATE, true);
-        return intent;
-    }
-
-    public static Intent createIntent(Context context, AccountProtocol protocol) {
-        Intent intent = new Intent(context, OAuthActivity.class);
-        intent.setData(Uri.parse(String.valueOf(protocol.ordinal())));
-        return intent;
-    }
-
-    public static boolean isInvalidated(Intent intent) {
-        return intent.getBooleanExtra(OAuthActivity.EXTRA_INVALIDATE, false);
-    }
-
-    public static String getToken(Intent intent) {
-        return intent.getStringExtra(OAuthActivity.EXTRA_REFRESH_TOKEN);
-    }
-
-    private static AccountProtocol getAccountProtocol(Intent intent) {
-        int index = Integer.valueOf(intent.getData().toString());
-        return AccountProtocol.values()[index];
     }
 
     private class OAuthWebViewClient extends WebViewClient {

@@ -21,11 +21,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.helper.ManagedDialog;
-import com.xabber.androiddev.R;
 
 /**
  * Dialog with password request for authentication.
@@ -38,6 +38,15 @@ public class PasswordRequest extends ManagedDialog {
 
     private EditText passwordView;
     private CheckBox storePasswordView;
+
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, PasswordRequest.class)
+                .setAccount(account).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +79,6 @@ public class PasswordRequest extends ManagedDialog {
     public void onDecline() {
         AccountManager.getInstance().removePasswordRequest(account);
         finish();
-    }
-
-    public static Intent createIntent(Context context, String account) {
-        return new AccountIntentBuilder(context, PasswordRequest.class)
-                .setAccount(account).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
     }
 
 }

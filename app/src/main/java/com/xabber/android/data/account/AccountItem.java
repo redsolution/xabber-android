@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.account;
 
+import com.xabber.android.R;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -21,7 +22,6 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.androiddev.R;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
@@ -37,20 +37,17 @@ import java.util.Date;
 public class AccountItem extends ConnectionItem {
 
     public static final String UNDEFINED_PASSWORD = "com.xabber.android.data.core.AccountItem.UNDEFINED_PASSWORD";
-
+    /**
+     * Full jid calculated according to {@link #userName}, {@link #serverName},
+     * {@link #resource}.
+     */
+    private final String account;
     /**
      * Id in database.
      * <p/>
      * MUST BE USED FROM BACKGROUND THREAD ONLY!
      */
     private Long id;
-
-    /**
-     * Full jid calculated according to {@link #userName}, {@link #serverName},
-     * {@link #resource}.
-     */
-    private final String account;
-
     private int colorIndex;
 
     /**
@@ -132,6 +129,14 @@ public class AccountItem extends ConnectionItem {
     }
 
     /**
+     * @param priority
+     * @return Valid priority value between -128 and 128.
+     */
+    static private int getValidPriority(int priority) {
+        return Math.min(128, Math.max(-128, priority));
+    }
+
+    /**
      * @return ID in database.
      */
     Long getId() {
@@ -161,6 +166,10 @@ public class AccountItem extends ConnectionItem {
      */
     public int getColorIndex() {
         return colorIndex;
+    }
+
+    public void setColorIndex(int colorIndex) {
+        this.colorIndex = colorIndex;
     }
 
     /**
@@ -426,17 +435,5 @@ public class AccountItem extends ConnectionItem {
     @Override
     public String toString() {
         return super.toString() + ":" + getAccount();
-    }
-
-    /**
-     * @param priority
-     * @return Valid priority value between -128 and 128.
-     */
-    static private int getValidPriority(int priority) {
-        return Math.min(128, Math.max(-128, priority));
-    }
-
-    public void setColorIndex(int colorIndex) {
-        this.colorIndex = colorIndex;
     }
 }

@@ -16,6 +16,7 @@ package com.xabber.android.data.roster;
 
 import android.database.Cursor;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -23,7 +24,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
-import com.xabber.androiddev.R;
 
 public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
         GroupStateProvider {
@@ -52,12 +52,6 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * Account name used to store information that don't belong to any account.
      */
     public static final String NO_ACCOUNT = "com.xabber.android.data.NO_ACCOUNT";
-
-    /**
-     * List of settings for roster groups in accounts.
-     */
-    private final NestedMap<GroupConfiguration> groupConfigurations;
-
     private final static GroupManager instance;
 
     static {
@@ -65,12 +59,17 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
         Application.getInstance().addManager(instance);
     }
 
-    public static GroupManager getInstance() {
-        return instance;
-    }
+    /**
+     * List of settings for roster groups in accounts.
+     */
+    private final NestedMap<GroupConfiguration> groupConfigurations;
 
     private GroupManager() {
         groupConfigurations = new NestedMap<GroupConfiguration>();
+    }
+
+    public static GroupManager getInstance() {
+        return instance;
     }
 
     @Override

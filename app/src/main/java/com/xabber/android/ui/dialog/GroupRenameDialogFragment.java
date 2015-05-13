@@ -21,15 +21,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
 
 public class GroupRenameDialogFragment extends ConfirmDialogFragment {
 
     private static final String ACCOUNT = "ACCOUNT";
     private static final String GROUP = "GROUP";
+    private String group;
+    private String account;
+    private EditText nameView;
 
     /**
      * @param account can be <code>null</code> to be used for all accounts.
@@ -40,10 +43,6 @@ public class GroupRenameDialogFragment extends ConfirmDialogFragment {
         return new GroupRenameDialogFragment().putAgrument(ACCOUNT, account)
                 .putAgrument(GROUP, group);
     }
-
-    private String group;
-    private String account;
-    private EditText nameView;
 
     @Override
     protected Builder getBuilder() {

@@ -3,18 +3,20 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog.Builder;
 import android.app.DialogFragment;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.ContactViewer;
-import com.xabber.androiddev.R;
 
 public class ContactDeleteDialogFragment extends ConfirmDialogFragment {
 
     private static final String ACCOUNT = "ACCOUNT";
     private static final String USER = "USER";
+    private String user;
+    private String account;
 
     /**
      * @param account
@@ -25,9 +27,6 @@ public class ContactDeleteDialogFragment extends ConfirmDialogFragment {
         return new ContactDeleteDialogFragment().putAgrument(ACCOUNT, account)
                 .putAgrument(USER, user);
     }
-
-    private String user;
-    private String account;
 
     @Override
     protected Builder getBuilder() {

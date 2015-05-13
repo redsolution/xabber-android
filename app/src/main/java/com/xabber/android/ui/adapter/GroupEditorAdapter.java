@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.R;
 
 import java.util.List;
 

@@ -9,15 +9,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
-import com.xabber.androiddev.R;
 
 public class ContactEditor extends ContactViewer {
+
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, ContactEditor.class)
+                .setAccount(account).setUser(user).build();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,10 +80,5 @@ public class ContactEditor extends ContactViewer {
         });
 
         builder.show();
-    }
-
-    public static Intent createIntent(Context context, String account, String user) {
-        return new EntityIntentBuilder(context, ContactEditor.class)
-                .setAccount(account).setUser(user).build();
     }
 }

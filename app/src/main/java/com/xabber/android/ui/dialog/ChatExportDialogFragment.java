@@ -25,12 +25,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
 
 import java.io.File;
 
@@ -38,6 +38,10 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
 
     private static final String ACCOUNT = "ACCOUNT";
     private static final String USER = "USER";
+    private String account;
+    private String user;
+    private EditText nameView;
+    private CheckBox sendView;
 
     /**
      * @param account
@@ -47,11 +51,6 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
     public static DialogFragment newInstance(String account, String user) {
         return new ChatExportDialogFragment().putAgrument(ACCOUNT, account).putAgrument(USER, user);
     }
-
-    private String account;
-    private String user;
-    private EditText nameView;
-    private CheckBox sendView;
 
     @Override
     protected Builder getBuilder() {

@@ -22,6 +22,18 @@ android {
         // problems with generated "applicationId" string resource
         disable 'MissingTranslation'
     }
+
+    productFlavors {
+
+        dev {
+            applicationId "com.xabber.androiddev"
+        }
+
+        beta {
+            applicationId "com.xabber.android.beta"
+        }
+
+    }
 }
 
 repositories {

@@ -16,8 +16,8 @@ package com.xabber.android.data.message;
 
 import android.content.Context;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.androiddev.R;
 
 /**
  * Action in chat.

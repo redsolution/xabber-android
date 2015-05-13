@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +21,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
 
 /**
  * Adapter for available status modes.

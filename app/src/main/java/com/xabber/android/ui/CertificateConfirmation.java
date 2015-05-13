@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui;
 
-import java.util.NoSuchElementException;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,13 +21,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.connection.CertificateInvalidReason;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.PendingCertificate;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.ui.helper.ManagedDialog;
-import com.xabber.androiddev.R;
+
+import java.util.NoSuchElementException;
 
 /**
  * Dialog to confirm invalid certificate.
@@ -42,6 +42,27 @@ public class CertificateConfirmation extends ManagedDialog {
 
     private PendingCertificate pendingCertificate;
     private boolean showDetails;
+
+    public static Intent createIntent(Context context, String fingerPrint,
+                                      CertificateInvalidReason reason) {
+        return new SegmentIntentBuilder<SegmentIntentBuilder<?>>(context,
+                CertificateConfirmation.class).addSegment(fingerPrint)
+                .addSegment(reason.toString()).build();
+    }
+
+    private static String getFingerprint(Intent intent) {
+        return SegmentIntentBuilder.getSegment(intent, 0);
+    }
+
+    private static CertificateInvalidReason getReason(Intent intent) {
+        String value = SegmentIntentBuilder.getSegment(intent, 1);
+        if (value != null)
+            try {
+                return CertificateInvalidReason.valueOf(value);
+            } catch (NoSuchElementException e) {
+            }
+        return null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,27 +145,6 @@ public class CertificateConfirmation extends ManagedDialog {
         super.onCenter();
         showDetails = true;
         update();
-    }
-
-    public static Intent createIntent(Context context, String fingerPrint,
-                                      CertificateInvalidReason reason) {
-        return new SegmentIntentBuilder<SegmentIntentBuilder<?>>(context,
-                CertificateConfirmation.class).addSegment(fingerPrint)
-                .addSegment(reason.toString()).build();
-    }
-
-    private static String getFingerprint(Intent intent) {
-        return SegmentIntentBuilder.getSegment(intent, 0);
-    }
-
-    private static CertificateInvalidReason getReason(Intent intent) {
-        String value = SegmentIntentBuilder.getSegment(intent, 1);
-        if (value != null)
-            try {
-                return CertificateInvalidReason.valueOf(value);
-            } catch (NoSuchElementException e) {
-            }
-        return null;
     }
 
 }

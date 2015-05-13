@@ -3,10 +3,10 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.R;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
-import com.xabber.androiddev.R;
 
 public class DebugSettings extends ManagedActivity {
     @Override

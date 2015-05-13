@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.extension.archive;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -39,7 +40,6 @@ import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.archive.AbstractMessage;
 import com.xabber.xmpp.archive.Auto;
@@ -93,55 +93,6 @@ public class MessageArchiveManager implements OnPacketListener,
     private static final String FEATURE_ARCH = "urn:xmpp:archive";
     private static final String FEATURE_PREF = "urn:xmpp:archive:pref";
     private static final String FEATURE_MANAGE = "urn:xmpp:archive:manage";
-
-    /**
-     * Custom auto setting per account.
-     */
-    private final Map<String, Boolean> saves;
-
-    /**
-     * Default settings for each account.
-     */
-    private final Map<String, ArchivePreference> defaults;
-
-    /**
-     * Per user settings for each account.
-     */
-    private final Map<String, Map<MatchMode, Map<String, ArchivePreference>>> items;
-
-    /**
-     * Settings for session in each account.
-     */
-    private final NestedMap<SaveMode> sessionSaves;
-
-    /**
-     * Contains whether chat modification has been requested for the given
-     * packet id in the accounts.
-     */
-    private final NestedMap<Boolean> modificationRequests;
-
-    /**
-     * Store information about modifications received from the server.
-     */
-    private final Map<String, ModificationStorage> modificationStorages;
-
-    /**
-     * Server side timestamp when connection has been established.
-     */
-    private final Map<String, Date> connected;
-
-    /**
-     * Store current history request state for the user in each account.
-     */
-    private final NestedMap<HistoryStorage> historyStorages;
-
-    /**
-     * Chat storages for tags for users in accounts.
-     */
-    private final NestedNestedMaps<String, ChatStorage> chatStorages;
-
-    private final BaseAccountNotificationProvider<AvailableArchiveRequest> availableArchiveRequestProvider;
-
     private final static MessageArchiveManager instance;
 
     static {
@@ -149,9 +100,44 @@ public class MessageArchiveManager implements OnPacketListener,
         Application.getInstance().addManager(instance);
     }
 
-    public static MessageArchiveManager getInstance() {
-        return instance;
-    }
+    /**
+     * Custom auto setting per account.
+     */
+    private final Map<String, Boolean> saves;
+    /**
+     * Default settings for each account.
+     */
+    private final Map<String, ArchivePreference> defaults;
+    /**
+     * Per user settings for each account.
+     */
+    private final Map<String, Map<MatchMode, Map<String, ArchivePreference>>> items;
+    /**
+     * Settings for session in each account.
+     */
+    private final NestedMap<SaveMode> sessionSaves;
+    /**
+     * Contains whether chat modification has been requested for the given
+     * packet id in the accounts.
+     */
+    private final NestedMap<Boolean> modificationRequests;
+    /**
+     * Store information about modifications received from the server.
+     */
+    private final Map<String, ModificationStorage> modificationStorages;
+    /**
+     * Server side timestamp when connection has been established.
+     */
+    private final Map<String, Date> connected;
+    /**
+     * Store current history request state for the user in each account.
+     */
+    private final NestedMap<HistoryStorage> historyStorages;
+    /**
+     * Chat storages for tags for users in accounts.
+     */
+    private final NestedNestedMaps<String, ChatStorage> chatStorages;
+    private final BaseAccountNotificationProvider<AvailableArchiveRequest> availableArchiveRequestProvider;
 
     private MessageArchiveManager(Application application) {
         saves = new HashMap<String, Boolean>();
@@ -165,6 +151,10 @@ public class MessageArchiveManager implements OnPacketListener,
         chatStorages = new NestedNestedMaps<String, ChatStorage>();
         availableArchiveRequestProvider = new BaseAccountNotificationProvider<AvailableArchiveRequest>(
                 R.drawable.ic_stat_ic_help_black);
+    }
+
+    public static MessageArchiveManager getInstance() {
+        return instance;
     }
 
     @Override

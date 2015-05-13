@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui;
 
-import java.util.Collection;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,19 +23,25 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.helper.SingleActivity;
-import com.xabber.androiddev.R;
+
+import java.util.Collection;
 
 public class LoadActivity extends SingleActivity implements
         OnAccountChangedListener {
 
     private Animation animation;
     private View disconnectedView;
+
+    public static Intent createIntent(Context context) {
+        return new Intent(context, LoadActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +100,6 @@ public class LoadActivity extends SingleActivity implements
     private void cancel() {
         finish();
         ActivityManager.getInstance().cancelTask(this);
-    }
-
-    public static Intent createIntent(Context context) {
-        return new Intent(context, LoadActivity.class);
     }
 
 }

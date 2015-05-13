@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnLowMemoryListener;
@@ -33,7 +34,6 @@ import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
 

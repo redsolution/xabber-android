@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
@@ -18,7 +19,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
-import com.xabber.androiddev.R;
 
 import java.util.Collection;
 
@@ -27,13 +27,10 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     private static final String SAVED_NAME = "com.xabber.android.ui.ContactAdd.SAVED_NAME";
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.ContactAdd.SAVED_ACCOUNT";
     private static final String SAVED_USER = "com.xabber.android.ui.ContactAdd.SAVED_USER";
-
-
+    Listener listenerActivity;
     private Spinner accountView;
     private EditText userView;
     private EditText nameView;
-
-    Listener listenerActivity;
     private String name;
     private View accountSelectorPanel;
 

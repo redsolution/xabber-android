@@ -17,6 +17,7 @@ package com.xabber.android.data.message;
 import android.database.Cursor;
 import android.os.Environment;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -39,7 +40,6 @@ import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.carbon.CarbonManager.Direction;
 import com.xabber.xmpp.delay.Delay;

@@ -14,10 +14,12 @@
  */
 package com.xabber.android.data.account;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import android.net.Uri;
+
+import com.xabber.android.R;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
+import com.xabber.android.data.NetworkException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,30 +37,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import android.net.Uri;
-
-import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.androiddev.R;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 class WLMManager implements OAuthProvider {
-
-    private static enum GrantType {
-
-        authorizationCode("authorization_code", "code"),
-
-        refreshToken("refresh_token", "refresh_token");
-
-        public final String name;
-        public final String value;
-
-        private GrantType(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-    }
 
     private static final String WLM_CLIENT_SECRET = "XEazfSKu0Iu2pt6Z64Lqm-1cRxtEYgS0";
     private static final String WLM_CLIENT_ID = "00000000440923FF";
@@ -69,7 +53,6 @@ class WLMManager implements OAuthProvider {
     private static final String WLM_REDIRECT_URL = new Uri.Builder()
             .scheme(WLM_SCHEME).authority(WLM_AUTHORITY)
             .path(WLM_REDIRECT_PATH).build().toString();
-
     private final static WLMManager instance;
 
     static {
@@ -77,11 +60,11 @@ class WLMManager implements OAuthProvider {
         Application.getInstance().addManager(instance);
     }
 
-    public static WLMManager getInstance() {
-        return instance;
+    private WLMManager() {
     }
 
-    private WLMManager() {
+    public static WLMManager getInstance() {
+        return instance;
     }
 
     /**
@@ -203,6 +186,22 @@ class WLMManager implements OAuthProvider {
         return WLM_SCHEME.equals(uri.getScheme())
                 && WLM_AUTHORITY.equals(uri.getAuthority())
                 && WLM_REDIRECT_PATH.equals(uri.getPath());
+    }
+
+    private enum GrantType {
+
+        authorizationCode("authorization_code", "code"),
+
+        refreshToken("refresh_token", "refresh_token");
+
+        public final String name;
+        public final String value;
+
+        GrantType(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
     }
 
 }

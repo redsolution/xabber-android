@@ -21,7 +21,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.R;
 
 /**
  * Helper for dialog activities.

@@ -14,6 +14,14 @@
  */
 package com.xabber.android.data;
 
+import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
+import android.os.Handler;
+
+import com.xabber.android.R;
+import com.xabber.android.service.XabberService;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,14 +34,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.content.res.TypedArray;
-import android.os.Handler;
-
-import com.xabber.android.service.XabberService;
-import com.xabber.androiddev.R;
-
 /**
  * Base entry point.
  *
@@ -42,64 +42,42 @@ import com.xabber.androiddev.R;
 public class Application extends android.app.Application {
 
     private static Application instance;
-
-    public static Application getInstance() {
-        if (instance == null)
-            throw new IllegalStateException();
-        return instance;
-    }
-
     private final ArrayList<Object> registeredManagers;
-
+    /**
+     * Thread to execute tasks in background..
+     */
+    private final ExecutorService backgroundExecutor;
+    /**
+     * Handler to execute runnable in UI thread.
+     */
+    private final Handler handler;
     /**
      * Unmodifiable collections of managers that implement some common
      * interface.
      */
     private Map<Class<? extends BaseManagerInterface>, Collection<? extends BaseManagerInterface>> managerInterfaces;
-
     private Map<Class<? extends BaseUIListener>, Collection<? extends BaseUIListener>> uiListeners;
-
-    /**
-     * Thread to execute tasks in background..
-     */
-    private final ExecutorService backgroundExecutor;
-
-    /**
-     * Handler to execute runnable in UI thread.
-     */
-    private final Handler handler;
-
     /**
      * Where data load was requested.
      */
     private boolean serviceStarted;
-
     /**
      * Whether application was initialized.
      */
     private boolean initialized;
-
     /**
      * Whether user was notified about some action in contact list activity
      * after application initialization.
      */
     private boolean notified;
-
     /**
      * Whether application is to be closed.
      */
     private boolean closing;
-
     /**
      * Whether {@link #onServiceDestroy()} has been called.
      */
     private boolean closed;
-
-    /**
-     * Future for loading process.
-     */
-    private Future<Void> loadFuture;
-
     private final Runnable timerRunnable = new Runnable() {
 
         @Override
@@ -111,6 +89,10 @@ public class Application extends android.app.Application {
         }
 
     };
+    /**
+     * Future for loading process.
+     */
+    private Future<Void> loadFuture;
 
     public Application() {
         instance = this;
@@ -135,6 +117,12 @@ public class Application extends android.app.Application {
                         return thread;
                     }
                 });
+    }
+
+    public static Application getInstance() {
+        if (instance == null)
+            throw new IllegalStateException();
+        return instance;
     }
 
     /**

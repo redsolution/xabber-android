@@ -19,9 +19,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.androiddev.R;
 
 import org.jivesoftware.smackx.ChatState;
 

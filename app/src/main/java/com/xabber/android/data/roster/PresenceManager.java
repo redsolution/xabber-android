@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.roster;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -29,7 +30,6 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.packet.IQ;
@@ -55,24 +55,6 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
         OnPacketListener, OnLoadListener, OnAccountDisabledListener,
         OnDisconnectListener {
 
-    private final EntityNotificationProvider<SubscriptionRequest> subscriptionRequestProvider;
-
-    /**
-     * List of account with requested subscriptions for auto accept incoming
-     * subscription request.
-     */
-    private final HashMap<String, HashSet<String>> requestedSubscriptions;
-
-    /**
-     * Presence container for bare address in account.
-     */
-    private final NestedMap<ResourceContainer> presenceContainers;
-
-    /**
-     * Account ready to send / update its presence information.
-     */
-    private final ArrayList<String> readyAccounts;
-
     private final static PresenceManager instance;
 
     static {
@@ -80,9 +62,20 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
         Application.getInstance().addManager(instance);
     }
 
-    public static PresenceManager getInstance() {
-        return instance;
-    }
+    private final EntityNotificationProvider<SubscriptionRequest> subscriptionRequestProvider;
+    /**
+     * List of account with requested subscriptions for auto accept incoming
+     * subscription request.
+     */
+    private final HashMap<String, HashSet<String>> requestedSubscriptions;
+    /**
+     * Presence container for bare address in account.
+     */
+    private final NestedMap<ResourceContainer> presenceContainers;
+    /**
+     * Account ready to send / update its presence information.
+     */
+    private final ArrayList<String> readyAccounts;
 
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<SubscriptionRequest>(
@@ -90,6 +83,10 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
         requestedSubscriptions = new HashMap<String, HashSet<String>>();
         presenceContainers = new NestedMap<ResourceContainer>();
         readyAccounts = new ArrayList<String>();
+    }
+
+    public static PresenceManager getInstance() {
+        return instance;
     }
 
     @Override

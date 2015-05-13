@@ -14,19 +14,7 @@
  */
 package com.xabber.android.data.roster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.RosterPacket;
-import org.jivesoftware.smack.packet.RosterPacket.ItemType;
-
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -47,8 +35,20 @@ import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.RosterPacket;
+import org.jivesoftware.smack.packet.RosterPacket.ItemType;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Manage contact list (roster).
@@ -59,26 +59,6 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         OnAccountEnabledListener, OnAccountDisabledListener,
         OnArchiveModificationsReceivedListener, OnAccountRemovedListener {
 
-    /**
-     * List of roster groups for its names in accounts.
-     */
-    private final NestedMap<RosterGroup> rosterGroups;
-
-    /**
-     * Managed contacts for bare addresses in accounts.
-     */
-    private final NestedMap<RosterContact> rosterContacts;
-
-    /**
-     * List of accounts for witch roster was requested.
-     */
-    private final Set<String> requestedRosters;
-
-    /**
-     * List of accounts for witch roster has been received.
-     */
-    private final Set<String> receivedRosters;
-
     private final static RosterManager instance;
 
     static {
@@ -86,15 +66,32 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         Application.getInstance().addManager(instance);
     }
 
-    public static RosterManager getInstance() {
-        return instance;
-    }
+    /**
+     * List of roster groups for its names in accounts.
+     */
+    private final NestedMap<RosterGroup> rosterGroups;
+    /**
+     * Managed contacts for bare addresses in accounts.
+     */
+    private final NestedMap<RosterContact> rosterContacts;
+    /**
+     * List of accounts for witch roster was requested.
+     */
+    private final Set<String> requestedRosters;
+    /**
+     * List of accounts for witch roster has been received.
+     */
+    private final Set<String> receivedRosters;
 
     private RosterManager() {
         rosterGroups = new NestedMap<RosterGroup>();
         rosterContacts = new NestedMap<RosterContact>();
         receivedRosters = new HashSet<String>();
         requestedRosters = new HashSet<String>();
+    }
+
+    public static RosterManager getInstance() {
+        return instance;
     }
 
     public Collection<RosterContact> getContacts() {

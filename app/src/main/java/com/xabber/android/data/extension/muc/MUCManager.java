@@ -16,6 +16,7 @@ package com.xabber.android.data.extension.muc;
 
 import android.database.Cursor;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -32,7 +33,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.muc.MUC;
 
 import org.jivesoftware.smack.XMPPConnection;
@@ -55,10 +55,6 @@ import java.util.Collections;
  */
 public class MUCManager implements OnLoadListener, OnPacketListener {
 
-    private final EntityNotificationProvider<RoomInvite> inviteProvider;
-
-    private final EntityNotificationProvider<RoomAuthorizationError> authorizationErrorProvider;
-
     private final static MUCManager instance;
 
     static {
@@ -66,15 +62,18 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         Application.getInstance().addManager(instance);
     }
 
-    public static MUCManager getInstance() {
-        return instance;
-    }
+    private final EntityNotificationProvider<RoomInvite> inviteProvider;
+    private final EntityNotificationProvider<RoomAuthorizationError> authorizationErrorProvider;
 
     private MUCManager() {
         inviteProvider = new EntityNotificationProvider<RoomInvite>(
                 R.drawable.ic_stat_ic_add_circle);
         authorizationErrorProvider = new EntityNotificationProvider<RoomAuthorizationError>(
                 R.drawable.ic_stat_error);
+    }
+
+    public static MUCManager getInstance() {
+        return instance;
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
@@ -22,10 +23,10 @@ import com.xabber.android.ui.adapter.AccountTypeAdapter;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.OrbotHelper;
 import com.xabber.android.ui.preferences.AccountEditor;
-import com.xabber.androiddev.R;
 
 public class AccountAddFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
+    private static final String SAVED_ACCOUNT_TYPE = "com.xabber.android.ui.AccountAdd.ACCOUNT_TYPE";
     private CheckBox storePasswordView;
     private CheckBox useOrbotView;
     private CheckBox createAccountCheckBox;
@@ -34,8 +35,6 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
     private EditText userView;
     private EditText passwordView;
     private EditText passwordConfirmEditText;
-
-    private static final String SAVED_ACCOUNT_TYPE = "com.xabber.android.ui.AccountAdd.ACCOUNT_TYPE";
     private View authPanel;
     private TextView accountHelpView;
 

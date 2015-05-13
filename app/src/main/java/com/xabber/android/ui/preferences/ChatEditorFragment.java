@@ -4,10 +4,10 @@ package com.xabber.android.ui.preferences;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.androiddev.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -100,10 +100,10 @@ public class ChatEditorFragment extends BaseSettingsFragment {
     }
 
     public interface ChatEditorFragmentInteractionListener {
-        public String getAccount();
+        String getAccount();
 
-        public AccountItem getAccountItem();
+        AccountItem getAccountItem();
 
-        public String getUser();
+        String getUser();
     }
 }

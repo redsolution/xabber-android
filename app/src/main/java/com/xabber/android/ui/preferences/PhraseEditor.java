@@ -18,13 +18,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.androiddev.R;
 
 public class PhraseEditor extends BasePhrasePreferences {
+
+    public static Intent createIntent(Context context, Integer phraseIndex) {
+        SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<>(
+                context, PhraseEditor.class);
+        if (phraseIndex != null)
+            builder.addSegment(phraseIndex.toString());
+        return builder.build();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +76,5 @@ public class PhraseEditor extends BasePhrasePreferences {
             return null;
         else
             return Integer.valueOf(value);
-    }
-
-    public static Intent createIntent(Context context, Integer phraseIndex) {
-        SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<>(
-                context, PhraseEditor.class);
-        if (phraseIndex != null)
-            builder.addSegment(phraseIndex.toString());
-        return builder.build();
     }
 }
