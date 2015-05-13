@@ -424,7 +424,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     public void onChatViewAdapterFinishUpdate() {
         insertExtraText();
-        updateRegisteredChats();
     }
 
     private void insertExtraText() {

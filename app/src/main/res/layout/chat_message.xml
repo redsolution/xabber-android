@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/message_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/message_layout"
     android:minWidth="160dp"
+    android:orientation="vertical"
     tools:showIn="@layout/chat_viewer_outgoing_message"
-    android:descendantFocusability="blocksDescendants"
     >
 
     <TextView
@@ -21,8 +20,8 @@
         android:id="@+id/message_unencrypted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="11sp"
-        android:text="@string/otr_unencrypted_message" />
+        android:text="@string/otr_unencrypted_message"
+        android:textSize="11sp" />
 
     <TextView
         android:id="@+id/message_text"

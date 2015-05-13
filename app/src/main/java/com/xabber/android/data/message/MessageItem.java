@@ -14,14 +14,11 @@
  */
 package com.xabber.android.data.message;
 
-import java.util.Date;
-
-import android.text.Spannable;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.util.Linkify;
 
-import com.xabber.xmpp.uri.XMPPUri;
+import java.util.Date;
 
 /**
  * Message item.
@@ -31,76 +28,62 @@ import com.xabber.xmpp.uri.XMPPUri;
 public class MessageItem implements Comparable<MessageItem> {
 
     private final AbstractChat chat;
-
-    /**
-     * Tag used to identify collection in server side message archive. Equals to
-     * collection's start attribute.
-     */
-    private String tag;
-
     /**
      * Contact's resource.
      */
     private final String resource;
-
     /**
      * Text representation.
      */
     private final String text;
-
-    /**
-     * Cached text populated with smiles and link.
-     */
-    private Spannable spannable;
-
     /**
      * Optional action. If set message represent not an actual message but some
      * action in the chat.
      */
     private final ChatAction action;
-
-    /**
-     * Time when message was received or sent by Xabber.
-     */
-    private Date timestamp;
-
-    /**
-     * Time when message was created.
-     */
-    private Date delayTimestamp;
     private final boolean incoming;
     private final boolean unencypted;
-
-    /**
-     * ID in database.
-     */
-    private Long id;
-
-    /**
-     * Error response received on send request.
-     */
-    private boolean error;
-
-    /**
-     * Receipt was received for sent message.
-     */
-    private boolean delivered;
-
-    /**
-     * Message was sent.
-     */
-    private boolean sent;
-
-    /**
-     * Message was shown to the user.
-     */
-    private boolean read;
-
     /**
      * Message was received from server side offline storage.
      */
     private final boolean offline;
-
+    /**
+     * Tag used to identify collection in server side message archive. Equals to
+     * collection's start attribute.
+     */
+    private String tag;
+    /**
+     * Cached text populated with smiles and link.
+     */
+    private Spannable spannable;
+    /**
+     * Time when message was received or sent by Xabber.
+     */
+    private Date timestamp;
+    /**
+     * Time when message was created.
+     */
+    private Date delayTimestamp;
+    /**
+     * ID in database.
+     */
+    private Long id;
+    /**
+     * Error response received on send request.
+     */
+    private boolean error;
+    /**
+     * Receipt was received for sent message.
+     */
+    private boolean delivered;
+    /**
+     * Message was sent.
+     */
+    private boolean sent;
+    /**
+     * Message was shown to the user.
+     */
+    private boolean read;
     /**
      * Outgoing packet id.
      */
@@ -152,8 +135,6 @@ public class MessageItem implements Comparable<MessageItem> {
     public Spannable getSpannable() {
         if (spannable == null) {
             spannable = new SpannableString(Html.fromHtml(text));
-            Linkify.addLinks(this.spannable, Linkify.ALL);
-            XMPPUri.addLinks(this.spannable);
         }
         return spannable;
     }
