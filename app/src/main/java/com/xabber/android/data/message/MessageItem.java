@@ -14,7 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 
@@ -129,12 +128,12 @@ public class MessageItem implements Comparable<MessageItem> {
     }
 
     public String getText() {
-        return Html.fromHtml(text).toString();
+        return text;
     }
 
     public Spannable getSpannable() {
         if (spannable == null) {
-            spannable = new SpannableString(Html.fromHtml(text));
+            spannable = new SpannableString(text);
         }
         return spannable;
     }
