@@ -5,12 +5,10 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 176
         versionName '1.0.4'
-        resValue 'string', 'application_package', applicationId
     }
 
     compileOptions {
@@ -27,10 +25,12 @@ android {
 
         dev {
             applicationId "com.xabber.androiddev"
+            resValue 'string', 'application_package', applicationId
         }
 
         beta {
             applicationId "com.xabber.android.beta"
+            resValue 'string', 'application_package', applicationId
         }
 
     }
