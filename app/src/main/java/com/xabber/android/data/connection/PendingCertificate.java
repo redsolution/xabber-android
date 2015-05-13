@@ -14,18 +14,18 @@
  */
 package com.xabber.android.data.connection;
 
-import java.security.Principal;
-import java.security.cert.X509Certificate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.content.Intent;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.notification.NotificationItem;
 import com.xabber.android.ui.CertificateConfirmation;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
+
+import java.security.Principal;
+import java.security.cert.X509Certificate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PendingCertificate implements NotificationItem {
 

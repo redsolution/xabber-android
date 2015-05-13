@@ -14,12 +14,20 @@
  */
 package com.xabber.android.data.extension.muc;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import com.xabber.android.R;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
+import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.roster.RosterManager;
+import com.xabber.xmpp.address.Jid;
+import com.xabber.xmpp.delay.Delay;
+import com.xabber.xmpp.muc.Affiliation;
+import com.xabber.xmpp.muc.MUC;
+import com.xabber.xmpp.muc.Role;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
@@ -29,20 +37,12 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.packet.MUCUser;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
-import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageItem;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
-import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.delay.Delay;
-import com.xabber.xmpp.muc.Affiliation;
-import com.xabber.xmpp.muc.MUC;
-import com.xabber.xmpp.muc.Role;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Chat room.
@@ -54,33 +54,28 @@ import com.xabber.xmpp.muc.Role;
 public class RoomChat extends AbstractChat {
 
     /**
-     * Joining was requested from the UI.
-     */
-    private boolean requested;
-
-    /**
-     * Nickname used in the room.
-     */
-    private String nickname;
-
-    private String password;
-    private RoomState state;
-    private String subject;
-
-    /**
-     * SMACK MUC implementation.
-     */
-    private MultiUserChat multiUserChat;
-
-    /**
      * Information about occupants for STRING-PREPed resource.
      */
     private final Map<String, Occupant> occupants;
-
     /**
      * Invited user for the sent packet ID.
      */
     private final Map<String, String> invites;
+    /**
+     * Joining was requested from the UI.
+     */
+    private boolean requested;
+    /**
+     * Nickname used in the room.
+     */
+    private String nickname;
+    private String password;
+    private RoomState state;
+    private String subject;
+    /**
+     * SMACK MUC implementation.
+     */
+    private MultiUserChat multiUserChat;
 
     RoomChat(String account, String user, String nickname, String password) {
         super(account, user);

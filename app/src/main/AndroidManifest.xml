@@ -13,7 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xabber.androiddev">
+    package="com.xabber.android">
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.hardware.location" android:required="false" />
@@ -34,14 +34,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:label="@string/application_name"
-        android:icon="@drawable/ic_launcher"
         android:name="com.xabber.android.data.Application"
-        android:theme="@style/Theme"
-        android:allowBackup="true">
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/application_title_full"
+        android:theme="@style/Theme">
         <activity
-            android:label="@string/application_name"
             android:name="com.xabber.android.ui.ContactList"
+            android:label="@string/application_title_full"
             android:launchMode="singleTop"
             >
             <intent-filter>
@@ -80,8 +80,8 @@
             android:name="com.xabber.android.ui.LoadActivity"
             />
         <activity
-            android:label="@string/about_viewer"
             android:name="com.xabber.android.ui.preferences.AboutViewer"
+            android:label="@string/about_viewer"
             android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor"
             >
 
@@ -91,8 +91,8 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:label="@string/preference_accounts"
             android:name="com.xabber.android.ui.preferences.AccountList"
+            android:label="@string/preference_accounts"
             android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -101,8 +101,8 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:label="@string/account_editor"
             android:name="com.xabber.android.ui.preferences.AccountEditor"
+            android:label="@string/account_editor"
             android:parentActivityName="com.xabber.android.ui.preferences.AccountList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -111,8 +111,8 @@
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:label="@string/occupant_list"
             android:name="com.xabber.android.ui.OccupantList"
+            android:label="@string/occupant_list"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -122,11 +122,11 @@
 
         </activity>
         <activity
-            android:label="@string/chat_viewer"
             android:name="com.xabber.android.ui.ChatViewer"
-            android:windowSoftInputMode="adjustResize"
+            android:label="@string/chat_viewer"
             android:launchMode="singleTop"
             android:parentActivityName="com.xabber.android.ui.ContactList"
+            android:windowSoftInputMode="adjustResize"
             >
 
             <intent-filter>
@@ -140,8 +140,8 @@
 
         </activity>
         <activity
-            android:label="@string/contact_editor"
             android:name="com.xabber.android.ui.GroupEditor"
+            android:label="@string/contact_editor"
             android:parentActivityName="com.xabber.android.ui.ContactViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -150,8 +150,8 @@
                 android:value="com.xabber.android.ui.ContactViewer" />
         </activity>
         <activity
-            android:label="@string/contact_add"
             android:name="com.xabber.android.ui.ContactAdd"
+            android:label="@string/contact_add"
             android:parentActivityName="com.xabber.android.ui.preferences.AccountList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -160,8 +160,8 @@
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:label="@string/account_add"
             android:name="com.xabber.android.ui.AccountAdd"
+            android:label="@string/account_add"
             android:parentActivityName="com.xabber.android.ui.preferences.AccountList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -170,12 +170,12 @@
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:label="@string/account_oauth"
             android:name="com.xabber.android.ui.OAuthActivity"
+            android:label="@string/account_oauth"
             />
         <activity
-            android:label="@string/muc_add"
             android:name="com.xabber.android.ui.MUCEditor"
+            android:label="@string/muc_add"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -184,8 +184,8 @@
                 android:value="com.xabber.android.ui.ContactList" />
         </activity>
         <activity
-            android:label="@string/status_editor"
             android:name="com.xabber.android.ui.StatusEditor"
+            android:label="@string/status_editor"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -194,8 +194,8 @@
                 android:value="com.xabber.android.ui.ContactList" />
         </activity>
         <activity
-            android:label="@string/preference_editor"
             android:name="com.xabber.android.ui.preferences.PreferenceEditor"
+            android:label="@string/preference_editor"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >
 
@@ -206,8 +206,8 @@
         </activity>
 
         <activity
-            android:label="@string/chat_settings"
             android:name="com.xabber.android.ui.preferences.ChatEditor"
+            android:label="@string/chat_settings"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
 
@@ -218,8 +218,8 @@
         </activity>
 
         <activity
-            android:label="@string/contact_viewer"
             android:name="com.xabber.android.ui.ContactViewer"
+            android:label="@string/contact_viewer"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -237,8 +237,8 @@
         </activity>
 
         <activity
-            android:label="@string/contact_viewer"
             android:name="com.xabber.android.ui.ContactEditor"
+            android:label="@string/contact_viewer"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -322,13 +322,13 @@
             android:name="com.xabber.android.ui.ReconnectionActivity"
             />
         <activity
-            android:label="ClearNotifications"
             android:name="com.xabber.android.ui.ClearNotifications"
-            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:label="ClearNotifications"
             android:launchMode="singleInstance"
             android:noHistory="true"
             android:stateNotNeeded="true"
-            android:excludeFromRecents="true"
+            android:taskAffinity=""
             />
 
         <activity

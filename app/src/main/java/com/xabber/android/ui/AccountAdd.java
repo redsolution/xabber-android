@@ -22,10 +22,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 
 public class AccountAdd extends ManagedActivity {
 

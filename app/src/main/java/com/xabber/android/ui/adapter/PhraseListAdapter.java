@@ -14,16 +14,16 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.Collection;
-
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.androiddev.R;
+
+import java.util.Collection;
 
 /**
  * This class manage list of phrases.

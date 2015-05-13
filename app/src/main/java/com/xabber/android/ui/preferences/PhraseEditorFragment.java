@@ -7,9 +7,9 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.androiddev.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -97,8 +97,8 @@ public class PhraseEditorFragment extends BaseSettingsFragment {
     }
 
     public interface OnPhraseEditorFragmentInteractionListener {
-        public Phrase getPhrase();
+        Phrase getPhrase();
 
-        public void setPhrase(Phrase phrase);
+        void setPhrase(Phrase phrase);
     }
 }

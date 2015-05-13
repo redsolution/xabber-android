@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -34,7 +35,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,23 +43,21 @@ import java.util.List;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
-    private static final int VIEW_TYPE_HINT = 1;
     public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
+    private static final int VIEW_TYPE_HINT = 1;
     private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
 
     private final Context context;
     private final Message.MessageClickListener messageClickListener;
-    private String account;
-    private String user;
-    private boolean isMUC;
-    private List<MessageItem> messages;
-
     /**
      * Message font appearance.
      */
     private final int appearanceStyle;
-
+    private String account;
+    private String user;
+    private boolean isMUC;
+    private List<MessageItem> messages;
     /**
      * Text with extra information.
      */

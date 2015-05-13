@@ -6,9 +6,9 @@ import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
-import com.xabber.androiddev.R;
 
 public class ContactListSettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {

@@ -7,10 +7,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.helper.AccountPainter;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 

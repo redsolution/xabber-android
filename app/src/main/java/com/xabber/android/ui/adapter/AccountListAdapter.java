@@ -21,12 +21,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.ui.preferences.AccountList;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collection;

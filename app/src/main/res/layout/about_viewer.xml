@@ -14,20 +14,20 @@
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:orientation="vertical"
     >
 
     <include layout="@layout/toolbar_default"/>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
         <ImageView
             android:id="@+id/avatar"
             android:layout_width="wrap_content"
@@ -36,14 +36,14 @@
             android:src="@drawable/ic_connect"
             />
         <TextView
-            android:text="@string/application_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="15sp"
-            android:paddingTop="8dip"
             android:paddingBottom="8dip"
+            android:paddingTop="8dip"
+            android:text="@string/application_title_full"
             android:textColor="?android:attr/textColorPrimary"
+            android:textSize="15sp"
+            android:textStyle="bold"
             />
         <TextView
             android:id="@+id/about_version"
@@ -53,41 +53,41 @@
             android:textColor="?android:attr/textColorPrimary"
             />
         <TextView
-            android:text="@string/about_site"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dip"
-            android:textColor="?android:attr/textColorPrimary"
             android:autoLink="all"
             android:gravity="center"
+            android:paddingBottom="8dip"
+            android:text="@string/about_site"
+            android:textColor="?android:attr/textColorPrimary"
             android:textColorLink="#0099FF"
             />
          <TextView
-            android:text="@string/about_feedback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dip"
-            android:textColor="?android:attr/textColorPrimary"
             android:autoLink="all"
             android:gravity="center"
+             android:paddingBottom="8dip"
+             android:text="@string/about_feedback"
+             android:textColor="?android:attr/textColorPrimary"
             android:textColorLink="#0099FF"
             />
     </LinearLayout>
     <TextView
         android:id="@+id/about_license"
-        android:text="@string/about_license"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dip"
-        android:textColor="?android:attr/textColorPrimary"
         android:gravity="center"
+        android:paddingBottom="8dip"
+        android:text="@string/about_license"
+        android:textColor="?android:attr/textColorPrimary"
         android:textColorLink="#0099FF"
         />
     <TextView
-        android:text="@string/about_copyright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="4dip"
+        android:text="@string/about_copyright"
         android:textColor="?android:attr/textColorPrimary"
         android:textColorLink="#0099FF" />
 </LinearLayout>

@@ -14,15 +14,6 @@
  */
 package com.xabber.android.data.roster;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.OnAccountsUpdateListener;
@@ -49,6 +40,7 @@ import android.provider.ContactsContract.Groups;
 import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.StatusUpdates;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.LogManager;
@@ -62,7 +54,15 @@ import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.utils.DummyCursor;
-import com.xabber.androiddev.R;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Manage integration with system accounts and contacts.
@@ -79,62 +79,49 @@ public class SyncManager implements OnLoadListener, OnUnloadListener,
         OnAccountSyncableChangedListener, OnAccountsUpdateListener,
         OnRosterChangedListener {
 
-    private static boolean LOG = true;
-
     private static final Uri RAW_CONTACTS_URI = RawContacts.CONTENT_URI
             .buildUpon()
             .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER,
                     "true").build();
-
     private static final Uri GROUPS_URI = Groups.CONTENT_URI
             .buildUpon()
             .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER,
                     "true").build();
-
     private static final Uri DATA_URI = Data.CONTENT_URI
             .buildUpon()
             .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER,
                     "true").build();
-
-    private final Application application;
-
-    /**
-     * List of contacts with specified status.
-     */
-    private final HashMap<RosterContact, SystemContactStatus> statuses;
-
-    /**
-     * System account manager.
-     */
-    private final AccountManager accountManager;
-
-    /**
-     * Whether system accounts must be created on xabber account add.
-     * <p/>
-     * Used to prevent system account creation on load.
-     */
-    private boolean createAccounts;
-
-    /**
-     * Whether OnAccountsUpdatedListener was registered.
-     */
-    private boolean registeredOnAccountsUpdatedListener;
-
-    /**
-     * Accounts which contacts is indented to be synchronized.
-     */
-    private final HashSet<String> syncableAccounts;
-
     private final static SyncManager instance;
+    private static boolean LOG = true;
 
     static {
         instance = new SyncManager();
         Application.getInstance().addManager(instance);
     }
 
-    public static SyncManager getInstance() {
-        return instance;
-    }
+    private final Application application;
+    /**
+     * List of contacts with specified status.
+     */
+    private final HashMap<RosterContact, SystemContactStatus> statuses;
+    /**
+     * System account manager.
+     */
+    private final AccountManager accountManager;
+    /**
+     * Accounts which contacts is indented to be synchronized.
+     */
+    private final HashSet<String> syncableAccounts;
+    /**
+     * Whether system accounts must be created on xabber account add.
+     * <p/>
+     * Used to prevent system account creation on load.
+     */
+    private boolean createAccounts;
+    /**
+     * Whether OnAccountsUpdatedListener was registered.
+     */
+    private boolean registeredOnAccountsUpdatedListener;
 
     private SyncManager() {
         this.application = Application.getInstance();
@@ -143,6 +130,10 @@ public class SyncManager implements OnLoadListener, OnUnloadListener,
         accountManager = AccountManager.get(application);
         createAccounts = false;
         registeredOnAccountsUpdatedListener = false;
+    }
+
+    public static SyncManager getInstance() {
+        return instance;
     }
 
     /**

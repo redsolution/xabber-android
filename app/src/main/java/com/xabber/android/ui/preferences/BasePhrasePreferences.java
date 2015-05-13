@@ -4,10 +4,10 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.R;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 
 public abstract class BasePhrasePreferences extends ManagedActivity
         implements PhraseEditorFragment.OnPhraseEditorFragmentInteractionListener {

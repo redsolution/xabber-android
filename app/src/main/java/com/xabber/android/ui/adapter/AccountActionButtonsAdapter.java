@@ -7,10 +7,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
@@ -39,7 +40,6 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 
 import org.jivesoftware.smack.util.StringUtils;
 

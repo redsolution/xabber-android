@@ -16,10 +16,10 @@ package com.xabber.android.data.account;
 
 import android.content.Intent;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
-import com.xabber.androiddev.R;
 
 public class PasswordRequest extends AccountRelated implements
         AccountNotificationItem {

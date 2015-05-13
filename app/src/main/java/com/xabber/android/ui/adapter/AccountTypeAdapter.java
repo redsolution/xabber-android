@@ -14,8 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +21,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountType;
-import com.xabber.androiddev.R;
+
+import java.util.List;
 
 /**
  * Adapter for drop down list of account's types.

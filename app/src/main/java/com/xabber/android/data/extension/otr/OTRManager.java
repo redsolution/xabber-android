@@ -16,6 +16,8 @@ package com.xabber.android.data.extension.otr;
 
 import android.database.Cursor;
 
+import com.xabber.android.BuildConfig;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -39,8 +41,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.BuildConfig;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.archive.OtrMode;
 import com.xabber.xmpp.archive.SaveMode;
 
@@ -77,6 +77,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         OnLoadListener, OnAccountAddedListener, OnAccountRemovedListener,
         OnCloseListener {
 
+    private final static OTRManager instance;
     private static Map<SecurityOtrMode, OtrPolicy> POLICIES;
 
     static {
@@ -91,42 +92,30 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                 OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
     }
 
-    private final EntityNotificationProvider<SMRequest> smRequestProvider;
-
-    private final EntityNotificationProvider<SMProgress> smProgressProvider;
-
-    private final static OTRManager instance;
-
     static {
         instance = new OTRManager();
         Application.getInstance().addManager(instance);
     }
 
-    public static OTRManager getInstance() {
-        return instance;
-    }
-
+    private final EntityNotificationProvider<SMRequest> smRequestProvider;
+    private final EntityNotificationProvider<SMProgress> smProgressProvider;
     /**
      * Accepted fingerprints for user in account.
      */
     private final NestedNestedMaps<String, Boolean> fingerprints;
-
     /**
      * Fingerprint of encrypted or encrypted and verified session for user in
      * account.
      */
     private final NestedMap<String> actives;
-
     /**
      * Finished entity's sessions for users in accounts.
      */
     private final NestedMap<Boolean> finished;
-
     /**
      * Used OTR sessions for users in accounts.
      */
     private final NestedMap<Session> sessions;
-
     /**
      * Service for keypair generation.
      */
@@ -153,6 +142,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                         return thread;
                     }
                 });
+    }
+
+    public static OTRManager getInstance() {
+        return instance;
     }
 
     @Override

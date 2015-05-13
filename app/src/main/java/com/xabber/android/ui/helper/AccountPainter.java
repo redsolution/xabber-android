@@ -3,8 +3,8 @@ package com.xabber.android.ui.helper;
 import android.content.Context;
 import android.content.res.TypedArray;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

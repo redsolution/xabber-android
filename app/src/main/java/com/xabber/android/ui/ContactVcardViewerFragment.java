@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.VcardMaps;
@@ -24,7 +25,6 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.vcard.Address;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
@@ -47,18 +47,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class ContactVcardViewerFragment extends Fragment implements OnVCardListener, OnContactChangedListener, OnAccountChangedListener {
-    private static final String SAVED_VCARD = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD";
-    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
-
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.ContactVcardViewerFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.ContactVcardViewerFragment.ARGUMENT_USER";
-
-    private LinearLayout xmppItems;
-    private LinearLayout contactInfoItems;
-
+    private static final String SAVED_VCARD = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD";
+    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
     String account;
     String user;
-
+    private LinearLayout xmppItems;
+    private LinearLayout contactInfoItems;
     private VCard vCard;
     private boolean vCardError;
 

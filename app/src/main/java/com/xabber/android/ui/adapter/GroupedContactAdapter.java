@@ -26,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -37,7 +38,6 @@ import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.ContactViewer;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,22 +84,19 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         NO_GROUP_LIST = Collections.unmodifiableCollection(groups);
     }
 
+    final ArrayList<BaseEntity> baseEntities = new ArrayList<>();
     /**
      * Layout inflater
      */
     private final LayoutInflater layoutInflater;
     private final Activity activity;
-
-
-    private int[] accountGroupColors;
     private final int[] accountSubgroupColors;
     private final int activeChatsColor;
     private final OnClickListener onClickListener;
-
-    final ArrayList<BaseEntity> baseEntities = new ArrayList<>();
-    protected Locale locale = Locale.getDefault();
     private final ContactItemInflater contactItemInflater;
     private final int accountElevation;
+    protected Locale locale = Locale.getDefault();
+    private int[] accountGroupColors;
 
     public GroupedContactAdapter(Activity activity, OnClickListener onClickListener) {
         this.activity = activity;
@@ -554,6 +551,10 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         onChange();
     }
 
+    public interface OnClickListener {
+        void onAccountMenuClick(View view, String account);
+    }
+
     /**
      * Holder for views in contact list group.
      */
@@ -569,10 +570,6 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             groupOfflineIndicator = (ImageView) view.findViewById(R.id.group_offline_indicator);
             offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         }
-    }
-
-    public interface OnClickListener {
-        void onAccountMenuClick(View view, String account);
     }
 
 }

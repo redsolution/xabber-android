@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.xabber.android.R;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
-import com.xabber.androiddev.R;
 
 public class PhraseAdder extends BasePhrasePreferences {
+
+    public static Intent createIntent(Context context) {
+        return new SegmentIntentBuilder<>(context, PhraseAdder.class).build();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +47,6 @@ public class PhraseAdder extends BasePhrasePreferences {
                 return super.onOptionsItemSelected(item);
         }
 
-    }
-
-    public static Intent createIntent(Context context) {
-        return new SegmentIntentBuilder<>(context, PhraseAdder.class).build();
     }
 
 }

@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
@@ -34,7 +35,6 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
@@ -48,6 +48,19 @@ public class ContactViewer extends ManagedActivity implements
 
     private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private TextView contactNameView;
+
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, ContactViewer.class)
+                .setAccount(account).setUser(user).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
+    }
+
+    private static String getUser(Intent intent) {
+        return EntityIntentBuilder.getUser(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,20 +151,6 @@ public class ContactViewer extends ManagedActivity implements
         if (accounts.contains(account)) {
             contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
         }
-    }
-
-
-    public static Intent createIntent(Context context, String account, String user) {
-        return new EntityIntentBuilder(context, ContactViewer.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static String getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
     protected String getAccount() {

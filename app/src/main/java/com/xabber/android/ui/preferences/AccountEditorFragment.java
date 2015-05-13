@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -13,7 +14,6 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.ui.helper.OrbotHelper;
-import com.xabber.androiddev.R;
 
 import java.util.HashMap;
 import java.util.Map;

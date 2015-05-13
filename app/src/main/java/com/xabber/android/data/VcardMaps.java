@@ -1,6 +1,6 @@
 package com.xabber.android.data;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.R;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;

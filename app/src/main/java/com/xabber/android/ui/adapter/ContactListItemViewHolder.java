@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.R;
 
 class ContactListItemViewHolder {
 

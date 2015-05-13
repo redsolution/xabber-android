@@ -7,8 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.androiddev.R;
 
 public class ContactTitleActionBarInflater {
 

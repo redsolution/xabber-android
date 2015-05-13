@@ -17,6 +17,7 @@ package com.xabber.android.data.extension.attention;
 import android.media.AudioManager;
 import android.net.Uri;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -38,7 +39,6 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.attention.Attention;
 
@@ -82,10 +82,6 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 });
     }
 
-    public static AttentionManager getInstance() {
-        return instance;
-    }
-
     private final EntityNotificationProvider<AttentionRequest> attentionRequestProvider = new EntityNotificationProvider<AttentionRequest>(
             R.drawable.ic_stat_error) {
 
@@ -102,6 +98,10 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     };
 
     public AttentionManager() {
+    }
+
+    public static AttentionManager getInstance() {
+        return instance;
     }
 
     public void onSettingsChanged() {

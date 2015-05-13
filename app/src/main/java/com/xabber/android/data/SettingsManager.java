@@ -23,6 +23,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.NetworkManager;
@@ -34,7 +35,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.carbon.CarbonManager;
 
 import java.util.Comparator;
@@ -47,145 +47,6 @@ import java.util.Comparator;
 public class SettingsManager implements OnInitializedListener,
         OnMigrationListener, OnSharedPreferenceChangeListener {
 
-    public static enum ChatsHistory {
-
-        /**
-         * Don't store chat messages.
-         */
-        none,
-
-        /**
-         * Store only unread messages.
-         */
-        unread,
-
-        /**
-         * Store all messages.
-         */
-        all;
-
-    }
-
-    public static enum InterfaceTheme {
-
-        /**
-         * All windows will be dark.
-         */
-        dark,
-
-        /**
-         * All windows will be light.
-         */
-        light,
-
-        /**
-         * Chat will be light, other windows will be dark.
-         */
-        normal;
-
-    }
-
-    public static enum EventsMessage {
-
-        /**
-         * Never notify.
-         */
-        none,
-
-        /**
-         * Notify in chat only.
-         */
-        chat,
-
-        /**
-         * Notify in chat and muc.
-         */
-        chatAndMuc;
-
-    }
-
-    ;
-
-    public enum ChatsShowStatusChange {
-
-        /**
-         * Always show status change.
-         */
-        always,
-
-        /**
-         * Show status change only in MUC.
-         */
-        muc,
-
-        /**
-         * Never show status change.
-         */
-        never;
-
-    }
-
-    public enum ChatsHideKeyboard {
-
-        /**
-         * Always hide keyboard.
-         */
-        always,
-
-        /**
-         * Hide keyboard only in landscape mode.
-         */
-        landscape,
-
-        /**
-         * Never hide keyboard.
-         */
-        never,
-    }
-
-    public enum ChatsDivide {
-
-        /**
-         * Always divide message header from text.
-         */
-        always,
-
-        /**
-         * Only in portial mode.
-         */
-        portial,
-
-        /**
-         * Never.
-         */
-        never;
-
-    }
-
-    public enum SecurityOtrMode {
-
-        /**
-         * OTR is disabled.
-         */
-        disabled,
-
-        /**
-         * Manually send request and confirm requests.
-         */
-        manual,
-
-        /**
-         * Automatically try to use OTR.
-         */
-        auto,
-
-        /**
-         * Require to use OTR.
-         */
-        required;
-
-    }
-
     private static final SettingsManager instance;
 
     static {
@@ -193,17 +54,12 @@ public class SettingsManager implements OnInitializedListener,
         Application.getInstance().addManager(instance);
     }
 
-    public static SettingsManager getInstance() {
-        return instance;
-    }
-
     private SettingsManager() {
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
-    @Override
-    public void onInitialized() {
-        incrementBootCount();
+    public static SettingsManager getInstance() {
+        return instance;
     }
 
     private static SharedPreferences getSharedPreferences() {
@@ -700,6 +556,11 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     @Override
+    public void onInitialized() {
+        incrementBootCount();
+    }
+
+    @Override
     public void onMigrate(int toVersion) {
         switch (toVersion) {
             case 32:
@@ -769,6 +630,143 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.security_otr_mode_key))) {
             OTRManager.getInstance().onSettingsChanged();
         }
+    }
+
+    public enum ChatsHistory {
+
+        /**
+         * Don't store chat messages.
+         */
+        none,
+
+        /**
+         * Store only unread messages.
+         */
+        unread,
+
+        /**
+         * Store all messages.
+         */
+        all
+
+    }
+
+    public enum InterfaceTheme {
+
+        /**
+         * All windows will be dark.
+         */
+        dark,
+
+        /**
+         * All windows will be light.
+         */
+        light,
+
+        /**
+         * Chat will be light, other windows will be dark.
+         */
+        normal
+
+    }
+
+    public enum EventsMessage {
+
+        /**
+         * Never notify.
+         */
+        none,
+
+        /**
+         * Notify in chat only.
+         */
+        chat,
+
+        /**
+         * Notify in chat and muc.
+         */
+        chatAndMuc
+
+    }
+
+    public enum ChatsShowStatusChange {
+
+        /**
+         * Always show status change.
+         */
+        always,
+
+        /**
+         * Show status change only in MUC.
+         */
+        muc,
+
+        /**
+         * Never show status change.
+         */
+        never
+
+    }
+
+    public enum ChatsHideKeyboard {
+
+        /**
+         * Always hide keyboard.
+         */
+        always,
+
+        /**
+         * Hide keyboard only in landscape mode.
+         */
+        landscape,
+
+        /**
+         * Never hide keyboard.
+         */
+        never,
+    }
+
+    public enum ChatsDivide {
+
+        /**
+         * Always divide message header from text.
+         */
+        always,
+
+        /**
+         * Only in portial mode.
+         */
+        portial,
+
+        /**
+         * Never.
+         */
+        never
+
+    }
+
+    public enum SecurityOtrMode {
+
+        /**
+         * OTR is disabled.
+         */
+        disabled,
+
+        /**
+         * Manually send request and confirm requests.
+         */
+        manual,
+
+        /**
+         * Automatically try to use OTR.
+         */
+        auto,
+
+        /**
+         * Require to use OTR.
+         */
+        required
+
     }
 
 }

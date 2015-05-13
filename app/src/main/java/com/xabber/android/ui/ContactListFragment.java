@@ -22,6 +22,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -44,7 +45,6 @@ import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
-import com.xabber.androiddev.R;
 
 import java.util.Collection;
 

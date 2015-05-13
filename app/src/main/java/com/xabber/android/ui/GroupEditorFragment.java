@@ -13,11 +13,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.GroupEditorAdapter;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +45,13 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     private CheckBox groupAddCheckBox;
     private View footerView;
 
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public GroupEditorFragment() {
+    }
+
     public static GroupEditorFragment newInstance(String account, String user) {
         GroupEditorFragment fragment = new GroupEditorFragment();
         Bundle args = new Bundle();
@@ -54,13 +61,14 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         return fragment;
     }
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public GroupEditorFragment() {
+    public static void hideKeyboard(Activity activity) {
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,7 +141,6 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
             groupEditorAdapter.add(group);
         }
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -218,15 +225,6 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         }
     }
 
-    public static void hideKeyboard(Activity activity) {
-        // Check if no view has focus:
-        View view = activity.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -241,12 +239,12 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         return account;
     }
 
-    protected String getUser() {
-        return user;
-    }
-
     protected void setAccount(String account) {
         this.account = account;
+    }
+
+    protected String getUser() {
+        return user;
     }
 
     protected void setUser(String user) {

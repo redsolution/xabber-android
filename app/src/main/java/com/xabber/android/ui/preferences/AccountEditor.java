@@ -21,6 +21,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -29,7 +30,6 @@ import com.xabber.android.ui.OAuthActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 
 public class AccountEditor extends ManagedActivity implements
         OnPreferenceClickListener, AccountEditorFragment.AccountEditorFragmentInteractionListener {

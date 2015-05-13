@@ -16,13 +16,13 @@ package com.xabber.android.data.extension.muc;
 
 import android.content.Intent;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.MUCInvite;
-import com.xabber.androiddev.R;
 
 /**
  * Invite to join the room.

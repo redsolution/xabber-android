@@ -21,13 +21,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
+import com.xabber.android.R;
 import com.xabber.android.data.AbstractTable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.androiddev.R;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -46,39 +46,6 @@ import java.util.Date;
  */
 class AccountTable extends AbstractTable {
 
-    private static final class Fields implements BaseColumns {
-        private Fields() {
-        }
-
-        public static final String ENABLED = "enabled";
-        public static final String SERVER_NAME = "server_name";
-        public static final String USER_NAME = "user_name";
-        public static final String PASSWORD = "password";
-        public static final String RESOURCE = "resource";
-        public static final String PRIORITY = "priority";
-        public static final String STATUS_MODE = "status_mode";
-        public static final String STATUS_TEXT = "status_text";
-        public static final String CUSTOM = "custom";
-        public static final String HOST = "host";
-        public static final String PORT = "port";
-        public static final String SASL_ENABLED = "sasl_enabled";
-        public static final String TLS_MODE = "required_tls";
-        public static final String COMPRESSION = "compression";
-        public static final String COLOR_INDEX = "color_index";
-        public static final String PROTOCOL = "protocol";
-        public static final String SYNCABLE = "syncable";
-        public static final String STORE_PASSWORD = "store_password";
-        public static final String PUBLIC_KEY = "public_key";
-        public static final String PRIVATE_KEY = "private_key";
-        public static final String LAST_SYNC = "last_sync";
-        public static final String ARCHIVE_MODE = "archive_mode";
-        public static final String PROXY_TYPE = "proxy_type";
-        public static final String PROXY_HOST = "proxy_host";
-        public static final String PROXY_PORT = "proxy_port";
-        public static final String PROXY_USER = "proxy_user";
-        public static final String PROXY_PASSWORD = "proxy_password";
-    }
-
     private static final String NAME = "accounts";
     private static final String[] PROJECTION = new String[]{Fields._ID,
             Fields.PROTOCOL, Fields.CUSTOM, Fields.HOST, Fields.PORT,
@@ -90,9 +57,6 @@ class AccountTable extends AbstractTable {
             Fields.PRIVATE_KEY, Fields.LAST_SYNC, Fields.ARCHIVE_MODE,
             Fields.PROXY_TYPE, Fields.PROXY_HOST, Fields.PROXY_PORT,
             Fields.PROXY_USER, Fields.PROXY_PASSWORD};
-
-    private final DatabaseManager databaseManager;
-
     private final static AccountTable instance;
 
     static {
@@ -100,12 +64,150 @@ class AccountTable extends AbstractTable {
         DatabaseManager.getInstance().addTable(instance);
     }
 
+    private final DatabaseManager databaseManager;
+
+    private AccountTable(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
+
     public static AccountTable getInstance() {
         return instance;
     }
 
-    private AccountTable(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    static long getId(Cursor cursor) {
+        return cursor.getLong(cursor.getColumnIndex(Fields._ID));
+    }
+
+    static AccountProtocol getProtocol(Cursor cursor) {
+        return AccountProtocol.valueOf(cursor.getString(cursor.getColumnIndex(Fields.PROTOCOL)));
+    }
+
+    static String getHost(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.HOST));
+    }
+
+    static boolean isCustom(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.CUSTOM)) != 0;
+    }
+
+    static int getPort(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.PORT));
+    }
+
+    static String getServerName(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.SERVER_NAME));
+    }
+
+    static String getUserName(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.USER_NAME));
+    }
+
+    static String getPassword(Cursor cursor) {
+        if (!isStorePassword(cursor)) {
+            return AccountItem.UNDEFINED_PASSWORD;
+        }
+        return cursor.getString(cursor.getColumnIndex(Fields.PASSWORD));
+    }
+
+    static String getResource(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.RESOURCE));
+    }
+
+    static int getColorIndex(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.COLOR_INDEX));
+    }
+
+    static int getPriority(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.PRIORITY));
+    }
+
+    static StatusMode getStatusMode(Cursor cursor) {
+        int statusModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.STATUS_MODE));
+        return StatusMode.values()[statusModeIndex];
+    }
+
+    static String getStatusText(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.STATUS_TEXT));
+    }
+
+    static boolean isEnabled(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.ENABLED)) != 0;
+    }
+
+    static boolean isSaslEnabled(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.SASL_ENABLED)) != 0;
+    }
+
+    public static TLSMode getTLSMode(Cursor cursor) {
+        int tlsModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.TLS_MODE));
+        return TLSMode.values()[tlsModeIndex];
+    }
+
+    static boolean isCompression(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.COMPRESSION)) != 0;
+    }
+
+    static boolean isSyncable(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.SYNCABLE)) != 0;
+    }
+
+    static boolean isStorePassword(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.STORE_PASSWORD)) != 0;
+    }
+
+    static Date getLastSync(Cursor cursor) {
+        if (cursor.isNull(cursor.getColumnIndex(Fields.LAST_SYNC))) {
+            return null;
+        } else {
+            return new Date(cursor.getLong(cursor.getColumnIndex(Fields.LAST_SYNC)));
+        }
+    }
+
+    static ArchiveMode getArchiveMode(Cursor cursor) {
+        int index = cursor.getInt(cursor.getColumnIndex(Fields.ARCHIVE_MODE));
+        return ArchiveMode.values()[index];
+    }
+
+    static ProxyType getProxyType(Cursor cursor) {
+        int index = cursor.getInt(cursor.getColumnIndex(Fields.PROXY_TYPE));
+        return ProxyType.values()[index];
+    }
+
+    static String getProxyHost(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.PROXY_HOST));
+    }
+
+    static int getProxyPort(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.PROXY_PORT));
+    }
+
+    static String getProxyUser(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.PROXY_USER));
+    }
+
+    static String getProxyPassword(Cursor cursor) {
+        return cursor.getString(cursor.getColumnIndex(Fields.PROXY_PASSWORD));
+    }
+
+    static KeyPair getKeyPair(Cursor cursor) {
+        byte[] publicKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PUBLIC_KEY));
+        byte[] privateKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PRIVATE_KEY));
+        if (privateKeyBytes == null || publicKeyBytes == null) {
+            return null;
+        }
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        PublicKey publicKey;
+        PrivateKey privateKey;
+        KeyFactory keyFactory;
+        try {
+            keyFactory = KeyFactory.getInstance("DSA");
+            publicKey = keyFactory.generatePublic(publicKeySpec);
+            privateKey = keyFactory.generatePrivate(privateKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+        return new KeyPair(publicKey, privateKey);
     }
 
     @Override
@@ -395,140 +497,37 @@ class AccountTable extends AbstractTable {
         return PROJECTION;
     }
 
-    static long getId(Cursor cursor) {
-        return cursor.getLong(cursor.getColumnIndex(Fields._ID));
-    }
+    private static final class Fields implements BaseColumns {
+        public static final String ENABLED = "enabled";
+        public static final String SERVER_NAME = "server_name";
+        public static final String USER_NAME = "user_name";
+        public static final String PASSWORD = "password";
+        public static final String RESOURCE = "resource";
+        public static final String PRIORITY = "priority";
+        public static final String STATUS_MODE = "status_mode";
+        public static final String STATUS_TEXT = "status_text";
+        public static final String CUSTOM = "custom";
+        public static final String HOST = "host";
+        public static final String PORT = "port";
+        public static final String SASL_ENABLED = "sasl_enabled";
+        public static final String TLS_MODE = "required_tls";
+        public static final String COMPRESSION = "compression";
+        public static final String COLOR_INDEX = "color_index";
+        public static final String PROTOCOL = "protocol";
+        public static final String SYNCABLE = "syncable";
+        public static final String STORE_PASSWORD = "store_password";
+        public static final String PUBLIC_KEY = "public_key";
+        public static final String PRIVATE_KEY = "private_key";
+        public static final String LAST_SYNC = "last_sync";
+        public static final String ARCHIVE_MODE = "archive_mode";
+        public static final String PROXY_TYPE = "proxy_type";
+        public static final String PROXY_HOST = "proxy_host";
+        public static final String PROXY_PORT = "proxy_port";
+        public static final String PROXY_USER = "proxy_user";
+        public static final String PROXY_PASSWORD = "proxy_password";
 
-    static AccountProtocol getProtocol(Cursor cursor) {
-        return AccountProtocol.valueOf(cursor.getString(cursor.getColumnIndex(Fields.PROTOCOL)));
-    }
-
-    static String getHost(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.HOST));
-    }
-
-    static boolean isCustom(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.CUSTOM)) != 0;
-    }
-
-    static int getPort(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.PORT));
-    }
-
-    static String getServerName(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.SERVER_NAME));
-    }
-
-    static String getUserName(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.USER_NAME));
-    }
-
-    static String getPassword(Cursor cursor) {
-        if (!isStorePassword(cursor)) {
-            return AccountItem.UNDEFINED_PASSWORD;
+        private Fields() {
         }
-        return cursor.getString(cursor.getColumnIndex(Fields.PASSWORD));
-    }
-
-    static String getResource(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.RESOURCE));
-    }
-
-    static int getColorIndex(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.COLOR_INDEX));
-    }
-
-    static int getPriority(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.PRIORITY));
-    }
-
-    static StatusMode getStatusMode(Cursor cursor) {
-        int statusModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.STATUS_MODE));
-        return StatusMode.values()[statusModeIndex];
-    }
-
-    static String getStatusText(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.STATUS_TEXT));
-    }
-
-    static boolean isEnabled(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.ENABLED)) != 0;
-    }
-
-    static boolean isSaslEnabled(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.SASL_ENABLED)) != 0;
-    }
-
-    public static TLSMode getTLSMode(Cursor cursor) {
-        int tlsModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.TLS_MODE));
-        return TLSMode.values()[tlsModeIndex];
-    }
-
-    static boolean isCompression(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.COMPRESSION)) != 0;
-    }
-
-    static boolean isSyncable(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.SYNCABLE)) != 0;
-    }
-
-    static boolean isStorePassword(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.STORE_PASSWORD)) != 0;
-    }
-
-    static Date getLastSync(Cursor cursor) {
-        if (cursor.isNull(cursor.getColumnIndex(Fields.LAST_SYNC))) {
-            return null;
-        } else {
-            return new Date(cursor.getLong(cursor.getColumnIndex(Fields.LAST_SYNC)));
-        }
-    }
-
-    static ArchiveMode getArchiveMode(Cursor cursor) {
-        int index = cursor.getInt(cursor.getColumnIndex(Fields.ARCHIVE_MODE));
-        return ArchiveMode.values()[index];
-    }
-
-    static ProxyType getProxyType(Cursor cursor) {
-        int index = cursor.getInt(cursor.getColumnIndex(Fields.PROXY_TYPE));
-        return ProxyType.values()[index];
-    }
-
-    static String getProxyHost(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.PROXY_HOST));
-    }
-
-    static int getProxyPort(Cursor cursor) {
-        return cursor.getInt(cursor.getColumnIndex(Fields.PROXY_PORT));
-    }
-
-    static String getProxyUser(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.PROXY_USER));
-    }
-
-    static String getProxyPassword(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.PROXY_PASSWORD));
-    }
-
-    static KeyPair getKeyPair(Cursor cursor) {
-        byte[] publicKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PUBLIC_KEY));
-        byte[] privateKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PRIVATE_KEY));
-        if (privateKeyBytes == null || publicKeyBytes == null) {
-            return null;
-        }
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-        PublicKey publicKey;
-        PrivateKey privateKey;
-        KeyFactory keyFactory;
-        try {
-            keyFactory = KeyFactory.getInstance("DSA");
-            publicKey = keyFactory.generatePublic(publicKeySpec);
-            privateKey = keyFactory.generatePrivate(privateKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
-        }
-        return new KeyPair(publicKey, privateKey);
     }
 
 }

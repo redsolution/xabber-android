@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.OnCloseListener;
@@ -45,7 +46,6 @@ import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.ReconnectionActivity;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -154,7 +154,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void initPersistentNotification() {
-        persistentNotificationBuilder.setContentTitle(application.getString(R.string.application_name));
+        persistentNotificationBuilder.setContentTitle(application.getString(R.string.application_title_full));
         persistentNotificationBuilder.setDeleteIntent(clearNotifications);
         persistentNotificationBuilder.setOngoing(true);
         persistentNotificationBuilder.setWhen(System.currentTimeMillis());

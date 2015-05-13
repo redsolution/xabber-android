@@ -3,15 +3,17 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog.Builder;
 import android.app.DialogFragment;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
 
 public class GroupDeleteDialogFragment extends ConfirmDialogFragment {
 
     private static final String ACCOUNT = "ACCOUNT";
     private static final String GROUP = "GROUP";
+    private String group;
+    private String account;
 
     /**
      * @param account can be <code>null</code> to be used for all accounts.
@@ -22,9 +24,6 @@ public class GroupDeleteDialogFragment extends ConfirmDialogFragment {
         return new GroupDeleteDialogFragment().putAgrument(ACCOUNT, account)
                 .putAgrument(GROUP, group);
     }
-
-    private String group;
-    private String account;
 
     @Override
     protected Builder getBuilder() {

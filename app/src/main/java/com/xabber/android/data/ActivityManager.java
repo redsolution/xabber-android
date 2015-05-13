@@ -20,9 +20,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.xabber.android.R;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.LoadActivity;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,29 +39,6 @@ public class ActivityManager implements OnUnloadListener {
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
 
     private static final boolean LOG = true;
-
-    private final Application application;
-
-    /**
-     * List of launched activities.
-     */
-    private final ArrayList<Activity> activities;
-
-    /**
-     * Next index of task.
-     */
-    private int nextTaskIndex;
-
-    /**
-     * Activity with index of it task.
-     */
-    private final WeakHashMap<Activity, Integer> taskIndexes;
-
-    /**
-     * Listener for errors.
-     */
-    private OnErrorListener onErrorListener;
-
     private final static ActivityManager instance;
 
     static {
@@ -69,15 +46,33 @@ public class ActivityManager implements OnUnloadListener {
         Application.getInstance().addManager(instance);
     }
 
-    public static ActivityManager getInstance() {
-        return instance;
-    }
+    private final Application application;
+    /**
+     * List of launched activities.
+     */
+    private final ArrayList<Activity> activities;
+    /**
+     * Activity with index of it task.
+     */
+    private final WeakHashMap<Activity, Integer> taskIndexes;
+    /**
+     * Next index of task.
+     */
+    private int nextTaskIndex;
+    /**
+     * Listener for errors.
+     */
+    private OnErrorListener onErrorListener;
 
     private ActivityManager() {
         this.application = Application.getInstance();
         activities = new ArrayList<Activity>();
         nextTaskIndex = 0;
         taskIndexes = new WeakHashMap<Activity, Integer>();
+    }
+
+    public static ActivityManager getInstance() {
+        return instance;
     }
 
     /**

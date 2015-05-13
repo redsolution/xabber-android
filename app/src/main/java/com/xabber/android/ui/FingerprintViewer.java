@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
@@ -50,7 +51,6 @@ import com.xabber.android.ui.dialog.NotificationDialogBuilder;
 import com.xabber.android.ui.dialog.NotificationDialogListener;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;

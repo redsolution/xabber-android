@@ -14,12 +14,18 @@
  */
 package com.xabber.android.data.connection;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import com.xabber.android.R;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
+import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.OnCloseListener;
+import com.xabber.android.data.OnInitializedListener;
+import com.xabber.android.data.OnTimerListener;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.NestedMap;
+import com.xabber.xmpp.address.Jid;
+import com.xabber.xmpp.wlm.XMessengerOAuth2;
 
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
@@ -31,18 +37,12 @@ import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.ServiceDiscoveryManager;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnCloseListener;
-import com.xabber.android.data.OnInitializedListener;
-import com.xabber.android.data.OnTimerListener;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.entity.NestedMap;
-import com.xabber.androiddev.R;
-import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.wlm.XMessengerOAuth2;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * Connection manager.
@@ -61,18 +61,6 @@ public class ConnectionManager implements OnInitializedListener,
      * Path to the trust store in this system.
      */
     public final static String TRUST_STORE_PATH;
-
-    /**
-     * List of managed connection. Only managed connections can notify
-     * registered listeners.
-     */
-    private final Collection<ConnectionThread> managedConnections;
-
-    /**
-     * Request holders for its packet id in accounts.
-     */
-    private final NestedMap<RequestHolder> requests;
-
     private final static ConnectionManager instance;
 
     static {
@@ -107,13 +95,23 @@ public class ConnectionManager implements OnInitializedListener,
                 });
     }
 
-    public static ConnectionManager getInstance() {
-        return instance;
-    }
+    /**
+     * List of managed connection. Only managed connections can notify
+     * registered listeners.
+     */
+    private final Collection<ConnectionThread> managedConnections;
+    /**
+     * Request holders for its packet id in accounts.
+     */
+    private final NestedMap<RequestHolder> requests;
 
     private ConnectionManager() {
         managedConnections = new ArrayList<ConnectionThread>();
         requests = new NestedMap<RequestHolder>();
+    }
+
+    public static ConnectionManager getInstance() {
+        return instance;
     }
 
     @Override

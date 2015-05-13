@@ -5,12 +5,10 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.xabber.androiddev"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 175
-        versionName '1.0.3'
-        resValue 'string', 'application_package', applicationId
+        versionCode 177
+        versionName '1.0.5'
     }
 
     compileOptions {
@@ -21,6 +19,20 @@ android {
     lintOptions {
         // problems with generated "applicationId" string resource
         disable 'MissingTranslation'
+    }
+
+    productFlavors {
+
+        dev {
+            applicationId "com.xabber.androiddev"
+            resValue 'string', 'application_package', applicationId
+        }
+
+        beta {
+            applicationId "com.xabber.android.beta"
+            resValue 'string', 'application_package', applicationId
+        }
+
     }
 }
 

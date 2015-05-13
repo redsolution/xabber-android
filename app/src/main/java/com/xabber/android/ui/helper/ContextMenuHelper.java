@@ -22,6 +22,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -49,7 +50,6 @@ import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
 import com.xabber.android.ui.preferences.AccountEditor;
-import com.xabber.androiddev.R;
 
 /**
  * Helper class for context menu creation.

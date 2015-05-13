@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
@@ -29,7 +30,6 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;

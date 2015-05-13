@@ -33,7 +33,7 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2"
-                android:text="@string/production_title"
+                android:text="@string/application_title_short"
                 android:textColor="@color/grey_50"
                 android:textSize="40sp" />
         </LinearLayout>

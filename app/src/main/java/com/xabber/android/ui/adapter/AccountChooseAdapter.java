@@ -15,16 +15,15 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.androiddev.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,10 +34,9 @@ import java.util.Collections;
  * @author alexander.ivanov
  */
 public class AccountChooseAdapter extends BaseAdapter {
-    private final int[] accountColors;
-
-    private final Activity activity;
     protected final ArrayList<String> accounts;
+    private final int[] accountColors;
+    private final Activity activity;
 
     public AccountChooseAdapter(Activity activity) {
         super();

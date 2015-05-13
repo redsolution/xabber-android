@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -16,13 +17,12 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
 
 public class ContactItemInflater {
 
     final Context context;
-    private int[] accountMainColors;
     private final int elevation;
+    private int[] accountMainColors;
 
     public ContactItemInflater(Context context) {
         this.context = context;

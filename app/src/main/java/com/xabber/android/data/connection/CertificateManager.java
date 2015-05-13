@@ -16,13 +16,13 @@ package com.xabber.android.data.connection;
 
 import android.content.res.AssetManager;
 
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.notification.BaseNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
 
 import org.jivesoftware.smack.CertificateListener;
 import org.jivesoftware.smack.util.StringUtils;
@@ -79,20 +79,18 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
                     .getFilesDir(), reason.toString() + ".bsk"));
     }
 
-    public static CertificateManager getInstance() {
-        return instance;
-    }
-
     /**
      * Key store for confirmed certificates.
      */
     private final Map<CertificateInvalidReason, KeyStore> keyStores;
-
     /**
      * Key store for preset certificates.
      */
     private final Map<CertificateInvalidReason, KeyStore> defaultStores;
-
+    /**
+     * Certificate issues not to be displayed to the user.
+     */
+    private final Collection<PendingCertificate> ignoreCertificates;
     private final BaseNotificationProvider<PendingCertificate> pendingCertificateProvider = new BaseNotificationProvider<PendingCertificate>(
             R.drawable.ic_stat_error) {
 
@@ -104,42 +102,14 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
 
     };
 
-    /**
-     * Certificate issues not to be displayed to the user.
-     */
-    private final Collection<PendingCertificate> ignoreCertificates;
-
     private CertificateManager() {
         defaultStores = new HashMap<CertificateInvalidReason, KeyStore>();
         keyStores = new ConcurrentHashMap<CertificateInvalidReason, KeyStore>();
         ignoreCertificates = new ArrayList<PendingCertificate>();
     }
 
-    @Override
-    public void onLoad() {
-        final Map<CertificateInvalidReason, KeyStore> defaultStores = new HashMap<CertificateInvalidReason, KeyStore>();
-        final Map<CertificateInvalidReason, KeyStore> keyStores = new HashMap<CertificateInvalidReason, KeyStore>();
-        AssetManager assetManager = Application.getInstance().getResources()
-                .getAssets();
-        for (CertificateInvalidReason reason : CertificateInvalidReason
-                .values()) {
-            InputStream stream;
-            try {
-                stream = assetManager.open(reason.toString() + ".bsk");
-            } catch (IOException e) {
-                stream = null;
-            }
-            defaultStores.put(reason, loadKeyStore(stream));
-            stream = getInputStream(KEY_FILES.get(reason));
-            if (stream != null)
-                keyStores.put(reason, loadKeyStore(stream));
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(defaultStores, keyStores);
-            }
-        });
+    public static CertificateManager getInstance() {
+        return instance;
     }
 
     private static InputStream getInputStream(File file) {
@@ -177,6 +147,89 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
             throw new RuntimeException(e);
         }
         return keyStore;
+    }
+
+    /**
+     * @param fingerprint
+     * @param reason
+     * @param collection
+     * @return Pending certificate or <code>null</code>.
+     */
+    private static PendingCertificate getPendingCertificate(String fingerprint,
+                                                            CertificateInvalidReason reason,
+                                                            Collection<PendingCertificate> collection) {
+        for (PendingCertificate pendingCertificate : collection)
+            if (pendingCertificate.getFingerprint().equals(fingerprint)
+                    && reason == pendingCertificate.getReason())
+                return pendingCertificate;
+        return null;
+    }
+
+    /**
+     * @param x509Certificate
+     * @return Finger print for the given certificate.
+     */
+    private static String getFingerprint(X509Certificate x509Certificate) {
+        byte[] data;
+        try {
+            data = x509Certificate.getEncoded();
+        } catch (CertificateEncodingException e) {
+            LogManager.exception(PendingCertificate.class, e);
+            return INVALID;
+        }
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            LogManager.exception(PendingCertificate.class, e);
+            return INVALID;
+        }
+        digest.update(data);
+        byte[] bytes = digest.digest();
+        return StringUtils.encodeHex(bytes);
+    }
+
+    /**
+     * @param fingerprint
+     * @return Formatted fingerprint to be shown.
+     */
+    public static String showFingerprint(String fingerprint) {
+        if (fingerprint == null)
+            return null;
+        StringBuffer buffer = new StringBuffer();
+        for (int index = 0; index < fingerprint.length(); index++) {
+            if (index > 0 && index % 2 == 0)
+                buffer.append(':');
+            buffer.append(fingerprint.charAt(index));
+        }
+        return buffer.toString().toUpperCase();
+    }
+
+    @Override
+    public void onLoad() {
+        final Map<CertificateInvalidReason, KeyStore> defaultStores = new HashMap<CertificateInvalidReason, KeyStore>();
+        final Map<CertificateInvalidReason, KeyStore> keyStores = new HashMap<CertificateInvalidReason, KeyStore>();
+        AssetManager assetManager = Application.getInstance().getResources()
+                .getAssets();
+        for (CertificateInvalidReason reason : CertificateInvalidReason
+                .values()) {
+            InputStream stream;
+            try {
+                stream = assetManager.open(reason.toString() + ".bsk");
+            } catch (IOException e) {
+                stream = null;
+            }
+            defaultStores.put(reason, loadKeyStore(stream));
+            stream = getInputStream(KEY_FILES.get(reason));
+            if (stream != null)
+                keyStores.put(reason, loadKeyStore(stream));
+        }
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                onLoaded(defaultStores, keyStores);
+            }
+        });
     }
 
     /**
@@ -253,22 +306,6 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
             }
         });
         return false;
-    }
-
-    /**
-     * @param fingerprint
-     * @param reason
-     * @param collection
-     * @return Pending certificate or <code>null</code>.
-     */
-    private static PendingCertificate getPendingCertificate(String fingerprint,
-                                                            CertificateInvalidReason reason,
-                                                            Collection<PendingCertificate> collection) {
-        for (PendingCertificate pendingCertificate : collection)
-            if (pendingCertificate.getFingerprint().equals(fingerprint)
-                    && reason == pendingCertificate.getReason())
-                return pendingCertificate;
-        return null;
     }
 
     public PendingCertificate getPendingCertificate(String fingerprint,
@@ -352,46 +389,6 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
             return;
         pendingCertificateProvider.remove(pendingCertificate);
         ignoreCertificates.add(pendingCertificate);
-    }
-
-    /**
-     * @param x509Certificate
-     * @return Finger print for the given certificate.
-     */
-    private static String getFingerprint(X509Certificate x509Certificate) {
-        byte[] data;
-        try {
-            data = x509Certificate.getEncoded();
-        } catch (CertificateEncodingException e) {
-            LogManager.exception(PendingCertificate.class, e);
-            return INVALID;
-        }
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            LogManager.exception(PendingCertificate.class, e);
-            return INVALID;
-        }
-        digest.update(data);
-        byte[] bytes = digest.digest();
-        return StringUtils.encodeHex(bytes);
-    }
-
-    /**
-     * @param fingerprint
-     * @return Formatted fingerprint to be shown.
-     */
-    public static String showFingerprint(String fingerprint) {
-        if (fingerprint == null)
-            return null;
-        StringBuffer buffer = new StringBuffer();
-        for (int index = 0; index < fingerprint.length(); index++) {
-            if (index > 0 && index % 2 == 0)
-                buffer.append(':');
-            buffer.append(fingerprint.charAt(index));
-        }
-        return buffer.toString().toUpperCase();
     }
 
     @Override
