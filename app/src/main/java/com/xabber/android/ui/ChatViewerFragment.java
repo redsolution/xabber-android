@@ -77,6 +77,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private RecyclerView recyclerView;
     private View contactTitleView;
     private AbstractContact abstractContact;
+    private LinearLayoutManager layoutManager;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -157,7 +158,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
         recyclerView.setAdapter(chatMessageAdapter);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -408,10 +409,17 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
+        int itemCountBeforeUpdate = recyclerView.getAdapter().getItemCount();
         chatMessageAdapter.onChange();
-        recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        scrollChat(itemCountBeforeUpdate);
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
+    }
+
+    private void scrollChat(int itemCountBeforeUpdate) {
+        if (layoutManager.findLastVisibleItemPosition() == (itemCountBeforeUpdate - 1)) {
+            recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        }
     }
 
     private void updateSecurityButton() {
