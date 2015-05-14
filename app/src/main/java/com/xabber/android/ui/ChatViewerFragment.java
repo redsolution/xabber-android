@@ -12,11 +12,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,11 +71,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private ChatViewerFragmentListener listener;
     private Animation shakeAnimation = null;
-    private int contextMenuItemPosition;
     private RecyclerView recyclerView;
     private View contactTitleView;
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
+    private MessageItem clickedMessageItem;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -361,52 +359,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        int itemViewType = chatMessageAdapter.getItemViewType(contextMenuItemPosition);
-
-        if (itemViewType == ChatMessageAdapter.VIEW_TYPE_INCOMING_MESSAGE
-                || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
-
-            MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.chat_context_menu, menu);
-
-            if (chatMessageAdapter.getMessageItem(contextMenuItemPosition).isError()) {
-                menu.findItem(R.id.action_message_repeat).setVisible(true);
-
-            }
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        final MessageItem message = chatMessageAdapter.getMessageItem(contextMenuItemPosition);
-
-        switch (item.getItemId()) {
-            case R.id.action_message_repeat:
-                sendMessage(message.getText());
-                return true;
-
-            case R.id.action_message_copy:
-                ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                        .setPrimaryClip(ClipData.newPlainText(message.getSpannable(), message.getSpannable()));
-                return true;
-
-            case R.id.action_message_quote:
-                setInputText("> " + message.getText() + "\n");
-                return true;
-
-            case R.id.action_message_remove:
-                MessageManager.getInstance().removeMessage(message);
-                updateChat();
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
         int itemCountBeforeUpdate = recyclerView.getAdapter().getItemCount();
@@ -533,6 +485,25 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 startActivity(OccupantList.createIntent(getActivity(), account, user));
                 return true;
 
+            /* message popup menu */
+
+            case R.id.action_message_repeat:
+                sendMessage(clickedMessageItem.getText());
+                return true;
+
+            case R.id.action_message_copy:
+                ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
+                        .setPrimaryClip(ClipData.newPlainText(clickedMessageItem.getSpannable(), clickedMessageItem.getSpannable()));
+                return true;
+
+            case R.id.action_message_quote:
+                setInputText("> " + clickedMessageItem.getText() + "\n");
+                return true;
+
+            case R.id.action_message_remove:
+                MessageManager.getInstance().removeMessage(clickedMessageItem);
+                updateChat();
+                return true;
 
             default:
                 return false;
@@ -608,11 +579,23 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public void onMessageClick(View caller, int position) {
-        registerForContextMenu(caller);
-        this.contextMenuItemPosition = position;
-        caller.setOnCreateContextMenuListener(this);
-        caller.showContextMenu();
-        unregisterForContextMenu(caller);
+        int itemViewType = chatMessageAdapter.getItemViewType(position);
+
+        if (itemViewType == ChatMessageAdapter.VIEW_TYPE_INCOMING_MESSAGE
+                || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
+
+            clickedMessageItem = chatMessageAdapter.getMessageItem(position);
+
+            PopupMenu popup = new PopupMenu(getActivity(), caller);
+            popup.inflate(R.menu.chat_context_menu);
+            popup.setOnMenuItemClickListener(this);
+
+            if (chatMessageAdapter.getMessageItem(position).isError()) {
+                popup.getMenu().findItem(R.id.action_message_repeat).setVisible(true);
+            }
+
+            popup.show();
+        }
     }
 
     public void playIncomingAnimation() {
