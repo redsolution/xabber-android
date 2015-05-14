@@ -38,11 +38,11 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.ChatViewer;
+import com.xabber.android.ui.ConferenceAdd;
 import com.xabber.android.ui.ContactAdd;
 import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.ui.GroupEditor;
-import com.xabber.android.ui.MUCEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
@@ -81,7 +81,7 @@ public class ContextMenuHelper {
         if (MUCManager.getInstance().hasRoom(account, user)) {
             if (!MUCManager.getInstance().inUse(account, user))
                 menu.add(R.string.muc_edit).setIntent(
-                        MUCEditor.createIntent(activity, account, user));
+                        ConferenceAdd.createIntent(activity, account, user));
             menu.add(R.string.muc_delete).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override

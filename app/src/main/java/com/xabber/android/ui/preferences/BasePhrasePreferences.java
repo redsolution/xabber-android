@@ -18,7 +18,7 @@ public abstract class BasePhrasePreferences extends ManagedActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_preferences);
+        setContentView(R.layout.activity_with_toolbar_and_container);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
 
@@ -30,7 +30,7 @@ public abstract class BasePhrasePreferences extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.preferences_activity_container, new PhraseEditorFragment()).commit();
+                    .add(R.id.fragment_container, new PhraseEditorFragment()).commit();
         }
     }
 

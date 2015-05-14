@@ -71,12 +71,12 @@ public class AccountEditor extends ManagedActivity implements
             token = accountItem.getConnectionSettings().getPassword();
 
             getFragmentManager().beginTransaction()
-                    .add(R.id.preferences_activity_container, new AccountEditorFragment()).commit();
+                    .add(R.id.fragment_container, new AccountEditorFragment()).commit();
         } else {
             token = savedInstanceState.getString(SAVED_TOKEN);
         }
 
-        setContentView(R.layout.activity_preferences);
+        setContentView(R.layout.activity_with_toolbar_and_container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -109,7 +109,7 @@ public class AccountEditor extends ManagedActivity implements
                 }
 
                 ((AccountEditorFragment) getFragmentManager().findFragmentById(
-                        R.id.preferences_activity_container)).onOAuthChange();
+                        R.id.fragment_container)).onOAuthChange();
             }
         }
     }

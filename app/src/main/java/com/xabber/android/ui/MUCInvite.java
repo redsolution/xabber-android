@@ -67,7 +67,7 @@ public class MUCInvite extends ManagedDialog {
     @Override
     public void onAccept() {
         super.onAccept();
-        startActivity(MUCEditor.createIntent(this, account, room));
+        startActivity(ConferenceAdd.createIntent(this, account, room));
         finish();
     }
 

@@ -20,7 +20,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.MUCEditor;
+import com.xabber.android.ui.ConferenceAdd;
 
 public class RoomAuthorizationError extends BaseEntity implements
         EntityNotificationItem {
@@ -31,7 +31,7 @@ public class RoomAuthorizationError extends BaseEntity implements
 
     @Override
     public Intent getIntent() {
-        return MUCEditor.createIntent(Application.getInstance(),
+        return ConferenceAdd.createIntent(Application.getInstance(),
                 account, user);
     }
 

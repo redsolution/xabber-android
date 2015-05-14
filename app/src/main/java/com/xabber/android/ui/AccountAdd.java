@@ -43,10 +43,10 @@ public class AccountAdd extends ManagedActivity {
         if (isFinishing())
             return;
 
-        setContentView(R.layout.account_add);
+        setContentView(R.layout.activity_with_toolbar_and_container);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, AccountAddFragment.newInstance()).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, AccountAddFragment.newInstance()).commit();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
@@ -73,7 +73,7 @@ public class AccountAdd extends ManagedActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_account:
-                ((AccountAddFragment)getSupportFragmentManager().findFragmentById(R.id.container)).addAccount();
+                ((AccountAddFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).addAccount();
 
                 return true;
 

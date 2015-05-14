@@ -318,7 +318,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         @Override
         public void onClick(View v) {
-            onClickListener.onMessageClick(v, getPosition());
+            onClickListener.onMessageClick(messageBalloon, getPosition());
         }
 
         public interface MessageClickListener {

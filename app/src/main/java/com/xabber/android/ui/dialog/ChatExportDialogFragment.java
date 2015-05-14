@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.DialogFragment;
@@ -42,29 +43,26 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
     private String user;
     private EditText nameView;
     private CheckBox sendView;
+    private Activity activity;
 
-    /**
-     * @param account
-     * @param user
-     * @return
-     */
     public static DialogFragment newInstance(String account, String user) {
         return new ChatExportDialogFragment().putAgrument(ACCOUNT, account).putAgrument(USER, user);
     }
 
     @Override
     protected Builder getBuilder() {
+        activity = getActivity();
+
         account = getArguments().getString(ACCOUNT);
         user = getArguments().getString(USER);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.export_chat_title);
-        View layout = getActivity().getLayoutInflater().inflate(
-                R.layout.export_chat, null);
+        View layout = activity.getLayoutInflater().inflate(R.layout.export_chat, null);
         nameView = (EditText) layout.findViewById(R.id.name);
         sendView = (CheckBox) layout.findViewById(R.id.send);
-        nameView.setText(getString(R.string.export_chat_mask, AccountManager
-                .getInstance().getVerboseName(account), RosterManager
-                .getInstance().getName(account, user)));
+        nameView.setText(getString(R.string.export_chat_mask,
+                AccountManager.getInstance().getVerboseName(account),
+                RosterManager.getInstance().getName(account, user)));
         builder.setView(layout);
         return builder;
     }
@@ -72,10 +70,10 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
     @Override
     protected boolean onPositiveClick() {
         String name = nameView.getText().toString();
-        if ("".equals(name))
+        if ("".equals(name)) {
             return false;
-        new ChatExportAsyncTask(account, user, name, sendView.isChecked())
-                .execute();
+        }
+        new ChatExportAsyncTask(account, user, name, sendView.isChecked()).execute();
         return true;
     }
 
@@ -86,8 +84,7 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
         private final String name;
         private final boolean send;
 
-        public ChatExportAsyncTask(String account, String user, String name,
-                                   boolean send) {
+        public ChatExportAsyncTask(String account, String user, String name, boolean send) {
             this.account = account;
             this.user = user;
             this.name = name;
@@ -97,8 +94,7 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
         @Override
         protected File doInBackground(Void... params) {
             try {
-                return MessageManager.getInstance().exportChat(account, user,
-                        name);
+                return MessageManager.getInstance().exportChat(account, user, name);
             } catch (NetworkException e) {
                 Application.getInstance().onError(e);
                 return null;
@@ -107,19 +103,19 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
 
         @Override
         public void onPostExecute(File result) {
-            if (result == null)
+            if (result == null || activity == null) {
                 return;
+            }
+
             // TODO: Use notification bar to notify about success.
             if (send) {
                 Intent intent = new Intent(android.content.Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 Uri uri = Uri.fromFile(result);
                 intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
-                startActivity(Intent.createChooser(intent,
-                        getString(R.string.export_chat)));
+                activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.export_chat)));
             } else {
-                Toast.makeText(getActivity(), R.string.export_chat_done,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, R.string.export_chat_done, Toast.LENGTH_LONG).show();
             }
         }
 
