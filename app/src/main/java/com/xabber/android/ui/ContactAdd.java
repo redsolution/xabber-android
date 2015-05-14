@@ -55,7 +55,7 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.contact_add);
+        setContentView(R.layout.activity_with_toolbar_and_container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         setTitle(null);
@@ -70,14 +70,14 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
+                    .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
                     .commit();
         }
 
     }
 
     private void addContact() {
-        ((ContactAddFragment)getSupportFragmentManager().findFragmentById(R.id.container)).addContact();
+        ((ContactAddFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).addContact();
     }
 
     @Override

@@ -62,7 +62,7 @@ public class ChatEditor extends ManagedActivity
             return;
         }
 
-        setContentView(R.layout.activity_preferences);
+        setContentView(R.layout.activity_with_toolbar_and_container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -72,7 +72,7 @@ public class ChatEditor extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.preferences_activity_container, new ChatEditorFragment()).commit();
+                    .add(R.id.fragment_container, new ChatEditorFragment()).commit();
         }
     }
 

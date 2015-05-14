@@ -40,7 +40,7 @@ public class PreferenceEditor extends ManagedActivity
         if (isFinishing())
             return;
 
-        setContentView(R.layout.activity_preferences);
+        setContentView(R.layout.activity_with_toolbar_and_container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         setSupportActionBar(toolbar);
         barPainter = new BarPainter(this, toolbar);
@@ -48,7 +48,7 @@ public class PreferenceEditor extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.preferences_activity_container, new PreferencesFragment()).commit();
+                    .add(R.id.fragment_container, new PreferencesFragment()).commit();
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

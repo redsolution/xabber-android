@@ -167,7 +167,7 @@
             android:label="@string/account_oauth"
             />
         <activity
-            android:name="com.xabber.android.ui.MUCEditor"
+            android:name=".ui.ConferenceAdd"
             android:label="@string/muc_add"
             android:parentActivityName="com.xabber.android.ui.ContactList"
             >

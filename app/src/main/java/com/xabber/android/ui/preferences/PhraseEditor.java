@@ -67,7 +67,7 @@ public class PhraseEditor extends BasePhrasePreferences {
         super.onPause();
 
         ((PhraseEditorFragment) getFragmentManager()
-                .findFragmentById(R.id.preferences_activity_container)).saveChanges();
+                .findFragmentById(R.id.fragment_container)).saveChanges();
     }
 
     private Integer getPhraseIndex(Intent intent) {

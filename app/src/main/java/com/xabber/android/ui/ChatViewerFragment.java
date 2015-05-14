@@ -448,7 +448,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_authorization_settings:
-                startActivity(MUCEditor.createIntent(getActivity(), account, user));
+                startActivity(ConferenceAdd.createIntent(getActivity(), account, user));
                 return true;
 
             case R.id.action_close_chat:

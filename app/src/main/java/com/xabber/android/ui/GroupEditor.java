@@ -59,7 +59,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.group_editor);
+        setContentView(R.layout.activity_with_toolbar_and_container);
 
         contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
         contactTitleActionBarInflater.setUpActionBarView();
@@ -75,7 +75,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, GroupEditorFragment.newInstance(account, user)).commit();
+                    .add(R.id.fragment_container, GroupEditorFragment.newInstance(account, user)).commit();
         }
 
     }
