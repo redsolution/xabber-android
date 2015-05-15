@@ -191,7 +191,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         if (SettingsManager.chatsShowBackground()) {
             viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
-            viewPager.getBackground().setAlpha(30);
         }
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
