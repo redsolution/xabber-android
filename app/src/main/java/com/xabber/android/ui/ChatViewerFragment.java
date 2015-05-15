@@ -211,12 +211,19 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 if (!skipOnTextChanges) {
                     ChatStateManager.getInstance().onComposing(account, user, text);
                 }
-             }
+            }
 
         });
 
-        updateChat();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        listener.registerChat(this);
+        updateChat();
+        restoreInputState();
     }
 
 
@@ -267,16 +274,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        listener.registerChat(this);
-
-        updateChat();
-
-        restoreInputState();
-
-    }
 
     public void restoreInputState() {
         skipOnTextChanges = true;
@@ -361,7 +358,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
-        int itemCountBeforeUpdate = recyclerView.getAdapter().getItemCount();
+        int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
         chatMessageAdapter.onChange();
         scrollChat(itemCountBeforeUpdate);
         setUpOptionsMenu(toolbar.getMenu());
@@ -369,9 +366,14 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void scrollChat(int itemCountBeforeUpdate) {
-        if (layoutManager.findLastVisibleItemPosition() == (itemCountBeforeUpdate - 1)) {
-            recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+        if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (itemCountBeforeUpdate - 1)) {
+            scrollDown();
         }
+    }
+
+    private void scrollDown() {
+        recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
     private void updateSecurityButton() {
