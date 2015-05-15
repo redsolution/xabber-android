@@ -246,6 +246,9 @@
     </string-array>
     <string name="chats_hide_keyboard_default">@string/chats_hide_keyboard_landscape_value</string>
 
+    <string name="chats_show_background_key">chats_show_background</string>
+    <bool name="chats_show_background_default">true</bool>
+
     <string name="chats_font_size_key">chats_font_size</string>
     <string name="chats_font_size_small_value">small</string>
     <string name="chats_font_size_normal_value">normal</string>
@@ -364,7 +367,7 @@
     <bool name="connection_load_vcard_default">true</bool>
 
     <string name="connection_use_carbons_key">connection_use_carbons</string>
-    <bool name="connection_use_carbons_default">true</bool>
+    <bool name="connection_use_carbons_default">false</bool>
 
 <!-- preference_cache -->
     <string name="cache_clear_key">cache_clear</string>

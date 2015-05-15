@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -62,6 +63,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
     private static final String ACTION_RECENT_CHATS = "com.xabber.android.data.RECENT_CHATS";
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
+    private static final String ACTION_SHORTCUT = "com.xabber.android.data.ACTION_SHORTCUT";
 
     private static final String SAVED_INITIAL_ACCOUNT = "com.xabber.android.ui.ChatViewer.SAVED_INITIAL_ACCOUNT";
     private static final String SAVED_INITIAL_USER = "com.xabber.android.ui.ChatViewer.SAVED_INITIAL_USER";
@@ -134,6 +136,12 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         return intent;
     }
 
+    public static Intent createShortCutIntent(Context context, String account, String user) {
+        Intent intent = createClearTopIntent(context, account, user);
+        intent.setAction(ACTION_SHORTCUT);
+        return intent;
+    }
+
     /**
      * Create intent to send message.
      * <p/>
@@ -167,7 +175,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
         }
 
-        setContentView(R.layout.activity_chat_viewer);
+        setContentView(R.layout.chat_viewer);
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -178,6 +186,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             restoreInstanceState(savedInstanceState);
         }
 
+        initChats();
+    }
+
+    private void initChats() {
         if (initialChat != null) {
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), initialChat, this);
         } else {
@@ -187,7 +199,10 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.setOnPageChangeListener(this);
-        viewPager.getBackground().setAlpha(30);
+
+        if (SettingsManager.chatsShowBackground()) {
+            viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+        }
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
                 (LinearLayout)findViewById(R.id.chat_scroll_indicator));
@@ -219,6 +234,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             case ACTION_SPECIFIC_CHAT:
             case ACTION_ATTENTION:
             case Intent.ACTION_SEND:
+            case ACTION_SHORTCUT:
                 isRecentChatsSelected = false;
                 selectedChat = new BaseEntity(getAccount(intent), getUser(intent));
                 break;
@@ -233,7 +249,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         setIntent(intent);
+
         getSelectedPageDataFromIntent();
+
+        if (intent.getAction().equals(ACTION_SHORTCUT)) {
+            getInitialChatFromIntent();
+            initChats();
+        }
     }
 
     private void restoreInstanceState(Bundle savedInstanceState) {

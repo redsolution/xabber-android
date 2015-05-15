@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="cache_clear">Clear cache\nClear all local data. This can free some space.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
@@ -72,6 +72,9 @@
     <string name="chats_divide">Message on the new line\nDisplay a message on a new line</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
     <string name="chats_divide_portrait">In portrait mode</string>
+
+    <string name="chats_show_background">Show background\nDisabling may increase performance</string>
+
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_font_size">Font size\nSize of text in the message</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
@@ -147,7 +150,7 @@
     <string name="chats_attention">Attention\nReact for the incoming attention requests</string>
     <string name="chats_attention_sound">Attention sound\nChoose ring-tone</string>
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
-	<string name="connection_use_carbons">Carbon-copied mode\nWill share the sessions for the same account on this client. Disable to reduce traffic usage.</string>
+    <string name="connection_use_carbons">Carbon-copied mode\nMay work unstable! Will share the sessions for the same account on this client. Disable to reduce traffic usage.</string>
     <string name="events_phrases">Key phrases\nCustom sound notifications about messages with preset phrases</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
     <string name="security_clear_certificate_warning">Do you really want to remove all the ignored certificates?</string>

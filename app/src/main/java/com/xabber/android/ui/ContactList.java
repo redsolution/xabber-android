@@ -548,7 +548,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private void createShortcut(AbstractContact abstractContact) {
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatViewer.createClearTopIntent(this,
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatViewer.createShortCutIntent(this,
                 abstractContact.getAccount(), abstractContact.getUser()));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, abstractContact.getName());
         Bitmap bitmap;
