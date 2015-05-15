@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="cache_clear">Очистить кэш\nУдалить все сохранённые локально данные. Это позволит уменьшить занимаемое программой место.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
@@ -147,7 +147,7 @@
     <string name="chats_attention">Привлечение внимания\nОтзываться на запросы привлечения внимания</string>
     <string name="chats_attention_sound">Звук привлечения внимания\nВыберите мелодию звонка</string>
     <string name="connection_load_vcard">Загружать vCard\nЗагружать и обновлять персональную информацию и аватары контактов. Отключение поможет сэкономить трафик.</string>
-	<string name="connection_use_carbons">Сообщения carbons\nПринимать сообщения других сессий Вашей учетной записи. Отключение поможет сэкономить трафик.</string>
+    <string name="connection_use_carbons">Сообщения carbons\nМожет работать нестабильно! Принимать сообщения других сессий Вашей учетной записи. Отключение поможет сэкономить трафик.</string>
     <string name="events_phrases">Ключевые фразы\nНастройки уведомлений о сообщениях содержащих ключевые фразы</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
     <string name="security_clear_certificate_warning">Вы действительно хотите удалить все игнорируемые сертификаты?</string>
