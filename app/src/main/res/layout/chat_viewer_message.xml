@@ -4,7 +4,6 @@
     android:id="@+id/message_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:minWidth="160dp"
     android:orientation="vertical"
     tools:showIn="@layout/chat_viewer_outgoing_message"
     >
@@ -28,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:autoLink="all"
-
+        android:minWidth="160dp"
         android:text="Some text\n line \nrgregrere" />
 
 </LinearLayout>
