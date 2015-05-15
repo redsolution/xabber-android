@@ -323,6 +323,10 @@ public class SettingsManager implements OnInitializedListener,
             throw new IllegalStateException();
     }
 
+    public static boolean chatsShowBackground() {
+        return getBoolean(R.string.chats_show_background_key, R.bool.chats_show_background_default);
+    }
+
     public static int chatsAppearanceStyle() {
         String value = getString(R.string.chats_font_size_key,
                 R.string.chats_font_size_default);

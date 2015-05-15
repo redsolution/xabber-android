@@ -22,12 +22,12 @@
         android:layout_width="32dip"
         android:layout_height="32dip"
 
-        android:layout_marginTop="3dp"
-        android:layout_marginLeft="6dp"
-
-        android:layout_alignTop="@+id/message_text"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+
+        android:layout_alignTop="@+id/message_text"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="3dp"
 
         android:src="@drawable/ic_avatar_1"
         />
@@ -37,29 +37,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_toRightOf="@id/avatar"
+        android:layout_marginEnd="48dp"
+        android:layout_marginLeft="6dp"
+
+        android:layout_marginRight="48dp"
+
+        android:layout_marginStart="6dp"
         android:layout_toEndOf="@id/avatar"
+        android:layout_toRightOf="@id/avatar"
+
+        android:autoLink="all"
+        android:background="@drawable/message_incoming"
 
         android:minWidth="142dp"
 
-        android:paddingLeft="16dp"
-        android:paddingRight="10dp"
+        android:paddingBottom="8dp"
         android:paddingEnd="6dp"
 
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="10dp"
 
-        android:autoLink="all"
+        android:paddingTop="8dp">
 
-        android:layout_marginLeft="6dp"
-        android:layout_marginStart="6dp"
-
-        android:layout_marginRight="48dp"
-        android:layout_marginEnd="48dp"
-
-        android:background="@drawable/message_incoming">
-
-        <include layout="@layout/chat_message"/>
+        <include layout="@layout/chat_viewer_message" />
 
     </FrameLayout>
 
@@ -68,14 +68,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_toRightOf="@+id/avatar"
-        android:layout_toEndOf="@+id/avatar"
         android:layout_below="@+id/message_balloon"
+        android:layout_toEndOf="@+id/avatar"
+        android:layout_toRightOf="@+id/avatar"
 
         android:paddingLeft="16dp"
 
-        android:textSize="10sp"
-
         android:text="Feb 19, 2015 4:39 PM"
+
+        android:textSize="10sp"
         />
 </RelativeLayout>

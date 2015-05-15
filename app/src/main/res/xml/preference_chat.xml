@@ -1,61 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:title="@string/chats_show_avatars"
-        android:key="@string/chats_show_avatars_key"
         android:defaultValue="@bool/chats_show_avatars_default"
+        android:key="@string/chats_show_avatars_key"
+        android:title="@string/chats_show_avatars"
         />
     <CheckBoxPreference
-        android:title="@string/chats_send_by_enter"
-        android:key="@string/chats_send_by_enter_key"
         android:defaultValue="@bool/chats_send_by_enter_default"
+        android:key="@string/chats_send_by_enter_key"
+        android:title="@string/chats_send_by_enter"
         />
     <ListPreference
-        android:title="@string/chats_show_status_change"
-        android:summary="@string/chats_show_status_change"
-        android:key="@string/chats_show_status_change_key"
+        android:defaultValue="@string/chats_show_status_change_default"
         android:entries="@array/chats_show_status_change_entries"
         android:entryValues="@array/chats_show_status_change_entryvalues"
-        android:defaultValue="@string/chats_show_status_change_default"
+        android:key="@string/chats_show_status_change_key"
+        android:summary="@string/chats_show_status_change"
+        android:title="@string/chats_show_status_change"
         />
     <ListPreference
-        android:title="@string/chats_hide_keyboard"
-        android:key="@string/chats_hide_keyboard_key"
+        android:defaultValue="@string/chats_hide_keyboard_default"
         android:entries="@array/chats_hide_keyboard_entries"
         android:entryValues="@array/chats_hide_keyboard_entryvalues"
-        android:defaultValue="@string/chats_hide_keyboard_default"
+        android:key="@string/chats_hide_keyboard_key"
+        android:title="@string/chats_hide_keyboard"
         />
+
+    <CheckBoxPreference
+        android:defaultValue="@bool/chats_show_background_default"
+        android:key="@string/chats_show_background_key"
+        android:title="@string/chats_show_background"
+        />
+
     <ListPreference
-        android:title="@string/chats_font_size"
-        android:key="@string/chats_font_size_key"
+        android:defaultValue="@string/chats_font_size_default"
         android:entries="@array/chats_font_size_entries"
         android:entryValues="@array/chats_font_size_entryvalues"
-        android:defaultValue="@string/chats_font_size_default"
+        android:key="@string/chats_font_size_key"
+        android:title="@string/chats_font_size"
         />
     <ListPreference
-        android:title="@string/chats_divide"
-        android:key="@string/chats_divide_key"
+        android:defaultValue="@string/chats_divide_default"
         android:entries="@array/chats_divide_entries"
         android:entryValues="@array/chats_divide_entryvalues"
-        android:defaultValue="@string/chats_divide_default"
+        android:key="@string/chats_divide_key"
+        android:title="@string/chats_divide"
         />
     <CheckBoxPreference
-        android:title="@string/chats_state_notification"
-        android:key="@string/chats_state_notification_key"
         android:defaultValue="@bool/chats_state_notification_default"
+        android:key="@string/chats_state_notification_key"
+        android:title="@string/chats_state_notification"
         />
     <CheckBoxPreference
-        android:title="@string/chats_attention"
-        android:key="@string/chats_attention_key"
         android:defaultValue="@bool/chats_attention_default"
+        android:key="@string/chats_attention_key"
+        android:title="@string/chats_attention"
         />
     <RingtonePreference
-        android:title="@string/chats_attention_sound"
-        android:key="@string/chats_attention_sound_key"
         android:defaultValue="@string/chats_attention_sound_default"
-        android:ringtoneType="ringtone"
         android:dependency="@string/chats_attention_key"
-        android:showSilent="true"
+        android:key="@string/chats_attention_sound_key"
+        android:ringtoneType="ringtone"
         android:showDefault="true"
+        android:showSilent="true"
+        android:title="@string/chats_attention_sound"
         />
 </PreferenceScreen>

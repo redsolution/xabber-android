@@ -72,6 +72,9 @@
     <string name="chats_divide">Сообщение с новой строки\nОтображать сообщение с новой строки</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
     <string name="chats_divide_portrait">В портретном режиме</string>
+
+    <string name="chats_show_background">Отображать фон\nОтключение может увеличить производительность</string>
+
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
     <string name="chats_font_size">Размер шрифта\nРазмер текста сообщения</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->

@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
@@ -167,7 +168,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
         }
 
-        setContentView(R.layout.activity_chat_viewer);
+        setContentView(R.layout.chat_viewer);
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -187,7 +188,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.setOnPageChangeListener(this);
-        viewPager.getBackground().setAlpha(30);
+
+        if (SettingsManager.chatsShowBackground()) {
+            viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            viewPager.getBackground().setAlpha(30);
+        }
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
                 (LinearLayout)findViewById(R.id.chat_scroll_indicator));

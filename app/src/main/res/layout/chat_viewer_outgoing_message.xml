@@ -24,26 +24,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
 
+        android:layout_marginEnd="6dp"
         android:layout_marginLeft="48dp"
-        android:layout_marginStart="48dp"
 
         android:layout_marginRight="6dp"
-        android:layout_marginEnd="6dp"
-
-        android:paddingLeft="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:paddingRight="16dp"
-        android:paddingEnd="16dp"
+        android:layout_marginStart="48dp"
 
         android:background="@drawable/message_outgoing_states"
+        android:paddingBottom="8dp"
+        android:paddingEnd="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="16dp"
+
+        android:paddingTop="8dp"
         >
 
-        <include layout="@layout/chat_message"/>
+        <include layout="@layout/chat_viewer_message" />
 
     </FrameLayout>
 
@@ -51,16 +51,16 @@
         android:id="@+id/message_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/message_balloon"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/message_balloon"
 
-        android:paddingRight="16dp"
         android:paddingEnd="16dp"
-
-        android:textSize="10sp"
+        android:paddingRight="16dp"
 
         android:text="Feb 19, 2015 4:39 PM"
+
+        android:textSize="10sp"
         />
 
     <ImageView
