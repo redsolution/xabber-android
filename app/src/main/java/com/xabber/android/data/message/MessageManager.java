@@ -27,6 +27,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.OnAccountArchiveModeChangedListener;
+import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -68,8 +69,8 @@ import java.util.Set;
  * @author alexander.ivanov
  */
 public class MessageManager implements OnLoadListener, OnPacketListener, OnDisconnectListener,
-        OnAccountRemovedListener, OnRosterReceivedListener, OnAccountArchiveModeChangedListener,
-        OnStatusChangeListener {
+        OnAccountRemovedListener, OnAccountDisabledListener, OnRosterReceivedListener,
+        OnAccountArchiveModeChangedListener, OnStatusChangeListener {
 
     private final static MessageManager instance;
 
@@ -571,6 +572,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
+        chats.clear(accountItem.getAccount());
+    }
+
+    @Override
+    public void onAccountDisabled(AccountItem accountItem) {
         chats.clear(accountItem.getAccount());
     }
 
