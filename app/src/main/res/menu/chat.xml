@@ -3,94 +3,94 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/action_join_conference"
-        android:title="@string/muc_join"
-        app:showAsAction="never"
-        android:orderInCategory="80"
-        android:visible="false"
         android:icon="@drawable/ic_group_white_24dp"
+        android:orderInCategory="80"
+        android:title="@string/muc_join"
+        android:visible="false"
+        app:showAsAction="never"
         />
 
     <item android:id="@+id/action_invite_to_chat"
-        android:title="@string/muc_invite"
-        app:showAsAction="never"
         android:orderInCategory="90"
+        android:title="@string/muc_invite"
         android:visible="false"
+        app:showAsAction="never"
         />
 
     <item android:id="@+id/action_view_contact"
-        android:title="@string/contact_viewer"
-        app:showAsAction="never"
         android:orderInCategory="100"
+        android:title="@string/contact_viewer"
         android:visible="false"
+        app:showAsAction="never"
         />
 
     <item android:id="@+id/action_chat_list"
-        android:title="@string/chat_list"
-        app:showAsAction="ifRoom"
-        android:orderInCategory="110"
         android:icon="@drawable/ic_list_white_24dp"
+        android:orderInCategory="110"
+        android:title="@string/chat_list"
         android:visible="false"
+        app:showAsAction="ifRoom"
         />
 
     <item android:id="@+id/action_chat_settings"
+        android:orderInCategory="120"
         android:title="@string/chat_settings"
         app:showAsAction="never"
-        android:orderInCategory="120"
         />
 
     <item android:id="@+id/action_show_history"
+        android:icon="@drawable/ic_forum_white_24dp"
+        android:orderInCategory="130"
         android:title="@string/show_history"
         app:showAsAction="never"
-        android:orderInCategory="130"
-        android:icon="@drawable/ic_forum_white_24dp"
         />
 
     <item android:id="@+id/action_authorization_settings"
-        android:title="@string/muc_edit"
-        app:showAsAction="never"
         android:orderInCategory="133"
+        android:title="@string/muc_edit"
         android:visible="false"
+        app:showAsAction="never"
         />
 
     <item android:id="@+id/action_leave_conference"
-        android:title="@string/muc_leave"
-        app:showAsAction="never"
         android:orderInCategory="136"
+        android:title="@string/muc_leave"
         android:visible="false"
+        app:showAsAction="never"
         />
 
     <item android:id="@+id/action_clear_history"
+        android:icon="@drawable/ic_clear_all_white_24dp"
+        android:orderInCategory="160"
         android:title="@string/clear_history"
         app:showAsAction="never"
-        android:orderInCategory="160"
-        android:icon="@drawable/ic_clear_all_white_24dp"
-        />
-
-    <item android:id="@+id/action_close_chat"
-        android:title="@string/close_chat"
-        app:showAsAction="never"
-        android:orderInCategory="165"
-        android:visible="false"
-        android:icon="@drawable/ic_clear_white_24dp"
         />
 
     <item android:id="@+id/action_export_chat"
+        android:orderInCategory="170"
         android:title="@string/export_chat"
         app:showAsAction="never"
-        android:orderInCategory="170"
         />
 
     <item android:id="@+id/action_call_attention"
+        android:orderInCategory="180"
         android:title="@string/call_attention"
         app:showAsAction="never"
-        android:orderInCategory="180"
         />
 
     <item android:id="@+id/action_list_of_occupants"
-        android:title="@string/occupant_list"
-        app:showAsAction="never"
         android:orderInCategory="200"
+        android:title="@string/occupant_list"
         android:visible="false"
+        app:showAsAction="never"
         />
+
+    <item
+        android:id="@+id/action_close_chat"
+        android:icon="@drawable/ic_clear_white_24dp"
+        android:orderInCategory="210"
+        android:title="@string/close_chat"
+        android:visible="false"
+        app:showAsAction="never" />
 
 </menu>
