@@ -12,13 +12,13 @@ import com.xabber.android.data.message.chat.ChatManager;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatEditorFragment extends BaseSettingsFragment {
+public class ChatContactSettingsFragment extends BaseSettingsFragment {
 
     private ChatEditorFragmentInteractionListener mListener;
 
     @Override
     protected void onInflate(Bundle savedInstanceState) {
-        addPreferencesFromResource(R.xml.chat_editor);
+        addPreferencesFromResource(R.xml.preference_chat_contact);
 
         AccountItem accountItem = mListener.getAccountItem();
 
@@ -101,9 +101,7 @@ public class ChatEditorFragment extends BaseSettingsFragment {
 
     public interface ChatEditorFragmentInteractionListener {
         String getAccount();
-
         AccountItem getAccountItem();
-
         String getUser();
     }
 }

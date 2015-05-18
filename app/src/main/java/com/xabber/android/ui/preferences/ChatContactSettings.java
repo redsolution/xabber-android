@@ -27,17 +27,15 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
-public class ChatEditor extends ManagedActivity
-        implements ChatEditorFragment.ChatEditorFragmentInteractionListener {
+public class ChatContactSettings extends ManagedActivity
+        implements ChatContactSettingsFragment.ChatEditorFragmentInteractionListener {
 
     private String account;
     private String user;
     private AccountItem accountItem;
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
-        return new EntityIntentBuilder(context, ChatEditor.class)
-                .setAccount(account).setUser(user).build();
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).setUser(user).build();
     }
 
     private static String getAccount(Intent intent) {
@@ -72,7 +70,7 @@ public class ChatEditor extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new ChatEditorFragment()).commit();
+                    .add(R.id.fragment_container, new ChatContactSettingsFragment()).commit();
         }
     }
 

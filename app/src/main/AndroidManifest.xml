@@ -199,7 +199,7 @@
         </activity>
 
         <activity
-            android:name="com.xabber.android.ui.preferences.ChatEditor"
+            android:name=".ui.preferences.ChatContactSettings"
             android:label="@string/chat_settings"
             android:parentActivityName="com.xabber.android.ui.ChatViewer"
             >
@@ -334,7 +334,7 @@
         </activity>
 
         <activity
-            android:name="com.xabber.android.ui.preferences.ChatSettings"
+            android:name=".ui.preferences.ChatGlobalSettings"
             android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

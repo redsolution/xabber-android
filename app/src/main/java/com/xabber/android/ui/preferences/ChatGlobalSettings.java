@@ -8,7 +8,7 @@ import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
 
-public class ChatSettings extends ManagedActivity {
+public class ChatGlobalSettings extends ManagedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +31,7 @@ public class ChatSettings extends ManagedActivity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new ChatSettingsFragment()).commit();
+                    .add(R.id.fragment_container, new ChatGlobalSettingsFragment()).commit();
         }
     }
 }

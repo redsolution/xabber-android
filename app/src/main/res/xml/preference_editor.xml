@@ -30,7 +30,7 @@
         android:key="@string/preference_chats"
         android:title="@string/preference_chats">
         <intent
-            android:targetClass="com.xabber.android.ui.preferences.ChatSettings"
+            android:targetClass="com.xabber.android.ui.preferences.ChatGlobalSettings"
             android:targetPackage="@string/application_package" />
     </Preference>
     <Preference
