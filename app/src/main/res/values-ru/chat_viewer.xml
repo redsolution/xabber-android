@@ -152,4 +152,8 @@
 
     <string name="under_construction">В разработке</string>
     <string name="under_construction_message">Этот экран находится в разработке</string>
+
+    <string name="chat_events_show_text_global">Использовать глобальные настройки</string>
+    <string name="chat_events_show_text_always">Отображать текст сообщения</string>
+    <string name="chat_events_show_text_never">Скрывать текст сообщения</string>
 </resources>

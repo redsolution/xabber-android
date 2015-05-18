@@ -25,7 +25,7 @@ import com.xabber.android.data.DatabaseManager;
  *
  * @author alexander.ivanov
  */
-class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
+class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNotification> {
 
     static final String NAME = "chat_show_text";
 
@@ -36,12 +36,16 @@ class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
         DatabaseManager.getInstance().addTable(instance);
     }
 
+    private ShowTextTable(DatabaseManager databaseManager) {
+        super(databaseManager);
+    }
+
     public static ShowTextTable getInstance() {
         return instance;
     }
 
-    private ShowTextTable(DatabaseManager databaseManager) {
-        super(databaseManager);
+    static ShowMessageTextInNotification getValue(Cursor cursor) {
+        return ShowMessageTextInNotification.fromInteger((int) cursor.getLong(cursor.getColumnIndex(Fields.VALUE)));
     }
 
     @Override
@@ -55,8 +59,8 @@ class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
     }
 
     @Override
-    void bindValue(SQLiteStatement writeStatement, Boolean value) {
-        writeStatement.bindLong(3, value ? 1 : 0);
+    void bindValue(SQLiteStatement writeStatement, ShowMessageTextInNotification showMessageTextInNotification) {
+        writeStatement.bindLong(3, showMessageTextInNotification.ordinal());
     }
 
     @Override
@@ -69,10 +73,6 @@ class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
             default:
                 break;
         }
-    }
-
-    static boolean getValue(Cursor cursor) {
-        return cursor.getLong(cursor.getColumnIndex(Fields.VALUE)) != 0;
     }
 
 }

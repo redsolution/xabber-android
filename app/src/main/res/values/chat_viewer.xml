@@ -152,4 +152,9 @@
 
     <string name="under_construction">Under construction</string>
     <string name="under_construction_message">This screen is under construction</string>
+
+    <string name="chat_events_show_text_global">Use global settings</string>
+    <string name="chat_events_show_text_always">Show message text</string>
+    <string name="chat_events_show_text_never">Hide message text</string>
+
 </resources>

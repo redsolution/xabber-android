@@ -24,7 +24,11 @@
         android:showDefault="true"
         android:showSilent="true"
         android:title="@string/events_sound" />
-    <CheckBoxPreference
+
+    <ListPreference
+        android:defaultValue="@string/chat_events_show_text_default"
+        android:entries="@array/chat_events_show_text_entries"
+        android:entryValues="@array/chat_events_show_text_entry_values"
         android:key="@string/chat_events_show_text_key"
         android:title="@string/events_show_text"
         />

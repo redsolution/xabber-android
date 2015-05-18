@@ -8,6 +8,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,8 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
         putValue(map, R.string.chat_events_visible_chat_key, ChatManager
                 .getInstance().isNotifyVisible(account, user));
         putValue(map, R.string.chat_events_show_text_key, ChatManager
-                .getInstance().isShowText(account, user));
+                .getInstance().getShowText(account, user).ordinal());
+
         putValue(map, R.string.chat_events_vibro_key, ChatManager.getInstance()
                 .isMakeVibro(account, user));
         putValue(map, R.string.chat_events_sound_key, ChatManager.getInstance()
@@ -67,9 +69,10 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
             ChatManager.getInstance().setNotifyVisible(account, user,
                     getBoolean(result, R.string.chat_events_visible_chat_key));
 
-        if (hasChanges(source, result, R.string.chat_events_show_text_key))
+        if (hasChanges(source, result, R.string.chat_events_show_text_key)) {
             ChatManager.getInstance().setShowText(account, user,
-                    getBoolean(result, R.string.chat_events_show_text_key));
+                    ShowMessageTextInNotification.fromInteger(getInt(result, R.string.chat_events_show_text_key)));
+        }
 
         if (hasChanges(source, result, R.string.chat_events_vibro_key))
             ChatManager.getInstance().setMakeVibro(account, user,
