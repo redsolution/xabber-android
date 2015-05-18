@@ -50,7 +50,7 @@ import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
-import com.xabber.android.ui.preferences.ChatEditor;
+import com.xabber.android.ui.preferences.ChatContactSettings;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, ChatMessageAdapter.Message.MessageClickListener {
@@ -442,7 +442,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_chat_settings:
-                startActivity(ChatEditor.createIntent(getActivity(), account, user));
+                startActivity(ChatContactSettings.createIntent(getActivity(), account, user));
                 return true;
 
             case R.id.action_show_history:

@@ -252,7 +252,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
         getSelectedPageDataFromIntent();
 
-        if (intent.getAction().equals(ACTION_SHORTCUT)) {
+        if (intent.getAction() != null && intent.getAction().equals(ACTION_SHORTCUT)) {
             getInitialChatFromIntent();
             initChats();
         }

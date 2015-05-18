@@ -13,7 +13,9 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
         addPreferencesFromResource(R.xml.preference_debug);
 
-        getPreferenceScreen().findPreference(getString(R.string.debug_log_key)).setEnabled(LogManager.isDebugable());
+        if (!LogManager.isDebugable()) {
+            getPreferenceScreen().removePreference(getPreferenceScreen().findPreference(getString(R.string.debug_log_key)));
+        }
 
         PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
     }
