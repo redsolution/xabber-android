@@ -12,6 +12,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.helper.AccountPainter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,12 +22,11 @@ import java.util.List;
 
 
 public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String> {
-    private final int[] accountColors;
+    private final AccountPainter accountPainter;
 
     public NavigationDrawerAccountAdapter(Activity activity) {
         super(activity);
-
-        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
+        accountPainter = new AccountPainter(activity);
     }
 
     @Override
@@ -39,13 +40,16 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
         }
         String account = getItem(position);
 
-        int accountColor = accountColors[accountManager.getColorLevel(account)];
+        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable((accountPainter.getAccountMainColor(account))));
+        ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
-        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable(accountColor));
-        ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
+        TextView accountName = (TextView) view.findViewById(R.id.name);
 
-        ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
+        accountName.setText(RosterManager.getInstance().getBestContact(account, accountManager.getVerboseName(account)).getName());
+        accountName.setTextColor(accountPainter.getAccountDarkColor(account));
+
+        ((TextView) view.findViewById(R.id.account_jid)).setText(accountManager.getVerboseName(account));
+
         AccountItem accountItem = accountManager.getAccount(account);
         ConnectionState state;
         if (accountItem == null) {

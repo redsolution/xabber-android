@@ -9,4 +9,6 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
     <string name="about_version">Version: %s</string>
     <string name="about_license">License: GNU GPLv3\n<a href="https://github.com/redsolution/xabber-android">Open source software</a></string>
+
+    <string name="about_open_source_xmpp_client">open source XMPP client</string>
 </resources>
