@@ -19,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.SettingsManager;
 
 /**
  * Storage with settings to show text in notification for each chat.
@@ -70,6 +71,26 @@ class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNotificat
             case 52:
                 initialMigrate(db, "chat_show_text", "INTEGER");
                 break;
+
+            case 67:
+                int trueMigrationValue;
+                int falseMigrationValue;
+
+                if (SettingsManager.eventsShowText()) {
+                    trueMigrationValue = ShowMessageTextInNotification.default_settings.ordinal();
+                    falseMigrationValue = ShowMessageTextInNotification.hide.ordinal();
+                } else {
+                    trueMigrationValue = ShowMessageTextInNotification.show.ordinal();
+                    falseMigrationValue = ShowMessageTextInNotification.default_settings.ordinal();
+                }
+
+
+                String sql = "UPDATE " + NAME
+                        + " SET " + Fields.VALUE + " = CASE WHEN (" + Fields.VALUE + "=1) THEN "
+                        + trueMigrationValue + " ELSE " + falseMigrationValue + " END;";
+
+                DatabaseManager.execSQL(db, sql);
+
             default:
                 break;
         }
