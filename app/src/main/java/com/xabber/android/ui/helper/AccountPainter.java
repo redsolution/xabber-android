@@ -17,11 +17,13 @@ public class AccountPainter {
 
     private int[] accountMainColors;
     private int[] accountDarkColors;
+    private int[] accountDarkestColors;
 
     public AccountPainter(Context context) {
 
         accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
         accountDarkColors = context.getResources().getIntArray(R.array.account_status_bar);
+        accountDarkestColors = context.getResources().getIntArray(R.array.account_900);
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
@@ -83,6 +85,11 @@ public class AccountPainter {
     public int getAccountDarkColor(String account) {
         return accountDarkColors[getAccountColorLevel(account)];
     }
+
+    public int getAccountDarkestColor(String account) {
+        return accountDarkestColors[getAccountColorLevel(account)];
+    }
+
 
     public int getDefaultDarkColor() {
         String firstAccount = getFirstAccount();

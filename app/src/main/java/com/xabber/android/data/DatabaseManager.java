@@ -14,18 +14,18 @@
  */
 package com.xabber.android.data;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.xabber.android.data.entity.AbstractAccountTable;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Helps to open, create, and upgrade the database file.
@@ -38,13 +38,10 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         OnLoadListener, OnClearListener {
 
     private static final String DATABASE_NAME = "xabber.db";
-    private static final int DATABASE_VERSION = 66;
+    private static final int DATABASE_VERSION = 67;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
-
-    private final ArrayList<DatabaseTable> registeredTables;
-
     private final static DatabaseManager instance;
 
     static {
@@ -52,13 +49,92 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         Application.getInstance().addManager(instance);
     }
 
-    public static DatabaseManager getInstance() {
-        return instance;
-    }
+    private final ArrayList<DatabaseTable> registeredTables;
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<DatabaseTable>();
+    }
+
+    public static DatabaseManager getInstance() {
+        return instance;
+    }
+
+    /**
+     * Builds IN statement for specified collection of values.
+     *
+     * @param <T>
+     * @param column
+     * @param values
+     * @return "column IN (value1, ... valueN)" or
+     * "(column IS NULL AND column IS NOT NULL)" if ids is empty.
+     */
+    public static <T> String in(String column, Collection<T> values) {
+        if (values.isEmpty())
+            return new StringBuilder("(").append(column)
+                    .append(" IS NULL AND ").append(column)
+                    .append(" IS NOT NULL)").toString();
+        StringBuilder builder = new StringBuilder(column);
+        builder.append(" IN (");
+        Iterator<T> iterator = values.iterator();
+        while (iterator.hasNext()) {
+            T value = iterator.next();
+            if (value instanceof String)
+                builder.append(DatabaseUtils.sqlEscapeString((String) value));
+            else
+                builder.append(value.toString());
+            if (iterator.hasNext())
+                builder.append(",");
+        }
+        builder.append(")");
+        return builder.toString();
+    }
+
+    public static void execSQL(SQLiteDatabase db, String sql) {
+        LogManager.iString(DatabaseManager.class.getName(), sql);
+        db.execSQL(sql);
+    }
+
+    public static void dropTable(SQLiteDatabase db, String table) {
+        execSQL(db, "DROP TABLE IF EXISTS " + table + ";");
+    }
+
+    public static void renameTable(SQLiteDatabase db, String table,
+                                   String newTable) {
+        execSQL(db, "ALTER TABLE " + table + " RENAME TO " + newTable + ";");
+    }
+
+    public static String commaSeparatedFromCollection(Collection<String> strings) {
+        StringBuilder builder = new StringBuilder();
+        for (String value : strings) {
+            if (builder.length() > 0)
+                builder.append(",");
+            builder.append(value.replace("\\", "\\\\").replace(",", "\\,"));
+        }
+        return builder.toString();
+    }
+
+    public static Collection<String> collectionFromCommaSeparated(String value) {
+        Collection<String> collection = new ArrayList<String>();
+        boolean escape = false;
+        StringBuilder builder = new StringBuilder();
+        for (int index = 0; index < value.length(); index++) {
+            char chr = value.charAt(index);
+            if (!escape) {
+                if (chr == '\\') {
+                    escape = true;
+                    continue;
+                } else if (chr == ',') {
+                    collection.add(builder.toString());
+                    builder = new StringBuilder();
+                    continue;
+                }
+            }
+            escape = false;
+            builder.append(chr);
+        }
+        collection.add(builder.toString());
+        return Collections.unmodifiableCollection(collection);
     }
 
     /**
@@ -144,83 +220,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         for (DatabaseTable table : registeredTables)
             if (table instanceof AbstractAccountTable)
                 ((AbstractAccountTable) table).removeAccount(account);
-    }
-
-    /**
-     * Builds IN statement for specified collection of values.
-     *
-     * @param <T>
-     * @param column
-     * @param values
-     * @return "column IN (value1, ... valueN)" or
-     * "(column IS NULL AND column IS NOT NULL)" if ids is empty.
-     */
-    public static <T> String in(String column, Collection<T> values) {
-        if (values.isEmpty())
-            return new StringBuilder("(").append(column)
-                    .append(" IS NULL AND ").append(column)
-                    .append(" IS NOT NULL)").toString();
-        StringBuilder builder = new StringBuilder(column);
-        builder.append(" IN (");
-        Iterator<T> iterator = values.iterator();
-        while (iterator.hasNext()) {
-            T value = iterator.next();
-            if (value instanceof String)
-                builder.append(DatabaseUtils.sqlEscapeString((String) value));
-            else
-                builder.append(value.toString());
-            if (iterator.hasNext())
-                builder.append(",");
-        }
-        builder.append(")");
-        return builder.toString();
-    }
-
-    public static void execSQL(SQLiteDatabase db, String sql) {
-        LogManager.iString(DatabaseManager.class.getName(), sql);
-        db.execSQL(sql);
-    }
-
-    public static void dropTable(SQLiteDatabase db, String table) {
-        execSQL(db, "DROP TABLE IF EXISTS " + table + ";");
-    }
-
-    public static void renameTable(SQLiteDatabase db, String table,
-                                   String newTable) {
-        execSQL(db, "ALTER TABLE " + table + " RENAME TO " + newTable + ";");
-    }
-
-    public static String commaSeparatedFromCollection(Collection<String> strings) {
-        StringBuilder builder = new StringBuilder();
-        for (String value : strings) {
-            if (builder.length() > 0)
-                builder.append(",");
-            builder.append(value.replace("\\", "\\\\").replace(",", "\\,"));
-        }
-        return builder.toString();
-    }
-
-    public static Collection<String> collectionFromCommaSeparated(String value) {
-        Collection<String> collection = new ArrayList<String>();
-        boolean escape = false;
-        StringBuilder builder = new StringBuilder();
-        for (int index = 0; index < value.length(); index++) {
-            char chr = value.charAt(index);
-            if (!escape) {
-                if (chr == '\\') {
-                    escape = true;
-                    continue;
-                } else if (chr == ',') {
-                    collection.add(builder.toString());
-                    builder = new StringBuilder();
-                    continue;
-                }
-            }
-            escape = false;
-            builder.append(chr);
-        }
-        collection.add(builder.toString());
-        return Collections.unmodifiableCollection(collection);
     }
 
 }

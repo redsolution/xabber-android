@@ -19,13 +19,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.SettingsManager;
 
 /**
  * Storage with settings to show text in notification for each chat.
  *
  * @author alexander.ivanov
  */
-class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
+class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNotification> {
 
     static final String NAME = "chat_show_text";
 
@@ -36,12 +37,16 @@ class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
         DatabaseManager.getInstance().addTable(instance);
     }
 
+    private ShowTextTable(DatabaseManager databaseManager) {
+        super(databaseManager);
+    }
+
     public static ShowTextTable getInstance() {
         return instance;
     }
 
-    private ShowTextTable(DatabaseManager databaseManager) {
-        super(databaseManager);
+    static ShowMessageTextInNotification getValue(Cursor cursor) {
+        return ShowMessageTextInNotification.fromInteger((int) cursor.getLong(cursor.getColumnIndex(Fields.VALUE)));
     }
 
     @Override
@@ -55,8 +60,8 @@ class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
     }
 
     @Override
-    void bindValue(SQLiteStatement writeStatement, Boolean value) {
-        writeStatement.bindLong(3, value ? 1 : 0);
+    void bindValue(SQLiteStatement writeStatement, ShowMessageTextInNotification showMessageTextInNotification) {
+        writeStatement.bindLong(3, showMessageTextInNotification.ordinal());
     }
 
     @Override
@@ -66,13 +71,29 @@ class ShowTextTable extends AbstractChatPropertyTable<Boolean> {
             case 52:
                 initialMigrate(db, "chat_show_text", "INTEGER");
                 break;
+
+            case 67:
+                int trueMigrationValue;
+                int falseMigrationValue;
+
+                if (SettingsManager.eventsShowText()) {
+                    trueMigrationValue = ShowMessageTextInNotification.default_settings.ordinal();
+                    falseMigrationValue = ShowMessageTextInNotification.hide.ordinal();
+                } else {
+                    trueMigrationValue = ShowMessageTextInNotification.show.ordinal();
+                    falseMigrationValue = ShowMessageTextInNotification.default_settings.ordinal();
+                }
+
+
+                String sql = "UPDATE " + NAME
+                        + " SET " + Fields.VALUE + " = CASE WHEN (" + Fields.VALUE + "=1) THEN "
+                        + trueMigrationValue + " ELSE " + falseMigrationValue + " END;";
+
+                DatabaseManager.execSQL(db, sql);
+
             default:
                 break;
         }
-    }
-
-    static boolean getValue(Cursor cursor) {
-        return cursor.getLong(cursor.getColumnIndex(Fields.VALUE)) != 0;
     }
 
 }

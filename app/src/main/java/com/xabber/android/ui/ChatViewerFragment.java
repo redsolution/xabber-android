@@ -260,7 +260,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void setSendButtonColor() {
-        boolean empty = inputView.getText().toString().isEmpty();
+        boolean empty = inputView.getText().toString().trim().isEmpty();
 
         if (empty != isInputEmpty) {
             isInputEmpty = empty;

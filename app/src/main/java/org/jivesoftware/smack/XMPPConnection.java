@@ -848,7 +848,7 @@ public class XMPPConnection extends Connection {
                 throw new IllegalStateException();
             context.init(kms, new TrustManager[]{new XMPPTrustManager(
                     KeyStoreManager.getOrCreateKeyStore(config),
-                    getServiceName(), config.getCertificateListener(),
+                    getHost(), config.getCertificateListener(),
                     chainCheck, domainCheck, allowSelfSigned)}, SECURE_RANDOM);
         }
         Socket plain = socket;

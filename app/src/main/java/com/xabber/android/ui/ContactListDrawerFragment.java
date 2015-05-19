@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.xabber.android.R;
@@ -27,7 +28,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private ListView listView;
     private View divider;
     private View headerTitle;
-    private View drawerHeader;
+    private ImageView drawerHeaderImage;
 
     @Override
     public void onAttach(Activity activity) {
@@ -40,7 +41,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_list_drawer, container, false);
 
-        drawerHeader = view.findViewById(R.id.drawer_header);
+        View drawerHeader = view.findViewById(R.id.drawer_header);
+        drawerHeaderImage = (ImageView) drawerHeader.findViewById(R.id.drawer_header_image);
 
         listView = (ListView) view.findViewById(R.id.drawer_account_list);
 
@@ -99,7 +101,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     private void update() {
         adapter.onChange();
-        drawerHeader.getBackground().setLevel(AccountPainter.getDefaultAccountColorLevel());
+        drawerHeaderImage.setImageLevel(AccountPainter.getDefaultAccountColorLevel());
 
         if (adapter.getCount() == 0) {
             headerTitle.setVisibility(View.GONE);

@@ -176,8 +176,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             GroupConfiguration groupConfiguration = (GroupConfiguration) object;
             adapter.setExpanded(groupConfiguration.getAccount(), groupConfiguration.getUser(),
                     !groupConfiguration.isExpanded());
-        } else {
-            throw new IllegalStateException();
         }
     }
 

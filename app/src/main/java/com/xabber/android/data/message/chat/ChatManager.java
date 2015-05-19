@@ -14,9 +14,6 @@
  */
 package com.xabber.android.data.message.chat;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -27,6 +24,9 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Manage chat specific options.
@@ -39,38 +39,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             .parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
     private static final Object PRIVATE_CHAT = new Object();
-
-    /**
-     * Stored input for user in account.
-     */
-    private final NestedMap<ChatInput> chatInputs;
-
-    /**
-     * List of chats whose messages mustn't be saved for user in account.
-     */
-    private final NestedMap<Object> privateChats;
-
-    /**
-     * Whether notification in visible chat should be used for user in account.
-     */
-    private final NestedMap<Boolean> notifyVisible;
-
-    /**
-     * Whether text of incoming message should be shown in notification bar for
-     * user in account.
-     */
-    private final NestedMap<Boolean> showText;
-
-    /**
-     * Whether vibro notification should be used for user in account.
-     */
-    private final NestedMap<Boolean> makeVibro;
-
-    /**
-     * Sound, associated with chat for user in account.
-     */
-    private final NestedMap<Uri> sounds;
-
     private final static ChatManager instance;
 
     static {
@@ -78,24 +46,50 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         Application.getInstance().addManager(instance);
     }
 
-    public static ChatManager getInstance() {
-        return instance;
-    }
+    /**
+     * Stored input for user in account.
+     */
+    private final NestedMap<ChatInput> chatInputs;
+    /**
+     * List of chats whose messages mustn't be saved for user in account.
+     */
+    private final NestedMap<Object> privateChats;
+    /**
+     * Whether notification in visible chat should be used for user in account.
+     */
+    private final NestedMap<Boolean> notifyVisible;
+    /**
+     * Whether text of incoming message should be shown in notification bar for
+     * user in account.
+     */
+    private final NestedMap<ShowMessageTextInNotification> showText;
+    /**
+     * Whether vibro notification should be used for user in account.
+     */
+    private final NestedMap<Boolean> makeVibro;
+    /**
+     * Sound, associated with chat for user in account.
+     */
+    private final NestedMap<Uri> sounds;
 
     private ChatManager() {
         chatInputs = new NestedMap<ChatInput>();
         privateChats = new NestedMap<Object>();
         sounds = new NestedMap<Uri>();
-        showText = new NestedMap<Boolean>();
+        showText = new NestedMap<>();
         makeVibro = new NestedMap<Boolean>();
         notifyVisible = new NestedMap<Boolean>();
+    }
+
+    public static ChatManager getInstance() {
+        return instance;
     }
 
     @Override
     public void onLoad() {
         final Set<BaseEntity> privateChats = new HashSet<BaseEntity>();
         final NestedMap<Boolean> notifyVisible = new NestedMap<Boolean>();
-        final NestedMap<Boolean> showText = new NestedMap<Boolean>();
+        final NestedMap<ShowMessageTextInNotification> showText = new NestedMap<>();
         final NestedMap<Boolean> makeVibro = new NestedMap<Boolean>();
         final NestedMap<Uri> sounds = new NestedMap<Uri>();
         Cursor cursor;
@@ -174,7 +168,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     }
 
     private void onLoaded(Set<BaseEntity> privateChats,
-                          NestedMap<Boolean> notifyVisible, NestedMap<Boolean> showText,
+                          NestedMap<Boolean> notifyVisible, NestedMap<ShowMessageTextInNotification> showText,
                           NestedMap<Boolean> vibro, NestedMap<Uri> sounds) {
         for (BaseEntity baseEntity : privateChats)
             this.privateChats.put(baseEntity.getAccount(),
@@ -316,14 +310,27 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * Common value if there is no user specific value.
      */
     public boolean isShowText(String account, String user) {
-        Boolean value = showText.get(account, user);
-        if (value == null)
-            return SettingsManager.eventsShowText();
-        return value;
+        switch (getShowText(account, user)) {
+            case show:
+                return true;
+            case hide:
+                return false;
+            case default_settings:
+            default:
+                return SettingsManager.eventsShowText();
+        }
     }
 
-    public void setShowText(final String account, final String user,
-                            final boolean value) {
+    public ShowMessageTextInNotification getShowText(String account, String user) {
+        ShowMessageTextInNotification showMessageTextInNotification = showText.get(account, user);
+        if (showMessageTextInNotification == null) {
+            return ShowMessageTextInNotification.default_settings;
+        } else {
+            return showMessageTextInNotification;
+        }
+    }
+
+    public void setShowText(final String account, final String user, final ShowMessageTextInNotification value) {
         showText.put(account, user, value);
         Application.getInstance().runInBackground(new Runnable() {
             @Override

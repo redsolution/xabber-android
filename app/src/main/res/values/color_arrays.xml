@@ -67,6 +67,16 @@
         <item>@color/teal_50</item>
     </array>
 
+    <array name="account_900">
+        <item>@color/green_900</item>
+        <item>@color/orange_900</item>
+        <item>@color/red_900</item>
+        <item>@color/blue_900</item>
+        <item>@color/indigo_900</item>
+        <item>@color/blue_grey_900</item>
+        <item>@color/cyan_900</item>
+        <item>@color/teal_900</item>
+    </array>
 
     <color name="color_primary_light">@color/grey_200</color>
 

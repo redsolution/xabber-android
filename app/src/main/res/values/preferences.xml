@@ -485,7 +485,25 @@
 <!-- preference_chat -->
     <string name="chat_save_history_key">chat_save_history</string>
     <string name="chat_events_sound_key">chat_events_sound</string>
-    <string name="chat_events_show_text_key">chat_events_show_text</string>
+    <string name="chat_events_show_text_key">chat_events_show_message_text</string>
+
+    <string-array name="chat_events_show_text_entries">
+        <item>@string/chat_events_show_text_global</item>
+        <item>@string/chat_events_show_text_always</item>
+        <item>@string/chat_events_show_text_never</item>
+    </string-array>
+    <string-array name="chat_events_show_text_entry_values">
+        <item>@string/chat_events_show_text_global_value</item>
+        <item>@string/chat_events_show_text_always_value</item>
+        <item>@string/chat_events_show_text_never_value</item>
+    </string-array>
+
+    <string name="chat_events_show_text_global_value">default</string>
+    <string name="chat_events_show_text_always_value">always</string>
+    <string name="chat_events_show_text_never_value">never</string>
+
+    <string name="chat_events_show_text_default">@string/chat_events_show_text_global_value</string>
+
     <string name="chat_events_vibro_key">chat_events_vibro</string>
     <string name="chat_events_visible_chat_key">chat_events_visible_chat</string>
 
