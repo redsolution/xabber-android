@@ -62,56 +62,45 @@ public abstract class AbstractChat extends BaseEntity {
      * Number of messages from history to be shown for context purpose.
      */
     private static final int PRELOADED_MESSAGES = 3;
-
-    /**
-     * Current thread id.
-     */
-    private String threadId;
-
-    /**
-     * Whether chat is open and should be displayed as active chat.
-     */
-    protected boolean active;
-
-    /**
-     * Whether changes in status should be record.
-     */
-    protected boolean trackStatus;
-
-    /**
-     * Whether user never received notifications from this chat.
-     */
-    protected boolean firstNotification;
-
-    /**
-     * Last incoming message's text.
-     */
-    protected String lastText;
-
-    /**
-     * Last message's time.
-     */
-    protected Date lastTime;
-
     /**
      * Ids of messages not loaded in to the memory.
      * <p/>
      * MUST BE ACCESSED FROM BACKGROUND THREAD ONLY.
      */
     protected final Collection<Long> historyIds;
-
     /**
      * Sorted list of messages in this chat.
      */
     protected final List<MessageItem> messages;
-
     /**
      * List of messages to be sent.
      */
     protected final Collection<MessageItem> sendQuery;
-
+    /**
+     * Whether chat is open and should be displayed as active chat.
+     */
+    protected boolean active;
+    /**
+     * Whether changes in status should be record.
+     */
+    protected boolean trackStatus;
+    /**
+     * Whether user never received notifications from this chat.
+     */
+    protected boolean firstNotification;
+    /**
+     * Last incoming message's text.
+     */
+    protected String lastText;
+    /**
+     * Last message's time.
+     */
+    protected Date lastTime;
     protected Date creationTime = new Date();
-
+    /**
+     * Current thread id.
+     */
+    private String threadId;
     private boolean isLastMessageIncoming;
 
     protected AbstractChat(final String account, final String user) {
@@ -396,6 +385,11 @@ public abstract class AbstractChat extends BaseEntity {
                 .getInstance().getSecurityLevel(account, user) != SecurityLevel.plain)))
             save = false;
         Date timestamp = new Date();
+
+        if (text.trim().isEmpty()) {
+            notify = false;
+        }
+
         if (notify || !incoming)
             openChat();
         if (!incoming)
