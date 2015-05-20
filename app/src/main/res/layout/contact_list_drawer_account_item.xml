@@ -68,7 +68,7 @@
             android:singleLine="true"
             android:text="example@example.com"
             android:textColor="@color/grey_500"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/status"
