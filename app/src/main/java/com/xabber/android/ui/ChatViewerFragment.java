@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,6 +131,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 NavUtils.navigateUpFromSameTask(getActivity());
             }
         });
+
+        setHasOptionsMenu(true);
 
         AccountPainter accountPainter = new AccountPainter(getActivity());
         toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
@@ -324,6 +327,23 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
         updateChat();
+    }
+
+    /**
+     * This method used for hardware menu button
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.chat, menu);
+        setUpOptionsMenu(menu);
+    }
+
+    /**
+     * This method used for hardware menu button
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return onMenuItemClick(item);
     }
 
     private void setUpOptionsMenu(Menu menu) {
