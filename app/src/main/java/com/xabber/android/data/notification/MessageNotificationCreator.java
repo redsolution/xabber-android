@@ -2,8 +2,6 @@ package com.xabber.android.data.notification;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -11,12 +9,10 @@ import android.text.style.StyleSpan;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.helper.AccountPainter;
@@ -29,7 +25,6 @@ public class MessageNotificationCreator {
     private final Application application;
     private final AccountPainter accountPainter;
     private List<MessageNotification> messageNotifications;
-    private NotificationCompat.Builder notificationBuilder;
 
     public MessageNotificationCreator() {
         application = Application.getInstance();
@@ -56,7 +51,7 @@ public class MessageNotificationCreator {
 
         boolean showText  = ChatManager.getInstance().isShowText(message.getAccount(), message.getUser());
 
-        notificationBuilder = new NotificationCompat.Builder(application);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
         notificationBuilder.setSubText(message.getAccount());
@@ -75,7 +70,7 @@ public class MessageNotificationCreator {
         notificationBuilder.setCategory(NotificationCompat.CATEGORY_MESSAGE);
         notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        addEffects(messageItem);
+        NotificationManager.addEffects(notificationBuilder, messageItem);
 
         return notificationBuilder.build();
     }
@@ -205,18 +200,4 @@ public class MessageNotificationCreator {
         return PendingIntent.getActivity(application, 0, chatIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private void addEffects(MessageItem messageItem) {
-        if (messageItem == null) {
-            return;
-        }
-        if (messageItem.getChat().getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
-            Uri sound = PhraseManager.getInstance().getSound(messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser(), messageItem.getText());
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser());
-
-            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
-                    makeVibration, sound, AudioManager.STREAM_NOTIFICATION);
-        }
-    }
 }

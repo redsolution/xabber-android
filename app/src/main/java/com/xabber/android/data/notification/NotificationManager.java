@@ -19,6 +19,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -40,6 +41,8 @@ import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ClearNotifications;
 import com.xabber.android.ui.ContactList;
@@ -64,6 +67,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
     public static final int MESSAGE_NOTIFICATION_ID = 2;
+    public static final int CURRENT_CHAT_MESSAGE_NOTIFICATION_ID = 3;
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
@@ -151,6 +155,21 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public static NotificationManager getInstance() {
         return instance;
+    }
+
+    public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem) {
+        if (messageItem == null) {
+            return;
+        }
+        if (messageItem.getChat().getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
+            Uri sound = PhraseManager.getInstance().getSound(messageItem.getChat().getAccount(),
+                    messageItem.getChat().getUser(), messageItem.getText());
+            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getChat().getAccount(),
+                    messageItem.getChat().getUser());
+
+            NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
+                    makeVibration, sound, AudioManager.STREAM_NOTIFICATION);
+        }
     }
 
     private void initPersistentNotification() {
@@ -417,8 +436,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         return connectionState;
     }
 
-
-
     private void notify(int id, Notification notification) {
         LogManager.i(this, "Notification: " + id
                 + ", ticker: " + notification.tickerText
@@ -441,41 +458,40 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         return null;
     }
 
-    /**
-     * Shows ticker with the message and updates message notification.
-     *
-     * @param messageItem
-     * @param addNotification Whether notification should be stored.
-     */
-    public void onMessageNotification(MessageItem messageItem, boolean addNotification) {
-        if (addNotification) {
-            MessageNotification messageNotification = getMessageNotification(
-                    messageItem.getChat().getAccount(), messageItem.getChat().getUser());
-            if (messageNotification == null) {
-                messageNotification = new MessageNotification(
-                        messageItem.getChat().getAccount(), messageItem.getChat().getUser(), null, null, 0);
-            } else {
-                messageNotifications.remove(messageNotification);
-            }
-            messageNotification.addMessage(messageItem.getText());
-            messageNotifications.add(messageNotification);
-
-            final String account = messageNotification.getAccount();
-            final String user = messageNotification.getUser();
-            final String text = messageNotification.getText();
-            final Date timestamp = messageNotification.getTimestamp();
-            final int count = messageNotification.getCount();
-
-            if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore) {
-                Application.getInstance().runInBackground(new Runnable() {
-                    @Override
-                    public void run() {
-                        NotificationTable.getInstance().write(account, user, text, timestamp, count);
-                    }
-                });
-            }
+    public void onMessageNotification(MessageItem messageItem) {
+        MessageNotification messageNotification = getMessageNotification(
+                messageItem.getChat().getAccount(), messageItem.getChat().getUser());
+        if (messageNotification == null) {
+            messageNotification = new MessageNotification(
+                    messageItem.getChat().getAccount(), messageItem.getChat().getUser(), null, null, 0);
+        } else {
+            messageNotifications.remove(messageNotification);
         }
+        messageNotification.addMessage(messageItem.getText());
+        messageNotifications.add(messageNotification);
+
+        final String account = messageNotification.getAccount();
+        final String user = messageNotification.getUser();
+        final String text = messageNotification.getText();
+        final Date timestamp = messageNotification.getTimestamp();
+        final int count = messageNotification.getCount();
+
+        if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore) {
+            Application.getInstance().runInBackground(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationTable.getInstance().write(account, user, text, timestamp, count);
+                }
+            });
+        }
+
         updateMessageNotification(messageItem);
+    }
+
+    public void onCurrentChatMessageNotification(MessageItem messageItem) {
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
+        addEffects(notificationBuilder, messageItem);
+        notify(CURRENT_CHAT_MESSAGE_NOTIFICATION_ID, notificationBuilder.build());
     }
 
     /**
