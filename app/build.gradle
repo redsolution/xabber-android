@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 182
-        versionName '1.0.10'
+        versionCode 183
+        versionName '1.0.11'
     }
 
     compileOptions {
