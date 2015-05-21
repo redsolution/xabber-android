@@ -55,7 +55,7 @@
             android:singleLine="true"
             android:text="Some Name"
             android:textColor="@color/green_700"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/account_jid"
@@ -79,6 +79,7 @@
             android:gravity="top"
             android:singleLine="true"
             android:text="Online"
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
     </LinearLayout>
 </LinearLayout>
