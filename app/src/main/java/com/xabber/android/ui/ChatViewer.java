@@ -34,7 +34,6 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.helper.ChatScroller;
-import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 
 /**
@@ -43,7 +42,7 @@ import com.xabber.android.ui.helper.StatusBarPainter;
  *
  * @author alexander.ivanov
  */
-public class ChatViewer extends ManagedActivity implements ChatScroller.ChatScrollerListener, ChatScroller.ChatScrollerProvider {
+public class ChatViewer extends MainBasicActivity implements ChatScroller.ChatScrollerListener, ChatScroller.ChatScrollerProvider {
 
     /**
      * Attention request.
@@ -149,6 +148,11 @@ public class ChatViewer extends ManagedActivity implements ChatScroller.ChatScro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (findViewById(R.id.chat_container) != null) {
+            finish();
+            return;
+        }
 
         if (isFinishing()) {
             return;
@@ -302,7 +306,7 @@ public class ChatViewer extends ManagedActivity implements ChatScroller.ChatScro
     }
 
     @Override
-    public void onAccountSelected(String account) {
+    public void onStatusBarNeedPaint(String account) {
         if (account == null) {
             statusBarPainter.updateWithDefaultColor();
         } else {

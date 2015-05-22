@@ -65,7 +65,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         if (getListAdapter().isEmpty()) {
             Activity activity = getActivity();
             Toast.makeText(activity, R.string.chat_list_is_empty, Toast.LENGTH_LONG).show();
-            activity.finish();
+//            activity.finish();
         }
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
@@ -89,15 +89,18 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     @Override
     public void onResume() {
         super.onResume();
-
-        listener.getChatScroller().registerRecentChatsList(this);
+        if (null != listener.getChatScroller()) {
+            listener.getChatScroller().registerRecentChatsList(this);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        listener.getChatScroller().unregisterRecentChatsList(this);
+        if (null != listener.getChatScroller()) {
+            listener.getChatScroller().unregisterRecentChatsList(this);
+        }
     }
 
     @Override
@@ -111,7 +114,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        if (null != listener) {
+        if (null != listener.getChatScroller()) {
             listener.getChatScroller().onChatSelected((AbstractChat) getListAdapter().getItem(position));
         }
     }
@@ -126,7 +129,9 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     }
 
     public void updateChats() {
-        ((ChatListAdapter) getListAdapter()).updateChats(listener.getChatScroller().getActiveChats());
+        if (listener.getChatScroller() != null) {
+            ((ChatListAdapter) getListAdapter()).updateChats(listener.getChatScroller().getActiveChats());
+        }
     }
 
     public interface RecentChatFragmentInteractionListener {

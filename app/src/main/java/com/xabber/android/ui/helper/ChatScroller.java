@@ -141,9 +141,9 @@ public class ChatScroller implements
 
     private void updateStatusBar() {
         if (isRecentChatsSelected) {
-            listener.onAccountSelected(null);
+            listener.onStatusBarNeedPaint(null);
         } else {
-            listener.onAccountSelected(selectedChat.getAccount());
+            listener.onStatusBarNeedPaint(selectedChat.getAccount());
         }
     }
 
@@ -307,7 +307,7 @@ public class ChatScroller implements
     }
 
     public interface ChatScrollerListener {
-        void onAccountSelected(String account);
+        void onStatusBarNeedPaint(String account);
 
         void onClose();
     }

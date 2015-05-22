@@ -27,9 +27,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
@@ -37,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -64,10 +64,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListene
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.android.ui.preferences.AboutViewer;
-import com.xabber.android.ui.preferences.AccountEditor;
-import com.xabber.android.ui.preferences.PreferenceEditor;
+import com.xabber.android.ui.helper.ChatScroller;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -79,8 +76,9 @@ import java.util.Collection;
  *
  * @author alexander.ivanov
  */
-public class ContactList extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, OnContactClickListener, ContactListDrawerFragment.ContactListDrawerListener {
+public class ContactList extends MainBasicActivity implements OnAccountChangedListener,
+        View.OnClickListener, OnChoosedListener, OnContactClickListener, ChatScroller.ChatScrollerListener,
+        ChatScroller.ChatScrollerProvider {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -108,8 +106,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private SearchView searchView;
     private BarPainter barPainter;
-    private ActionBarDrawerToggle drawerToggle;
-    private DrawerLayout drawerLayout;
+    private boolean isDualPanelView;
+    private ChatScroller chatScroller;
+
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactList.class);
@@ -152,12 +151,19 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             return;
         }
 
-        setContentView(R.layout.contact_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        isDualPanelView = findViewById(R.id.chat_container) != null;
+
+        if (isDualPanelView) {
+            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            LinearLayout chatScrollIndicatorLayout = (LinearLayout) findViewById(R.id.chat_scroll_indicator);
+
+            chatScroller = new ChatScroller(this, viewPager, chatScrollIndicatorLayout);
+            chatScroller.initChats(null);
+        }
+
         toolbar.setOnClickListener(this);
         setSupportActionBar(toolbar);
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short);
         drawerLayout.setDrawerListener(drawerToggle);
 
@@ -324,6 +330,10 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 }
             }
         }
+
+        if (isDualPanelView) {
+            chatScroller.update();
+        }
     }
 
     @Override
@@ -445,7 +455,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         super.onBackPressed();
     }
 
-    private void exit() {
+    @Override
+    protected void exit() {
         Application.getInstance().requestToClose();
         showDialog(DIALOG_CLOSE_APPLICATION_ID);
         getContactListFragment().unregisterListeners();
@@ -508,9 +519,14 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            startActivity(ChatViewer.createSpecificChatIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser()));
-            return;
+            if (isDualPanelView) {
+                chatScroller.setSelectedChat(abstractContact);
+                chatScroller.update();
+            } else {
+                startActivity(ChatViewer.createSpecificChatIntent(this,
+                        abstractContact.getAccount(), abstractContact.getUser()));
+                return;
+            }
         }
         switch (action) {
             case ACTION_ROOM_INVITE: {
@@ -540,8 +556,15 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 break;
             }
             default:
-                startActivity(ChatViewer.createSpecificChatIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser()));
+                if (isDualPanelView) {
+                    chatScroller.initChats(abstractContact);
+                    chatScroller.setSelectedChat(abstractContact);
+                    chatScroller.update();
+                } else {
+                    startActivity(ChatViewer.createSpecificChatIntent(this,
+                            abstractContact.getAccount(), abstractContact.getUser()));
+                    return;
+                }
                 break;
         }
     }
@@ -579,25 +602,17 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     @Override
-    public void onContactListDrawerListener(int viewId) {
-        drawerLayout.closeDrawers();
-        switch (viewId) {
-            case R.id.drawer_action_settings:
-                startActivity(PreferenceEditor.createIntent(this));
-                break;
-            case R.id.drawer_action_about:
-                startActivity(AboutViewer.createIntent(this));
-                break;
-            case R.id.drawer_action_exit:
-                exit();
-                break;
+    public void onStatusBarNeedPaint(String account) {
 
-        }
     }
 
     @Override
-    public void onAccountSelected(String account) {
-        drawerLayout.closeDrawers();
-        startActivity(AccountEditor.createIntent(this, account));
+    public void onClose() {
+
+    }
+
+    @Override
+    public ChatScroller getChatScroller() {
+        return chatScroller;
     }
 }
