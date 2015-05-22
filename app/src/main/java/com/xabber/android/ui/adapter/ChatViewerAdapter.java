@@ -11,6 +11,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.ChatViewerFragment;
 import com.xabber.android.ui.RecentChatFragment;
+import com.xabber.android.ui.helper.ChatScroller;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.ArrayList;
@@ -21,23 +22,22 @@ import static java.lang.Math.abs;
 
 public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
+    private static final int TOTAL_COUNT = 200;
+    private static final int OFFSET = TOTAL_COUNT / 2;
     /**
      * Intent sent while opening chat activity.
      */
     private final AbstractChat intent;
-
     private ArrayList<AbstractChat> activeChats;
-
     private FinishUpdateListener finishUpdateListener;
-
-    private static final int TOTAL_COUNT = 200;
-    private static final int OFFSET = TOTAL_COUNT / 2;
-
+    private RecentChatFragment.RecentChatFragmentInteractionListener recentChatFragmentInteractionListener;
     private Fragment currentFragment;
 
-    public ChatViewerAdapter(FragmentManager fragmentManager, BaseEntity chat, FinishUpdateListener finishUpdateListener) {
+    public ChatViewerAdapter(FragmentManager fragmentManager, BaseEntity chat, ChatScroller chatScroller) {
         super(fragmentManager);
-        this.finishUpdateListener = finishUpdateListener;
+        finishUpdateListener = chatScroller;
+        recentChatFragmentInteractionListener = chatScroller;
+
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
         intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), Jid.getBareAddress(chat.getUser()));
@@ -45,9 +45,10 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         updateChats();
     }
 
-    public ChatViewerAdapter(FragmentManager fragmentManager, FinishUpdateListener finishUpdateListener) {
+    public ChatViewerAdapter(FragmentManager fragmentManager, ChatScroller chatScroller) {
         super(fragmentManager);
-        this.finishUpdateListener = finishUpdateListener;
+        finishUpdateListener = chatScroller;
+        recentChatFragmentInteractionListener = chatScroller;
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
         intent = null;
@@ -165,10 +166,6 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         finishUpdateListener.onChatViewAdapterFinishUpdate();
     }
 
-    public interface FinishUpdateListener {
-        public void onChatViewAdapterFinishUpdate();
-    }
-
     public ArrayList<AbstractChat> getActiveChats() {
         return activeChats;
     }
@@ -191,6 +188,10 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     public Fragment getCurrentFragment() {
         return currentFragment;
+    }
+
+    public interface FinishUpdateListener {
+        void onChatViewAdapterFinishUpdate();
     }
 
 }

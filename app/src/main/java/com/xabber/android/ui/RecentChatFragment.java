@@ -16,12 +16,14 @@ import com.xabber.android.R;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.adapter.ChatListAdapter;
 import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.helper.ChatScroller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuItemClickListener {
-    private RecentChatFragmentInteractionListener listener;
+
+    private ChatScroller.ChatScrollerProvider listener = null;
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -41,17 +43,16 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         setListAdapter(new ChatListAdapter(getActivity()));
     }
 
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        try {
-            listener = (RecentChatFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
+        if (!(activity instanceof ChatScroller.ChatScrollerProvider)) {
             throw new ClassCastException(activity.toString()
-                    + " must implement RecentChatFragmentInteractionListener");
+                    + " must implement ChatScrollerProvider");
         }
+
+        listener = (ChatScroller.ChatScrollerProvider) activity;
     }
 
     @Override
@@ -59,8 +60,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.recent_chats, container, false);
 
-        ArrayList<AbstractChat> activeChats = ((ChatViewer) getActivity()).getChatViewerAdapter().getActiveChats();
-        ((ChatListAdapter) getListAdapter()).updateChats(activeChats);
+        updateChats();
 
         if (getListAdapter().isEmpty()) {
             Activity activity = getActivity();
@@ -90,14 +90,14 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     public void onResume() {
         super.onResume();
 
-        ((ChatViewer)getActivity()).registerRecentChatsList(this);
+        listener.getChatScroller().registerRecentChatsList(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ((ChatViewer)getActivity()).unregisterRecentChatsList(this);
+        listener.getChatScroller().unregisterRecentChatsList(this);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         super.onListItemClick(l, v, position, id);
 
         if (null != listener) {
-            listener.onChatSelected((AbstractChat) getListAdapter().getItem(position));
+            listener.getChatScroller().onChatSelected((AbstractChat) getListAdapter().getItem(position));
         }
     }
 
@@ -125,11 +125,17 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         return false;
     }
 
-    public void updateChats(List<AbstractChat> chats) {
-        ((ChatListAdapter) getListAdapter()).updateChats(chats);
+    public void updateChats() {
+        ((ChatListAdapter) getListAdapter()).updateChats(listener.getChatScroller().getActiveChats());
     }
 
     public interface RecentChatFragmentInteractionListener {
         void onChatSelected(AbstractChat chat);
+
+        void registerRecentChatsList(RecentChatFragment fragment);
+
+        void unregisterRecentChatsList(RecentChatFragment fragment);
+
+        List<AbstractChat> getActiveChats();
     }
 }

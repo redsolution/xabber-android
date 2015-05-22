@@ -50,6 +50,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.helper.ChatScroller;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
@@ -70,7 +71,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private ImageButton securityButton;
     private Toolbar toolbar;
 
-    private ChatViewerFragmentListener listener;
+    private ChatScroller.ChatScrollerProvider listener = null;
     private Animation shakeAnimation = null;
     private RecyclerView recyclerView;
     private View contactTitleView;
@@ -92,12 +93,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        try {
-            listener = (ChatViewerFragmentListener) activity;
-        } catch (ClassCastException e) {
+        if (!(activity instanceof ChatScroller.ChatScrollerProvider)) {
             throw new ClassCastException(activity.toString()
-                    + " must implement ChatViewerFragmentListener");
+                    + " must implement ChatScrollerProvider");
         }
+
+        listener = (ChatScroller.ChatScrollerProvider) activity;
     }
 
     @Override
@@ -224,7 +225,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Override
     public void onResume() {
         super.onResume();
-        listener.registerChat(this);
+        listener.getChatScroller().registerChat(this);
         updateChat();
         restoreInputState();
     }
@@ -296,7 +297,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onPause() {
         super.onPause();
         saveInputState();
-        listener.unregisterChat(this);
+        listener.getChatScroller().unregisterChat(this);
     }
 
     public void saveInputState() {
@@ -315,7 +316,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         sendMessage(text);
 
-        listener.onMessageSent();
+        listener.getChatScroller().onMessageSent();
 
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
@@ -579,7 +580,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private void closeChat(String account, String user) {
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
-        listener.onCloseChat();
+        listener.getChatScroller().onCloseChat();
     }
 
     private void clearHistory(String account, String user) {
