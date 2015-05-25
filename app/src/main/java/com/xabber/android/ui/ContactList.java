@@ -28,7 +28,9 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
@@ -78,7 +80,7 @@ import java.util.Collection;
  */
 public class ContactList extends MainBasicActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChoosedListener, OnContactClickListener, ChatScroller.ChatScrollerListener,
-        ChatScroller.ChatScrollerProvider {
+        ChatScroller.ChatScrollerProvider, Toolbar.OnMenuItemClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -108,7 +110,6 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
     private BarPainter barPainter;
     private boolean isDualPanelView;
     private ChatScroller chatScroller;
-
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactList.class);
@@ -162,18 +163,18 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
         }
 
         toolbar.setOnClickListener(this);
-        setSupportActionBar(toolbar);
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short);
         drawerLayout.setDrawerListener(drawerToggle);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
-
+        toolbar.inflateMenu(R.menu.contact_list);
+        setUpSearchView(toolbar.getMenu());
+        toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
-        setTitle(getString(R.string.application_title_full));
+        toolbar.setTitle(R.string.application_title_full);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -354,13 +355,13 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.contact_list, menu);
-        setUpSearchView(menu);
+        menu.findItem(R.id.action_search).setVisible(false);
         return true;
     }
 
     private void setUpSearchView(final Menu menu) {
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint("Search contact");
+        searchView.setQueryHint(getString(R.string.contact_search_hint));
 
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
@@ -381,13 +382,11 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                LogManager.i(this, "onMenuItemActionCollapse");
                 searchView.setQuery("", true);
                 searchView.clearFocus();
                 return true;
             }
         });
-
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -402,6 +401,11 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
                 return true;
             }
         });
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onOptionsItemSelected(item);
     }
 
     @Override

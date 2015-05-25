@@ -64,7 +64,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     boolean isInputEmpty = true;
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
-    private boolean skipOnTextChanges;
+    private boolean skipOnTextChanges = false;
     private String account;
     private String user;
     private ImageButton sendButton;
@@ -78,6 +78,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
     private MessageItem clickedMessageItem;
+    private AccountPainter accountPainter;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -135,8 +136,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         setHasOptionsMenu(true);
 
-        AccountPainter accountPainter = new AccountPainter(getActivity());
-        toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        accountPainter = new AccountPainter(getActivity());
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
@@ -186,15 +186,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     return true;
                 }
                 return false;
-            }
-        });
-
-        inputView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    ChatStateManager.getInstance().onPaused(account, user);
-                }
             }
         });
 
@@ -379,6 +370,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
+        toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
         int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
         chatMessageAdapter.onChange();
         scrollChat(itemCountBeforeUpdate);
