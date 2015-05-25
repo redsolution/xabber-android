@@ -43,7 +43,6 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -80,7 +79,7 @@ import java.util.Collection;
  * @author alexander.ivanov
  */
 public class ContactList extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, OnContactClickListener, ContactListDrawerFragment.ContactListDrawerListener {
+        View.OnClickListener, OnChoosedListener, OnContactClickListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -155,19 +154,19 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         setContentView(R.layout.contact_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setOnClickListener(this);
-        setSupportActionBar(toolbar);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short);
         drawerLayout.setDrawerListener(drawerToggle);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
-
+        toolbar.inflateMenu(R.menu.contact_list);
+        setUpSearchView(toolbar.getMenu());
+        toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
-        setTitle(getString(R.string.application_title_full));
+        toolbar.setTitle(R.string.application_title_full);
 
         if (savedInstanceState != null) {
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
@@ -344,13 +343,13 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.contact_list, menu);
-        setUpSearchView(menu);
+        menu.findItem(R.id.action_search).setVisible(false);
         return true;
     }
 
     private void setUpSearchView(final Menu menu) {
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setQueryHint("Search contact");
+        searchView.setQueryHint(getString(R.string.contact_search_hint));
 
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
@@ -371,13 +370,11 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                LogManager.i(this, "onMenuItemActionCollapse");
                 searchView.setQuery("", true);
                 searchView.clearFocus();
                 return true;
             }
         });
-
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -392,6 +389,11 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 return true;
             }
         });
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onOptionsItemSelected(item);
     }
 
     @Override

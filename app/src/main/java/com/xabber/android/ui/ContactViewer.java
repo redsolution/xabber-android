@@ -43,10 +43,9 @@ import java.util.List;
 public class ContactViewer extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener {
 
+    protected ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private String account;
     private String bareAddress;
-
-    private ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private TextView contactNameView;
 
     public static Intent createIntent(Context context, String account, String user) {

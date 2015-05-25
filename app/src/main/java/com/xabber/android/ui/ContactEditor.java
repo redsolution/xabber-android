@@ -4,9 +4,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import com.xabber.android.R;
@@ -17,11 +21,33 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 
-public class ContactEditor extends ContactViewer {
+public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemClickListener {
 
     public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, ContactEditor.class)
                 .setAccount(account).setUser(user).build();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Toolbar toolbar = contactTitleExpandableToolbarInflater.getToolbar();
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getBareAddress());
+        if (rosterContact != null) {
+            toolbar.inflateMenu(R.menu.contact_viewer);
+            toolbar.setOnMenuItemClickListener(this);
+        }
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(ContactEditor.this);
+            }
+        });
+
     }
 
     @Override
@@ -32,6 +58,11 @@ public class ContactEditor extends ContactViewer {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onOptionsItemSelected(item);
     }
 
     @Override
