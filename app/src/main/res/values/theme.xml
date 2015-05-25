@@ -20,8 +20,8 @@
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
 
-        <!-- for hardware button menu -->
-        <item name="panelBackground">?attr/colorPrimary</item>
+        <!--&lt;!&ndash; for hardware button menu &ndash;&gt;-->
+        <!--<item name="panelBackground">?attr/colorPrimary</item>-->
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
