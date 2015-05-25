@@ -63,7 +63,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     boolean isInputEmpty = true;
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
-    private boolean skipOnTextChanges;
+    private boolean skipOnTextChanges = false;
     private String account;
     private String user;
     private ImageButton sendButton;
@@ -185,15 +185,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     return true;
                 }
                 return false;
-            }
-        });
-
-        inputView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    ChatStateManager.getInstance().onPaused(account, user);
-                }
             }
         });
 
