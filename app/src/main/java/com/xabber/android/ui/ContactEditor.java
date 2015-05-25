@@ -26,7 +26,11 @@ public class ContactEditor extends ContactViewer {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.contact_viewer, menu);
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getBareAddress());
+        if (rosterContact != null) {
+            getMenuInflater().inflate(R.menu.contact_viewer, menu);
+        }
+
         return true;
     }
 
