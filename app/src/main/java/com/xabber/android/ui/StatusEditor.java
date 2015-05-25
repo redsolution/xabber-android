@@ -101,11 +101,12 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         listView.setOnItemClickListener(this);
         registerForContextMenu(listView);
         adapter = new StatusEditorAdapter(this);
-        setListAdapter(adapter);
 
         View footerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.status_history_footer, null, false);
         footerView.findViewById(R.id.clear_status_history_button).setOnClickListener(this);
         listView.addFooterView(footerView);
+
+        setListAdapter(adapter);
 
         statusTextView = (EditText) findViewById(R.id.status_text);
         statusModeView = (Spinner) findViewById(R.id.status_icon);
@@ -190,10 +191,6 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         switch (item.getItemId()) {
             case R.id.action_change_status:
                 changeStatus();
-                return true;
-
-            case R.id.action_clear_status_history:
-                clearStatusHistory();
                 return true;
         }
         return false;
