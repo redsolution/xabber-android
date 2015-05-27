@@ -23,7 +23,8 @@ import java.util.List;
 public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuItemClickListener {
 
     private ChatScroller.ChatScrollerProvider listener = null;
-
+    private AccountPainter accountPainter;
+    private Toolbar toolbar;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,28 +61,24 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.recent_chats, container, false);
 
-        updateChats();
-
-        if (getListAdapter().isEmpty()) {
-            Activity activity = getActivity();
-            Toast.makeText(activity, R.string.chat_list_is_empty, Toast.LENGTH_LONG).show();
-//            activity.finish();
-        }
-
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
         toolbar.setTitle(R.string.recent_chats);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(getActivity());
-            }
-        });
+
+        if (!getResources().getBoolean(R.bool.landscape)) {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+            });
+        }
         toolbar.inflateMenu(R.menu.recent_chats);
         toolbar.setOnMenuItemClickListener(this);
 
-        AccountPainter accountPainter = new AccountPainter(getActivity());
-        toolbar.setBackgroundColor(accountPainter.getDefaultMainColor());
+        accountPainter = new AccountPainter(getActivity());
+
+        updateChats();
 
         return rootView;
     }
@@ -92,6 +89,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         if (null != listener.getChatScroller()) {
             listener.getChatScroller().registerRecentChatsList(this);
         }
+        toolbar.setBackgroundColor(accountPainter.getDefaultMainColor());
     }
 
     @Override
@@ -129,7 +127,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     }
 
     public void updateChats() {
-        if (listener.getChatScroller() != null) {
+        if (listener.getChatScroller().isInitialized()) {
             ((ChatListAdapter) getListAdapter()).updateChats(listener.getChatScroller().getActiveChats());
         }
     }

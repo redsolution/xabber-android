@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -79,6 +80,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     }
 
     public boolean updateChats() {
+        LogManager.i(this, "updateChats");
 
         ArrayList<AbstractChat> newChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
 
@@ -99,9 +101,18 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         }
 
         activeChats = newChats;
+
+        LogManager.i(this, "activeChats size " + activeChats.size());
+
         notifyDataSetChanged();
 
         return true;
+    }
+
+    public void clear() {
+        LogManager.i(this, "clear");
+        activeChats.clear();
+        notifyDataSetChanged();
     }
 
     private boolean isChatsEquals(ArrayList<AbstractChat> newChats) {

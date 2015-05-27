@@ -2,7 +2,10 @@ package com.xabber.android.ui.helper;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
 import com.xabber.android.R;
@@ -13,9 +16,9 @@ import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ChatViewerFragment;
 import com.xabber.android.ui.RecentChatFragment;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
@@ -34,61 +37,48 @@ public class ChatScroller implements
         RecentChatFragment.RecentChatFragmentInteractionListener,
         ChatViewerFragment.ChatViewerFragmentListener {
 
+    private final ChatManager chatManager;
+    Activity activity;
     ViewPager viewPager;
     ChatViewerAdapter chatViewerAdapter;
     ChatScrollIndicatorAdapter chatScrollIndicatorAdapter;
     Collection<ChatViewerFragment> registeredChats = new HashSet<>();
     Collection<RecentChatFragment> recentChatFragments = new HashSet<>();
     ChatScrollerListener listener;
-    Activity activity;
-    private boolean isRecentChatsSelected;
-    private BaseEntity selectedChat = null;
-    private boolean isVisible;
     private String extraText = null;
-    private boolean exitOnSend = false;
 
-    public ChatScroller(Activity activity, ViewPager viewPager, LinearLayout chatScrollIndicatorLayout) {
-        this.viewPager = viewPager;
+    public ChatScroller(Activity activity) {
+        chatManager = ChatManager.getInstance();
         this.activity = activity;
         this.listener = (ChatScrollerListener) activity;
+
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    public void createView(ViewPager viewPager, LinearLayout chatScrollIndicatorLayout) {
+        this.viewPager = viewPager;
         this.chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(activity, chatScrollIndicatorLayout);
     }
 
-    public BaseEntity getSelectedChat() {
-        return selectedChat;
+    public void onHide() {
+        MessageManager.getInstance().removeVisibleChat();
     }
 
-    public void setSelectedChat(BaseEntity selectedChat) {
-        this.selectedChat = selectedChat;
-        isRecentChatsSelected = selectedChat == null;
-    }
+    public void initChats() {
 
-    public void setIsVisible(boolean isVisible) {
-        this.isVisible = isVisible;
-        if (!isVisible) {
-            MessageManager.getInstance().removeVisibleChat();
-        }
-    }
-
-    public boolean isExitOnSend() {
-        return exitOnSend;
-    }
-
-    public void setExitOnSend(boolean exitOnSend) {
-        this.exitOnSend = exitOnSend;
-    }
-
-    public void setExtraText(String extraText) {
-        this.extraText = extraText;
-    }
-
-    public void initChats(BaseEntity initialChat) {
-        if (initialChat != null) {
-            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), initialChat, this);
+        if (chatManager.getInitialChat() != null) {
+            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), chatManager.getInitialChat(), this);
         } else {
             chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), this);
         }
-
 
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.setOnPageChangeListener(this);
@@ -101,16 +91,20 @@ public class ChatScroller implements
     }
 
     public void update() {
+        if (!isInitialized()) {
+            return;
+        }
+
         chatViewerAdapter.updateChats();
         chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
         selectPage();
     }
 
     private void selectPage() {
-        if (isRecentChatsSelected) {
+        if (chatManager.getSelectedChat() == null) {
             selectRecentChatsPage();
         } else {
-            selectChatPage(selectedChat, false);
+            selectChatPage(chatManager.getSelectedChat(), false);
         }
     }
 
@@ -140,7 +134,8 @@ public class ChatScroller implements
     }
 
     private void updateStatusBar() {
-        if (isRecentChatsSelected) {
+        BaseEntity selectedChat = chatManager.getSelectedChat();
+        if (selectedChat == null) {
             listener.onStatusBarNeedPaint(null);
         } else {
             listener.onStatusBarNeedPaint(selectedChat.getAccount());
@@ -153,6 +148,10 @@ public class ChatScroller implements
 
     @Override
     public void onChatChanged(final String account, final String user, final boolean incoming) {
+        if (!isInitialized()) {
+            return;
+        }
+
         if (chatViewerAdapter.updateChats()) {
             chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
             selectPage();
@@ -162,7 +161,7 @@ public class ChatScroller implements
             updateStatusBar();
 
             for (ChatViewerFragment chat : registeredChats) {
-                if (chat.isEqual(selectedChat) && incoming) {
+                if (chat.isEqual(new BaseEntity(account, user)) && incoming) {
                     chat.playIncomingAnimation();
                 }
             }
@@ -202,18 +201,17 @@ public class ChatScroller implements
 
     @Override
     public void onPageSelected(int position) {
-        ChatViewer.hideKeyboard(activity);
+        hideKeyboard(activity);
         chatScrollIndicatorAdapter.select(chatViewerAdapter.getRealPagePosition(position));
 
-        setSelectedChat(chatViewerAdapter.getChatByPageNumber(position));
+        chatManager.setSelectedChat(chatViewerAdapter.getChatByPageNumber(position));
 
-        if (isRecentChatsSelected) {
+        if (chatManager.getSelectedChat() == null) {
             MessageManager.getInstance().removeVisibleChat();
         } else {
-            if (isVisible) {
-                MessageManager.getInstance().setVisibleChat(selectedChat);
-            }
+            BaseEntity selectedChat = chatManager.getSelectedChat();
 
+            MessageManager.getInstance().setVisibleChat(selectedChat);
             MessageArchiveManager.getInstance().requestHistory(selectedChat.getAccount(), selectedChat.getUser(), 0,
                     MessageManager.getInstance().getChat(selectedChat.getAccount(), selectedChat.getUser()).getRequiredMessageCount());
 
@@ -253,18 +251,17 @@ public class ChatScroller implements
 
     /**
      * ChatViewerFragmentListener
+     * @param baseEntity
      */
 
     @Override
-    public void onCloseChat() {
-        listener.onClose();
+    public void onCloseChat(BaseEntity chat) {
+        update();
+        listener.onClose(chat);
     }
 
     @Override
     public void onMessageSent() {
-        if (exitOnSend) {
-            listener.onClose();
-        }
     }
 
     @Override
@@ -295,7 +292,7 @@ public class ChatScroller implements
         boolean isExtraTextInserted = false;
 
         for (ChatViewerFragment chat : registeredChats) {
-            if (chat.isEqual(selectedChat)) {
+            if (chat.isEqual(ChatManager.getInstance().getSelectedChat())) {
                 chat.setInputText(extraText);
                 isExtraTextInserted = true;
             }
@@ -306,14 +303,17 @@ public class ChatScroller implements
         }
     }
 
+    public boolean isInitialized() {
+        return chatViewerAdapter != null;
+    }
+
     public interface ChatScrollerListener {
         void onStatusBarNeedPaint(String account);
 
-        void onClose();
+        void onClose(BaseEntity chat);
     }
 
     public interface ChatScrollerProvider {
         ChatScroller getChatScroller();
     }
-
 }

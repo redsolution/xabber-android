@@ -28,7 +28,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -45,7 +44,6 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -56,6 +54,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
@@ -66,7 +65,6 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListene
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ChatScroller;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -78,9 +76,8 @@ import java.util.Collection;
  *
  * @author alexander.ivanov
  */
-public class ContactList extends MainBasicActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, OnContactClickListener, ChatScroller.ChatScrollerListener,
-        ChatScroller.ChatScrollerProvider, Toolbar.OnMenuItemClickListener {
+public class ContactList extends ChatIntentActivity implements OnAccountChangedListener,
+        View.OnClickListener, OnChoosedListener, OnContactClickListener, Toolbar.OnMenuItemClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -109,7 +106,6 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
     private SearchView searchView;
     private BarPainter barPainter;
     private boolean isDualPanelView;
-    private ChatScroller chatScroller;
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactList.class);
@@ -158,8 +154,8 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
             ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
             LinearLayout chatScrollIndicatorLayout = (LinearLayout) findViewById(R.id.chat_scroll_indicator);
 
-            chatScroller = new ChatScroller(this, viewPager, chatScrollIndicatorLayout);
-            chatScroller.initChats(null);
+            chatScroller.createView(viewPager, chatScrollIndicatorLayout);
+            chatScroller.initChats();
         }
 
         toolbar.setOnClickListener(this);
@@ -194,7 +190,6 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
         super.onNewIntent(intent);
         setIntent(intent);
         action = getIntent().getAction();
-        getIntent().setAction(null);
     }
 
     @Override
@@ -255,10 +250,10 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
      */
     private void openChat(BaseEntity baseEntity, String text) {
         if (text == null) {
-            startActivity(ChatViewer.createSendIntent(this,
+            startActivity(ChatIntentActivity.createSendIntent(this,
                     baseEntity.getAccount(), baseEntity.getUser(), null));
         } else {
-            startActivity(ChatViewer.createSendIntent(this,
+            startActivity(ChatIntentActivity.createSendIntent(this,
                     baseEntity.getAccount(), baseEntity.getUser(), text));
         }
         finish();
@@ -313,6 +308,11 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
                     }
                     break;
                 }
+
+                case ACTION_SPECIFIC_CHAT:
+                case ACTION_ATTENTION:
+                case ACTION_SHORTCUT:
+                    startChat(ChatManager.getInstance().getSelectedChat());
             }
         }
 
@@ -332,9 +332,6 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
             }
         }
 
-        if (isDualPanelView) {
-            chatScroller.update();
-        }
     }
 
     @Override
@@ -431,7 +428,7 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
                 startActivity(ConferenceAdd.createIntent(this));
                 return true;
             case R.id.action_chat_list:
-                startActivity(ChatViewer.createRecentChatsIntent(this));
+                startChat(null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -480,6 +477,13 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
                     removeMessageNotification(chat.getAccount(), chat.getUser());
         }
         getContactListFragment().getAdapter().onChange();
+        ChatManager.getInstance().setInitialChat(null);
+        ChatManager.getInstance().setSelectedChat(null);
+
+        if (isDualPanelView) {
+            chatScroller.initChats();
+            chatScroller.update();
+        }
     }
 
     private ContactListFragment getContactListFragment() {
@@ -523,14 +527,8 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            if (isDualPanelView) {
-                chatScroller.setSelectedChat(abstractContact);
-                chatScroller.update();
-            } else {
-                startActivity(ChatViewer.createSpecificChatIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser()));
-                return;
-            }
+            startChat(abstractContact);
+            return;
         }
         switch (action) {
             case ACTION_ROOM_INVITE: {
@@ -550,7 +548,7 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
             }
             case Intent.ACTION_SEND:
                 action = null;
-                startActivity(ChatViewer.createSendIntent(this,
+                startActivity(ChatIntentActivity.createSendIntent(this,
                         abstractContact.getAccount(), abstractContact.getUser(), sendText));
                 finish();
                 break;
@@ -560,22 +558,25 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
                 break;
             }
             default:
-                if (isDualPanelView) {
-                    chatScroller.initChats(abstractContact);
-                    chatScroller.setSelectedChat(abstractContact);
-                    chatScroller.update();
-                } else {
-                    startActivity(ChatViewer.createSpecificChatIntent(this,
-                            abstractContact.getAccount(), abstractContact.getUser()));
-                    return;
-                }
+                startChat(abstractContact);
                 break;
+        }
+    }
+
+    private void startChat(BaseEntity abstractContact) {
+        ChatManager.getInstance().setInitialChat(abstractContact);
+        ChatManager.getInstance().setSelectedChat(abstractContact);
+        if (isDualPanelView) {
+            chatScroller.initChats();
+            chatScroller.update();
+        } else {
+            startActivity(ChatViewer.createChatViewerIntent(this));
         }
     }
 
     private void createShortcut(AbstractContact abstractContact) {
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatViewer.createShortCutIntent(this,
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatIntentActivity.createShortCutIntent(this,
                 abstractContact.getAccount(), abstractContact.getUser()));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, abstractContact.getName());
         Bitmap bitmap;
@@ -586,7 +587,7 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
             bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser());
         }
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
-                    AvatarManager.getInstance().createShortcutBitmap(bitmap));
+                AvatarManager.getInstance().createShortcutBitmap(bitmap));
         setResult(RESULT_OK, intent);
     }
 
@@ -611,12 +612,16 @@ public class ContactList extends MainBasicActivity implements OnAccountChangedLi
     }
 
     @Override
-    public void onClose() {
+    public void onClose(BaseEntity chat) {
 
+        ChatManager.getInstance().setSelectedChat(null);
+
+        if (ChatManager.getInstance().getInitialChat().equals(chat)) {
+            ChatManager.getInstance().setInitialChat(null);
+            chatScroller.initChats();
+        }
+
+        chatScroller.update();
     }
 
-    @Override
-    public ChatScroller getChatScroller() {
-        return chatScroller;
-    }
 }

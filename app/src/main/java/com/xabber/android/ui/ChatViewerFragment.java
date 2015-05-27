@@ -126,13 +126,16 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
         toolbar.inflateMenu(R.menu.chat);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(getActivity());
-            }
-        });
+
+        if (!getResources().getBoolean(R.bool.landscape)) {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+            });
+        }
 
         setHasOptionsMenu(true);
 
@@ -221,6 +224,13 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         restoreInputState();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveInputState();
+        listener.getChatScroller().unregisterChat(this);
+    }
+
 
     @Override
     public void onDetach() {
@@ -269,7 +279,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-
     public void restoreInputState() {
         skipOnTextChanges = true;
 
@@ -282,13 +291,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (!inputView.getText().toString().isEmpty()) {
             inputView.requestFocus();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        saveInputState();
-        listener.getChatScroller().unregisterChat(this);
     }
 
     public void saveInputState() {
@@ -312,7 +314,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
                 && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
-            ChatViewer.hideKeyboard(getActivity());
+            ChatScroller.hideKeyboard(getActivity());
         }
     }
 
@@ -572,7 +574,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private void closeChat(String account, String user) {
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
-        listener.getChatScroller().onCloseChat();
+        listener.getChatScroller().onCloseChat(new BaseEntity(account, user));
     }
 
     private void clearHistory(String account, String user) {
@@ -621,7 +623,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     public interface ChatViewerFragmentListener {
-        void onCloseChat();
+        void onCloseChat(BaseEntity chat);
 
         void onMessageSent();
 

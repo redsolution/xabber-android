@@ -72,6 +72,11 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Uri> sounds;
 
+
+    private BaseEntity initialChat = null;
+    private BaseEntity selectedChat = null;
+
+
     private ChatManager() {
         chatInputs = new NestedMap<ChatInput>();
         privateChats = new NestedMap<Object>();
@@ -391,4 +396,19 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         });
     }
 
+    public BaseEntity getSelectedChat() {
+        return selectedChat;
+    }
+
+    public void setSelectedChat(BaseEntity selectedChat) {
+        this.selectedChat = selectedChat;
+    }
+
+    public BaseEntity getInitialChat() {
+        return initialChat;
+    }
+
+    public void setInitialChat(BaseEntity initialChat) {
+        this.initialChat = initialChat;
+    }
 }

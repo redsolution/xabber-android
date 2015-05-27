@@ -14,7 +14,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ChatViewer;
+import com.xabber.android.ui.ChatIntentActivity;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
@@ -199,7 +199,7 @@ public class MessageNotificationCreator {
         Intent backIntent = ContactList.createIntent(application);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Intent intent = ChatViewer.createClearTopIntent(application, message.getAccount(), message.getUser());
+        Intent intent = ChatIntentActivity.createClearTopIntent(application, message.getAccount(), message.getUser());
         return PendingIntent.getActivities(application, UNIQUE_REQUEST_CODE++,
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
     }
