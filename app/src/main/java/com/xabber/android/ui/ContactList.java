@@ -544,7 +544,9 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
                         Application.getInstance().onError(e);
                     }
                 }
-                finish();
+                if (!isDualPanelView) {
+                    finish();
+                }
                 break;
             }
             case Intent.ACTION_SEND:
