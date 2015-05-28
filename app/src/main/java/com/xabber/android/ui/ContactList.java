@@ -155,7 +155,6 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
             LinearLayout chatScrollIndicatorLayout = (LinearLayout) findViewById(R.id.chat_scroll_indicator);
 
             chatScroller.createView(viewPager, chatScrollIndicatorLayout);
-            chatScroller.initChats();
         }
 
         toolbar.setOnClickListener(this);
@@ -313,7 +312,11 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
                 case ACTION_ATTENTION:
                 case ACTION_SHORTCUT:
                     action = null;
-                    startChat(ChatManager.getInstance().getSelectedChat());
+                    if (isDualPanelView) {
+                        chatScroller.update();
+                    } else {
+                        startActivity(ChatViewer.createChatViewerIntent(this));
+                    }
             }
         }
 
@@ -429,7 +432,12 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
                 startActivity(ConferenceAdd.createIntent(this));
                 return true;
             case R.id.action_chat_list:
-                startChat(null);
+                ChatManager.getInstance().setSelectedChat(null);
+                if (isDualPanelView) {
+                    chatScroller.update();
+                } else {
+                    startActivity(ChatViewer.createChatViewerIntent(this));
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -482,7 +490,6 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
         ChatManager.getInstance().setSelectedChat(null);
 
         if (isDualPanelView) {
-            chatScroller.initChats();
             chatScroller.update();
         }
     }
@@ -573,7 +580,6 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
         ChatManager.getInstance().setInitialChat(abstractContact);
         ChatManager.getInstance().setSelectedChat(abstractContact);
         if (isDualPanelView) {
-            chatScroller.initChats();
             chatScroller.update();
         } else {
             startActivity(ChatViewer.createChatViewerIntent(this));
@@ -624,7 +630,6 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
 
         if (ChatManager.getInstance().getInitialChat().equals(chat)) {
             ChatManager.getInstance().setInitialChat(null);
-            chatScroller.initChats();
         }
 
         chatScroller.update();

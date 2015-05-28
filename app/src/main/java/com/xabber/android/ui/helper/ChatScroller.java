@@ -63,20 +63,8 @@ public class ChatScroller implements
     public void createView(ViewPager viewPager, LinearLayout chatScrollIndicatorLayout) {
         this.viewPager = viewPager;
         this.chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(activity, chatScrollIndicatorLayout);
-    }
 
-    public void onHide() {
-        MessageManager.getInstance().removeVisibleChat();
-    }
-
-    public void initChats() {
-
-        if (chatManager.getInitialChat() != null) {
-            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), chatManager.getInitialChat());
-        } else {
-            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager());
-        }
-
+        chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager());
         viewPager.setAdapter(chatViewerAdapter);
         viewPager.setOnPageChangeListener(this);
 
@@ -85,6 +73,10 @@ public class ChatScroller implements
         }
 
         chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
+    }
+
+    public void onHide() {
+        MessageManager.getInstance().removeVisibleChat();
     }
 
     public void update() {

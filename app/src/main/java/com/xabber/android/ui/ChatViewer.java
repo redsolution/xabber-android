@@ -58,7 +58,6 @@ public class ChatViewer extends ChatScrollerActivity {
         LinearLayout chatScrollIndicatorLayout = (LinearLayout) findViewById(R.id.chat_scroll_indicator);
 
         chatScroller.createView(viewPager, chatScrollIndicatorLayout);
-        chatScroller.initChats();
     }
 
     @Override

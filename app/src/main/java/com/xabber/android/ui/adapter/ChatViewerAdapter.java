@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.ChatViewerFragment;
 import com.xabber.android.ui.RecentChatFragment;
 import com.xabber.xmpp.address.Jid;
@@ -26,24 +27,12 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     /**
      * Intent sent while opening chat activity.
      */
-    private final AbstractChat intent;
     private ArrayList<AbstractChat> activeChats;
     private Fragment currentFragment;
 
-    public ChatViewerAdapter(FragmentManager fragmentManager, BaseEntity chat) {
-        super(fragmentManager);
-
-        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), Jid.getBareAddress(chat.getUser()));
-
-        updateChats();
-    }
-
     public ChatViewerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
-
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = null;
         updateChats();
     }
 
@@ -72,6 +61,13 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
     public boolean updateChats() {
         ArrayList<AbstractChat> newChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
+        BaseEntity initialChat = ChatManager.getInstance().getInitialChat();
+
+        AbstractChat intent = null;
+
+        if (initialChat != null) {
+            intent = MessageManager.getInstance().getOrCreateChat(initialChat.getAccount(), Jid.getBareAddress(initialChat.getUser()));
+        }
 
         if (intent != null && !newChats.contains(intent)) {
             newChats.add(intent);
