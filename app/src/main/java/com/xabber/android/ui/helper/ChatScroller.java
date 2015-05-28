@@ -33,7 +33,6 @@ public class ChatScroller implements
         OnContactChangedListener,
         OnAccountChangedListener,
         ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener,
         RecentChatFragment.RecentChatFragmentInteractionListener,
         ChatViewerFragment.ChatViewerFragmentListener {
 
@@ -45,8 +44,6 @@ public class ChatScroller implements
     Collection<ChatViewerFragment> registeredChats = new HashSet<>();
     Collection<RecentChatFragment> recentChatFragments = new HashSet<>();
     ChatScrollerListener listener;
-    private String extraText = null;
-
     public ChatScroller(Activity activity) {
         chatManager = ChatManager.getInstance();
         this.activity = activity;
@@ -75,9 +72,9 @@ public class ChatScroller implements
     public void initChats() {
 
         if (chatManager.getInitialChat() != null) {
-            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), chatManager.getInitialChat(), this);
+            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), chatManager.getInitialChat());
         } else {
-            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager(), this);
+            chatViewerAdapter = new ChatViewerAdapter(activity.getFragmentManager());
         }
 
         viewPager.setAdapter(chatViewerAdapter);
@@ -98,6 +95,10 @@ public class ChatScroller implements
         chatViewerAdapter.updateChats();
         chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
         selectPage();
+    }
+
+    public boolean isInitialized() {
+        return chatViewerAdapter != null;
     }
 
     private void selectPage() {
@@ -249,6 +250,10 @@ public class ChatScroller implements
         return chatViewerAdapter.getActiveChats();
     }
 
+    /**
+     * ChatViewerFragmentListener
+     */
+
     @Override
     public void onCloseChat(BaseEntity chat) {
         update();
@@ -269,42 +274,8 @@ public class ChatScroller implements
         registeredChats.remove(chat);
     }
 
-    /**
-     * FinishUpdateListener
-     */
-
-    @Override
-    public void onChatViewAdapterFinishUpdate() {
-        insertExtraText();
-    }
-
-    private void insertExtraText() {
-
-        if (extraText == null) {
-            return;
-        }
-
-        boolean isExtraTextInserted = false;
-
-        for (ChatViewerFragment chat : registeredChats) {
-            if (chat.isEqual(ChatManager.getInstance().getSelectedChat())) {
-                chat.setInputText(extraText);
-                isExtraTextInserted = true;
-            }
-        }
-
-        if (isExtraTextInserted) {
-            extraText = null;
-        }
-    }
-
-    public boolean isInitialized() {
-        return chatViewerAdapter != null;
-    }
-
     public interface ChatScrollerListener {
         void onStatusBarNeedPaint(String account);
-
         void onClose(BaseEntity chat);
     }
 
