@@ -249,11 +249,6 @@ public class ChatScroller implements
         return chatViewerAdapter.getActiveChats();
     }
 
-    /**
-     * ChatViewerFragmentListener
-     * @param baseEntity
-     */
-
     @Override
     public void onCloseChat(BaseEntity chat) {
         update();

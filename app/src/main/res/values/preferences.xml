@@ -512,6 +512,7 @@
 
 <!-- common values -->
     <bool name="landscape">false</bool>
+    <bool name="tablet_mode">false</bool>
     <string name="status_mode_key">status_mode</string>
     <string name="status_text_key">status_text</string>
     <string name="boot_count_key">boot_count</string>

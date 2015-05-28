@@ -32,14 +32,16 @@ public class ChatViewer extends ChatScrollerActivity {
     private StatusBarPainter statusBarPainter;
 
     public static Intent createChatViewerIntent(Context context) {
-        return new EntityIntentBuilder(context, ChatViewer.class).build();
+        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).build();
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getResources().getBoolean(R.bool.landscape)) {
+        if (getResources().getBoolean(R.bool.tablet_mode)) {
             finish();
             return;
         }

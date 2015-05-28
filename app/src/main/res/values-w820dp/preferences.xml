@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <bool name="is_landscape_mode">false</bool>
+    <bool name="tablet_mode">true</bool>
 </resources>

@@ -312,6 +312,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
                 case ACTION_SPECIFIC_CHAT:
                 case ACTION_ATTENTION:
                 case ACTION_SHORTCUT:
+                    action = null;
                     startChat(ChatManager.getInstance().getSelectedChat());
             }
         }
@@ -548,9 +549,10 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
             }
             case Intent.ACTION_SEND:
                 action = null;
-                startActivity(ChatIntentActivity.createSendIntent(this,
-                        abstractContact.getAccount(), abstractContact.getUser(), sendText));
-                finish();
+                startChat(abstractContact);
+                if (!isDualPanelView) {
+                    finish();
+                }
                 break;
             case Intent.ACTION_CREATE_SHORTCUT: {
                 createShortcut(abstractContact);
