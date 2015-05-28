@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -117,6 +119,15 @@ public class ContactViewer extends ManagedActivity implements
         contactTitleView.findViewById(R.id.status_icon).setVisibility(View.GONE);
         contactTitleView.findViewById(R.id.status_text).setVisibility(View.GONE);
         contactNameView = (TextView) contactTitleView.findViewById(R.id.name);
+
+        Toolbar toolbar = contactTitleExpandableToolbarInflater.getToolbar();
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(ContactViewer.this);
+            }
+        });
     }
 
     @Override
