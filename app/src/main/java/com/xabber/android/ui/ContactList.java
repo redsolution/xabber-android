@@ -551,6 +551,8 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
             }
             case Intent.ACTION_SEND:
                 action = null;
+                ChatManager.getInstance().setTyped(abstractContact.getAccount(), abstractContact.getUser(),
+                        sendText, sendText.length(), sendText.length());
                 startChat(abstractContact);
                 if (!isDualPanelView) {
                     finish();
