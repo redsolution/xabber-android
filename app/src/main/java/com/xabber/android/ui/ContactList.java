@@ -25,7 +25,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -90,8 +89,6 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
     private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
 
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
-
-    private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
 
     /**
      * Current action.
@@ -394,8 +391,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Fragment fragmentById = getSupportFragmentManager().findFragmentById(R.id.container);
-                ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(newText);
+                getContactListFragment().getFilterableAdapter().getFilter().filter(newText);
                 return true;
             }
         });
@@ -492,7 +488,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
     }
 
     private ContactListFragment getContactListFragment() {
-        return (ContactListFragment) getSupportFragmentManager().findFragmentByTag(CONTACT_LIST_TAG);
+        return (ContactListFragment) getSupportFragmentManager().findFragmentById(R.id.container);
     }
 
     @Override
@@ -602,7 +598,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
+        getContactListFragment().onAccountsChanged();
         barPainter.setDefaultColor();
     }
 
@@ -612,7 +608,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
     }
 
     private void rebuildAccountToggle() {
-        ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).rebuild();
+        getContactListFragment().rebuild();
     }
 
     @Override
