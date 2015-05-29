@@ -14,6 +14,7 @@
 -->
 
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -40,24 +41,28 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <FrameLayout
+            <fragment
                 android:id="@+id/container"
+                android:name="com.xabber.android.ui.ContactListFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="8dp" />
+                tools:layout="@layout/contact_list_fragment"
+                />
 
             <FrameLayout
                 android:id="@+id/chat_container"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:padding="8dp">
+
+                >
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/pager"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    />
 
                 <LinearLayout
                     android:id="@+id/chat_scroll_indicator"
@@ -80,6 +85,7 @@
         android:name="com.xabber.android.ui.ContactListDrawerFragment"
         android:layout_width="304dp"
         android:layout_height="match_parent"
-        android:layout_gravity="left|start" />
+        android:layout_gravity="left|start"
+        tools:layout="@layout/contact_list_drawer" />
 </android.support.v4.widget.DrawerLayout>
 

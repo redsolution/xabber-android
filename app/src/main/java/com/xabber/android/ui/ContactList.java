@@ -175,9 +175,6 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
             action = savedInstanceState.getString(SAVED_ACTION);
         } else {
-            getSupportFragmentManager().beginTransaction().add(R.id.container,
-                    new ContactListFragment(), CONTACT_LIST_TAG).commit();
-
             sendText = null;
             action = getIntent().getAction();
         }
