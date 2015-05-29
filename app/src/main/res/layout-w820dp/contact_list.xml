@@ -46,7 +46,7 @@
                 android:name="com.xabber.android.ui.ContactListFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 tools:layout="@layout/contact_list_fragment"
                 />
 
@@ -54,7 +54,7 @@
                 android:id="@+id/chat_container"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
+                android:layout_weight="3"
 
                 >
 

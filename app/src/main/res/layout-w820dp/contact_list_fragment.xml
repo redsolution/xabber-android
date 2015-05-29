@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
      Copyright (c) 2013, Redsolution LTD. All rights reserved.
 
      This file is part of Xabber project; you can redistribute it and/or
@@ -13,28 +12,36 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/grey_400"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:drawSelectorOnTop="true"
-        tools:listitem="@layout/contact_list_item" />
-
-    <include layout="@layout/connecting_accounts_layout" />
+    android:layout_height="match_parent"
+    android:background="@color/grey_400"
+    android:orientation="horizontal">
 
     <include
         layout="@layout/account_action_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginRight="18dp" />
+        android:layout_gravity="bottom|right" />
 
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:drawSelectorOnTop="true"
+            tools:listitem="@layout/contact_list_item" />
+
+        <include layout="@layout/connecting_accounts_layout" />
+
+    </FrameLayout>
+
+
+</LinearLayout>
