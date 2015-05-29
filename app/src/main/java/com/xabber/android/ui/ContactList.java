@@ -53,6 +53,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -76,7 +77,7 @@ import java.util.Collection;
  * @author alexander.ivanov
  */
 public class ContactList extends ChatIntentActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, OnContactClickListener, Toolbar.OnMenuItemClickListener {
+        View.OnClickListener, OnChoosedListener, OnContactClickListener, Toolbar.OnMenuItemClickListener, OnChatChangedListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -258,6 +259,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
         barPainter.setDefaultColor();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnChatChangedListener.class, this);
 
         if (action != null) {
             switch (action) {
@@ -337,6 +339,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
         super.onPause();
         hideKeyboard();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
     }
 
     private void hideKeyboard() {
@@ -619,6 +622,7 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
     @Override
     public void onClose(BaseEntity chat) {
 
+        MessageManager.getInstance().closeChat(chat.getAccount(), chat.getUser());
         ChatManager.getInstance().setSelectedChat(null);
 
         if (ChatManager.getInstance().getInitialChat().equals(chat)) {
@@ -626,6 +630,11 @@ public class ContactList extends ChatIntentActivity implements OnAccountChangedL
         }
 
         chatScroller.update();
+        getContactListFragment().getAdapter().onChange();
     }
 
+    @Override
+    public void onChatChanged(String account, String user, boolean incoming) {
+        getContactListFragment().getAdapter().onChange();
+    }
 }
