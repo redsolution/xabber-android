@@ -19,11 +19,17 @@ public class AccountPainter {
     private int[] accountDarkColors;
     private int[] accountDarkestColors;
 
+    private int[] accountLightColors;
+    private int[] accountLightestColors;
+
     public AccountPainter(Context context) {
 
         accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
         accountDarkColors = context.getResources().getIntArray(R.array.account_status_bar);
         accountDarkestColors = context.getResources().getIntArray(R.array.account_900);
+
+        accountLightColors = context.getResources().getIntArray(R.array.account_200);
+        accountLightestColors = context.getResources().getIntArray(R.array.account_50);
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
@@ -82,6 +88,15 @@ public class AccountPainter {
         }
     }
 
+    public int getDefaultLightColor() {
+        String firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return themeMainColor;
+        } else {
+            return getAccountLightColor(firstAccount);
+        }
+    }
+
     public int getAccountDarkColor(String account) {
         return accountDarkColors[getAccountColorLevel(account)];
     }
@@ -90,6 +105,13 @@ public class AccountPainter {
         return accountDarkestColors[getAccountColorLevel(account)];
     }
 
+    public int getAccountLightColor(String account) {
+        return accountLightColors[getAccountColorLevel(account)];
+    }
+
+    public int getAccountLightestColor(String account) {
+        return accountLightestColors[getAccountColorLevel(account)];
+    }
 
     public int getDefaultDarkColor() {
         String firstAccount = getFirstAccount();

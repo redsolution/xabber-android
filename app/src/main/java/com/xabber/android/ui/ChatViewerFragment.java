@@ -372,12 +372,22 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
-        toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        setToolbarColor();
         int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
         chatMessageAdapter.onChange();
         scrollChat(itemCountBeforeUpdate);
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
+    }
+
+    private void setToolbarColor() {
+        int toolbarColor;
+        if (getResources().getBoolean(R.bool.tablet_mode)) {
+            toolbarColor = accountPainter.getAccountLightColor(account);
+        } else {
+            toolbarColor = accountPainter.getAccountMainColor(account);
+        }
+        toolbar.setBackgroundColor(toolbarColor);
     }
 
     private void scrollChat(int itemCountBeforeUpdate) {

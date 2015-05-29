@@ -89,7 +89,17 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         if (null != listener.getChatScroller()) {
             listener.getChatScroller().registerRecentChatsList(this);
         }
-        toolbar.setBackgroundColor(accountPainter.getDefaultMainColor());
+        setToolbarColor();
+    }
+
+    private void setToolbarColor() {
+        int toolbarColor;
+        if (getResources().getBoolean(R.bool.tablet_mode)) {
+            toolbarColor = accountPainter.getDefaultLightColor();
+        } else {
+            toolbarColor = accountPainter.getDefaultMainColor();
+        }
+        toolbar.setBackgroundColor(toolbarColor);
     }
 
     @Override
