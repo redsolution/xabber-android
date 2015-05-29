@@ -97,6 +97,15 @@ public class AccountPainter {
         }
     }
 
+    public int getDefaultLightestColor() {
+        String firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return themeMainColor;
+        } else {
+            return getAccountLightestColor(firstAccount);
+        }
+    }
+
     public int getAccountDarkColor(String account) {
         return accountDarkColors[getAccountColorLevel(account)];
     }
@@ -139,4 +148,6 @@ public class AccountPainter {
         }
         return null;
     }
+
+
 }

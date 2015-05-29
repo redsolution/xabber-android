@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_under_construction"
+        android:icon="@drawable/ic_alert_black_24dp"
+        android:orderInCategory="100"
+        android:title="@string/under_construction"
+        app:showAsAction="always" />
+</menu>

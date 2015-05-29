@@ -383,7 +383,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private void setToolbarColor() {
         int toolbarColor;
         if (getResources().getBoolean(R.bool.tablet_mode)) {
-            toolbarColor = accountPainter.getAccountLightColor(account);
+            toolbarColor = accountPainter.getAccountLightestColor(account);
         } else {
             toolbarColor = accountPainter.getAccountMainColor(account);
         }

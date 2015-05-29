@@ -95,7 +95,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     private void setToolbarColor() {
         int toolbarColor;
         if (getResources().getBoolean(R.bool.tablet_mode)) {
-            toolbarColor = accountPainter.getDefaultLightColor();
+            toolbarColor = accountPainter.getDefaultLightestColor();
         } else {
             toolbarColor = accountPainter.getDefaultMainColor();
         }

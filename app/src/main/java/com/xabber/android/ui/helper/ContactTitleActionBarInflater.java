@@ -33,7 +33,7 @@ public class ContactTitleActionBarInflater {
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        actionBarView = LayoutInflater.from(activity).inflate(R.layout.contact_title, null);
+        actionBarView = LayoutInflater.from(activity).inflate(R.layout.contact_title_dark, null);
 
         actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(
                 ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
