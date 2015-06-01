@@ -13,10 +13,13 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources>
-    <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
 
+    <style name="Theme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--for text selection toolbar to be above usual toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+    </style>
+
+    <style name="ThemeDark" parent="Theme.AppCompat.NoActionBar">
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
     </style>

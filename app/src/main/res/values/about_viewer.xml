@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_copyright">© Redsolution LTD, 2010–2015</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_feedback">mailto:info@xabber.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_site">http://www.xabber.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
     <string name="about_version">Version: %s</string>
-    <string name="about_license">License: GNU GPLv3\n<a href="https://github.com/redsolution/xabber-android">Open source software</a></string>
-
     <string name="about_open_source_xmpp_client">open source XMPP client</string>
+
+    <string name="about_about">About</string>
+    <string name="about_developers">Developers</string>
+    <string name="about_redsolution_url">http://www.redsolution.com/</string>
+    <string name="about_xabber_url">http://www.xabber.com</string>
+    <string name="about_xabber_email">info@xabber.com</string>
+    <string name="about_follow_us">Follow us</string>
+    <string name="about_xabber_twitter_url">https://twitter.com/xabber_xmpp</string>
+    <string name="about_xabber_github_url">https://github.com/redsolution/xabber-android</string>
+
+    <string name="about_copyright">© Redsolution LTD, 2010–2015</string>
+    <string name="about_license">License: GNU GPLv3</string>
+    <string name="about_open_source_software">Open source software</string>
 </resources>

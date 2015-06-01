@@ -73,9 +73,10 @@
             android:name="com.xabber.android.ui.LoadActivity"
             />
         <activity
-            android:name="com.xabber.android.ui.preferences.AboutViewer"
+            android:name=".ui.AboutViewer"
             android:label="@string/about_viewer"
             android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor"
+            android:theme="@style/ThemeDark"
             >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
