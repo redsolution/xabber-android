@@ -20,10 +20,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.ui.helper.ManagedActivity;
 
@@ -50,8 +53,16 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
         findViewById(R.id.about_twitter).setOnClickListener(this);
         findViewById(R.id.about_redsolution).setOnClickListener(this);
 
-//        ((TextView) findViewById(R.id.about_version))
-//                .setText(getString(R.string.about_version, getVersionName()));
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle("Xabber");
+
+        loadBackdrop();
+    }
+
+    private void loadBackdrop() {
+        final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
+        Glide.with(this).load(R.drawable.about_backdrop).centerCrop().into(imageView);
     }
 
     private String getVersionName() {
