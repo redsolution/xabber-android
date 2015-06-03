@@ -23,8 +23,11 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
@@ -52,10 +55,20 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
         findViewById(R.id.about_github).setOnClickListener(this);
         findViewById(R.id.about_twitter).setOnClickListener(this);
         findViewById(R.id.about_redsolution).setOnClickListener(this);
+        findViewById(R.id.about_text_xmpp_protocol).setOnClickListener(this);
+
+        ((TextView) findViewById(R.id.about_text_developers))
+                .setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) findViewById(R.id.about_text_translators))
+                .setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) findViewById(R.id.about_text_license))
+                .setMovementMethod(LinkMovementMethod.getInstance());
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle("Xabber");
+        collapsingToolbar.setTitle(getString(R.string.application_title_short));
+
+        ((TextView) findViewById(R.id.about_version)).setText(getVersionName());
 
         loadBackdrop();
     }
@@ -68,7 +81,7 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
     private String getVersionName() {
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            return pInfo.versionName;
+            return getString(R.string.application_title_full) + " " + pInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -87,9 +100,12 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
                 sendUrlViewIntent(getString(R.string.about_xabber_github_url));
                 break;
 
-
             case R.id.about_twitter:
                 sendUrlViewIntent(getString(R.string.about_xabber_twitter_url));
+                break;
+
+            case R.id.about_text_xmpp_protocol:
+                Toast.makeText(this, R.string.about_shameless_quote_from_wiki, Toast.LENGTH_SHORT).show();
                 break;
         }
     }

@@ -78,6 +78,15 @@
                     android:text="@string/about_open_source_xmpp_client"
                     android:textColor="@color/green_50" />
 
+                <TextView
+                    android:id="@+id/about_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:padding="4dp"
+                    android:text="Xabber Beta 1.0.16"
+                    android:textSize="12sp" />
+
             </FrameLayout>
 
             <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
@@ -112,7 +121,7 @@
                 android:id="@+id/about_header_about"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/about_about"
+                android:text="@string/about_header_about"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Space
@@ -123,37 +132,7 @@
                 android:id="@+id/about_text_about"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="24dp" />
-
-            <TextView
-                android:id="@+id/about_header_developers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/about_developers"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="16dp" />
-
-            <ImageView
-                android:id="@+id/about_redsolution"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingRight="8dp"
-                android:src="@drawable/redsolution_logo" />
-
-            <TextView
-                android:id="@+id/about_text_developers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequatt"
+                android:text="@string/about_text_about"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Space
@@ -193,11 +172,67 @@
                 android:layout_height="24dp" />
 
             <TextView
-                android:id="@+id/about_header_follow_us"
+                android:id="@+id/about_header_xmpp_protocol"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/about_follow_us"
+                android:text="@string/about_header_xmpp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:id="@+id/about_text_xmpp_protocol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_text_xmpp"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <TextView
+                android:id="@+id/about_header_xmpp_extension_protocols"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_header_xep"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:id="@+id/about_text_xmpp_extension_protocols"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_text_xep"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <TextView
+                android:id="@+id/about_header_developers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_header_developers"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <TextView
+                android:id="@+id/about_text_developers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_text_developers"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColorLink="@color/white" />
 
             <Space
                 android:layout_width="match_parent"
@@ -205,35 +240,34 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/about_redsolution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/redsolution_logo" />
+
+                <Space
+                    android:layout_width="16dp"
+                    android:layout_height="match_parent" />
 
                 <ImageView
                     android:id="@+id/about_twitter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingRight="8dp"
-                    android:paddingTop="8dp"
                     android:src="@drawable/ic_twitter" />
+
+                <Space
+                    android:layout_width="16dp"
+                    android:layout_height="match_parent" />
 
                 <ImageView
                     android:id="@+id/about_github"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="8dp"
                     android:src="@drawable/ic_github" />
-
-                <Space
-                    android:layout_width="16dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/about_text_follow_us"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna."
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
             </LinearLayout>
 
             <Space
@@ -241,54 +275,46 @@
                 android:layout_height="24dp" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/about_header_translators"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Something else"
+                android:text="@string/about_header_translators"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
-
             <TextView
-                android:id="@+id/textView6"
+                android:id="@+id/about_text_translators"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:text="@string/about_text_translators"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColorLink="@color/white" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <TextView
+                android:id="@+id/about_header_license"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_header_license"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
             <TextView
-                android:id="@+id/about_license"
+                android:id="@+id/about_text_license"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                android:text="@string/about_license"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:id="@+id/about_open_source"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center"
-                android:paddingBottom="8dp"
-                android:text="@string/about_open_source_software"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:id="@+id/about_copyright"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/about_copyright"
-                android:textColor="@color/white" />
+                android:text="@string/about_text_license"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColorLink="@color/white" />
 
         </LinearLayout>
 
