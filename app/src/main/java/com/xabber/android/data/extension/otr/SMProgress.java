@@ -31,8 +31,7 @@ public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return QuestionViewer.createCancelIntent(
-                Application.getInstance(), account, user);
+        return QuestionViewer.createCancelIntent(Application.getInstance(), account, user);
     }
 
     @Override
@@ -43,8 +42,7 @@ public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public String getText() {
-        return Application.getInstance().getString(
-                R.string.otr_verification_in_progress);
+        return Application.getInstance().getString(R.string.otr_verification_in_progress);
     }
 
 }
