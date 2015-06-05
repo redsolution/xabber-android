@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -139,6 +140,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             incomingMessage.messageBalloon.setVisibility(View.GONE);
             incomingMessage.messageTime.setVisibility(View.GONE);
             incomingMessage.avatar.setVisibility(View.GONE);
+            LogManager.w(this, "Empty message! Hidden, but need to correct");
         } else {
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
@@ -285,7 +287,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return null;
     }
 
-    public static class BasicMessage  extends RecyclerView.ViewHolder {
+    public static class BasicMessage extends RecyclerView.ViewHolder {
 
         public TextView messageText;
 

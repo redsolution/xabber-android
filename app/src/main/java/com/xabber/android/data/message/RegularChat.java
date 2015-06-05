@@ -14,14 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import net.java.otr4j.OtrException;
-
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Message.Type;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.packet.MUCUser;
-
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -34,6 +26,14 @@ import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.delay.Delay;
 import com.xabber.xmpp.muc.MUC;
+
+import net.java.otr4j.OtrException;
+
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Message.Type;
+import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smackx.packet.MUCUser;
 
 /**
  * Represents normal chat.
@@ -141,8 +141,7 @@ public class RegularChat extends AbstractChat {
             updateThreadId(thread);
             boolean unencrypted = false;
             try {
-                text = OTRManager.getInstance().transformReceiving(account,
-                        user, text);
+                text = OTRManager.getInstance().transformReceiving(account, user, text);
             } catch (OtrException e) {
                 if (e.getCause() instanceof OTRUnencryptedException) {
                     text = ((OTRUnencryptedException) e.getCause()).getText();
@@ -154,7 +153,7 @@ public class RegularChat extends AbstractChat {
                 }
             }
             // System message received.
-            if (text == null)
+            if (text == null || text.trim().equals(""))
                 return true;
             if (!"".equals(resource))
                 this.resource = resource;
