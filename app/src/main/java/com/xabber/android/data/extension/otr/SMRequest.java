@@ -35,8 +35,7 @@ public class SMRequest extends BaseEntity implements EntityNotificationItem {
     @Override
     public Intent getIntent() {
         return QuestionViewer.createIntent(
-                Application.getInstance(), account, user, question != null,
-                true, question);
+                Application.getInstance(), account, user, question != null, true, question);
     }
 
     @Override

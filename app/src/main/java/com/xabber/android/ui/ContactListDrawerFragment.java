@@ -52,8 +52,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
         View headerView = ((LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .inflate(R.layout.contact_list_drawer_header, listView, false);
-        headerTitle = headerView.findViewById(R.id.drawer_header_title);
-
+        headerTitle = headerView.findViewById(R.id.drawer_header_action_xmpp_accounts);
+        headerTitle.setOnClickListener(this);
 
         listView.addHeaderView(headerView);
 

@@ -66,6 +66,7 @@ import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.AboutViewer;
 import com.xabber.android.ui.preferences.AccountEditor;
+import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -593,7 +594,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             case R.id.drawer_action_exit:
                 exit();
                 break;
-
+            case R.id.drawer_header_action_xmpp_accounts:
+                startActivity(AccountList.createIntent(this));
+                break;
         }
     }
 

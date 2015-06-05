@@ -356,21 +356,29 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
             selectPage();
         } else {
-            updateRegisteredChats();
-            updateRegisteredRecentChatsFragments();
-            updateStatusBar();
-
             for (ChatViewerFragment chat : registeredChats) {
-                if (chat.isEqual(selectedChat) && incoming) {
-                    chat.playIncomingAnimation();
+                if (chat.isEqual(selectedChat)) {
+                    chat.updateChat();
+                    if (incoming) {
+                        chat.playIncomingAnimation();
+                    }
                 }
             }
+            updateRegisteredRecentChatsFragments();
+            updateStatusBar();
         }
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        updateRegisteredChats();
+        for (BaseEntity contact : entities) {
+            for (ChatViewerFragment chat : registeredChats) {
+                if (chat.isEqual(contact)) {
+                    chat.updateChat();
+                }
+            }
+        }
+
         updateRegisteredRecentChatsFragments();
         updateStatusBar();
     }
