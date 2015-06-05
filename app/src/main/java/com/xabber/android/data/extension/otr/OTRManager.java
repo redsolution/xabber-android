@@ -169,37 +169,28 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         NotificationManager.getInstance().registerNotificationProvider(smProgressProvider);
     }
 
-    private Session getOrCreateSession(String account, String user) {
-        Session session = sessions.get(account, user);
-        if (session != null) {
-            return session;
-        }
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        session = new Session(new SessionID(account, user,
-                accountItem == null ? "" : accountItem.getConnectionSettings().getProtocol().toString()), this);
-        session.addOtrEngineListener(this);
-        sessions.put(account, user, session);
-        return session;
-    }
-
     public void startSession(String account, String user) throws NetworkException {
+        LogManager.i(this, "Starting session for " + user);
         try {
             getOrCreateSession(account, user).startSession();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
+        LogManager.i(this, "Started session for " + user);
     }
 
     public void refreshSession(String account, String user) throws NetworkException {
+        LogManager.i(this, "Refreshing session for " + user);
         try {
             getOrCreateSession(account, user).refreshSession();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
+        LogManager.i(this, "Refreshed session for " + user);
     }
 
     public void endSession(String account, String user) throws NetworkException {
-        LogManager.i(this, "Ending session for " + account);
+        LogManager.i(this, "Ending session for " + user);
         try {
             getOrCreateSession(account, user).endSession();
         } catch (OtrException e) {
@@ -208,10 +199,33 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
         MessageArchiveManager.getInstance().setSaveMode(account, user, abstractChat.getThreadId(), SaveMode.body);
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.concede);
-        LogManager.i(this, "Session ended for " + account);
+        LogManager.i(this, "Ended session for " + user);
+    }
+
+    private Session getOrCreateSession(String account, String user) {
+        Session session = sessions.get(account, user);
+        if (session != null) {
+            LogManager.i(this, "Found session with id " + session.getSessionID() + " with status " + session.getSessionStatus() + " for user " + user);
+            return session;
+        }
+
+        LogManager.i(this, "Creating new session for " + user);
+
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        session = new Session(new SessionID(account, user,
+                accountItem == null ? "" : accountItem.getConnectionSettings().getProtocol().toString()), this);
+        session.addOtrEngineListener(this);
+        sessions.put(account, user, session);
+        return session;
+    }
+
+    @Override
+    public void injectMessage(SessionID sessionID, String msg) throws OtrException {
+        injectMessage(sessionID.getAccountID(), sessionID.getUserID(), msg);
     }
 
     private void injectMessage(String account, String user, String msg) throws OtrException {
+        LogManager.i(this, "injectMessage. user: " + user + " message: " + msg);
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
         try {
             MessageArchiveManager.getInstance().setSaveMode(account, user, abstractChat.getThreadId(), SaveMode.fls);
@@ -228,20 +242,17 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public void injectMessage(SessionID sessionID, String msg) throws OtrException {
-        injectMessage(sessionID.getAccountID(), sessionID.getUserID(), msg);
+    public void unreadableMessageReceived(SessionID sessionID) throws OtrException {
+        LogManager.i(this, "unreadableMessageReceived");
+        newAction(sessionID.getAccountID(), sessionID.getUserID(), null, ChatAction.otr_unreadable);
     }
 
     /**
      * Creates new action in specified chat.
      */
     private void newAction(String account, String user, String text, ChatAction action) {
+        LogManager.i(this, "newAction. text: " + text + " action " + action);
         MessageManager.getInstance().getChat(account, user).newAction(null, text, action);
-    }
-
-    @Override
-    public void unreadableMessageReceived(SessionID sessionID) throws OtrException {
-        newAction(sessionID.getAccountID(), sessionID.getUserID(), null, ChatAction.otr_unreadable);
     }
 
     @Override
@@ -251,11 +262,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     @Override
     public void unencryptedMessageReceived(SessionID sessionID, String msg) throws OtrException {
+        LogManager.i(this, "unencrypted Message Received. " + msg);
         throw new OtrException(new OTRUnencryptedException(msg));
     }
 
     @Override
     public void showError(SessionID sessionID, String error) throws OtrException {
+        LogManager.i(this, "ShowError: " + error);
         newAction(sessionID.getAccountID(), sessionID.getUserID(), error, ChatAction.otr_error);
     }
 
@@ -311,6 +324,9 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         removeSMProgress(sessionID.getAccountID(), sessionID.getUserID());
         Session session = sessions.get(sessionID.getAccountID(), sessionID.getUserID());
         SessionStatus sStatus = session.getSessionStatus();
+
+        LogManager.i(this, "session status changed " + sessionID.getUserID() + " status: " + sStatus);
+
         if (sStatus == SessionStatus.ENCRYPTED) {
             finished.remove(sessionID.getAccountID(), sessionID.getUserID());
             PublicKey remotePublicKey = session.getRemotePublicKey();
@@ -334,6 +350,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                     .getChat(sessionID.getAccountID(), sessionID.getUserID()).sendMessages();
         } else if (sStatus == SessionStatus.PLAINTEXT) {
             actives.remove(sessionID.getAccountID(), sessionID.getUserID());
+            sessions.remove(sessionID.getAccountID(), sessionID.getUserID());
             finished.remove(sessionID.getAccountID(), sessionID.getUserID());
             try {
                 session.endSession();
@@ -343,6 +360,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, ChatAction.otr_plain);
         } else if (sStatus == SessionStatus.FINISHED) {
             actives.remove(sessionID.getAccountID(), sessionID.getUserID());
+            sessions.remove(sessionID.getAccountID(), sessionID.getUserID());
             finished.put(sessionID.getAccountID(), sessionID.getUserID(), true);
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, ChatAction.otr_finish);
         } else {
@@ -360,6 +378,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      * Transform outgoing message before sending.
      */
     public String transformSending(String account, String user, String content) throws OtrException {
+        LogManager.i(this, "transform outgoing message... " + user);
         String parts[] = getOrCreateSession(account, user).transformSending(content, null);
         if (BuildConfig.DEBUG && parts.length != 1) {
             throw new RuntimeException(
@@ -372,9 +391,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      * Transform incoming message after receiving.
      */
     public String transformReceiving(String account, String user, String content) throws OtrException {
+        LogManager.i(this, "transform incoming message... " + content);
         Session session = getOrCreateSession(account, user);
         try {
-            return session.transformReceiving(content);
+            String s = session.transformReceiving(content);
+            LogManager.i(this, "transformed incoming message: " + s + " session status: " + session.getSessionStatus());
+            return s;
         } catch (UnsupportedOperationException e) {
             throw new OtrException(e);
         }
@@ -477,6 +499,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      * Respond using SM protocol.
      */
     public void respondSmp(String account, String user, String question, String secret) throws NetworkException {
+        LogManager.i(this, "responding smp... " + user);
         removeSMRequest(account, user);
         addSMProgress(account, user);
         try {
@@ -490,6 +513,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      * Initiate request using SM protocol.
      */
     public void initSmp(String account, String user, String question, String secret) throws NetworkException {
+        LogManager.i(this, "initializing smp... " + user);
         removeSMRequest(account, user);
         addSMProgress(account, user);
         try {
@@ -503,6 +527,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      * Abort SM negotiation.
      */
     public void abortSmp(String account, String user) throws NetworkException {
+        LogManager.i(this, "aborting smp... " + user);
         removeSMRequest(account, user);
         removeSMProgress(account, user);
         try {
