@@ -68,10 +68,6 @@
     <string name="preference_interface">Theme settings\nAppearance settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="about_viewer">About</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_divide">Message on the new line\nDisplay a message on a new line</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
-    <string name="chats_divide_portrait">In portrait mode</string>
 
     <string name="chats_show_background">Show background\nDisabling may increase performance</string>
 

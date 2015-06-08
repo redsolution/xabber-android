@@ -268,22 +268,6 @@
     </string-array>
     <string name="chats_font_size_default">@string/chats_font_size_normal_value</string>
 
-    <string name="chats_divide_key">chats_divide</string>
-    <string name="chats_divide_always_value">always</string>
-    <string name="chats_divide_portrait_value">portrait</string>
-    <string name="chats_divide_never_value">never</string>
-    <string-array name="chats_divide_entries">
-        <item>@string/always</item>
-        <item>@string/chats_divide_portrait</item>
-        <item>@string/never</item>
-        </string-array>
-    <string-array name="chats_divide_entryvalues">
-        <item>@string/chats_divide_always_value</item>
-        <item>@string/chats_divide_portrait_value</item>
-        <item>@string/chats_divide_never_value</item>
-    </string-array>
-    <string name="chats_divide_default">@string/chats_divide_portrait_value</string>
-
     <string name="chats_state_notification_key">chats_state_notification</string>
     <bool name="chats_state_notification_default">true</bool>
 
