@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
-    <string name="cache_clear">Clear cache\nClear all local data. This can free some space.</string>
+    <string name="cache_clear">Clear cache\nClear all local data. This can free up some space.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
-    <string name="cache_clear_warning">Do you really want to remove chat history and another local data?\nAccount and roster data are not affected. Application will be closed.</string>
+    <string name="cache_clear_warning">Do you really want to remove chat history and other local data?\nAccount and roster data are not affected. The app will close.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by Enter button</string>
+    <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by pressing the Enter button</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_go_away">Auto-away\nAutomatically set away status on screen lock</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_order">Sort contacts\nAllows to set contacts order</string>
+    <string name="contacts_order">Sort contacts\nSet the order in which contacts are displayed</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
-    <string name="contacts_order_alphabet">Alphabetically</string>
+    <string name="contacts_order_alphabet">Alphabetic</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
     <string name="contacts_order_status">By status</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_accounts">Group by account\nGroup contacts in contact list by account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_show_active_chats">Active chats on top\nDisplay active chats on top of contact list</string>
+    <string name="contacts_show_active_chats">Active chats on top\nDisplay active chats at the top of the contact list</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_avatars">Show avatars\nShows users\' avatars in contact list</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_show_empty_groups">Show empty groups\nShow groups with no online contacts </string>
+    <string name="contacts_show_empty_groups">Show empty groups\nShow groups with no online contacts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_groups">Show groups\nShow groups in contact list</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_offline">Show offline contacts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
-    <string name="contacts_show_panel">Show account\'s panel\nShow action buttons with account\'s avatars in the bottom right corner of contact list</string>
+    <string name="contacts_show_panel">Show accounts panel\nShow action buttons with avatars in the bottom right corner of contact list</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_stay_active_chats">Duplicate active chats\nActive chats appear both on top of contact list and in home groups</string>
+    <string name="contacts_stay_active_chats">Duplicate active chats\nActive chats appear both on top of contact list and in groups</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="debug_log">Debug log\nWrite messages to debug log (please restart application to apply changes)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_lightning">Light indication\nBlink LED on notification</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
-    <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading application from memory</string>
+    <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_sound">Audio alert\nChoose notification sound</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
@@ -69,14 +69,14 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="about_viewer">About</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_divide">Message on the new line\nDisplay a message on a new line</string>
+    <string name="chats_divide">Messages on new lines\nDisplay each message on a new line</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
     <string name="chats_divide_portrait">In portrait mode</string>
 
     <string name="chats_show_background">Show background\nDisabling may increase performance</string>
 
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_font_size">Font size\nSize of text in the message</string>
+    <string name="chats_font_size">Font size\nSize of message text</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
     <string name="chats_font_size_large">Large</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
@@ -86,7 +86,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
     <string name="chats_font_size_xlarge">Extra large</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_hide_keyboard">Hide keyboard\nHide software keyboard after message sent</string>
+    <string name="chats_hide_keyboard">Hide keyboard\nHide software keyboard after sending message</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
     <string name="chats_hide_keyboard_landscape">In landscape mode</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
@@ -98,9 +98,9 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
     <string name="chats_show_status_change_muc">In conferences</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_state_notification">Show typing notification\nNotify that you are typing</string>
+    <string name="chats_state_notification">Show typing notification\nShow that the other user is typing</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_adjust_priority">Adjust priority\nSet priority according to selected status. Account`s priority will be overridden.</string>
+    <string name="connection_adjust_priority">Adjust priority\nSet priority according to selected status. Account priority will be overridden.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
     <string name="connection_go_away_immediately">Immediately on screen lock</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
@@ -108,21 +108,21 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Priority settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_start_at_boot">Start when Android boots\nStart the application when Android boots. This doesn\'t work when Xabber is installed on SDCard.</string>
+    <string name="connection_start_at_boot">Start when Android boots\nStart the application when Android boots. This doesn\'t work when Xabber is installed on SD card.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_wake_lock">Prevent sleep mode\nWill reduce battery life</string>
+    <string name="connection_wake_lock">Prevent sleep mode\nPrevent the device from sleeping. This will increase battery usage.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_wifi_lock">Keep WiFi awake\nKeep WiFi active while on standby. Will reduce battery life</string>
+    <string name="connection_wifi_lock">Keep WiFi awake\nKeep WiFi active on standby. This will increase battery usage</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
-    <string name="events_first_only">Alert on first message\nNotify only on first message in the chat</string>
+    <string name="events_first_only">Alert on first message\nNotify only on the first message in a chat</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_ignore_system_vibro">Ignore system vibration settings\nUse this option if system vibration does not work</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
-    <string name="events_message">Notification settings\nConfigure notifications about incoming messages</string>
+    <string name="events_message">Notification settings\nConfigure incoming message notifications</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
     <string name="events_message_chat">Chats only</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
@@ -136,22 +136,22 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
     <string name="negative_priotiry_summary">%s (you won\'t receive messages from any chat)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
-    <string name="preference_accounts">XMPP accounts\nManage your accounts</string>
+    <string name="preference_accounts">XMPP accounts\nManage accounts</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
     <string name="preference_security">Security\nSecurity settings</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
-    <string name="security_check_certificate">Check server certificate\nNotify about certificate issues while encrypted connection</string>
+    <string name="security_check_certificate">Check server certificate\nNotify for certificate problems on encrypted connections</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
-    <string name="security_clear_certificate">Remove certificates\nClear list of certificates ignored</string>
+    <string name="security_clear_certificate">Remove certificates\nClear list of ignored certificates</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
-    <string name="security_otr_history">Store history\nStore history while OTR session</string>
+    <string name="security_otr_history">Store history\nStore chat history for OTR sessions</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
     <string name="security_otr_mode">OTR mode</string>
-    <string name="chats_attention">Attention\nReact for the incoming attention requests</string>
-    <string name="chats_attention_sound">Attention sound\nChoose ring-tone</string>
+    <string name="chats_attention">Attention\nReact for incoming attention requests</string>
+    <string name="chats_attention_sound">Attention sound\nChoose ringtone</string>
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
-    <string name="connection_use_carbons">Carbon-copied mode\nMay work unstable! Will share the sessions for the same account on this client. Disable to reduce traffic usage.</string>
-    <string name="events_phrases">Key phrases\nCustom sound notifications about messages with preset phrases</string>
+    <string name="connection_use_carbons">Carbon-copied mode\nMay be unstable! Will share sessions for the same account on this client. Disable to reduce traffic usage.</string>
+    <string name="events_phrases">Key phrases\nCustom sound notifications for messages containing preset phrases</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
-    <string name="security_clear_certificate_warning">Do you really want to remove all the ignored certificates?</string>
+    <string name="security_clear_certificate_warning">Do you really want to remove all ignored certificates?</string>
 </resources>
