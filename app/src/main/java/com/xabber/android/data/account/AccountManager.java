@@ -107,7 +107,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         enabledAccounts = new HashSet<>();
         savedStatuses = new ArrayList<>();
         authorizationErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
-        passwordRequestProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_ic_add_circle);
+        passwordRequestProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_add_circle);
 
         colors = application.getResources().getIntArray(R.array.account_color_names).length;
 

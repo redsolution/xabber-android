@@ -67,7 +67,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     private MUCManager() {
         inviteProvider = new EntityNotificationProvider<RoomInvite>(
-                R.drawable.ic_stat_ic_add_circle);
+                R.drawable.ic_stat_add_circle);
         authorizationErrorProvider = new EntityNotificationProvider<RoomAuthorizationError>(
                 R.drawable.ic_stat_error);
     }

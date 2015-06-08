@@ -150,7 +150,7 @@ public class MessageArchiveManager implements OnPacketListener,
         modificationRequests = new NestedMap<Boolean>();
         chatStorages = new NestedNestedMaps<String, ChatStorage>();
         availableArchiveRequestProvider = new BaseAccountNotificationProvider<AvailableArchiveRequest>(
-                R.drawable.ic_stat_ic_help_black);
+                R.drawable.ic_stat_help);
     }
 
     public static MessageArchiveManager getInstance() {
