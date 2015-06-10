@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_confirm.png -->
     <string name="account_delete_confirm">Do you really want to delete account %s?\n(it won\'t be deleted from server, just from Xabber)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->

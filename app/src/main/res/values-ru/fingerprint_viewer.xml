@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
     <string name="otr_fingerprint_description">Чтобы Вам убедиться, что никто не выдает себя за вашего собеседника, он должен сообщить Вам цифровой отпечаток пальца, который вы сверите с указанным здесь. Не следует использовать XMPP чат для такой проверки.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->

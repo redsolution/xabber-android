@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
     <string name="available">Available</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_status.png -->
@@ -37,5 +37,4 @@
     <string name="saved_statuses">Saved statuses</string>
     <string name="clear_status_history">Clear status history</string>
     <string name="status_message">Status message</string>
-
 </resources>

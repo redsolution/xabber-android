@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
     <string name="events_phrases_title">Ключевые фразы</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->

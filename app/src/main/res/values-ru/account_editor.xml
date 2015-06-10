@@ -22,47 +22,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type">Тип учетной записи</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_facebook">учетная запись facebook.com (не email)</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_gtalk">учетная запись gmail.com или службы google</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_livejournal">учетная запись livejournal.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_qip">учетная запись qip.ru</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_vkontakte">имя или id на vkontakte.ru (не email)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_xmpp">имя@сервер.ru</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_ya">учетная запись yandex.ru (не email)</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_facebook">Вы не можете подключиться к чату Facebook, указав свой email. Вы должны указать имя пользователя Facebook и пароль. Дополнительную информацию можно найти на http://www.facebook.com/sitetour/chat.php</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_gtalk">Если у Вас нет учётной записи Google, её можно создать на сайте http://mail.google.com/\nТакже вы можете использовать ваше_имя@ваш_гугло_домен</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_livejournal">Если у Вас нет учётной записи LiveJournal, её можно создать здесь: http://livejournal.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_qip">Если у Вас нет учётной записи QIP, её можно создать здесь: http://qip.ru</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_vkontakte">Вы можете указать имя пользователя (например masha.v.kontakte) или указать свой номер (например id123456). Вы не можете войти в чат Вконтакте, использовав свой email. Чтобы войти в чат, Вам надо указать имя пользователя Вконтакте и пароль. Дополнительная информация: http://vk.com/help.php?page=jabber</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_xmpp">Подробную информацию об XMPP (Jabber) можно найти по адресу https://xmpp.org\nЗарегистрировать новую учетную запись можно тут https://register.jabber.org или тут http://jabber.ru</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_ya">Если у Вас нет учетной записи Yandex, её можно создать здесь: http://yandex.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_facebook">Facebook</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_gtalk">Google Talk</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_livejournal">LiveJournal</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_qip">QIP</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_vkontakte">В контакте</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_xmpp">XMPP</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_ya">Я.Онлайн</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_user_name">Имя пользователя</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
@@ -100,21 +66,11 @@
     <string name="account_oauth_invalidated">Не авторизован</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
     <string name="account_oauth_summary">Настройки авторизации OAuth</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_gtalk.png -->
-    <string name="account_protocol_gtalk_title">Google Talk</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
-    <string name="account_protocol_wlm_title">WLM</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
-    <string name="account_protocol_xmpp_title">XMPP</string>
     <string name="account_proxy_host">Хост для прокси</string>
     <string name="account_proxy_password">Пароль для прокси</string>
     <string name="account_proxy_port">Порт для прокси</string>
     <string name="account_proxy_type">Тип прокси</string>
-    <string name="account_proxy_type_http">HTTP</string>
     <string name="account_proxy_type_none">Отключено</string>
-    <string name="account_proxy_type_orbot">Orbot</string>
-    <string name="account_proxy_type_socks4">SOCKS4</string>
-    <string name="account_proxy_type_socks5">SOCKS5</string>
     <string name="account_proxy_user">Имя пользователя для прокси</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Использовать SASL аутентификацию (рекомендуется)</string>
@@ -142,18 +98,6 @@
     <string name="account_tls_require">Требовать TLS</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_tls_require_summary">Требовать TLS шифрование при подключении к серверу</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_odnoklassniki">В качестве имени пользователя нужно использовать ваш ID (например: 123456). Вы не можете войти в чат, использовав свой логин, email или номер телефона. Ваш ID можно узнать в настройках профиля http://www.odnoklassniki.ru/settings</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_wlm">Вы будете перенаправлены на http://live.com для ввода имени пользователя и пароля.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_odnoklassniki">Номер (ID) на Одноклассниках (не логин или e-mail)</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_wlm"></string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_odnoklassniki">Одноклассники</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_wlm">Windows Live Messenger</string>
     <string name="account_use_orbot">Использовать анонимное соединение через TOR и требовать TLS шифрование\nНе рекомендуется для Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Вы уверены, что хотите отменить все не сохраненные изменения?</string>

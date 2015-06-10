@@ -22,47 +22,13 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type">Account type</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_facebook">username for facebook.com (not e-mail)</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_gtalk">username for gmail.com or Google Apps domain</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_livejournal">username for livejournal.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_qip">username for qip.ru</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_vkontakte">username or id for vkontakte.ru (not e-mail)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_xmpp">name@example.com</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_ya">username for yandex.ru (not e-mail)</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_facebook">You can not login to Facebook chat using your email. To set up Facebook chat you have to provide your Facebook username and password. You may check http://www.facebook.com/sitetour/chat.php for details.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_gtalk">If you don\'t have Google account you may create one at http://mail.google.com\nAlso you can use your_user_name@your_google_domain</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_livejournal">If you don\'t have Livejournal account you may create one at http://livejournal.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_qip">If you don\'t have QIP account you may create one at http://qip.ru</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_vkontakte">You can enter you name (e.g. masha.v.kontakte) or id (e.g. id123456). You can not login to VKontakte chat using your email. To set up chat you have to provide your Vkontakte.ru username and password. Check http://vk.com/help.php?page=jabber for details.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_ya">If you don\'t have Ya.Online account you may create one at http://yandex.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_facebook">Facebook</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_gtalk">Google Talk</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_livejournal">LiveJournal</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_qip">QIP</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_vkontakte">VKontakte</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_xmpp">XMPP</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_ya">Ya.Online</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
     <string name="account_user_name">Username</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_error.png -->
@@ -100,21 +66,11 @@
     <string name="account_oauth_invalidated">Not authorized</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
     <string name="account_oauth_summary">OAuth settings</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_gtalk.png -->
-    <string name="account_protocol_gtalk_title">Google Talk</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_wlm.png -->
-    <string name="account_protocol_wlm_title">WLM</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_01.png -->
-    <string name="account_protocol_xmpp_title">XMPP</string>
     <string name="account_proxy_host">Proxy host</string>
     <string name="account_proxy_password">Proxy password</string>
     <string name="account_proxy_port">Proxy port</string>
     <string name="account_proxy_type">Proxy type</string>
-    <string name="account_proxy_type_http">HTTP</string>
     <string name="account_proxy_type_none">Disabled</string>
-    <string name="account_proxy_type_orbot">Orbot</string>
-    <string name="account_proxy_type_socks4">SOCKS4</string>
-    <string name="account_proxy_type_socks5">SOCKS5</string>
     <string name="account_proxy_user">Proxy user</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_sasl">Use SASL Authentication (recommended)</string>
@@ -142,18 +98,6 @@
     <string name="account_tls_require">Require TLS</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_02.png -->
     <string name="account_tls_require_summary">Require TLS encryption when connect to server</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_odnoklassniki">You must use your ID as your user name (e.g. 123456). You can not login to Odnoklasniki chat using your email, login or phone number. Your ID can be found here http://www.odnoklassniki.ru/settings</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_helps_wlm">You will be redirected to http://live.com in order to enter username and password.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_odnoklassniki">id for odnoklassniki.ru (not login or e-mail)</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_wlm">-</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_odnoklassniki">Odnoklassniki</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add_type.png -->
-    <string name="account_type_names_wlm">Windows Live Messenger</string>
     <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol\nNot recommended for Google Talk</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_editor_confirm.png -->
     <string name="confirm_cancellation">Are you sure you want to discard all the changes?</string>

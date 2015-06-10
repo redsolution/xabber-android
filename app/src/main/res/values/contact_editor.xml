@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="CANNOT_ADD_TO_GROUP">Error: can\'t add to group</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
@@ -40,9 +40,7 @@
     <string name="choose_account">Choose an account</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_editor_error.png -->
     <string name="EMPTY_ACCOUNT">Please select an account</string>
-
     <string name="add_new_group">Add new group…</string>
-
     <string name="accept_contact">Authorize</string>
     <string name="decline_contact">Discard</string>
 </resources>

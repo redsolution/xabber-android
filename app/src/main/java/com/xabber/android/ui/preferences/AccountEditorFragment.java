@@ -82,7 +82,7 @@ public class AccountEditorFragment extends BaseSettingsFragment
 
         if (getString(R.string.account_proxy_type_key).equals(key)) {
             boolean enabled = !getString(R.string.account_proxy_type_none).equals(newValue)
-                    && !getString(R.string.account_proxy_type_orbot).equals(newValue);
+                    && !getString(R.string.orbot).equals(newValue);
             for (int id : new Integer[]{R.string.account_proxy_host_key,
                     R.string.account_proxy_port_key, R.string.account_proxy_user_key,
                     R.string.account_proxy_password_key,}) {

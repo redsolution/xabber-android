@@ -9,6 +9,7 @@
     <string name="account_delete">Удалить учетную запись</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list_context_menu.png -->
     <string name="account_editor">Редактировать учетную запись</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
     <string name="account_state_registration">Регистрация</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_list.png -->
     <string name="account_state_authentication">Авторизация</string>
