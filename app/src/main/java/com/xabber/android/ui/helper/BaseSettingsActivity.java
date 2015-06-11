@@ -33,7 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xabber.android.ui.widget.RingtonePreference;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Provide possibility to edit, apply and discard settings.

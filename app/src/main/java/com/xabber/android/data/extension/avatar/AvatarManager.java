@@ -37,7 +37,7 @@ import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
 

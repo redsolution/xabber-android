@@ -29,7 +29,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Activity with WebView for OAuth authorization.

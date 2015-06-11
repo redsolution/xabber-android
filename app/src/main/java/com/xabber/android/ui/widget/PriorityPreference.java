@@ -19,7 +19,7 @@ import android.preference.EditTextPreference;
 import android.util.AttributeSet;
 import android.widget.Toast;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Preference to validate xmpp priority input and to show related hint.

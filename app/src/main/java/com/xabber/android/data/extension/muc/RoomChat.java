@@ -37,7 +37,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
 import com.xabber.xmpp.muc.Affiliation;

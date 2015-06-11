@@ -13,7 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xabber.androiddev"
+    package="com.xabber.android.classic"
     android:versionCode="102"
     android:versionName="@string/application_version"
     android:installLocation="auto"

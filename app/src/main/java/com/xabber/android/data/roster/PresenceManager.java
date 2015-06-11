@@ -43,7 +43,7 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 
 /**

@@ -49,7 +49,7 @@ import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.archive.AbstractMessage;
 import com.xabber.xmpp.archive.Auto;

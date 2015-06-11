@@ -15,7 +15,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <string name="application_name">Xabber Classic</string>
   <string name="application_version">@string/development_versions_102</string>
-  <string name="application_package">com.xabber.androiddev</string>
+  <string name="application_package">com.xabber.android.classic</string>
   <string name="client_name">Xabber</string>
 
   <string name="development_versions_1">@string/production_versions_1</string>

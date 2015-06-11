@@ -45,7 +45,7 @@ import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.notification.BaseNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Manage certificate exceptions.

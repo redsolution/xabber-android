@@ -34,7 +34,7 @@ import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.dialog.GroupAddDialogBuilder;
 import com.xabber.android.ui.helper.ManagedListActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Manage list of selected groups.

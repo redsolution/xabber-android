@@ -20,7 +20,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
 import com.xabber.android.ui.AccountEditor;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class AccountAuthorizationError extends AccountRelated implements
 		AccountNotificationItem {

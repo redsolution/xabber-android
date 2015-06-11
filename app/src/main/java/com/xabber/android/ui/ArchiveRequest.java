@@ -24,7 +24,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.helper.ManagedDialog;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Dialog with request to enable message archive.

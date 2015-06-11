@@ -36,7 +36,7 @@ import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.GroupStateProvider;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Provide grouping implementation for the list of contacts.

@@ -22,7 +22,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.MUCEditor;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Invite to join the room.

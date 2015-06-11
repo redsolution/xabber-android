@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Preference to show status mode icon.

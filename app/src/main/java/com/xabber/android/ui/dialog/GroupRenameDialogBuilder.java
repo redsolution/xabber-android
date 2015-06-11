@@ -20,7 +20,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class GroupRenameDialogBuilder extends ConfirmDialogBuilder {
 

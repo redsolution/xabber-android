@@ -31,7 +31,7 @@ import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatListAdapter;
 import com.xabber.android.ui.helper.ManagedListActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class ChatList extends ManagedListActivity implements
 		OnAccountChangedListener, OnContactChangedListener,

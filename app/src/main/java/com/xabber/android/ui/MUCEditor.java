@@ -44,7 +44,7 @@ import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class MUCEditor extends ManagedActivity implements View.OnClickListener,
 		OnItemSelectedListener, ConfirmDialogListener {

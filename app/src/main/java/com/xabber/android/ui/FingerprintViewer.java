@@ -51,7 +51,7 @@ import com.xabber.android.ui.dialog.NotificationDialogBuilder;
 import com.xabber.android.ui.dialog.NotificationDialogListener;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 
 public class FingerprintViewer extends ManagedActivity implements

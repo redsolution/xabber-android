@@ -28,7 +28,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Adapter for the list of accounts in the title of contact list.

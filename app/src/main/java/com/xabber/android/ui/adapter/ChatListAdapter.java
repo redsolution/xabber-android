@@ -32,7 +32,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.ChatList;
 import com.xabber.android.ui.helper.AbstractAvatarInflaterHelper;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Adapter for {@link ChatList}.

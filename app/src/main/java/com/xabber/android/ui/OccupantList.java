@@ -29,7 +29,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.helper.ManagedListActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 
 /**

@@ -62,7 +62,7 @@ import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.utils.DummyCursor;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Manage integration with system accounts and contacts.

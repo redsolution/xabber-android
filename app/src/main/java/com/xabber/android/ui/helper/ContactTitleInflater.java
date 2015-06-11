@@ -32,7 +32,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Helper class to update <code>contact_title.xml</code>.

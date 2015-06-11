@@ -36,7 +36,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.BaseSettingsActivity;
 import com.xabber.android.ui.helper.OrbotHelper;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class AccountEditor extends BaseSettingsActivity implements
 		OnPreferenceClickListener {

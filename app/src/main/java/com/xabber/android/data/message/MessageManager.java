@@ -55,7 +55,7 @@ import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
 

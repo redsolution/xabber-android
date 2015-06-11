@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * This class manage list of phrases.

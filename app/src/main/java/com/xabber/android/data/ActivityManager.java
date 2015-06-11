@@ -30,7 +30,7 @@ import com.xabber.android.data.SettingsManager.InterfaceTheme;
 import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.LoadActivity;
 import com.xabber.android.ui.PreferenceEditor;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Activity stack manager.

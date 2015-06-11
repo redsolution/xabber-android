@@ -42,7 +42,7 @@ import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.ManagedListActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class StatusEditor extends ManagedListActivity implements
 		View.OnClickListener, OnItemClickListener {

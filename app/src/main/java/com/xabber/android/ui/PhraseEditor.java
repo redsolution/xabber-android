@@ -30,7 +30,7 @@ import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.helper.BaseSettingsActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class PhraseEditor extends BaseSettingsActivity {
 

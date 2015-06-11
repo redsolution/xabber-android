@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Adapter for available status modes.

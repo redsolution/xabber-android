@@ -20,7 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.xabber.android.ui.helper.OrbotHelper;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Orbot installer dialog builder.

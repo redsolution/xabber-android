@@ -17,7 +17,7 @@ package com.xabber.android.data.account;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Mode;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Status mode.

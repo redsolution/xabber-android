@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Inflate view with contact's status mode.

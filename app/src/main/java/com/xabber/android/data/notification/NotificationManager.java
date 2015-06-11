@@ -57,7 +57,7 @@ import com.xabber.android.ui.ContactList;
 import com.xabber.android.ui.ReconnectionActivity;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Manage notifications about message, subscription and authentication.

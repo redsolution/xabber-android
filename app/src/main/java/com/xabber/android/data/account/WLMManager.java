@@ -40,7 +40,7 @@ import android.net.Uri;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 class WLMManager implements OAuthProvider {
 

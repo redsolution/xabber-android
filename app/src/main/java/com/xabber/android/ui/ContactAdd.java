@@ -44,7 +44,7 @@ import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class ContactAdd extends GroupListActivity implements
 		View.OnClickListener, ConfirmDialogListener, OnItemSelectedListener {

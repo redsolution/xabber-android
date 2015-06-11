@@ -25,7 +25,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.helper.ManagedDialog;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Dialog with password request for authentication.

@@ -40,7 +40,7 @@ import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Manage operations with common settings.

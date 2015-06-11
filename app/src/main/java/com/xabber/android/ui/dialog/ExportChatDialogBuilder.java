@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class ExportChatDialogBuilder extends ConfirmDialogBuilder {
 

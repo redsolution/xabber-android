@@ -30,7 +30,7 @@ import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.helper.BaseListEditor;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class AccountList extends BaseListEditor<String> implements
 		OnAccountChangedListener {

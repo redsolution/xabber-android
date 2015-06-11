@@ -31,7 +31,7 @@ import android.widget.Scroller;
 
 import com.xabber.android.data.LogManager;
 import com.xabber.android.ui.adapter.SaveStateAdapter;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Widget to switch between chat pages.

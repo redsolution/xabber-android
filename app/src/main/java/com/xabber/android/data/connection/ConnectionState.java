@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.connection;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * State of connection.

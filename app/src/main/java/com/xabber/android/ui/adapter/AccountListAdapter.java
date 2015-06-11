@@ -30,7 +30,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.ui.AccountList;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Adapter for the list of accounts for {@link AccountList}.

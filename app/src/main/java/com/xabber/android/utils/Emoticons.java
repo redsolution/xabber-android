@@ -26,7 +26,7 @@ import android.text.Spannable.Factory;
 import android.text.style.ImageSpan;
 
 import com.xabber.android.data.SettingsManager;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Emoticons.

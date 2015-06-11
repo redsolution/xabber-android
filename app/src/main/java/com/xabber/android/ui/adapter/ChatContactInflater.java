@@ -20,7 +20,7 @@ import android.view.View;
 
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Inflate view with contact's last message or status text as well as active

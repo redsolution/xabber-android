@@ -25,7 +25,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.notification.NotificationItem;
 import com.xabber.android.ui.CertificateConfirmation;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class PendingCertificate implements NotificationItem {
 

@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Helper for dialog activities.

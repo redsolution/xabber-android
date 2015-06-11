@@ -21,7 +21,7 @@ import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class AboutViewer extends ManagedActivity {
 

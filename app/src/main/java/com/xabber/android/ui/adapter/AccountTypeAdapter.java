@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountType;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Adapter for drop down list of account's types.

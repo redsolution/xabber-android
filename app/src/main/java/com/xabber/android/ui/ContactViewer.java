@@ -49,7 +49,7 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ManagedPreferenceActivity;
 import com.xabber.android.ui.widget.StatusPreference;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.Address;
 import com.xabber.xmpp.vcard.AddressProperty;

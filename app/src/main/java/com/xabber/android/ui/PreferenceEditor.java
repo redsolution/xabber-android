@@ -41,7 +41,7 @@ import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.helper.ManagedPreferenceActivity;
 import com.xabber.android.ui.helper.PreferenceSummaryHelper;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class PreferenceEditor extends ManagedPreferenceActivity implements
 		OnPreferenceClickListener, OnSharedPreferenceChangeListener,

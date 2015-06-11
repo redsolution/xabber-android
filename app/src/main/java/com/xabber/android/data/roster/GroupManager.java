@@ -23,7 +23,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 		GroupStateProvider {

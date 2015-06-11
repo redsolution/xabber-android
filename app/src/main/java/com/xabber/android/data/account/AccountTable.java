@@ -36,7 +36,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Storage with account settings.

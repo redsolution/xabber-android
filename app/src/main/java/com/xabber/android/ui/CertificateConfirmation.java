@@ -29,7 +29,7 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.PendingCertificate;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.ui.helper.ManagedDialog;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Dialog to confirm invalid certificate.

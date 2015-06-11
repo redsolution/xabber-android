@@ -33,7 +33,7 @@ import android.os.Build;
 import android.os.Handler;
 
 import com.xabber.android.service.XabberService;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 /**
  * Base entry point.

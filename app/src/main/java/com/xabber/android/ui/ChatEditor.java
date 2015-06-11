@@ -28,7 +28,7 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.helper.BaseSettingsActivity;
-import com.xabber.androiddev.R;
+import com.xabber.android.classic.R;
 
 public class ChatEditor extends BaseSettingsActivity {
 
