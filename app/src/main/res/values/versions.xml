@@ -13,7 +13,7 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-  <string name="application_name">@string/development_title</string>
+  <string name="application_name">Xabber Classic</string>
   <string name="application_version">@string/development_versions_102</string>
   <string name="application_package">com.xabber.androiddev</string>
   <string name="client_name">Xabber</string>
