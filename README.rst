@@ -45,11 +45,12 @@ Supported protocols
 Translations
 ============
 
-We use webtranslateit.com as our translation system.
-All related resources are automatically generated from files got with webtranslateit.com.
-If you want to update any translation please email us to info[at]xabber.com and specify all the translation languages you want to edit.
-Then we'll send an invitation to our project on webtranslateit.com.
-Please don't create pull requests with translation fixes as any changes will be overwritten with the next update from webtranslateit.com.
+
+
+We use crowdin.com as our translation system.
+All related resources are automatically generated from files got with crowdin.com.
+If you want to update any translation go to Xabber page https://crowdin.com/project/xabber and request to join our translation team
+Please don't create pull requests with translation fixes as any changes will be overwritten with the next update from crowdin.com.
 
 Wiki
 ====
