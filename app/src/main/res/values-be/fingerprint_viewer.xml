@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_fingerprint_description">Каб пацьвердзіць сваю асобу, ваш суразмоўца можа прывесьці свой адбітак, каб вы параўналі яго з тым, які паказваецца тут. Адбітак трэба прадыктаваць праз іншую давераную крыніцу сувязі (напрыклад, голасам па тэлефоне).</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_is_verified">Я давяраю гэтаму суразмоўцу</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">Ваш адбітак:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">Адбітак вашага суразмоўцы:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">Адсканаваць QR code з адбіткам вашага суразмоўцы</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">Паказаць QR code з вашым адбіткам</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">У вас не ўсталяваны Google Play. Калі ласка, усталюйце Barcode Scanner ўручную.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">Гэтай праграме патрэбны Barcode Scanner. Ці хочаце вы ўсталяваць яго?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">Скапіяваць ваш адбітак у буфер абмену</string>
+</resources>

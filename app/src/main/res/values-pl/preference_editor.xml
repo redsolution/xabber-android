@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="cache_clear">Wyczyść pamięć podręczną\nWyczyść wszystkie dane lokalne. Uzyskasz więcej wolnego miejsca w pamięci urządzenia.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
@@ -9,7 +9,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_go_away">Automatyczny status Oddalony\nAutomatycznie przełącza na status Oddalony po zablokowaniu ekranu</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_order">Sortuj kontakty\nPozwala posortować kontakty według kryterium</string>
+    <string name="contacts_order">Sortuj kontakty\nPozwala posortować kontakty w/g zadanego kryterium</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
     <string name="contacts_order_alphabet">Alfabetycznie</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
@@ -21,7 +21,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_avatars">Pokazuj awatary\nPokazuj awatary użytkowników na liście kontaktów</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
-    <string name="contacts_show_empty_groups">Pokazuj puste grupy\nPokazuj grupy bez kontaktów połączonych</string>
+    <string name="contacts_show_empty_groups">Pokazuj puste grupy\nPokazuj grupy bez aktywnych (połączonych) kontaktów </string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_show_groups">Pokazuj grupy\nPokazuj grupy na liście kontaktów</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
@@ -33,7 +33,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
     <string name="debug_log">Log debugowania\nWpisz wiadomość do logu debugowania (wymaga ponownego uruchomienia aplikacji)</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
-    <string name="events_lightning">Dioda\nMigaj diodą</string>
+    <string name="events_lightning">Dioda\nMiga diodą przy powiadomieniu</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
     <string name="events_persistent">Stałe powiadomienie\nPokaż stałe powiadomienia. Opcja zapobiega systemowemu wyrzuceniu aplikacji z pamięci</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
@@ -59,7 +59,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
     <string name="preference_contacts">Lista kontaktów\nDostosuj wygląd listy kontaktów</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
-    <string name="preference_debug">Ustawienia debugowania\nWybierz to, jeśli chcesz pomóc twórcom Xabber\'a w rozwoju aplikacji</string>
+    <string name="preference_debug">Ustawienia debugowania\nWybierz, jeśli chcesz pomóc twórcom Xabber\'a w rozwoju aplikacji</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
     <string name="preference_editor">Ustawienia</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
@@ -83,7 +83,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
     <string name="chats_font_size_xlarge">Ogromna</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
-    <string name="chats_hide_keyboard">Ukryj klawiaturę\nUkryj klawiaturę po wysłaniu wiadomości</string>
+    <string name="chats_hide_keyboard">Ukryj klawiaturę\nUkryj klawiaturę ekranową po wysłaniu wiadomości</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
     <string name="chats_hide_keyboard_landscape">W trybie poziomym</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
@@ -105,11 +105,11 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_priority">Ustawienia priorytetów</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_start_at_boot">Włącz przy uruchamianiu systemu\nWłącz aplikację przy uruchamianiu systemu</string>
+    <string name="connection_start_at_boot">Włącz przy uruchamianiu systemu\nWłącz aplikację przy uruchamianiu systemu. Nie działa, jeśli Xabber został zainstalowany na karcie SD.</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
     <string name="connection_wake_lock">Zapobieganie trybowi uśpienia\nZmniejszy żywotność baterii</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
-    <string name="connection_wifi_lock">Pozostaw aktywne WiFi\nZapobiegaj wyłączeniu WiFi w trybie czuwania. Zwiększy zużycie baterii</string>
+    <string name="connection_wifi_lock">Pozostaw aktywne WiFi\nZapobiegaj wyłączeniu WiFi w trybie czuwania. Zmniejszy żywotność baterii</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
     <string name="contacts_reset_offline">Resetuj ustawienia offline\nWyczyść indywidualne ustawienia dla grup i kont</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->

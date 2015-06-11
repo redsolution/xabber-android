@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="cache_clear">Gyorsítótár törlése\nMinden helyi adat törlése. Ez felszabadít némi tárterületet.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug_cache.png -->
+    <string name="cache_clear_warning">Valóban töröljük a csevegési előzményeket és egyéb helyi adatokat?\nA fiókadatok és a névjegyzék megmaradnak. Az alkalmazás bezáródik.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_send_by_enter">Enterrel küld\nAz üzenet az Enter gomb megnyomásakor elmegy</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_away">Automatikusan távol\nKépernyő zárolásakor az állapotot automatikusan távollévőre állítja</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_order">Kapcsolatok rendezése\nBeállítható a kapcsolatok sorrendje</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_alphabet">Betűrendben</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_sort.png -->
+    <string name="contacts_order_status">Státusz alapján</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_accounts">Fiók szerinti csoportosítás\nKapcsolatok csoportosítása a listán a fiókok szerint</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_active_chats">Az aktív csevegés felül\nAz aktív csevegéseket a lista elején mutatja</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_avatars">Avatarok megjelenítése\nFelhasználók képeinek megjelenítése a kapcsolatok listáján</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_show_empty_groups">Üres csoportok megjelenítése\nMegjeleníti azokat a csoportokat, amelyekben nincs elérhető kapcsolat </string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_groups">Csoportok megjelenítése\nCsoportok megjelenítése a kapcsolatok listáján</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_offline">Kijelentkezett kapcsolatok megjelenítése</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_show_panel">Fiókpanel megjelenítése\nA kapcsolatok listája fölött megjeleníti a fiókot avatarral együtt</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_02.png -->
+    <string name="contacts_stay_active_chats">Aktív csevegések duplázása\nAz aktív csevegések megjelennek a lista elején és a csoportban is</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_debug.png -->
+    <string name="debug_log">Hibakeresési napló\nÜzeneteket ír a hibakeresési naplóba (az alkalmazást újra kell indítani, hogy a változás életbe lépjen)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_lightning">Fényjelzés\nA LED villogtatása értesítés esetén</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_persistent">Értesítési terület ikonja\nÁllandó értesítés megjelenítése. Ez megakadályozza, hogy az Adroid az alkalmazást kitegye a memóriából.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_sound">Hang\nVálassza ki az értestés hangját</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_vibro">Rezgés\nÉrtesítéskor rezgés</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_theme">Téma\nTéma beállításai</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_dark">Sötét</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_light">Világos</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_skin.png -->
+    <string name="interface_theme_normal">Alapértelmezett</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance.png -->
+    <string name="interface_smiles">Emotikonok\nEmotikonok (régebben szmájlik) beállításai</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_android">Android emotikonok</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_appearance_smiles.png -->
+    <string name="interface_smiles_none">Nincs grafikus emotikon</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_connection">Csatlakozás beállításai\nCsatlakozás beállításai</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_contacts">Kapcsolatok\nKapcsolatok listája megjelenésének testreszabása</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_debug">Hibakeresési beállítások\nOlyan beállítások, amelyek a fejlesztőknek segítenek jobbá tenni a Xabbert.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_option_menu.png -->
+    <string name="preference_editor">Beállítások</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_events">Értesítések\nÉrtesítések beállításai</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_interface">Témabeállítás\nMegjelenési beállítások</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="about_viewer">Névjegy</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_divide">Üzenet új sorban\nEgy üzenetet új sorban jelenít meg</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_new_line.png -->
+    <string name="chats_divide_portrait">Álló helyzetben</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_font_size">Betűméret\nA betűk mérete az üzenetben</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_large">Nagy</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_normal">Normál</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_small">Kicsi</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_font_size.png -->
+    <string name="chats_font_size_xlarge">Nagyon nagy</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_hide_keyboard">Billentyűzet elrejtése\nA szoftverbillentyűzet elrejtése az öüzenet küldése után</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_keyboard.png -->
+    <string name="chats_hide_keyboard_landscape">Fekvő helyzetben</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_02.png -->
+    <string name="chats_receipt">Kézbesítési jelentések\nJelentések küldése és fogadása üzenetek kézbesítéséről</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_avatars">Avatárok üzenetekben\nMinden üzenetben megjeleníti az avatárokat</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_show_status_change">Állapotváltozások megjelenítése\nÜzeneteket jelenít meg az állapotváltozásokról</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer_status.png -->
+    <string name="chats_show_status_change_muc">Konferenciákban</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_chat_viewer.png -->
+    <string name="chats_state_notification">Gépelési értesítés megjelenítése\nÉrtesítést küld a gépelésről üzenetírás közben</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_adjust_priority">Prioritás beállítása\nPrioritás beállítása az állapotnak megfelelően. A fiók prioritása felül lesz bírálva.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_away.png -->
+    <string name="connection_go_away_immediately">Képernyő zároláskor azonnal</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_go_xa">Üresjáratban "kiterjesztett távollét"\nAz állapot "Kiterjesztett távollét"-re állítása képernyő zárolásakor</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_priority">Prioritás beállításai</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_start_at_boot">A rendszerrel együtt indul\nAz Android indulásakor induljon el az alkalmazás is. Ez nem működik, ha a Xabbert SD kártyára telepíti.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wake_lock">Alvás megakadályozása\nCsökkenti az akkumulátor üzemidejét</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_01.png -->
+    <string name="connection_wifi_lock">WiFi ébren tartása\nKészenléti módban is aktív állapotban tartja a WiFi -t. Ez csökkenti az akkumulátor üzemidejét.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_01.png -->
+    <string name="contacts_reset_offline">Kapcsolat nélküli beállítások törlése\nCsoportok és fiókok egyedi beállításainak törlése</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_contact_list_reset_offline.png -->
+    <string name="contacts_reset_offline_warning">Valóban töröljük a csoportok és fiókok egyedi beállításait?</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_first_only">Értesítés csak az első üzenetről\nCsak a csevegés első üzenetéről ad értesítést</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_01.png -->
+    <string name="events_ignore_system_vibro">Rezgésbeállítás figyelmen kívül hagyása\nHa arendszerben beállított rezgés nem működik, használja ezt az opciót</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_message">Értesítés beállításai\nBejövő üzenetek értesítéseinek beállításai</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat">Csak csevegések</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_chat_and_muc">Csevegések és konferenciák</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_where.png -->
+    <string name="events_message_none">Nincs értesítés</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_show_text">Az üzenet megjelenítése az értesítésben\nAz értesítési területen megjeleníti az üzenet szövegét</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_notifications_02.png -->
+    <string name="events_visible_chat">Értesítés csevegésen belül\nA csevegésen belül a bejövő üzenetekről  értesítést ad</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_connection_02.png -->
+    <string name="negative_priotiry_summary">%s (nem kap üzenetet egyik csevegésből sem)</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_01.png -->
+    <string name="preference_accounts">XMPP fiókok\nFiókok kezelése</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_02.png -->
+    <string name="preference_security">Biztonság\nBiztonsági beállítások</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_check_certificate">Szervertanusítvány ellenőrzése\nTitkosított csatlakozás esetén értesítés a tanusítvánnyal kapcsolatos problémákról</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_clear_certificate">Tanusítványok eltávolítása\nFigyelmen kívül hagyott tanusítványok listájának törlése</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_history">Előzmények mentése\nOTR munkamenet előzményeinek mentése</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security.png -->
+    <string name="security_otr_mode">OTR mód</string>
+    <string name="chats_attention">Figyelemkeltés\nBejövő figyelemkeltési kérésekre adott reakció</string>
+    <string name="chats_attention_sound">Figyelemkéltési hang\nCsengőhang választása</string>
+    <string name="connection_load_vcard">vCard betöltése\nA kapcsolat személyes információinak és képének betöltése és frissítése. Tiltsa le az adatforgalom mérsékléséhez.</string>
+    <string name="events_phrases">Kulcsmondatok\nElőre megadott kifejezéseket tartalmazó üzenetekről egyéni hangértesítés</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/preference_editor_security_remove.png -->
+    <string name="security_clear_certificate_warning">Valóban töröljük a figyelmen kívül hagyott tanusítványokat?</string>
+</resources>

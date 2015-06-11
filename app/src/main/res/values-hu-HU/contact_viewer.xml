@@ -1,109 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
-    <string name="contact_viewer">Voir les informations</string>
+    <string name="contact_viewer">Információ megjelenítése</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_for">Informations sur %s</string>
+    <string name="contact_viewer_for">%s információinak megjelenítése</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="contact_viewer_xmpp">XMPP</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_jid">Identifiant Jabber</string>
+    <string name="contact_viewer_jid">Jabber ID</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_name">Nom Jabber</string>
+    <string name="contact_viewer_name">Jabber név</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_resources">Ressources</string>
+    <string name="contact_viewer_resources">Erőforrások</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_resource_summary">Ressource: %1$s\nPriorité: %2$d\nClient: %3$s</string>
+    <string name="contact_viewer_resource_summary">Erőforrás: %1$s\nPrioritás: %2$d\nKliens: %3$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_client_info">%1$s, type: %2$s</string>
+    <string name="contact_viewer_client_info">%1$s, típus: %2$s</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_person">Informations personnelles</string>
+    <string name="vcard_person">Személyes adatok</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_nick_name">Surnom</string>
+    <string name="vcard_nick_name">Becenév</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_formatted_name">Nom formaté</string>
+    <string name="vcard_formatted_name">Teljes név</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
-    <string name="vcard_prefix_name">Titre</string>
+    <string name="vcard_prefix_name">Előtag</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
-    <string name="vcard_given_name">Surnom</string>
+    <string name="vcard_given_name">Keresztnév</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
-    <string name="vcard_middle_name">Second prénom</string>
+    <string name="vcard_middle_name">Középső név</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
-    <string name="vcard_family_name">Nom de famille</string>
+    <string name="vcard_family_name">Vezetéknév</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_name.png -->
-    <string name="vcard_suffix_name">Suffixe</string>
+    <string name="vcard_suffix_name">Utótag</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_birth_date">Anniversaire</string>
+    <string name="vcard_birth_date">Születésnap</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
-    <string name="vcard_url">Site Web</string>
+    <string name="vcard_url">Weboldal</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_organization">Organisation</string>
+    <string name="vcard_organization">Szervezet</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_title">Titre de l\'emploi, de la fonction</string>
+    <string name="vcard_title">Munkakör</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_role">Rôle</string>
+    <string name="vcard_role">Beosztás</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
-    <string name="vcard_other">Autres informations</string>
+    <string name="vcard_other">Egyéb információ</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
-    <string name="vcard_categories">Catégories</string>
+    <string name="vcard_categories">Kategóriák</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
-    <string name="vcard_decsription">Description</string>
+    <string name="vcard_decsription">Leírás</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_common.png -->
-    <string name="vcard_note">Notes</string>
+    <string name="vcard_note">Jegyzetek</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address">Adresse</string>
+    <string name="vcard_address">Cím</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_pobox">CP</string>
+    <string name="vcard_address_pobox">Postafiók</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_extadr">Adresse étendue</string>
+    <string name="vcard_address_extadr">Bővebb cím</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_street">Rue</string>
+    <string name="vcard_address_street">Utca</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_locality">Localité</string>
+    <string name="vcard_address_locality">Helyiség</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_region">Région</string>
+    <string name="vcard_address_region">Régió</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_pcode">Code Postal</string>
+    <string name="vcard_address_pcode">Irányítószám</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_address_ctry">Pays</string>
+    <string name="vcard_address_ctry">Ország neve</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_telephone">Téléphone</string>
+    <string name="vcard_telephone">Telefon</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_email">Courrier Électronique</string>
+    <string name="vcard_email">E-mail</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type">Étiquettes</string>
+    <string name="vcard_type">Címkék</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_home">Domicile</string>
+    <string name="vcard_type_home">Otthoni</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_work">Travail</string>
+    <string name="vcard_type_work">Munkahelyi</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_postal">Code postal</string>
+    <string name="vcard_type_postal">Postai</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_parcel">Colis</string>
+    <string name="vcard_type_parcel">Csomagküldési cím</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_dom">Domicile</string>
+    <string name="vcard_type_dom">Belföldi</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_intl">International</string>
+    <string name="vcard_type_intl">Nemzetközi</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_pref">Préféré</string>
+    <string name="vcard_type_pref">Preferált</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_voice">Voix</string>
+    <string name="vcard_type_voice">Hang</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_fax">Fax</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_pager">Pageur</string>
+    <string name="vcard_type_pager">Személyhívó</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_cell">Mobile</string>
+    <string name="vcard_type_cell">Mobil</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_video">Vidéo</string>
+    <string name="vcard_type_video">Video</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_bbs">BBS</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_modem">Modem</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_msg">Méssagerie vocale</string>
+    <string name="vcard_type_msg">Hangposta</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_isdn">RNIS</string>
+    <string name="vcard_type_isdn">ISDN</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_pcs">PCS</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
@@ -111,7 +111,7 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_x400">X400</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="please_wait">Veuillez patienter…</string>
+    <string name="please_wait">Kérem, várjon...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="unknown">Inconnu</string>
+    <string name="unknown">Ismeretlen</string>
 </resources>

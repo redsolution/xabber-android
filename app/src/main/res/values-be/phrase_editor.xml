@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
-    <string name="events_phrases_title">Słowa kluczowe</string>
+    <string name="events_phrases_title">Ключавыя выразы</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
-    <string name="phrase_add">Dodaj frazę</string>
+    <string name="phrase_add">Дадаць выраз</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
-    <string name="phrase_delete">Usuń frazę</string>
+    <string name="phrase_delete">Выдаліць выраз</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
-    <string name="phrase_delete_confirm">Jesteś pewien, że chcesz usunąć frazę: %s?</string>
+    <string name="phrase_delete_confirm">Ці насамрэч вы хочаце выдаліць выраз: %s?</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
-    <string name="phrase_empty">&lt; dowolny tekst &gt;</string>
+    <string name="phrase_empty">&lt; Любы тэкст &gt;</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_group">Członek grupy</string>
+    <string name="phrase_group">Частка назвы групы суразмоўцаў</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_regexp">Wyrażenie regularne</string>
+    <string name="phrase_regexp">Рэгулярны выраз regexp</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_sound">Dźwięk\nWybierz dźwięk powiadomienia</string>
+    <string name="phrase_sound">Гук\nАбярыце гук для абвестак</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_text">Tekst do wyszukania</string>
+    <string name="phrase_text">Тэкст, які трэба шукаць</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_user">Identyfikator użytkownika (część przed @)</string>
+    <string name="phrase_user">Частка Jabber ID суразмоўцы</string>
 </resources>

@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
-    <string name="events_phrases_title">Słowa kluczowe</string>
+    <string name="events_phrases_title">Kulcsmondatok</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
-    <string name="phrase_add">Dodaj frazę</string>
+    <string name="phrase_add">Mondat hozzáadása</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
-    <string name="phrase_delete">Usuń frazę</string>
+    <string name="phrase_delete">Mondat törlése</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
-    <string name="phrase_delete_confirm">Jesteś pewien, że chcesz usunąć frazę: %s?</string>
+    <string name="phrase_delete_confirm">Tényleg töröljük a %s mondatot?</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
-    <string name="phrase_empty">&lt; dowolny tekst &gt;</string>
+    <string name="phrase_empty">&lt; Bármilyen szöveg &gt;</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_group">Członek grupy</string>
+    <string name="phrase_group">A kapcsolatcsoport része</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_regexp">Wyrażenie regularne</string>
+    <string name="phrase_regexp">Reguláris kifejezés</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_sound">Dźwięk\nWybierz dźwięk powiadomienia</string>
+    <string name="phrase_sound">Hang \nÉrtesítési hang választása</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_text">Tekst do wyszukania</string>
+    <string name="phrase_text">Keresendő szöveg</string>
     <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
-    <string name="phrase_user">Identyfikator użytkownika (część przed @)</string>
+    <string name="phrase_user">A kapcsolat Jabber-ID része</string>
 </resources>
