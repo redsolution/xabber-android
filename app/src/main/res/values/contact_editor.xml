@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="CANNOT_ADD_TO_GROUP">Error: can\'t add to group</string>
-    <string name="CANNOT_CREATE_CONTACT">Error: can\'t add contact</string>
-    <string name="CANNOT_REMOVE_CONTACT">Error: can\'t delete contact</string>
-    <string name="CANNOT_REMOVE_FROM_GROUP">Error: can\'t remove from group</string>
-    <string name="CANNOT_REMOVE_GROUP">Error: can\'t delete group</string>
-    <string name="CANNOT_RENAME_GROUP">Error: can\'t rename group</string>
     <string name="contact_account">Account</string>
-    <string name="contact_editor_title">Editing %s</string>
     <string name="contact_group">Select groups</string>
     <string name="contact_name">Alias (optional)</string>
     <string name="contact_subscribe_confirm">Share your %1$s account status with contact?</string>
     <string name="contact_user">Contact username</string>
     <string name="ENTRY_IS_NOT_FOUND">Contact not found</string>
-    <string name="group_add">Create new group</string>
-    <string name="group_default">Friends</string>
-    <string name="group_exists">Group with this name already exists</string>
     <string name="group_is_empty">Set group name</string>
     <string name="group_name">Group name</string>
     <string name="choose_account">Choose an account</string>
