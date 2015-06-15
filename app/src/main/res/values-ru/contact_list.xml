@@ -50,8 +50,6 @@
     <string name="contact_delete">Удалить</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_confirm.png -->
     <string name="contact_delete_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
-    <string name="contact_editor">Редактировать</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list.png -->
     <string name="contact_list">Список контактов</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->

@@ -25,7 +25,6 @@
     <string name="contact_add">Add contact</string>
     <string name="contact_delete">Delete</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
-    <string name="contact_editor">Edit</string>
     <string name="contact_list">Contact list</string>
     <string name="discard_subscription">Decline contact</string>
     <string name="exit">Exit</string>
