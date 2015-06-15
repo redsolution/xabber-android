@@ -18,8 +18,6 @@
     <string name="muc_room">Конференция</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_server">Сервер конференций</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
-    <string name="muc_server_hint">conferenсe.jabber.ru</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
     <string name="NICK_ALREADY_USED">Такой ник уже используется</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->

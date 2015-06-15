@@ -34,7 +34,7 @@
         android:id="@+id/contact_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="user@domain.name"
+        android:hint="@string/user_domain_name"
         android:singleLine="true"
         android:inputType="textEmailAddress"
         />

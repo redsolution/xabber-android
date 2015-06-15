@@ -24,8 +24,6 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_hints_gtalk">учетная запись gmail.com или службы google</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
-    <string name="account_type_hints_xmpp">имя@сервер.ru</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_gtalk">Если у Вас нет учётной записи Google, её можно создать на сайте http://mail.google.com/\nТакже вы можете использовать ваше_имя@ваш_гугло_домен</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/account_add.png -->
     <string name="account_type_helps_xmpp">Подробную информацию об XMPP (Jabber) можно найти по адресу https://xmpp.org\nЗарегистрировать новую учетную запись можно тут https://register.jabber.org или тут http://jabber.ru</string>

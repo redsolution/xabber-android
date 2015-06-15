@@ -18,8 +18,7 @@
     <string name="muc_room">Conference</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
     <string name="muc_server">Multi User Chat server</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor.png -->
-    <string name="muc_server_hint">conference.jabber.org</string>
+
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
     <string name="NICK_ALREADY_USED">Nick already used</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/conference_editor_error.png -->
