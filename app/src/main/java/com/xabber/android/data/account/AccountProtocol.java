@@ -50,11 +50,9 @@ public enum AccountProtocol {
      */
     public int getNameResource() {
         if (this == xmpp)
-            return R.string.account_type_names_xmpp;
+            return R.string.xmpp;
         else if (this == gtalk)
-            return R.string.account_type_names_gtalk;
-        else if (this == wlm)
-            return R.string.account_type_names_wlm;
+            return R.string.google_talk;
         else
             throw new UnsupportedOperationException();
     }
@@ -64,11 +62,9 @@ public enum AccountProtocol {
      */
     public int getShortResource() {
         if (this == xmpp)
-            return R.string.account_protocol_xmpp_title;
+            return R.string.xmpp;
         else if (this == gtalk)
-            return R.string.account_protocol_gtalk_title;
-        else if (this == wlm)
-            return R.string.account_protocol_wlm_title;
+            return R.string.google_talk;
         else
             throw new UnsupportedOperationException();
     }

@@ -346,22 +346,6 @@ public class SettingsManager implements OnInitializedListener,
             throw new IllegalStateException();
     }
 
-    public static ChatsDivide chatsDivide() {
-        String value = getString(R.string.chats_divide_key,
-                R.string.chats_divide_default);
-        if (Application.getInstance()
-                .getString(R.string.chats_divide_always_value).equals(value))
-            return ChatsDivide.always;
-        else if (Application.getInstance()
-                .getString(R.string.chats_divide_portrait_value).equals(value))
-            return ChatsDivide.portial;
-        else if (Application.getInstance()
-                .getString(R.string.chats_divide_never_value).equals(value))
-            return ChatsDivide.never;
-        else
-            throw new IllegalStateException();
-    }
-
     public static boolean chatsStateNotification() {
         return getBoolean(R.string.chats_state_notification_key,
                 R.bool.chats_state_notification_default);
@@ -728,25 +712,6 @@ public class SettingsManager implements OnInitializedListener,
          * Never hide keyboard.
          */
         never,
-    }
-
-    public enum ChatsDivide {
-
-        /**
-         * Always divide message header from text.
-         */
-        always,
-
-        /**
-         * Only in portial mode.
-         */
-        portial,
-
-        /**
-         * Never.
-         */
-        never
-
     }
 
     public enum SecurityOtrMode {

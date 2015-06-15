@@ -47,15 +47,15 @@ public class VcardMaps {
         if (ADDRESS_PROPERTY_MAP.size() != AddressProperty.values().length)
             throw new IllegalStateException();
 
-        TELEPHONE_TYPE_MAP.put(TelephoneType.BBS, R.string.vcard_type_bbs);
+        TELEPHONE_TYPE_MAP.put(TelephoneType.BBS, R.string.bbs);
         TELEPHONE_TYPE_MAP.put(TelephoneType.CELL, R.string.vcard_type_cell);
         TELEPHONE_TYPE_MAP.put(TelephoneType.FAX, R.string.vcard_type_fax);
         TELEPHONE_TYPE_MAP.put(TelephoneType.HOME, R.string.vcard_type_home);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.ISDN, R.string.vcard_type_isdn);
+        TELEPHONE_TYPE_MAP.put(TelephoneType.ISDN, R.string.isdn);
         TELEPHONE_TYPE_MAP.put(TelephoneType.MODEM, R.string.vcard_type_modem);
         TELEPHONE_TYPE_MAP.put(TelephoneType.MSG, R.string.vcard_type_msg);
         TELEPHONE_TYPE_MAP.put(TelephoneType.PAGER, R.string.vcard_type_pager);
-        TELEPHONE_TYPE_MAP.put(TelephoneType.PCS, R.string.vcard_type_pcs);
+        TELEPHONE_TYPE_MAP.put(TelephoneType.PCS, R.string.pcs);
         TELEPHONE_TYPE_MAP.put(TelephoneType.PREF, R.string.vcard_type_pref);
         TELEPHONE_TYPE_MAP.put(TelephoneType.VIDEO, R.string.vcard_type_video);
         TELEPHONE_TYPE_MAP.put(TelephoneType.VOICE, R.string.vcard_type_voice);
@@ -67,7 +67,7 @@ public class VcardMaps {
         EMAIL_TYPE_MAP.put(EmailType.INTERNET, R.string.vcard_type_internet);
         EMAIL_TYPE_MAP.put(EmailType.PREF, R.string.vcard_type_pref);
         EMAIL_TYPE_MAP.put(EmailType.WORK, R.string.vcard_type_work);
-        EMAIL_TYPE_MAP.put(EmailType.X400, R.string.vcard_type_x400);
+        EMAIL_TYPE_MAP.put(EmailType.X400, R.string.x400);
         if (EMAIL_TYPE_MAP.size() != EmailType.values().length)
             throw new IllegalStateException();
     }

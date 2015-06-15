@@ -86,7 +86,7 @@ public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemCl
         input.setText(rosterContact.getName());
         builder.setView(input);
 
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
@@ -96,7 +96,7 @@ public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemCl
                 }
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();

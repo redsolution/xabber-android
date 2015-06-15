@@ -31,7 +31,7 @@
             android:id="@+id/muc_server"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/muc_server_hint"
+            android:hint="@string/conference_jabber_org"
             android:inputType="textEmailAddress"
             android:singleLine="true" />
 

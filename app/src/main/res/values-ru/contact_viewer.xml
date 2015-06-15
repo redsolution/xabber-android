@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_contact_context_menu.png -->
     <string name="contact_viewer">Информация о контакте</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_for">Просмотр информации о %s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_xmpp">XMPP</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_jid">Jabber ID</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_name">Присвоенный псевдоним</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_resources">Ресурсы</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_resource_summary">Ресурс: %1$s\nПриоритет: %2$d\nКлиент: %3$s</string>
     <string name="contact_viewer_client">Клиент</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
-    <string name="contact_viewer_client_info">%1$s, тип: %2$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
-    <string name="vcard_person">Персональные данные</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
     <string name="vcard_nick_name">Псевдоним</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_personal.png -->
@@ -98,24 +82,15 @@
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_video">Видео</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_bbs">BBS</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_modem">Модем</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_msg">Голосовая почта</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_isdn">ISDN</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_pcs">PCS</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
     <string name="vcard_type_internet">Интернет</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_contact.png -->
-    <string name="vcard_type_x400">X400</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="please_wait">Пожалуйста, подождите...</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_viewer_xmpp.png -->
     <string name="unknown">Не известно</string>
-
     <string name="edit_alias">Редактировать псевдоним</string>
     <string name="edit_contact_groups">Редактировать группы</string>
     <string name="remove_contact">Удалить контакт</string>
