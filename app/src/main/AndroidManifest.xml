@@ -285,7 +285,6 @@
             />
         <activity
             android:name="com.xabber.android.ui.preferences.PhraseList"
-            android:label="@string/events_phrases_title"
             android:parentActivityName="com.xabber.android.ui.preferences.NotificationsSettings">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
