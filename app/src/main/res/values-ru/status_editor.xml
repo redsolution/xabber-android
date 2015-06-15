@@ -18,8 +18,6 @@
     <string name="invisible">Невидимый</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
     <string name="remove_status">Удалить статус</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor_context_menu.png -->
-    <string name="select_status">Установить статус</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
     <string name="status_editor">Установить статус</string>
     <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/status_editor.png -->
