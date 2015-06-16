@@ -1,62 +1,102 @@
-Copyright (c) 2013, Redsolution LTD.
+Copyright (c) 2015, Redsolution Inc.
 All rights reserved.
 
-Project is distributed under "GNU General Public License, Version 3" (see assets/LICENSE-GPLv3.txt).
+Project is distributed under GNU General Public License, Version 3 (see app/src/main/assets/LICENSE-GPLv3.txt).
 
-Note about restrictions:
+Following files as well as translations in app/src/main/res/values* are distributed under Creative Commons Attribution Non-Commercial Share Alike license:
 
-Following files are distributed under "Creative Commons Attribution Non-Commercial No Derivatives":
-res/drawable*/ic_connect.png
-res/drawable*/ic_disconnect.png
-res/drawable*/ic_information.png
-res/drawable*/ic_launcher.png
-res/drawable*/ic_stat_*.png
-res/drawable*/title_logo.9.png
+app/src/main/res/drawable/about_backdrop.jpg
+app/src/main/res/drawable*/chat_background.png
+app/src/main/res/drawable/contact_shadow.jpg
+app/src/main/res/drawable*/drawer_*.jpg
+app/src/main/res/drawable*/ic_avatar_*.png
+app/src/main/res/drawable*/ic_client_*.png
+app/src/main/res/drawable*/ic_offline_shadow_24dp.png
+app/src/main/res/drawable*/ic_scroll_indicator_circle_*.png
+app/src/main/res/drawable*/ic_stat_offline.png
+app/src/main/res/drawable*/ic_stat_cnline.png
+app/src/main/res/drawable*/ic_status_*.png
+app/src/main/res/drawable*/message_*.9.png
 
-Following files are part of The Android Open Source Project licensed under the Apache License, Version 2.0 (the "License") (see assets/LICENSE-Apache2.txt):
-res/drawable/notify_panel_notification_icon_bg_tile.xml
-res/layout/info_preference.xml
-res/layout/preference.xml
-res/layout/progress_preference.xml
-res/drawable*/emo_im_*.png
-res/drawable*/ic_menu_*.png
+Following files are part of official icon set from Google and distributed under Creative Common Attribution 4.0 International License (CC-BY 4.0):
 
-The rest of graphic in res/drawable* as well as translations in res/values* are distributed under "Creative Commons Attribution Non-Commercial Share Alike".
+app/src/main/res/drawable*/ic_add_white_24dp.png
+app/src/main/res/drawable*/ic_arrow_left_white_24dp.png
+app/src/main/res/drawable*/ic_button_send_*_24dp.png
+app/src/main/res/drawable*/ic_chat_white_24dp.png
+app/src/main/res/drawable*/ic_clear_all_white_24dp.png
+app/src/main/res/drawable*/ic_clear_white_24dp.png
+app/src/main/res/drawable*/ic_exit_grey600_24dp.png
+app/src/main/res/drawable*/ic_expander_indicator_down_black_24dp.png
+app/src/main/res/drawable*/ic_expander_indicator_right_black_24dp.png
+app/src/main/res/drawable*/ic_group_add_white_24dp.png
+app/src/main/res/drawable*/ic_hangouts_grey600_24dp.png
+app/src/main/res/drawable*/ic_help_circle_grey600_24dp.png
+app/src/main/res/drawable*/ic_list_white_24dp.png
+app/src/main/res/drawable*/ic_message_delivered_18dp.png
+app/src/main/res/drawable*/ic_message_has_error_18dp.png
+app/src/main/res/drawable*/ic_message_not_sent_18dp.png
+app/src/main/res/drawable*/ic_person_add_white_24dp.png
+app/src/main/res/drawable*/ic_search_white_24dp.png
+app/src/main/res/drawable*/ic_security_*_24dp.png
+app/src/main/res/drawable*/ic_settings_grey600_24dp.png
+app/src/main/res/drawable*/ic_show_offline_*.png
+app/src/main/res/drawable*/ic_stat_add_circle.png
+app/src/main/res/drawable*/ic_stat_chat.png
+app/src/main/res/drawable*/ic_stat_error.png
+app/src/main/res/drawable*/ic_stat_help.png
+app/src/main/res/drawable*/ic_stat_play_circle_fill.png
+app/src/main/res/drawable*/ic_vcard_address_24dp.png
+app/src/main/res/drawable*/ic_vcard_birthday_24dp.png
+app/src/main/res/drawable*/ic_vcard_contact_info_24dp.png
+app/src/main/res/drawable*/ic_vcard_email_24dp.png
+app/src/main/res/drawable*/ic_vcard_job_title_24dp.png
+app/src/main/res/drawable*/ic_vcard_notes_24dp.png
+app/src/main/res/drawable*/ic_vcard_phone_24dp.png
+app/src/main/res/drawable*/ic_vcard_web_24dp.png
 
-Also following components are in use (see the source code or official sites for license details):
+XMPP logo is licensed under a slightly modified MIT license (http://xmpp.org/about-xmpp/xsf/xsf-ipr-policy/#legal):
+app/src/main/res/drawable*/ic_vcard_xmpp_24dp.png
+
+The Jabber logo is licensed under the Creative Commons Attribution License
+app/src/main/res/drawable*/ic_vcard_jabber_24dp.png
+
+Xabber, Redsolution logo are trademarks of Redsolution Inc., and are licensed under  Creative Commons Attribution-NoDerivs license:
+app/src/main/res/drawable*/ic_connect.png
+app/src/main/res/drawable*/ic_disconnect.png
+app/src/main/res/drawable*/ic_launcher.png
+app/src/main/res/drawable*/redsolution_logo*.9.png
+
+Following file is part of The Android Open Source Project licensed under the Apache License, Version 2.0 (the "License") (see assets/LICENSE-Apache2.txt):
+app/src/main/res/layout/preference.xml
+
+Also source code of following components is included in repository (see the source code or official sites for license details):
 
 ZXing
-src/com/google/zxing/*
+app/src/main/java/com/google/zxing/*
 Apache License, Version 2.0 (the "License").
 
 JZLib
-src/com/jcraft/jzlib/*
+app/src/main/java/com/jcraft/jzlib/*
 BSD license.
 
 Novel sasl client
-src/com/novell/sasl/*
+app/src/main/java/com/novell/sasl/*
 The OpenLDAP Public License.
 
 Measite Smack SASL
-src/de/measite/smack/*
+app/src/main/java/de/measite/smack/*
 Apache License, Version 2.0 (the "License").
 
 Apache Harmony
-src/org/apache/harmony/*
+app/src/main/java/org/apache/harmony/*
 Apache License, Version 2.0 (the "License").
 
 Apache Qpid
-src/org/apache/qpid/*
+app/src/main/java/org/apache/qpid/*
 Apache License, Version 2.0 (the "License").
 
 Smack
-src/org/jivesoftware/*
+app/src/main/java/org/jivesoftware/*
 Apache License, Version 2.0 (the "License").
 
-DNS Java
-src/org/xbill/*
-BSD license.
-
-OTR4J
-libs/otr4j.jar
-GNU Lesser General Public License, Version 3.
