@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_copyright">© Redsolution LTD, 2010–2015</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_feedback">mailto:info@xabber.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_site">http://www.xabber.com</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/about_viewer.png -->
-    <string name="about_version">Version: %s</string>
-    <string name="about_license">License: GNU GPLv3\n<a href="https://github.com/redsolution/xabber-android">Open source software</a></string>
-
+<resources>
     <string name="about_open_source_xmpp_client">open source XMPP client</string>
+
+    <string name="about_header_about">About</string>
+    <string name="about_text_about">Xabber is an open-source XMPP messenger for Android platform. It is built around open standards, interoperability, design and user experience. Xabber supports many popular XMPP extension protocols, Off-The-Record Chat Encryption and is available in multiple languages.</string>
+
+    <string name="about_header_xmpp">XMPP protocol</string>
+    <string name="about_text_xmpp">Extensible Messaging and Presence Protocol (XMPP) is a communications protocol for message-oriented middleware based on XML (Extensible Markup Language). It enables the near-real-time exchange of structured yet extensible data between any two or more network entities. The protocol was originally named Jabber, and was developed by the Jabber open-source community in 1999 for near real-time instant messaging (IM),presence information, and contact list maintenance.</string>
+    <string name="about_shameless_quote_from_wiki">Shameless quote from Wikipedia</string>
+
+    <string name="about_header_xep">XMPP Extension Protocols</string>
+    <string name="about_text_xep">XMPP is highly extensible, via extensions known as XEPs (XMPP Extension Protocol). Xabber supports a number of popular XEPs that are essential to providing great chat experience for our users.</string>
+
+    <string name="about_header_developers">Developers</string>
+    <string name="about_text_developers">Xabber was originally developed by <a href="http://www.redsolution.com/">Redsolution, Inc.</a> — an international software and services company based in Russia and United States. Xabber was licensed under GNU/GPL v.3 license early in 2013. Since then, a number of individuals joined Xabber as developers, testers and translators.\n\nOur goal is to create a stable, reliable and user friendly ecosystem for instant messaging that does not rely on proprietary services. We welcome anyone who believes in open standards and free information interchange to take part in moving Xabber forward.\n\nFollow us on Twitter and Github.</string>
+
+    <string name="about_redsolution_url">http://www.redsolution.com/</string>
+    <string name="about_xabber_url">http://www.xabber.com</string>
+    <string name="about_xabber_email">info@xabber.com</string>
+    <string name="about_xabber_twitter_url">https://twitter.com/xabber_xmpp</string>
+    <string name="about_xabber_github_url">https://github.com/redsolution/xabber-android</string>
+
+    <string name="about_header_translators">Translators</string>
+    <string name="about_text_translators">Xabber is available in multiple languages thanks to many fine people from all over the world. We have created a <a href="https://github.com/redsolution/xabber-android/wiki/Top-translators">special page</a> on our website to acknowledge their efforts.\n\nYou may join their ranks and help us improve translation quality by <a href="https://crowdin.com/project/xabber/">contributing</a> your translations to Xabber project.</string>
+
+    <string name="about_header_license">License</string>
+    <string name="about_text_license">Xabber source code is licensed under GNU GPL v.3 license and is available on GitHub.\n\nGraphical images are licensed under Creative Commons Attribution Share-Alike (CC BY-SA) license.\n\nXabber &amp; Redsolution logo are property of Redsolution, Inc.\n\nMore detailed information on Xabber <a href="https://github.com/redsolution/xabber-android/blob/master/LICENSE">license file</a>.</string>
 
     <string name="translation_unavailable">Translation unavailable</string>
     <string name="translation_unavailable_message">Unfortunately, Xabber does not have a translation to your language, but you can help us fix that.\nXabber is open-source, and all translations are provided by community, and it is easy to join.</string>

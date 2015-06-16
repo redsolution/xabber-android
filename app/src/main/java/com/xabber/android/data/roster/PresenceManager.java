@@ -79,7 +79,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<SubscriptionRequest>(
-                R.drawable.ic_stat_ic_add_circle);
+                R.drawable.ic_stat_add_circle);
         requestedSubscriptions = new HashMap<String, HashSet<String>>();
         presenceContainers = new NestedMap<ResourceContainer>();
         readyAccounts = new ArrayList<String>();

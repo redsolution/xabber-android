@@ -132,7 +132,6 @@ public class ActivityManager implements OnUnloadListener {
     public void onCreate(Activity activity) {
         if (LOG)
             LogManager.i(activity, "onCreate: " + activity.getIntent());
-        applyTheme(activity);
         if (application.isClosing() && !(activity instanceof LoadActivity)) {
             activity.startActivity(LoadActivity.createIntent(activity));
             activity.finish();
