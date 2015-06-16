@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 191
-        versionName '1.0.19'
+        versionCode 192
+        versionName '1.0.20'
     }
 
     compileOptions {
@@ -41,11 +41,13 @@ repositories {
 }
 
 dependencies {
+    compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:support-v13:22.2.0'
     compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
     compile 'de.hdodenhof:circleimageview:1.2.2'
     compile 'com.melnykov:floatingactionbutton:1.2.0'
     compile 'dnsjava:dnsjava:2.1.7'
+    compile 'com.github.bumptech.glide:glide:3.6.0'
     compile project('otr4j')
 }

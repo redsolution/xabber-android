@@ -268,22 +268,6 @@
     </string-array>
     <string name="chats_font_size_default">@string/chats_font_size_normal_value</string>
 
-    <string name="chats_divide_key">chats_divide</string>
-    <string name="chats_divide_always_value">always</string>
-    <string name="chats_divide_portrait_value">portrait</string>
-    <string name="chats_divide_never_value">never</string>
-    <string-array name="chats_divide_entries">
-        <item>@string/always</item>
-        <item>@string/chats_divide_portrait</item>
-        <item>@string/never</item>
-        </string-array>
-    <string-array name="chats_divide_entryvalues">
-        <item>@string/chats_divide_always_value</item>
-        <item>@string/chats_divide_portrait_value</item>
-        <item>@string/chats_divide_never_value</item>
-    </string-array>
-    <string name="chats_divide_default">@string/chats_divide_portrait_value</string>
-
     <string name="chats_state_notification_key">chats_state_notification</string>
     <bool name="chats_state_notification_default">true</bool>
 
@@ -419,17 +403,17 @@
 
     <string-array name="account_proxy_type_entries">
         <item>@string/account_proxy_type_none</item>
-        <item>@string/account_proxy_type_http</item>
-        <item>@string/account_proxy_type_socks4</item>
-        <item>@string/account_proxy_type_socks5</item>
-        <item>@string/account_proxy_type_orbot</item>
+        <item>@string/http</item>
+        <item>@string/socks4</item>
+        <item>@string/socks5</item>
+        <item>@string/orbot</item>
     </string-array>
     <string-array name="account_proxy_type_entryvalues">
         <item>@string/account_proxy_type_none</item>
-        <item>@string/account_proxy_type_http</item>
-        <item>@string/account_proxy_type_socks4</item>
-        <item>@string/account_proxy_type_socks5</item>
-        <item>@string/account_proxy_type_orbot</item>
+        <item>@string/http</item>
+        <item>@string/socks4</item>
+        <item>@string/socks5</item>
+        <item>@string/orbot</item>
     </string-array>
 
     <string-array name="account_archive_mode_entries">
@@ -517,6 +501,7 @@
     <string name="boot_count_key">boot_count</string>
     <string name="start_at_boot_suggested_key">start_at_boot_suggested</string>
     <string name="contact_integration_suggested_key">contact_integration_suggested</string>
+    <string name="translation_suggested_key">translation_suggested</string>
     <string name="sync_account_type">@string/application_package</string>
     <string name="contact_viewer_mime_type">vnd.android.cursor.item/vnd.com.xabber.view</string>
 </resources>

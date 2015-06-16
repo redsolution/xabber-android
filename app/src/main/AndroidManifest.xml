@@ -73,9 +73,10 @@
             android:name="com.xabber.android.ui.LoadActivity"
             />
         <activity
-            android:name="com.xabber.android.ui.preferences.AboutViewer"
+            android:name=".ui.AboutViewer"
             android:label="@string/about_viewer"
             android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor"
+            android:theme="@style/ThemeDark"
             >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -134,7 +135,6 @@
         </activity>
         <activity
             android:name="com.xabber.android.ui.GroupEditor"
-            android:label="@string/contact_editor"
             android:parentActivityName="com.xabber.android.ui.ContactViewer"
             >
             <!-- Parent activity meta-data to support 4.0 and lower -->
@@ -285,7 +285,6 @@
             />
         <activity
             android:name="com.xabber.android.ui.preferences.PhraseList"
-            android:label="@string/events_phrases_title"
             android:parentActivityName="com.xabber.android.ui.preferences.NotificationsSettings">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data

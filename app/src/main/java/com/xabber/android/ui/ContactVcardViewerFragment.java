@@ -207,7 +207,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnVCardListe
 
         xmppItems.removeAllViews();
 
-        View jabberIdView = createItemView(xmppItems, getString(R.string.contact_viewer_jid),
+        View jabberIdView = createItemView(xmppItems, getString(R.string.jabber_id),
                 bareAddress, R.drawable.ic_vcard_xmpp_24dp);
 
         if (jabberIdView != null) {

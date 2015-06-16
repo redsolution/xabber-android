@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/action_join_conference"
-        android:icon="@drawable/ic_group_white_24dp"
+        android:icon="@drawable/ic_group_add_white_24dp"
         android:orderInCategory="80"
         android:title="@string/muc_join"
         android:visible="false"
@@ -39,7 +39,6 @@
         />
 
     <item android:id="@+id/action_show_history"
-        android:icon="@drawable/ic_forum_white_24dp"
         android:orderInCategory="130"
         android:title="@string/show_history"
         app:showAsAction="never"

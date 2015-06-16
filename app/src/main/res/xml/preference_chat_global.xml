@@ -39,13 +39,6 @@
         android:key="@string/chats_font_size_key"
         android:title="@string/chats_font_size"
         />
-    <ListPreference
-        android:defaultValue="@string/chats_divide_default"
-        android:entries="@array/chats_divide_entries"
-        android:entryValues="@array/chats_divide_entryvalues"
-        android:key="@string/chats_divide_key"
-        android:title="@string/chats_divide"
-        />
     <CheckBoxPreference
         android:defaultValue="@bool/chats_state_notification_default"
         android:key="@string/chats_state_notification_key"

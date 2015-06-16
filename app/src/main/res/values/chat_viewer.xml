@@ -1,151 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_text">%1$s changed status: %2$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_text_none">%1$s cleared status text</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_join">%1$s joined conference</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_kick">%1$s was kicked</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_account_is_offline.png -->
     <string name="account_is_offline">You are currently offline. Messages you send will be delivered next time you connect.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_delay">sent at %s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_input_hint">Type your message here</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_switch.png -->
-    <string name="chat_page">Chat %1$d of %2$d</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_send">Send</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="clear_history">Clear history</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
-    <string name="clear_message">Clear text</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_contact_is_offline.png -->
     <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="FILE_NOT_FOUND">File not found</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
     <string name="message_copy">Copy</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
     <string name="message_quote">Quote</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
     <string name="message_remove">Remove from history</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_context_menu.png -->
     <string name="message_repeat">Retry sending</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_settings.png -->
     <string name="save_history">Save local history\nStore message history locally</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="show_history">Show history</string>
     <string name="action_attention_called">Call attention was sent</string>
     <string name="action_attention_requested">Attention was requested</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_ban">%1$s was banned</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_ban_by">%1$s was banned by %2$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_invite_error">Invitation was not received by %s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_invite_sent">Invitation was sent to %s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_join_complete">You have joined chat as %1$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_join_complete_to">You have joined chat %1$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_kick_by">%1$s was kicked by %2$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_leave">%1$s left chat</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_nickname">%1$s changed nickname to %2$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_encryption">Encryption has been enabled but this contact has not been verified. You can verify it from the OTR encryption menu.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_error">OTR error: %1$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_finish">Opponent has left conversation. You should do the same or restart it.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_finished_session">Your message has not been sent. Leave the conversation or restart it.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_plain">You have left the encrypted conversation</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_cheated">Opponent attempted to cheat during verification</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_failed">Verification failed</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_not_approved">Your answer for the secret question was verified. You should ask your opponent too or check shared secret.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_unverified">Verification failed</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_smp_verified">Verification successfully passed</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_unreadable">The encrypted message received is unreadable</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="action_otr_verified">Encryption enabled</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_available">%1$s is now online</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_away">%1$s is now away</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_chat">%1$s free for chat</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_dnd">%1$s asks do not disturb</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_unavailable">%1$s is now unavailable</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_status_xa">%1$s away for a long time</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_status.png -->
     <string name="action_subject">%1$s has changed the subject to: %2$s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/contact_list_error.png -->
     <string name="ATTENTION_IS_NOT_SUPPORTED">Contact doesn\'t support or has disabled attention</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="call_attention">Call attention</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu.png -->
     <string name="chat_settings">Chat settings</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_typing.png -->
     <string name="chat_state_composing">Typing…</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_paused.png -->
     <string name="chat_state_paused">Entered text…</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer.png -->
     <string name="chat_typed">entered at %s</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="export_chat">Export chat</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat_done.png -->
     <string name="export_chat_done">History has been exported to SD Card</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
     <string name="export_chat_mask">%2$s for %1$s.html</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
     <string name="export_chat_send">Send after export</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/export_chat.png -->
     <string name="export_chat_title">Enter file name</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_conference.png -->
     <string name="muc_invite">Invite to chat</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_leaved.png -->
     <string name="muc_is_unavailable">Your messages can not be delivered. Please join chat</string>
     <string name="occupant_list">List of occupants</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_extra.png -->
     <string name="otr_encryption">OTR encryption</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_end">Stop encryption</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_refresh">Restart encryption</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
-    <string name="otr_request">Off-the-Record private conversation has been requested but you do not have a supportive plugin. Use Pidgin, Gajim or Adium for PC/Mac and Xabber or ChatSecure for Android. Go to http://otr.cypherpunks.ca/ for more information.</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_01.png -->
+    <string name="otr_request">Off-the-Record private conversation has been requested but you do not have a supportive plugin. Use Pidgin, Gajim or Adium for PC/Mac and Xabber, Conversations or ChatSecure for Android. Go to http://otr.cypherpunks.ca/ for more information.</string>
     <string name="otr_start">Start encryption</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="otr_unencrypted_message">This message has not been encrypted</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_otr_status.png -->
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/notification_bar_otr_progress.png -->
     <string name="otr_verification">OTR verification</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_verify_fingerprint">Verify with fingerprint</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_verify_question">Verify with question</string>
-    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/chat_viewer_option_menu_otr_02.png -->
     <string name="otr_verify_secret">Verify with shared secret</string>
 
     <string name="recent_chats">Recent chats</string>

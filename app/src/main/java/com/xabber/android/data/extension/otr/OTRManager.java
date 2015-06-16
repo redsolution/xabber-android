@@ -116,8 +116,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private final ExecutorService keyPairGenerator;
 
     private OTRManager() {
-        smRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_ic_help_black);
-        smProgressProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_ic_play_circle_fill);
+        smRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_help);
+        smProgressProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_play_circle_fill);
         smProgressProvider.setCanClearNotifications(false);
         fingerprints = new NestedNestedMaps<>();
         actives = new NestedMap<>();

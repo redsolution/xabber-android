@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="xmpp">XMPP</string>
+    <string name="google_talk">Google Talk</string>
+    <string name="http">HTTP</string>
+    <string name="orbot">Orbot</string>
+    <string name="socks4">SOCKS4</string>
+    <string name="socks5">SOCKS5</string>
+    <string name="jabber_id">Jabber ID</string>
+    <string name="bbs">BBS</string>
+    <string name="isdn">ISDN</string>
+    <string name="pcs">PCS</string>
+    <string name="x400">X400</string>
+    <string name="name_example_com">name@example.com</string>
+    <string name="user_domain_name">user@domain.name</string>
+    <string name="conference_jabber_org">conference.jabber.org</string>
+</resources>
