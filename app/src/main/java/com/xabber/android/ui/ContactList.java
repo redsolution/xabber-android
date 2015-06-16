@@ -62,6 +62,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
+import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.AboutViewer;
@@ -73,6 +74,7 @@ import com.xabber.xmpp.uri.XMPPUri;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Main application activity.
@@ -310,6 +312,14 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         }
 
         if (Application.getInstance().doNotify()) {
+            if (!SettingsManager.isTranslationSuggested()) {
+                Locale currentLocale = getResources().getConfiguration().locale;
+                if (!currentLocale.getLanguage().equals("en") && !getResources().getBoolean(R.bool.is_translated)) {
+                    new TranslationDialog().show(getFragmentManager(), "TRANSLATION_DIALOG");
+                    SettingsManager.setTranslationSuggested();
+                }
+            }
+
             if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
                     && !SettingsManager.startAtBootSuggested()) {
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");

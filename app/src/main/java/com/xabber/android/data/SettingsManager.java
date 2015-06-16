@@ -519,6 +519,14 @@ public class SettingsManager implements OnInitializedListener,
         setBoolean(R.string.contact_integration_suggested_key, true);
     }
 
+    public static boolean isTranslationSuggested() {
+        return getBoolean(R.string.translation_suggested_key, false);
+    }
+
+    public static void setTranslationSuggested() {
+        setBoolean(R.string.translation_suggested_key, true);
+    }
+
     /**
      * @return Common status mode for all accounts or
      * {@link StatusMode#available} if mode was not set.

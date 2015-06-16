@@ -11,4 +11,10 @@
     <string name="about_license">License: GNU GPLv3\n<a href="https://github.com/redsolution/xabber-android">Open source software</a></string>
 
     <string name="about_open_source_xmpp_client">open source XMPP client</string>
+
+    <string name="translation_unavailable">Translation unavailable</string>
+    <string name="translation_unavailable_message">Unfortunately, Xabber does not have a translation to your language, but you can help us fix that.\nXabber is open-source, and all translations are provided by community, and it is easy to join.</string>
+    <string name="help_translate_xabber">Help translate Xabber</string>
+    <string name="translation_url">https://crowdin.com/project/xabber</string>
+
 </resources>
