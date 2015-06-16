@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="account_compression">Использовать сжатие</string>
-    <string name="account_editor_title">%1$s учетная запись %2$s</string>
     <string name="account_enabled">Учетная запись включена</string>
     <string name="account_host">Хост</string>
     <string name="account_password">Пароль</string>
