@@ -10,7 +10,7 @@
   <string name="chat_input_hint">أكتب رسالتك هنا</string>
   <string name="chat_send">أرسل</string>
   <string name="clear_history">مسح سجل الرسائل</string>
-  <string name="contact_is_offline">المستلم غير متصل. سيتم تسليم الرسائل التي ترسلها عندما يعاود الاتصال.</string>
+  <string name="contact_is_offline">المستلم غير متاح. سيتم تسليم الرسائل التي ترسلها عندما يصبح متاحاً.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">طرف الاتصال غير متاح</string>
   <string name="FILE_NOT_FOUND">ملف غير موجود</string>
   <string name="message_copy">نسخ</string>
@@ -42,7 +42,7 @@
   <string name="action_otr_smp_verified">تمت عملية التحقق بنجاج</string>
   <string name="action_otr_unreadable">الرسالة المشفرة المستقبلة غير مقروؤة</string>
   <string name="action_otr_verified">التشفير مفعّل</string>
-  <string name="action_status_available">%1$s متصل الآن</string>
+  <string name="action_status_available">%1$s متاح الآن</string>
   <string name="action_status_away">%1$s متغيب</string>
   <string name="action_status_chat">%1$s متاح للمحادثة</string>
   <string name="action_status_dnd">%1$s يطلب عدم الإزعاج</string>

@@ -11,7 +11,7 @@
   <string name="remove_status">حذف الحالة</string>
   <string name="status_editor">تحديد الحالة</string>
   <string name="status_text_hint">أدخل رسالة الحالة</string>
-  <string name="unavailable">غير متصل</string>
+  <string name="unavailable">غير متاح</string>
   <string name="unsubscribed">غير مصرح به</string>
   <string name="xa">متغيب لفترة طويلة</string>
   <string name="new_status">حالة جديدة</string>

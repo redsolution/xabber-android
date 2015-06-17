@@ -403,6 +403,15 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name="com.xabber.android.receiver.ShutDownReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name="com.xabber.android.receiver.GoAwayReceiver" />
         <receiver android:name="com.xabber.android.receiver.GoXaReceiver" />
         <receiver android:name="com.xabber.android.receiver.ComposingPausedReceiver" />
