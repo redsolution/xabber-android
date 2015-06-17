@@ -11,9 +11,9 @@
   <string name="contacts_show_accounts">جمِّع حسب الحساب\nجمِّع الأطراف في قائمة الاتصال حسب الحساب</string>
   <string name="contacts_show_active_chats">المحادثات النشطة بالأعلى\nأظهر المحادثات النشطة بأعلى قائمة الاتصال</string>
   <string name="contacts_show_avatars">إظهار الصور الرمزية\nإظهار الصور الرمزية للأطراف في قائمة الاتصال</string>
-  <string name="contacts_show_empty_groups">أظهر المجموعات الخالية\nأظهر المجموعات التي ليس بها أطراف متصلة</string>
+  <string name="contacts_show_empty_groups">أظهر المجموعات الخالية\nأظهر المجموعات التي ليس بها أطراف متاحة</string>
   <string name="contacts_show_groups">إظهار المجموعات\nإظهار المجموعات في قائمة الاتصال</string>
-  <string name="contacts_show_offline">إظهار الأطراف الغير المتصلة</string>
+  <string name="contacts_show_offline">إظهار الأطراف الغير المتاحة</string>
   <string name="contacts_show_panel">إظهار لوحة الحسابات\nإظهار أزرار بالصور الرمزية في الركن اليمين السفلي لقائمة أطراف الاتصال</string>
   <string name="contacts_stay_active_chats">تكرار المحادثات النشطة\nأظهر المحادثات النشطة بأعلى قائمة الاتصال وكذلك في مجموعات الاتصال</string>
   <string name="debug_log">سجل التصحيح\nكتابة الرسائل لسجل التصحيح (برجاء إعادة تشغيل البرنامج لتطبيق التغيير)</string>
@@ -55,7 +55,7 @@
   <string name="connection_start_at_boot">تشغيل عند بدء النظام\nتشغيل التطبيق عند بدء نظام التشغيل Android. هذا الإعداد لن يعمل إذا تم تثبيت Xabber على بطاقة الذاكرة SD.</string>
   <string name="connection_wake_lock">منع وضع السكون\nمنع الجهاز من السكون. هذا سينقص من عمر البطارية.</string>
   <string name="connection_wifi_lock">أبقٍ اتصال WiFi نشطاً\nأبقٍ اتصال WiFi نشط في وضع السكون. سينقص عمر البطارية</string>
-  <string name="contacts_reset_offline">إعادة تعيين إعدادات الأطراف الغير متصلة\nمسح الإعدادات الفردية للمجموعات وأطراف الاتصال</string>
+  <string name="contacts_reset_offline">إعادة تعيين إعدادات الأطراف الغير متاحة\nمسح الإعدادات الفردية للمجموعات وأطراف الاتصال</string>
   <string name="contacts_reset_offline_warning">هل ترغب حقاً في مسح الإعدادات الفردية للمجموعات وأطراف الاتصال؟</string>
   <string name="events_first_only">تنبيه للرسالة الأولى\nإشعار فقط لأول رسالة في الحوار</string>
   <string name="events_ignore_system_vibro">تجاهل إعدادات النظام للاهتزاز\nاستخدم هذا الخيار في حالة عدم عمل الاهتزاز بالنظام</string>

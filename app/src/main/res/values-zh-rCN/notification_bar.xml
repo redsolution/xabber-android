@@ -15,8 +15,8 @@
   <string name="chat_message_quantity_2">消息</string>
   <string name="chat_message_quantity_5">-</string>
   <string name="chat_status">%3$d位%4$s的%1$d条%2$s</string>
-  <string name="chat_messages_from_contact">来自 %3$s 的 %1$d %2$s</string>
-  <string name="chat_contact_and_message">%1$s: %2$s</string>
+  <string name="chat_messages_from_contact">来自%3$s的%1$d条%2$s</string>
+  <string name="chat_contact_and_message">%1$s：%2$s</string>
   <string name="connection_state_connected_1">%2$d个中的%1$d个%3$s在线</string>
   <string name="connection_state_connected_2">%2$d个中的%1$d个%3$s在线</string>
   <string name="connection_state_connected_5">-</string>

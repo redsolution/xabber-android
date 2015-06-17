@@ -6,7 +6,7 @@
   <string name="action_join">%1$s加入了会议</string>
   <string name="action_kick">%1$s被踢出</string>
   <string name="account_is_offline">你不在线，发送的消息会在你下次上线后送出。</string>
-  <string name="chat_delay">在 %s 发送</string>
+  <string name="chat_delay">于%s发送</string>
   <string name="chat_input_hint">在此输入你的消息</string>
   <string name="chat_send">发送</string>
   <string name="clear_history">清除历史</string>
@@ -52,9 +52,9 @@
   <string name="ATTENTION_IS_NOT_SUPPORTED">联系人不支持或已禁用注意</string>
   <string name="call_attention">请求注意</string>
   <string name="chat_settings">聊天设置</string>
-  <string name="chat_state_composing">正在输入...</string>
-  <string name="chat_state_paused">输入的文本...</string>
-  <string name="chat_typed">在 %s 输入</string>
+  <string name="chat_state_composing">正在输入&#8230;</string>
+  <string name="chat_state_paused">已输入文本&#8230;</string>
+  <string name="chat_typed">于%s输入</string>
   <string name="export_chat">导出聊天</string>
   <string name="export_chat_done">记录已被导出到SD卡</string>
   <string name="export_chat_mask">%2$s与%1$s.html</string>
@@ -74,9 +74,9 @@
   <string name="otr_verify_fingerprint">以指纹验证</string>
   <string name="otr_verify_question">以问题验证</string>
   <string name="otr_verify_secret">已共享秘密验证</string>
-  <string name="recent_chats">最近聊天记录</string>
-  <string name="under_construction">正在建设</string>
-  <string name="under_construction_message">此屏幕正在建设</string>
+  <string name="recent_chats">近期聊天</string>
+  <string name="under_construction">建设中</string>
+  <string name="under_construction_message">此屏幕正在建设中</string>
   <string name="chat_events_show_text_global">使用全局设置</string>
   <string name="chat_events_show_text_always">显示消息文本</string>
   <string name="chat_events_show_text_never">隐藏消息文本</string>

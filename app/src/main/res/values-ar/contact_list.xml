@@ -6,14 +6,14 @@
   <string name="application_action_disabled">إدارة الحسابات</string>
   <string name="application_action_empty">إضافة حساب</string>
   <string name="application_action_no_contacts">أضف طرف اتصال</string>
-  <string name="application_action_no_online">إظهار الأطراف الغير متصلة</string>
+  <string name="application_action_no_online">إظهار الأطراف الغير المتاحة</string>
   <string name="application_action_offline">كن متصلاً</string>
   <string name="application_action_waiting">أعد الاتصال</string>
   <string name="application_state_connecting">جارِ الاتصال&#8230;</string>
   <string name="application_state_disabled">حسابات غير مفعّلة</string>
   <string name="application_state_empty">ليس لديك أي حسابات</string>
   <string name="application_state_no_contacts">ليس لديك أطراف اتصال</string>
-  <string name="application_state_no_online">لا أحد متصل</string>
+  <string name="application_state_no_online">لا أحد متاح</string>
   <string name="application_state_offline">لا حساب متصل</string>
   <string name="application_state_roster">متصل.</string>
   <string name="application_state_starting">جارِ تشغيل التطبيق&#8230; </string>
@@ -53,7 +53,7 @@
   <string name="show_offline_always">أظهر دائماً</string>
   <string name="show_offline_never">لا تظهر نهائياً</string>
   <string name="show_offline_normal">استخدام الإعدادات العامة</string>
-  <string name="show_offline_settings">إظهار الأطراف الغير متصلة</string>
+  <string name="show_offline_settings">إظهار الأطراف الغير متاحة</string>
   <string name="start_at_boot_suggest">هل تريد تشغيل Xabber عند بدء نظام التشغيل؟\nيمكن تغيير هذا الإعداد من \"الإعدادات\" → \"إعدادات الاتصال\" → \"تشغيل عند بدء النظام\"</string>
   <string name="contact_search_hint">بحث في أطراف الاتصال</string>
   <string name="sender_is_you">أنت</string>

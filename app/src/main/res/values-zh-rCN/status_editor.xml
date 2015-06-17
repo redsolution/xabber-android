@@ -6,7 +6,7 @@
   <string name="chat">请和我聊天</string>
   <string name="dnd">忙碌</string>
   <string name="edit_status">编辑状态</string>
-  <string name="empty_status">&lt; 空状态 &gt;</string>
+  <string name="empty_status">&lt;空状态&gt;</string>
   <string name="invisible">隐身</string>
   <string name="remove_status">删除状态</string>
   <string name="status_editor">设置状态</string>
@@ -16,6 +16,6 @@
   <string name="xa">远远离开</string>
   <string name="new_status">新状态</string>
   <string name="saved_statuses">已保存的状态</string>
-  <string name="clear_status_history">清除状态历史记录</string>
+  <string name="clear_status_history">清除状态历史</string>
   <string name="status_message">状态消息</string>
 </resources>
