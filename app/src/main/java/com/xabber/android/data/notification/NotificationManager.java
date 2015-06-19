@@ -150,7 +150,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         messageNotificationCreator = new MessageNotificationCreator();
 
         accountPainter = new AccountPainter(application);
-        persistentNotificationColor = application.getResources().getColor(R.color.red_500);
+        persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
     public static NotificationManager getInstance() {
