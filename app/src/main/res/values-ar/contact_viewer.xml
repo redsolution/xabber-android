@@ -29,7 +29,6 @@
   <string name="vcard_address_ctry">البلد</string>
   <string name="vcard_telephone">هاتف</string>
   <string name="vcard_email">بريد الكتروني</string>
-  <string name="vcard_type">علامات</string>
   <string name="vcard_type_home">البيت</string>
   <string name="vcard_type_work">العمل</string>
   <string name="vcard_type_postal">بريد</string>

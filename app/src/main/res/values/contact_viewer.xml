@@ -28,7 +28,6 @@
     <string name="vcard_address_ctry">Country Name</string>
     <string name="vcard_telephone">Telephone</string>
     <string name="vcard_email">Email</string>
-    <string name="vcard_type">Labels</string>
     <string name="vcard_type_home">Home</string>
     <string name="vcard_type_work">Work</string>
     <string name="vcard_type_postal">Postal</string>
