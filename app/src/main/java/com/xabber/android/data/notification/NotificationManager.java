@@ -354,6 +354,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void updatePersistentNotification() {
+        if (!SettingsManager.eventsPersistent()) {
+            return;
+        }
+
         int waiting = 0;
         int connecting = 0;
         int connected = 0;
