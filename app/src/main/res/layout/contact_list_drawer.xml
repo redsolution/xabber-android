@@ -67,6 +67,16 @@
             </LinearLayout>
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="1.0.0"
+            android:id="@+id/version"
+            android:textColor="@color/grey_300"
+            android:paddingRight="4dp"
+            android:textSize="12sp" />
+
     </FrameLayout>
 
     <ListView
