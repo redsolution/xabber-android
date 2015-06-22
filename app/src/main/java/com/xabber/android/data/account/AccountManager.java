@@ -398,17 +398,20 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         }
 
 
-        boolean useCustomHost = false;
-
+        boolean useCustomHost = application.getResources().getBoolean(R.bool.account_use_custom_host_default);
         if (accountType.getProtocol() == AccountProtocol.gtalk) {
             useCustomHost = true;
         }
 
+        boolean useCompression = application.getResources().getBoolean(R.bool.account_use_compression_default);
+
+        ArchiveMode archiveMode = ArchiveMode.valueOf(application.getString(R.string.account_archive_mode_default_value));
+
         accountItem = addAccount(accountType.getProtocol(), useCustomHost, host, port, serverName, userName,
                 storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
-                false, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
-                "", "", syncable, null, null, ArchiveMode.available, registerNewAccount);
+                useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
+                "", "", syncable, null, null, archiveMode, registerNewAccount);
         if (accountItem == null) {
             throw new NetworkException(R.string.ACCOUNT_REGISTER_FAILED);
         }
