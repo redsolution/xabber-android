@@ -46,6 +46,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -57,7 +58,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ContactListFragment.OnContactClickListener;
+import com.xabber.android.ui.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
@@ -81,7 +82,7 @@ import java.util.Locale;
  * @author alexander.ivanov
  */
 public class ContactList extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, OnContactClickListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
+        View.OnClickListener, OnChoosedListener, ContactListFragmentListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
@@ -111,6 +112,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     private BarPainter barPainter;
     private ActionBarDrawerToggle drawerToggle;
     private DrawerLayout drawerLayout;
+    private Menu optionsMenu;
 
     public static Intent createPersistentIntent(Context context) {
         Intent intent = new Intent(context, ContactList.class);
@@ -162,7 +164,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         drawerLayout.setDrawerListener(drawerToggle);
 
         toolbar.inflateMenu(R.menu.contact_list);
-        setUpSearchView(toolbar.getMenu());
+        optionsMenu = toolbar.getMenu();
+        setUpSearchView(optionsMenu);
         toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
@@ -554,6 +557,30 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             default:
                 startActivity(ChatViewer.createSpecificChatIntent(this,
                         abstractContact.getAccount(), abstractContact.getUser()));
+                break;
+        }
+    }
+
+    @Override
+    public void onContactListChange(CommonState commonState) {
+
+        switch (commonState) {
+
+            case empty:
+            case disabled:
+                for (int i = 0; i < optionsMenu.size(); i++) {
+                    optionsMenu.getItem(i).setVisible(false);
+                }
+                break;
+            case offline:
+            case waiting:
+            case connecting:
+            case roster:
+            case online:
+                for (int i = 0; i < optionsMenu.size(); i++) {
+                    optionsMenu.getItem(i).setVisible(true);
+                }
+
                 break;
         }
     }

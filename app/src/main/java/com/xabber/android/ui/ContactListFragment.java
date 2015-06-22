@@ -1,5 +1,6 @@
 package com.xabber.android.ui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -91,6 +92,15 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private FloatingActionButton scrollToChatsActionButton;
     private AccountPainter accountPainter;
 
+    private ContactListFragmentListener contactListFragmentListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        contactListFragmentListener = (ContactListFragmentListener) activity;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_list_fragment, container, false);
@@ -150,6 +160,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        contactListFragmentListener = null;
+    }
+
+    @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(info.position);
@@ -171,7 +187,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Object object = parent.getAdapter().getItem(position);
         if (object instanceof AbstractContact) {
-            ((OnContactClickListener) getActivity()).onContactClick((AbstractContact) object);
+            contactListFragmentListener.onContactClick((AbstractContact) object);
         } else if (object instanceof GroupConfiguration) {
             GroupConfiguration groupConfiguration = (GroupConfiguration) object;
             adapter.setExpanded(groupConfiguration.getAccount(), groupConfiguration.getUser(),
@@ -328,7 +344,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         }
         buttonView.setOnClickListener(listener);
 
-
+        contactListFragmentListener.onContactListChange(commonState);
 
     }
 
@@ -443,8 +459,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         popup.show();
     }
 
-    public interface OnContactClickListener {
+    public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
+        void onContactListChange(CommonState commonState);
     }
+
+
 
 }
