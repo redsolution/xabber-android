@@ -33,7 +33,7 @@ public enum LoggingValue {
 
     private final String label;
 
-    private LoggingValue(String label) {
+    LoggingValue(String label) {
         this.label = label;
     }
 

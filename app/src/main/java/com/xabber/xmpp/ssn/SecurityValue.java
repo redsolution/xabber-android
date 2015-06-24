@@ -35,7 +35,7 @@ public enum SecurityValue {
 
     private final String label;
 
-    private SecurityValue(String label) {
+    SecurityValue(String label) {
         this.label = label;
     }
 

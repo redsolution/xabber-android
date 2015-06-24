@@ -132,7 +132,7 @@ public class ProviderUtils {
      * @throws Exception
      */
     public static String parseText(XmlPullParser parser, int maximum)
-            throws OverflowReceiverBufferException, Exception {
+            throws Exception {
         final StringBuilder text = new StringBuilder();
         int inner = 1;
         boolean overflow = false;
@@ -179,7 +179,7 @@ public class ProviderUtils {
      * @throws Exception
      */
     public static void skipTag(XmlPullParser parser)
-            throws IllegalStateException, Exception {
+            throws Exception {
         LinkedList<String> tags = new LinkedList<String>();
         tags.add(parser.getName());
         while (!tags.isEmpty()) {

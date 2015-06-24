@@ -222,6 +222,7 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
                 return true;
             case R.id.action_edit_status:
                 showStatus(actionWithItem.getStatusMode(), actionWithItem.getStatusText());
+                statusTextView.requestFocus();
                 return true;
             case R.id.action_remove_status:
                 AccountManager.getInstance().removeSavedStatus(actionWithItem);

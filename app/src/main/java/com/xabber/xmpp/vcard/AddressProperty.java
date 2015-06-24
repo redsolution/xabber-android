@@ -28,6 +28,6 @@ public enum AddressProperty {
 
     PCODE,
 
-    CTRY;
+    CTRY
 
 }

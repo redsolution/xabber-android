@@ -32,7 +32,7 @@ public interface Instance {
      * @return Whether parsed instance has valid values (e.g. required field are
      * not <code>null</code>).
      */
-    public boolean isValid();
+    boolean isValid();
 
     /**
      * Serializes an instance into XML using serializer.
@@ -40,6 +40,6 @@ public interface Instance {
      * @param serializer
      * @throws IOException
      */
-    public void serialize(XmlSerializer serializer) throws IOException;
+    void serialize(XmlSerializer serializer) throws IOException;
 
 }

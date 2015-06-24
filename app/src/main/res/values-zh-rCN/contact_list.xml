@@ -21,7 +21,7 @@
   <string name="chat_list">聊天列表</string>
   <string name="chat_list_is_empty">没有进行中的聊天</string>
   <string name="chat_viewer">聊天</string>
-  <string name="close_chat">关闭聊天</string>
+  <string name="close_chat">结束聊天</string>
   <string name="CONNECTION_FAILED">连接错误</string>
   <string name="contact_add">添加联系人</string>
   <string name="contact_delete">删除</string>
@@ -36,7 +36,7 @@
   <string name="group_rename">更名分组</string>
   <string name="NO_SUCH_ACCOUNT">未找到该账户</string>
   <string name="NOT_CONNECTED">未能建立连接</string>
-  <string name="request_subscription">请求订阅</string>
+  <string name="request_subscription">订阅请求</string>
   <string name="XMPP_EXCEPTION">流错误</string>
   <string name="application_state_closing">正在保存设置&#8230;\n应用程序将很快关闭。</string>
   <string name="certificate_confirmation">%1$s。\n你真的信任具有SHA-1指纹%2$s的证书吗？你是否希望不再被通知关于此证书的事务。</string>
@@ -45,8 +45,8 @@
   <string name="certificate_invalid_target">目标验证失败</string>
   <string name="certificate_self_signed">自签名证书</string>
   <string name="certificate_show_details">详情&#8230;</string>
-  <string name="close_chats">关闭所有聊天</string>
-  <string name="contact_integration_suggest">你希望Xabber整合进系统联系人吗？\n可在“设置”→“XMPP账户”→你的账户→“整合入系统联系人列表”处修改。\n注：系统联系人列表可能有几分钟变得迟缓</string>
+  <string name="close_chats">结束所有聊天</string>
+  <string name="contact_integration_suggest">你希望将Xabber整合进系统联系人吗？\n可在“设置”→“XMPP账户”→你的账户→“与系统联系人整合”处修改。\n注：系统联系人列表可能有几分钟变得迟缓</string>
   <string name="group_room">会议</string>
   <string name="OTR_ERROR">OTR错误</string>
   <string name="select_contact">点击以选择联系人</string>

@@ -62,7 +62,7 @@ public enum OtrMode {
 
     private final LoggingValue[] loggingValues;
 
-    private OtrMode(LoggingValue[] loggingValues) {
+    OtrMode(LoggingValue[] loggingValues) {
         this.loggingValues = loggingValues;
     }
 

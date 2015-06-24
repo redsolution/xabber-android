@@ -66,7 +66,7 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
     /**
      * Possible operations.
      */
-    private static enum Operation {
+    private enum Operation {
         save, discard, read
     }
 

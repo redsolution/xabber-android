@@ -120,10 +120,15 @@ public class RegularChat extends AbstractChat {
         final String resource = Jid.getResource(packet.getFrom());
         if (packet instanceof Presence) {
             final Presence presence = (Presence) packet;
-            if (this.resource != null
-                    && presence.getType() == Presence.Type.unavailable
-                    && this.resource.equals(resource))
+
+            if (this.resource != null && presence.getType() == Presence.Type.unavailable
+                    && this.resource.equals(resource)) {
                 this.resource = null;
+            }
+
+            if (presence.getType() == Presence.Type.unavailable) {
+                OTRManager.getInstance().onContactUnAvailable(account, user);
+            }
         } else if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error)

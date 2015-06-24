@@ -20,6 +20,6 @@ public enum Classification {
 
     PRIVATE,
 
-    CONFIDENTIAL;
+    CONFIDENTIAL
 
 }

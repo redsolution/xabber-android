@@ -47,7 +47,7 @@ public enum SaveMode {
 
     private String value;
 
-    private SaveMode(String name) {
+    SaveMode(String name) {
         this.value = name;
     }
 

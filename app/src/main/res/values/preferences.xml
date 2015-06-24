@@ -373,6 +373,7 @@
     <string name="account_username_key">account_username</string>
     <string name="account_store_password_key">account_store_password</string>
     <string name="account_password_key">account_password</string>
+    <bool name="account_use_custom_host_default">false</bool>
     <string name="account_host_key">account_host</string>
     <string name="account_port_key">account_port</string>
     <string name="account_server_key">account_server</string>
@@ -381,6 +382,7 @@
     <string name="account_sasl_key">account_sasl</string>
     <string name="account_tls_mode_key">account_tls_mode</string>
     <string name="account_compression_key">account_compression</string>
+    <bool name="account_use_compression_default">false</bool>
     <string name="account_proxy_type_key">account_proxy_type</string>
     <string name="account_proxy_host_key">account_proxy_host</string>
     <string name="account_proxy_port_key">account_proxy_port</string>
@@ -430,6 +432,8 @@
         <item>@string/account_archive_mode_unread</item>
         <item>@string/account_archive_mode_dont_store</item>
     </string-array>
+
+    <string name="account_archive_mode_default_value">available</string>
 
 <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>

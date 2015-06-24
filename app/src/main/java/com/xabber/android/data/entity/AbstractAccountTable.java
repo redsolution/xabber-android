@@ -29,9 +29,9 @@ import android.provider.BaseColumns;
  */
 public abstract class AbstractAccountTable extends AbstractTable {
 
-    public static interface Fields extends BaseColumns {
+    public interface Fields extends BaseColumns {
 
-        public static final String ACCOUNT = "account";
+        String ACCOUNT = "account";
 
     }
 

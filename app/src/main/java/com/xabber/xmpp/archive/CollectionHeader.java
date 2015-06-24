@@ -23,12 +23,12 @@ import java.util.Date;
  */
 public interface CollectionHeader {
 
-    public Date getStart();
+    Date getStart();
 
-    public String getStartString();
+    String getStartString();
 
-    public Integer getVersion();
+    Integer getVersion();
 
-    public String getWith();
+    String getWith();
 
 }

@@ -24,6 +24,6 @@ public enum EmailType {
 
     X400,
 
-    PREF;
+    PREF
 
 }

@@ -3,6 +3,8 @@ package com.xabber.android.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -41,6 +44,14 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_list_drawer, container, false);
 
+        try {
+            ((TextView)view.findViewById(R.id.version))
+                    .setText(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0)
+                            .versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
         View drawerHeader = view.findViewById(R.id.drawer_header);
         drawerHeaderImage = (ImageView) drawerHeader.findViewById(R.id.drawer_header_image);
 
@@ -66,6 +77,8 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         footerView.findViewById(R.id.drawer_action_exit).setOnClickListener(this);
 
         divider = footerView.findViewById(R.id.drawer_divider);
+
+
 
         return view;
     }

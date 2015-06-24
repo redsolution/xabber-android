@@ -38,8 +38,6 @@ public class LogManager implements OnLoadListener {
         log = debugable && SettingsManager.debugLog();
     }
 
-    ;
-
     private final static LogManager instance;
 
     static {

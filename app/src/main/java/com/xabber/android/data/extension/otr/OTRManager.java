@@ -653,4 +653,20 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         // since this is not supported, we don't need to do anything
     }
 
+    public void onContactUnAvailable(String account, String user) {
+        Session session = sessions.get(account, user);
+
+        if (session == null) {
+            return;
+        }
+
+        if (session.getSessionStatus() == SessionStatus.ENCRYPTED) {
+            try {
+                LogManager.i(this, "onContactUnAvailable. Refresh session for " + user);
+                session.refreshSession();
+            } catch (OtrException e) {
+                LogManager.exception(this, e);
+            }
+        }
+    }
 }

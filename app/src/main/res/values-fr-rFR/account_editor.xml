@@ -55,7 +55,7 @@
   <string name="account_use_orbot">Discuter à travers le réseau anonymisant TOR et forcer le chiffrement TLS\nDéconseillé pour Google Talk</string>
   <string name="confirm_cancellation">Êtes-vous sûr de vouloir annuler vos modifications ?</string>
   <string name="INCORRECT_USER_NAME">Identifiant incorrect. Consultez le message ci-dessous pour plus de détails.</string>
-  <string name="orbot_required_message">Pour utiliser TOR, Orbot doit être installé et activé pour relayer les communications. Voulez-vous l\'installer à partir de Google Play?</string>
+  <string name="orbot_required_message">Afin d\'utiliser TOR, Orbot doit être installé et activé pour relayer les communications. Voulez-vous l\'installer à partir de Google Play?</string>
   <string name="orbot_required_title">Installer Orbot ?</string>
   <string name="ACCOUNT_REGISTER_FAILED">L\'enregistrement sur le serveur a échoué.</string>
   <string name="account_color">Couleur du compte</string>

@@ -81,9 +81,7 @@ public class Target implements Comparable<Target> {
             return false;
         if (priority != other.priority)
             return false;
-        if (weight != other.weight)
-            return false;
-        return true;
+        return weight == other.weight;
     }
 
     @Override

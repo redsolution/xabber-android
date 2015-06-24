@@ -27,6 +27,6 @@ public enum MatchMode {
 
     bare,
 
-    exect;
+    exect
 
 }

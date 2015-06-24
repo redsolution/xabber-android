@@ -20,7 +20,7 @@
   <string name="events_lightning">灯光提示\n通知时闪烁LED</string>
   <string name="events_persistent">任务栏图标\n显示持久性通知，此选项可防止Android从内存中卸载该程序</string>
   <string name="events_sound">声音提示\n选择提示音</string>
-  <string name="events_vibro">震动\n通知时震动</string>
+  <string name="events_vibro">振动\n通知时振动</string>
   <string name="interface_theme">主题\n主题设置</string>
   <string name="interface_theme_dark">暗色</string>
   <string name="interface_theme_light">亮色</string>
@@ -58,7 +58,7 @@
   <string name="contacts_reset_offline">重设离线设置\n清除对某一账户或群组所作的设置</string>
   <string name="contacts_reset_offline_warning">你真的要清除对某一账户或群组所作的设置吗？</string>
   <string name="events_first_only">在首条消息时通知\n仅在聊天中收到第一条消息时通知</string>
-  <string name="events_ignore_system_vibro">忽略系统震动设置\n在系统震动不工作时使用此选项</string>
+  <string name="events_ignore_system_vibro">忽略系统振动设置\n在系统振动无法正常使用时请启用此选项</string>
   <string name="events_message">通知设置\n设置接收消息通知</string>
   <string name="events_message_chat">仅聊天</string>
   <string name="events_message_chat_and_muc">聊天和会议</string>
@@ -68,7 +68,7 @@
   <string name="negative_priotiry_summary">%s（你将不会收到任何消息）</string>
   <string name="preference_accounts">XMPP账户\n管理账户</string>
   <string name="preference_security">安全\n安全设置</string>
-  <string name="security_check_certificate">检查服务器证书\n在加密连接有有证书问题时通知</string>
+  <string name="security_check_certificate">检查服务器证书\n在加密连接有证书问题时通知</string>
   <string name="security_clear_certificate">移除证书\n清除忽略的证书列表</string>
   <string name="security_otr_history">存储历史\n存储OTR会话的聊天记录</string>
   <string name="security_otr_mode">OTR模式</string>
@@ -77,5 +77,5 @@
   <string name="connection_load_vcard">加载vCard\n加载和更新联系人的个人信息和头像，禁用以减少流量</string>
   <string name="connection_use_carbons">复写模式\n可能不稳定！将为此客户端上的相同账户共享会话，禁用以减少流量使用。</string>
   <string name="events_phrases">关键短语\n通知某些包含预设短语的消息并选择声音</string>
-  <string name="security_clear_certificate_warning">您确实要删除所有忽略的证书吗？</string>
+  <string name="security_clear_certificate_warning">你确实要删除所有忽略的证书吗？</string>
 </resources>

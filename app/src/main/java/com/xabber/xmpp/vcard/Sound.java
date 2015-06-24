@@ -18,6 +18,6 @@ import com.xabber.xmpp.Instance;
 
 public interface Sound extends Instance {
 
-    public static final String ELEMENT_NAME = "SOUND";
+    String ELEMENT_NAME = "SOUND";
 
 }

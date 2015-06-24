@@ -29,7 +29,6 @@
   <string name="vcard_address_ctry">Страна</string>
   <string name="vcard_telephone">Телефон</string>
   <string name="vcard_email">Эл. почта</string>
-  <string name="vcard_type">Метки</string>
   <string name="vcard_type_home">Домашний</string>
   <string name="vcard_type_work">Рабочий</string>
   <string name="vcard_type_postal">Почтовый</string>

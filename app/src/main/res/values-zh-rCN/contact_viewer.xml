@@ -29,7 +29,6 @@
   <string name="vcard_address_ctry">国家</string>
   <string name="vcard_telephone">电话</string>
   <string name="vcard_email">电子邮箱</string>
-  <string name="vcard_type">标签</string>
   <string name="vcard_type_home">家庭</string>
   <string name="vcard_type_work">工作</string>
   <string name="vcard_type_postal">邮政</string>
