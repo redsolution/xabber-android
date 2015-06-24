@@ -95,7 +95,7 @@ public class ContactItemInflater {
                 viewHolder.outgoingMessageIndicator.setTextColor(accountMainColors[colorLevel]);
 
             }
-            view.setBackgroundColor(context.getResources().getColor(R.color.grey_50));
+            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_active_chat_background));
             viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
             viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
             viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
@@ -103,7 +103,7 @@ public class ContactItemInflater {
         } else {
             statusText = contact.getStatusText().trim();
             viewHolder.smallRightText.setVisibility(View.GONE);
-            view.setBackgroundColor(context.getResources().getColor(R.color.grey_300));
+            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_contact_background));
             viewHolder.smallRightIcon.setVisibility(View.GONE);
             viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
