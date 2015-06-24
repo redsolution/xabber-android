@@ -26,5 +26,5 @@ public interface OnCloseListener extends BaseManagerInterface {
      * <p/>
      * This function will be call from UI thread.
      */
-    public void onClose();
+    void onClose();
 }

@@ -26,7 +26,7 @@ package com.xabber.android.data;
  */
 public interface OnTimerListener extends BaseManagerInterface {
 
-    public final static int DELAY = 1000;
+    int DELAY = 1000;
 
     /**
      * Called after at least {@link #DELAY} milliseconds.

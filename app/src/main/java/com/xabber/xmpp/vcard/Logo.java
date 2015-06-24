@@ -18,6 +18,6 @@ import com.xabber.xmpp.Instance;
 
 public interface Logo extends Instance {
 
-    public static final String ELEMENT_NAME = "LOGO";
+    String ELEMENT_NAME = "LOGO";
 
 }

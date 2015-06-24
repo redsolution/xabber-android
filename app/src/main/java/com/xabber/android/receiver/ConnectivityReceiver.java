@@ -34,7 +34,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (!ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction()))
             return;
-        NetworkInfo networkInfo = (NetworkInfo) intent
+        NetworkInfo networkInfo = intent
                 .getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
         if (networkInfo == null) {
             LogManager.e(this, "NO INFO");

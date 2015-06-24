@@ -30,6 +30,6 @@ public enum SessionState {
      * Data form of type "form" with a "renegotiate" field whose value is "1"
      * has been sent.
      */
-    renegotiation;
+    renegotiation
 
 }

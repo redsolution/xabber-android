@@ -23,9 +23,9 @@ import android.database.Cursor;
  */
 public abstract class AbstractEntityTable extends AbstractAccountTable {
 
-    public static interface Fields extends AbstractAccountTable.Fields {
+    public interface Fields extends AbstractAccountTable.Fields {
 
-        public static final String USER = "user";
+        String USER = "user";
 
     }
 

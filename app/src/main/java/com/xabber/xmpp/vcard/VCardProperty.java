@@ -48,7 +48,7 @@ public enum VCardProperty {
 
     private final String name;
 
-    private VCardProperty() {
+    VCardProperty() {
         name = super.toString().replace('_', '-');
     }
 

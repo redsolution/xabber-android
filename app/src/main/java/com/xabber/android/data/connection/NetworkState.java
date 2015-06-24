@@ -25,6 +25,6 @@ public enum NetworkState {
 
     suspended,
 
-    unavailable;
+    unavailable
 
 }

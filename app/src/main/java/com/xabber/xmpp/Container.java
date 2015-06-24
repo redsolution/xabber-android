@@ -28,12 +28,12 @@ public interface Container extends Instance {
     /**
      * @return XML element name.
      */
-    public String getElementName();
+    String getElementName();
 
     /**
      * @return XML namespace.
      */
-    public String getNamespace();
+    String getNamespace();
 
     /**
      * Serializes an inner content of XML tag.
@@ -41,7 +41,7 @@ public interface Container extends Instance {
      * @param serializer
      * @throws IOException
      */
-    public abstract void serializeContent(XmlSerializer serializer)
+    void serializeContent(XmlSerializer serializer)
             throws IOException;
 
 }

@@ -472,7 +472,7 @@ public class ConnectionThread implements
         Throwable e1 = ((XMPPException) e).getWrappedThrowable();
         if (!(e1 instanceof SSLException))
             return;
-        Throwable e2 = ((SSLException) e1).getCause();
+        Throwable e2 = e1.getCause();
         if (!(e2 instanceof CertificateException))
             return;
         runOnUiThread(new Runnable() {

@@ -166,7 +166,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
     }
 
     public interface FinishUpdateListener {
-        public void onChatViewAdapterFinishUpdate();
+        void onChatViewAdapterFinishUpdate();
     }
 
     public ArrayList<AbstractChat> getActiveChats() {

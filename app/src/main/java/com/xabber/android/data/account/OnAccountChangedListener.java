@@ -30,5 +30,5 @@ public interface OnAccountChangedListener extends BaseUIListener {
      *
      * @param accounts
      */
-    public void onAccountsChanged(Collection<String> accounts);
+    void onAccountsChanged(Collection<String> accounts);
 }

@@ -37,7 +37,7 @@ public enum DisclosureValue {
 
     private final String label;
 
-    private DisclosureValue(String label) {
+    DisclosureValue(String label) {
         this.label = label;
     }
 

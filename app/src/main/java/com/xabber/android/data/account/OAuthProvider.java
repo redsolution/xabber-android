@@ -29,7 +29,7 @@ interface OAuthProvider extends BaseManagerInterface {
     /**
      * @return Supported protocol.
      */
-    public AccountProtocol getAccountProtocol();
+    AccountProtocol getAccountProtocol();
 
     /**
      * Gets refresh token using Request Access Token.
@@ -40,7 +40,7 @@ interface OAuthProvider extends BaseManagerInterface {
      * @return refresh token or <code>null</code> if auth failed.
      * @throws NetworkException
      */
-    public String requestRefreshToken(String code) throws NetworkException;
+    String requestRefreshToken(String code) throws NetworkException;
 
     /**
      * Requests password renew from server based on refreshToken.
@@ -51,7 +51,7 @@ interface OAuthProvider extends BaseManagerInterface {
      * @return <code>null</code> on authorization fail.
      * @throws NetworkException
      */
-    public OAuthResult requestAccessToken(String refreshToken)
+    OAuthResult requestAccessToken(String refreshToken)
             throws NetworkException;
 
     /**

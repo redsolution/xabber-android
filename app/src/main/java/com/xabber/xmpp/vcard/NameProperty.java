@@ -24,6 +24,6 @@ public enum NameProperty {
 
     PREFIX,
 
-    SUFFIX;
+    SUFFIX
 
 }

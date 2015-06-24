@@ -31,7 +31,7 @@ public interface OnVCardListener extends BaseUIListener {
      * @param bareAddress
      * @param vCard
      */
-    public void onVCardReceived(String account, String bareAddress, VCard vCard);
+    void onVCardReceived(String account, String bareAddress, VCard vCard);
 
     /**
      * Fail occurred on vCard response.
@@ -39,6 +39,6 @@ public interface OnVCardListener extends BaseUIListener {
      * @param account
      * @param bareAddress
      */
-    public void onVCardFailed(String account, String bareAddress);
+    void onVCardFailed(String account, String bareAddress);
 
 }

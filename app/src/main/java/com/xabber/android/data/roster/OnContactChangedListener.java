@@ -31,6 +31,6 @@ public interface OnContactChangedListener extends BaseUIListener {
      *
      * @param entities
      */
-    public void onContactsChanged(Collection<BaseEntity> entities);
+    void onContactsChanged(Collection<BaseEntity> entities);
 
 }

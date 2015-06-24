@@ -28,6 +28,6 @@ public interface OnChatChangedListener extends BaseUIListener {
      * @param user
      * @param incoming Whether new incoming message received.
      */
-    public void onChatChanged(String account, String user, boolean incoming);
+    void onChatChanged(String account, String user, boolean incoming);
 
 }

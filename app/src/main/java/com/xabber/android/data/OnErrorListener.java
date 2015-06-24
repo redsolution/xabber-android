@@ -26,5 +26,5 @@ interface OnErrorListener extends BaseUIListener {
      *
      * @param resourceId String with error description.
      */
-    public void onError(int resourceId);
+    void onError(int resourceId);
 }

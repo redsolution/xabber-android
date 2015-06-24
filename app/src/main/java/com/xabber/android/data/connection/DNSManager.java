@@ -102,7 +102,7 @@ public class DNSManager {
             }
             for (Resolver check : resolver.getResolvers())
                 if (check instanceof SimpleResolver) {
-                    ((SimpleResolver) check).setTimeout(30);
+                    check.setTimeout(30);
                 } else {
                     LogManager.i(this, "Not simple resolver!!!?" + check);
                 }

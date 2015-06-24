@@ -21,6 +21,6 @@ package com.xabber.android.data.roster;
  */
 public interface Group {
 
-    public String getName();
+    String getName();
 
 }

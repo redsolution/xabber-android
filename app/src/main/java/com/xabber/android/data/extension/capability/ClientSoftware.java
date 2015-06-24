@@ -47,7 +47,7 @@ public enum ClientSoftware {
     private final static Pattern GTALK_NODE = Pattern
             .compile("(?iu).*mail\\.google\\.com.*client.*");
 
-    private ClientSoftware(String regularExpression) {
+    ClientSoftware(String regularExpression) {
         this.regularExpression = Pattern.compile(regularExpression);
     }
 

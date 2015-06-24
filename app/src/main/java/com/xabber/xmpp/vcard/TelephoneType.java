@@ -40,6 +40,6 @@ public enum TelephoneType {
 
     PCS,
 
-    PREF;
+    PREF
 
 }

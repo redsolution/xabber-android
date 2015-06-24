@@ -28,6 +28,6 @@ public interface OnUnloadListener extends BaseManagerInterface {
      * WILL BE CALLED FROM BACKGROUND THREAD. DON'T CHANGE OR ACCESS
      * APPLICATION'S DATA HERE!
      */
-    public void onUnload();
+    void onUnload();
 
 }

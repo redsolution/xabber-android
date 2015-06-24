@@ -21,6 +21,6 @@ package com.xabber.android.data.notification;
  */
 public interface EntityNotificationItem extends AccountNotificationItem {
 
-    public String getUser();
+    String getUser();
 
 }

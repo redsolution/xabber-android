@@ -54,6 +54,6 @@ public enum CommonState {
     /**
      * There is at least one account with received roster.
      */
-    online;
+    online
 
 }

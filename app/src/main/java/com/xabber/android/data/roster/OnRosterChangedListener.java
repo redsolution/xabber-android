@@ -37,7 +37,7 @@ public interface OnRosterChangedListener extends BaseManagerInterface {
      * @param removedContacts
      * @param removedGroups
      */
-    public void onRosterUpdate(
+    void onRosterUpdate(
             Collection<RosterGroup> addedGroups,
             Map<RosterContact, String> addedContacts,
             Map<RosterContact, String> renamedContacts,
@@ -51,14 +51,14 @@ public interface OnRosterChangedListener extends BaseManagerInterface {
      *
      * @param rosterContact
      */
-    public void onPresenceChanged(Collection<RosterContact> rosterContact);
+    void onPresenceChanged(Collection<RosterContact> rosterContact);
 
     /**
      * Contact's structured name has been changed.
      *
      * @param rosterContact
      */
-    public void onContactStructuredInfoChanged(RosterContact rosterContact,
-                                               StructuredName structuredName);
+    void onContactStructuredInfoChanged(RosterContact rosterContact,
+                                        StructuredName structuredName);
 
 }
