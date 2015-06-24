@@ -60,7 +60,7 @@
   <string name="export_chat_mask">%2$s en %1$s.html</string>
   <string name="export_chat_send">Enviar después de exportar</string>
   <string name="export_chat_title">Nombre de archivo:</string>
-  <string name="muc_invite">Invitarle a charlar</string>
+  <string name="muc_invite">Invitar a un contacto</string>
   <string name="muc_is_unavailable">Por favor, únete a una conversación para que tus mensajes se envíen</string>
   <string name="occupant_list">Lista de participantes</string>
   <string name="otr_encryption">Cifrado OTR</string>

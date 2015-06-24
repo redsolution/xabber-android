@@ -32,7 +32,7 @@
   <string name="INVALID_CERTIFICATE">无效证书</string>
   <string name="muc_invite_message">你要加入会议吗？</string>
   <string name="otr_verification_in_progress">点击此处放弃</string>
-  <string name="PASSWORD_REQUIRED">要求密码</string>
+  <string name="PASSWORD_REQUIRED">需要密码</string>
   <string name="pay_attention">注意</string>
   <string name="subscription_request_message">授权请求</string>
 </resources>

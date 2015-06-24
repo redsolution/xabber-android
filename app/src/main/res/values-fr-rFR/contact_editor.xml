@@ -3,10 +3,10 @@
 <resources>
   <string name="contact_account">Compte</string>
   <string name="contact_group">Sélectionner les groupes</string>
-  <string name="contact_name">Surnom (facultatif)</string>
+  <string name="contact_name">Alias (facultatif)</string>
   <string name="contact_subscribe_confirm">Partager le status de votre compte %1$s avec ce contact ?</string>
-  <string name="contact_user">Nom d\'utilisateur</string>
-  <string name="ENTRY_IS_NOT_FOUND">Contact non trouvé</string>
+  <string name="contact_user">Identifiant du contact</string>
+  <string name="ENTRY_IS_NOT_FOUND">Contact introuvable</string>
   <string name="group_is_empty">Définir le nom du groupe</string>
   <string name="group_name">Nom du groupe</string>
   <string name="choose_account">Choisir un compte</string>

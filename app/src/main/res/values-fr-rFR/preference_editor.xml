@@ -4,7 +4,7 @@
   <string name="cache_clear">Vider le cache\nSupprime toutes les données locales. Peut libérer de l\'espace.</string>
   <string name="cache_clear_warning">Êtes-vous sûr de vouloir supprimer les historiques des conversations et autres données locales ?\nLes paramètres des comptes et les listes de contacts ne seront pas affectés. L\'application sera fermée.</string>
   <string name="chats_send_by_enter">Entrée pour envoyer\nAppuyer sur Entrée pour envoyer un message</string>
-  <string name="connection_go_away">Non Disponible Automatique\nPasse le statut à non disponible automatiquement au verrouillage de l\'écran</string>
+  <string name="connection_go_away">Absence automatique\nPasser au statut \"Absent\" au verrouillage de l\'écran</string>
   <string name="contacts_order">Trier les contacts\nChoisir l\'ordre d\'affichage des contacts</string>
   <string name="contacts_order_alphabet">Alphabétique</string>
   <string name="contacts_order_status">Par statut</string>
@@ -50,7 +50,7 @@
   <string name="chats_state_notification">Afficher notification d\'écriture\nNotifier que l\'interlocuteur est en train d\'écrire</string>
   <string name="connection_adjust_priority">Ajuster la priorité\nModifier la priorité en fonction du statut. Ce paramètre l\'emportera sur la priorité globale du compte.</string>
   <string name="connection_go_away_immediately">Immédiatement au verrouillage d\'écran</string>
-  <string name="connection_go_xa">\"Absence prolongée\" en cas d\'inactivité\nPasser en \"Absence prolongée\" lorsque l\'écran est vérouillé</string>
+  <string name="connection_go_xa">Absence prolongée en cas d\'inactivité\nPasser en absence prolongée au verrouillage de l\'écran</string>
   <string name="connection_priority">Configuration de la priorité</string>
   <string name="connection_start_at_boot">Démarrer avec Android\nL\'application sera lancée au démarrage d\'Android. Ne fonctionne pas quand Xabber est installé sur une carte SD.</string>
   <string name="connection_wake_lock">Empêcher la mise en veille\nEmpêcher l\'appareil de se mettre veille. Décharge la batterie plus rapidement.</string>

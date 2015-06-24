@@ -10,7 +10,7 @@
   <string name="chat_input_hint">在此输入你的消息</string>
   <string name="chat_send">发送</string>
   <string name="clear_history">清除历史</string>
-  <string name="contact_is_offline">对方不在线，他上线后会收到你消息</string>
+  <string name="contact_is_offline">对方不在线，他上线后会收到你的消息</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">联系人不可用</string>
   <string name="FILE_NOT_FOUND">文件未找到</string>
   <string name="message_copy">复制</string>
@@ -20,7 +20,7 @@
   <string name="save_history">保存本地历史\n在本地保存消息历史</string>
   <string name="show_history">显示历史</string>
   <string name="action_attention_called">已发送注意</string>
-  <string name="action_attention_requested">已请求注意</string>
+  <string name="action_attention_requested">被请求注意</string>
   <string name="action_ban">%1$s被禁言</string>
   <string name="action_ban_by">%1$s被%2$s禁言</string>
   <string name="action_invite_error">邀请未被%s接收</string>
@@ -32,7 +32,7 @@
   <string name="action_nickname">%1$s更改昵称为%2$s</string>
   <string name="action_otr_encryption">加密已启用但此联系人未被验证。请在OTR加密菜单中验证。</string>
   <string name="action_otr_error">OTR错误：%1$s</string>
-  <string name="action_otr_finish">对方已离开加密对话，你应该也这样做或重启对话。</string>
+  <string name="action_otr_finish">对方已离开加密对话，建议你也离开或重启对话。</string>
   <string name="action_otr_finished_session">消息未被发送，请离开或重启对话。</string>
   <string name="action_otr_plain">你已离开加密对话</string>
   <string name="action_otr_smp_cheated">对方试图在验证过程中作弊</string>
@@ -40,8 +40,8 @@
   <string name="action_otr_smp_not_approved">你对安全问题的回答已被确认。你也应该询问对方，或检查共享秘密。</string>
   <string name="action_otr_smp_unverified">验证失败</string>
   <string name="action_otr_smp_verified">验证成功完成</string>
-  <string name="action_otr_unreadable">收到的加密消息不可读</string>
-  <string name="action_otr_verified">加密已启用</string>
+  <string name="action_otr_unreadable">无法读取收到的加密消息</string>
+  <string name="action_otr_verified">已启用加密</string>
   <string name="action_status_available">%1$s上线了</string>
   <string name="action_status_away">%1$s离开了</string>
   <string name="action_status_chat">请和%1$s聊天</string>
