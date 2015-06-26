@@ -76,10 +76,6 @@ ZXing
 app/src/main/java/com/google/zxing/*
 Apache License, Version 2.0 (the "License").
 
-JZLib
-app/src/main/java/com/jcraft/jzlib/*
-BSD license.
-
 Novel sasl client
 app/src/main/java/com/novell/sasl/*
 The OpenLDAP Public License.
