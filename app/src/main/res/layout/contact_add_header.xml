@@ -24,33 +24,7 @@
 
     <include layout="@layout/account_select_spinner" />
 
-    <TextView
-        android:text="@string/contact_user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-    <EditText
-        android:text=""
-        android:id="@+id/contact_user"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/user_domain_name"
-        android:singleLine="true"
-        android:inputType="textEmailAddress"
-        />
-
-    <TextView
-        android:text="@string/contact_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-    <EditText
-        android:text=""
-        android:id="@+id/contact_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        />
+    <include layout="@layout/contact_add_username_and_alias" />
 
     <TextView
         android:id="@+id/select_groups_text_view"
