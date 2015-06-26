@@ -15,11 +15,8 @@
 package com.xabber.android.ui;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
@@ -44,11 +41,6 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
-import com.xabber.android.ui.dialog.ConfirmDialogListener;
-import com.xabber.android.ui.dialog.DialogBuilder;
-import com.xabber.android.ui.dialog.NotificationDialogBuilder;
-import com.xabber.android.ui.dialog.NotificationDialogListener;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.xmpp.address.Jid;
@@ -57,8 +49,7 @@ import java.util.Collection;
 
 public class FingerprintViewer extends ManagedActivity implements
         OnCheckedChangeListener, OnAccountChangedListener,
-        OnContactChangedListener, OnClickListener, ConfirmDialogListener,
-        NotificationDialogListener {
+        OnContactChangedListener, OnClickListener {
 
     private static final String SAVED_REMOTE_FINGERPRINT = "com.xabber.android.ui.FingerprintViewer.SAVED_REMOTE_FINGERPRINT";
     private static final String SAVED_LOCAL_FINGERPRINT = "com.xabber.android.ui.FingerprintViewer.SAVED_LOCAL_FINGERPRINT";
@@ -170,11 +161,15 @@ public class FingerprintViewer extends ManagedActivity implements
             String code = scanResult.getContents();
             boolean equals = code != null && code.equals(remoteFingerprint);
             verifiedView.setChecked(equals);
+
+            int dialogMessageId;
             if (equals) {
-                showDialog(R.string.action_otr_smp_verified);
+                dialogMessageId = R.string.action_otr_smp_verified;
             } else {
-                showDialog(R.string.action_otr_smp_unverified);
+                dialogMessageId = R.string.action_otr_smp_unverified;
             }
+            new AlertDialog.Builder(this).setMessage(dialogMessageId)
+                    .setNeutralButton(android.R.string.ok, null).show();
         }
     }
 
@@ -209,27 +204,14 @@ public class FingerprintViewer extends ManagedActivity implements
         }
     }
 
-    /**
-     * Show native dialog instead of provided by ZXing.
-     *
-     * @param alertDialog
-     */
-    private void wrapInstallDialog(AlertDialog alertDialog) {
-        if (alertDialog == null) {
-            return;
-        }
-        alertDialog.dismiss();
-        showDialog(R.string.zxing_install_message);
-    }
-
-    @Override
+     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.scan:
-                wrapInstallDialog(integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES));
+                integrator.initiateScan(IntentIntegrator.QR_CODE_TYPES);
                 break;
             case R.id.show:
-                wrapInstallDialog(integrator.shareText(localFingerprint));
+                integrator.shareText(localFingerprint);
                 break;
             case R.id.copy:
                 ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
@@ -238,52 +220,6 @@ public class FingerprintViewer extends ManagedActivity implements
             default:
                 break;
         }
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case R.string.zxing_install_message:
-                return new ConfirmDialogBuilder(this, id, this)
-                        .setMessage(R.string.zxing_install_message).create();
-            case R.string.zxing_install_fail:
-                return new NotificationDialogBuilder(this, id, this)
-                        .setMessage(R.string.zxing_install_fail).create();
-            case R.string.action_otr_smp_verified:
-                return new NotificationDialogBuilder(this, id, this)
-                        .setMessage(R.string.action_otr_smp_verified).create();
-            case R.string.action_otr_smp_unverified:
-                return new NotificationDialogBuilder(this, id, this)
-                        .setMessage(R.string.action_otr_smp_unverified).create();
-            default:
-                return super.onCreateDialog(id);
-        }
-    }
-
-    @Override
-    public void onAccept(DialogBuilder dialogBuilder) {
-        switch (dialogBuilder.getDialogId()) {
-            case R.string.zxing_install_message:
-                Uri uri = Uri.parse("market://details?id=" + IntentIntegrator.BS_PACKAGE);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                try {
-                    startActivity(intent);
-                } catch (ActivityNotFoundException anfe) {
-                    showDialog(R.string.zxing_install_fail);
-                    break;
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onDecline(DialogBuilder dialogBuilder) {
-    }
-
-    @Override
-    public void onCancel(DialogBuilder dialogBuilder) {
     }
 
     private void update() {
