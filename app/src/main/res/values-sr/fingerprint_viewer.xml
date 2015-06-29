@@ -7,7 +7,5 @@
   <string name="otr_remote_fingerprint">Отисак вашег саговорника:</string>
   <string name="otr_scan_fingerprint">Скенирајте QR код са отиском саговорника</string>
   <string name="otr_show_fingerprint">Прикажи QR код мог отиска</string>
-  <string name="zxing_install_fail">Нема Гуглове Плеј продавнице. Инсталирајте скенер бар-кôда ручно.</string>
-  <string name="zxing_install_message">Ова апликација захтева скенер бар-кôда. Желите ли да га инсталирате?</string>
   <string name="otr_copy_fingerprint">Копирај мој отисак у клипборд</string>
 </resources>

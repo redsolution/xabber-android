@@ -7,7 +7,5 @@
   <string name="otr_remote_fingerprint">Цифровой отпечаток пальца собеседника:</string>
   <string name="otr_scan_fingerprint">Сканировать QR код с цифровым отпечатком пальца собеседника</string>
   <string name="otr_show_fingerprint">Показать QR код с Вашим отпечатком пальца</string>
-  <string name="zxing_install_fail">У вас не установлен Google Play. Пожалуйста установите Сканер штрих-кодов вручную.</string>
-  <string name="zxing_install_message">Приложению требуется Сканер штрих-кодов. Вы хотите его установить?</string>
   <string name="otr_copy_fingerprint">Скопировать ваш отпечаток в буфер обмена</string>
 </resources>
