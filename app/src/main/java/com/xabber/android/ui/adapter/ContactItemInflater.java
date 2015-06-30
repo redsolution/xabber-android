@@ -80,31 +80,38 @@ public class ContactItemInflater {
 
         MessageManager messageManager = MessageManager.getInstance();
 
+        viewHolder.smallRightText.setVisibility(View.GONE);
+        viewHolder.smallRightIcon.setVisibility(View.GONE);
+
         if (messageManager.hasActiveChat(contact.getAccount(), contact.getUser())) {
 
             AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
 
             statusText = chat.getLastText().trim();
 
-            viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
-            viewHolder.smallRightText.setVisibility(View.VISIBLE);
-
-            if (!statusText.isEmpty() && !chat.isLastMessageIncoming()) {
-                viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
-                viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
-                viewHolder.outgoingMessageIndicator.setTextColor(accountMainColors[colorLevel]);
-
-            }
             view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_active_chat_background));
-            viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
-            viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
-            viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
-            viewHolder.largeClientIcon.setVisibility(View.GONE);
+
+            if (!statusText.isEmpty()) {
+
+                viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
+                viewHolder.smallRightText.setVisibility(View.VISIBLE);
+
+                if (!chat.isLastMessageIncoming()) {
+                    viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
+                    viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
+                    viewHolder.outgoingMessageIndicator.setTextColor(accountMainColors[colorLevel]);
+                }
+                viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
+                viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
+                viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
+                viewHolder.largeClientIcon.setVisibility(View.GONE);
+            } else {
+                viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
+                viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
+            }
         } else {
             statusText = contact.getStatusText().trim();
-            viewHolder.smallRightText.setVisibility(View.GONE);
             view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_contact_background));
-            viewHolder.smallRightIcon.setVisibility(View.GONE);
             viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
