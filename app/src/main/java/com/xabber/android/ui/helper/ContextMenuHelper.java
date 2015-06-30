@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xabber.android.R;
@@ -66,7 +67,18 @@ public class ContextMenuHelper {
         final String account = abstractContact.getAccount();
         final String user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
-        menu.add(R.string.chat_viewer).setOnMenuItemClickListener(
+        MenuInflater inflater = activity.getMenuInflater();
+        inflater.inflate(R.menu.contact_list_contact_context_menu, menu);
+
+        setContactContextMenuActions(activity, adapter, menu, account, user);
+        setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
+    }
+
+    private static void setContactContextMenuActions(final FragmentActivity activity,
+                                                     final UpdatableAdapter adapter,
+                                                     ContextMenu menu,
+                                                     final String account, final String user) {
+        menu.findItem(R.id.action_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
 
                     @Override
@@ -78,138 +90,166 @@ public class ContextMenuHelper {
                     }
                 });
 
-        if (MUCManager.getInstance().hasRoom(account, user)) {
-            if (!MUCManager.getInstance().inUse(account, user))
-                menu.add(R.string.muc_edit).setIntent(
-                        ConferenceAdd.createIntent(activity, account, user));
-            menu.add(R.string.muc_delete).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            MUCDeleteDialogFragment.newInstance(account, user)
-                                    .show(activity.getFragmentManager(),
-                                            "MUC_DELETE");
-                            return true;
+        menu.findItem(R.id.action_edit_conference).setIntent(
+                ConferenceAdd.createIntent(activity, account, user));
+
+        menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MUCDeleteDialogFragment.newInstance(account, user)
+                                .show(activity.getFragmentManager(), "MUC_DELETE");
+                        return true;
+                    }
+                });
+
+        menu.findItem(R.id.action_join_conference).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MUCManager.getInstance().joinRoom(account,
+                                user, true);
+                        return true;
+                    }
+                });
+
+        menu.findItem(R.id.action_leave_conference).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MUCManager.getInstance().leaveRoom(account, user);
+                        MessageManager.getInstance().closeChat(account, user);
+                        NotificationManager.getInstance().removeMessageNotification(account, user);
+                        adapter.onChange();
+                        return true;
+                    }
+
+                });
+
+        menu.findItem(R.id.action_contact_info).setIntent(
+                ContactEditor.createIntent(activity, account, user));
+        menu.findItem(R.id.action_edit_contact_groups).setIntent(
+                GroupEditor.createIntent(activity, account, user));
+
+        menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        ContactDeleteDialogFragment.newInstance(account,
+                                user).show(activity.getFragmentManager(), "CONTACT_DELETE");
+                        return true;
+                    }
+
+                });
+
+        menu.findItem(R.id.action_close_chat).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        MessageManager.getInstance().closeChat(account,
+                                user);
+                        NotificationManager.getInstance()
+                                .removeMessageNotification(account,
+                                        user);
+                        adapter.onChange();
+                        return true;
+                    }
+
+                });
+
+        menu.findItem(R.id.action_request_subscription)
+                .setOnMenuItemClickListener(
+                        new MenuItem.OnMenuItemClickListener() {
+
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                try {
+                                    PresenceManager.getInstance()
+                                            .requestSubscription(
+                                                    account, user);
+                                } catch (NetworkException e) {
+                                    Application.getInstance()
+                                            .onError(e);
+                                }
+                                return true;
+                            }
+
+                        });
+
+        menu.findItem(R.id.action_accept_subscription).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        try {
+                            PresenceManager.getInstance().acceptSubscription(account, user);
+                        } catch (NetworkException e) {
+                            Application.getInstance().onError(e);
                         }
-                    });
+                        activity.startActivity(GroupEditor.createIntent(activity, account, user));
+                        return true;
+                    }
+                });
+        menu.findItem(R.id.action_discard_subscription).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        try {
+                            PresenceManager.getInstance()
+                                    .discardSubscription(account, user);
+                        } catch (NetworkException e) {
+                            Application.getInstance().onError(e);
+                        }
+                        return true;
+                    }
+                });
+    }
+
+    private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
+                                                            ContextMenu menu,
+                                                            String account, String user) {
+        // all menu items are visible by default
+        // it allows to hide items in xml file without touching code
+
+        if (!MUCManager.getInstance().hasRoom(account, user)) {
+            // is not conference
+
+            menu.findItem(R.id.action_edit_conference).setVisible(false);
+            menu.findItem(R.id.action_delete_conference).setVisible(false);
+            menu.findItem(R.id.action_leave_conference).setVisible(false);
+            menu.findItem(R.id.action_join_conference).setVisible(false);
+
+            if (!MessageManager.getInstance().hasActiveChat(account, user)) {
+                menu.findItem(R.id.action_close_chat).setVisible(false);
+            }
+            if (abstractContact.getStatusMode() != StatusMode.unsubscribed) {
+                menu.findItem(R.id.action_request_subscription).setVisible(false);
+            }
+        } else { // is conference
+
+            menu.findItem(R.id.action_contact_info).setVisible(false);
+            menu.findItem(R.id.action_edit_contact_groups).setVisible(false);
+            menu.findItem(R.id.action_delete_contact).setVisible(false);
+            menu.findItem(R.id.action_close_chat).setVisible(false);
+            menu.findItem(R.id.action_request_subscription).setVisible(false);
+
+            if (MUCManager.getInstance().inUse(account, user)) {
+                menu.findItem(R.id.action_edit_conference).setVisible(false);
+            }
+
             if (MUCManager.getInstance().isDisabled(account, user)) {
-                menu.add(R.string.muc_join).setOnMenuItemClickListener(
-                        new MenuItem.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                MUCManager.getInstance().joinRoom(account,
-                                        user, true);
-                                return true;
-                            }
-                        });
+                menu.findItem(R.id.action_leave_conference).setVisible(false);
             } else {
-                menu.add(R.string.muc_leave).setOnMenuItemClickListener(
-                        new MenuItem.OnMenuItemClickListener() {
-
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                MUCManager.getInstance().leaveRoom(account,
-                                        user);
-                                MessageManager.getInstance().closeChat(account,
-                                        user);
-                                NotificationManager.getInstance()
-                                        .removeMessageNotification(account,
-                                                user);
-                                adapter.onChange();
-                                return true;
-                            }
-
-                        });
+                menu.findItem(R.id.action_join_conference).setVisible(false);
             }
-        } else {
-            menu.add(R.string.contact_viewer).setIntent(
-                    ContactEditor.createIntent(activity, account, user));
-            menu.add(R.string.edit_contact_groups).setIntent(
-                    GroupEditor.createIntent(activity, account, user));
 
-            menu.add(R.string.contact_delete).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            ContactDeleteDialogFragment.newInstance(account,
-                                    user).show(activity.getFragmentManager(),
-                                    "CONTACT_DELETE");
-                            return true;
-                        }
-
-                    });
-            if (MessageManager.getInstance().hasActiveChat(account, user)) {
-                menu.add(R.string.close_chat).setOnMenuItemClickListener(
-                        new MenuItem.OnMenuItemClickListener() {
-
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                MessageManager.getInstance().closeChat(account,
-                                        user);
-                                NotificationManager.getInstance()
-                                        .removeMessageNotification(account,
-                                                user);
-                                adapter.onChange();
-                                return true;
-                            }
-
-                        });
-            }
-            if (abstractContact.getStatusMode() == StatusMode.unsubscribed) {
-                menu.add(R.string.request_subscription)
-                        .setOnMenuItemClickListener(
-                                new MenuItem.OnMenuItemClickListener() {
-
-                                    @Override
-                                    public boolean onMenuItemClick(MenuItem item) {
-                                        try {
-                                            PresenceManager.getInstance()
-                                                    .requestSubscription(
-                                                            account, user);
-                                        } catch (NetworkException e) {
-                                            Application.getInstance()
-                                                    .onError(e);
-                                        }
-                                        return true;
-                                    }
-
-                                });
-            }
         }
-        if (PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
-            menu.add(R.string.accept_subscription).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
 
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            try {
-                                PresenceManager.getInstance()
-                                        .acceptSubscription(account, user);
-                            } catch (NetworkException e) {
-                                Application.getInstance().onError(e);
-                            }
-                            activity.startActivity(GroupEditor.createIntent(
-                                    activity, account, user));
-                            return true;
-                        }
-
-                    });
-            menu.add(R.string.discard_subscription).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            try {
-                                PresenceManager.getInstance()
-                                        .discardSubscription(account, user);
-                            } catch (NetworkException e) {
-                                Application.getInstance().onError(e);
-                            }
-                            return true;
-                        }
-
-                    });
+        if (!PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
+            menu.findItem(R.id.action_accept_subscription).setVisible(false);
+            menu.findItem(R.id.action_discard_subscription).setVisible(false);
         }
     }
 
