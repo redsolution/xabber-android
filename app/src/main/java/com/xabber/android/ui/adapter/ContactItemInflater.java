@@ -89,7 +89,7 @@ public class ContactItemInflater {
             viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
             viewHolder.smallRightText.setVisibility(View.VISIBLE);
 
-            if (!chat.isLastMessageIncoming()) {
+            if (!statusText.isEmpty() && !chat.isLastMessageIncoming()) {
                 viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
                 viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
                 viewHolder.outgoingMessageIndicator.setTextColor(accountMainColors[colorLevel]);
