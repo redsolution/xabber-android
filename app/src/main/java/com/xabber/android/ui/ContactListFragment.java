@@ -223,6 +223,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             scrollToChatsActionButtonContainer.setVisibility(View.GONE);
         }
 
+        contactListFragmentListener.onContactListChange(commonState);
 
         if (hasVisibleContacts) {
             infoView.setVisibility(View.GONE);
@@ -343,9 +344,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             buttonView.setText(button);
         }
         buttonView.setOnClickListener(listener);
-
-        contactListFragmentListener.onContactListChange(commonState);
-
     }
 
     /**
