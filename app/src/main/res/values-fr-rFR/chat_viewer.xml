@@ -16,10 +16,10 @@
   <string name="message_copy">Copier</string>
   <string name="message_quote">Citer</string>
   <string name="message_remove">Supprimer de l\'historique</string>
-  <string name="message_repeat">Tenter à nouveau l\'envoi</string>
+  <string name="message_repeat">Retenter l\'envoi</string>
   <string name="save_history">Stocker l\'historique localement\nSauvegarder l\'historique des messages localement</string>
   <string name="show_history">Afficher l\'historique</string>
-  <string name="action_attention_called">Une demande d\'attention a été envoyée</string>
+  <string name="action_attention_called">Demande d\'attention envoyée</string>
   <string name="action_attention_requested">Une demande d\'attention a été reçue</string>
   <string name="action_ban">%1$s a été banni</string>
   <string name="action_ban_by">%1$s a été banni par %2$s</string>
@@ -61,7 +61,7 @@
   <string name="export_chat_send">Envoyer après avoir exporté</string>
   <string name="export_chat_title">Entrer un nom de fichier</string>
   <string name="muc_invite">Inviter à discuter</string>
-  <string name="muc_is_unavailable">Vos messages ne peuvent être délivrés. Rejoignez la discussion s\'il vous plait.</string>
+  <string name="muc_is_unavailable">Vos messages ne peuvent être délivrés. Veuillez rejoindre la discussion</string>
   <string name="occupant_list">Liste des participants</string>
   <string name="otr_encryption">Chiffrement OTR</string>
   <string name="otr_end">Arrêter le chiffrement</string>

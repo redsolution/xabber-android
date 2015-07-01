@@ -11,6 +11,6 @@
   <string name="account_state_connected">En ligne</string>
   <string name="account_state_connecting">Connexion en cours</string>
   <string name="account_state_disconnecting">Déconnexion en cours</string>
-  <string name="account_state_offline">Hors ligne</string>
+  <string name="account_state_offline">Hors-ligne</string>
   <string name="account_state_waiting">En attente de reconnexion</string>
 </resources>

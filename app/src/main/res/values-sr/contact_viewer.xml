@@ -45,7 +45,7 @@
   <string name="vcard_type_msg">Говорна пошта</string>
   <string name="vcard_type_internet">Интернет</string>
   <string name="please_wait">Сачекајте...</string>
-  <string name="unknown">Непознато</string>
+  <string name="unknown">непознат</string>
   <string name="edit_alias">Уреди псеудоним</string>
   <string name="edit_contact_groups">Уреди групе</string>
   <string name="remove_contact">Уклони контакт</string>

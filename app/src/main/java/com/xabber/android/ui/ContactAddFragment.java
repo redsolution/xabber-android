@@ -22,7 +22,8 @@ import com.xabber.android.ui.adapter.AccountChooseAdapter;
 
 import java.util.Collection;
 
-public class ContactAddFragment extends GroupEditorFragment implements AdapterView.OnItemSelectedListener {
+public class ContactAddFragment extends GroupEditorFragment
+        implements AdapterView.OnItemSelectedListener, ContactAdder {
 
     private static final String SAVED_NAME = "com.xabber.android.ui.ContactAdd.SAVED_NAME";
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.ContactAdd.SAVED_ACCOUNT";
@@ -166,6 +167,7 @@ public class ContactAddFragment extends GroupEditorFragment implements AdapterVi
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
+    @Override
     public void addContact() {
         if (getAccount() == null) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),

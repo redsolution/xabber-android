@@ -7,7 +7,5 @@
   <string name="otr_remote_fingerprint">對方的指紋：</string>
   <string name="otr_scan_fingerprint">掃描對方指紋的QR碼</string>
   <string name="otr_show_fingerprint">顯示你指紋的QR碼</string>
-  <string name="zxing_install_fail">未安裝Google Play，請手動安裝Barcode Scanner。</string>
-  <string name="zxing_install_message">這應用程式需要Barcode Scanner，你想要安裝嗎？</string>
   <string name="otr_copy_fingerprint">複製指紋到剪貼簿</string>
 </resources>

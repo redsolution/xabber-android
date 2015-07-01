@@ -7,7 +7,5 @@
   <string name="otr_remote_fingerprint">相手のフィンガープリント:</string>
   <string name="otr_scan_fingerprint">相手のフィンガープリントで QR コードをスキャン</string>
   <string name="otr_show_fingerprint">あなたのフィンガープリントで QR コードを表示</string>
-  <string name="zxing_install_fail">Google Play がインストールされていません. バーコード・スキャナーを手動でインストールしてください.</string>
-  <string name="zxing_install_message">このアプリケーションはバーコード・スキャナーが必要です. インストールしますか?</string>
   <string name="otr_copy_fingerprint">あなたのフィンガープリントをクリップボードにコピー</string>
 </resources>

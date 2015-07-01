@@ -19,7 +19,7 @@
   <string name="debug_log">デバッグ・ログ\nメッセージをデバッグ･ログに書き込む (変更を適用するにはアプリケーションを再起動してください)</string>
   <string name="events_lightning">ライト通知\n通知時に LED を点滅します</string>
   <string name="events_persistent">タスクバーアイコン\n永続的な通知を表示します。このオプションは、Android がアプリケーションをメモリからアンロードしないようにします</string>
-  <string name="events_sound">オーディオ・アラート\n通知サウンドを選択してください</string>
+  <string name="events_sound">オーディオ・アラート\n通知サウンドを選択します</string>
   <string name="events_vibro">バイブレート\n通知時にバイブレートします</string>
   <string name="interface_theme">テーマ\nテーマ設定</string>
   <string name="interface_theme_dark">ダーク</string>
@@ -54,7 +54,7 @@
   <string name="connection_priority">優先度設定</string>
   <string name="connection_start_at_boot">Android の起動時に開始\nAndroid の起動時にアプリケーションを開始します。これは Xabber が SD カードにインストールされている場合は動作しません。</string>
   <string name="connection_wake_lock">スリープモードを防止\nデバイスのスリープを防止します。これは、バッテリーの使用量が増えます。</string>
-  <string name="connection_wifi_lock">WiFi をアクティブのままにする\nスタンバイ時に WiFi をアクティブにしておきます。これは、バッテリーの使用量を増やします</string>
+  <string name="connection_wifi_lock">WiFi をアクティブのままにする\nスタンバイ時に WiFi をアクティブにしておきます。これは、バッテリーの使用量が増えます</string>
   <string name="contacts_reset_offline">オフライン設定をリセット\nグループおよびアカウントに対する個々の設定をクリアします</string>
   <string name="contacts_reset_offline_warning">グループおよびアカウントに対する個々の設定をクリアしてもよろしいですか?</string>
   <string name="events_first_only">最初のメッセージでアラート\nチャットの最初のメッセージのみ通知します</string>
@@ -76,6 +76,6 @@
   <string name="chats_attention_sound">注意サウンド\n着信音を選択します</string>
   <string name="connection_load_vcard">vCard をロード\n連絡先の個人情報およびアバターをロードして更新します. 無効にすると通信の使用量が減ります.</string>
   <string name="connection_use_carbons">カーボン コピー モード\n不安定になることがあります! このクライアントで同じアカウントのセッションを共有します。無効にすると、トラフィックの使用状況を削減します。</string>
-  <string name="events_phrases">キーフレーズ\n重要な phrases\nプリセットしたフレーズが含まれたメッセージを通知します。サウンドを選択します</string>
+  <string name="events_phrases">キーフレーズ\n指定したフレーズが含まれるメッセージを通知します</string>
   <string name="security_clear_certificate_warning">無視された証明書をすべて削除してもよろしいですか?</string>
 </resources>

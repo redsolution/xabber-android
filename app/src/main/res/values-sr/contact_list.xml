@@ -50,8 +50,8 @@
   <string name="group_room">Групна ћаскања</string>
   <string name="OTR_ERROR">ОТР грешка</string>
   <string name="select_contact">Тапните за избор контакта</string>
-  <string name="show_offline_always">увек прикажи</string>
-  <string name="show_offline_never">никад не приказуј</string>
+  <string name="show_offline_always">увек</string>
+  <string name="show_offline_never">никад</string>
   <string name="show_offline_normal">користи опште поставке</string>
   <string name="show_offline_settings">Прикажи неповезане контакте</string>
   <string name="start_at_boot_suggest">Желите ли покретати Ксабер при дизању система?\nМожете да измените ово у \"Поставке\" → \"Поставке везе\" → \"Покрени при подизању система\"</string>

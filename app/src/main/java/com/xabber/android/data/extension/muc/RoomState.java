@@ -62,29 +62,40 @@ public enum RoomState {
      * @return Status mode used in contact list.
      */
     StatusMode toStatusMode() {
-        if (this == RoomState.available)
-            return StatusMode.available;
-        else if (this == RoomState.occupation)
-            return StatusMode.connection;
-        else if (this == RoomState.joining)
-            return StatusMode.connection;
-        else if (this == RoomState.creating)
-            return StatusMode.connection;
-        else if (this == RoomState.unavailable)
-            return StatusMode.unavailable;
-        else if (this == RoomState.waiting)
-            return StatusMode.connection;
-        else if (this == RoomState.error)
-            return StatusMode.unsubscribed;
-        else
-            throw new IllegalStateException();
+        switch (this) {
+            case available:
+                return StatusMode.available;
+            case occupation:
+            case joining:
+            case creating:
+            case waiting:
+                return StatusMode.connection;
+            case unavailable:
+                return StatusMode.unavailable;
+            case error:
+                return StatusMode.unsubscribed;
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     /**
      * @return Connected is establish or connection is in progress.
      */
     boolean inUse() {
-        return this == RoomState.available || this == RoomState.occupation
-                || this == RoomState.creating || this == RoomState.joining;
+        switch (this) {
+
+            case available:
+            case occupation:
+            case joining:
+            case creating:
+                return true;
+
+            case unavailable:
+            case waiting:
+            case error:
+            default:
+                return false;
+        }
     }
 }

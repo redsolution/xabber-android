@@ -6,7 +6,5 @@
     <string name="otr_remote_fingerprint">Your opponent\'s fingerprint:</string>
     <string name="otr_scan_fingerprint">Scan QR code with opponent\'s fingerprint</string>
     <string name="otr_show_fingerprint">Show QR code with your fingerprint</string>
-    <string name="zxing_install_fail">There is no Google Play installed. Please install Barcode Scanner manually.</string>
-    <string name="zxing_install_message">This application requires Barcode Scanner. Would you like to install it?</string>
     <string name="otr_copy_fingerprint">Copy your fingerprint to clipboard</string>
 </resources>

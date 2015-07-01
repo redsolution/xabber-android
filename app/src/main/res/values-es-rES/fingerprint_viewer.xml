@@ -7,7 +7,5 @@
   <string name="otr_remote_fingerprint">Huella de seguridad del interlocutor:</string>
   <string name="otr_scan_fingerprint">Escanear código QR de la huella de seguridad del interlocutor</string>
   <string name="otr_show_fingerprint">Mostrar código QR con tu huella de seguridad</string>
-  <string name="zxing_install_fail">No tienes instalado Google Play. Por favor instala \"Barcode Scanner\" manualmente.</string>
-  <string name="zxing_install_message">Esta aplicación necesita \"Barcode Scanner\". ¿Quieres instalarlo?</string>
   <string name="otr_copy_fingerprint">Copiar tu huella de seguridad al portapapeles</string>
 </resources>

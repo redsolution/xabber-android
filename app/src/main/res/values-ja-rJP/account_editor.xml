@@ -52,7 +52,7 @@
   <string name="account_tls_mode">TLS/SSL 使用方法</string>
   <string name="account_tls_require">TLS が必要</string>
   <string name="account_tls_require_summary">サーバーに接続時 TLS 暗号化を必要とします</string>
-  <string name="account_use_orbot">TOR 匿名ネットワークでチャットし, TLS 暗号プロトコルを強制的に使用します\nGoogle Talk では推奨しません</string>
+  <string name="account_use_orbot">TOR 匿名ネットワークでチャットし, TLS 暗号プロトコルを強制的に使用\nGoogle Talk では推奨しません</string>
   <string name="confirm_cancellation">すべての変更を取り消してもよろしいですか?</string>
   <string name="INCORRECT_USER_NAME">ユーザー名が正しくありません. 詳細は下部のヘルプテキストを確認してください.</string>
   <string name="orbot_required_message">TOR を使用して処理するには Orbot をインストールし proxy のトラフィックを有効にする必要があります. Google Play からインストールしますか?</string>

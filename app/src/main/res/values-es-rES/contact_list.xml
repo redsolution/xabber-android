@@ -20,7 +20,7 @@
   <string name="application_state_waiting">Conectando...</string>
   <string name="chat_list">Lista de conversaciones</string>
   <string name="chat_list_is_empty">No hay conversaciones activas</string>
-  <string name="chat_viewer">Iniciar conversación</string>
+  <string name="chat_viewer">Conversación</string>
   <string name="close_chat">Cerrar conversación</string>
   <string name="CONNECTION_FAILED">Error de conexión</string>
   <string name="contact_add">Añadir contacto</string>

@@ -72,14 +72,6 @@ app/src/main/res/layout/preference.xml
 
 Also source code of following components is included in repository (see the source code or official sites for license details):
 
-ZXing
-app/src/main/java/com/google/zxing/*
-Apache License, Version 2.0 (the "License").
-
-JZLib
-app/src/main/java/com/jcraft/jzlib/*
-BSD license.
-
 Novel sasl client
 app/src/main/java/com/novell/sasl/*
 The OpenLDAP Public License.
