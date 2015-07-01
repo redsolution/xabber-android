@@ -56,9 +56,8 @@ class RoomTable extends AbstractAccountTable {
     }
 
     private static final String NAME = "rooms";
-    private static final String[] PROJECTION = new String[]{Fields._ID,
-            Fields.ACCOUNT, Fields.ROOM, Fields.NICKNAME, Fields.PASSWORD,
-            Fields.NEED_JOIN,};
+    private static final String[] PROJECTION = new String[]{ Fields._ID,
+            Fields.ACCOUNT, Fields.ROOM, Fields.NICKNAME, Fields.PASSWORD, Fields.NEED_JOIN };
 
     private final DatabaseManager databaseManager;
     private SQLiteStatement writeStatement;
@@ -123,20 +122,12 @@ class RoomTable extends AbstractAccountTable {
 
     /**
      * Adds or updates room.
-     *
-     * @param account
-     * @param room
-     * @param nickname
-     * @param password
-     * @param join
      */
-    void write(String account, String room, String nickname, String password,
-               boolean join) {
+    void write(String account, String room, String nickname, String password, boolean join) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
-                writeStatement = db
-                        .compileStatement("INSERT OR REPLACE INTO " + NAME
+                writeStatement = db.compileStatement("INSERT OR REPLACE INTO " + NAME
                                 + " (" + Fields.ACCOUNT + ", " + Fields.ROOM
                                 + ", " + Fields.NICKNAME + ", "
                                 + Fields.PASSWORD + ", " + Fields.NEED_JOIN
@@ -153,14 +144,10 @@ class RoomTable extends AbstractAccountTable {
 
     /**
      * Removes room.
-     *
-     * @param account
-     * @param room
      */
     void remove(String account, String room) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
-        db.delete(NAME, Fields.ACCOUNT + " = ? AND " + Fields.ROOM + " = ?",
-                new String[]{account, room});
+        db.delete(NAME, Fields.ACCOUNT + " = ? AND " + Fields.ROOM + " = ?", new String[]{account, room});
     }
 
     @Override

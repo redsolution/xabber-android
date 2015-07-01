@@ -46,8 +46,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
      */
     private final String password;
 
-    public RoomInvite(String account, String user, String inviter,
-                      String reason, String password) {
+    public RoomInvite(String account, String user, String inviter, String reason, String password) {
         super(account, user);
         this.inviter = inviter;
         this.reason = reason == null ? "" : reason;
@@ -73,18 +72,17 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
      * @return Text for the confirmation.
      */
     public String getConfirmation() {
-        String accountName = AccountManager.getInstance().getVerboseName(
-                account);
-        String inviterName = RosterManager.getInstance().getName(account,
-                inviter);
-        if (reason == null || "".equals(reason))
+        String accountName = AccountManager.getInstance().getVerboseName(account);
+        String inviterName = RosterManager.getInstance().getName(account, inviter);
+        if (reason == null || "".equals(reason)) {
             return Application.getInstance()
                     .getString(R.string.muc_invite_confirm, accountName,
                             inviterName, user);
-        else
+        } else {
             return Application.getInstance().getString(
                     R.string.muc_invite_confirm_reason, accountName,
                     inviterName, user, reason);
+        }
     }
 
     public String getInviter() {

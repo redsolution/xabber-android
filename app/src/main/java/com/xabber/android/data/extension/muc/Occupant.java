@@ -91,8 +91,9 @@ public class Occupant implements Comparable<Occupant> {
     @Override
     public int compareTo(Occupant another) {
         int result = another.role.ordinal() - role.ordinal();
-        if (result != 0)
+        if (result != 0) {
             return result;
+        }
         return nickname.compareTo(another.nickname);
     }
 

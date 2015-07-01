@@ -66,10 +66,8 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     private final EntityNotificationProvider<RoomAuthorizationError> authorizationErrorProvider;
 
     private MUCManager() {
-        inviteProvider = new EntityNotificationProvider<RoomInvite>(
-                R.drawable.ic_stat_add_circle);
-        authorizationErrorProvider = new EntityNotificationProvider<RoomAuthorizationError>(
-                R.drawable.ic_stat_error);
+        inviteProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_add_circle);
+        authorizationErrorProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_error);
     }
 
     public static MUCManager getInstance() {
@@ -78,19 +76,18 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     @Override
     public void onLoad() {
-        final Collection<RoomChat> roomChats = new ArrayList<RoomChat>();
-        final Collection<RoomChat> needJoins = new ArrayList<RoomChat>();
+        final Collection<RoomChat> roomChats = new ArrayList<>();
+        final Collection<RoomChat> needJoins = new ArrayList<>();
         Cursor cursor = RoomTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
                 do {
                     RoomChat roomChat = new RoomChat(
-                            RoomTable.getAccount(cursor),
-                            RoomTable.getRoom(cursor),
-                            RoomTable.getNickname(cursor),
-                            RoomTable.getPassword(cursor));
-                    if (RoomTable.needJoin(cursor))
+                            RoomTable.getAccount(cursor), RoomTable.getRoom(cursor),
+                            RoomTable.getNickname(cursor), RoomTable.getPassword(cursor));
+                    if (RoomTable.needJoin(cursor)) {
                         needJoins.add(roomChat);
+                    }
                     roomChats.add(roomChat);
                 } while (cursor.moveToNext());
             }
@@ -105,38 +102,34 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         });
     }
 
-    private void onLoaded(Collection<RoomChat> roomChats,
-                          Collection<RoomChat> needJoins) {
+    private void onLoaded(Collection<RoomChat> roomChats, Collection<RoomChat> needJoins) {
         for (RoomChat roomChat : roomChats) {
             AbstractChat abstractChat = MessageManager.getInstance().getChat(
                     roomChat.getAccount(), roomChat.getUser());
-            if (abstractChat != null)
+            if (abstractChat != null) {
                 MessageManager.getInstance().removeChat(abstractChat);
+            }
             MessageManager.getInstance().addChat(roomChat);
-            if (needJoins.contains(roomChat))
+            if (needJoins.contains(roomChat)) {
                 roomChat.setState(RoomState.waiting);
+            }
         }
-        NotificationManager.getInstance().registerNotificationProvider(
-                inviteProvider);
-        NotificationManager.getInstance().registerNotificationProvider(
-                authorizationErrorProvider);
+        NotificationManager.getInstance().registerNotificationProvider(inviteProvider);
+        NotificationManager.getInstance().registerNotificationProvider(authorizationErrorProvider);
     }
 
     /**
-     * @param account
-     * @param room
      * @return <code>null</code> if does not exists.
      */
     private RoomChat getRoomChat(String account, String room) {
         AbstractChat chat = MessageManager.getInstance().getChat(account, room);
-        if (chat != null && chat instanceof RoomChat)
+        if (chat != null && chat instanceof RoomChat) {
             return (RoomChat) chat;
+        }
         return null;
     }
 
     /**
-     * @param account
-     * @param room
      * @return Whether there is such room.
      */
     public boolean hasRoom(String account, String room) {
@@ -144,14 +137,13 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     /**
-     * @param account
-     * @param room
      * @return nickname or empty string if room does not exists.
      */
     public String getNickname(String account, String room) {
         RoomChat roomChat = getRoomChat(account, room);
-        if (roomChat == null)
+        if (roomChat == null) {
             return "";
+        }
         return roomChat.getNickname();
     }
 
@@ -162,26 +154,24 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
      */
     public String getPassword(String account, String room) {
         RoomChat roomChat = getRoomChat(account, room);
-        if (roomChat == null)
+        if (roomChat == null) {
             return "";
+        }
         return roomChat.getPassword();
     }
 
     /**
-     * @param account
-     * @param room
      * @return list of occupants or empty list.
      */
     public Collection<Occupant> getOccupants(String account, String room) {
         RoomChat roomChat = getRoomChat(account, room);
-        if (roomChat == null)
+        if (roomChat == null) {
             return Collections.emptyList();
+        }
         return roomChat.getOccupants();
     }
 
     /**
-     * @param account
-     * @param room
      * @return <code>null</code> if there is no such invite.
      */
     public RoomInvite getInvite(String account, String room) {
@@ -195,8 +185,9 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     public void removeRoom(final String account, final String room) {
         removeInvite(getInvite(account, room));
         RoomChat roomChat = getRoomChat(account, room);
-        if (roomChat == null)
+        if (roomChat == null) {
             return;
+        }
         leaveRoom(account, room);
         MessageManager.getInstance().removeChat(roomChat);
         RosterManager.getInstance().onContactChanged(account, room);
@@ -211,10 +202,6 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     /**
      * Creates or updates existed room.
      *
-     * @param account
-     * @param room
-     * @param nickname
-     * @param password
      */
     public void createRoom(String account, String room, String nickname,
                            String password, boolean join) {
@@ -222,8 +209,9 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         AbstractChat chat = MessageManager.getInstance().getChat(account, room);
         RoomChat roomChat;
         if (chat == null || !(chat instanceof RoomChat)) {
-            if (chat != null)
+            if (chat != null) {
                 MessageManager.getInstance().removeChat(chat);
+            }
             roomChat = new RoomChat(account, room, nickname, password);
             MessageManager.getInstance().addChat(roomChat);
         } else {
@@ -232,8 +220,9 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             roomChat.setPassword(password);
         }
         requestToWriteRoom(account, room, nickname, password, join);
-        if (join)
+        if (join) {
             joinRoom(account, room, true);
+        }
     }
 
     private void requestToWriteRoom(final String account, final String room,
@@ -248,8 +237,6 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     /**
-     * @param account
-     * @param room
      * @return Whether room is disabled.
      */
     public boolean isDisabled(final String account, final String room) {
@@ -258,8 +245,6 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     /**
-     * @param account
-     * @param room
      * @return Whether connected is establish or connection is in progress.
      */
     public boolean inUse(final String account, final String room) {
@@ -270,12 +255,9 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     /**
      * Requests to join to the room.
      *
-     * @param account
-     * @param room
      * @param requested Whether user request to join the room.
      */
-    public void joinRoom(final String account, final String room,
-                         boolean requested) {
+    public void joinRoom(final String account, final String room, boolean requested) {
         final XMPPConnection xmppConnection;
         final RoomChat roomChat;
         final String nickname;
@@ -323,19 +305,21 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             @Override
             public void run() {
                 try {
-                    if (roomChat.getMultiUserChat() != multiUserChat)
+                    if (roomChat.getMultiUserChat() != multiUserChat) {
                         return;
+                    }
                     multiUserChat.join(nickname, password);
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (roomChat.getMultiUserChat() != multiUserChat)
+                            if (roomChat.getMultiUserChat() != multiUserChat) {
                                 return;
-                            if (roomChat.getState() == RoomState.joining)
+                            }
+                            if (roomChat.getState() == RoomState.joining) {
                                 roomChat.setState(RoomState.occupation);
+                            }
                             removeAuthorizationError(account, room);
-                            RosterManager.getInstance().onContactChanged(
-                                    account, room);
+                            RosterManager.getInstance().onContactChanged(account, room);
                         }
                     });
                     return;
@@ -343,42 +327,35 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (roomChat.getMultiUserChat() != multiUserChat)
+                            if (roomChat.getMultiUserChat() != multiUserChat) {
                                 return;
+                            }
                             roomChat.setState(RoomState.error);
                             addAuthorizationError(account, room);
-                            if (e.getXMPPError() != null
-                                    && e.getXMPPError().getCode() == 409)
-                                Application.getInstance().onError(
-                                        R.string.NICK_ALREADY_USED);
-                            else if (e.getXMPPError() != null
-                                    && e.getXMPPError().getCode() == 401)
-                                Application.getInstance().onError(
-                                        R.string.AUTHENTICATION_FAILED);
-                            else
-                                Application.getInstance().onError(
-                                        R.string.NOT_CONNECTED);
-                            RosterManager.getInstance().onContactChanged(
-                                    account, room);
+                            if (e.getXMPPError() != null && e.getXMPPError().getCode() == 409) {
+                                Application.getInstance().onError(R.string.NICK_ALREADY_USED);
+                            } else if (e.getXMPPError() != null && e.getXMPPError().getCode() == 401) {
+                                Application.getInstance().onError(R.string.AUTHENTICATION_FAILED);
+                            } else {
+                                Application.getInstance().onError(R.string.NOT_CONNECTED);
+                            }
+                            RosterManager.getInstance().onContactChanged(account, room);
                         }
                     });
                     return;
                 } catch (IllegalStateException e) {
-                } catch (RuntimeException e) {
-                    LogManager.exception(this, e);
                 } catch (Exception e) {
                     LogManager.exception(this, e);
                 }
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (roomChat.getMultiUserChat() != multiUserChat)
+                        if (roomChat.getMultiUserChat() != multiUserChat) {
                             return;
+                        }
                         roomChat.setState(RoomState.waiting);
-                        Application.getInstance().onError(
-                                R.string.NOT_CONNECTED);
-                        RosterManager.getInstance().onContactChanged(account,
-                                room);
+                        Application.getInstance().onError(R.string.NOT_CONNECTED);
+                        RosterManager.getInstance().onContactChanged(account, room);
                     }
                 });
             }
@@ -390,17 +367,16 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     public void leaveRoom(String account, String room) {
         final MultiUserChat multiUserChat;
         RoomChat roomChat = getRoomChat(account, room);
-        if (roomChat == null)
+        if (roomChat == null) {
             return;
+        }
         multiUserChat = roomChat.getMultiUserChat();
         roomChat.setState(RoomState.unavailable);
         roomChat.setRequested(false);
         roomChat.newAction(roomChat.getNickname(), null, ChatAction.leave);
-        requestToWriteRoom(account, room, roomChat.getNickname(),
-                roomChat.getPassword(), false);
+        requestToWriteRoom(account, room, roomChat.getNickname(), roomChat.getPassword(), false);
         if (multiUserChat != null) {
-            Thread thread = new Thread("Leave to room " + room + " from "
-                    + account) {
+            Thread thread = new Thread("Leave to room " + room + " from " + account) {
                 @Override
                 public void run() {
                     try {
@@ -417,41 +393,39 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
-        if (!(connection instanceof AccountItem))
+    public void onPacket(ConnectionItem connection, String bareAddress, Packet packet) {
+        if (!(connection instanceof AccountItem)) {
             return;
+        }
         String account = ((AccountItem) connection).getAccount();
-        if (bareAddress == null || !(packet instanceof Message))
+        if (bareAddress == null || !(packet instanceof Message)) {
             return;
+        }
         Message message = (Message) packet;
-        if (message.getType() != Message.Type.normal
-                && message.getType() != Message.Type.chat)
+        if (message.getType() != Message.Type.normal && message.getType() != Message.Type.chat) {
             return;
+        }
         MUCUser mucUser = MUC.getMUCUserExtension(packet);
-        if (mucUser == null || mucUser.getInvite() == null)
+        if (mucUser == null || mucUser.getInvite() == null) {
             return;
+        }
         RoomChat roomChat = getRoomChat(account, bareAddress);
         if (roomChat == null || !roomChat.getState().inUse()) {
             String inviter = mucUser.getInvite().getFrom();
-            if (inviter == null)
+            if (inviter == null) {
                 inviter = bareAddress;
+            }
             inviteProvider.add(new RoomInvite(account, bareAddress, inviter,
-                            mucUser.getInvite().getReason(), mucUser.getPassword()),
-                    true);
+                            mucUser.getInvite().getReason(), mucUser.getPassword()), true);
         }
     }
 
     /**
      * Sends invitation.
      *
-     * @param account
-     * @param room
-     * @param user
      * @throws NetworkException
      */
-    public void invite(String account, String room, String user)
-            throws NetworkException {
+    public void invite(String account, String room, String user) throws NetworkException {
         RoomChat roomChat = getRoomChat(account, room);
         if (roomChat == null || roomChat.getState() != RoomState.available) {
             Application.getInstance().onError(R.string.NOT_CONNECTED);
@@ -474,8 +448,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public void addAuthorizationError(String account, String room) {
-        authorizationErrorProvider.add(
-                new RoomAuthorizationError(account, room), null);
+        authorizationErrorProvider.add(new RoomAuthorizationError(account, room), null);
     }
 
 }
