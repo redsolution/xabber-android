@@ -26,13 +26,13 @@
   <string name="connection_state_waiting_1">%1$d sur %2$d %3$s en attente de connexion</string>
   <string name="connection_state_waiting_2">%1$d sur %2$d %3$s en attente de connexion</string>
   <string name="connection_state_waiting_5">-</string>
-  <string name="connection_state_offline">%1$d %2$s hors ligne</string>
-  <string name="archive_available_request_message">Souhaitez-vous stocker l\'historique des messages sur le serveur ?\nCela permet à Xabber d\'obtenir l\'historique de tous les messages envoyés avec ce compte quels que soient les appareils ayant été utilisés.\nCette fonction génère un peu de trafic supplémentaire et réduit donc légèrement la vitesse de connexion.\nAVERTISSEMENT: Tout votre historique local sera supprimé.</string>
-  <string name="archive_available_request_title">Activer l\'archivage des messages?</string>
-  <string name="INVALID_CERTIFICATE">Certificat non valide</string>
-  <string name="muc_invite_message">Souhaitez-vous entrer dans la conférence ?</string>
-  <string name="otr_verification_in_progress">Cliquez ici pour annuler.</string>
+  <string name="connection_state_offline">%1$d %2$s hors-ligne</string>
+  <string name="archive_available_request_message">Souhaitez-vous stocker l\'historique des messages sur le serveur ?\nCela permet à Xabber d\'obtenir l\'historique de tous les messages envoyés avec ce compte, quels que soient les appareils ayant été utilisés.\nCette fonction génère un peu de trafic supplémentaire et réduit donc légèrement la vitesse de connexion.\nATTENTION : Tout votre historique local sera supprimé.</string>
+  <string name="archive_available_request_title">Activer l\'archivage des messages ?</string>
+  <string name="INVALID_CERTIFICATE">Problème de certificat</string>
+  <string name="muc_invite_message">Souhaitez-vous rejoindre la conférence ?</string>
+  <string name="otr_verification_in_progress">Appuyez ici pour annuler.</string>
   <string name="PASSWORD_REQUIRED">Mot de passe requis</string>
-  <string name="pay_attention">Porte attention</string>
+  <string name="pay_attention">Demande d\'attention</string>
   <string name="subscription_request_message">Demande d\'autorisation</string>
 </resources>

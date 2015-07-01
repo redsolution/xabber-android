@@ -12,7 +12,7 @@
   <string name="disabled">Désactivé</string>
   <string name="manual">Manuel</string>
   <string name="never">Jamais</string>
-  <string name="required">Requis</string>
-  <string name="auto">Automatiquement</string>
+  <string name="required">Obligatoire</string>
+  <string name="auto">Automatique</string>
   <string name="save">Enregistrer</string>
 </resources>

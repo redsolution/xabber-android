@@ -9,13 +9,13 @@
   <string name="empty_status">&lt;Pas de message&gt;</string>
   <string name="invisible">Invisible</string>
   <string name="remove_status">Supprimer le statut</string>
-  <string name="status_editor">Définir le statut</string>
+  <string name="status_editor">Paramétrer le statut</string>
   <string name="status_text_hint">Écrire message de statut</string>
-  <string name="unavailable">Hors ligne</string>
+  <string name="unavailable">Hors-ligne</string>
   <string name="unsubscribed">Autorisation refusée</string>
   <string name="xa">Absent depuis un moment</string>
   <string name="new_status">Nouveau statut</string>
   <string name="saved_statuses">Statuts enregistrés</string>
-  <string name="clear_status_history">Effacer l\'historique des status</string>
-  <string name="status_message">Message d\'état</string>
+  <string name="clear_status_history">Effacer l\'historique des statuts</string>
+  <string name="status_message">Message de statut</string>
 </resources>

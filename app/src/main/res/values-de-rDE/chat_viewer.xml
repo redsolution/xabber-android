@@ -5,12 +5,12 @@
   <string name="action_status_text_none">%1$s hat den Statustext gelöscht</string>
   <string name="action_join">%1$s hat die Konferenz betreten</string>
   <string name="action_kick">%1$s wurde rausgeworfen</string>
-  <string name="account_is_offline">Sie sind momentan offline. Nachrichten, die Sie senden, werden erst zugestellt sobald Sie sich erneut  verbinden.</string>
+  <string name="account_is_offline">Du bist offline. Gesendete Nachrichten werden erst zugestellt, sobald du wieder verbunden bist.</string>
   <string name="chat_delay">gesendet um %s</string>
   <string name="chat_input_hint">Geben Sie Ihre Nachricht hier ein</string>
   <string name="chat_send">Senden</string>
   <string name="clear_history">Gesprächsverlauf löschen</string>
-  <string name="contact_is_offline">Der Empfänger ist offline. Nachrichten, die Sie senden werden erst zugestellt, sobald er wieder online ist.</string>
+  <string name="contact_is_offline">Der Empfänger ist offline. Nachrichten werden erst zugestellt, sobald er wieder online ist.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontakt ist nicht verfügbar</string>
   <string name="FILE_NOT_FOUND">Datei nicht gefunden</string>
   <string name="message_copy">Nachricht kopieren</string>
@@ -20,7 +20,7 @@
   <string name="save_history">Gesprächsverlauf speichern\nDen Gesprächsverlauf lokal speichern</string>
   <string name="show_history">Gesprächsverlauf anzeigen</string>
   <string name="action_attention_called">Aufmerksamkeitswunsch wurde versandt</string>
-  <string name="action_attention_requested">Aufmerksamkeit wurde erbeten</string>
+  <string name="action_attention_requested">Deine Aufmerksamkeit wird verlangt!</string>
   <string name="action_ban">%1$s wurde verbannt</string>
   <string name="action_ban_by">%1$s wurde verbannt von %2$s</string>
   <string name="action_invite_error">%s hat die Einladung nicht empfangen</string>

@@ -7,7 +7,7 @@
   <string name="muc_nick">Pseudo</string>
   <string name="muc_nick_hint">Votre pseudo dans la conférence</string>
   <string name="muc_password">Mot de passe</string>
-  <string name="muc_password_hint">le mot de passe n\'est pas requis</string>
+  <string name="muc_password_hint">Le mot de passe n\'est pas obligatoire</string>
   <string name="muc_room">Conférence</string>
   <string name="muc_server">Serveur de discussions multi-utilisateur (MUC)</string>
   <string name="NICK_ALREADY_USED">Pseudo déjà utilisé</string>

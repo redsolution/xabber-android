@@ -42,11 +42,11 @@
   <string name="action_otr_smp_verified">Проверавање завршено успешно</string>
   <string name="action_otr_unreadable">Примљена шифрована порука је нечитљива</string>
   <string name="action_otr_verified">Шифровање је укључено</string>
-  <string name="action_status_available">%1$s је сад на вези</string>
-  <string name="action_status_away">%1$s је сад одсутан</string>
-  <string name="action_status_chat">%1$s слободан за ћаскање</string>
-  <string name="action_status_dnd">%1$s моли да се не узнемирава</string>
-  <string name="action_status_unavailable">корисник %1$s није недоступан</string>
+  <string name="action_status_available">корисник %1$s је сад на вези</string>
+  <string name="action_status_away">корисник %1$s је сад одсутан</string>
+  <string name="action_status_chat">корисник %1$s је слободан за ћаскање</string>
+  <string name="action_status_dnd">корисник %1$s моли да се не узнемирава</string>
+  <string name="action_status_unavailable">корисник %1$s је сад недоступан</string>
   <string name="action_status_xa">корисник %1$s је одсутан дуже време</string>
   <string name="action_subject">%1$s измени тему у: %2$s</string>
   <string name="ATTENTION_IS_NOT_SUPPORTED">Контакт не подржава или је искључио пажњу</string>
