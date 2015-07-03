@@ -4,7 +4,7 @@
   <string name="cache_clear">Очистити кеш\nОчистити всі локальні данні. Це може звільнити трохи пам\'яті.</string>
   <string name="cache_clear_warning">Ви дійсно бажаєте видалити історію чату та інші локальні данні? \nОбліковий запис та список залишаться недоторканними. Програму буде закрито.</string>
   <string name="chats_send_by_enter">Надіслати по Enter\nПовідомлення можe бути відправленe, натиснувши клавішу Enter</string>
-  <string name="connection_go_away">Авто статус\nАвтоматично встановити статус \"Відійшов\" при блокування екрану</string>
+  <string name="connection_go_away">Авто статус\nАвтоматично встановити статус \"Відійшов\" при блокуванні екрану</string>
   <string name="contacts_order">Сортувати контакти\nОберіть порядок, в якому будуть відображатись контакти</string>
   <string name="contacts_order_alphabet">За абеткою</string>
   <string name="contacts_order_status">По статусу</string>
@@ -50,7 +50,7 @@
   <string name="chats_state_notification">Показати статус набору\nПоказати коли інший користувач набирає</string>
   <string name="connection_adjust_priority">Настроїти пріоритет\nВстановити відповідно до вибраного стану. Пріоритет облікового запису буде перевизначено.</string>
   <string name="connection_go_away_immediately">Одразу після блокування екрану</string>
-  <string name="connection_go_xa">\"Розширений геть\" при простої\nВстановити \"Розширений геть» на екран блокування</string>
+  <string name="connection_go_xa">\"Розширений геть\" при простої\nВстановити \"Розширений геть\" на екран блокування</string>
   <string name="connection_priority">Параметри пріоритету</string>
   <string name="connection_start_at_boot">Запускати разом з Android\nЗапускати додаток коли завантажується Android. Це не працює, коли Xabber встановлений на SD-карту.</string>
   <string name="connection_wake_lock">Заборонити режим сну\nНе давати пристрою спати. Це збільшить використання акумулятора.</string>

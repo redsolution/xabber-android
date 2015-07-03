@@ -13,7 +13,7 @@
   <string name="status_text_hint">Унесите поруку стања</string>
   <string name="unavailable">ван везе</string>
   <string name="unsubscribed">Неаутентификован</string>
-  <string name="xa">нисам ту дуго времена</string>
+  <string name="xa">нисам ту дуже време</string>
   <string name="new_status">Нова порука стања</string>
   <string name="saved_statuses">Сачуване поруке стања</string>
   <string name="clear_status_history">Очисти историјат порука стања</string>
