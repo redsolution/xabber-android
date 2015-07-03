@@ -12,7 +12,7 @@
   <string name="disabled">Вимкнено</string>
   <string name="manual">Вручну</string>
   <string name="never">Ніколи</string>
-  <string name="required">Обов\'язково</string>
+  <string name="required">Необхідно</string>
   <string name="auto">Автоматично</string>
   <string name="save">Зберегти</string>
 </resources>

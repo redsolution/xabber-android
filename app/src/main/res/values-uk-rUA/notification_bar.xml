@@ -8,8 +8,8 @@
   <string name="account_quantity_offline_2">облікових записів</string>
   <string name="account_quantity_offline_5">облікових записів</string>
   <string name="AUTHENTICATION_FAILED">Помилка авторизації</string>
-  <string name="chat_contact_quantity_1">користувач</string>
-  <string name="chat_contact_quantity_2">користувачів</string>
+  <string name="chat_contact_quantity_1">контакт</string>
+  <string name="chat_contact_quantity_2">контакти</string>
   <string name="chat_contact_quantity_5">користувачів</string>
   <string name="chat_message_quantity_1">повідомлення</string>
   <string name="chat_message_quantity_2">повідомлень</string>
@@ -32,7 +32,7 @@
   <string name="INVALID_CERTIFICATE">Недійсний сертифікат</string>
   <string name="muc_invite_message">Бажаєте підключитись до конференції?</string>
   <string name="otr_verification_in_progress">Натисніть, щоб перервати</string>
-  <string name="PASSWORD_REQUIRED">Необхідно ввести пароль</string>
-  <string name="pay_attention">Звернути увагу</string>
+  <string name="PASSWORD_REQUIRED">Необхідний пароль</string>
+  <string name="pay_attention">Зверніть увагу</string>
   <string name="subscription_request_message">Запит авторизації</string>
 </resources>

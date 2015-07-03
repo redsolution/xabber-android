@@ -44,7 +44,7 @@
   <string name="certificate_invalid_chane">Помилка під час перевірки ланцюга підписів</string>
   <string name="certificate_invalid_target">Помилка цільової верифікацію</string>
   <string name="certificate_self_signed">Само-підписаний сертифікат</string>
-  <string name="certificate_show_details">Докладніше ...</string>
+  <string name="certificate_show_details">Докладніше...</string>
   <string name="close_chats">Закрити всі чати</string>
   <string name="contact_integration_suggest">Бажаєте інтегрувати Xabber із системними контактами?\nЦе можна змінити в \"Налаштування\" → \"XMPP облікові записи\" → Ваш обліковий запис → \"Інтеграція контактів\".\nУвага: Системний список контактів може стати повільнішим на декілька хвилин.</string>
   <string name="group_room">Конференції</string>
