@@ -14,13 +14,13 @@
  */
 package com.xabber.xmpp.delay;
 
-import java.util.Date;
-
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.DelayInformation;
-
 import com.xabber.xmpp.address.Jid;
+
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
+
+import java.util.Date;
 
 /**
  * Helper class to get delay information.
@@ -37,13 +37,12 @@ public class Delay {
      * @return Delay value from packet. <code>null</code> if no delay is
      * specified.
      */
-    public static Date getDelay(Packet packet) {
-        DelayInformation delay = (DelayInformation) packet.getExtension(
-                "delay", "urn:xmpp:delay");
+    public static Date getDelay(Stanza packet) {
+        DelayInformation delay = packet.getExtension("delay", "urn:xmpp:delay");
         // If there was no delay based on XEP-0203, then try XEP-0091 for
         // backward compatibility
         if (delay == null) {
-            delay = (DelayInformation) packet.getExtension("x",
+            delay = packet.getExtension("x",
                     "jabber:x:delay");
         }
         if (delay == null)
@@ -57,8 +56,8 @@ public class Delay {
      * @param packet
      * @return Whether message was delayed by server.
      */
-    public static boolean isOfflineMessage(String server, Packet packet) {
-        for (PacketExtension extension : packet.getExtensions())
+    public static boolean isOfflineMessage(String server, Stanza packet) {
+        for (ExtensionElement extension : packet.getExtensions())
             if (extension instanceof DelayInformation) {
                 String from = ((DelayInformation) extension).getFrom();
                 if (server.equals(Jid.getStringPrep(from)))

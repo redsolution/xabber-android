@@ -50,6 +50,7 @@ public class Chat extends AbstractChat implements CollectionHeader {
     // TODO: notes
 
     public Chat() {
+        super(ELEMENT_NAME);
         messages = new ArrayList<AbstractMessage>();
     }
 

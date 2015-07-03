@@ -38,6 +38,7 @@ public class SessionRemove extends IQ {
     private final Collection<Session> sessions;
 
     public SessionRemove() {
+        super(ELEMENT_NAME, NAMESPACE);
         sessions = new ArrayList<Session>();
     }
 

@@ -24,7 +24,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 
-import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.util.XmppStringUtils;
 
 public class ConferenceAddFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
@@ -88,8 +88,8 @@ public class ConferenceAddFragment extends Fragment implements AdapterView.OnIte
         accountView.setOnItemSelectedListener(this);
 
         if (room != null) {
-            serverView.setText(StringUtils.parseServer(room));
-            roomView.setText(StringUtils.parseName(room));
+            serverView.setText(XmppStringUtils.parseDomain(room));
+            roomView.setText(XmppStringUtils.parseLocalpart(room));
         }
 
         if (account != null && room != null) {
@@ -165,7 +165,7 @@ public class ConferenceAddFragment extends Fragment implements AdapterView.OnIte
             return "";
         }
         String nickname = AccountManager.getInstance().getNickName(account);
-        String name = StringUtils.parseName(nickname);
+        String name = XmppStringUtils.parseLocalpart(nickname);
         if ("".equals(name)) {
             return nickname;
         } else {

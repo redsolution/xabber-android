@@ -15,16 +15,14 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.filter.PacketIDFilter;
-import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+
 
 /**
  * Packet extension for XEP-0280: Message Carbons. This class implements
@@ -44,11 +42,11 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         instance = new CarbonManager();
         Application.getInstance().addManager(instance);
 
-        Connection.addConnectionCreationListener(new ConnectionCreationListener() {
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
             @Override
-            public void connectionCreated(final Connection connection) {
+            public void connectionCreated(final XMPPConnection connection) {
 
-                if (!(connection instanceof XMPPConnection)) {
+                if (connection == null) {
                     return;
                 }
 
@@ -62,7 +60,7 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         });
     }
 
-    private Connection connection;
+    private XMPPConnection connection;
     private volatile boolean enabled_state = false;
 
     private CarbonManager() {
@@ -83,20 +81,20 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         msg.addExtension(new Private());
     }
 
-    private IQ carbonsEnabledIQ(final boolean new_state) {
-
-        if (!checkConnected()) {
-            return null;
-        }
-        IQ setIQ = new IQ() {
-            public String getChildElementXML() {
-                return String.format("<%s xmlns='%s'/>", new_state ? "enable" : "disable", NAMESPACE);
-            }
-        };
-        setIQ.setType(IQ.Type.SET);
-        setIQ.setFrom(connection.getUser());
-        return setIQ;
-    }
+//    private IQ carbonsEnabledIQ(final boolean new_state) {
+//
+//        if (!checkConnected()) {
+//            return null;
+//        }
+//        IQ setIQ = new IQ() {
+//            public String getChildElementXML() {
+//                return String.format("<%s xmlns='%s'/>", new_state ? "enable" : "disable", NAMESPACE);
+//            }
+//        };
+//        setIQ.setType(IQ.Type.set);
+//        setIQ.setFrom(connection.getUser());
+//        return setIQ;
+//    }
 
     private boolean checkConnected() {
 
@@ -121,8 +119,7 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         if (!checkConnected()) {
             return false;
         }
-        boolean isCarbonSupported = ServerInfoManager.getInstance().isProtocolSupported(connection.getUser(), NAMESPACE);
-        return isCarbonSupported;
+        return ServerInfoManager.getInstance().isProtocolSupported(connection.getUser(), NAMESPACE);
     }
 
     /**
@@ -141,18 +138,18 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
             return;
         }
 
-        IQ setIQ = carbonsEnabledIQ(new_state);
-        connection.addPacketListener(new PacketListener() {
-            public void processPacket(Packet packet) {
-                IQ result = (IQ) packet;
-                if (result.getType() == IQ.Type.RESULT) {
-                    enabled_state = new_state;
-                }
-                connection.removePacketListener(this);
-            }
-        }, new PacketIDFilter(setIQ.getPacketID()));
-
-        connection.sendPacket(setIQ);
+//        IQ setIQ = carbonsEnabledIQ(new_state);
+//        connection.addAsyncStanzaListener(new StanzaListener() {
+//            public void processPacket(Stanza packet) {
+//                IQ result = (IQ) packet;
+//                if (result.getType() == IQ.Type.result) {
+//                    enabled_state = new_state;
+//                }
+//                connection.removeAsyncStanzaListener(this);
+//            }
+//        }, new StanzaIdFilter(setIQ.getStanzaId()));
+//
+//        connection.sendPacket(setIQ);
     }
 
     /**
@@ -180,8 +177,7 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
 
         if (!(connection instanceof AccountItem)) {
             return;
@@ -198,23 +194,21 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         if (!getCarbonsEnabled()) {
             return;
         }
-        PacketExtension carbonExtension = null;
+        ExtensionElement carbonExtension = null;
         Direction dir = null;
-        for (PacketExtension packetExtension : message.getExtensions()) {
+        for (ExtensionElement packetExtension : message.getExtensions()) {
             if (packetExtension instanceof Received) {
                 carbonExtension = packetExtension;
                 dir = Direction.received;
             } else if (packetExtension instanceof Sent) {
                 carbonExtension = packetExtension;
                 dir = Direction.sent;
-            } else {
-                continue;
             }
         }
         if (carbonExtension == null) {
             return;
         }
-        Forwarded forwarded = null;
+        Forwarded forwarded;
         if (dir == Direction.sent) {
             Sent carbon = (Sent) carbonExtension;
             forwarded = carbon.getForwarded();

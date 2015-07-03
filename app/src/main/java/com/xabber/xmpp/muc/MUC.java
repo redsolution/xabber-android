@@ -14,9 +14,9 @@
  */
 package com.xabber.xmpp.muc;
 
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
 
 /**
  * Helper class to get MUC information.
@@ -37,7 +37,7 @@ public class MUC {
      */
     public static MUCUser getMUCUserExtension(Packet packet) {
         if (packet != null)
-            for (PacketExtension extension : packet.getExtensions())
+            for (ExtensionElement extension : packet.getExtensions())
                 if (extension instanceof MUCUser)
                     return (MUCUser) extension;
         return null;

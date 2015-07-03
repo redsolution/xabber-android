@@ -18,15 +18,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.jivesoftware.smackx.FormField;
-import org.jivesoftware.smackx.FormField.Option;
-import org.jivesoftware.smackx.packet.DataForm;
+import org.jivesoftware.smack.util.XmlStringBuilder;
+import org.jivesoftware.smackx.xdata.FormField;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.xabber.xmpp.PacketExtension;
 import com.xabber.xmpp.ProviderUtils;
+import com.xabber.xmpp.SerializerUtils;
 import com.xabber.xmpp.form.DataFormType;
 
 /**
@@ -62,7 +64,9 @@ public class Feature extends PacketExtension {
 
     @Override
     public void serializeContent(XmlSerializer serializer) throws IOException {
-        dataForm.serialize(serializer);
+        //TODO
+//        dataForm.serialize(serializer);
+        SerializerUtils.serialize(serializer, this);
     }
 
     @Override
@@ -107,10 +111,10 @@ public class Feature extends PacketExtension {
     }
 
     static public DataForm createDataForm(DataFormType type) {
-        DataForm dataForm = new DataForm(type.toString());
+        DataForm dataForm = new DataForm(DataForm.Type.fromString(type.toString()));
         FormField typeField = new FormField(FORM_TYPE_FIELD);
         typeField.addValue(FORM_TYPE_VALUE);
-        typeField.setType(FormField.TYPE_HIDDEN);
+        typeField.setType(FormField.Type.hidden);
         dataForm.addField(typeField);
         return dataForm;
     }
@@ -121,18 +125,16 @@ public class Feature extends PacketExtension {
         field.setRequired(true);
         field.setLabel(label);
         field.addValue(Boolean.valueOf(value).toString());
-        field.setType(FormField.TYPE_BOOLEAN);
+        field.setType(FormField.Type.bool);
         dataForm.addField(field);
     }
 
     static public void addAcceptField(DataForm dataForm, boolean value) {
-        addRequiredBooleanField(dataForm, ACCEPT_FIELD, "Accept this session?",
-                value);
+        addRequiredBooleanField(dataForm, ACCEPT_FIELD, "Accept this session?", value);
     }
 
     static public void addRenegotiateField(DataForm dataForm, boolean value) {
-        addRequiredBooleanField(dataForm, RENEGOTIATE_FIELD, "Renegotiate?",
-                value);
+        addRequiredBooleanField(dataForm, RENEGOTIATE_FIELD, "Renegotiate?", value);
     }
 
     static public void addTerminateField(DataForm dataForm) {
@@ -144,7 +146,7 @@ public class Feature extends PacketExtension {
         FormField field = new FormField(LOGGING_FIELD);
         field.setRequired(true);
         field.setLabel("Message logging");
-        field.setType(FormField.TYPE_LIST_SINGLE);
+        field.setType(FormField.Type.list_single);
         if (options != null)
             for (LoggingValue loggingValue : options)
                 field.addOption(loggingValue.createOption());
@@ -157,7 +159,7 @@ public class Feature extends PacketExtension {
         FormField field = new FormField(DISCLOSURE_FIELD);
         field.setRequired(false);
         field.setLabel("Disclosure of content, decryption keys or identities");
-        field.setType(FormField.TYPE_LIST_SINGLE);
+        field.setType(FormField.Type.list_single);
         if (options != null)
             for (DisclosureValue loggingValue : options)
                 field.addOption(loggingValue.createOption());
@@ -170,7 +172,7 @@ public class Feature extends PacketExtension {
         FormField field = new FormField(SECURITY_FIELD);
         field.setRequired(false);
         field.setLabel("Minimum security level");
-        field.setType(FormField.TYPE_LIST_SINGLE);
+        field.setType(FormField.Type.list_single);
         if (options != null)
             for (SecurityValue loggingValue : options)
                 field.addOption(loggingValue.createOption());
@@ -179,59 +181,51 @@ public class Feature extends PacketExtension {
     }
 
     private FormField getField(String name) {
-        for (Iterator<FormField> i = dataForm.getFields(); i.hasNext(); ) {
-            FormField formField = i.next();
-            if (name.equals(formField.getVariable()))
-                return formField;
+        for (FormField field : dataForm.getFields()) {
+            if (name.equals(field.getVariable()))
+                return field;
         }
         return null;
     }
 
     public Collection<LoggingValue> getLoggingOptions() {
         FormField field = getField(LOGGING_FIELD);
-        if (field == null)
+        if (field == null) {
             return null;
-        Collection<LoggingValue> collection = new ArrayList<LoggingValue>();
-        Iterator<Option> iterator = field.getOptions();
-        while (iterator.hasNext())
-            try {
-                collection.add(LoggingValue.fromString(iterator.next()
-                        .getValue()));
-            } catch (NoSuchElementException e) {
-                continue;
-            }
+        }
+        Collection<LoggingValue> collection = new ArrayList<>();
+        List<FormField.Option> options = field.getOptions();
+
+        for (FormField.Option option : options) {
+            collection.add(LoggingValue.fromString(option.getValue()));
+        }
+
         return collection;
     }
 
     public Collection<DisclosureValue> getDisclosureOptions() {
         FormField field = getField(DISCLOSURE_FIELD);
-        if (field == null)
+        if (field == null) {
             return null;
-        Collection<DisclosureValue> collection = new ArrayList<DisclosureValue>();
-        Iterator<Option> iterator = field.getOptions();
-        while (iterator.hasNext())
-            try {
-                collection.add(DisclosureValue.fromString(iterator.next()
-                        .getValue()));
-            } catch (NoSuchElementException e) {
-                continue;
-            }
+        }
+        Collection<DisclosureValue> collection = new ArrayList<>();
+        List<FormField.Option> options = field.getOptions();
+        for (FormField.Option option : options) {
+            collection.add(DisclosureValue.fromString(option.getValue()));
+        }
         return collection;
     }
 
     public Collection<SecurityValue> getSecurityOptions() {
         FormField field = getField(SECURITY_FIELD);
-        if (field == null)
+        if (field == null) {
             return null;
-        Collection<SecurityValue> collection = new ArrayList<SecurityValue>();
-        Iterator<Option> iterator = field.getOptions();
-        while (iterator.hasNext())
-            try {
-                collection.add(SecurityValue.fromString(iterator.next()
-                        .getValue()));
-            } catch (NoSuchElementException e) {
-                continue;
-            }
+        }
+        Collection<SecurityValue> collection = new ArrayList<>();
+        List<FormField.Option> options = field.getOptions();
+        for (FormField.Option option : options) {
+            collection.add(SecurityValue.fromString(option.getValue()));
+        }
         return collection;
     }
 
@@ -239,10 +233,13 @@ public class Feature extends PacketExtension {
         FormField field = getField(name);
         if (field == null)
             return null;
-        Iterator<String> iterator = field.getValues();
-        if (iterator.hasNext())
-            return iterator.next();
-        return null;
+
+        List<String> values = field.getValues();
+        if (!values.isEmpty()) {
+            return null;
+        }
+
+        return values.get(0);
     }
 
     public LoggingValue getLoggingValue() {
@@ -268,7 +265,7 @@ public class Feature extends PacketExtension {
 
     public DataFormType getDataFormType() {
         try {
-            return DataFormType.fromString(dataForm.getType());
+            return DataFormType.fromString(dataForm.getType().toString());
         } catch (NoSuchElementException e) {
             return null;
         }

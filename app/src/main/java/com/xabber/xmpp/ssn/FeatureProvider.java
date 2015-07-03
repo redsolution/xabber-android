@@ -14,12 +14,12 @@
  */
 package com.xabber.xmpp.ssn;
 
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.util.PacketParserUtils;
-import org.jivesoftware.smackx.packet.DataForm;
-import org.xmlpull.v1.XmlPullParser;
-
 import com.xabber.xmpp.AbstractExtensionProvider;
+
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.util.PacketParserUtils;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.xmlpull.v1.XmlPullParser;
 
 public class FeatureProvider extends AbstractExtensionProvider<Feature> {
 
@@ -33,11 +33,10 @@ public class FeatureProvider extends AbstractExtensionProvider<Feature> {
             throws Exception {
         if (super.parseInner(parser, instance))
             return true;
-        if (DataForm.ELEMENT_NAME.equals(parser.getName())
+        if (DataForm.ELEMENT.equals(parser.getName())
                 && DataForm.NAMESPACE.equals(parser.getNamespace())) {
-            PacketExtension packetExtension = PacketParserUtils
-                    .parsePacketExtension(DataForm.ELEMENT_NAME,
-                            DataForm.NAMESPACE, parser);
+            ExtensionElement packetExtension = PacketParserUtils.
+                    parseExtensionElement(DataForm.ELEMENT, DataForm.NAMESPACE, parser);
             if (packetExtension instanceof DataForm)
                 instance.setDataForm((DataForm) packetExtension);
             return true;

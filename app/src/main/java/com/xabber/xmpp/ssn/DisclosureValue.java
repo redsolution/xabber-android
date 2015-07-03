@@ -14,9 +14,10 @@
  */
 package com.xabber.xmpp.ssn;
 
+import org.jivesoftware.smackx.xdata.FormField;
+
 import java.util.NoSuchElementException;
 
-import org.jivesoftware.smackx.FormField.Option;
 
 /**
  * Disclosure parameter values.
@@ -41,8 +42,8 @@ public enum DisclosureValue {
         this.label = label;
     }
 
-    public Option createOption() {
-        return new Option(label, name());
+    public FormField.Option createOption() {
+        return new FormField.Option(label, name());
     }
 
     public static DisclosureValue fromString(String value)

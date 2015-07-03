@@ -65,6 +65,7 @@ public class VCard extends IQ {
     // TODO: Agent
 
     public VCard() {
+        super(ELEMENT_NAME, NAMESPACE);
         name = new HashMap<NameProperty, String>();
         properties = new HashMap<VCardProperty, String>();
         photos = new ArrayList<Photo>();
@@ -294,4 +295,9 @@ public class VCard extends IQ {
         return true;
     }
 
+    @Override
+    protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
+        xml.setEmptyElement();
+        return xml;
+    }
 }

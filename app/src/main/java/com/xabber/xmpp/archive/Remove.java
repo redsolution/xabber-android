@@ -40,6 +40,10 @@ public class Remove extends AbstractChat {
     private boolean open;
     private Date end;
 
+    public Remove() {
+        super(ELEMENT_NAME);
+    }
+
     @Override
     public void serializeContent(XmlSerializer serializer) throws IOException {
         super.serializeContent(serializer);

@@ -14,17 +14,6 @@
  */
 package com.xabber.android.data.extension.capability;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smackx.packet.DiscoverInfo;
-import org.jivesoftware.smackx.packet.DiscoverInfo.Feature;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -34,6 +23,15 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnResponseListener;
 import com.xabber.xmpp.address.Jid;
+
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerInfoManager implements OnAuthorizedListener,
         OnResponseListener {
@@ -66,7 +64,7 @@ public class ServerInfoManager implements OnAuthorizedListener,
             if (protocols.get(account) == null) {
                 DiscoverInfo packet = new DiscoverInfo();
                 packet.setTo(Jid.getServer(account));
-                packet.setType(Type.GET);
+                packet.setType(Type.get);
                 try {
                     ConnectionManager.getInstance().sendRequest(account,
                             packet, this);
@@ -92,9 +90,9 @@ public class ServerInfoManager implements OnAuthorizedListener,
         }
         ArrayList<String> features = new ArrayList<String>();
         DiscoverInfo discoverInfo = (DiscoverInfo) iq;
-        Iterator<Feature> iterator = discoverInfo.getFeatures();
-        while (iterator.hasNext())
-            features.add(iterator.next().getVar());
+        for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
+            features.add(feature.getVar());
+        }
         protocols.put(account, features);
         onAvailable(AccountManager.getInstance().getAccount(account));
     }
@@ -116,9 +114,7 @@ public class ServerInfoManager implements OnAuthorizedListener,
 
     public boolean isProtocolSupported(String account, String feature) {
         Collection<String> collection = protocols.get(account);
-        if (collection == null)
-            return false;
-        return collection.contains(feature);
+        return collection != null && collection.contains(feature);
     }
 
 }

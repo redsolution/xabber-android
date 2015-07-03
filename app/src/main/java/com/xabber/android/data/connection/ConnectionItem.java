@@ -19,6 +19,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountProtocol;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 
 /**
@@ -204,8 +205,7 @@ public abstract class ConnectionItem {
         Thread thread = new Thread("Disconnection thread for " + this) {
             @Override
             public void run() {
-                XMPPConnection xmppConnection = connectionThread
-                        .getXMPPConnection();
+                AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
                 if (xmppConnection != null)
                     try {
                         xmppConnection.disconnect();
@@ -296,8 +296,9 @@ public abstract class ConnectionItem {
         else
             LogManager
                     .i(this, "onClose " + xmppConnection.hashCode() + " - "
-                            + xmppConnection.connectionCounterValue + ", "
+                            + xmppConnection.getConnectionCounter() + ", "
                             + acceptable);
+
         ConnectionManager.getInstance().onDisconnect(connectionThread);
         if (acceptable)
             connectionThread.shutdown();

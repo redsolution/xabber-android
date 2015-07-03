@@ -17,7 +17,7 @@ package com.xabber.android.data;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.jivesoftware.smack.Connection;
+import org.jivesoftware.smack.SmackConfiguration;
 import org.xbill.DNS.Options;
 
 import android.content.pm.ApplicationInfo;
@@ -59,7 +59,7 @@ public class LogManager implements OnLoadListener {
                     "org.jivesoftware.smack.debugger.ConsoleDebugger");
             // "com.xabber.android.data.FileLogDebugger");
             System.setProperty("smack.debugEnabled", "true");
-            Connection.DEBUG_ENABLED = true;
+            SmackConfiguration.DEBUG = true;
             Options.set("verbose");
             Options.set("verbosemsg");
             Options.set("verbosecompression");

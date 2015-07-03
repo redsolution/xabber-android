@@ -35,8 +35,9 @@ import com.xabber.xmpp.carbon.CarbonManager;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
-import org.jivesoftware.smackx.packet.DelayInformation;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -659,7 +660,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(String bareAddress, Packet packet) {
+    protected boolean onPacket(String bareAddress, Stanza packet) {
         return accept(bareAddress, packet.getFrom());
     }
 

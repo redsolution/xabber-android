@@ -144,7 +144,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnVCardListe
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_VCARD_ERROR, vCardError);
         if (vCard != null) {
-            outState.putString(SAVED_VCARD, vCard.getChildElementXML());
+            outState.putString(SAVED_VCARD, vCard.getChildElementXML().toString());
         }
     }
 

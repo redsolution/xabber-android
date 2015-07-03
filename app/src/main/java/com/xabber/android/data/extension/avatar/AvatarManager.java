@@ -37,9 +37,9 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -405,8 +405,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(packet instanceof Presence) || bareAddress == null) {
             return;
         }
@@ -418,7 +417,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (presence.getType() == Presence.Type.error) {
             return;
         }
-        for (PacketExtension packetExtension : presence.getExtensions()) {
+        for (ExtensionElement packetExtension : presence.getExtensions()) {
             if (packetExtension instanceof VCardUpdate) {
                 VCardUpdate vCardUpdate = (VCardUpdate) packetExtension;
                 if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {

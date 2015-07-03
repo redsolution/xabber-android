@@ -14,6 +14,8 @@
  */
 package com.xabber.xmpp;
 
+import com.xabber.android.data.LogManager;
+
 import java.io.IOException;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -25,17 +27,33 @@ import org.xmlpull.v1.XmlSerializer;
  *
  * @author alexander.ivanov
  */
-public abstract class IQ extends org.jivesoftware.smack.packet.IQ implements
-        Container {
+public abstract class IQ extends org.jivesoftware.smack.packet.IQ implements Container {
+
+    public IQ(org.jivesoftware.smack.packet.IQ iq) {
+        super(iq);
+    }
+
+    protected IQ(String childElementName) {
+        super(childElementName);
+    }
+
+    protected IQ(String childElementName, String childElementNamespace) {
+        super(childElementName, childElementNamespace);
+    }
 
     @Override
     public void serialize(XmlSerializer serializer) throws IOException {
+//        LogManager.i(this, "serialize ");
         SerializerUtils.serialize(serializer, this);
     }
 
     @Override
-    public String getChildElementXML() {
-        return SerializerUtils.toXml(this);
+    protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
+        // TODO ?
+//        LogManager.i(this, "getIQChildElementBuilder");
+
+        xml.append(SerializerUtils.toXml(this));
+        return xml;
     }
 
 }

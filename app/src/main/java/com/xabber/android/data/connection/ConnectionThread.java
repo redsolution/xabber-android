@@ -16,6 +16,30 @@ package com.xabber.android.data.connection;
 
 import android.os.Build;
 
+import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
+import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountProtocol;
+import com.xabber.android.data.account.OAuthManager;
+import com.xabber.android.data.account.OAuthResult;
+
+import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.StanzaFilter;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.StreamError;
+import org.jivesoftware.smack.proxy.ProxyInfo;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.xbill.DNS.Record;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutorService;
@@ -26,25 +50,6 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLException;
 
-import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.PacketFilter;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.StreamError;
-import org.jivesoftware.smack.proxy.ProxyInfo;
-import org.xbill.DNS.Record;
-
-import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountProtocol;
-import com.xabber.android.data.account.OAuthManager;
-import com.xabber.android.data.account.OAuthResult;
-
 /**
  * Provides connection workflow.
  * <p/>
@@ -54,7 +59,7 @@ import com.xabber.android.data.account.OAuthResult;
  */
 public class ConnectionThread implements
         org.jivesoftware.smack.ConnectionListener,
-        org.jivesoftware.smack.PacketListener {
+        org.jivesoftware.smack.StanzaListener {
 
     private static Pattern ADDRESS_AND_PORT = Pattern.compile("^(.*):(\\d+)$");
 
@@ -68,7 +73,7 @@ public class ConnectionThread implements
     /**
      * SMACK connection.
      */
-    private XMPPConnection xmppConnection;
+    private AbstractXMPPConnection xmppConnection;
 
     /**
      * Thread holder for this connection.
@@ -147,7 +152,7 @@ public class ConnectionThread implements
         started = false;
     }
 
-    public XMPPConnection getXMPPConnection() {
+    public AbstractXMPPConnection getXMPPConnection() {
         return xmppConnection;
     }
 
@@ -162,8 +167,7 @@ public class ConnectionThread implements
      * @param defaultHost
      * @param defaultPort
      */
-    private void srvResolve(final String fqdn, final String defaultHost,
-                            final int defaultPort) {
+    private void srvResolve(final String fqdn, final String defaultHost, final int defaultPort) {
         final Record[] records = DNSManager.getInstance().fetchRecords(fqdn);
         runOnUiThread(new Runnable() {
             @Override
@@ -223,11 +227,9 @@ public class ConnectionThread implements
      * @param port
      * @param firstRequest
      */
-    private void addressResolve(final String fqdn, final String host,
-                                final int port, final boolean firstRequest) {
+    private void addressResolve(final String fqdn, final String host, final int port, final boolean firstRequest) {
         LogManager.i(this, "Resolve " + host + ":" + port);
-        final InetAddress[] addresses = DNSManager.getInstance()
-                .fetchAddresses(host);
+        final InetAddress[] addresses = DNSManager.getInstance().fetchAddresses(host);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -276,8 +278,8 @@ public class ConnectionThread implements
                 return;
             }
         }
-        XMPPException exception = new XMPPException(
-                "There is no available address.");
+        // TODO correct type of exception
+        RuntimeException exception = new RuntimeException("There is no available address.");
         LogManager.exception(this, exception);
         connectionClosedOnError(exception);
     }
@@ -286,69 +288,78 @@ public class ConnectionThread implements
      * Called when configuration is ready and xmpp connection instance can be
      * created.
      *
-     * @param records
      */
     private void onReady(final InetAddress address, final int port) {
         LogManager.i(this, "Use " + address);
         ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort,
                 proxyUser, proxyPassword);
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                address.getHostAddress(), port, serverName, proxy);
-        onReady(connectionConfiguration);
+
+        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
+        builder.setHost(address.getHostAddress());
+        builder.setPort(port);
+        builder.setServiceName(serverName);
+
+
+//        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+//                address.getHostAddress(), port, serverName, proxy);
+        onReady(builder);
     }
 
     private void onReady(final String host, final int port) {
         LogManager.i(this, "Use remote DNS for " + host);
-        ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort,
-                proxyUser, proxyPassword);
-        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-                host, port, serverName, proxy);
-        onReady(connectionConfiguration);
+        ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort, proxyUser, proxyPassword);
+//        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
+//                host, port, serverName, proxy);
+
+        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
+        builder.setHost(host);
+        builder.setPort(port);
+        builder.setServiceName(serverName);
+
+        onReady(builder);
     }
 
-    private void onReady(ConnectionConfiguration connectionConfiguration) {
+    private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
         if (Build.VERSION.SDK_INT >= 14) {
-            connectionConfiguration.setTruststoreType("AndroidCAStore");
-            connectionConfiguration.setTruststorePassword(null);
-            connectionConfiguration.setTruststorePath(null);
-        } else {
-            connectionConfiguration.setTruststoreType("BKS");
-            connectionConfiguration
-                    .setTruststorePath(ConnectionManager.TRUST_STORE_PATH);
+//            connectionConfiguration.setTruststoreType("AndroidCAStore");
+//            connectionConfiguration.setTruststorePassword(null);
+//            connectionConfiguration.setTruststorePath(null);
         }
         // Disable smack`s reconnection.
-        connectionConfiguration.setReconnectionAllowed(false);
+//        connectionConfiguration.setReconnectionAllowed(false);
         // We will send custom presence.
-        connectionConfiguration.setSendPresence(false);
-        // We use own roster management.
-        connectionConfiguration.setRosterLoadedAtLogin(false);
+        builder.setSendPresence(false);
+
 
         if (SettingsManager.securityCheckCertificate()) {
-            connectionConfiguration.setExpiredCertificatesCheckEnabled(true);
-            connectionConfiguration.setNotMatchingDomainCheckEnabled(true);
-            connectionConfiguration.setSelfSignedCertificateEnabled(false);
-            connectionConfiguration.setVerifyChainEnabled(true);
-            connectionConfiguration.setVerifyRootCAEnabled(true);
-            connectionConfiguration.setCertificateListener(CertificateManager
-                    .getInstance().createCertificateListener(connectionItem));
+//            connectionConfiguration.setExpiredCertificatesCheckEnabled(true);
+//            connectionConfiguration.setNotMatchingDomainCheckEnabled(true);
+//            connectionConfiguration.setSelfSignedCertificateEnabled(false);
+//            connectionConfiguration.setVerifyChainEnabled(true);
+//            connectionConfiguration.setVerifyRootCAEnabled(true);
+//            connectionConfiguration.setCertificateListener(CertificateManager
+//                    .getInstance().createCertificateListener(connectionItem));
         } else {
-            connectionConfiguration.setExpiredCertificatesCheckEnabled(false);
-            connectionConfiguration.setNotMatchingDomainCheckEnabled(false);
-            connectionConfiguration.setSelfSignedCertificateEnabled(true);
-            connectionConfiguration.setVerifyChainEnabled(false);
-            connectionConfiguration.setVerifyRootCAEnabled(false);
+//            connectionConfiguration.setExpiredCertificatesCheckEnabled(false);
+//            connectionConfiguration.setNotMatchingDomainCheckEnabled(false);
+//            connectionConfiguration.setSelfSignedCertificateEnabled(true);
+//            connectionConfiguration.setVerifyChainEnabled(false);
+//            connectionConfiguration.setVerifyRootCAEnabled(false);
         }
 
-        connectionConfiguration.setSASLAuthenticationEnabled(saslEnabled);
-        connectionConfiguration.setSecurityMode(tlsMode.getSecurityMode());
-        connectionConfiguration.setCompressionEnabled(compression);
+//        connectionConfiguration.setSASLAuthenticationEnabled(saslEnabled);
+//        connectionConfiguration.setSecurityMode(tlsMode.getSecurityMode());
+        builder.setCompressionEnabled(compression);
 
-        xmppConnection = new XMPPConnection(connectionConfiguration);
-        xmppConnection.addPacketListener(this, ACCEPT_ALL);
-        xmppConnection.forceAddConnectionListener(this);
+        xmppConnection = new XMPPTCPConnection(builder.build());
+        xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
+        xmppConnection.addConnectionListener(this);
+
+        // We use own roster management.
+        Roster.getInstanceFor(xmppConnection).setRosterLoadedAtLogin(false);
+
         connectionItem.onSRVResolved(this);
-        final String password = OAuthManager.getInstance().getPassword(
-                protocol, token);
+        final String password = OAuthManager.getInstance().getPassword(protocol, token);
         if (password != null) {
             runOnConnectionThread(new Runnable() {
                 @Override
@@ -442,17 +453,28 @@ public class ConnectionThread implements
     private void connect(final String password) {
         try {
             xmppConnection.connect();
-        } catch (XMPPException e) {
+        } catch (SmackException | IOException | XMPPException e) {
+            e.printStackTrace();
             checkForCertificateError(e);
             if (!checkForSeeOtherHost(e)) {
                 // There is no connection listeners yet, so we call onClose.
                 throw new RuntimeException(e);
             }
-        } catch (IllegalStateException e) {
-            // There is no connection listeners yet, so we call onClose.
-            // connectionCreated() in other modules can fail.
-            throw new RuntimeException(e);
         }
+
+//        try {
+//            xmppConnection.connect();
+//        } catch (XMPPException e) {
+//            checkForCertificateError(e);
+//            if (!checkForSeeOtherHost(e)) {
+//                // There is no connection listeners yet, so we call onClose.
+//                throw new RuntimeException(e);
+//            }
+//        } catch (IllegalStateException e) {
+//            // There is no connection listeners yet, so we call onClose.
+//            // connectionCreated() in other modules can fail.
+//            throw new RuntimeException(e);
+//        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -467,14 +489,13 @@ public class ConnectionThread implements
      * @param e
      */
     private void checkForCertificateError(Exception e) {
-        if (!(e instanceof XMPPException))
+        if (!(e instanceof SSLException)) {
             return;
-        Throwable e1 = ((XMPPException) e).getWrappedThrowable();
-        if (!(e1 instanceof SSLException))
+        }
+        Throwable e2 = e.getCause();
+        if (!(e2 instanceof CertificateException)) {
             return;
-        Throwable e2 = e1.getCause();
-        if (!(e2 instanceof CertificateException))
-            return;
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -487,22 +508,22 @@ public class ConnectionThread implements
      * Check for see other host exception.
      *
      * @param e
-     * @return <code>true</code> if {@link StreamError.Type#seeOtherHost} has
+     * @return <code>true</code> if {@link StreamError.Condition#see_other_host} has
      * been found.
      */
     private boolean checkForSeeOtherHost(Exception e) {
-        if (!(e instanceof XMPPException))
-            return false;
-        StreamError streamError = ((XMPPException) e).getStreamError();
-        if (streamError == null
-                || streamError.getType() != StreamError.Type.seeOtherHost)
-            return false;
-        String target = streamError.getBody();
-        if (target == null || "".equals(target))
-            return false;
-        LogManager.i(this, "See other host: " + target);
-        seeOtherHost(target);
-        return true;
+        if (e instanceof XMPPException.StreamErrorException) {
+            XMPPException.StreamErrorException streamErrorException = (XMPPException.StreamErrorException) e;
+            if (streamErrorException.getStreamError().getCondition() == StreamError.Condition.see_other_host) {
+                String target = streamErrorException.getStreamError().getConditionText();
+                if (target == null || "".equals(target))
+                    return false;
+                LogManager.i(this, "See other host: " + target);
+                seeOtherHost(target);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -538,9 +559,8 @@ public class ConnectionThread implements
      */
     private void registerAccount(final String password) {
         try {
-            xmppConnection.getAccountManager().createAccount(login, password);
-        }
-        catch (XMPPException e) {
+            AccountManager.getInstance(xmppConnection).createAccount(login, password);
+        } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
             LogManager.exception(connectionItem, e);
             connectionClosedOnError(e);
             // Server will destroy connection, but we can speedup
@@ -548,6 +568,7 @@ public class ConnectionThread implements
             xmppConnection.disconnect();
             return;
         }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -575,39 +596,46 @@ public class ConnectionThread implements
     private void authorization(String password) {
         try {
             xmppConnection.login(login, password, resource);
-        } catch (IllegalStateException e) {
-            // onClose must be called from reader thread.
-            return;
-        } catch (XMPPException e) {
-            LogManager.exception(connectionItem, e);
-            // SASLAuthentication#authenticate(String,String,String)
-            boolean SASLfailed = e.getMessage() != null
-                    && e.getMessage().startsWith("SASL authentication ")
-                    && !e.getMessage().endsWith("temporary-auth-failure");
-            // NonSASLAuthentication#authenticate(String,String,String)
-            // Authentication request failed (doesn't supported),
-            // error was returned after negotiation or
-            // authentication failed.
-            boolean NonSASLfailed = e.getXMPPError() != null
-                    && "Authentication failed.".equals(e.getMessage());
-            if (SASLfailed || NonSASLfailed) {
-                // connectionClosed can be called before from reader thread,
-                // so don't check whether connection is managed.
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Login failed. We don`t want to reconnect.
-                        connectionItem.onAuthFailed();
-                    }
-                });
-                connectionClosed();
-            } else
-                connectionClosedOnError(e);
-            // Server will destroy connection, but we can speedup
-            // it.
+        } catch (IOException | SmackException | XMPPException e) {
+            e.printStackTrace();
+            connectionClosedOnError(e);
             xmppConnection.disconnect();
             return;
         }
+//        } catch (XMPPException e) {
+//            LogManager.exception(connectionItem, e);
+//            // SASLAuthentication#authenticate(String,String,String)
+//            boolean SASLfailed = e.getMessage() != null
+//                    && e.getMessage().startsWith("SASL authentication ")
+//                    && !e.getMessage().endsWith("temporary-auth-failure");
+//            // NonSASLAuthentication#authenticate(String,String,String)
+//            // Authentication request failed (doesn't supported),
+//            // error was returned after negotiation or
+//            // authentication failed.
+//            boolean NonSASLfailed = e.getXMPPError() != null
+//                    && "Authentication failed.".equals(e.getMessage());
+//            if (SASLfailed || NonSASLfailed) {
+//                // connectionClosed can be called before from reader thread,
+//                // so don't check whether connection is managed.
+//                Application.getInstance().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        // Login failed. We don`t want to reconnect.
+//                        connectionItem.onAuthFailed();
+//                    }
+//                });
+//                connectionClosed();
+//            } else
+//                connectionClosedOnError(e);
+//            // Server will destroy connection, but we can speedup
+//            // it.
+//            xmppConnection.disconnect();
+//            return;
+//        } catch (SmackException | IOException e) {
+//            e.printStackTrace();
+//            return;
+//        }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -622,10 +650,19 @@ public class ConnectionThread implements
     private void onAuthorized() {
         connectionItem.onAuthorized(this);
         ConnectionManager.getInstance().onAuthorized(this);
-        if (connectionItem instanceof AccountItem)
-            AccountManager.getInstance().removeAuthorizationError(
+        if (connectionItem instanceof AccountItem) {
+            com.xabber.android.data.account.AccountManager.getInstance().removeAuthorizationError(
                     ((AccountItem) connectionItem).getAccount());
+        }
         shutdown();
+    }
+
+    @Override
+    public void connected(XMPPConnection connection) {
+    }
+
+    @Override
+    public void authenticated(XMPPConnection connection, boolean resumed) {
     }
 
     @Override
@@ -660,12 +697,11 @@ public class ConnectionThread implements
     }
 
     @Override
-    public void processPacket(final Packet packet) {
+    public void processPacket(final Stanza packet) throws SmackException.NotConnectedException {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ConnectionManager.getInstance().processPacket(
-                        ConnectionThread.this, packet);
+                ConnectionManager.getInstance().processPacket(ConnectionThread.this, packet);
             }
         });
     }
@@ -675,9 +711,9 @@ public class ConnectionThread implements
      *
      * @author alexander.ivanov
      */
-    static class AcceptAll implements PacketFilter {
+    static class AcceptAll implements StanzaFilter {
         @Override
-        public boolean accept(Packet packet) {
+        public boolean accept(Stanza packet) {
             return true;
         }
     }
@@ -718,7 +754,7 @@ public class ConnectionThread implements
     /**
      * Stop connection.
      * <p/>
-     * {@link #start()} MUST BE CALLED FIRST.
+     * start MUST BE CALLED FIRST.
      */
     void shutdown() {
         executorService.shutdownNow();

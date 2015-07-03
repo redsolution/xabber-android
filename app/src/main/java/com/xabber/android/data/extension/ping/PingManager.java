@@ -14,13 +14,6 @@
  */
 package com.xabber.android.data.extension.ping;
 
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.packet.Ping;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -28,6 +21,14 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnPacketListener;
+
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.ping.packet.Ping;
 
 /**
  * Reply on incoming ping requests.
@@ -41,15 +42,13 @@ public class PingManager implements OnPacketListener {
     static {
         instance = new PingManager();
         Application.getInstance().addManager(instance);
-
-        Connection
-                .addConnectionCreationListener(new ConnectionCreationListener() {
-                    @Override
-                    public void connectionCreated(final Connection connection) {
-                        ServiceDiscoveryManager.getInstanceFor(connection)
-                                .addFeature("urn:xmpp:ping");
-                    }
-                });
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                ServiceDiscoveryManager.getInstanceFor(connection)
+                        .addFeature("urn:xmpp:ping");
+            }
+        });
     }
 
     public static PingManager getInstance() {
@@ -60,15 +59,14 @@ public class PingManager implements OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String account = ((AccountItem) connection).getAccount();
         if (!(packet instanceof Ping))
             return;
         final Ping ping = (Ping) packet;
-        if (ping.getType() != IQ.Type.GET)
+        if (ping.getType() != IQ.Type.get)
             return;
         try {
             ConnectionManager.getInstance().sendPacket(account,

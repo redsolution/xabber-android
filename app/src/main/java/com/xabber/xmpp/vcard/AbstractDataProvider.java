@@ -14,13 +14,13 @@
  */
 package com.xabber.xmpp.vcard;
 
-import org.jivesoftware.smack.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 
 import com.xabber.xmpp.AbstractProvider;
 import com.xabber.xmpp.Instance;
 import com.xabber.xmpp.OverflowReceiverBufferException;
 import com.xabber.xmpp.ProviderUtils;
+import org.jivesoftware.smack.util.stringencoder.Base64;
 
 abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder<T>>
         extends AbstractProvider<Inner> {
@@ -76,7 +76,7 @@ abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder
             } catch (OverflowReceiverBufferException e) {
                 return true;
             }
-            payload.setData(StringUtils.decodeBase64(value));
+            payload.setData(Base64.decode(value));
         } else
             return false;
         return true;

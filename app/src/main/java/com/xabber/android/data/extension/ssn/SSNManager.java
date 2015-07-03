@@ -14,13 +14,6 @@
  */
 package com.xabber.android.data.extension.ssn;
 
-import java.util.Collection;
-
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.DataForm;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -39,6 +32,13 @@ import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
 import com.xabber.xmpp.ssn.LoggingValue;
 import com.xabber.xmpp.ssn.SecurityValue;
+
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
+
+import java.util.Collection;
 
 /**
  * Stanza Session Negotiation.
@@ -82,8 +82,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         String from = packet.getFrom();
         if (from == null)
             return;
@@ -95,7 +94,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         String session = message.getThread();
         if (session == null)
             return;
-        for (PacketExtension packetExtension : packet.getExtensions())
+        for (ExtensionElement packetExtension : packet.getExtensions())
             if (packetExtension instanceof Feature) {
                 Feature feature = (Feature) packetExtension;
                 if (!feature.isValid())

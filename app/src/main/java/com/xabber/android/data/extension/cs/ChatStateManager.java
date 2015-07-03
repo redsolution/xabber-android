@@ -38,16 +38,17 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.ComposingPausedReceiver;
 import com.xabber.xmpp.address.Jid;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
-import org.jivesoftware.smackx.ChatState;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-import org.jivesoftware.smackx.packet.ChatStateExtension;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.chatstates.ChatState;
+import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -70,14 +71,11 @@ public class ChatStateManager implements OnDisconnectListener,
         instance = new ChatStateManager();
         Application.getInstance().addManager(instance);
 
-        Connection
-                .addConnectionCreationListener(new ConnectionCreationListener() {
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
                     @Override
-                    public void connectionCreated(final Connection connection) {
-                        ServiceDiscoveryManager
-                                .getInstanceFor(connection)
-                                .addFeature(
-                                        "http://jabber.org/protocol/chatstates");
+                    public void connectionCreated(final XMPPConnection connection) {
+                        ServiceDiscoveryManager.getInstanceFor(connection)
+                                .addFeature("http://jabber.org/protocol/chatstates");
                     }
                 });
     }
@@ -238,7 +236,7 @@ public class ChatStateManager implements OnDisconnectListener,
     /**
      * Must be call each time user change text message.
      *
-     * @param accunt
+     * @param account
      * @param user
      */
     public void onComposing(String account, String user, CharSequence text) {
@@ -295,8 +293,7 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String resource = Jid.getResource(packet.getFrom());
@@ -312,11 +309,10 @@ public class ChatStateManager implements OnDisconnectListener,
             supports.remove(account, bareAddress, resource);
         } else if (packet instanceof Message) {
             boolean support = false;
-            for (PacketExtension extension : packet.getExtensions())
+            for (ExtensionElement extension : packet.getExtensions())
                 if (extension instanceof ChatStateExtension) {
                     removeCallback(account, bareAddress, resource);
-                    ChatState chatState = ((ChatStateExtension) extension)
-                            .getState();
+                    ChatState chatState = ((ChatStateExtension) extension).getChatState();
                     chatStates.put(account, bareAddress, resource, chatState);
                     if (chatState != ChatState.active) {
                         Runnable runnable = new Runnable() {

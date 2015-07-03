@@ -14,12 +14,12 @@
  */
 package com.xabber.xmpp.vcard;
 
-import java.io.IOException;
+import com.xabber.xmpp.SerializerUtils;
 
-import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smack.util.stringencoder.Base64;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.xabber.xmpp.SerializerUtils;
+import java.io.IOException;
 
 public abstract class AbstractBinaryData extends AbstractData {
 
@@ -58,8 +58,7 @@ public abstract class AbstractBinaryData extends AbstractData {
     @Override
     protected void writeBody(XmlSerializer serializer) throws IOException {
         SerializerUtils.addTextTag(serializer, TYPE_NAME, type);
-        SerializerUtils.addTextTag(serializer, BINVAL_NAME,
-                StringUtils.encodeBase64(data));
+        SerializerUtils.addTextTag(serializer, BINVAL_NAME, Base64.encodeToString(data));
     }
 
 }

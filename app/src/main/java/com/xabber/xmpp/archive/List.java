@@ -51,6 +51,7 @@ public class List extends IQ {
     private final Collection<Chat> chats;
 
     public List() {
+        super(ELEMENT_NAME, NAMESPACE);
         chats = new ArrayList<Chat>();
     }
 

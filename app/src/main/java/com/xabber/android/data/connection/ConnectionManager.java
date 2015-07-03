@@ -25,17 +25,17 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.wlm.XMessengerOAuth2;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,15 +67,13 @@ public class ConnectionManager implements OnInitializedListener,
         instance = new ConnectionManager();
         Application.getInstance().addManager(instance);
 
-        SmackConfiguration.setPacketReplyTimeout(PACKET_REPLY_TIMEOUT);
+        SmackConfiguration.setDefaultPacketReplyTimeout(PACKET_REPLY_TIMEOUT);
 
-        ServiceDiscoveryManager.setIdentityType("handheld");
-        ServiceDiscoveryManager.setIdentityName(Application.getInstance()
-                .getString(R.string.client_name));
-
-        SASLAuthentication.registerSASLMechanism("X-MESSENGER-OAUTH2",
-                XMessengerOAuth2.class);
-        SASLAuthentication.supportSASLMechanism("X-MESSENGER-OAUTH2");
+//        ServiceDiscoveryManager.setIdentityType("handheld");
+//        ServiceDiscoveryManager.setIdentityName(Application.getInstance()
+//                .getString(R.string.client_name));
+        ServiceDiscoveryManager.setDefaultIdentity(new DiscoverInfo.Identity("client", Application.getInstance()
+                .getString(R.string.client_name), "handheld"));
 
         String path = System.getProperty("javax.net.ssl.trustStore");
         if (path == null)
@@ -85,14 +83,12 @@ public class ConnectionManager implements OnInitializedListener,
         else
             TRUST_STORE_PATH = path;
 
-        Connection
-                .addConnectionCreationListener(new ConnectionCreationListener() {
-                    @Override
-                    public void connectionCreated(final Connection connection) {
-                        ServiceDiscoveryManager.getInstanceFor(connection)
-                                .addFeature("sslc2s");
-                    }
-                });
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                ServiceDiscoveryManager.getInstanceFor(connection).addFeature("sslc2s");
+            }
+        });
     }
 
     /**
@@ -164,7 +160,7 @@ public class ConnectionManager implements OnInitializedListener,
      * @param account
      * @param packet
      */
-    public void sendPacket(String account, Packet packet)
+    public void sendPacket(String account, Stanza packet)
             throws NetworkException {
         ConnectionThread connectionThread = null;
         for (ConnectionThread check : managedConnections)
@@ -179,9 +175,11 @@ public class ConnectionManager implements OnInitializedListener,
                 .isConnected())
             throw new NetworkException(R.string.NOT_CONNECTED);
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+
         try {
-            xmppConnection.sendPacket(packet);
-        } catch (IllegalStateException e) {
+            xmppConnection.sendStanza(packet);
+        } catch (SmackException.NotConnectedException e) {
+            e.printStackTrace();
             throw new NetworkException(R.string.XMPP_EXCEPTION);
         }
     }
@@ -221,11 +219,11 @@ public class ConnectionManager implements OnInitializedListener,
     public void onAuthorized(ConnectionThread connectionThread) {
         if (!managedConnections.contains(connectionThread))
             return;
-        LogManager.i(this,
-                "onAuthorized: " + connectionThread.getConnectionItem());
-        for (OnAuthorizedListener listener : Application.getInstance()
-                .getManagers(OnAuthorizedListener.class))
+        LogManager.i(this, "onAuthorized: " + connectionThread.getConnectionItem());
+        for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
             listener.onAuthorized(connectionThread.getConnectionItem());
+        }
+        LogManager.i(this, "onAuthorized: finished");
     }
 
     public void onDisconnect(ConnectionThread connectionThread) {
@@ -245,25 +243,23 @@ public class ConnectionManager implements OnInitializedListener,
             listener.onDisconnect(connectionThread.getConnectionItem());
     }
 
-    public void processPacket(ConnectionThread connectionThread, Packet packet) {
+    public void processPacket(ConnectionThread connectionThread, Stanza packet) {
         if (!managedConnections.contains(connectionThread))
             return;
         ConnectionItem connectionItem = connectionThread.getConnectionItem();
         if (packet instanceof IQ && connectionItem instanceof AccountItem) {
             IQ iq = (IQ) packet;
-            String packetId = iq.getPacketID();
+            String packetId = iq.getStanzaId();
             if (packetId != null
-                    && (iq.getType() == Type.RESULT || iq.getType() == Type.ERROR)) {
+                    && (iq.getType() == Type.result || iq.getType() == Type.error)) {
                 String account = ((AccountItem) connectionItem).getAccount();
                 RequestHolder requestHolder = requests
                         .remove(account, packetId);
                 if (requestHolder != null) {
-                    if (iq.getType() == Type.RESULT)
-                        requestHolder.getListener().onReceived(account,
-                                packetId, iq);
+                    if (iq.getType() == Type.result)
+                        requestHolder.getListener().onReceived(account, packetId, iq);
                     else
-                        requestHolder.getListener().onError(account, packetId,
-                                iq);
+                        requestHolder.getListener().onError(account, packetId, iq);
                 }
             }
         }
@@ -277,17 +273,19 @@ public class ConnectionManager implements OnInitializedListener,
     public void onTimer() {
         if (NetworkManager.getInstance().getState() != NetworkState.suspended) {
             Collection<ConnectionItem> reconnect = new ArrayList<ConnectionItem>();
-            for (ConnectionThread connectionThread : managedConnections)
-                if (connectionThread.getConnectionItem().getState()
-                        .isConnected()
-                        // XMPPConnection can`t be null here
-                        && !connectionThread.getXMPPConnection().isAlive()) {
-                    LogManager.i(connectionThread.getConnectionItem(),
-                            "forceReconnect on checkAlive");
-                    reconnect.add(connectionThread.getConnectionItem());
-                }
-            for (ConnectionItem connection : reconnect)
+            for (ConnectionThread connectionThread : managedConnections) {
+//                if (connectionThread.getConnectionItem().getState().isConnected()
+//                    // TODO find the way to check if connection is alive
+//                    // XMPPConnection can`t be null here
+////                        && !connectionThread.getXMPPConnection().isAlive()
+//                        ) {
+//                    LogManager.i(connectionThread.getConnectionItem(), "forceReconnect on checkAlive");
+//                    reconnect.add(connectionThread.getConnectionItem());
+//                }
+            }
+            for (ConnectionItem connection : reconnect) {
                 connection.forceReconnect();
+            }
         }
         long now = new Date().getTime();
         Iterator<NestedMap.Entry<RequestHolder>> iterator = requests.iterator();

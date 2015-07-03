@@ -14,7 +14,7 @@
  */
 package com.xabber.xmpp;
 
-import org.jivesoftware.smack.provider.PacketExtensionProvider;
+
 import org.xmlpull.v1.XmlPullParser;
 
 /**
@@ -24,9 +24,11 @@ import org.xmlpull.v1.XmlPullParser;
  * @author alexander.ivanov
  */
 public abstract class AbstractExtensionProvider<Extension extends PacketExtension>
-        extends AbstractProvider<Extension> implements PacketExtensionProvider {
+        extends AbstractProvider<Extension>
+    // TODO
+//        implements PacketExtensionProvider
+{
 
-    @Override
     public Extension parseExtension(XmlPullParser parser) throws Exception {
         return provideInstance(parser);
     }

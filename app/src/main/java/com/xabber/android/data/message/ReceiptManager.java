@@ -14,13 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -33,6 +26,14 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.xmpp.receipt.Received;
 import com.xabber.xmpp.receipt.Request;
+
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 /**
  * Manage message receive receipts as well as error replies.
@@ -52,14 +53,13 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
         instance = new ReceiptManager();
         Application.getInstance().addManager(instance);
 
-        Connection
-                .addConnectionCreationListener(new ConnectionCreationListener() {
-                    @Override
-                    public void connectionCreated(final Connection connection) {
-                        ServiceDiscoveryManager.getInstanceFor(connection)
-                                .addFeature("urn:xmpp:receipts");
-                    }
-                });
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                ServiceDiscoveryManager.getInstanceFor(connection)
+                        .addFeature("urn:xmpp:receipts");
+            }
+        });
     }
 
     public static ReceiptManager getInstance() {
@@ -86,8 +86,7 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
@@ -115,7 +114,7 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
                         messageItem.getChat().getUser(), false);
             }
         } else {
-            for (PacketExtension packetExtension : message.getExtensions())
+            for (ExtensionElement packetExtension : message.getExtensions())
                 if (packetExtension instanceof Received) {
                     Received received = (Received) packetExtension;
                     String id = received.getId();

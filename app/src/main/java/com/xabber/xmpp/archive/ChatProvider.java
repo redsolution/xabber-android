@@ -14,19 +14,20 @@
  */
 package com.xabber.xmpp.archive;
 
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.provider.PacketExtensionProvider;
-import org.jivesoftware.smack.util.PacketParserUtils;
-import org.xmlpull.v1.XmlPullParser;
-
 import com.xabber.xmpp.AbstractIQProvider;
 import com.xabber.xmpp.ProviderUtils;
 import com.xabber.xmpp.rsm.Set;
 
-public class ChatProvider extends AbstractIQProvider<Chat> implements
-        PacketExtensionProvider {
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.util.PacketParserUtils;
+import org.xmlpull.v1.XmlPullParser;
 
-    @Override
+public class ChatProvider extends AbstractIQProvider<Chat>
+    //TODO
+//        implements DataPacketProvider.PacketExtensionProvider
+{
+
+//    @Override
     public Chat parseExtension(XmlPullParser parser) throws Exception {
         return provideInstance(parser);
     }
@@ -78,9 +79,8 @@ public class ChatProvider extends AbstractIQProvider<Chat> implements
                 instance.setPrevious(value);
         } else if (Set.ELEMENT_NAME.equals(name)
                 && Set.NAMESPACE.equals(parser.getNamespace())) {
-            PacketExtension packetExtension = PacketParserUtils
-                    .parsePacketExtension(Set.ELEMENT_NAME, Set.NAMESPACE,
-                            parser);
+            ExtensionElement packetExtension = PacketParserUtils
+                    .parseExtensionElement(Set.ELEMENT_NAME, Set.NAMESPACE, parser);
             if (packetExtension instanceof Set
                     && ((Set) packetExtension).isValid())
                 instance.setRsm((Set) packetExtension);

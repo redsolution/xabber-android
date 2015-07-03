@@ -31,11 +31,12 @@ import com.xabber.xmpp.muc.Role;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smackx.muc.packet.MUCItem;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jxmpp.util.XmppStringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -179,12 +180,12 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(String bareAddress, Packet packet) {
+    protected boolean onPacket(String bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet)) {
             return false;
         }
         final String from = packet.getFrom();
-        final String resource = StringUtils.parseResource(from);
+        final String resource = XmppStringUtils.parseResource(from);
         if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error) {
@@ -268,22 +269,22 @@ public class RoomChat extends AbstractChat {
                 occupants.remove(stringPrep);
                 MUCUser mucUser = MUC.getMUCUserExtension(presence);
                 if (mucUser != null && mucUser.getStatus() != null) {
-                    String code = mucUser.getStatus().getCode();
-                    if ("307".equals(code)) {
-                        onKick(resource, mucUser.getItem().getActor());
-                    } else if ("301".equals(code)) {
-                        onBan(resource, mucUser.getItem().getActor());
-                    } else if ("303".equals(code)) {
-                        String newNick = mucUser.getItem().getNick();
-                        if (newNick == null) {
-                            return true;
-                        }
-                        onRename(resource, newNick);
-                        Occupant occupant = createOccupant(newNick, presence);
-                        occupants.put(Jid.getStringPrep(newNick), occupant);
-                    } else if ("321".equals(code)) {
-                        onRevoke(resource, mucUser.getItem().getActor());
-                    }
+//                    String code = mucUser.getStatus().getCode();
+//                    if ("307".equals(code)) {
+//                        onKick(resource, mucUser.getItem().getActor());
+//                    } else if ("301".equals(code)) {
+//                        onBan(resource, mucUser.getItem().getActor());
+//                    } else if ("303".equals(code)) {
+//                        String newNick = mucUser.getItem().getNick();
+//                        if (newNick == null) {
+//                            return true;
+//                        }
+//                        onRename(resource, newNick);
+//                        Occupant occupant = createOccupant(newNick, presence);
+//                        occupants.put(Jid.getStringPrep(newNick), occupant);
+//                    } else if ("321".equals(code)) {
+//                        onRevoke(resource, mucUser.getItem().getActor());
+//                    }
                 } else {
                     onLeave(resource);
                 }
@@ -356,15 +357,15 @@ public class RoomChat extends AbstractChat {
         String statusText = null;
         MUCUser mucUser = MUC.getMUCUserExtension(presence);
         if (mucUser != null) {
-            MUCUser.Item item = mucUser.getItem();
+            MUCItem item = mucUser.getItem();
             if (item != null) {
                 jid = item.getJid();
                 try {
-                    affiliation = Affiliation.fromString(item.getAffiliation());
+                    affiliation = Affiliation.fromString(item.getAffiliation().toString());
                 } catch (NoSuchElementException e) {
                 }
                 try {
-                    role = Role.fromString(item.getRole());
+                    role = Role.fromString(item.getRole().toString());
                 } catch (NoSuchElementException e) {
                 }
                 statusMode = StatusMode.createStatusMode(presence);

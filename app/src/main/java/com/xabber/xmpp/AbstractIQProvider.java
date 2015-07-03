@@ -14,7 +14,6 @@
  */
 package com.xabber.xmpp;
 
-import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;
 
 /**
@@ -23,10 +22,12 @@ import org.xmlpull.v1.XmlPullParser;
  * @param <T>
  * @author alexander.ivanov
  */
-public abstract class AbstractIQProvider<T extends IQ> extends
-        AbstractProvider<T> implements IQProvider {
 
-    @Override
+// TODO
+public abstract class AbstractIQProvider<T extends IQ> extends AbstractProvider<T>
+        //implements IQProvider
+        {
+
     public IQ parseIQ(XmlPullParser parser) throws Exception {
         return provideInstance(parser);
     }

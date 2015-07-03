@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.util.XmppDateTime;
 import org.xmlpull.v1.XmlPullParser;
 
 import com.xabber.android.data.LogManager;
@@ -69,7 +70,7 @@ public class ProviderUtils {
         if (matcher.matches())
             dateString = matcher.group(1) + matcher.group(2);
         try {
-            return StringUtils.parseXEP0082Date(dateString);
+            return XmppDateTime.parseXEP0082Date(dateString);
         } catch (ParseException e) {
             synchronized (XEP_0082_UTC_FORMAT_WITHOUT_MILLIS) {
                 try {

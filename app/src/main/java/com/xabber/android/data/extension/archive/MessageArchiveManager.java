@@ -60,7 +60,7 @@ import com.xabber.xmpp.rsm.Set;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.Collection;
 import java.util.Date;
@@ -294,8 +294,7 @@ public class MessageArchiveManager implements OnPacketListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
@@ -306,19 +305,19 @@ public class MessageArchiveManager implements OnPacketListener,
         if (!(packet instanceof IQ))
             return;
         IQ iq = (IQ) packet;
-        if (iq.getType() == Type.SET && packet instanceof Pref
+        if (iq.getType() == Type.set && packet instanceof Pref
                 && ((Pref) packet).isValid())
             onPreferenceReceived(account, (Pref) packet);
-        else if (iq.getType() == Type.SET && packet instanceof ItemRemove
+        else if (iq.getType() == Type.set && packet instanceof ItemRemove
                 && ((ItemRemove) packet).isValid())
             onItemRemoveReceived(account, (ItemRemove) packet);
-        else if (iq.getType() == Type.SET && packet instanceof SessionRemove
+        else if (iq.getType() == Type.set && packet instanceof SessionRemove
                 && ((SessionRemove) packet).isValid())
             onSessionRemoveReceived(account, (SessionRemove) packet);
-        else if (iq.getType() == Type.RESULT && packet instanceof List
+        else if (iq.getType() == Type.result && packet instanceof List
                 && ((List) packet).isValid())
             onListReceived(account, (List) packet);
-        else if (iq.getType() == Type.RESULT && packet instanceof Chat
+        else if (iq.getType() == Type.result && packet instanceof Chat
                 && ((Chat) packet).isValid())
             onChatReceived(account, (Chat) packet);
     }
@@ -336,7 +335,7 @@ public class MessageArchiveManager implements OnPacketListener,
             } else if (AccountManager.getInstance().getArchiveMode(account) == ArchiveMode.server) {
                 Auto auto = new Auto();
                 auto.setSave(true);
-                auto.setType(Type.SET);
+                auto.setType(Type.set);
                 try {
                     ConnectionManager.getInstance().sendPacket(account, auto);
                 } catch (NetworkException e) {
@@ -393,7 +392,7 @@ public class MessageArchiveManager implements OnPacketListener,
         defaultItem.setSave(SaveMode.body);
         Pref pref = new Pref();
         pref.setDefault(defaultItem);
-        pref.setType(Type.SET);
+        pref.setType(Type.set);
         try {
             ConnectionManager.getInstance().sendPacket(account, pref);
         } catch (NetworkException e) {
@@ -543,7 +542,7 @@ public class MessageArchiveManager implements OnPacketListener,
 
     private void requestPreferences(String account) {
         Pref pref = new Pref();
-        pref.setType(Type.GET);
+        pref.setType(Type.get);
         try {
             ConnectionManager.getInstance().sendRequest(account, pref,
                     new OnResponseListener() {
@@ -622,7 +621,7 @@ public class MessageArchiveManager implements OnPacketListener,
 
     private void requestModified(String account, String before) {
         Modified packet = new Modified();
-        packet.setType(Type.GET);
+        packet.setType(Type.get);
         Set rsm = new Set();
         rsm.setMax(RSM_MAX);
         rsm.setBefore(before);
@@ -695,7 +694,7 @@ public class MessageArchiveManager implements OnPacketListener,
 
     private String requestList(String account, String bareAddress, String before) {
         List packet = new List();
-        packet.setType(Type.GET);
+        packet.setType(Type.get);
         Set rsm = new Set();
         rsm.setMax(RSM_MAX);
         rsm.setBefore(before);
@@ -713,7 +712,7 @@ public class MessageArchiveManager implements OnPacketListener,
     private void requestChat(String account, CollectionHeader header,
                              String after, boolean modification) {
         Retrieve packet = new Retrieve();
-        packet.setType(Type.GET);
+        packet.setType(Type.get);
         Set rsm = new Set();
         rsm.setMax(RSM_MAX);
         rsm.setAfter(after);
@@ -766,7 +765,7 @@ public class MessageArchiveManager implements OnPacketListener,
         extension.setSave(saveMode);
         Pref packet = new Pref();
         packet.addItem(extension);
-        packet.setType(Type.SET);
+        packet.setType(Type.set);
         ConnectionManager.getInstance().sendPacket(account, packet);
     }
 
@@ -776,7 +775,7 @@ public class MessageArchiveManager implements OnPacketListener,
         extension.setJid(user);
         ItemRemove packet = new ItemRemove();
         packet.addItem(extension);
-        packet.setType(Type.SET);
+        packet.setType(Type.set);
         ConnectionManager.getInstance().sendPacket(account, packet);
     }
 
@@ -862,7 +861,7 @@ public class MessageArchiveManager implements OnPacketListener,
         extension.setSave(saveMode);
         Pref packet = new Pref();
         packet.addSession(extension);
-        packet.setType(Type.SET);
+        packet.setType(Type.set);
         ConnectionManager.getInstance().sendPacket(account, packet);
         sessionSaves.put(account, session, saveMode);
     }
@@ -873,7 +872,7 @@ public class MessageArchiveManager implements OnPacketListener,
         extension.setThread(session);
         SessionRemove packet = new SessionRemove();
         packet.addSession(extension);
-        packet.setType(Type.SET);
+        packet.setType(Type.set);
         ConnectionManager.getInstance().sendPacket(account, packet);
         sessionSaves.remove(account, session);
     }

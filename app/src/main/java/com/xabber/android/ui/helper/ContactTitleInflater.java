@@ -23,7 +23,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
 
-import org.jivesoftware.smackx.ChatState;
+import org.jivesoftware.smackx.chatstates.ChatState;
+
 
 public class ContactTitleInflater {
 

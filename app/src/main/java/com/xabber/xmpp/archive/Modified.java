@@ -45,6 +45,7 @@ public class Modified extends IQ {
     private final Collection<AbstractModified> chats;
 
     public Modified() {
+        super(ELEMENT_NAME, NAMESPACE);
         chats = new ArrayList<AbstractModified>();
     }
 

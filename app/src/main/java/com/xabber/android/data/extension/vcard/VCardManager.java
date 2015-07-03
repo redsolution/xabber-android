@@ -26,6 +26,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 
 import android.database.Cursor;
 
@@ -187,7 +188,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             }
         VCard packet = new VCard();
         packet.setTo(bareAddress);
-        packet.setType(Type.GET);
+        packet.setType(Type.get);
         VCardRequest request = new VCardRequest(account, bareAddress,
                 packet.getPacketID());
         requests.add(request);
@@ -243,8 +244,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
@@ -258,7 +258,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                     request(account, bareAddress, null);
         } else if (packet instanceof IQ) {
             IQ iq = (IQ) packet;
-            if (iq.getType() != Type.ERROR && !(packet instanceof VCard))
+            if (iq.getType() != Type.error && !(packet instanceof VCard))
                 return;
             String packetId = iq.getPacketID();
             VCardRequest request = null;
@@ -274,7 +274,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             if (request == null || !request.getUser().equals(bareAddress))
                 return;
             final StructuredName name;
-            if (iq.getType() == Type.ERROR) {
+            if (iq.getType() == Type.error) {
                 onVCardFailed(account, bareAddress);
                 invalidHashes.addAll(request.getHashes());
                 if (names.containsKey(bareAddress))

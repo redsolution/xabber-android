@@ -3,7 +3,8 @@ package com.xabber.xmpp.carbon;
 import java.io.IOException;
 
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.packet.DelayInfo;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.xabber.xmpp.Container;
@@ -23,8 +24,8 @@ public class Forwarded extends PacketExtension implements Container {
     public static final String NAMESPACE = "urn:xmpp:forward:0";
     public static final String ELEMENT_NAME = "forwarded";
     
-    private DelayInfo delay;
-    private Packet forwardedPacket;
+    private DelayInformation delay;
+    private Stanza forwardedPacket;
     
     public Forwarded() {        
     }
@@ -32,10 +33,10 @@ public class Forwarded extends PacketExtension implements Container {
     /**
      * Creates a new Forwarded packet extension.
      *
-     * @param delay an optional {@link DelayInfo} timestamp of the packet.
+     * @param delay an optional {@link DelayInformation} timestamp of the packet.
      * @param fwdPacket the packet that is forwarded (required).
      */
-    public Forwarded(DelayInfo delay, Packet fwdPacket) {
+    public Forwarded(DelayInformation delay, Stanza fwdPacket) {
         this();
         this.delay = delay;
         this.forwardedPacket = fwdPacket;
@@ -77,9 +78,9 @@ public class Forwarded extends PacketExtension implements Container {
     /**
      * get the timestamp of the forwarded packet.
      *
-     * @return the {@link DelayInfo} representing the time when the original packet was sent. May be null.
+     * @return the {@link DelayInformation} representing the time when the original packet was sent. May be null.
      */
-    public DelayInfo getDelayInfo() {
+    public DelayInformation getDelayInfo() {
         return delay;
     }
 }
