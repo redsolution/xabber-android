@@ -65,6 +65,7 @@
   <string name="events_message_none">Nicht benachrichtigen</string>
   <string name="events_show_text">Nachricht in der Statusleiste anzeigen\nNachricht in der Statusleiste anzeigen</string>
   <string name="events_visible_chat">Benachrichtigung bei offenem Chat\nBenachrichtigung bei eingehender Nachricht im offenen Chat</string>
+  <string name="events_suppress_100">Unterdrücke Status Code 100\nUnterdrücke \'Dieser Raum ist nicht anonym\' Meldungen</string>
   <string name="negative_priotiry_summary">%s (Du wirst aus keinem Chat Nachrichten erhalten)</string>
   <string name="preference_accounts">XMPP-Konten\nKonten verwalten</string>
   <string name="preference_security">Sicherheit\nSicherheitseinstellungen</string>

@@ -64,6 +64,7 @@
     <string name="events_message_none">Don\'t notify</string>
     <string name="events_show_text">Show message in notification\nShow message text in notification area</string>
     <string name="events_visible_chat">Notify in current chat\nNotify on incoming messages in current chat</string>
+    <string name="events_suppress_100">Suppress Status Code 100\nDon\'t get \'This room is not anonymous\' messages</string>
     <string name="negative_priotiry_summary">%s (you won\'t receive messages from any chat)</string>
     <string name="preference_accounts">XMPP accounts\nManage accounts</string>
     <string name="preference_security">Security\nSecurity settings</string>
