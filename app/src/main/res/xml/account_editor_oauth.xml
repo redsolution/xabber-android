@@ -38,6 +38,9 @@
         android:key="@string/account_priority_key"
         android:title="@string/account_priority"
         android:singleLine="true"
+        android:numeric="signed"
+        android:inputType="numberSigned|phone"
+        android:digits="1234567890-"
         />
     <ListPreference
         android:title="@string/account_proxy_type"
