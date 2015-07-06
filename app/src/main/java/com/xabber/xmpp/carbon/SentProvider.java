@@ -23,8 +23,7 @@ public class SentProvider extends AbstractExtensionProvider<Sent> {
     }
     
     @Override
-    protected boolean parseInner(XmlPullParser parser, Sent instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Sent instance) {
         
         Forwarded forwarded = null;        
         

@@ -18,9 +18,13 @@ import com.xabber.xmpp.AbstractIQProvider;
 import com.xabber.xmpp.ProviderUtils;
 import com.xabber.xmpp.rsm.Set;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 public class ModifiedProvider extends AbstractIQProvider<Modified> {
 
@@ -37,8 +41,7 @@ public class ModifiedProvider extends AbstractIQProvider<Modified> {
     }
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Modified instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Modified instance) throws XmlPullParserException, IOException, SmackException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();

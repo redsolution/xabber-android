@@ -14,17 +14,18 @@
  */
 package com.xabber.xmpp.vcard;
 
-import org.xmlpull.v1.XmlPullParser;
-
 import com.xabber.xmpp.AbstractProvider;
-import com.xabber.xmpp.OverflowReceiverBufferException;
 import com.xabber.xmpp.ProviderUtils;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 class KeyProvider extends AbstractProvider<Key> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Key instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Key instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         if (Key.TYPE_NAME.equals(parser.getName()))
@@ -34,7 +35,7 @@ class KeyProvider extends AbstractProvider<Key> {
             try {
                 value = ProviderUtils.parseText(parser,
                         Key.MAX_ENCODED_DATA_SIZE);
-            } catch (OverflowReceiverBufferException e) {
+            } catch (Exception e) {
                 return true;
             }
             instance.setEncodedData(value);

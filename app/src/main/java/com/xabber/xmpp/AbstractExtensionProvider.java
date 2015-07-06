@@ -15,7 +15,11 @@
 package com.xabber.xmpp;
 
 
+import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  * Provides common interface to parse extensions.
@@ -24,12 +28,105 @@ import org.xmlpull.v1.XmlPullParser;
  * @author alexander.ivanov
  */
 public abstract class AbstractExtensionProvider<Extension extends PacketExtension>
-        extends AbstractProvider<Extension>
-    // TODO
-//        implements PacketExtensionProvider
+        extends org.jivesoftware.smack.provider.ExtensionElementProvider<Extension>
 {
 
-    public Extension parseExtension(XmlPullParser parser) throws Exception {
+    /**
+     * Creates an instance.
+     * <p/>
+     * Parser position mustn't be changed.
+     *
+     * @param parser
+     * @return
+     */
+    abstract protected Extension createInstance(XmlPullParser parser);
+
+    /**
+     * Parse XML tag and create instance.
+     *
+     * @param parser an XML parser.
+     * @return new instance.
+     * @throws Exception if an error occurs while parsing.
+     */
+    public Extension provideInstance(XmlPullParser parser) throws IOException, XmlPullParserException, SmackException {
+        Extension instance = createInstance(parser);
+        return parseTag(parser, instance);
+    }
+
+    /**
+     * Parse XML tag and populate element instance. At the beginning of the
+     * method call, the XML parser will be positioned on the opening tag. At the
+     * end of the method call, the parser <b>must</b> be positioned on the end
+     * of processed tag.
+     *
+     * @param parser   an XML parser.
+     * @param instance instance to be updated.
+     * @return updated or replaced instance.
+     * @throws Exception if an error occurs parsing the XML.
+     */
+    public Extension parseTag(XmlPullParser parser, Extension instance) throws IOException, XmlPullParserException, SmackException {
+        String name = parser.getName();
+        instance = preProcess(parser, instance);
+        while (true) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG) {
+                if (!parseInner(parser, instance))
+                    ProviderUtils.skipTag(parser);
+            } else if (eventType == XmlPullParser.END_TAG) {
+                if (name.equals(parser.getName()))
+                    break;
+                else
+                    throw new IllegalStateException();
+            } else if (eventType == XmlPullParser.END_DOCUMENT)
+                break;
+        }
+        return postProcess(instance);
+    }
+
+
+    /**
+     * Updates instance from tag name or attributes.
+     * <p/>
+     * Parser position mustn't be changed.
+     *
+     * @param instance
+     * @param parser
+     * @return modified instance.
+     */
+    protected Extension preProcess(XmlPullParser parser, Extension instance) {
+        return instance;
+    }
+
+    /**
+     * Called when packet have been fully parsed.
+     * <p/>
+     * Parser position mustn't be changed.
+     *
+     * @param instance
+     * @return modified instance.
+     */
+    protected Extension postProcess(Extension instance) {
+        return instance;
+    }
+
+    /**
+     * Parses inner tag.
+     * <p/>
+     * Parser position either <b>must</b> be move to the end of processed tag,
+     * either <b>mustn't</b> be changed at all.
+     *
+     * @param parser
+     * @param instance
+     * @return Whether parser position have been changed.
+     * @throws Exception
+     */
+    protected boolean parseInner(XmlPullParser parser, Extension instance) throws XmlPullParserException, IOException, SmackException {
+        return false;
+    }
+
+
+    @Override
+    public Extension parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
         return provideInstance(parser);
     }
 

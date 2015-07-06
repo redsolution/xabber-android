@@ -15,14 +15,16 @@
 package com.xabber.xmpp.vcard;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 class AddressProvider extends AbstractTypedDataProvider<AddressType, Address> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Address instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Address instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();

@@ -22,8 +22,7 @@ public class ReceivedProvider extends AbstractExtensionProvider<Received> {
     }
     
     @Override
-    protected boolean parseInner(XmlPullParser parser, Received instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Received instance) {
         
         Forwarded forwarded = null;
         if (parser.getName().equals(Forwarded.ELEMENT_NAME)) {

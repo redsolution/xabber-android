@@ -15,15 +15,17 @@
 package com.xabber.xmpp.vcard;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.AbstractProvider;
 import com.xabber.xmpp.ProviderUtils;
 
+import java.io.IOException;
+
 class GeoProvider extends AbstractProvider<Geo> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Geo instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Geo instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         if (Geo.LAT_NAME.equals(parser.getName()))

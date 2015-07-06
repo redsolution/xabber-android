@@ -15,15 +15,17 @@
 package com.xabber.xmpp.vcard;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 class SoundHolderProvider extends
         AbstractDataProvider<Sound, DataHolder<Sound>> {
 
     @Override
-    protected boolean createPayload(XmlPullParser parser,
-                                    DataHolder<Sound> instance) throws Exception {
+    protected boolean createPayload(XmlPullParser parser, DataHolder<Sound> instance) {
         if (super.createPayload(parser, instance))
             return true;
         if (PhoneticSound.PHONETIC_NAME.equals(parser.getName()))
@@ -48,8 +50,7 @@ class SoundHolderProvider extends
     }
 
     @Override
-    protected boolean inflatePayload(XmlPullParser parser,
-                                     DataHolder<Sound> instance) throws Exception {
+    protected boolean inflatePayload(XmlPullParser parser, DataHolder<Sound> instance) throws IOException, XmlPullParserException {
         if (super.inflatePayload(parser, instance))
             return true;
         if (instance.getPayload() instanceof PhoneticSound)
@@ -59,8 +60,7 @@ class SoundHolderProvider extends
             return false;
     }
 
-    protected boolean inflatePhoneticSound(XmlPullParser parser,
-                                           PhoneticSound payload) throws Exception {
+    protected boolean inflatePhoneticSound(XmlPullParser parser, PhoneticSound payload) throws IOException, XmlPullParserException {
         if (PhoneticSound.PHONETIC_NAME.equals(parser.getName()))
             payload.setValue(ProviderUtils.parseText(parser));
         else

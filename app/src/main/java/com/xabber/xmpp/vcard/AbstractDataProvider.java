@@ -14,20 +14,21 @@
  */
 package com.xabber.xmpp.vcard;
 
-import org.xmlpull.v1.XmlPullParser;
-
 import com.xabber.xmpp.AbstractProvider;
 import com.xabber.xmpp.Instance;
-import com.xabber.xmpp.OverflowReceiverBufferException;
 import com.xabber.xmpp.ProviderUtils;
+
 import org.jivesoftware.smack.util.stringencoder.Base64;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder<T>>
         extends AbstractProvider<Inner> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Inner instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Inner instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         if (instance.getPayload() == null)
@@ -36,8 +37,7 @@ abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder
         return inflatePayload(parser, instance);
     }
 
-    protected boolean createPayload(XmlPullParser parser, Inner instance)
-            throws Exception {
+    protected boolean createPayload(XmlPullParser parser, Inner instance) {
         if (AbstractBinaryData.TYPE_NAME.equals(parser.getName())
                 || AbstractBinaryData.BINVAL_NAME.equals(parser.getName()))
             instance.setPayload(createBinaryData());
@@ -52,8 +52,7 @@ abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder
 
     protected abstract T createExternalData();
 
-    protected boolean inflatePayload(XmlPullParser parser, Inner instance)
-            throws Exception {
+    protected boolean inflatePayload(XmlPullParser parser, Inner instance) throws IOException, XmlPullParserException {
         if (instance.getPayload() instanceof AbstractBinaryData)
             return inflateBinaryData(parser,
                     (AbstractBinaryData) instance.getPayload());
@@ -64,8 +63,7 @@ abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder
             return false;
     }
 
-    protected boolean inflateBinaryData(XmlPullParser parser,
-                                        AbstractBinaryData payload) throws Exception {
+    protected boolean inflateBinaryData(XmlPullParser parser, AbstractBinaryData payload) throws IOException, XmlPullParserException {
         if (AbstractBinaryData.TYPE_NAME.equals(parser.getName()))
             payload.setType(ProviderUtils.parseText(parser));
         else if (AbstractBinaryData.BINVAL_NAME.equals(parser.getName())) {
@@ -73,7 +71,7 @@ abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder
             try {
                 value = ProviderUtils.parseText(parser,
                         AbstractBinaryData.MAX_ENCODED_DATA_SIZE);
-            } catch (OverflowReceiverBufferException e) {
+            } catch (Exception e) {
                 return true;
             }
             payload.setData(Base64.decode(value));
@@ -82,8 +80,7 @@ abstract class AbstractDataProvider<T extends Instance, Inner extends DataHolder
         return true;
     }
 
-    protected boolean inflateExternalData(XmlPullParser parser,
-                                          AbstractExternalData payload) throws Exception {
+    protected boolean inflateExternalData(XmlPullParser parser, AbstractExternalData payload) throws IOException, XmlPullParserException {
         if (AbstractExternalData.EXTVAL_NAME.equals(parser.getName()))
             payload.setValue(ProviderUtils.parseText(parser));
         else

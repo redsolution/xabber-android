@@ -15,14 +15,16 @@
 package com.xabber.xmpp.vcard;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 class LabelProvider extends AbstractTypedDataProvider<AddressType, Label> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Label instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Label instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         if (Label.LINE_NAME.equals(parser.getName())) {

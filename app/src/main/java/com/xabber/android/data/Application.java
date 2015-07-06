@@ -22,6 +22,9 @@ import android.os.Handler;
 import com.xabber.android.R;
 import com.xabber.android.service.XabberService;
 
+import org.jivesoftware.smack.provider.ProviderFileLoader;
+import org.jivesoftware.smack.provider.ProviderManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -133,6 +136,8 @@ public class Application extends android.app.Application {
     }
 
     private void onLoad() {
+        ProviderManager.addLoader(new ProviderFileLoader(getResources().openRawResource(R.raw.smack)));
+
         for (OnLoadListener listener : getManagers(OnLoadListener.class)) {
             LogManager.i(listener, "onLoad");
             listener.onLoad();

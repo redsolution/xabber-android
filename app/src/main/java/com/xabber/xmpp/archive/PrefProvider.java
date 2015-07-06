@@ -14,9 +14,12 @@
  */
 package com.xabber.xmpp.archive;
 
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.AbstractIQProvider;
 import com.xabber.xmpp.ProviderUtils;
@@ -24,8 +27,7 @@ import com.xabber.xmpp.ProviderUtils;
 public class PrefProvider extends AbstractIQProvider<Pref> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Pref instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Pref instance) throws XmlPullParserException, IOException, SmackException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();

@@ -2,11 +2,15 @@ package com.xabber.xmpp.carbon;
 
 import com.xabber.xmpp.AbstractExtensionProvider;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.delay.provider.DelayInformationProvider;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  * Packet extension for XEP-0297: Stanza Forwarding. This class implements
@@ -29,9 +33,9 @@ public class ForwardedProvider extends AbstractExtensionProvider<Forwarded> {
 
         return new Forwarded(null, null);
     }
-        
+
     @Override
-    public Forwarded parseExtension(XmlPullParser parser) throws Exception {
+    public Forwarded parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
         DelayInformationProvider delayInformationProvider = new DelayInformationProvider();
         DelayInformation delayInformation = null;
         Stanza packet = null;
@@ -44,13 +48,13 @@ public class ForwardedProvider extends AbstractExtensionProvider<Forwarded> {
                     delayInformation = delayInformationProvider.parse(parser);
                 else if (parser.getName().equals("message"))
                     packet = PacketParserUtils.parseMessage(parser);
-                else throw new Exception("Unsupported forwarded packet type: " + parser.getName());
+                else throw new SmackException("Unsupported forwarded packet type: " + parser.getName());
             }
             else if (eventType == XmlPullParser.END_TAG && parser.getName().equals(Forwarded.ELEMENT_NAME))
                 done = true;
         }
         if (packet == null)
-            throw new Exception("forwarded extension must contain a packet");
+            throw new SmackException("forwarded extension must contain a packet");
         return new Forwarded(delayInformation, packet);
     }
 }

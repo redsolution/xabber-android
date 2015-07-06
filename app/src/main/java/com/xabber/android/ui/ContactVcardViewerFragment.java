@@ -97,7 +97,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnVCardListe
                     if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
                         throw new IllegalStateException(parser.getNamespace());
                     }
-                    vCard = (VCard) (new VCardProvider()).parseIQ(parser);
+                    vCard = (VCard) (new VCardProvider()).parse(parser);
                 } catch (Exception e) {
                     LogManager.exception(this, e);
                 }

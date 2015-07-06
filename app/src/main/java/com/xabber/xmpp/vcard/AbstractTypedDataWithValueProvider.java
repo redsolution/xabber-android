@@ -15,15 +15,17 @@
 package com.xabber.xmpp.vcard;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 public abstract class AbstractTypedDataWithValueProvider<Type extends Enum<?>, Instance extends AbstractTypedDataWithValue<Type>>
         extends AbstractTypedDataProvider<Type, Instance> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Instance instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Instance instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         if (getValueName().equals(parser.getName())) {

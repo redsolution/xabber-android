@@ -15,9 +15,12 @@
 package com.xabber.xmpp.archive;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.AbstractProvider;
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 public abstract class AbstractMessageProvider<T extends AbstractMessage>
         extends AbstractProvider<T> {
@@ -36,8 +39,7 @@ public abstract class AbstractMessageProvider<T extends AbstractMessage>
     }
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, T instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, T instance) throws IOException, XmlPullParserException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();

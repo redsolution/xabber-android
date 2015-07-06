@@ -15,6 +15,9 @@
 package com.xabber.xmpp;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  * Provide common interface to populate java object from received xml.
@@ -45,7 +48,7 @@ public abstract class AbstractInflater<T extends Instance> {
      * @param instance
      * @return modified instance.
      */
-    protected T postProcess(T instance) throws Exception {
+    protected T postProcess(T instance) {
         return instance;
     }
 
@@ -60,8 +63,7 @@ public abstract class AbstractInflater<T extends Instance> {
      * @return Whether parser position have been changed.
      * @throws Exception
      */
-    protected boolean parseInner(XmlPullParser parser, T instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, T instance) throws IOException, XmlPullParserException {
         return false;
     }
 
@@ -76,7 +78,7 @@ public abstract class AbstractInflater<T extends Instance> {
      * @return updated or replaced instance.
      * @throws Exception if an error occurs parsing the XML.
      */
-    public T parseTag(XmlPullParser parser, T instance) throws Exception {
+    public T parseTag(XmlPullParser parser, T instance) throws IOException, XmlPullParserException {
         String name = parser.getName();
         instance = preProcess(parser, instance);
         while (true) {

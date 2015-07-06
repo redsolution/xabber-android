@@ -15,6 +15,9 @@
 package com.xabber.xmpp;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  * Provide common interface to create new object from received XML.
@@ -42,7 +45,7 @@ public abstract class AbstractProvider<T extends Instance> extends
      * @return new instance.
      * @throws Exception if an error occurs while parsing.
      */
-    public T provideInstance(XmlPullParser parser) throws Exception {
+    public T provideInstance(XmlPullParser parser) throws IOException, XmlPullParserException {
         T instance = createInstance(parser);
         return parseTag(parser, instance);
     }
