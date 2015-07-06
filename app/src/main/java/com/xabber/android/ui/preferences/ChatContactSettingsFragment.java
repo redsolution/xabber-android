@@ -53,6 +53,8 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
                 .isMakeVibro(account, user));
         putValue(map, R.string.chat_events_sound_key, ChatManager.getInstance()
                 .getSound(account, user));
+        putValue(map, R.string.chat_events_suppress_100_key, ChatManager.getInstance()
+                .isSuppress100(account, user));
         return map;
     }
 
@@ -82,6 +84,9 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
             ChatManager.getInstance().setSound(account, user,
                     getUri(result, R.string.chat_events_sound_key));
 
+        if (hasChanges(source, result, R.string.chat_events_suppress_100_key))
+            ChatManager.getInstance().setSuppress100(account, user,
+                    getBoolean(result, R.string.chat_events_suppress_100_key));
         return true;
     }
 

@@ -22,6 +22,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
@@ -198,6 +199,11 @@ public class RoomChat extends AbstractChat {
             if (mucUser != null && mucUser.getDecline() != null) {
                 onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
                 return true;
+            }
+            if (mucUser != null && mucUser.getStatus() != null && mucUser.getStatus().getCode().equals("100")
+                    && ChatManager.getInstance().isSuppress100(account, user)) {
+                    // 'This room is not anonymous'
+                    return true;
             }
             final String text = message.getBody();
             final String subject = message.getSubject();

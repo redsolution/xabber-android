@@ -227,6 +227,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.events_vibro_default);
     }
 
+    public static boolean eventsSuppress100() {
+        return getBoolean(R.string.chat_events_suppress_100_key,
+                R.bool.chat_events_suppress_100_default);
+    }
+
     public static boolean eventsIgnoreSystemVibro() {
         return getBoolean(R.string.events_ignore_system_vibro_key,
                 R.bool.events_ignore_system_vibro_default);
