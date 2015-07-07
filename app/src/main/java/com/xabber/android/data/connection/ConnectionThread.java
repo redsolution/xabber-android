@@ -320,11 +320,8 @@ public class ConnectionThread implements
     }
 
     private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
-        if (Build.VERSION.SDK_INT >= 14) {
-//            connectionConfiguration.setTruststoreType("AndroidCAStore");
-//            connectionConfiguration.setTruststorePassword(null);
-//            connectionConfiguration.setTruststorePath(null);
-        }
+        builder.setKeystoreType("AndroidCAStore");
+
         // Disable smack`s reconnection.
 //        connectionConfiguration.setReconnectionAllowed(false);
         // We will send custom presence.
@@ -348,7 +345,7 @@ public class ConnectionThread implements
         }
 
 //        connectionConfiguration.setSASLAuthenticationEnabled(saslEnabled);
-//        connectionConfiguration.setSecurityMode(tlsMode.getSecurityMode());
+        builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
 
         xmppConnection = new XMPPTCPConnection(builder.build());
