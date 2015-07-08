@@ -74,6 +74,7 @@
         <item>com.xabber.android.data.extension.otr.OTRTable</item>
         <item>com.xabber.android.data.message.chat.VibroTable</item>
         <item>com.xabber.android.data.notification.NotificationTable</item>
+        <item>com.xabber.android.data.message.chat.Suppress100Table</item>
         <item>com.xabber.android.data.message.phrase.PhraseTable</item>
     </string-array>
 
@@ -494,6 +495,9 @@
 
     <string name="chat_events_vibro_key">chat_events_vibro</string>
     <string name="chat_events_visible_chat_key">chat_events_visible_chat</string>
+
+    <string name="chat_events_suppress_100_key">chat_events_suppress_100</string>
+    <bool name="chat_events_suppress_100_default">false</bool>
 
 <!-- preference_xabber -->
     <string name="preference_xabber_key">preference_xabber</string>

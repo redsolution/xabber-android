@@ -71,6 +71,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      * Sound, associated with chat for user in account.
      */
     private final NestedMap<Uri> sounds;
+    /**
+     * Whether 'This room is not anonymous'-messages (Status Code 100) should be suppressed
+     */
+    private final NestedMap<Boolean> suppress100;
 
     private ChatManager() {
         chatInputs = new NestedMap<ChatInput>();
@@ -79,6 +83,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         showText = new NestedMap<>();
         makeVibro = new NestedMap<Boolean>();
         notifyVisible = new NestedMap<Boolean>();
+        suppress100 = new NestedMap<Boolean>();
     }
 
     public static ChatManager getInstance() {
@@ -92,6 +97,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         final NestedMap<ShowMessageTextInNotification> showText = new NestedMap<>();
         final NestedMap<Boolean> makeVibro = new NestedMap<Boolean>();
         final NestedMap<Uri> sounds = new NestedMap<Uri>();
+        final NestedMap<Boolean> suppress100 = new NestedMap<Boolean>();
         Cursor cursor;
         cursor = PrivateChatTable.getInstance().list();
         try {
@@ -158,18 +164,31 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             cursor.close();
         }
 
+        cursor = Suppress100Table.getInstance().list();
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    makeVibro.put(Suppress100Table.getAccount(cursor),
+                            Suppress100Table.getUser(cursor),
+                            Suppress100Table.getValue(cursor));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            cursor.close();
+        }
+
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 onLoaded(privateChats, notifyVisible, showText, makeVibro,
-                        sounds);
+                        sounds, suppress100);
             }
         });
     }
 
     private void onLoaded(Set<BaseEntity> privateChats,
                           NestedMap<Boolean> notifyVisible, NestedMap<ShowMessageTextInNotification> showText,
-                          NestedMap<Boolean> vibro, NestedMap<Uri> sounds) {
+                          NestedMap<Boolean> vibro, NestedMap<Uri> sounds, NestedMap<Boolean> suppress100) {
         for (BaseEntity baseEntity : privateChats)
             this.privateChats.put(baseEntity.getAccount(),
                     baseEntity.getUser(), PRIVATE_CHAT);
@@ -177,6 +196,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         this.showText.addAll(showText);
         this.makeVibro.addAll(vibro);
         this.sounds.addAll(sounds);
+        this.suppress100.addAll(suppress100);
     }
 
     @Override
@@ -187,6 +207,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         showText.clear(accountItem.getAccount());
         makeVibro.clear(accountItem.getAccount());
         notifyVisible.clear(accountItem.getAccount());
+        suppress100.clear(accountItem.getAccount());
     }
 
     /**
@@ -391,4 +412,26 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         });
     }
 
+    /**
+     * @param account
+     * @param user
+     * @return Whether 'This Room is not Anonymous'-messages (Status Code 100) should be suppressed.
+     */
+    public boolean isSuppress100(String account, String user) {
+        Boolean value = suppress100.get(account, user);
+        if (value == null)
+            return SettingsManager.eventsSuppress100();
+        return value;
+    }
+
+    public void setSuppress100(final String account, final String user,
+                             final boolean value) {
+        suppress100.put(account, user, value);
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Suppress100Table.getInstance().write(account, user, value);
+            }
+        });
+    }
 }
