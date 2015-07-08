@@ -61,9 +61,31 @@ public class AccountEditorFragment extends BaseSettingsFragment
 
         if (getString(R.string.account_port_key).equals(key)) {
             try {
-                Integer.parseInt((String) newValue);
+                int newPort = Integer.parseInt((String) newValue);
+                // TODO: Not IPv6 Compatible
+                if (newPort < 0 || newPort > 0xFFFF) {
+                    Toast.makeText(getActivity(), getString(R.string.account_invalid_port_range),
+                    Toast.LENGTH_LONG).show();
+                    return false;
+                }
             } catch (NumberFormatException e) {
                 Toast.makeText(getActivity(), getString(R.string.account_invalid_port),
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+
+        if (getString(R.string.account_proxy_port_key).equals(key)) {
+            try {
+                int newPort = Integer.parseInt((String) newValue);
+                // TODO: Not IPv6 Compatible
+                if (newPort < 0 || newPort > 0xFFFF) {
+                    Toast.makeText(getActivity(), getString(R.string.account_proxy_invalid_port_range),
+                            Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(getActivity(), getString(R.string.account_proxy_invalid_port),
                         Toast.LENGTH_LONG).show();
                 return false;
             }

@@ -67,6 +67,9 @@
         android:title="@string/account_port"
         android:singleLine="true"
         android:dependency="@string/account_custom_key"
+        android:numeric="integer"
+        android:inputType="number|phone"
+        android:digits="1234567890"
         />
     <EditTextPreference
         android:key="@string/account_resource_key"
@@ -77,6 +80,9 @@
         android:key="@string/account_priority_key"
         android:title="@string/account_priority"
         android:singleLine="true"
+        android:numeric="signed"
+        android:inputType="numberSigned|phone"
+        android:digits="1234567890-"
         />
     <CheckBoxPreference
         android:title="@string/account_sasl"
@@ -109,6 +115,9 @@
         android:key="@string/account_proxy_port_key"
         android:title="@string/account_proxy_port"
         android:singleLine="true"
+        android:numeric="integer"
+        android:inputType="number|phone"
+        android:digits="1234567890"
         />
     <EditTextPreference
         android:key="@string/account_proxy_user_key"
