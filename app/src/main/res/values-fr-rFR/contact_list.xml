@@ -18,7 +18,7 @@
   <string name="application_state_roster">Connecté.</string>
   <string name="application_state_starting">Démarrage en cours&#8230;</string>
   <string name="application_state_waiting">En attente de connexion...</string>
-  <string name="chat_list">Liste des conversations</string>
+  <string name="chat_list">Conversations récentes</string>
   <string name="chat_list_is_empty">Pas de conversation active</string>
   <string name="chat_viewer">Conversation</string>
   <string name="close_chat">Fermer cette conversation</string>

@@ -32,7 +32,7 @@
   <string name="account_invalid_priority">Пріоритет має бути в діапазоні між -128 і 128 (типове значення :10)</string>
   <string name="account_oauth">Авторизація</string>
   <string name="account_oauth_invalidated">Не авторизований</string>
-  <string name="account_oauth_summary">Налаштування OAuth авторизації</string>
+  <string name="account_oauth_summary">Налаштування OAuth</string>
   <string name="account_proxy_host">Вузол проксі</string>
   <string name="account_proxy_password">Пароль</string>
   <string name="account_proxy_port">Порт проксі</string>
