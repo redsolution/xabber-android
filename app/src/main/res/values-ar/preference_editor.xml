@@ -47,7 +47,7 @@
   <string name="chats_show_avatars">الصور الرمزية في الرسائل\nإظهار الصور الرمزية في كل رسالة</string>
   <string name="chats_show_status_change">إظهار تغيير الحالة\nأظهر رسائل عن تغيير الحالة</string>
   <string name="chats_show_status_change_muc">في الاجتماعات</string>
-  <string name="chats_state_notification">إظهار إشعار الكتابة\nإشعار بأن الطرف الآخر يكتب رسالة</string>
+  <string name="chats_state_notification">إرسال إخطار الكتابة\nإخطار الطرف الآخر أنك تكتب له رسالة</string>
   <string name="connection_adjust_priority">تعديل الأولوية\nضبط الأولوية حسب الحالة المحددة. أولوية الحساب سيتم تجاوزها.</string>
   <string name="connection_go_away_immediately">فوراً عند قفل الشاشة</string>
   <string name="connection_go_xa">\"غياب ممتد\" عند الخمول\nتعيين حالة \"غياب ممتد\" لدى قفل الشاشة</string>

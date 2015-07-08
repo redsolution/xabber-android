@@ -44,14 +44,14 @@
   <string name="account_store_password">Guardar palavra-passe</string>
   <string name="account_store_password_summary">Desactivar esta opção para solicitar a palavra-passe cada vez que se ligar</string>
   <string name="account_syncable">Integrar com os contactos do sistema</string>
-  <string name="account_syncable_summary">Mostrar os contactos desta conta na lista de contactos do dispositivo</string>
+  <string name="account_syncable_summary">Mostra os contactos desta conta na lista de contactos do dispositivo</string>
   <string name="account_tls_enable">Activar TLS</string>
   <string name="account_tls_enable_summary">Usar a encriptação TLS, sempre que possível, para se ligar ao servidor</string>
   <string name="account_tls_legacy">SSL herdado</string>
   <string name="account_tls_legacy_summary">Usar a encriptação SSL herdada para se ligar ao servidor</string>
   <string name="account_tls_mode">Usar TLS/SSL</string>
   <string name="account_tls_require">Exigir TLS</string>
-  <string name="account_tls_require_summary">Exigir encriptação TLS para se ligar ao servidor</string>
+  <string name="account_tls_require_summary">Exige encriptação TLS para se ligar ao servidor</string>
   <string name="account_use_orbot">Conversar através da rede anónima TOR e forçar o protocolo de encriptação TLS\nNão é recomendado para o Google Talk</string>
   <string name="confirm_cancellation">Tem a certeza de que deseja descartar todas as alterações?</string>
   <string name="INCORRECT_USER_NAME">Nome de utilizador incorrecto. Seleccione o texto de ajuda abaixo para detalhes.</string>
