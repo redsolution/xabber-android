@@ -298,7 +298,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
         if (registerNewAccount) {
               // TODO: attempt to register account, if that fails return null;
-              // accountItem.registerAccount();
+               accountItem.registerAccount();
               // return(null);
         }
         requestToWriteAccount(accountItem);
