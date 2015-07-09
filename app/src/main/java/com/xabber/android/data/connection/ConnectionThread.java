@@ -41,6 +41,8 @@ import org.xbill.DNS.Record;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,7 +50,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.X509TrustManager;
+
+import de.duenndns.ssl.MemorizingTrustManager;
 
 /**
  * Provides connection workflow.
@@ -347,6 +353,19 @@ public class ConnectionThread implements
 //        connectionConfiguration.setSASLAuthenticationEnabled(saslEnabled);
         builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
+
+        {
+            try {
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+                sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
+                builder.setCustomSSLContext(sslContext);
+                builder.setHostnameVerifier(
+                        mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()));
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
+            }
+        }
 
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);

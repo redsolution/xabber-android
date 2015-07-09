@@ -415,5 +415,9 @@
         <receiver android:name="com.xabber.android.receiver.GoAwayReceiver" />
         <receiver android:name="com.xabber.android.receiver.GoXaReceiver" />
         <receiver android:name="com.xabber.android.receiver.ComposingPausedReceiver" />
+
+        <activity
+            android:name="de.duenndns.ssl.MemorizingActivity"
+            />
     </application>
 </manifest>

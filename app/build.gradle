@@ -56,4 +56,5 @@ dependencies {
     compile "org.igniterealtime.smack:smack-experimental:4.1.2"
     compile "org.igniterealtime.smack:smack-tcp:4.1.2"
     compile project('otr4j')
+    compile project('MemorizingTrustManager')
 }
