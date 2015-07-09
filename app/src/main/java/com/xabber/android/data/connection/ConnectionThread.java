@@ -564,7 +564,12 @@ public class ConnectionThread implements
     private void onAccountRegistered(final String password) {
         LogManager.i(this, "Account registered");
         connectionItem.onAccountRegistered(this);
-        authorization(password);
+        runOnConnectionThread(new Runnable() {
+            @Override
+            public void run() {
+                authorization(password);
+            }
+        });
     }
 
     /**
