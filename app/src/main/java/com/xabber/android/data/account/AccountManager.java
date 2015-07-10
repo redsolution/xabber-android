@@ -504,7 +504,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             result.setColorIndex(colorIndex);
 
             boolean reconnect = false;
-            if (accountItem.getConnectionSettings().isCustom() != custom
+            if (accountItem.getConnectionSettings().isCustomHostAndPort() != custom
                     || !accountItem.getConnectionSettings().getHost().equals(host)
                     || accountItem.getConnectionSettings().getPort() != port
                     || !accountItem.getConnectionSettings().getPassword().equals(password)
@@ -596,7 +596,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         updateAccount(
                 account,
-                connectionSettings.isCustom(),
+                connectionSettings.isCustomHostAndPort(),
                 connectionSettings.getHost(),
                 connectionSettings.getPort(),
                 connectionSettings.getServerName(),
@@ -625,7 +625,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         updateAccount(
                 account,
-                connectionSettings.isCustom(),
+                connectionSettings.isCustomHostAndPort(),
                 connectionSettings.getHost(),
                 connectionSettings.getPort(),
                 connectionSettings.getServerName(),
@@ -654,7 +654,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         AccountManager.getInstance().updateAccount(
                 account,
-                connectionSettings.isCustom(),
+                connectionSettings.isCustomHostAndPort(),
                 connectionSettings.getHost(),
                 connectionSettings.getPort(),
                 connectionSettings.getServerName(),

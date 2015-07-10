@@ -69,6 +69,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
             @Override
             public void connectionCreated(final XMPPConnection connection) {
+                LogManager.i(this, "connectionCreated");
                 ServiceDiscoveryManager.getInstanceFor(connection).addFeature("sslc2s");
             }
         });
@@ -85,6 +86,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     private final NestedMap<RequestHolder> requests;
 
     private ConnectionManager() {
+        LogManager.i(this, "ConnectionManager");
         managedConnections = new ArrayList<>();
         requests = new NestedMap<>();
     }
@@ -95,12 +97,14 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     @Override
     public void onInitialized() {
+        LogManager.i(this, "onInitialized");
         updateConnections(false);
         AccountManager.getInstance().onAccountsChanged(new ArrayList<>(AccountManager.getInstance().getAllAccounts()));
     }
 
     @Override
     public void onClose() {
+        LogManager.i(this, "onClose");
         ArrayList<ConnectionThread> connections = new ArrayList<>(managedConnections);
         managedConnections.clear();
         for (ConnectionThread connectionThread : connections) {
@@ -116,6 +120,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
      * @param userRequest
      */
     public void updateConnections(boolean userRequest) {
+        LogManager.i(this, "updateConnections");
         AccountManager accountManager = AccountManager.getInstance();
         for (String account : accountManager.getAccounts()) {
             if (accountManager.getAccount(account).updateConnection(userRequest)) {
@@ -128,6 +133,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
      * Disconnect and connect using new network.
      */
     public void forceReconnect() {
+        LogManager.i(this, "forceReconnect");
         AccountManager accountManager = AccountManager.getInstance();
         for (String account : accountManager.getAccounts()) {
             accountManager.getAccount(account).forceReconnect();
@@ -181,6 +187,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     public void onConnection(ConnectionThread connectionThread) {
+        LogManager.i(this, "onConnection");
         managedConnections.add(connectionThread);
         for (OnConnectionListener listener : Application.getInstance().getManagers(OnConnectionListener.class)) {
             listener.onConnection(connectionThread.getConnectionItem());
@@ -188,6 +195,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     public void onConnected(ConnectionThread connectionThread) {
+        LogManager.i(this, "onConnected");
         if (!managedConnections.contains(connectionThread)) {
             return;
         }
@@ -197,6 +205,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     public void onAuthorized(ConnectionThread connectionThread) {
+        LogManager.i(this, "onAuthorized");
         if (!managedConnections.contains(connectionThread)) {
             return;
         }
@@ -208,6 +217,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     public void onDisconnect(ConnectionThread connectionThread) {
+        LogManager.i(this, "onDisconnect");
         if (!managedConnections.remove(connectionThread)) {
             return;
         }
@@ -251,9 +261,9 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     @Override
     public void onTimer() {
-        if (NetworkManager.getInstance().getState() != NetworkState.suspended) {
-            Collection<ConnectionItem> reconnect = new ArrayList<>();
-            for (ConnectionThread connectionThread : managedConnections) {
+//        if (NetworkManager.getInstance().getState() != NetworkState.suspended) {
+//            Collection<ConnectionItem> reconnect = new ArrayList<>();
+//            for (ConnectionThread connectionThread : managedConnections) {
 //                if (connectionThread.getConnectionItem().getState().isConnected()
 //                    // TODO find the way to check if connection is alive
 //                    // XMPPConnection can`t be null here
@@ -262,11 +272,11 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 //                    LogManager.i(connectionThread.getConnectionItem(), "forceReconnect on checkAlive");
 //                    reconnect.add(connectionThread.getConnectionItem());
 //                }
-            }
-            for (ConnectionItem connection : reconnect) {
-                connection.forceReconnect();
-            }
-        }
+//            }
+//            for (ConnectionItem connection : reconnect) {
+//                connection.forceReconnect();
+//            }
+//        }
         long now = new Date().getTime();
         Iterator<NestedMap.Entry<RequestHolder>> iterator = requests.iterator();
         while (iterator.hasNext()) {

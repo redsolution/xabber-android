@@ -120,9 +120,10 @@ public class ConnectionThread implements
     private boolean registerNewAccount;
 
     public ConnectionThread(final ConnectionItem connectionItem) {
+        LogManager.i(this, "NEW connection thread " + connectionItem.getRealJid());
+
         this.connectionItem = connectionItem;
-        executorService = Executors
-                .newSingleThreadExecutor(new ThreadFactory() {
+        executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
                     @Override
                     public Thread newThread(Runnable runnable) {
                         Thread thread = new Thread(
@@ -751,6 +752,8 @@ public class ConnectionThread implements
     synchronized void start(final String fqdn, final int port,
                             final boolean useSRVLookup,
                             final boolean registerNewAccount) {
+        LogManager.i(this, "start: " + fqdn);
+
         if (started)
             throw new IllegalStateException();
         started = true;

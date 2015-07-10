@@ -42,7 +42,7 @@ public abstract class ConnectionItem {
     /**
      * Connection was requested by user.
      */
-    private boolean connectionRequest;
+    private boolean isConnectionRequestedByUser;
 
     /**
      * Current state.
@@ -69,7 +69,7 @@ public abstract class ConnectionItem {
                 serverName, resource, custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
-        connectionRequest = false;
+        isConnectionRequestedByUser = false;
         disconnectionRequested = false;
         connectionThread = null;
         state = ConnectionState.offline;
@@ -152,7 +152,7 @@ public abstract class ConnectionItem {
             if (state == ConnectionState.connected || state == ConnectionState.authentication
                     || state == ConnectionState.connecting) {
                 if (userRequest) {
-                    connectionRequest = false;
+                    isConnectionRequestedByUser = false;
                 }
                 if (connectionThread != null) {
                     disconnect(connectionThread);
@@ -168,17 +168,26 @@ public abstract class ConnectionItem {
         } else {
             if (state == ConnectionState.offline || state == ConnectionState.waiting) {
                 if (userRequest) {
-                    connectionRequest = true;
+                    isConnectionRequestedByUser = true;
                 }
                 state = ConnectionState.connecting;
                 connectionThread = new ConnectionThread(this);
-                if (connectionSettings.isCustom()) {
-                    connectionThread.start(connectionSettings.getHost(),
-                            connectionSettings.getPort(), false, registerNewAccount);
+
+                boolean useSRVLookup;
+                String fullyQualifiedDomainName;
+                int port;
+                if (connectionSettings.isCustomHostAndPort()) {
+                    fullyQualifiedDomainName = connectionSettings.getHost();
+                    port = connectionSettings.getPort();
+                    useSRVLookup = false;
                 } else {
-                    connectionThread.start(connectionSettings.getServerName(),
-                            5222, true, registerNewAccount);
+                    fullyQualifiedDomainName = connectionSettings.getServerName();
+                    port = 5222;
+                    useSRVLookup = true;
                 }
+
+                connectionThread.start(fullyQualifiedDomainName, port, useSRVLookup, registerNewAccount);
+
                 return true;
             } else {
                 return false;
@@ -194,10 +203,10 @@ public abstract class ConnectionItem {
             return;
         }
         disconnectionRequested = true;
-        boolean request = connectionRequest;
-        connectionRequest = false;
+        boolean request = isConnectionRequestedByUser;
+        isConnectionRequestedByUser = false;
         updateConnection(false);
-        connectionRequest = request;
+        isConnectionRequestedByUser = request;
         disconnectionRequested = false;
         updateConnection(false);
     }
@@ -319,10 +328,10 @@ public abstract class ConnectionItem {
         if (onDisconnect(connectionThread)) {
             state = ConnectionState.waiting;
             this.connectionThread = null;
-            if (connectionRequest) {
+            if (isConnectionRequestedByUser) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
-            connectionRequest = false;
+            isConnectionRequestedByUser = false;
         }
     }
 
