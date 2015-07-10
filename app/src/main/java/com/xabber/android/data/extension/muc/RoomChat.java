@@ -201,7 +201,7 @@ public class RoomChat extends AbstractChat {
                 onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
                 return true;
             }
-            if (mucUser != null && mucUser.getStatus() != null && mucUser.getStatus().getCode().equals("100")
+            if (mucUser != null && mucUser.getStatus() != null && mucUser.getStatus().contains(MUCUser.Status.create("100"))
                     && ChatManager.getInstance().isSuppress100(account, user)) {
                     // 'This room is not anonymous'
                     return true;
