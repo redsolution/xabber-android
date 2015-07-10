@@ -36,6 +36,7 @@ import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+import org.jivesoftware.smackx.ping.PingFailedListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +55,8 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
      * Timeout for receiving reply from server.
      */
     public final static int PACKET_REPLY_TIMEOUT = 5000;
+
+    public final static int PING_INTERVAL_SECONDS = 30;
 
     private final static ConnectionManager instance;
 
@@ -89,6 +92,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         LogManager.i(this, "ConnectionManager");
         managedConnections = new ArrayList<>();
         requests = new NestedMap<>();
+        org.jivesoftware.smackx.ping.PingManager.setDefaultPingInterval(PING_INTERVAL_SECONDS);
     }
 
     public static ConnectionManager getInstance() {
@@ -121,9 +125,12 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
      */
     public void updateConnections(boolean userRequest) {
         LogManager.i(this, "updateConnections");
+
         AccountManager accountManager = AccountManager.getInstance();
         for (String account : accountManager.getAccounts()) {
-            if (accountManager.getAccount(account).updateConnection(userRequest)) {
+            final ConnectionItem connectionItem = accountManager.getAccount(account);
+
+            if (connectionItem.updateConnection(userRequest)) {
                 AccountManager.getInstance().onAccountChanged(account);
             }
         }
@@ -194,7 +201,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         }
     }
 
-    public void onConnected(ConnectionThread connectionThread) {
+    public void onConnected(final ConnectionThread connectionThread) {
         LogManager.i(this, "onConnected");
         if (!managedConnections.contains(connectionThread)) {
             return;
@@ -202,6 +209,14 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
             listener.onConnected(connectionThread.getConnectionItem());
         }
+
+        org.jivesoftware.smackx.ping.PingManager.getInstanceFor(connectionThread.getXMPPConnection()).registerPingFailedListener(new PingFailedListener() {
+            @Override
+            public void pingFailed() {
+                LogManager.i(this, "pingFailed for " + connectionThread.getConnectionItem().getRealJid());
+                connectionThread.getConnectionItem().forceReconnect();
+            }
+        });
     }
 
     public void onAuthorized(ConnectionThread connectionThread) {
@@ -261,22 +276,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     @Override
     public void onTimer() {
-//        if (NetworkManager.getInstance().getState() != NetworkState.suspended) {
-//            Collection<ConnectionItem> reconnect = new ArrayList<>();
-//            for (ConnectionThread connectionThread : managedConnections) {
-//                if (connectionThread.getConnectionItem().getState().isConnected()
-//                    // TODO find the way to check if connection is alive
-//                    // XMPPConnection can`t be null here
-////                        && !connectionThread.getXMPPConnection().isAlive()
-//                        ) {
-//                    LogManager.i(connectionThread.getConnectionItem(), "forceReconnect on checkAlive");
-//                    reconnect.add(connectionThread.getConnectionItem());
-//                }
-//            }
-//            for (ConnectionItem connection : reconnect) {
-//                connection.forceReconnect();
-//            }
-//        }
         long now = new Date().getTime();
         Iterator<NestedMap.Entry<RequestHolder>> iterator = requests.iterator();
         while (iterator.hasNext()) {
