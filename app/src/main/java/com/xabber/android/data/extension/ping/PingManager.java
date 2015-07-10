@@ -69,7 +69,7 @@ public class PingManager implements OnPacketListener {
         if (ping.getType() != IQ.Type.get)
             return;
         try {
-            ConnectionManager.getInstance().sendPacket(account,
+            ConnectionManager.getInstance().sendStanza(account,
                     IQ.createResultIQ(ping));
         } catch (NetworkException e) {
             LogManager.exception(this, e);

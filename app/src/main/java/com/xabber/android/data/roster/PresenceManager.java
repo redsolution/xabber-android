@@ -124,7 +124,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         HashSet<String> set = requestedSubscriptions.get(account);
         if (set == null) {
             set = new HashSet<String>();
@@ -150,7 +150,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribed);
         packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, bareAddress);
         removeRequestedSubscription(account, bareAddress);
     }
@@ -167,7 +167,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             throws NetworkException {
         Presence packet = new Presence(Presence.Type.unsubscribed);
         packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, bareAddress);
         removeRequestedSubscription(account, bareAddress);
     }
@@ -381,7 +381,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     public void resendPresence(String account) throws NetworkException {
         if (!readyAccounts.contains(account))
             throw new NetworkException(R.string.NOT_CONNECTED);
-        ConnectionManager.getInstance().sendPacket(account,
+        ConnectionManager.getInstance().sendStanza(account,
                 AccountManager.getInstance().getAccount(account).getPresence());
     }
 

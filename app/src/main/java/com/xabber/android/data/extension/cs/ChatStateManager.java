@@ -215,7 +215,7 @@ public class ChatStateManager implements OnDisconnectListener,
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState));
         try {
-            ConnectionManager.getInstance().sendPacket(account, message);
+            ConnectionManager.getInstance().sendStanza(account, message);
         } catch (NetworkException e) {
             // Just ignore it.
         }

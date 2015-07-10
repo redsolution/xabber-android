@@ -292,7 +292,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         message.setThread(session);
         message.addExtension(feature);
         try {
-            ConnectionManager.getInstance().sendPacket(account, message);
+            ConnectionManager.getInstance().sendStanza(account, message);
         } catch (NetworkException e) {
         }
     }

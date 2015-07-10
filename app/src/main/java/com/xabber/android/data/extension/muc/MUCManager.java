@@ -39,7 +39,6 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
@@ -442,7 +441,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         invite.setReason("");
         mucUser.setInvite(invite);
         message.addExtension(mucUser);
-        ConnectionManager.getInstance().sendPacket(account, message);
+        ConnectionManager.getInstance().sendStanza(account, message);
         roomChat.putInvite(message.getPacketID(), user);
         roomChat.newAction(roomChat.getNickname(), user, ChatAction.invite_sent);
     }

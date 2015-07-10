@@ -337,7 +337,7 @@ public class MessageArchiveManager implements OnPacketListener,
                 auto.setSave(true);
                 auto.setType(Type.set);
                 try {
-                    ConnectionManager.getInstance().sendPacket(account, auto);
+                    ConnectionManager.getInstance().sendStanza(account, auto);
                 } catch (NetworkException e) {
                 }
                 // TODO: track results.
@@ -394,7 +394,7 @@ public class MessageArchiveManager implements OnPacketListener,
         pref.setDefault(defaultItem);
         pref.setType(Type.set);
         try {
-            ConnectionManager.getInstance().sendPacket(account, pref);
+            ConnectionManager.getInstance().sendStanza(account, pref);
         } catch (NetworkException e) {
         }
     }
@@ -703,7 +703,7 @@ public class MessageArchiveManager implements OnPacketListener,
         packet.setEnd(connected.get(account));
         String packetId = packet.getPacketID();
         try {
-            ConnectionManager.getInstance().sendPacket(account, packet);
+            ConnectionManager.getInstance().sendStanza(account, packet);
         } catch (NetworkException e) {
         }
         return packetId;
@@ -722,7 +722,7 @@ public class MessageArchiveManager implements OnPacketListener,
         modificationRequests.put(account, packet.getPacketID(), modification);
         try {
             if (!modification) {
-                ConnectionManager.getInstance().sendPacket(account, packet);
+                ConnectionManager.getInstance().sendStanza(account, packet);
                 return;
             }
             ConnectionManager.getInstance().sendRequest(account, packet,
@@ -766,7 +766,7 @@ public class MessageArchiveManager implements OnPacketListener,
         Pref packet = new Pref();
         packet.addItem(extension);
         packet.setType(Type.set);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     private void sendItemRemove(String account, String user)
@@ -776,7 +776,7 @@ public class MessageArchiveManager implements OnPacketListener,
         ItemRemove packet = new ItemRemove();
         packet.addItem(extension);
         packet.setType(Type.set);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     public void setOtrMode(String account, String user, OtrMode otrMode)
@@ -862,7 +862,7 @@ public class MessageArchiveManager implements OnPacketListener,
         Pref packet = new Pref();
         packet.addSession(extension);
         packet.setType(Type.set);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         sessionSaves.put(account, session, saveMode);
     }
 
@@ -873,7 +873,7 @@ public class MessageArchiveManager implements OnPacketListener,
         SessionRemove packet = new SessionRemove();
         packet.addSession(extension);
         packet.setType(Type.set);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         sessionSaves.remove(account, session);
     }
 

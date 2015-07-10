@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 
@@ -195,7 +194,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         if (hash != null)
             request.addHash(hash);
         try {
-            ConnectionManager.getInstance().sendPacket(account, packet);
+            ConnectionManager.getInstance().sendStanza(account, packet);
         } catch (NetworkException e) {
             requests.remove(request);
             onVCardFailed(account, bareAddress);

@@ -127,7 +127,7 @@ public class TimeManager implements OnServerInfoReceivedListener,
                     .get(Calendar.DST_OFFSET)) / 60000);
             result.setUtc(calendar.getTime());
             try {
-                ConnectionManager.getInstance().sendPacket(account, result);
+                ConnectionManager.getInstance().sendStanza(account, result);
             } catch (NetworkException e) {
             }
         }

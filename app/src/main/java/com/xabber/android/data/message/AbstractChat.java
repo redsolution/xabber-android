@@ -34,7 +34,6 @@ import com.xabber.xmpp.carbon.CarbonManager;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
@@ -583,7 +582,7 @@ public abstract class AbstractChat extends BaseEntity {
                             .getTimestamp()));
                 try {
                     ConnectionManager.getInstance()
-                            .sendPacket(account, message);
+                            .sendStanza(account, message);
                 } catch (NetworkException e) {
                     break;
                 }

@@ -194,7 +194,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setTo(to);
         message.setType(Message.Type.headline);
         message.addExtension(new Attention());
-        ConnectionManager.getInstance().sendPacket(account, message);
+        ConnectionManager.getInstance().sendStanza(account, message);
         chat.newAction(null, null, ChatAction.attention_called);
     }
 

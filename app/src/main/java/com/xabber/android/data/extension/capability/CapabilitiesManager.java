@@ -218,7 +218,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         if (capability.getNode() != null && capability.getVersion() != null)
             packet.setNode(capability.getNode() + "#" + capability.getVersion());
         try {
-            ConnectionManager.getInstance().sendPacket(account, packet);
+            ConnectionManager.getInstance().sendStanza(account, packet);
         } catch (NetworkException e) {
             return;
         }

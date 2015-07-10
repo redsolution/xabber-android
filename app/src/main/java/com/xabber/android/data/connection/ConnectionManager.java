@@ -37,7 +37,6 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -57,10 +56,6 @@ public class ConnectionManager implements OnInitializedListener,
      */
     public final static int PACKET_REPLY_TIMEOUT = 5000;
 
-    /**
-     * Path to the trust store in this system.
-     */
-    public final static String TRUST_STORE_PATH;
     private final static ConnectionManager instance;
 
     static {
@@ -69,19 +64,8 @@ public class ConnectionManager implements OnInitializedListener,
 
         SmackConfiguration.setDefaultPacketReplyTimeout(PACKET_REPLY_TIMEOUT);
 
-//        ServiceDiscoveryManager.setIdentityType("handheld");
-//        ServiceDiscoveryManager.setIdentityName(Application.getInstance()
-//                .getString(R.string.client_name));
         ServiceDiscoveryManager.setDefaultIdentity(new DiscoverInfo.Identity("client", Application.getInstance()
                 .getString(R.string.client_name), "handheld"));
-
-        String path = System.getProperty("javax.net.ssl.trustStore");
-        if (path == null)
-            TRUST_STORE_PATH = System.getProperty("java.home") + File.separator
-                    + "etc" + File.separator + "security" + File.separator
-                    + "cacerts.bks";
-        else
-            TRUST_STORE_PATH = path;
 
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
             @Override
@@ -102,8 +86,8 @@ public class ConnectionManager implements OnInitializedListener,
     private final NestedMap<RequestHolder> requests;
 
     private ConnectionManager() {
-        managedConnections = new ArrayList<ConnectionThread>();
-        requests = new NestedMap<RequestHolder>();
+        managedConnections = new ArrayList<>();
+        requests = new NestedMap<>();
     }
 
     public static ConnectionManager getInstance() {
@@ -113,18 +97,16 @@ public class ConnectionManager implements OnInitializedListener,
     @Override
     public void onInitialized() {
         updateConnections(false);
-        AccountManager.getInstance().onAccountsChanged(
-                new ArrayList<String>(AccountManager.getInstance()
-                        .getAllAccounts()));
+        AccountManager.getInstance().onAccountsChanged(new ArrayList<>(AccountManager.getInstance().getAllAccounts()));
     }
 
     @Override
     public void onClose() {
-        ArrayList<ConnectionThread> connections = new ArrayList<ConnectionThread>(
-                managedConnections);
+        ArrayList<ConnectionThread> connections = new ArrayList<>(managedConnections);
         managedConnections.clear();
-        for (ConnectionThread connectionThread : connections)
+        for (ConnectionThread connectionThread : connections) {
             connectionThread.getConnectionItem().disconnect(connectionThread);
+        }
     }
 
     /**
@@ -137,9 +119,9 @@ public class ConnectionManager implements OnInitializedListener,
     public void updateConnections(boolean userRequest) {
         AccountManager accountManager = AccountManager.getInstance();
         for (String account : accountManager.getAccounts()) {
-            if (accountManager.getAccount(account)
-                    .updateConnection(userRequest))
+            if (accountManager.getAccount(account).updateConnection(userRequest)) {
                 AccountManager.getInstance().onAccountChanged(account);
+            }
         }
     }
 
@@ -155,29 +137,28 @@ public class ConnectionManager implements OnInitializedListener,
     }
 
     /**
-     * Send packet to authenticated connection.
+     * Send stanza to authenticated connection.
      *
      * @param account
-     * @param packet
+     * @param stanza
      */
-    public void sendPacket(String account, Stanza packet)
+    public void sendStanza(String account, Stanza stanza)
             throws NetworkException {
         ConnectionThread connectionThread = null;
-        for (ConnectionThread check : managedConnections)
+        for (ConnectionThread check : managedConnections) {
             if (check.getConnectionItem() instanceof AccountItem
-                    && ((AccountItem) check.getConnectionItem()).getAccount()
-                    .equals(account)) {
+                    && ((AccountItem) check.getConnectionItem()).getAccount().equals(account)) {
                 connectionThread = check;
                 break;
             }
-        if (connectionThread == null
-                || !connectionThread.getConnectionItem().getState()
-                .isConnected())
+        }
+        if (connectionThread == null || !connectionThread.getConnectionItem().getState().isConnected()) {
             throw new NetworkException(R.string.NOT_CONNECTED);
+        }
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
 
         try {
-            xmppConnection.sendStanza(packet);
+            xmppConnection.sendStanza(stanza);
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
             throw new NetworkException(R.string.XMPP_EXCEPTION);
@@ -193,32 +174,33 @@ public class ConnectionManager implements OnInitializedListener,
      * @param listener
      * @throws NetworkException
      */
-    public void sendRequest(String account, IQ iq, OnResponseListener listener)
-            throws NetworkException {
-        String packetId = iq.getPacketID();
+    public void sendRequest(String account, IQ iq, OnResponseListener listener) throws NetworkException {
+        String stanzaId = iq.getStanzaId();
         RequestHolder holder = new RequestHolder(listener);
-        sendPacket(account, iq);
-        requests.put(account, packetId, holder);
+        sendStanza(account, iq);
+        requests.put(account, stanzaId, holder);
     }
 
     public void onConnection(ConnectionThread connectionThread) {
         managedConnections.add(connectionThread);
-        for (OnConnectionListener listener : Application.getInstance()
-                .getManagers(OnConnectionListener.class))
+        for (OnConnectionListener listener : Application.getInstance().getManagers(OnConnectionListener.class)) {
             listener.onConnection(connectionThread.getConnectionItem());
+        }
     }
 
     public void onConnected(ConnectionThread connectionThread) {
-        if (!managedConnections.contains(connectionThread))
+        if (!managedConnections.contains(connectionThread)) {
             return;
-        for (OnConnectedListener listener : Application.getInstance()
-                .getManagers(OnConnectedListener.class))
+        }
+        for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
             listener.onConnected(connectionThread.getConnectionItem());
+        }
     }
 
     public void onAuthorized(ConnectionThread connectionThread) {
-        if (!managedConnections.contains(connectionThread))
+        if (!managedConnections.contains(connectionThread)) {
             return;
+        }
         LogManager.i(this, "onAuthorized: " + connectionThread.getConnectionItem());
         for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
             listener.onAuthorized(connectionThread.getConnectionItem());
@@ -227,52 +209,51 @@ public class ConnectionManager implements OnInitializedListener,
     }
 
     public void onDisconnect(ConnectionThread connectionThread) {
-        if (!managedConnections.remove(connectionThread))
+        if (!managedConnections.remove(connectionThread)) {
             return;
+        }
         ConnectionItem connectionItem = connectionThread.getConnectionItem();
         if (connectionItem instanceof AccountItem) {
             String account = ((AccountItem) connectionItem).getAccount();
-            for (Entry<String, RequestHolder> entry : requests.getNested(
-                    account).entrySet())
-                entry.getValue().getListener()
-                        .onDisconnect(account, entry.getKey());
+            for (Entry<String, RequestHolder> entry : requests.getNested(account).entrySet()) {
+                entry.getValue().getListener().onDisconnect(account, entry.getKey());
+            }
             requests.clear(account);
         }
-        for (OnDisconnectListener listener : Application.getInstance()
-                .getManagers(OnDisconnectListener.class))
+        for (OnDisconnectListener listener : Application.getInstance().getManagers(OnDisconnectListener.class)) {
             listener.onDisconnect(connectionThread.getConnectionItem());
+        }
     }
 
-    public void processPacket(ConnectionThread connectionThread, Stanza packet) {
-        if (!managedConnections.contains(connectionThread))
+    public void processPacket(ConnectionThread connectionThread, Stanza stanza) {
+        if (!managedConnections.contains(connectionThread)) {
             return;
+        }
         ConnectionItem connectionItem = connectionThread.getConnectionItem();
-        if (packet instanceof IQ && connectionItem instanceof AccountItem) {
-            IQ iq = (IQ) packet;
+        if (stanza instanceof IQ && connectionItem instanceof AccountItem) {
+            IQ iq = (IQ) stanza;
             String packetId = iq.getStanzaId();
-            if (packetId != null
-                    && (iq.getType() == Type.result || iq.getType() == Type.error)) {
+            if (packetId != null && (iq.getType() == Type.result || iq.getType() == Type.error)) {
                 String account = ((AccountItem) connectionItem).getAccount();
-                RequestHolder requestHolder = requests
-                        .remove(account, packetId);
+                RequestHolder requestHolder = requests.remove(account, packetId);
                 if (requestHolder != null) {
-                    if (iq.getType() == Type.result)
+                    if (iq.getType() == Type.result) {
                         requestHolder.getListener().onReceived(account, packetId, iq);
-                    else
+                    } else {
                         requestHolder.getListener().onError(account, packetId, iq);
+                    }
                 }
             }
         }
-        for (OnPacketListener listener : Application.getInstance().getManagers(
-                OnPacketListener.class))
-            listener.onPacket(connectionItem,
-                    Jid.getBareAddress(packet.getFrom()), packet);
+        for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
+            listener.onPacket(connectionItem, Jid.getBareAddress(stanza.getFrom()), stanza);
+        }
     }
 
     @Override
     public void onTimer() {
         if (NetworkManager.getInstance().getState() != NetworkState.suspended) {
-            Collection<ConnectionItem> reconnect = new ArrayList<ConnectionItem>();
+            Collection<ConnectionItem> reconnect = new ArrayList<>();
             for (ConnectionThread connectionThread : managedConnections) {
 //                if (connectionThread.getConnectionItem().getState().isConnected()
 //                    // TODO find the way to check if connection is alive
@@ -292,8 +273,7 @@ public class ConnectionManager implements OnInitializedListener,
         while (iterator.hasNext()) {
             NestedMap.Entry<RequestHolder> entry = iterator.next();
             if (entry.getValue().isExpired(now)) {
-                entry.getValue().getListener()
-                        .onTimeout(entry.getFirst(), entry.getSecond());
+                entry.getValue().getListener().onTimeout(entry.getFirst(), entry.getSecond());
                 iterator.remove();
             }
         }

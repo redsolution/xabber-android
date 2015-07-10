@@ -137,7 +137,7 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
                     receipt.addExtension(new Received(id));
                     receipt.setThread(message.getThread());
                     try {
-                        ConnectionManager.getInstance().sendPacket(account,
+                        ConnectionManager.getInstance().sendStanza(account,
                                 receipt);
                     } catch (NetworkException e) {
                         LogManager.exception(this, e);

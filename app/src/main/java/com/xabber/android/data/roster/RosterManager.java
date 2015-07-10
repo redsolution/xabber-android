@@ -302,7 +302,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
             if (group.trim().length() > 0)
                 item.addGroupName(group);
         packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -319,7 +319,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         RosterPacket.Item item = new RosterPacket.Item(bareAddress, "");
         item.setItemType(RosterPacket.ItemType.remove);
         packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     public void setGroups(String account, String bareAddress, Collection<String> groups) throws NetworkException {
@@ -357,7 +357,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
             item.addGroupName(group);
         }
         packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -384,7 +384,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         }
         if (packet.getRosterItemCount() == 0)
             return;
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -439,7 +439,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         }
         if (packet.getRosterItemCount() == 0)
             return;
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -500,7 +500,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         String account = ((AccountItem) connection).getAccount();
         requestedRosters.add(account);
         try {
-            ConnectionManager.getInstance().sendPacket(account,
+            ConnectionManager.getInstance().sendStanza(account,
                     new RosterPacket());
         } catch (NetworkException e) {
             LogManager.exception(this, e);

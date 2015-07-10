@@ -149,7 +149,7 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
 //            }
 //        }, new StanzaIdFilter(setIQ.getStanzaId()));
 //
-//        connection.sendPacket(setIQ);
+//        connection.sendStanza(setIQ);
     }
 
     /**
