@@ -48,8 +48,7 @@ import java.util.Map.Entry;
  *
  * @author alexander.ivanov
  */
-public class ConnectionManager implements OnInitializedListener,
-        OnCloseListener, OnTimerListener {
+public class ConnectionManager implements OnInitializedListener, OnCloseListener, OnTimerListener {
 
     /**
      * Timeout for receiving reply from server.

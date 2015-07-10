@@ -116,14 +116,17 @@ public abstract class ConnectionItem {
      */
     public String getRealJid() {
         ConnectionThread connectionThread = getConnectionThread();
-        if (connectionThread == null)
+        if (connectionThread == null) {
             return null;
+        }
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-        if (xmppConnection == null)
+        if (xmppConnection == null) {
             return null;
+        }
         String user = xmppConnection.getUser();
-        if (user == null)
+        if (user == null) {
             return null;
+        }
         return user;
     }
 
@@ -145,13 +148,12 @@ public abstract class ConnectionItem {
         boolean available = isConnectionAvailable(userRequest);
         if (NetworkManager.getInstance().getState() != NetworkState.available
                 || !available || disconnectionRequested) {
-            ConnectionState target = available ? ConnectionState.waiting
-                    : ConnectionState.offline;
-            if (state == ConnectionState.connected
-                    || state == ConnectionState.authentication
+            ConnectionState target = available ? ConnectionState.waiting : ConnectionState.offline;
+            if (state == ConnectionState.connected || state == ConnectionState.authentication
                     || state == ConnectionState.connecting) {
-                if (userRequest)
+                if (userRequest) {
                     connectionRequest = false;
+                }
                 if (connectionThread != null) {
                     disconnect(connectionThread);
                     // Force remove managed connection thread.
@@ -164,18 +166,19 @@ public abstract class ConnectionItem {
             state = target;
             return true;
         } else {
-            if (state == ConnectionState.offline
-                    || state == ConnectionState.waiting) {
-                if (userRequest)
+            if (state == ConnectionState.offline || state == ConnectionState.waiting) {
+                if (userRequest) {
                     connectionRequest = true;
+                }
                 state = ConnectionState.connecting;
                 connectionThread = new ConnectionThread(this);
-                if (connectionSettings.isCustom())
+                if (connectionSettings.isCustom()) {
                     connectionThread.start(connectionSettings.getHost(),
                             connectionSettings.getPort(), false, registerNewAccount);
-                else
+                } else {
                     connectionThread.start(connectionSettings.getServerName(),
                             5222, true, registerNewAccount);
+                }
                 return true;
             } else {
                 return false;
@@ -187,8 +190,9 @@ public abstract class ConnectionItem {
      * Disconnect and connect using new connection.
      */
     public void forceReconnect() {
-        if (!getState().isConnectable())
+        if (!getState().isConnectable()) {
             return;
+        }
         disconnectionRequested = true;
         boolean request = connectionRequest;
         connectionRequest = false;
@@ -253,10 +257,11 @@ public abstract class ConnectionItem {
      * Connection has been established.
      */
     protected void onConnected(ConnectionThread connectionThread) {
-        if (isRegisterAccount())
+        if (isRegisterAccount()) {
             state = ConnectionState.registration;
-        else if (isManaged(connectionThread))
+        } else if (isManaged(connectionThread)) {
             state = ConnectionState.authentication;
+        }
     }
 
     /**
@@ -264,8 +269,9 @@ public abstract class ConnectionItem {
      */
     protected void onAccountRegistered(ConnectionThread connectionThread) {
         registerNewAccount = false;
-        if (isManaged(connectionThread))
+        if (isManaged(connectionThread)) {
             state = ConnectionState.authentication;
+        }
     }
 
     /**
@@ -278,8 +284,9 @@ public abstract class ConnectionItem {
      * Authorization passed.
      */
     protected void onAuthorized(ConnectionThread connectionThread) {
-        if (isManaged(connectionThread))
+        if (isManaged(connectionThread)) {
             state = ConnectionState.connected;
+        }
     }
 
     /**
@@ -291,17 +298,17 @@ public abstract class ConnectionItem {
     private boolean onDisconnect(ConnectionThread connectionThread) {
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
         boolean acceptable = isManaged(connectionThread);
-        if (xmppConnection == null)
+        if (xmppConnection == null) {
             LogManager.i(this, "onClose " + acceptable);
-        else
-            LogManager
-                    .i(this, "onClose " + xmppConnection.hashCode() + " - "
-                            + xmppConnection.getConnectionCounter() + ", "
-                            + acceptable);
+        } else {
+            LogManager.i(this, "onClose " + xmppConnection.hashCode() + " - "
+                            + xmppConnection.getConnectionCounter() + ", " + acceptable);
+        }
 
         ConnectionManager.getInstance().onDisconnect(connectionThread);
-        if (acceptable)
+        if (acceptable) {
             connectionThread.shutdown();
+        }
         return acceptable;
     }
 
@@ -312,8 +319,9 @@ public abstract class ConnectionItem {
         if (onDisconnect(connectionThread)) {
             state = ConnectionState.waiting;
             this.connectionThread = null;
-            if (connectionRequest)
+            if (connectionRequest) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
+            }
             connectionRequest = false;
         }
     }
