@@ -23,7 +23,7 @@
   <string name="account_archive_mode_dont_store">Não guardar</string>
   <string name="account_archive_mode_local">Localmente (no dispositivo)</string>
   <string name="account_archive_mode_server">No servidor</string>
-  <string name="account_archive_mode_unread">Localmente, apenas se não enviado e não lido</string>
+  <string name="account_archive_mode_unread">Localmente, apenas se não enviadas e não lidas</string>
   <string name="account_compression_summary">Marque para activar a compressão de dados</string>
   <string name="account_custom">Alojamento personalizado</string>
   <string name="account_custom_summary">Usar a configuração personalizada do alojamento em vez do registo SRV</string>

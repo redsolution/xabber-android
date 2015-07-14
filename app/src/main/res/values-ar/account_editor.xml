@@ -29,11 +29,14 @@
   <string name="account_custom_summary">استخدم إعداد مخصص للمضيف بدلاً من سجل SRV</string>
   <string name="account_enabled_summary">علِّم لتفعيل الحساب</string>
   <string name="account_invalid_port">المنفذ يجب أن يكون رقماً (الافتراضي: 5222)</string>
+  <string name="account_invalid_port_range">المنفذ يجب أن يتراوح بين 1 إلى 65535 (الافتراضي: 5222)</string>
   <string name="account_invalid_priority">قيمة الأولوية يجب أن تكون بين -128 و 128 (الافتراضي: 10)</string>
   <string name="account_oauth">تخويل</string>
   <string name="account_oauth_invalidated">غير مخول</string>
   <string name="account_oauth_summary">OAuth ضبط</string>
   <string name="account_proxy_host">مضيف الوسيط</string>
+  <string name="account_proxy_invalid_port_range">منفذ الوسيط يجب أن يتراوح بين 1 إلى 65535 (الافتراضي: 8080)</string>
+  <string name="account_proxy_invalid_port">منفذ الوسيط يجب أن يكون رقماً (الافتراضي: 8080)</string>
   <string name="account_proxy_password">كلمة المرور للوسيط</string>
   <string name="account_proxy_port">منفذ الوسيط</string>
   <string name="account_proxy_type">نوع الوسيط</string>

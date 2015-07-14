@@ -29,11 +29,14 @@
   <string name="account_custom_summary">Usar un servidor manual en vez del registro SRV</string>
   <string name="account_enabled_summary">Habilitar cuenta</string>
   <string name="account_invalid_port">El puerto debe ser un número (por defecto: 5222)</string>
+  <string name="account_invalid_port_range">El puerto debe estar entre 1 y 65535 (predeterminado: 5222)</string>
   <string name="account_invalid_priority">El valor de la prioridad debe ser un número entre -128 y 128 (por defecto: 10)</string>
   <string name="account_oauth">Autorización</string>
   <string name="account_oauth_invalidated">No autorizado</string>
   <string name="account_oauth_summary">Configuración de OAuth</string>
   <string name="account_proxy_host">Direción del proxy</string>
+  <string name="account_proxy_invalid_port_range">El proxy debe estar entre 1 y 65535 (predeterminado: 8080)</string>
+  <string name="account_proxy_invalid_port">El puerto proxy debe ser un número (predeterminado: 8080)</string>
   <string name="account_proxy_password">Contraseña del proxy</string>
   <string name="account_proxy_port">Puerto del proxy</string>
   <string name="account_proxy_type">Tipo de proxy</string>

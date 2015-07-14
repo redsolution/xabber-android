@@ -12,7 +12,7 @@
   <string name="status_editor">Status setzen</string>
   <string name="status_text_hint">Geben Sie die Statusmeldung ein</string>
   <string name="unavailable">Offline</string>
-  <string name="unsubscribed">Nicht berechtigt</string>
+  <string name="unsubscribed">Nicht autorisiert</string>
   <string name="xa">Abwesend für längere Zeit</string>
   <string name="new_status">Neuer Status</string>
   <string name="saved_statuses">Gespeicherte Status</string>
