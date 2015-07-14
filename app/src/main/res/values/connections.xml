@@ -143,12 +143,6 @@
     <array name="account_types">
         <item>@array/account_type_xmpp</item>
         <item>@array/account_type_gtalk</item>
-        <item>@array/account_type_wlm</item>
-        <item>@array/account_type_facebook</item>
-        <item>@array/account_type_qip</item>
-        <item>@array/account_type_ya</item>
-        <item>@array/account_type_livejournal</item>
-        <item>@array/account_type_odnoklassniki</item>
     </array>
 
 </resources>
