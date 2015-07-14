@@ -8,6 +8,7 @@ android {
         applicationId "com.xabber.android.classic"
         minSdkVersion 3
         targetSdkVersion 9
+        maxSdkVersion 13
     }
 
     buildTypes {
