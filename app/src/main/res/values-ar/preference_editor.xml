@@ -65,6 +65,7 @@
   <string name="events_message_none">بدون إشعارات</string>
   <string name="events_show_text">إظهار الرسالة في الإشعار\nإظهار نص الرسالة في منطقة الإشعار</string>
   <string name="events_visible_chat">الإشعار في المحادثة الحالية\nالإشعار للرسائل الواردة في المحادثة الحالية</string>
+  <string name="events_suppress_100">حظر بعض رسائل الحالة\nحظر رسائل \'الهويات في هذه الغرفة ليست مجهولة\'</string>
   <string name="negative_priotiry_summary">‎%s‎ (لن تتلقَ رسائل من أي محادثة)</string>
   <string name="preference_accounts">حسابات XMPP\nإدارة الحسابات</string>
   <string name="preference_security">الأمان\nإعدادات الأمان</string>

@@ -65,6 +65,7 @@
   <string name="events_message_none">通知しない</string>
   <string name="events_show_text">通知にメッセージを表示\n通知エリアにメッセージのテキストを表示します</string>
   <string name="events_visible_chat">現在のチャットに通知\n届いたメッセージを現在のチャットに通知します</string>
+  <string name="events_suppress_100">一部のステータスメッセージを抑制します\n\'この部屋は匿名ではありません\' のメッセージを取得しません</string>
   <string name="negative_priotiry_summary">%s (チャットからメッセージを受け取りません)</string>
   <string name="preference_accounts">XMPP アカウント\nアカウントを管理します</string>
   <string name="preference_security">セキュリティ\nセキュリティ設定</string>

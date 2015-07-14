@@ -22,6 +22,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
@@ -199,6 +200,11 @@ public class RoomChat extends AbstractChat {
                 onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
                 return true;
             }
+            if (mucUser != null && mucUser.getStatus() != null && mucUser.getStatus().getCode().equals("100")
+                    && ChatManager.getInstance().isSuppress100(account, user)) {
+                    // 'This room is not anonymous'
+                    return true;
+            }
             final String text = message.getBody();
             final String subject = message.getSubject();
             if (text == null && subject == null) {
@@ -215,8 +221,12 @@ public class RoomChat extends AbstractChat {
                 RosterManager.getInstance().onContactChanged(account, bareAddress);
                 newAction(resource, subject, ChatAction.subject);
             } else {
+                boolean notify = true;
                 String packetID = message.getPacketID();
                 Date delay = Delay.getDelay(message);
+                if (delay != null) {
+                    notify = false;
+                }
                 for (MessageItem messageItem : messages) {
                     // Search for duplicates
                     if (packetID != null && packetID.equals(messageItem.getPacketID())) {
@@ -232,7 +242,7 @@ public class RoomChat extends AbstractChat {
                 }
                 updateThreadId(message.getThread());
                 MessageItem messageItem = newMessage(resource, text, null,
-                        delay, true, true, false, false, true);
+                        delay, true, notify, false, false, true);
                 messageItem.setPacketID(packetID);
             }
         } else if (packet instanceof Presence) {

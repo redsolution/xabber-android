@@ -69,7 +69,7 @@
   <string name="preference_accounts">Contas XMPP\nGerir contas</string>
   <string name="preference_security">Segurança\nConfigurações de segurança</string>
   <string name="security_check_certificate">Verificar certificado do servidor\nNotifica problemas com o certificado nas mensagens encriptadas</string>
-  <string name="security_clear_certificate">Apagar certificados\nApagar a lista dos certificados ignorados</string>
+  <string name="security_clear_certificate">Apagar certificados\nApaga a lista dos certificados ignorados</string>
   <string name="security_otr_history">Guardar histórico\nGuarda o histórico das conversas com a sessão encriptada</string>
   <string name="security_otr_mode">Modo OTR</string>
   <string name="chats_attention">Pedidos de atenção\nNotificar os pedidos de atenção recebidos</string>
