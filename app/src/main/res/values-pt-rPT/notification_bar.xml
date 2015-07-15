@@ -7,7 +7,7 @@
   <string name="account_quantity_offline_1">conta</string>
   <string name="account_quantity_offline_2">contas</string>
   <string name="account_quantity_offline_5">Contas</string>
-  <string name="AUTHENTICATION_FAILED">Erro de autorização</string>
+  <string name="AUTHENTICATION_FAILED">Erro de autenticação</string>
   <string name="chat_contact_quantity_1">contacto</string>
   <string name="chat_contact_quantity_2">contactos</string>
   <string name="chat_contact_quantity_5">Contas</string>

@@ -65,6 +65,7 @@
   <string name="events_message_none">Не уведомлять</string>
   <string name="events_show_text">Отображать сообщение в уведомлении\nОтображать текст входящего сообщения в области уведомлений</string>
   <string name="events_visible_chat">Извещение в текущем чате\nИзвещать о входящих сообщениях в текущем чате</string>
+  <string name="events_suppress_100">Игнорировать некоторые сообщения\nНе получать служебные сообщения о неанонимности конференции</string>
   <string name="negative_priotiry_summary">%s (вы не будете получать сообщения)</string>
   <string name="preference_accounts">Учетные записи XMPP\nУправление учетными записями</string>
   <string name="preference_security">Безопасность\nНастройки безопасности</string>
