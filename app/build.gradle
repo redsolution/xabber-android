@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 200
-        versionName '1.0.28'
+        versionCode 201
+        versionName '1.0.29'
     }
 
     compileOptions {
@@ -30,6 +30,16 @@ android {
 
         beta {
             applicationId "com.xabber.android.beta"
+            resValue 'string', 'application_package', applicationId
+        }
+
+        prod {
+            applicationId "com.xabber.android"
+            resValue 'string', 'application_package', applicationId
+        }
+
+        vip {
+            applicationId "com.xabber.androidvip"
             resValue 'string', 'application_package', applicationId
         }
 

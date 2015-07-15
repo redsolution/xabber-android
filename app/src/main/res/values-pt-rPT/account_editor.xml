@@ -29,11 +29,14 @@
   <string name="account_custom_summary">Usar a configuração personalizada do alojamento em vez do registo SRV</string>
   <string name="account_enabled_summary">Marque para activar a conta</string>
   <string name="account_invalid_port">A porta deve ser um número (predefinição: 5222)</string>
+  <string name="account_invalid_port_range">A porta deve ser um número entre 1 e 65535 (predefinição: 5222)</string>
   <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 128 (predefinição: 10)</string>
   <string name="account_oauth">Autorização</string>
   <string name="account_oauth_invalidated">Autorização recusada</string>
   <string name="account_oauth_summary">Configurações OAuth</string>
   <string name="account_proxy_host">Alojamento do proxy</string>
+  <string name="account_proxy_invalid_port_range">A porta de proxy deve ser um número entre 1 e 65535 (predefinição: 8080)</string>
+  <string name="account_proxy_invalid_port">A porta de proxy deve ser um número (predefinição: 8080)</string>
   <string name="account_proxy_password">Palavra-passe do proxy</string>
   <string name="account_proxy_port">Porta do proxy</string>
   <string name="account_proxy_type">Tipo de proxy</string>
@@ -53,7 +56,7 @@
   <string name="account_tls_require">Exigir TLS</string>
   <string name="account_tls_require_summary">Exige encriptação TLS para se ligar ao servidor</string>
   <string name="account_use_orbot">Conversar através da rede anónima TOR e forçar o protocolo de encriptação TLS\nNão é recomendado para o Google Talk</string>
-  <string name="confirm_cancellation">Tem a certeza de que deseja descartar todas as alterações?</string>
+  <string name="confirm_cancellation">Tem certeza de que deseja descartar todas as alterações?</string>
   <string name="INCORRECT_USER_NAME">Nome de utilizador incorrecto. Seleccione o texto de ajuda abaixo para detalhes.</string>
   <string name="orbot_required_message">Para efectuar o tráfego através do TOR, o Orbot tem que estar instalado e activado o tráfego por esse proxy. Gostaria de instalá-lo pelo Google Play?</string>
   <string name="orbot_required_title">Instalar o Orbot?</string>

@@ -15,7 +15,7 @@
   <string name="ALREADY_JOINED">Já entrou</string>
   <string name="muc_add">Adicionar conferência</string>
   <string name="muc_delete">Remover conferência</string>
-  <string name="muc_delete_confirm">Tem a certeza que deseja apagar a conferência %1$s da conta %2$s?</string>
+  <string name="muc_delete_confirm">Tem certeza de que deseja apagar a conferência %1$s da conta %2$s?</string>
   <string name="muc_edit">Opções de autorização</string>
   <string name="muc_invite_confirm">%2$s convidou-o para entrar na conferência %3$s. Entrar com a conta %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s convidou-o para entrar na conferência %3$s: %4$s. Entrar com a conta %1$s?</string>
