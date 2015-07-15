@@ -279,22 +279,21 @@ public class RoomChat extends AbstractChat {
                 occupants.remove(stringPrep);
                 MUCUser mucUser = MUC.getMUCUserExtension(presence);
                 if (mucUser != null && mucUser.getStatus() != null) {
-//                    String code = mucUser.getStatus().getCode();
-//                    if ("307".equals(code)) {
-//                        onKick(resource, mucUser.getItem().getActor());
-//                    } else if ("301".equals(code)) {
-//                        onBan(resource, mucUser.getItem().getActor());
-//                    } else if ("303".equals(code)) {
-//                        String newNick = mucUser.getItem().getNick();
-//                        if (newNick == null) {
-//                            return true;
-//                        }
-//                        onRename(resource, newNick);
-//                        Occupant occupant = createOccupant(newNick, presence);
-//                        occupants.put(Jid.getStringPrep(newNick), occupant);
-//                    } else if ("321".equals(code)) {
-//                        onRevoke(resource, mucUser.getItem().getActor());
-//                    }
+                    if (mucUser.getStatus().contains(MUCUser.Status.KICKED_307)) {
+                        onKick(resource, mucUser.getItem().getActor());
+                    } else if (mucUser.getStatus().contains(MUCUser.Status.BANNED_301)){
+                        onBan(resource, mucUser.getItem().getActor());
+                    } else if (mucUser.getStatus().contains(MUCUser.Status.NEW_NICKNAME_303)) {
+                        String newNick = mucUser.getItem().getNick();
+                        if (newNick == null) {
+                            return true;
+                        }
+                        onRename(resource, newNick);
+                        Occupant occupant = createOccupant(newNick, presence);
+                        occupants.put(Jid.getStringPrep(newNick), occupant);
+                    } else if (mucUser.getStatus().contains(MUCUser.Status.REMOVED_AFFIL_CHANGE_321)) {
+                        onRevoke(resource, mucUser.getItem().getActor());
+                    }
                 } else {
                     onLeave(resource);
                 }

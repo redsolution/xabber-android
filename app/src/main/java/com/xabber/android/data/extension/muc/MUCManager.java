@@ -40,6 +40,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
@@ -335,13 +336,15 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                             roomChat.setState(RoomState.error);
                             addAuthorizationError(account, room);
 
-//                            if (e.getXMPPError() != null && e.getXMPPError().getCode() == 409) {
-//                                Application.getInstance().onError(R.string.NICK_ALREADY_USED);
-//                            } else if (e.getXMPPError() != null && e.getXMPPError().getCode() == 401) {
-//                                Application.getInstance().onError(R.string.AUTHENTICATION_FAILED);
-//                            } else {
-//                                Application.getInstance().onError(R.string.NOT_CONNECTED);
-//                            }
+                            XMPPError xmppError = e.getXMPPError();
+
+                                if (xmppError != null && xmppError.getCondition() == XMPPError.Condition.conflict) {
+                                    Application.getInstance().onError(R.string.NICK_ALREADY_USED);
+                                } else if (xmppError != null && xmppError.getCondition() == XMPPError.Condition.not_authorized) {
+                                    Application.getInstance().onError(R.string.AUTHENTICATION_FAILED);
+                                } else {
+                                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                                }
                             RosterManager.getInstance().onContactChanged(account, room);
                         }
                     });
