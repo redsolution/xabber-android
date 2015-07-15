@@ -65,6 +65,7 @@
   <string name="events_message_none">не обавештавај</string>
   <string name="events_show_text">Прикажи поруку као обавештење\nПриказ текста поруке у траци обавештења</string>
   <string name="events_visible_chat">Обавештење у текућем ћаскању\nОбавештава о долазним порукама текућег ћаскања</string>
+  <string name="events_suppress_100">Потискуј неке поруке стања\nБез порука „Ова соба није анонимна“</string>
   <string name="negative_priotiry_summary">%s (нећете примати никакве поруке)</string>
   <string name="preference_accounts">ИксМПП налози\nУправљање налозима</string>
   <string name="preference_security">Безбедност\nПоставке безбедности</string>
