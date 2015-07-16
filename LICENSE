@@ -62,13 +62,9 @@ The Jabber logo is licensed under the Creative Commons Attribution License
 app/src/main/res/drawable*/ic_vcard_jabber_24dp.png
 
 Xabber, Redsolution logo are trademarks of Redsolution Inc., and are licensed under  Creative Commons Attribution-NoDerivs license:
-app/src/main/res/drawable*/ic_connect.png
-app/src/vip/res/drawable*/ic_connect.png
-app/src/main/res/drawable*/ic_disconnect.png
-app/src/vip/res/drawable*/ic_disconnect.png
-app/src/main/res/drawable*/ic_launcher.png
-app/src/vip/res/drawable*/ic_launcher.png
-app/src/main/res/drawable*/redsolution_logo*.9.png
+app/src/*/res/drawable*/xabber_logo*.png
+app/src/main/res/drawable*/redsolution_logo*.png
+app/src/*/res/mipmap*/ic_launcher.png
 
 Following file is part of The Android Open Source Project licensed under the Apache License, Version 2.0 (the "License") (see assets/LICENSE-Apache2.txt):
 app/src/main/res/layout/preference.xml
