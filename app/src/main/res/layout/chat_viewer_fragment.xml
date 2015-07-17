@@ -73,6 +73,13 @@
             android:src="@drawable/ic_security_grey_24dp"
             />
 
+        <Space
+            android:id="@+id/button_security_spacer"
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            />
+
         <EditText
             android:id="@+id/chat_input"
             android:layout_width="0dp"

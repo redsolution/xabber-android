@@ -114,7 +114,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case VIEW_TYPE_ACTION_MESSAGE:
                 ChatAction action = messageItem.getAction();
                 String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
-                String name = RosterManager.getInstance().getBestContact(account, messageItem.getChat().getUser()).getName();
+
+                String name;
+                if (isMUC) {
+                    name = messageItem.getResource();
+                } else {
+                    name = RosterManager.getInstance().getBestContact(account, messageItem.getChat().getUser()).getName();
+                }
                 ((BasicMessage)holder).messageText.setText(time + ": "
                         + action.getText(context, name, messageItem.getSpannable().toString()));
 
