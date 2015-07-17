@@ -30,7 +30,7 @@
   <string name="archive_available_request_message">Deseja armazenar o histórico das mensagens no servidor?\nHabilita o Xabber a carregar o histórico de mensagens de todos os seus dispositivos, usando esta conta.\nEsta funcionalidade usará mais tráfego na sua rede e reduzirá a velocidade da sua ligação.\nATENÇÃO: Todo o histórico local será removido.</string>
   <string name="archive_available_request_title">Activar o arquivo de mensagens?</string>
   <string name="INVALID_CERTIFICATE">Certificado inválido</string>
-  <string name="muc_invite_message">Deseja entrar conferência?</string>
+  <string name="muc_invite_message">Deseja entrar na conferência?</string>
   <string name="otr_verification_in_progress">Seleccione para abortar.</string>
   <string name="PASSWORD_REQUIRED">Palavra-passe obrigatória</string>
   <string name="pay_attention">Pedido de atenção</string>

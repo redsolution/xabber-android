@@ -65,6 +65,7 @@
   <string name="events_message_none">Ne pas notifier</string>
   <string name="events_show_text">Afficher les messages dans la barre des tâches\nAffiche le texte des messages dans la zone de notification</string>
   <string name="events_visible_chat">Notifier pour la conversation affichée\nNotifier lorsqu\'un message est reçu dans la conversation affichée</string>
+  <string name="events_suppress_100">Masquer certaines notifications\nMasque les messages \"Cette conférence n\'est pas anonyme\"</string>
   <string name="negative_priotiry_summary">%s (Vous ne recevrez aucun message)</string>
   <string name="preference_accounts">Comptes XMPP\nGérer les comptes</string>
   <string name="preference_security">Sécurité\nParamètres de sécurité</string>

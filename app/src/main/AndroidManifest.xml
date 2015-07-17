@@ -29,7 +29,7 @@
     <application
         android:name="com.xabber.android.data.Application"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
         android:theme="@style/Theme">
         <activity

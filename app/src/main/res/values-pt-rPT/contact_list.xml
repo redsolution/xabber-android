@@ -25,14 +25,14 @@
   <string name="CONNECTION_FAILED">Erro na ligação</string>
   <string name="contact_add">Adicionar contacto</string>
   <string name="contact_delete">Apagar</string>
-  <string name="contact_delete_confirm">Tem a certeza que deseja apagar o contacto %1$s da conta %2$s?</string>
+  <string name="contact_delete_confirm">Tem certeza de que deseja apagar o contacto %1$s da conta %2$s?</string>
   <string name="contact_list">Lista de contactos</string>
   <string name="discard_subscription">Recusar contacto</string>
   <string name="exit">Sair</string>
   <string name="group_active_chat">Conversas abertas</string>
   <string name="group_none">Sem grupos</string>
   <string name="group_remove">Apagar grupo</string>
-  <string name="group_remove_confirm">Tem a certeza que deseja remover o grupo %s? Os interlocutores deste grupo permanecerão na lista de contactos.</string>
+  <string name="group_remove_confirm">Tem certeza de que deseja remover o grupo %s? Os interlocutores deste grupo permanecerão na lista de contactos.</string>
   <string name="group_rename">Renomear grupo</string>
   <string name="NO_SUCH_ACCOUNT">A conta não foi encontrada</string>
   <string name="NOT_CONNECTED">Ligação não estabelecida</string>

@@ -29,11 +29,14 @@
   <string name="account_custom_summary">Користи посебне поставке домаћина уместо СРВ записа</string>
   <string name="account_enabled_summary">Кликните да омогућите налог</string>
   <string name="account_invalid_port">Порт мора бити број (подразумевано: 5222)</string>
+  <string name="account_invalid_port_range">Порт мора бити између 1 и 65535 (подразумевани: 5222)</string>
   <string name="account_invalid_priority">Приоритет мора бити број између -128 и 128 (подразумевано: 10)</string>
   <string name="account_oauth">Овлашћење</string>
   <string name="account_oauth_invalidated">Без овлашћења</string>
   <string name="account_oauth_summary">ОАут поставке</string>
   <string name="account_proxy_host">Домаћин проксија</string>
+  <string name="account_proxy_invalid_port_range">Порт проксија мора бити између 1 и 65535 (подразумевани: 8080)</string>
+  <string name="account_proxy_invalid_port">Порт проксија мора бити број (подразумевано: 8080)</string>
   <string name="account_proxy_password">Лозинка проксија</string>
   <string name="account_proxy_port">Порт проксија</string>
   <string name="account_proxy_type">Тип проксија</string>

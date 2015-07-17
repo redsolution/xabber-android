@@ -3,11 +3,11 @@
 <resources>
   <string name="phrase_add">Adicionar frase</string>
   <string name="phrase_delete">Apagar frase</string>
-  <string name="phrase_delete_confirm">Tem a certeza que deseja apagar a frase: %s?</string>
-  <string name="phrase_empty">&lt; Texto &gt;</string>
+  <string name="phrase_delete_confirm">Tem certeza de que deseja apagar a frase: %s?</string>
+  <string name="phrase_empty">&lt; Sem texto &gt;</string>
   <string name="phrase_group">Parte do grupo de contacto</string>
   <string name="phrase_regexp">Expressão regular</string>
   <string name="phrase_sound">Som\nEscolha um som para as notificações</string>
   <string name="phrase_text">Texto a pesquisar</string>
-  <string name="phrase_user">Parte do ID de Jabber de um contacto</string>
+  <string name="phrase_user">Parte do ID de Jabber do contacto</string>
 </resources>

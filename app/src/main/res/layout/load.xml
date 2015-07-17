@@ -24,14 +24,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_connect"
+        android:src="@drawable/xabber_logo_80dp"
         />
     <ImageView
         android:id="@+id/disconnected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_disconnect"
+        android:src="@drawable/xabber_logo_grey_80dp"
         />
     <TextView
         android:id="@+id/text"
