@@ -107,7 +107,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
 
         accountGroupColors = resources.getIntArray(R.array.account_200);
-        accountSubgroupColors = resources.getIntArray(R.array.account_50);
+        accountSubgroupColors = resources.getIntArray(R.array.account_background);
         activeChatsColor = resources.getColor(R.color.contact_list_active_chats_group_background);
 
         contactItemInflater = new ContactItemInflater(activity);

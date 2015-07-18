@@ -210,6 +210,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.messageText.setText(messageItem.getSpannable());
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+        message.messageBalloon.getBackground().setAlpha(150);
 
         String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
 
