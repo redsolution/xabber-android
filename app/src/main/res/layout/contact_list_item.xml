@@ -41,7 +41,6 @@
             />
 
         <ImageView
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/avatar"
             android:layout_width="@dimen/avatar_size_toolbar"
             android:layout_height="@dimen/avatar_size_toolbar"
