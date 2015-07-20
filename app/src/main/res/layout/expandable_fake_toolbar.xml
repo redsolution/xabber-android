@@ -19,7 +19,7 @@
         android:layout_gravity="bottom"
         android:paddingBottom="10dp">
 
-        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageView
             android:id="@+id/avatar"
             android:layout_width="@dimen/avatar_large_size"
             android:layout_height="@dimen/avatar_large_size"
