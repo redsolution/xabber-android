@@ -39,7 +39,9 @@ public class RoomSelectActivity extends ManagedActivity implements RoomSelectFra
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
-        getFragmentManager().beginTransaction().add(R.id.fragment_container, new RoomSelectFragment()).commit();
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction().add(R.id.fragment_container, new RoomSelectFragment()).commit();
+        }
     }
 
     @Override
