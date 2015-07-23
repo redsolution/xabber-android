@@ -7,7 +7,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar_default"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -16,34 +15,31 @@
             android:layout_height="wrap_content"
             android:text="@string/contact_account" />
 
-        <com.xabber.android.ui.widget.NoDefaultSpinner
-            android:id="@+id/contact_account"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:prompt="@string/choose_account" />
-
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/muc_server" />
-
-        <EditText
-            android:id="@+id/muc_server"
+            android:id="@+id/muc_account_jid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/conference_jabber_org"
-            android:inputType="textEmailAddress"
-            android:singleLine="true" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="account@jabber.org"
+            android:padding="8dp"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/ic_avatar_1"
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/muc_room" />
 
-        <EditText
-            android:id="@+id/muc_room"
+        <TextView
+            android:id="@+id/muc_conference_jid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="room@conference.jabber.org"
+            android:padding="8dp"
             android:singleLine="true" />
 
         <TextView
@@ -56,6 +52,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/muc_nick_hint"
+            android:paddingLeft="8dp"
+            android:imeOptions="flagNoExtractUi"
             android:singleLine="true" />
 
         <TextView
@@ -69,14 +67,10 @@
             android:layout_height="wrap_content"
             android:hint="@string/muc_password_hint"
             android:inputType="textPassword"
+            android:paddingLeft="8dp"
+            android:imeOptions="flagNoExtractUi"
             android:singleLine="true" />
 
-        <CheckBox
-            android:id="@+id/muc_join"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/muc_join" />
     </LinearLayout>
 
 </ScrollView>
