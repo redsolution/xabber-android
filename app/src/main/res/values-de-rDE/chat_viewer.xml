@@ -5,7 +5,7 @@
   <string name="action_status_text_none">%1$s hat den Statustext gelöscht</string>
   <string name="action_join">%1$s hat die Konferenz betreten</string>
   <string name="action_kick">%1$s wurde rausgeworfen</string>
-  <string name="account_is_offline">Du bist offline. Gesendete Nachrichten werden erst zugestellt, sobald du wieder verbunden bist.</string>
+  <string name="account_is_offline">Sie sind momentan offline. Nachrichten, die Sie senden, werden erst zugestellt sobald Sie sich erneut  verbinden.</string>
   <string name="chat_delay">gesendet um %s</string>
   <string name="chat_input_hint">Geben Sie Ihre Nachricht hier ein</string>
   <string name="chat_send">Senden</string>
@@ -13,8 +13,8 @@
   <string name="contact_is_offline">Der Empfänger ist offline. Nachrichten werden erst zugestellt, sobald er wieder online ist.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontakt ist nicht verfügbar</string>
   <string name="FILE_NOT_FOUND">Datei nicht gefunden</string>
-  <string name="message_copy">Nachricht kopieren</string>
-  <string name="message_quote">Nachricht zitieren</string>
+  <string name="message_copy">Kopieren</string>
+  <string name="message_quote">Zitieren</string>
   <string name="message_remove">Nachrichten aus dem Verlauf entfernen</string>
   <string name="message_repeat">Erneut senden</string>
   <string name="save_history">Gesprächsverlauf speichern\nDen Gesprächsverlauf lokal speichern</string>
@@ -54,7 +54,7 @@
   <string name="chat_settings">Chateinstellungen</string>
   <string name="chat_state_composing">Tippt gerade&#8230;</string>
   <string name="chat_state_paused">Eingegebenen Text&#8230;</string>
-  <string name="chat_typed">geschrieben am %s</string>
+  <string name="chat_typed">geschrieben um %s</string>
   <string name="export_chat">Chat exportieren</string>
   <string name="export_chat_done">Verlauf wurde auf SD Karte exportiert</string>
   <string name="export_chat_mask">%2$s für %1$s.html</string>

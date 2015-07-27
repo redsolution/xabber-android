@@ -18,31 +18,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
-import java.util.Collection;
-
-public class ConferenceAdd extends ManagedActivity implements ConferenceAddFragment.Listener {
+public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.MUCEditor.SAVED_ACCOUNT";
     private static final String SAVED_ROOM = "com.xabber.android.ui.MUCEditor.SAVED_ROOM";
 
-    private BarPainter barPainter;
     private String account;
     private String room;
 
-    public static Intent createIntent(Context context) {
-        return ConferenceAdd.createIntent(context, null, null);
-    }
-
-    public static Intent createIntent(Context context, String account,
-                                      String room) {
+    public static Intent createIntent(Context context, String account, String room) {
         return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(room).build();
     }
 
@@ -65,17 +58,19 @@ public class ConferenceAdd extends ManagedActivity implements ConferenceAddFragm
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        setTitle(null);
+        toolbar.inflateMenu(R.menu.add_conference);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        toolbar.setOnMenuItemClickListener(this);
 
-        setSupportActionBar(toolbar);
-
-        barPainter = new BarPainter(this, toolbar);
+        BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
 
         Intent intent = getIntent();
-
-        account = null;
-        room = null;
 
         if (savedInstanceState != null) {
             account = savedInstanceState.getString(SAVED_ACCOUNT);
@@ -85,16 +80,7 @@ public class ConferenceAdd extends ManagedActivity implements ConferenceAddFragm
             room = getUser(intent);
         }
 
-        if (account == null) {
-            Collection<String> accounts = AccountManager.getInstance().getAccounts();
-            if (accounts.size() == 1) {
-                account = accounts.iterator().next();
-            }
-        }
-
-        if (account != null) {
-            barPainter.updateWithAccountName(account);
-        }
+        barPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
             getFragmentManager()
@@ -112,8 +98,14 @@ public class ConferenceAdd extends ManagedActivity implements ConferenceAddFragm
     }
 
     @Override
-    public void onAccountSelected(String account) {
-        barPainter.updateWithAccountName(account);
-        this.account = account;
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_conference:
+                ((ConferenceAddFragment)getFragmentManager().findFragmentById(R.id.fragment_container)).addConference();
+                return true;
+
+            default:
+                return false;
+        }
     }
 }

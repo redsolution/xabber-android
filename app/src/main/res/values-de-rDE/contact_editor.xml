@@ -5,11 +5,11 @@
   <string name="contact_group">Gruppen wählen</string>
   <string name="contact_name">Alias (optional)</string>
   <string name="contact_subscribe_confirm">Teilen Sie Ihren Kontostatus %1$s mit dem Kontakt?</string>
-  <string name="contact_user">Kontakt Benutzername</string>
+  <string name="contact_user">Benutzername des Kontakts</string>
   <string name="ENTRY_IS_NOT_FOUND">Kontakt wurde nicht gefunden</string>
   <string name="group_is_empty">Gruppenname setzen</string>
   <string name="group_name">Gruppename</string>
-  <string name="choose_account">Bitte ein  Konto auswählen</string>
+  <string name="choose_account">Bitte ein Konto auswählen</string>
   <string name="EMPTY_ACCOUNT">Bitte ein Konto auswählen</string>
   <string name="add_new_group">Neue Gruppe hinzufügen&#8230;</string>
   <string name="accept_contact">Autorisieren</string>
