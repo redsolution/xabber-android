@@ -10,7 +10,7 @@
   <string name="invisible">Unsichtbar</string>
   <string name="remove_status">Status löschen</string>
   <string name="status_editor">Status setzen</string>
-  <string name="status_text_hint">Geben Sie die Statusmeldung ein</string>
+  <string name="status_text_hint">Statusmeldung eingeben</string>
   <string name="unavailable">Offline</string>
   <string name="unsubscribed">Nicht autorisiert</string>
   <string name="xa">Abwesend für längere Zeit</string>
