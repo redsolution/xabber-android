@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -25,7 +27,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
-public class ConferenceAdd extends ManagedActivity {
+public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.MUCEditor.SAVED_ACCOUNT";
     private static final String SAVED_ROOM = "com.xabber.android.ui.MUCEditor.SAVED_ROOM";
@@ -56,9 +58,14 @@ public class ConferenceAdd extends ManagedActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        setTitle(null);
-
-        setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.add_conference);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        toolbar.setOnMenuItemClickListener(this);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
@@ -88,5 +95,17 @@ public class ConferenceAdd extends ManagedActivity {
         super.onSaveInstanceState(outState);
         outState.putString(SAVED_ACCOUNT, account);
         outState.putString(SAVED_ROOM, room);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_conference:
+                ((ConferenceAddFragment)getFragmentManager().findFragmentById(R.id.fragment_container)).addConference();
+                return true;
+
+            default:
+                return false;
+        }
     }
 }

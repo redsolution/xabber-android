@@ -104,7 +104,7 @@ public class ConferenceAddFragment extends Fragment {
         }
     }
 
-    private void addConference() {
+    public void addConference() {
         String nick = nickView.getText().toString();
         if ("".equals(nick)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_NICK_NAME), Toast.LENGTH_LONG).show();
@@ -115,22 +115,4 @@ public class ConferenceAddFragment extends Fragment {
         MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
         getActivity().finish();
     }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.add_conference, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_conference:
-                addConference();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 }
