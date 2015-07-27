@@ -23,6 +23,7 @@
             android:paddingLeft="16dp"
             android:id="@+id/room_name_edit_text"
             android:imeOptions="flagNoExtractUi"
+            android:singleLine="true"
         />
 
         <ImageButton

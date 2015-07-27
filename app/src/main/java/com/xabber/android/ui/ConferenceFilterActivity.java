@@ -7,10 +7,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -25,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConferenceFilterActivity extends ManagedActivity implements TextWatcher, View.OnClickListener,
-        AdapterView.OnItemClickListener {
+        AdapterView.OnItemClickListener, TextView.OnEditorActionListener {
 
     public static final String ARG_CONFERENCE_NAME = "com.xabber.android.ui.ConferenceFilterActivity.ARG_CONFERENCE_NAME";
     public static final String ARG_CONFERENCE_LIST_NAMES = "com.xabber.android.ui.ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES";
@@ -53,14 +55,18 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-            Intent data = new Intent();
-            data.putExtra(ARG_CONFERENCE_NAME, conferenceNameEditText.getText().toString());
-
-            setResult(RESULT_OK, data);
-            finish();
+            returnResult();
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    private void returnResult() {
+        Intent data = new Intent();
+        data.putExtra(ARG_CONFERENCE_NAME, conferenceNameEditText.getText().toString());
+
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     @Override
@@ -74,6 +80,7 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
         conferenceNameEditText = (EditText)findViewById(R.id.room_name_edit_text);
 
         conferenceNameEditText.addTextChangedListener(this);
+        conferenceNameEditText.setOnEditorActionListener(this);
 
         setRoomClearButtonVisibility();
 
@@ -152,5 +159,16 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         startActivity(ConferenceAdd.createIntent(this, account,
                 hostedConferencesAdapter.getItem(position).getJid()));
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE) {
+            returnResult();
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
