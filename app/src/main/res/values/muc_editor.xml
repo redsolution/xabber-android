@@ -23,5 +23,7 @@
 
     <string name="muc_choose_conference">Choose conference</string>
     <string name="muc_next">Next</string>
-    <string name="muc_get_hosted_rooms">Get hosted rooms</string>
+    <string name="muc_get_hosted_conferences">Get hosted conferences</string>
+    <string name="muc_error_getting_conferences">Error getting conferences</string>
+    <string name="muc_type_conference_name">Type conference name</string>
 </resources>

@@ -177,12 +177,12 @@
         <activity
             android:name=".ui.ConferenceAdd"
             android:label="@string/muc_add"
-            android:parentActivityName=".ui.RoomSelectActivity" >
+            android:parentActivityName=".ui.ConferenceSelectActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.RoomSelectActivity" />
+                android:value=".ui.ConferenceSelectActivity" />
         </activity>
         <activity
             android:name=".ui.StatusEditor"
@@ -369,13 +369,17 @@
         </activity>
 
         <activity
-            android:name=".ui.RoomSelectActivity"
+            android:name=".ui.ConferenceSelectActivity"
             android:parentActivityName=".ui.ContactList" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ContactList" />
+        </activity>
+
+        <activity
+            android:name=".ui.ConferenceFilterActivity">
         </activity>
 
         <service android:name=".service.XabberService" />

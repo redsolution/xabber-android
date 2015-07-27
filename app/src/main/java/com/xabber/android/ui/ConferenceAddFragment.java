@@ -3,7 +3,6 @@ package com.xabber.android.ui;
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,19 +24,19 @@ import org.jivesoftware.smack.util.StringUtils;
 public class ConferenceAddFragment extends Fragment {
 
     protected static final String ARG_ACCOUNT = "com.xabber.android.ui.ConferenceAddFragment.ARG_ACCOUNT";
-    protected static final String ARG_ROOM = "com.xabber.android.ui.ConferenceAddFragment.ARG_ROOM";
+    protected static final String ARG_CONFERENCE_JID = "com.xabber.android.ui.ConferenceAddFragment.ARG_CONFERENCE_NAME";
 
     private EditText nickView;
     private EditText passwordView;
 
     private String account = null;
-    private String room = null;
+    private String conferenceJid = null;
 
-    public static ConferenceAddFragment newInstance(String account, String room) {
+    public static ConferenceAddFragment newInstance(String account, String conference) {
         ConferenceAddFragment fragment = new ConferenceAddFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ACCOUNT, account);
-        args.putString(ARG_ROOM, room);
+        args.putString(ARG_CONFERENCE_JID, conference);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,16 +47,15 @@ public class ConferenceAddFragment extends Fragment {
 
         if (getArguments() != null) {
             account = getArguments().getString(ARG_ACCOUNT);
-            room = getArguments().getString(ARG_ROOM);
+            conferenceJid = getArguments().getString(ARG_CONFERENCE_JID);
         }
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.conference_add_fragment, container, false);
 
-        ((TextView) view.findViewById(R.id.muc_conference_jid)).setText(room);
+        ((TextView) view.findViewById(R.id.muc_conference_jid)).setText(conferenceJid);
         ((TextView) view.findViewById(R.id.muc_account_jid)).setText(StringUtils.parseBareAddress(account));
 
         Drawable accountAvatar = AvatarManager.getInstance().getAccountAvatar(account);
@@ -67,22 +65,22 @@ public class ConferenceAddFragment extends Fragment {
         ((TextView) view.findViewById(R.id.muc_account_jid)).setCompoundDrawables(accountAvatar, null, null, null);
 
         nickView = (EditText) view.findViewById(R.id.muc_nick);
-        nickView.setText(MUCManager.getInstance().getNickname(account, room));
+        nickView.setText(MUCManager.getInstance().getNickname(account, conferenceJid));
         if ("".equals(nickView.getText().toString())) {
             nickView.setText(getNickname(account));
         }
 
         passwordView = (EditText) view.findViewById(R.id.muc_password);
         String password;
-        RoomInvite roomInvite = MUCManager.getInstance().getInvite(account, room);
+        RoomInvite roomInvite = MUCManager.getInstance().getInvite(account, conferenceJid);
         if (roomInvite != null) {
             password = roomInvite.getPassword();
         } else {
-            password = MUCManager.getInstance().getPassword(account, room);
+            password = MUCManager.getInstance().getPassword(account, conferenceJid);
         }
         passwordView.setText(password);
 
-        MUCManager.getInstance().removeAuthorizationError(account, room);
+        MUCManager.getInstance().removeAuthorizationError(account, conferenceJid);
 
         setHasOptionsMenu(true);
 
@@ -91,7 +89,7 @@ public class ConferenceAddFragment extends Fragment {
 
 
     /**
-     * @return Suggested nickname in the room.
+     * @return Suggested nickname in the conferenceJid.
      */
     private String getNickname(String account) {
         if (account == null) {
@@ -114,7 +112,7 @@ public class ConferenceAddFragment extends Fragment {
         }
         String password = passwordView.getText().toString();
         final boolean join = true;
-        MUCManager.getInstance().createRoom(account, room, nick, password, join);
+        MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
         getActivity().finish();
     }
 

@@ -2,7 +2,10 @@ package com.xabber.android.ui;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +20,22 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
-import com.xabber.android.ui.adapter.HostedRoomsAdapter;
+import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 import com.xabber.android.ui.helper.AccountPainter;
 
 import org.jivesoftware.smackx.muc.HostedRoom;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-public class RoomSelectFragment extends ListFragment implements AdapterView.OnItemSelectedListener,
+public class ConferenceSelectFragment extends ListFragment implements AdapterView.OnItemSelectedListener,
         View.OnClickListener, MUCManager.HostedRoomsListener, AdapterView.OnItemClickListener {
 
     private Spinner accountView;
     private EditText serverView;
     private EditText roomView;
-    private HostedRoomsAdapter hostedRoomsAdapter;
+    private HostedConferencesAdapter hostedConferencesAdapter;
     private View roomsProgressBar;
     private String account;
 
@@ -38,7 +43,7 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
     private AccountPainter accountPainter;
     private Button nextButton;
 
-    public RoomSelectFragment() {
+    public ConferenceSelectFragment() {
     }
 
     @Override
@@ -57,11 +62,39 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.room_select_fragment, container, false);
+        View view = inflater.inflate(R.layout.conference_select_fragment, container, false);
 
         accountView = (Spinner) view.findViewById(R.id.contact_account);
         serverView = (EditText) view.findViewById(R.id.muc_server);
-        roomView = (EditText) view.findViewById(R.id.muc_room);
+        roomView = (EditText) view.findViewById(R.id.muc_conference_name);
+
+        roomView.setOnClickListener(this);
+        roomView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    onRoomNameEditTextClick();
+                }
+            }
+        });
+
+
+        roomView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hostedConferencesAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         roomsProgressBar = view.findViewById(R.id.muc_rooms_progress_bar);
 
@@ -87,17 +120,31 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        hostedRoomsAdapter = new HostedRoomsAdapter(getActivity(), android.R.layout.simple_list_item_2);
+        hostedConferencesAdapter = new HostedConferencesAdapter(getActivity());
 
         ListView listView = getListView();
-        listView.setAdapter(hostedRoomsAdapter);
+        listView.setAdapter(hostedConferencesAdapter);
         listView.setOnItemClickListener(this);
+
+
+        if (savedInstanceState != null) {
+            hostedConferencesAdapter.clear();
+            hostedConferencesAdapter.addAll(ConferenceFilterActivity.restoreConferenceList(savedInstanceState));
+        }
+
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        storeConferenceList(outState);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         startActivity(ConferenceAdd.createIntent(getActivity(), account,
-                hostedRoomsAdapter.getItem(position).getJid()));
+                hostedConferencesAdapter.getItem(position).getJid()));
     }
 
     @Override
@@ -108,12 +155,16 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
             return;
         }
 
+        if (account != null) {
+            hostedConferencesAdapter.clear();
+        }
+
         account = newAccount;
         listener.onAccountSelected(account);
 
         nextButton.setTextColor(accountPainter.getAccountDarkColor(account));
 
-        hostedRoomsAdapter.clear();
+
     }
 
     @Override
@@ -129,6 +180,58 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
                 break;
             case R.id.muc_next:
                 onNextClick();
+                break;
+
+            case R.id.muc_conference_name:
+                onRoomNameEditTextClick();
+                break;
+
+        }
+    }
+
+    private void onRoomNameEditTextClick() {
+        if (hostedConferencesAdapter.isEmpty()) {
+            return;
+        }
+
+        Intent intent = ConferenceFilterActivity.createIntent(getActivity(), account);
+        intent.putExtra(ConferenceFilterActivity.ARG_CONFERENCE_NAME, roomView.getText().toString());
+
+
+        Bundle bundle = new Bundle();
+        storeConferenceList(bundle);
+        intent.putExtra(ConferenceFilterActivity.ARG_CONFERENCE_LIST, bundle);
+
+        startActivityForResult(intent, ConferenceFilterActivity.REQUEST_CODE_FILTER_ROOMS);
+    }
+
+    private void storeConferenceList(Bundle intent) {
+        List<HostedRoom> conferencesList = new ArrayList<>();
+        conferencesList.addAll(hostedConferencesAdapter.getConferencesList());
+
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> jids = new ArrayList<>();
+
+        for (HostedRoom hostedRoom : conferencesList) {
+            names.add(hostedRoom.getName());
+            jids.add(hostedRoom.getJid());
+        }
+
+        intent.putStringArrayList(ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES, names);
+        intent.putStringArrayList(ConferenceFilterActivity.ARG_CONFERENCE_LIST_JIDS, jids);
+    }
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ConferenceFilterActivity.REQUEST_CODE_FILTER_ROOMS) {
+            String stringExtra = data.getStringExtra(ConferenceFilterActivity.ARG_CONFERENCE_NAME);
+            if (stringExtra != null) {
+                onConferenceNameChanged(stringExtra);
+            }
         }
     }
 
@@ -167,7 +270,7 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
 
         ChatViewer.hideKeyboard(getActivity());
         MUCManager.requestHostedRooms(account, server, this);
-        hostedRoomsAdapter.clear();
+        hostedConferencesAdapter.clear();
         roomsProgressBar.setVisibility(View.VISIBLE);
     }
 
@@ -176,12 +279,17 @@ public class RoomSelectFragment extends ListFragment implements AdapterView.OnIt
         roomsProgressBar.setVisibility(View.GONE);
 
         if (hostedRooms == null) {
-            Toast.makeText(getActivity(), "Error getting rooms", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.muc_error_getting_conferences, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        hostedRoomsAdapter.clear();
-        hostedRoomsAdapter.addAll(hostedRooms);
+        hostedConferencesAdapter.clear();
+        hostedConferencesAdapter.addAll(hostedRooms);
+    }
+
+    public void onConferenceNameChanged(String stringExtra) {
+        roomView.setText(stringExtra);
+        roomView.setSelection(stringExtra.length());
     }
 
     interface Listener {

@@ -12,12 +12,12 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
-public class RoomSelectActivity extends ManagedActivity implements RoomSelectFragment.Listener {
+public class ConferenceSelectActivity extends ManagedActivity implements ConferenceSelectFragment.Listener {
 
     private BarPainter barPainter;
 
     public static Intent createIntent(Context context) {
-        return new EntityIntentBuilder(context, RoomSelectActivity.class).build();
+        return new EntityIntentBuilder(context, ConferenceSelectActivity.class).build();
     }
 
     @Override
@@ -31,7 +31,7 @@ public class RoomSelectActivity extends ManagedActivity implements RoomSelectFra
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(RoomSelectActivity.this);
+                NavUtils.navigateUpFromSameTask(ConferenceSelectActivity.this);
             }
         });
         toolbar.setTitle(getString(R.string.muc_choose_conference));
@@ -40,7 +40,7 @@ public class RoomSelectActivity extends ManagedActivity implements RoomSelectFra
         barPainter.setDefaultColor();
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().add(R.id.fragment_container, new RoomSelectFragment()).commit();
+            getFragmentManager().beginTransaction().add(R.id.fragment_container, new ConferenceSelectFragment()).commit();
         }
     }
 
