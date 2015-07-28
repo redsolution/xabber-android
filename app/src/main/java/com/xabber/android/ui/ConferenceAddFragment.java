@@ -4,9 +4,6 @@ import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -113,6 +110,6 @@ public class ConferenceAddFragment extends Fragment {
         String password = passwordView.getText().toString();
         final boolean join = true;
         MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
-        getActivity().finish();
+        startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, conferenceJid));
     }
 }
