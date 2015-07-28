@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -88,6 +89,8 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
                     .add(R.id.fragment_container, ConferenceAddFragment.newInstance(account, room))
                     .commit();
         }
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override
