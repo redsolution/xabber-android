@@ -58,6 +58,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private String account;
     private String user;
     private boolean isMUC;
+    private String mucNickname;
+
     private List<MessageItem> messages;
     /**
      * Text with extra information.
@@ -72,6 +74,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.messageClickListener = messageClickListener;
 
         isMUC = MUCManager.getInstance().hasRoom(account, user);
+        if (isMUC) {
+            mucNickname = MUCManager.getInstance().getNickname(account, user);
+        }
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
     }
@@ -187,7 +192,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             return VIEW_TYPE_ACTION_MESSAGE;
         }
 
-        return messageItem.isIncoming() ? VIEW_TYPE_INCOMING_MESSAGE : VIEW_TYPE_OUTGOING_MESSAGE;
+        if (messageItem.isIncoming()) {
+            if (isMUC && messageItem.getResource().equals(mucNickname)) {
+                return VIEW_TYPE_OUTGOING_MESSAGE;
+            }
+            return VIEW_TYPE_INCOMING_MESSAGE;
+        } else {
+            return VIEW_TYPE_OUTGOING_MESSAGE;
+        }
     }
 
     private void setUpMessage(MessageItem messageItem, Message message) {

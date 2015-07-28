@@ -211,9 +211,6 @@ public class RoomChat extends AbstractChat {
             if (text == null && subject == null) {
                 return true;
             }
-            if (isSelf(resource)) { // Own message
-                return true;
-            }
             if (subject != null) {
                 if (this.subject.equals(subject)) {
                     return true;
@@ -241,6 +238,11 @@ public class RoomChat extends AbstractChat {
                         }
                     }
                 }
+
+                if (isSelf(resource)) { // Own message from other client
+                    notify = false;
+                }
+
                 updateThreadId(message.getThread());
                 MessageItem messageItem = newMessage(resource, text, null,
                         delay, true, notify, false, false, true);

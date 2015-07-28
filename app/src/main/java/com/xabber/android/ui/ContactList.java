@@ -429,7 +429,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 closeAllChats();
                 return true;
             case R.id.action_join_conference:
-                startActivity(ConferenceAdd.createIntent(this));
+                startActivity(ConferenceSelectActivity.createIntent(this));
                 return true;
             case R.id.action_chat_list:
                 startActivity(ChatViewer.createRecentChatsIntent(this));

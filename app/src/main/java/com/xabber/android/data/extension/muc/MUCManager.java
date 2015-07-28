@@ -41,6 +41,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
@@ -457,4 +458,35 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         authorizationErrorProvider.add(new RoomAuthorizationError(account, room), null);
     }
 
+
+    public interface HostedRoomsListener {
+        void onHostedRoomsReceived(Collection<HostedRoom> hostedRooms);
+    }
+
+    public static void requestHostedRooms(final String account, final String serviceName, final HostedRoomsListener listener) {
+        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+
+        final Thread thread = new Thread("Get hosted rooms on server " + serviceName + " for account " + account) {
+            @Override
+            public void run() {
+                Collection<HostedRoom> hostedRooms = null;
+
+                try {
+                    hostedRooms = MultiUserChatManager.getInstanceFor(xmppConnection).getHostedRooms(serviceName);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                }
+
+                final Collection<HostedRoom> finalHostedRooms = hostedRooms;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onHostedRoomsReceived(finalHostedRooms);
+                    }
+                });
+            }
+        };
+        thread.start();
+
+    }
 }

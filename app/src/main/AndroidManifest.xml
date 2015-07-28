@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+<!--
+ Copyright (c) 2013, Redsolution LTD. All rights reserved.
 
      This file is part of Xabber project; you can redistribute it and/or
      modify it under the terms of the GNU General Public License, Version 3.
@@ -13,11 +14,17 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xabber.android">
+    package="com.xabber.android" >
 
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <uses-feature android:name="android.hardware.location" android:required="false" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,57 +34,63 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name="com.xabber.android.data.Application"
+        android:name=".data.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
-        android:theme="@style/Theme">
+        android:theme="@style/Theme" >
         <activity
-            android:name="com.xabber.android.ui.ContactList"
+            android:name=".ui.ContactList"
             android:label="@string/application_title_full"
-            android:launchMode="singleTop"
-            >
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="xmpp" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SENDTO" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="imto" />
                 <data android:host="jabber" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SENDTO" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="imto" />
                 <data android:host="gtalk" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.xabber.android.ui.LoadActivity"
-            />
+        <activity android:name=".ui.LoadActivity" />
         <activity
             android:name=".ui.AboutViewer"
             android:label="@string/about_viewer"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor"
-            android:theme="@style/ThemeDark"
-            >
+            android:parentActivityName=".ui.preferences.PreferenceEditor"
+            android:theme="@style/ThemeDark" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -85,44 +98,41 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.preferences.AccountList"
+            android:name=".ui.preferences.AccountList"
             android:label="@string/preference_accounts"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor"
-            >
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.preferences.AccountEditor"
+            android:name=".ui.preferences.AccountEditor"
             android:label="@string/account_editor"
-            android:parentActivityName="com.xabber.android.ui.preferences.AccountList"
-            >
+            android:parentActivityName=".ui.preferences.AccountList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.OccupantList"
+            android:name=".ui.OccupantList"
             android:label="@string/occupant_list"
-            android:parentActivityName="com.xabber.android.ui.ChatViewer"
-            >
+            android:parentActivityName=".ui.ChatViewer" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ChatViewer" />
-
         </activity>
         <activity
-            android:name="com.xabber.android.ui.ChatViewer"
+            android:name=".ui.ChatViewer"
             android:label="@string/chat_viewer"
             android:launchMode="singleTop"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
-            android:windowSoftInputMode="adjustResize"
-            >
-
+            android:parentActivityName=".ui.ContactList"
+            android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
@@ -131,90 +141,84 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ContactList" />
-
         </activity>
         <activity
-            android:name="com.xabber.android.ui.GroupEditor"
-            android:parentActivityName="com.xabber.android.ui.ContactViewer"
-            >
+            android:name=".ui.GroupEditor"
+            android:parentActivityName=".ui.ContactViewer" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ContactViewer" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.ContactAdd"
+            android:name=".ui.ContactAdd"
             android:label="@string/contact_add"
-            android:parentActivityName="com.xabber.android.ui.preferences.AccountList"
-            >
+            android:parentActivityName=".ui.preferences.AccountList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.AccountAdd"
+            android:name=".ui.AccountAdd"
             android:label="@string/account_add"
-            android:parentActivityName="com.xabber.android.ui.preferences.AccountList"
-            >
+            android:parentActivityName=".ui.preferences.AccountList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.OAuthActivity"
-            android:label="@string/account_oauth"
-            />
+            android:name=".ui.OAuthActivity"
+            android:label="@string/account_oauth" />
         <activity
             android:name=".ui.ConferenceAdd"
             android:label="@string/muc_add"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
-            >
+            android:parentActivityName=".ui.ConferenceSelectActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.ContactList" />
+                android:value=".ui.ConferenceSelectActivity" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.StatusEditor"
+            android:name=".ui.StatusEditor"
             android:label="@string/status_editor"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
-            >
+            android:parentActivityName=".ui.ContactList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ContactList" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.preferences.PreferenceEditor"
+            android:name=".ui.preferences.PreferenceEditor"
             android:label="@string/preference_editor"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
-            >
+            android:parentActivityName=".ui.ContactList" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ContactList" />
         </activity>
-
         <activity
             android:name=".ui.preferences.ChatContactSettings"
             android:label="@string/chat_settings"
-            android:parentActivityName="com.xabber.android.ui.ChatViewer"
-            >
+            android:parentActivityName=".ui.ChatViewer" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ChatViewer" />
         </activity>
-
         <activity
-            android:name="com.xabber.android.ui.ContactViewer"
+            android:name=".ui.ContactViewer"
             android:label="@string/contact_viewer"
-            android:parentActivityName="com.xabber.android.ui.ChatViewer"
-            >
+            android:parentActivityName=".ui.ChatViewer" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -222,119 +226,142 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="@string/contact_viewer_mime_type" />
                 <data android:scheme="content" />
                 <data android:host="com.android.contacts" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.xabber.android.ui.ContactEditor"
+            android:name=".ui.ContactEditor"
             android:label="@string/contact_viewer"
-            android:parentActivityName="com.xabber.android.ui.ChatViewer"
-            >
+            android:parentActivityName=".ui.ChatViewer" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ChatViewer" />
         </activity>
-
         <activity
-            android:name="com.xabber.android.ui.FingerprintViewer"
+            android:name=".ui.FingerprintViewer"
             android:label="@string/otr_verify_fingerprint"
-            android:parentActivityName="com.xabber.android.ui.ChatViewer"
-            >
+            android:parentActivityName=".ui.ChatViewer" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ChatViewer" />
         </activity>
-
         <activity
-            android:name="com.xabber.android.ui.QuestionViewer"
+            android:name=".ui.QuestionViewer"
             android:label="@string/otr_verify_fingerprint"
-            android:parentActivityName="com.xabber.android.ui.ChatViewer"
-            >
+            android:parentActivityName=".ui.ChatViewer" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ChatViewer" />
         </activity>
-
         <activity
-            android:name="com.xabber.android.ui.ContactSubscription"
-            android:parentActivityName="com.xabber.android.ui.ContactList"
-            >
+            android:name=".ui.ContactSubscription"
+            android:parentActivityName=".ui.ContactList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ContactList" />
         </activity>
+        <activity android:name=".ui.MUCInvite" />
+        <activity android:name=".ui.CertificateConfirmation" />
+        <activity android:name=".ui.PasswordRequest" />
+        <activity android:name=".ui.ArchiveRequest" />
         <activity
-            android:name="com.xabber.android.ui.MUCInvite"
-            />
-        <activity
-            android:name="com.xabber.android.ui.CertificateConfirmation"
-            />
-        <activity
-            android:name="com.xabber.android.ui.PasswordRequest"
-            />
-        <activity
-            android:name="com.xabber.android.ui.ArchiveRequest"
-            />
-        <activity
-            android:name="com.xabber.android.ui.preferences.PhraseList"
-            android:parentActivityName="com.xabber.android.ui.preferences.NotificationsSettings">
+            android:name=".ui.preferences.PhraseList"
+            android:parentActivityName=".ui.preferences.NotificationsSettings" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.NotificationsSettings" />
         </activity>
         <activity
-            android:name="com.xabber.android.ui.preferences.PhraseEditor"
-            android:parentActivityName="com.xabber.android.ui.preferences.PhraseList">
+            android:name=".ui.preferences.PhraseEditor"
+            android:parentActivityName=".ui.preferences.PhraseList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PhraseList" />
         </activity>
-
         <activity
-            android:name="com.xabber.android.ui.preferences.PhraseAdder"
-            android:parentActivityName="com.xabber.android.ui.preferences.PhraseList">
+            android:name=".ui.preferences.PhraseAdder"
+            android:parentActivityName=".ui.preferences.PhraseList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PhraseList" />
         </activity>
-
-
+        <activity android:name=".ui.ReconnectionActivity" />
         <activity
-            android:name="com.xabber.android.ui.ReconnectionActivity"
-            />
-        <activity
-            android:name="com.xabber.android.ui.ClearNotifications"
+            android:name=".ui.ClearNotifications"
             android:excludeFromRecents="true"
             android:label="ClearNotifications"
             android:launchMode="singleInstance"
             android:noHistory="true"
             android:stateNotNeeded="true"
-            android:taskAffinity=""
-            />
-
+            android:taskAffinity="" />
         <activity
-            android:name="com.xabber.android.ui.preferences.ContactListSettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
+            android:name=".ui.preferences.ContactListSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
-
         <activity
             android:name=".ui.preferences.ChatGlobalSettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
+            android:name=".ui.preferences.NotificationsSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
+            android:name=".ui.preferences.ConnectionSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
+            android:name=".ui.preferences.SecuritySettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+        <activity
+            android:name=".ui.preferences.DebugSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -342,82 +369,61 @@
         </activity>
 
         <activity
-            android:name="com.xabber.android.ui.preferences.NotificationsSettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
+            android:name=".ui.ConferenceSelectActivity"
+            android:parentActivityName=".ui.ContactList" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+                android:value="com.xabber.android.ui.ContactList" />
         </activity>
 
         <activity
-            android:name="com.xabber.android.ui.preferences.ConnectionSettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+            android:name=".ui.ConferenceFilterActivity">
         </activity>
 
-        <activity
-            android:name="com.xabber.android.ui.preferences.SecuritySettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
-        </activity>
-
-        <activity
-            android:name="com.xabber.android.ui.preferences.DebugSettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
-        </activity>
-
-        <service android:name="com.xabber.android.service.XabberService" />
+        <service android:name=".service.XabberService" />
         <service
-            android:name="com.xabber.android.service.SyncAdapterService"
-            android:exported="true">
+            android:name=".service.SyncAdapterService"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter"
-                />
+                android:resource="@xml/syncadapter" />
         </service>
         <service
-            android:name="com.xabber.android.service.AccountAuthenticatorService"
-            android:exported="true">
+            android:name=".service.AccountAuthenticatorService"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator" />
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
         </service>
-        <receiver
-            android:name="com.xabber.android.receiver.BootReceiver">
+
+        <receiver android:name=".receiver.BootReceiver" >
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <receiver
-            android:name="com.xabber.android.receiver.ShutDownReceiver">
+        <receiver android:name=".receiver.ShutDownReceiver" >
             <intent-filter>
-                <action android:name="android.intent.action.ACTION_SHUTDOWN"/>
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
                 <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.xabber.android.receiver.GoAwayReceiver" />
-        <receiver android:name="com.xabber.android.receiver.GoXaReceiver" />
-        <receiver android:name="com.xabber.android.receiver.ComposingPausedReceiver" />
-
         <activity
             android:name="de.duenndns.ssl.MemorizingActivity"
             />
+        <receiver android:name=".receiver.GoAwayReceiver" />
+        <receiver android:name=".receiver.GoXaReceiver" />
+        <receiver android:name=".receiver.ComposingPausedReceiver" />
     </application>
+
 </manifest>
