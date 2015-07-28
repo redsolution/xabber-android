@@ -22,7 +22,7 @@
             android:hint="@string/muc_type_conference_name"
             android:paddingLeft="16dp"
             android:id="@+id/room_name_edit_text"
-            android:imeOptions="flagNoExtractUi"
+            android:imeOptions="flagNoExtractUi|actionDone"
             android:singleLine="true"
         />
 
