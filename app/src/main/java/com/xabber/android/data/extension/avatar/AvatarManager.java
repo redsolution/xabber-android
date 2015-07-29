@@ -476,7 +476,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                                 String hash, byte[] value, Bitmap bitmap) {
         if (value == null) {
             if (SettingsManager.connectionLoadVCard()) {
-                VCardManager.getInstance().request(account, bareAddress, hash);
+                VCardManager.getInstance().request(account, bareAddress);
             }
         } else {
             bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);

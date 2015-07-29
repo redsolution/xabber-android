@@ -1055,7 +1055,7 @@ public class SyncManager implements OnLoadListener, OnUnloadListener,
                 nickNamesForContacts.put(rosterContact,
                         rosterContact.getRealName());
                 StructuredName structuredName = VCardManager.getInstance()
-                        .getStructucedName(rosterContact.getUser());
+                        .getStructuredName(rosterContact.getUser());
                 if (structuredName != null)
                     structuredNamesForContacts.put(rosterContact,
                             structuredName);

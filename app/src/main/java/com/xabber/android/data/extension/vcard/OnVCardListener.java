@@ -15,7 +15,7 @@
 package com.xabber.android.data.extension.vcard;
 
 import com.xabber.android.data.BaseUIListener;
-import com.xabber.xmpp.vcard.VCard;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 /**
  * Listener for vCard to be received.

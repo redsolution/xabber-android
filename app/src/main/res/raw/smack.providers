@@ -2,13 +2,6 @@
 <!-- Providers file for default Smack extensions -->
 <smackProviders> 
 
-    <!-- VCard -->
-    <iqProvider>
-        <elementName>vCard</elementName>
-        <namespace>vcard-temp</namespace>
-        <className>com.xabber.xmpp.vcard.VCardProvider</className>
-    </iqProvider>
-
     <!-- vCardUpdate -->
     <extensionProvider>
         <elementName>x</elementName>
