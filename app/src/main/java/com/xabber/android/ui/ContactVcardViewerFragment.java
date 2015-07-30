@@ -52,6 +52,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private LinearLayout contactInfoItems;
     private VCard vCard;
     private boolean vCardError;
+    private View progressBar;
 
     public static ContactVcardViewerFragment newInstance(String account, String user) {
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
@@ -108,6 +109,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
+        progressBar = view.findViewById(R.id.contact_info_progress_bar);
 
         return view;
     }
@@ -118,12 +120,15 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Application.getInstance().addUIListener(OnVCardListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        if (vCard == null && !vCardError) {
-            VCardManager.getInstance().request(account, user);
-        }
 
         updateContact(account, user);
-        updateVCard(vCard);
+
+        if (vCard == null && !vCardError) {
+            progressBar.setVisibility(View.VISIBLE);
+            VCardManager.getInstance().request(account, user);
+        } else {
+            updateVCard(vCard);
+        }
     }
 
     @Override
@@ -151,6 +156,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         this.vCard = vCard;
         this.vCardError = false;
         updateVCard(vCard);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -160,6 +166,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         }
         this.vCard = null;
         this.vCardError = true;
+        progressBar.setVisibility(View.GONE);
         Application.getInstance().onError(R.string.XMPP_EXCEPTION);
     }
 
