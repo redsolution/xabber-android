@@ -248,9 +248,12 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             public void run() {
                 VCard vCard = null;
                 try {
-                    vCard = vCardManager.loadVCard(user);
+                    vCard = vCardManager.loadVCard(Jid.getBareAddress(user));
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     LogManager.w(this, "Error getting vCard: " + e.getMessage());
+                } catch (ClassCastException e) {
+                    // http://stackoverflow.com/questions/31498721/error-loading-vcard-information-using-smack-emptyresultiq-cannot-be-cast-to-or
+                    LogManager.w(this, "ClassCastException: " + e.getMessage());
                 }
 
                 final VCard finalVCard = vCard;
