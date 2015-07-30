@@ -48,4 +48,5 @@
     <string name="edit_alias">Edit alias</string>
     <string name="edit_contact_groups">Edit groups</string>
     <string name="remove_contact">Remove contact</string>
+    <string name="edit_account_user_info">Edit user info</string>
 </resources>
