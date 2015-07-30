@@ -31,11 +31,14 @@ import com.xabber.xmpp.vcard.EmailType;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,26 +81,31 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         if (savedInstanceState != null) {
             vCardError = savedInstanceState.getBoolean(SAVED_VCARD_ERROR, false);
             String xml = savedInstanceState.getString(SAVED_VCARD);
-            if (xml != null)
+            if (xml != null) {
                 try {
-                    XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
-                    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
-                    parser.setInput(new StringReader(xml));
-                    int eventType = parser.next();
-                    if (eventType != XmlPullParser.START_TAG) {
-                        throw new IllegalStateException(String.valueOf(eventType));
-                    }
-                    if (!VCard.ELEMENT.equals(parser.getName())) {
-                        throw new IllegalStateException(parser.getName());
-                    }
-                    if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
-                        throw new IllegalStateException(parser.getNamespace());
-                    }
-                    vCard = (new VCardProvider()).parse(parser);
-                } catch (Exception e) {
+                    vCard = parseVCard(xml);
+                } catch (XmlPullParserException | IOException | SmackException e) {
                     LogManager.exception(this, e);
                 }
+            }
         }
+    }
+
+    public static VCard parseVCard(String xml) throws XmlPullParserException, IOException, SmackException {
+        XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
+        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
+        parser.setInput(new StringReader(xml));
+        int eventType = parser.next();
+        if (eventType != XmlPullParser.START_TAG) {
+            throw new IllegalStateException(String.valueOf(eventType));
+        }
+        if (!VCard.ELEMENT.equals(parser.getName())) {
+            throw new IllegalStateException(parser.getName());
+        }
+        if (!VCard.NAMESPACE.equals(parser.getNamespace())) {
+            throw new IllegalStateException(parser.getNamespace());
+        }
+        return (new VCardProvider()).parse(parser);
     }
 
     @Nullable
@@ -455,6 +463,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             ((ImageView) contactInfoItem.findViewById(R.id.contact_info_group_icon)).setImageResource(iconResource);
         }
         return contactInfoItem;
+    }
+
+    public VCard getvCard() {
+        return vCard;
     }
 
 }

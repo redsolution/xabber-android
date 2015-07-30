@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_contact_info_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_prefix_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_prefix_name"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_given_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_given_name"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_middle_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_middle_name"
+                />
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_family_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_family_name"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_suffix_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_suffix_name"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/contact_info_separator"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            >
+
+            <ImageView
+                android:id="@+id/vcard_avatar"
+                android:layout_width="@dimen/avatar_large_size"
+                android:layout_height="@dimen/avatar_large_size"
+                android:src="@drawable/ic_avatar_1" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change"
+                android:id="@+id/vcard_change_avatar"
+                android:layout_marginLeft="16dp"
+                android:layout_gravity="top" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <include layout="@layout/contact_info_separator"/>
+
+    </LinearLayout>

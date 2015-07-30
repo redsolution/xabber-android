@@ -272,4 +272,21 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         thread.start();
     }
 
+    public static void saveVCard(final String account, final VCard vCard) {
+        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
+
+        final Thread thread = new Thread("Save vCard for account " + account) {
+            @Override
+            public void run() {
+                try {
+                    vCardManager.saveVCard(vCard);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    LogManager.w(this, "Error saving vCard: " + e.getMessage());
+                }
+            }
+        };
+        thread.start();
+    }
+
 }
