@@ -24,6 +24,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
@@ -220,6 +221,18 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
+    private void onVCardSaveSuccess(String account) {
+        for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
+            listener.onVCardSaveSuccess(account);
+        }
+    }
+
+    private void onVCardSaveFailed(String account) {
+        for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
+            listener.onVCardSaveFailed(account);
+        }
+    }
+
     @Override
     public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
@@ -261,9 +274,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                     @Override
                     public void run() {
                     if (finalVCard == null) {
-                        onVCardFailed(account, user);
+                        onVCardFailed(account, Jid.getBareAddress(user));
                     } else {
-                        onVCardReceived(account, user, finalVCard);
+                        onVCardReceived(account, Jid.getBareAddress(user), finalVCard);
                     }
                     }
                 });
@@ -272,18 +285,39 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         thread.start();
     }
 
-    public static void saveVCard(final String account, final VCard vCard) {
+    public void saveVCard(final String account, final VCard vCard) {
         final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
 
         final Thread thread = new Thread("Save vCard for account " + account) {
             @Override
             public void run() {
+
+                boolean isSuccess = true;
+
+                xmppConnection.setPacketReplyTimeout(120000);
+
                 try {
                     vCardManager.saveVCard(vCard);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     LogManager.w(this, "Error saving vCard: " + e.getMessage());
+                    isSuccess = false;
                 }
+
+                xmppConnection.setPacketReplyTimeout(ConnectionManager.PACKET_REPLY_TIMEOUT);
+
+                final boolean finalIsSuccess = isSuccess;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalIsSuccess) {
+                            onVCardSaveSuccess(account);
+                        } else {
+                            onVCardSaveFailed(account);
+                        }
+                    }
+                });
+
             }
         };
         thread.start();

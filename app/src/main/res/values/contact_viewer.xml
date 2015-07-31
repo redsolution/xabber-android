@@ -12,6 +12,7 @@
     <string name="vcard_birth_date">Birthday</string>
     <string name="vcard_url">Web site</string>
     <string name="vcard_organization">Organization</string>
+    <string name="vcard_organization_unit">Organization unit</string>
     <string name="vcard_title">Job title, function</string>
     <string name="vcard_role">Role</string>
     <string name="vcard_other">Other information</string>
@@ -49,4 +50,7 @@
     <string name="edit_contact_groups">Edit groups</string>
     <string name="remove_contact">Remove contact</string>
     <string name="edit_account_user_info">Edit user info</string>
+    <string name="account_user_info_save_success">Account user info saved successfully</string>
+    <string name="account_user_info_save_fail">Could not save account user info</string>
+    <string name="account_user_info_save_started">Saving account user info...</string>
 </resources>

@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -30,12 +40,24 @@
             android:layout_marginBottom="8dp"
 
             >
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_formatted_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_formatted_name"
+                android:singleLine="true"
+                />
+
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/vcard_prefix_name"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/vcard_prefix_name"
+                android:singleLine="true"
                 />
 
             <EditText
@@ -44,6 +66,7 @@
                 android:hint="@string/vcard_given_name"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/vcard_given_name"
+                android:singleLine="true"
                 />
 
             <EditText
@@ -52,6 +75,7 @@
                 android:hint="@string/vcard_middle_name"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/vcard_middle_name"
+                android:singleLine="true"
                 />
 
 
@@ -61,6 +85,7 @@
                 android:hint="@string/vcard_family_name"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/vcard_family_name"
+                android:singleLine="true"
                 />
 
             <EditText
@@ -69,13 +94,22 @@
                 android:hint="@string/vcard_suffix_name"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/vcard_suffix_name"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_nick_name"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_nickname"
+                android:singleLine="true"
                 />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <include layout="@layout/contact_info_separator"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
@@ -90,6 +124,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="32dp"
             android:layout_marginTop="24dp"
+            android:src="@drawable/ic_file_image_box_grey600_24dp"
             />
 
         <LinearLayout
@@ -116,10 +151,328 @@
                 android:layout_gravity="top" />
 
         </LinearLayout>
+    </LinearLayout>
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_birthday_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_birth_date"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_birth_date"
+                android:singleLine="true"
+                android:inputType="date"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_job_title_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_title"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_title"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_role"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_role"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_organization"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_organization_name"
+                android:singleLine="true"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_organization_unit"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_organization_unit"
+                android:singleLine="true"
+                />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <include layout="@layout/contact_info_separator"/>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_web_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_url"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_url"
+                android:singleLine="true"
+                android:inputType="textUri" />
+        </LinearLayout>
 
     </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_notes_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_decsription"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_decsription"
+                android:singleLine="true"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_phone_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_telephone"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_phone_home"
+                android:inputType="phone"
+                android:singleLine="true"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"
+
+                android:singleLine="true"
+                android:text="@string/vcard_type_home"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_telephone"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_phone_work"
+                android:inputType="phone"
+                android:singleLine="true"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"
+
+                android:singleLine="true"
+                android:text="@string/vcard_type_work"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        >
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_vcard_email_24dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+
+            >
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_email"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_email_home"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"
+
+                android:singleLine="true"
+                android:text="@string/vcard_type_home"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/vcard_email"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/vcard_email_work"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"
+
+                android:singleLine="true"
+                android:text="@string/vcard_type_work"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
+
+
+</ScrollView>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:id="@+id/vcard_save_progress_bar"/>
+
+</RelativeLayout>

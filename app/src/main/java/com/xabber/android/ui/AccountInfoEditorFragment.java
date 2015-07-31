@@ -11,11 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.xmpp.vcard.TelephoneType;
+import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
@@ -25,7 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AccountInfoEditorFragment extends Fragment {
+public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_USER";
@@ -35,9 +40,23 @@ public class AccountInfoEditorFragment extends Fragment {
     private EditText middleName;
     private EditText familyName;
     private EditText suffixName;
+    private EditText nickName;
     private String account;
     private ImageView avatar;
     private Uri imageUri;
+    private EditText organization;
+    private EditText organizationUnit;
+    private EditText birthDate;
+    private EditText title;
+    private EditText role;
+    private EditText url;
+    private EditText description;
+    private EditText emailHome;
+    private EditText emailWork;
+    private EditText phoneHome;
+    private EditText phoneWork;
+    private EditText formattedName;
+    private View progressBar;
 
     public static AccountInfoEditorFragment newInstance(String account, String vCard) {
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
@@ -73,12 +92,15 @@ public class AccountInfoEditorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.account_info_editor_fragment, container, false);
 
+        progressBar = view.findViewById(R.id.vcard_save_progress_bar);
 
         prefixName = (EditText) view.findViewById(R.id.vcard_prefix_name);
+        formattedName = (EditText) view.findViewById(R.id.vcard_formatted_name);
         givenName = (EditText) view.findViewById(R.id.vcard_given_name);
         middleName = (EditText) view.findViewById(R.id.vcard_middle_name);
         familyName = (EditText) view.findViewById(R.id.vcard_family_name);
         suffixName = (EditText) view.findViewById(R.id.vcard_suffix_name);
+        nickName = (EditText) view.findViewById(R.id.vcard_nickname);
 
         avatar = (ImageView) view.findViewById(R.id.vcard_avatar);
         view.findViewById(R.id.vcard_change_avatar).setOnClickListener(new View.OnClickListener() {
@@ -89,16 +111,80 @@ public class AccountInfoEditorFragment extends Fragment {
                                                                        }
         );
 
+        birthDate = (EditText) view.findViewById(R.id.vcard_birth_date);
 
+        title = (EditText) view.findViewById(R.id.vcard_title);
+        role = (EditText) view.findViewById(R.id.vcard_role);
+        organization = (EditText) view.findViewById(R.id.vcard_organization_name);
+        organizationUnit = (EditText) view.findViewById(R.id.vcard_organization_unit);
+
+        url = (EditText) view.findViewById(R.id.vcard_url);
+
+        description = (EditText) view.findViewById(R.id.vcard_decsription);
+
+        phoneHome = (EditText) view.findViewById(R.id.vcard_phone_home);
+        phoneWork = (EditText) view.findViewById(R.id.vcard_phone_work);
+
+        emailHome = (EditText) view.findViewById(R.id.vcard_email_home);
+        emailWork = (EditText) view.findViewById(R.id.vcard_email_work);
+
+        setFieldsFromVCard();
+
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Application.getInstance().addUIListener(OnVCardSaveListener.class, this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Application.getInstance().removeUIListener(OnVCardSaveListener.class, this);
+    }
+
+    private void setFieldsFromVCard() {
+        formattedName.setText(vCard.getField(VCardProperty.FN.name()));
         prefixName.setText(vCard.getPrefix());
         givenName.setText(vCard.getFirstName());
         middleName.setText(vCard.getMiddleName());
         familyName.setText(vCard.getLastName());
         suffixName.setText(vCard.getSuffix());
+        nickName.setText(vCard.getNickName());
 
         avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
-        return view;
+        birthDate.setText(vCard.getField(VCardProperty.BDAY.name()));
+
+        title.setText(vCard.getField(VCardProperty.TITLE.name()));
+        role.setText(vCard.getField(VCardProperty.ROLE.name()));
+        organization.setText(vCard.getOrganization());
+        organizationUnit.setText(vCard.getOrganizationUnit());
+
+        url.setText(vCard.getField(VCardProperty.URL.name()));
+
+        description.setText(vCard.getField(VCardProperty.DESC.name()));
+
+        for (TelephoneType telephoneType : TelephoneType.values() ) {
+            String phone = vCard.getPhoneHome(telephoneType.name());
+            if (phone != null && !phone.isEmpty()) {
+                phoneHome.setText(phone);
+            }
+        }
+
+        for (TelephoneType telephoneType : TelephoneType.values() ) {
+            String phone = vCard.getPhoneWork(telephoneType.name());
+            if (phone != null && !phone.isEmpty()) {
+                phoneWork.setText(phone);
+            }
+        }
+
+        emailHome.setText(vCard.getEmailHome());
+        emailWork.setText(vCard.getEmailWork());
     }
 
     private void changeAvatar() {
@@ -129,15 +215,33 @@ public class AccountInfoEditorFragment extends Fragment {
         return byteBuffer.toByteArray();
     }
 
+    String getValueFromEditText(EditText editText) {
+        String trimText = editText.getText().toString().trim();
+        if (trimText.isEmpty()) {
+            return null;
+        }
+
+        return trimText;
+    }
+
     @Override
     public void onStop() {
         super.onStop();
+    }
 
-        vCard.setPrefix(prefixName.getText().toString());
-        vCard.setFirstName(givenName.getText().toString());
-        vCard.setMiddleName(middleName.getText().toString());
-        vCard.setLastName(familyName.getText().toString());
-        vCard.setSuffix(suffixName.getText().toString());
+    private void updateVCardFromFields() {
+
+        vCard.setPrefix(getValueFromEditText(prefixName));
+        vCard.setFirstName(getValueFromEditText(givenName));
+        vCard.setMiddleName(getValueFromEditText(middleName));
+        vCard.setLastName(getValueFromEditText(familyName));
+        vCard.setSuffix(getValueFromEditText(suffixName));
+        vCard.setNickName(getValueFromEditText(nickName));
+
+        String formattedNameText = getValueFromEditText(formattedName);
+        if (formattedNameText != null) {
+            vCard.setField(VCardProperty.FN.name(), formattedNameText);
+        }
 
         if (imageUri != null) {
             try {
@@ -149,6 +253,41 @@ public class AccountInfoEditorFragment extends Fragment {
 
         }
 
-        VCardManager.saveVCard(account, vCard);
+        vCard.setField(VCardProperty.BDAY.name(), getValueFromEditText(birthDate));
+
+        vCard.setField(VCardProperty.TITLE.name(), getValueFromEditText(title));
+        vCard.setField(VCardProperty.ROLE.name(), getValueFromEditText(role));
+        vCard.setOrganization(getValueFromEditText(organization));
+        vCard.setOrganizationUnit(getValueFromEditText(organizationUnit));
+
+        vCard.setField(VCardProperty.URL.name(), getValueFromEditText(url));
+
+        vCard.setField(VCardProperty.DESC.name(), getValueFromEditText(description));
+
+        vCard.setPhoneHome(TelephoneType.VOICE.name(), getValueFromEditText(phoneHome));
+        vCard.setPhoneWork(TelephoneType.VOICE.name(), getValueFromEditText(phoneWork));
+
+        vCard.setEmailHome(getValueFromEditText(emailHome));
+        vCard.setEmailWork(getValueFromEditText(emailWork));
+    }
+
+    public void saveVCard() {
+        updateVCardFromFields();
+        VCardManager.getInstance().saveVCard(account, vCard);
+        progressBar.setVisibility(View.VISIBLE);
+        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_started), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onVCardSaveSuccess(String account) {
+        progressBar.setVisibility(View.GONE);
+        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public void onVCardSaveFailed(String account) {
+        progressBar.setVisibility(View.GONE);
+        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
     }
 }

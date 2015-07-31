@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -20,9 +23,11 @@ import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
 
-public class AccountInfoEditor extends ManagedActivity implements OnAccountChangedListener {
+public class AccountInfoEditor extends ManagedActivity implements OnAccountChangedListener, Toolbar.OnMenuItemClickListener {
 
     public static final String ARG_VCARD = "com.xabber.android.ui.AccountInfoEditor.ARG_VCARD";
+    public static final int SAVE_MENU = R.menu.save;
+
 
     ContactTitleActionBarInflater contactTitleActionBarInflater;
     private String account;
@@ -55,7 +60,7 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
             finish();
         }
 
-
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,11 +68,16 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
             }
         });
 
+
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, AccountInfoEditorFragment.newInstance(account, vCard)).commit();
         }
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        toolbar.inflateMenu(SAVE_MENU);
+        toolbar.setOnMenuItemClickListener(this);
     }
 
     @Override
@@ -93,6 +103,30 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
     public void onAccountsChanged(Collection<String> accounts) {
         if (accounts.contains(account)) {
             update();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(SAVE_MENU, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                ((AccountInfoEditorFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).saveVCard();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

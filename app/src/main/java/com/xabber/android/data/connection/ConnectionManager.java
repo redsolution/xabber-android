@@ -54,7 +54,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     /**
      * Timeout for receiving reply from server.
      */
-    public final static int PACKET_REPLY_TIMEOUT = 60000;
+    public final static int PACKET_REPLY_TIMEOUT = 30000;
 
     public final static int PING_INTERVAL_SECONDS = 30;
 
