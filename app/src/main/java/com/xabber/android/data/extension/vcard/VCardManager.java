@@ -41,6 +41,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.util.ArrayList;
@@ -260,13 +261,22 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             @Override
             public void run() {
                 VCard vCard = null;
+
                 try {
                     vCard = vCardManager.loadVCard(Jid.getBareAddress(user));
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                } catch (SmackException.NoResponseException | SmackException.NotConnectedException e) {
                     LogManager.w(this, "Error getting vCard: " + e.getMessage());
+                } catch (XMPPException.XMPPErrorException e ) {
+                    LogManager.w(this, "XMPP error getting vCard: " + e.getMessage() + e.getXMPPError());
+
+                    if (e.getXMPPError().getCondition() == XMPPError.Condition.item_not_found) {
+                        vCard = new VCard();
+                    }
+
                 } catch (ClassCastException e) {
                     // http://stackoverflow.com/questions/31498721/error-loading-vcard-information-using-smack-emptyresultiq-cannot-be-cast-to-or
                     LogManager.w(this, "ClassCastException: " + e.getMessage());
+                    vCard = new VCard();
                 }
 
                 final VCard finalVCard = vCard;
