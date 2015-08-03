@@ -71,4 +71,6 @@ dependencies {
     compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
     compile project('otr4j')
     compile project('MemorizingTrustManager')
+
+    compile 'com.soundcloud.android:android-crop:1.0.0@aar'
 }

@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -129,5 +130,12 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        getFragmentManager().findFragmentById(R.id.fragment_container).onActivityResult(requestCode,
+                resultCode, data);
     }
 }

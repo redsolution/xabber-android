@@ -442,6 +442,9 @@
         <activity
             android:name="de.duenndns.ssl.MemorizingActivity"
             />
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
         <receiver android:name=".receiver.GoAwayReceiver" />
         <receiver android:name=".receiver.GoXaReceiver" />
         <receiver android:name=".receiver.ComposingPausedReceiver" />

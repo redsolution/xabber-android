@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.soundcloud.android.crop.Crop;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -30,6 +31,7 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -200,19 +202,43 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void changeAvatar() {
-        Intent pickAvatar = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickAvatar, 1);
+//        Intent pickAvatar = new Intent(Intent.ACTION_PICK,
+//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//        startActivityForResult(pickAvatar, 1);
+
+        Crop.pickImage(getActivity());
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            imageUri = data.getData();
-            avatar.setImageURI(imageUri);
+    public void onActivityResult(int requestCode, int resultCode, Intent result) {
+        LogManager.i(this, "onActivityResult");
+
+
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+//            imageUri = data.getData();
+//            avatar.setImageURI(imageUri);
+//        }
+
+        if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
+            beginCrop(result.getData());
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            handleCrop(resultCode, result);
         }
 
+    }
+
+    private void beginCrop(Uri source) {
+        imageUri = Uri.fromFile(new File(getActivity().getCacheDir(), "cropped"));
+        Crop.of(source, imageUri).asSquare().start(getActivity());
+    }
+
+    private void handleCrop(int resultCode, Intent result) {
+        if (resultCode == Activity.RESULT_OK) {
+            avatar.setImageURI(Crop.getOutput(result));
+        } else if (resultCode == Crop.RESULT_ERROR) {
+            Toast.makeText(getActivity(), Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static byte[] getBytes(InputStream inputStream) throws IOException {
