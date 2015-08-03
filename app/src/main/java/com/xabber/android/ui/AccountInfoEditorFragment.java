@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -62,6 +63,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText formattedName;
     private View progressBar;
     private boolean isSaveSuccess;
+    private LinearLayout fields;
 
     public static AccountInfoEditorFragment newInstance(String account, String vCard) {
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
@@ -96,6 +98,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.account_info_editor_fragment, container, false);
+
+        fields = (LinearLayout)view.findViewById(R.id.vcard_fields_layout);
 
         progressBar = view.findViewById(R.id.vcard_save_progress_bar);
 
@@ -284,7 +288,28 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         updateVCardFromFields();
         VCardManager.getInstance().saveVCard(account, vCard);
         isSaveSuccess = false;
+        enableProgressMode();
+
+    }
+
+    public void enableProgressMode() {
+        setEnabledRecursive(false, fields);
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void disableProgressMode() {
+        progressBar.setVisibility(View.GONE);
+        setEnabledRecursive(true, fields);
+    }
+
+    private void setEnabledRecursive(boolean enabled, ViewGroup viewGroup){
+        for (int i = 0; i < viewGroup.getChildCount(); i++){
+            View child = viewGroup.getChildAt(i);
+            child.setEnabled(enabled);
+            if (child instanceof ViewGroup){
+                setEnabledRecursive(enabled, (ViewGroup) child);
+            }
+        }
     }
 
     @Override
@@ -293,7 +318,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             return;
         }
 
-        progressBar.setVisibility(View.VISIBLE);
+        enableProgressMode();
         VCardManager.getInstance().request(account, account);
         isSaveSuccess = true;
     }
@@ -304,7 +329,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             return;
         }
 
-        progressBar.setVisibility(View.GONE);
+        disableProgressMode();
         Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
         isSaveSuccess = false;
     }
@@ -315,10 +340,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             return;
         }
 
-        progressBar.setVisibility(View.GONE);
-
-        this.vCard = vCard;
-        setFieldsFromVCard();
 
         if (isSaveSuccess) {
             Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
@@ -329,6 +350,11 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             getActivity().setResult(Activity.RESULT_OK, data);
 
             getActivity().finish();
+        } else {
+            disableProgressMode();
+
+            this.vCard = vCard;
+            setFieldsFromVCard();
         }
     }
 
