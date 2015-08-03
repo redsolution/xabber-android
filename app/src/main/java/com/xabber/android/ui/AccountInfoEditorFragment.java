@@ -17,8 +17,10 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
@@ -30,10 +32,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener {
+public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_USER";
+    public static final int ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST = 2;
+
     private VCard vCard;
     private EditText prefixName;
     private EditText givenName;
@@ -57,6 +61,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText phoneWork;
     private EditText formattedName;
     private View progressBar;
+    private boolean isSaveSuccess;
 
     public static AccountInfoEditorFragment newInstance(String account, String vCard) {
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
@@ -138,12 +143,15 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         super.onResume();
 
         Application.getInstance().addUIListener(OnVCardSaveListener.class, this);
+        Application.getInstance().addUIListener(OnVCardListener.class, this);
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
+        Application.getInstance().removeUIListener(OnVCardListener.class, this);
         Application.getInstance().removeUIListener(OnVCardSaveListener.class, this);
     }
 
@@ -272,22 +280,69 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     public void saveVCard() {
+        ChatViewer.hideKeyboard(getActivity());
         updateVCardFromFields();
         VCardManager.getInstance().saveVCard(account, vCard);
+        isSaveSuccess = false;
         progressBar.setVisibility(View.VISIBLE);
-        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_started), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onVCardSaveSuccess(String account) {
-        progressBar.setVisibility(View.GONE);
-        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(account))) {
+            return;
+        }
 
+        progressBar.setVisibility(View.VISIBLE);
+        VCardManager.getInstance().request(account, account);
+        isSaveSuccess = true;
     }
 
     @Override
     public void onVCardSaveFailed(String account) {
+        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(account))) {
+            return;
+        }
+
         progressBar.setVisibility(View.GONE);
         Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
+        isSaveSuccess = false;
+    }
+
+    @Override
+    public void onVCardReceived(String account, String bareAddress, VCard vCard) {
+        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(bareAddress))) {
+            return;
+        }
+
+        progressBar.setVisibility(View.GONE);
+
+        this.vCard = vCard;
+        setFieldsFromVCard();
+
+        if (isSaveSuccess) {
+            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+            isSaveSuccess = false;
+
+            Intent data = new Intent();
+            data.putExtra(ARGUMENT_VCARD, vCard.getChildElementXML().toString());
+            getActivity().setResult(Activity.RESULT_OK, data);
+
+            getActivity().finish();
+        }
+    }
+
+    @Override
+    public void onVCardFailed(String account, String bareAddress) {
+        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(bareAddress))) {
+            return;
+        }
+
+        if (isSaveSuccess) {
+            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+            isSaveSuccess = false;
+            getActivity().setResult(ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST);
+            getActivity().finish();
+        }
     }
 }

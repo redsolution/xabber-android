@@ -57,6 +57,7 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
 
         if (AccountManager.getInstance().getAccount(account) == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
+            setResult(RESULT_CANCELED);
             finish();
         }
 

@@ -132,11 +132,15 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         updateContact(account, user);
 
         if (vCard == null && !vCardError) {
-            progressBar.setVisibility(View.VISIBLE);
-            VCardManager.getInstance().request(account, user);
+            requestVCard();
         } else {
-            updateVCard(vCard);
+            updateVCard();
         }
+    }
+
+    public void requestVCard() {
+        progressBar.setVisibility(View.VISIBLE);
+        VCardManager.getInstance().request(account, user);
     }
 
     @Override
@@ -163,7 +167,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         }
         this.vCard = vCard;
         this.vCardError = false;
-        updateVCard(vCard);
+        updateVCard();
         progressBar.setVisibility(View.GONE);
     }
 
@@ -292,7 +296,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
     }
 
-    public void updateVCard(VCard vCard) {
+    public void updateVCard() {
         if (vCard == null) {
             return;
         }
