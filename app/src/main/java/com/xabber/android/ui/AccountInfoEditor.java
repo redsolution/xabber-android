@@ -12,26 +12,16 @@ import android.view.WindowManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.xmpp.address.Jid;
 
-import java.util.Collection;
-
-public class AccountInfoEditor extends ManagedActivity implements OnAccountChangedListener, Toolbar.OnMenuItemClickListener {
+public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     public static final String ARG_VCARD = "com.xabber.android.ui.AccountInfoEditor.ARG_VCARD";
     public static final int SAVE_MENU = R.menu.save;
 
-
-    ContactTitleActionBarInflater contactTitleActionBarInflater;
-    private String account;
 
     public static Intent createIntent(Context context, String account, String vCard) {
         Intent intent = new EntityIntentBuilder(context, AccountInfoEditor.class).setAccount(account).build();
@@ -48,12 +38,10 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, toolbar);
-        contactTitleActionBarInflater.setUpActionBarView();
+
 
         Intent intent = getIntent();
-        account = getAccount(intent);
+        String account = getAccount(intent);
         String vCard = intent.getStringExtra(ARG_VCARD);
 
         if (AccountManager.getInstance().getAccount(account) == null) {
@@ -62,6 +50,7 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
             finish();
         }
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +58,10 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
                 finish();
             }
         });
+        toolbar.setTitle(R.string.edit_account_user_info);
 
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -80,32 +72,6 @@ public class AccountInfoEditor extends ManagedActivity implements OnAccountChang
 
         toolbar.inflateMenu(SAVE_MENU);
         toolbar.setOnMenuItemClickListener(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-        update();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-    }
-
-    private void update() {
-        AbstractContact bestContact = RosterManager.getInstance().getBestContact(account, Jid.getBareAddress(account));
-        contactTitleActionBarInflater.update(bestContact);
-        contactTitleActionBarInflater.hideStatusIcon();
-    }
-
-    @Override
-    public void onAccountsChanged(Collection<String> accounts) {
-        if (accounts.contains(account)) {
-            update();
-        }
     }
 
     @Override
