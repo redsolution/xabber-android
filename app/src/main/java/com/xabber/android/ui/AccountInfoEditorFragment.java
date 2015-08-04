@@ -41,6 +41,9 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_USER";
     public static final int ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST = 2;
+    public static final int MAX_AVATAR_SIZE_PIXELS = 192;
+    public static final String TEMP_FILE_NAME = "cropped";
+    public static final int KB_SIZE_IN_BYTES = 1024;
 
     private VCard vCard;
     private EditText prefixName;
@@ -239,22 +242,19 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void beginCrop(Uri source) {
-        croppedImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), "cropped"));
-        Crop.of(source, croppedImageUri).start(getActivity());
+        croppedImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), TEMP_FILE_NAME));
+        Crop.of(source, croppedImageUri).withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS).start(getActivity());
     }
 
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == Activity.RESULT_OK) {
-
-
+            // null prompts image view to reload file.
             avatar.setImageURI(null);
             avatar.setImageURI(croppedImageUri);
 
-            File f = new File(croppedImageUri.getPath());
-            long size = f.length();
-
+            File file = new File(croppedImageUri.getPath());
+            avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
             avatarSize.setVisibility(View.VISIBLE);
-            avatarSize.setText(size / 1024 + "KB");
         } else if (resultCode == Crop.RESULT_ERROR) {
             avatarSize.setVisibility(View.INVISIBLE);
             Toast.makeText(getActivity(), Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
