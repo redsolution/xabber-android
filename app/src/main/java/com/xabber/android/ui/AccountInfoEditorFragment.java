@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundcloud.android.crop.Crop;
@@ -30,10 +31,10 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener {
 
@@ -50,7 +51,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText nickName;
     private String account;
     private ImageView avatar;
-    private Uri imageUri;
+    private Uri croppedImageUri;
     private EditText organization;
     private EditText organizationUnit;
     private EditText birthDate;
@@ -66,6 +67,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private View progressBar;
     private boolean isSaveSuccess;
     private LinearLayout fields;
+    private TextView avatarSize;
 
     public static AccountInfoEditorFragment newInstance(String account, String vCard) {
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
@@ -104,6 +106,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         fields = (LinearLayout)view.findViewById(R.id.vcard_fields_layout);
 
         progressBar = view.findViewById(R.id.vcard_save_progress_bar);
+
+        avatarSize = (TextView) view.findViewById(R.id.vcard_avatar_size_text_view);
 
         prefixName = (EditText) view.findViewById(R.id.vcard_prefix_name);
         formattedName = (EditText) view.findViewById(R.id.vcard_formatted_name);
@@ -202,24 +206,11 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void changeAvatar() {
-//        Intent pickAvatar = new Intent(Intent.ACTION_PICK,
-//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        startActivityForResult(pickAvatar, 1);
-
         Crop.pickImage(getActivity());
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
-        LogManager.i(this, "onActivityResult");
-
-
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-//            imageUri = data.getData();
-//            avatar.setImageURI(imageUri);
-//        }
-
         if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
             beginCrop(result.getData());
         } else if (requestCode == Crop.REQUEST_CROP) {
@@ -229,28 +220,26 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void beginCrop(Uri source) {
-        imageUri = Uri.fromFile(new File(getActivity().getCacheDir(), "cropped"));
-        Crop.of(source, imageUri).asSquare().start(getActivity());
+        croppedImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), "cropped"));
+        Crop.of(source, croppedImageUri).start(getActivity());
     }
 
     private void handleCrop(int resultCode, Intent result) {
         if (resultCode == Activity.RESULT_OK) {
-            avatar.setImageURI(Crop.getOutput(result));
+
+
+            avatar.setImageURI(null);
+            avatar.setImageURI(croppedImageUri);
+
+            File f = new File(croppedImageUri.getPath());
+            long size = f.length();
+
+            avatarSize.setVisibility(View.VISIBLE);
+            avatarSize.setText(size / 1024 + "KB");
         } else if (resultCode == Crop.RESULT_ERROR) {
+            avatarSize.setVisibility(View.INVISIBLE);
             Toast.makeText(getActivity(), Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public static byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
     }
 
     String getValueFromEditText(EditText editText) {
@@ -281,14 +270,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             vCard.setField(VCardProperty.FN.name(), formattedNameText);
         }
 
-        if (imageUri != null) {
+        if (croppedImageUri != null) {
             try {
-                InputStream inputStream = getActivity().getContentResolver().openInputStream(imageUri);
-                vCard.setAvatar(getBytes(inputStream));
-            } catch (IOException e) {
+                vCard.setAvatar(new URL(croppedImageUri.toString()));
+            } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-
         }
 
         vCard.setField(VCardProperty.BDAY.name(), getValueFromEditText(birthDate));
