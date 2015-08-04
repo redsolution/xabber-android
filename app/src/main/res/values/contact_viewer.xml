@@ -53,4 +53,5 @@
     <string name="account_user_info_save_success">Account user info saved successfully</string>
     <string name="account_user_info_save_fail">Could not save account user info</string>
     <string name="account_user_info_save_started">Saving account user info…</string>
+    <string name="saving">Saving…</string>
 </resources>

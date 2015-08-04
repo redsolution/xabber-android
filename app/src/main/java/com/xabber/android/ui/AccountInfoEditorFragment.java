@@ -69,6 +69,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private LinearLayout fields;
     private TextView avatarSize;
 
+    private Lister lister;
+
+    interface Lister {
+        void onVCardSavingStarted();
+        void onVCardSavingFinished();
+    }
+
     public static AccountInfoEditorFragment newInstance(String account, String vCard) {
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
 
@@ -80,6 +87,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     public AccountInfoEditorFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        lister = (Lister) activity;
     }
 
     @Override
@@ -163,6 +176,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         Application.getInstance().removeUIListener(OnVCardListener.class, this);
         Application.getInstance().removeUIListener(OnVCardSaveListener.class, this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        lister = null;
     }
 
     private void setFieldsFromVCard() {
@@ -308,11 +327,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public void enableProgressMode() {
         setEnabledRecursive(false, fields);
         progressBar.setVisibility(View.VISIBLE);
+        lister.onVCardSavingStarted();
     }
 
     public void disableProgressMode() {
         progressBar.setVisibility(View.GONE);
         setEnabledRecursive(true, fields);
+        lister.onVCardSavingFinished();
     }
 
     private void setEnabledRecursive(boolean enabled, ViewGroup viewGroup){

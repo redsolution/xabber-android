@@ -17,10 +17,11 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
-public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
+public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditorFragment.Lister {
 
     public static final String ARG_VCARD = "com.xabber.android.ui.AccountInfoEditor.ARG_VCARD";
     public static final int SAVE_MENU = R.menu.save;
+    private Toolbar toolbar;
 
 
     public static Intent createIntent(Context context, String account, String vCard) {
@@ -50,7 +51,7 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
             finish();
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,5 +104,17 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
         super.onActivityResult(requestCode, resultCode, data);
         getFragmentManager().findFragmentById(R.id.fragment_container).onActivityResult(requestCode,
                 resultCode, data);
+    }
+
+    @Override
+    public void onVCardSavingStarted() {
+        toolbar.setTitle(R.string.saving);
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(false);
+    }
+
+    @Override
+    public void onVCardSavingFinished() {
+        toolbar.setTitle(R.string.edit_account_user_info);
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(true);
     }
 }
