@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -286,11 +287,16 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
-            Drawable[] layers = new Drawable[2];
-            layers[0] = new ColorDrawable(accountColors[AccountManager.getInstance().getColorLevel(account)]);
-            layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
-            return new LayerDrawable(layers);
+            return getDefaultAccountAvatar(account);
         }
+    }
+
+    @NonNull
+    public Drawable getDefaultAccountAvatar(String account) {
+        Drawable[] layers = new Drawable[2];
+        layers[0] = new ColorDrawable(accountColors[AccountManager.getInstance().getColorLevel(account)]);
+        layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
+        return new LayerDrawable(layers);
     }
 
     /**

@@ -54,4 +54,7 @@
     <string name="account_user_info_save_fail">Could not save account user info</string>
     <string name="account_user_info_save_started">Saving account user info…</string>
     <string name="saving">Saving…</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="take_photo">Take photo</string>
+    <string name="remove_avatar">Remove avatar</string>
 </resources>
