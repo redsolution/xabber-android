@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlSerializer;
  * @author alexander.ivanov
  */
 public abstract class PacketExtension implements Container,
-        org.jivesoftware.smack.packet.PacketExtension {
+        org.jivesoftware.smack.packet.ExtensionElement {
 
     @Override
     public void serialize(XmlSerializer serializer) throws IOException {

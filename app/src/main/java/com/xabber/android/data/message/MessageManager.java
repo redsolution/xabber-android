@@ -45,10 +45,12 @@ import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.carbon.CarbonManager.Direction;
 import com.xabber.xmpp.delay.Delay;
 
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -460,7 +462,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
@@ -492,7 +494,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (body == null) {
                 return;
             }
-            for (PacketExtension packetExtension : message.getExtensions()) {
+            for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof MUCUser) {
                     return;
                 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -42,6 +43,8 @@ public class ConferenceSelectActivity extends ManagedActivity implements Confere
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction().add(R.id.fragment_container, new ConferenceSelectFragment()).commit();
         }
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override

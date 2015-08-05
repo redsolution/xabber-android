@@ -9,7 +9,7 @@
   <string name="account_state_registration">Regisztráció</string>
   <string name="account_state_authentication">Hitelesítés</string>
   <string name="account_state_connected">Bejelentkezve</string>
-  <string name="account_state_connecting">Csatlakozás</string>
+  <string name="account_state_connecting">Csatlakozik</string>
   <string name="account_state_disconnecting">Kapcsolat bontása</string>
   <string name="account_state_offline">Kijelentkezve</string>
   <string name="account_state_waiting">Újracsatlakozásra vár</string>

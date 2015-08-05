@@ -14,13 +14,13 @@
  */
 package com.xabber.xmpp.time;
 
-import java.io.IOException;
-import java.util.Date;
+import com.xabber.xmpp.IQ;
+import com.xabber.xmpp.SerializerUtils;
 
 import org.xmlpull.v1.XmlSerializer;
 
-import com.xabber.xmpp.IQ;
-import com.xabber.xmpp.SerializerUtils;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * Entity time packet.
@@ -45,6 +45,7 @@ public class Time extends IQ {
     private final Date created;
 
     public Time() {
+        super(ELEMENT_NAME, NAMESPACE);
         created = new Date();
     }
 
@@ -110,4 +111,9 @@ public class Time extends IQ {
         return created;
     }
 
+    @Override
+    protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
+        xml.setEmptyElement();
+        return xml;
+    }
 }

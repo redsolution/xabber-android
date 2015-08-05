@@ -14,18 +14,6 @@
  */
 package com.xabber.android.data.extension.time;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jivesoftware.smack.Connection;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -38,6 +26,19 @@ import com.xabber.android.data.extension.capability.OnServerInfoReceivedListener
 import com.xabber.android.data.extension.capability.ServerInfoManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.time.Time;
+
+import org.jivesoftware.smack.ConnectionCreationListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manage server time and response with local time.
@@ -65,14 +66,12 @@ public class TimeManager implements OnServerInfoReceivedListener,
         instance = new TimeManager();
         Application.getInstance().addManager(instance);
 
-        Connection
-                .addConnectionCreationListener(new ConnectionCreationListener() {
-                    @Override
-                    public void connectionCreated(final Connection connection) {
-                        ServiceDiscoveryManager.getInstanceFor(connection)
-                                .addFeature(FEATURE);
-                    }
-                });
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                ServiceDiscoveryManager.getInstanceFor(connection).addFeature(FEATURE);
+            }
+        });
     }
 
     public static TimeManager getInstance() {
@@ -98,7 +97,7 @@ public class TimeManager implements OnServerInfoReceivedListener,
             sents.put(account, new Date());
             Time packet = new Time();
             packet.setTo(Jid.getServer(account));
-            packet.setType(Type.GET);
+            packet.setType(Type.get);
             try {
                 ConnectionManager.getInstance().sendRequest(account, packet,
                         this);
@@ -110,17 +109,16 @@ public class TimeManager implements OnServerInfoReceivedListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
         if (!(packet instanceof Time))
             return;
         Time time = (Time) packet;
-        if (time.getType() == Type.GET) {
+        if (time.getType() == Type.get) {
             Time result = new Time();
-            result.setType(Type.RESULT);
+            result.setType(Type.result);
             result.setPacketID(time.getPacketID());
             result.setFrom(time.getTo());
             result.setTo(time.getFrom());
@@ -129,7 +127,7 @@ public class TimeManager implements OnServerInfoReceivedListener,
                     .get(Calendar.DST_OFFSET)) / 60000);
             result.setUtc(calendar.getTime());
             try {
-                ConnectionManager.getInstance().sendPacket(account, result);
+                ConnectionManager.getInstance().sendStanza(account, result);
             } catch (NetworkException e) {
             }
         }

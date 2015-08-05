@@ -14,10 +14,14 @@
  */
 package com.xabber.xmpp.avatar;
 
+import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.AbstractExtensionProvider;
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 public class VCardUpdateProvider extends AbstractExtensionProvider<VCardUpdate> {
 
@@ -27,8 +31,7 @@ public class VCardUpdateProvider extends AbstractExtensionProvider<VCardUpdate> 
     }
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, VCardUpdate instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, VCardUpdate instance) throws XmlPullParserException, IOException, SmackException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();

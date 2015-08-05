@@ -20,8 +20,8 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
+import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.muc.HostedRoom;
-import org.jivesoftware.smackx.packet.DiscoverItems;
 
 import java.util.ArrayList;
 import java.util.List;

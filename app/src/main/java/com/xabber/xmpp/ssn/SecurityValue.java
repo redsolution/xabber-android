@@ -14,9 +14,10 @@
  */
 package com.xabber.xmpp.ssn;
 
+import org.jivesoftware.smackx.xdata.FormField;
+
 import java.util.NoSuchElementException;
 
-import org.jivesoftware.smackx.FormField.Option;
 
 /**
  * Security parameter values.
@@ -39,8 +40,8 @@ public enum SecurityValue {
         this.label = label;
     }
 
-    public Option createOption() {
-        return new Option(label, name());
+    public FormField.Option createOption() {
+        return new FormField.Option(label, name());
     }
 
     public static SecurityValue fromString(String value)

@@ -33,6 +33,10 @@ public class Retrieve extends AbstractChat {
 
     private Set rsm;
 
+    public Retrieve() {
+        super(ELEMENT_NAME);
+    }
+
     @Override
     public void serializeContent(XmlSerializer serializer) throws IOException {
         super.serializeContent(serializer);

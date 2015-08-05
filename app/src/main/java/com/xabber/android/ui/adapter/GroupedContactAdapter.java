@@ -37,7 +37,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.ContactViewer;
+import com.xabber.android.ui.AccountViewer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -277,7 +277,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(ContactViewer.createIntent(activity, account, GroupManager.IS_ACCOUNT));
+                activity.startActivity(AccountViewer.createIntent(activity, account));
             }
         });
 

@@ -32,6 +32,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name=".data.Application"
@@ -244,6 +245,27 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.ChatViewer" />
         </activity>
+
+        <activity
+            android:name=".ui.AccountViewer"
+            android:parentActivityName=".ui.ContactList" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.ContactList" />
+        </activity>
+
+        <activity
+            android:name=".ui.AccountInfoEditor"
+            android:parentActivityName=".ui.AccountViewer" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.AccountViewer" />
+        </activity>
+
         <activity
             android:name=".ui.FingerprintViewer"
             android:label="@string/otr_verify_fingerprint"
@@ -417,6 +439,13 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="de.duenndns.ssl.MemorizingActivity"
+            />
+
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+
         <receiver android:name=".receiver.GoAwayReceiver" />
         <receiver android:name=".receiver.GoXaReceiver" />
         <receiver android:name=".receiver.ComposingPausedReceiver" />

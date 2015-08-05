@@ -155,7 +155,7 @@ public class AccountEditorFragment extends BaseSettingsFragment
         putValue(source, R.string.account_color_key, accountItem.getColorIndex());
 
         com.xabber.android.data.connection.ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
-        putValue(source, R.string.account_custom_key, connectionSettings.isCustom());
+        putValue(source, R.string.account_custom_key, connectionSettings.isCustomHostAndPort());
         putValue(source, R.string.account_host_key, connectionSettings.getHost());
         putValue(source, R.string.account_port_key, connectionSettings.getPort());
         putValue(source, R.string.account_server_key, connectionSettings.getServerName());

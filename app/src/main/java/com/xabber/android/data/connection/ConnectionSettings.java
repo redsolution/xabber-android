@@ -133,7 +133,7 @@ public class ConnectionSettings {
     /**
      * @return Whether custom host and port must be used.
      */
-    public boolean isCustom() {
+    public boolean isCustomHostAndPort() {
         return custom;
     }
 

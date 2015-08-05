@@ -14,16 +14,16 @@
  */
 package com.xabber.xmpp.archive;
 
-import java.io.IOException;
-import java.util.Date;
-
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.xmlpull.v1.XmlSerializer;
-
 import com.xabber.xmpp.IQ;
 import com.xabber.xmpp.SerializerUtils;
 
-public abstract class AbstractChat extends IQ implements PacketExtension {
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
+import java.util.Date;
+
+public abstract class AbstractChat extends IQ implements ExtensionElement {
 
     static final String NAMESPACE = "urn:xmpp:archive";
 
@@ -33,6 +33,10 @@ public abstract class AbstractChat extends IQ implements PacketExtension {
     private Date start;
     private String startString;
     private String with;
+
+    public AbstractChat(String childElementName) {
+        super(childElementName, NAMESPACE);
+    }
 
     @Override
     public void serializeContent(XmlSerializer serializer) throws IOException {

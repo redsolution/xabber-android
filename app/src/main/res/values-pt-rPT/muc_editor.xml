@@ -21,4 +21,8 @@
   <string name="muc_invite_confirm_reason">%2$s convidou-o para entrar na conferência %3$s: %4$s. Entrar com a conta %1$s?</string>
   <string name="muc_leave">Sair da conferência</string>
   <string name="muc_save">Guardar conferência</string>
+  <string name="muc_choose_conference">Escolher conferência</string>
+  <string name="muc_next">Seguinte</string>
+  <string name="muc_error_getting_conferences">Erro ao obter a conferência</string>
+  <string name="muc_type_conference_name">Escreva o nome da conferência</string>
 </resources>

@@ -60,7 +60,7 @@
                 android:paddingRight="8dp"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
-                android:background="@drawable/drawer_touch"
+                android:background="@drawable/ripple_background"
                 android:id="@+id/muc_get_hosted_rooms"
                 android:contentDescription="@string/muc_get_hosted_conferences"
                 android:layout_gravity="bottom|right"
@@ -113,7 +113,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
             android:layout_alignParentRight="true"
-            android:background="@drawable/drawer_touch"
+            android:background="@drawable/ripple_background"
             />
     </RelativeLayout>
 

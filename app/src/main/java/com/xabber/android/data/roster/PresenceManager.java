@@ -33,12 +33,11 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
-import org.jivesoftware.smack.packet.RosterPacket;
-import org.jivesoftware.smack.packet.RosterPacket.ItemType;
-import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.roster.packet.RosterPacket;
+import org.jxmpp.util.XmppStringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -125,7 +124,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         HashSet<String> set = requestedSubscriptions.get(account);
         if (set == null) {
             set = new HashSet<String>();
@@ -151,7 +150,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribed);
         packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, bareAddress);
         removeRequestedSubscription(account, bareAddress);
     }
@@ -168,7 +167,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             throws NetworkException {
         Presence packet = new Presence(Presence.Type.unsubscribed);
         packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, bareAddress);
         removeRequestedSubscription(account, bareAddress);
     }
@@ -218,8 +217,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
@@ -242,7 +240,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
                 }
                 return;
             }
-            String verbose = StringUtils.parseResource(presence.getFrom());
+            String verbose = XmppStringUtils.parseResource(presence.getFrom());
             String resource = Jid.getResource(presence.getFrom());
             ResourceContainer resourceContainer = presenceContainers.get(
                     account, bareAddress);
@@ -316,11 +314,11 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 
             RosterManager.getInstance().onContactChanged(account, bareAddress);
         } else if (packet instanceof RosterPacket
-                && ((RosterPacket) packet).getType() != IQ.Type.ERROR) {
+                && ((RosterPacket) packet).getType() != IQ.Type.error) {
             RosterPacket rosterPacket = (RosterPacket) packet;
             for (RosterPacket.Item item : rosterPacket.getRosterItems()) {
-                if (item.getItemType() == ItemType.both
-                        || item.getItemType() == ItemType.from) {
+                if (item.getItemType() == RosterPacket.ItemType.both
+                        || item.getItemType() == RosterPacket.ItemType.from) {
                     String user = Jid.getBareAddress(item.getUser());
                     if (user == null)
                         continue;
@@ -383,7 +381,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     public void resendPresence(String account) throws NetworkException {
         if (!readyAccounts.contains(account))
             throw new NetworkException(R.string.NOT_CONNECTED);
-        ConnectionManager.getInstance().sendPacket(account,
+        ConnectionManager.getInstance().sendStanza(account,
                 AccountManager.getInstance().getAccount(account).getPresence());
     }
 

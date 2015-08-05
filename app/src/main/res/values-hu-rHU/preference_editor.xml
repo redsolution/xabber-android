@@ -46,7 +46,7 @@
   <string name="chats_receipt">Kézbesítési jelentések\nVisszajelzések küldése és fogadása üzenetek kézbesítéséről</string>
   <string name="chats_show_avatars">Avatarok üzenetekben\nMinden üzenetben megjeleníti az avatarokat</string>
   <string name="chats_show_status_change">Állapotváltozások megjelenítése\nÜzeneteket jelenít meg az állapotváltozásokról</string>
-  <string name="chats_show_status_change_muc">Konferenciabeszélgetésben</string>
+  <string name="chats_show_status_change_muc">Konferenciákban</string>
   <string name="chats_state_notification">Gépelés jelzése\nJelzi a partnernek, hogy gépelsz</string>
   <string name="connection_adjust_priority">Prioritás beállítása\nIgazítsa a prioritást a kiválasztott állapothoz. A fiók prioritását felülírja.</string>
   <string name="connection_go_away_immediately">Képernyő zároláskor azonnal</string>

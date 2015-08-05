@@ -4,9 +4,6 @@ import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -19,7 +16,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
 
-import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.util.XmppStringUtils;
 
 public class ConferenceAddFragment extends Fragment {
 
@@ -56,13 +53,14 @@ public class ConferenceAddFragment extends Fragment {
         View view = inflater.inflate(R.layout.conference_add_fragment, container, false);
 
         ((TextView) view.findViewById(R.id.muc_conference_jid)).setText(conferenceJid);
-        ((TextView) view.findViewById(R.id.muc_account_jid)).setText(StringUtils.parseBareAddress(account));
+        ((TextView) view.findViewById(R.id.muc_account_jid)).setText(XmppStringUtils.parseBareJid(account));
 
         Drawable accountAvatar = AvatarManager.getInstance().getAccountAvatar(account);
         int h = accountAvatar.getIntrinsicHeight();
         int w = accountAvatar.getIntrinsicWidth();
         accountAvatar.setBounds( 0, 0, w, h );
         ((TextView) view.findViewById(R.id.muc_account_jid)).setCompoundDrawables(accountAvatar, null, null, null);
+
 
         nickView = (EditText) view.findViewById(R.id.muc_nick);
         nickView.setText(MUCManager.getInstance().getNickname(account, conferenceJid));
@@ -96,7 +94,7 @@ public class ConferenceAddFragment extends Fragment {
             return "";
         }
         String nickname = AccountManager.getInstance().getNickName(account);
-        String name = StringUtils.parseName(nickname);
+        String name = XmppStringUtils.parseLocalpart(nickname);
         if ("".equals(name)) {
             return nickname;
         } else {
@@ -113,6 +111,6 @@ public class ConferenceAddFragment extends Fragment {
         String password = passwordView.getText().toString();
         final boolean join = true;
         MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
-        getActivity().finish();
+        startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, conferenceJid));
     }
 }

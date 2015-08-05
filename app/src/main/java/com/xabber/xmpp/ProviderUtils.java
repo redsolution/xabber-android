@@ -14,6 +14,13 @@
  */
 package com.xabber.xmpp;
 
+import com.xabber.android.data.LogManager;
+
+import org.jxmpp.util.XmppDateTime;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -23,11 +30,6 @@ import java.util.LinkedList;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.jivesoftware.smack.util.StringUtils;
-import org.xmlpull.v1.XmlPullParser;
-
-import com.xabber.android.data.LogManager;
 
 /**
  * Set of functions commonly used by packet providers.
@@ -69,7 +71,7 @@ public class ProviderUtils {
         if (matcher.matches())
             dateString = matcher.group(1) + matcher.group(2);
         try {
-            return StringUtils.parseXEP0082Date(dateString);
+            return XmppDateTime.parseXEP0082Date(dateString);
         } catch (ParseException e) {
             synchronized (XEP_0082_UTC_FORMAT_WITHOUT_MILLIS) {
                 try {
@@ -116,7 +118,7 @@ public class ProviderUtils {
      * @return Empty string if there is no inner text elements.
      * @throws Exception
      */
-    public static String parseText(XmlPullParser parser) throws Exception {
+    public static String parseText(XmlPullParser parser) throws IOException, XmlPullParserException {
         return parseText(parser, -1);
     }
 
@@ -131,8 +133,7 @@ public class ProviderUtils {
      *                                         position will be at the and of the tag.
      * @throws Exception
      */
-    public static String parseText(XmlPullParser parser, int maximum)
-            throws Exception {
+    public static String parseText(XmlPullParser parser, int maximum) throws IOException, XmlPullParserException {
         final StringBuilder text = new StringBuilder();
         int inner = 1;
         boolean overflow = false;
@@ -167,7 +168,7 @@ public class ProviderUtils {
                 break;
         }
         if (overflow)
-            throw new OverflowReceiverBufferException();
+            throw new IOException("Overflow");
         return text.toString();
     }
 
@@ -178,8 +179,7 @@ public class ProviderUtils {
      * @throws IllegalStateException If closed tags are incompatible with opened one.
      * @throws Exception
      */
-    public static void skipTag(XmlPullParser parser)
-            throws Exception {
+    public static void skipTag(XmlPullParser parser) throws IOException, XmlPullParserException {
         LinkedList<String> tags = new LinkedList<String>();
         tags.add(parser.getName());
         while (!tags.isEmpty()) {
@@ -219,7 +219,7 @@ public class ProviderUtils {
      * data.
      * @throws Exception
      */
-    public static Integer parseInteger(XmlPullParser parser) throws Exception {
+    public static Integer parseInteger(XmlPullParser parser) throws IOException, XmlPullParserException {
         return parseInteger(parseText(parser, -1));
     }
 
@@ -231,7 +231,7 @@ public class ProviderUtils {
      * data.
      * @throws Exception
      */
-    public static Integer parseBoolean(XmlPullParser parser) throws Exception {
+    public static Integer parseBoolean(XmlPullParser parser) throws IOException, XmlPullParserException {
         return parseInteger(parseText(parser, -1));
     }
 
@@ -243,7 +243,7 @@ public class ProviderUtils {
      * data.
      * @throws Exception
      */
-    public static Date parseDateTime(XmlPullParser parser) throws Exception {
+    public static Date parseDateTime(XmlPullParser parser) throws IOException, XmlPullParserException {
         return parseDateTime(parseText(parser, -1));
     }
 

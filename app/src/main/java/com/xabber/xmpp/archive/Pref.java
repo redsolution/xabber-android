@@ -55,6 +55,7 @@ public class Pref extends IQ {
     private final Map<TypeMode, UseMode> methods;
 
     public Pref() {
+        super(ELEMENT_NAME, NAMESPACE);
         items = new ArrayList<Item>();
         sessions = new ArrayList<Session>();
         methods = new HashMap<TypeMode, UseMode>();

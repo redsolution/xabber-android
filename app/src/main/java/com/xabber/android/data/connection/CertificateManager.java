@@ -24,7 +24,6 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.notification.BaseNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 
-import org.jivesoftware.smack.CertificateListener;
 import org.jivesoftware.smack.util.StringUtils;
 
 import java.io.File;
@@ -416,43 +415,4 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
 
         });
     }
-
-    public CertificateListener createCertificateListener(
-            ConnectionItem connectionItem) {
-        final String server = connectionItem.getConnectionSettings()
-                .getServerName();
-        return new CertificateListener() {
-
-            @Override
-            public boolean onValid(X509Certificate[] chain) {
-                return true;
-            }
-
-            @Override
-            public boolean onSelfSigned(X509Certificate certificate,
-                                        CertificateException exception) {
-                LogManager.exception(CertificateManager.this, exception);
-                return isTrustedCertificate(server, certificate,
-                        CertificateInvalidReason.selfSigned);
-            }
-
-            @Override
-            public boolean onInvalidTarget(X509Certificate certificate,
-                                           CertificateException exception) {
-                LogManager.exception(CertificateManager.this, exception);
-                return isTrustedCertificate(server, certificate,
-                        CertificateInvalidReason.invalidTarget);
-            }
-
-            @Override
-            public boolean onInvalidChain(X509Certificate[] chain,
-                                          CertificateException exception) {
-                LogManager.exception(CertificateManager.this, exception);
-                return isTrustedCertificate(server, chain[0],
-                        CertificateInvalidReason.invalidChane);
-            }
-
-        };
-    }
-
 }

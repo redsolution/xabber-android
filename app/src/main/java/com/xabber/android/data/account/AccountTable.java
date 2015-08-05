@@ -409,7 +409,7 @@ class AccountTable extends AbstractTable {
 
         ContentValues values = new ContentValues();
         values.put(Fields.PROTOCOL, connectionSettings.getProtocol().name());
-        values.put(Fields.CUSTOM, connectionSettings.isCustom() ? 1 : 0);
+        values.put(Fields.CUSTOM, connectionSettings.isCustomHostAndPort() ? 1 : 0);
         values.put(Fields.HOST, connectionSettings.getHost());
         values.put(Fields.PORT, connectionSettings.getPort());
         values.put(Fields.SERVER_NAME, connectionSettings.getServerName());

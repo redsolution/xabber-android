@@ -235,7 +235,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
         try {
             ConnectionManager.getInstance()
-                    .sendPacket(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
+                    .sendStanza(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
         } catch (NetworkException e) {
             throw new OtrException(e);
         }

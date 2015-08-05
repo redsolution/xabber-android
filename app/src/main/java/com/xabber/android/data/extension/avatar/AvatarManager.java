@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -37,9 +38,9 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -286,11 +287,16 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
-            Drawable[] layers = new Drawable[2];
-            layers[0] = new ColorDrawable(accountColors[AccountManager.getInstance().getColorLevel(account)]);
-            layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
-            return new LayerDrawable(layers);
+            return getDefaultAccountAvatar(account);
         }
+    }
+
+    @NonNull
+    public Drawable getDefaultAccountAvatar(String account) {
+        Drawable[] layers = new Drawable[2];
+        layers[0] = new ColorDrawable(accountColors[AccountManager.getInstance().getColorLevel(account)]);
+        layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
+        return new LayerDrawable(layers);
     }
 
     /**
@@ -405,8 +411,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(packet instanceof Presence) || bareAddress == null) {
             return;
         }
@@ -418,7 +423,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         if (presence.getType() == Presence.Type.error) {
             return;
         }
-        for (PacketExtension packetExtension : presence.getExtensions()) {
+        for (ExtensionElement packetExtension : presence.getExtensions()) {
             if (packetExtension instanceof VCardUpdate) {
                 VCardUpdate vCardUpdate = (VCardUpdate) packetExtension;
                 if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {
@@ -477,7 +482,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
                                 String hash, byte[] value, Bitmap bitmap) {
         if (value == null) {
             if (SettingsManager.connectionLoadVCard()) {
-                VCardManager.getInstance().request(account, bareAddress, hash);
+                VCardManager.getInstance().request(account, bareAddress);
             }
         } else {
             bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);

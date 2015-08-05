@@ -14,15 +14,15 @@
  */
 package com.xabber.xmpp;
 
+import android.util.Xml;
+
+import org.jxmpp.util.XmppDateTime;
+import org.xmlpull.v1.XmlSerializer;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Date;
-
-import org.jivesoftware.smack.util.StringUtils;
-import org.xmlpull.v1.XmlSerializer;
-
-import android.util.Xml;
 
 /**
  * Set of functions commonly used by packet writers.
@@ -151,7 +151,7 @@ public final class SerializerUtils {
     public static String serializeDateTime(Date value) {
         if (value == null)
             return null;
-        return StringUtils.formatXEP0082Date(value);
+        return XmppDateTime.formatXEP0082Date(value);
     }
 
     /**
@@ -165,7 +165,7 @@ public final class SerializerUtils {
     }
 
     /**
-     * @param date
+     * @param value
      * @return <code>null</code> if value was <code>null</code>.
      */
     public static String serializeBoolean(Boolean value) {
