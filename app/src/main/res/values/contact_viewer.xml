@@ -57,4 +57,5 @@
     <string name="choose_from_gallery">Choose from gallery</string>
     <string name="take_photo">Take photo</string>
     <string name="remove_avatar">Remove avatar</string>
+    <string name="change">Change</string>
 </resources>

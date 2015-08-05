@@ -1,6 +1,7 @@
 package com.xabber.android.ui;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,8 +40,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
-public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener {
+public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_USER";
@@ -48,6 +58,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final String TEMP_FILE_NAME = "cropped";
     public static final int KB_SIZE_IN_BYTES = 1024;
     public static final int TAKE_PHOTO_REQUEST_CODE = 3;
+    public static final String DATE_FORMAT = "yyyy-mm-dd";
+    public static final String DATE_FORMAT_INT_TO_STRING = "%d-%02d-%02d";
 
     private VCard vCard;
     private EditText prefixName;
@@ -61,7 +73,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private Uri newAvatarImageUri;
     private EditText organization;
     private EditText organizationUnit;
-    private EditText birthDate;
+    private TextView birthDate;
     private EditText title;
     private EditText role;
     private EditText url;
@@ -79,7 +91,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private Lister lister;
     private View changeAvatarButton;
     private Uri photoFileUri;
-
+    private DatePickerDialog datePicker;
 
     interface Lister {
         void onVCardSavingStarted();
@@ -150,7 +162,15 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                                               }
         );
 
-        birthDate = (EditText) view.findViewById(R.id.vcard_birth_date);
+        birthDate = (TextView) view.findViewById(R.id.vcard_birth_date);
+
+        View changeBirthDateButton = view.findViewById(R.id.vcard_change_birth_date);
+        changeBirthDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePicker.show();
+            }
+        });
 
         title = (EditText) view.findViewById(R.id.vcard_title);
         role = (EditText) view.findViewById(R.id.vcard_role);
@@ -208,6 +228,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         birthDate.setText(vCard.getField(VCardProperty.BDAY.name()));
 
+        updateDatePickerDialog();
+
         title.setText(vCard.getField(VCardProperty.TITLE.name()));
         role.setText(vCard.getField(VCardProperty.ROLE.name()));
         organization.setText(vCard.getOrganization());
@@ -233,6 +255,38 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         emailHome.setText(vCard.getEmailHome());
         emailWork.setText(vCard.getEmailWork());
+    }
+
+    public void updateDatePickerDialog() {
+        Calendar calendar = null;
+
+        String vCardBirthDate = vCard.getField(VCardProperty.BDAY.name());
+
+        if (vCardBirthDate != null) {
+
+            DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+            Date result = null;
+            try {
+                result = dateFormat.parse(vCardBirthDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if (result != null) {
+                calendar = new GregorianCalendar();
+                calendar.setTime(result);
+            }
+        }
+
+        if (calendar == null) {
+            calendar = Calendar.getInstance(TimeZone.getDefault());
+        }
+        datePicker = new DatePickerDialog(getActivity(),
+                AccountInfoEditorFragment.this,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
+        datePicker.setCancelable(false);
     }
 
     private void changeAvatar() {
@@ -331,7 +385,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         }
     }
 
-    String getValueFromEditText(EditText editText) {
+    String getValueFromEditText(TextView editText) {
         String trimText = editText.getText().toString().trim();
         if (trimText.isEmpty()) {
             return null;
@@ -476,5 +530,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             getActivity().setResult(ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST);
             getActivity().finish();
         }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        birthDate.setText(String.format(DATE_FORMAT_INT_TO_STRING, year, monthOfYear + 1, dayOfMonth));
     }
 }
