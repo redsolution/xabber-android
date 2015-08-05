@@ -30,7 +30,7 @@
         android:id="@+id/drawer_action_settings"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/drawer_touch"
+        android:background="@drawable/ripple_background"
         android:gravity="center_vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
@@ -56,7 +56,7 @@
         android:id="@+id/drawer_action_about"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/drawer_touch"
+        android:background="@drawable/ripple_background"
         android:gravity="center_vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
@@ -80,7 +80,7 @@
         android:id="@+id/drawer_action_exit"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/drawer_touch"
+        android:background="@drawable/ripple_background"
         android:gravity="center_vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">

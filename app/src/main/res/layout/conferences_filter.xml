@@ -31,7 +31,7 @@
             android:layout_height="match_parent"
 
             android:src="@drawable/ic_close_circle_grey600_24dp"
-            android:background="@drawable/drawer_touch"
+            android:background="@drawable/ripple_background"
             android:layout_gravity="center_vertical"
             android:paddingRight="16dp"
             android:paddingLeft="16dp"

@@ -195,13 +195,13 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
 
 
             >
             <TextView
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/vcard_birth_date"
                 android:layout_gravity="center_vertical"
@@ -210,15 +210,21 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:inputType="date"
                 android:paddingLeft="4dp"
-                android:paddingTop="16dp"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:background="@drawable/ripple_background"
                 />
 
-            <Button
+            <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/change"
-                android:id="@+id/vcard_change_birth_date"
-                android:layout_marginLeft="16dp" />
+                android:src="@drawable/ic_close_circle_grey600_24dp"
+                android:padding="8dp"
+                android:background="@drawable/ripple_background"
+                android:id="@+id/vcard_birth_date_remove_button"
+                />
+
         </LinearLayout>
     </LinearLayout>
 

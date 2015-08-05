@@ -96,6 +96,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private Uri newAvatarImageUri;
     private Uri photoFileUri;
     private boolean removeAvatarFlag = false;
+    private View birthDateRemoveButton;
 
     interface Listener {
         void onVCardSavingStarted();
@@ -167,12 +168,18 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         );
 
         birthDate = (TextView) view.findViewById(R.id.vcard_birth_date);
-
-        View changeBirthDateButton = view.findViewById(R.id.vcard_change_birth_date);
-        changeBirthDateButton.setOnClickListener(new View.OnClickListener() {
+        birthDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 datePicker.show();
+            }
+        });
+
+        birthDateRemoveButton = view.findViewById(R.id.vcard_birth_date_remove_button);
+        birthDateRemoveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setBirthDate(null);
             }
         });
 
@@ -234,7 +241,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
-        birthDate.setText(vCard.getField(VCardProperty.BDAY.name()));
+        setBirthDate(vCard.getField(VCardProperty.BDAY.name()));
 
         updateDatePickerDialog();
 
@@ -545,6 +552,16 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        birthDate.setText(String.format(DATE_FORMAT_INT_TO_STRING, year, monthOfYear + 1, dayOfMonth));
+        setBirthDate(String.format(DATE_FORMAT_INT_TO_STRING, year, monthOfYear + 1, dayOfMonth));
+    }
+
+    public void setBirthDate(String date) {
+        birthDate.setText(date);
+        birthDate.setTextColor(getResources().getColor(android.R.color.primary_text_light));
+        if (date == null) {
+            birthDateRemoveButton.setVisibility(View.INVISIBLE);
+        } else {
+            birthDateRemoveButton.setVisibility(View.VISIBLE);
+        }
     }
 }
