@@ -203,6 +203,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         Application.getInstance().addUIListener(OnVCardSaveListener.class, this);
         Application.getInstance().addUIListener(OnVCardListener.class, this);
 
+        VCardManager vCardManager = VCardManager.getInstance();
+        if (vCardManager.isVCardRequested(account) || vCardManager.isVCardSaveRequested(account)) {
+            enableProgressMode();
+        }
     }
 
     @Override

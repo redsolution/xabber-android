@@ -47,6 +47,8 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Manage vCards and there requests.
@@ -71,6 +73,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     private final ArrayList<String> accountRequested;
 
     private final static VCardManager instance;
+
+    private Set<String> vCardRequests = new ConcurrentSkipListSet<>();
+    private Set<String> vCardSaveRequests = new ConcurrentSkipListSet<>();
 
     static {
         instance = new VCardManager();
@@ -253,7 +258,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    private void requestVCard(final String account, final String user) {
+    private void requestVCard(final String account, final String srcUser) {
+        final String user = Jid.getBareAddress(srcUser);
+
         final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
 
@@ -262,8 +269,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             public void run() {
                 VCard vCard = null;
 
+                vCardRequests.add(user);
                 try {
-                    vCard = vCardManager.loadVCard(Jid.getBareAddress(user));
+                    vCard = vCardManager.loadVCard(user);
                 } catch (SmackException.NoResponseException | SmackException.NotConnectedException e) {
                     LogManager.w(this, "Error getting vCard: " + e.getMessage());
                 } catch (XMPPException.XMPPErrorException e ) {
@@ -278,15 +286,16 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                     LogManager.w(this, "ClassCastException: " + e.getMessage());
                     vCard = new VCard();
                 }
+                vCardRequests.remove(user);
 
                 final VCard finalVCard = vCard;
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                     if (finalVCard == null) {
-                        onVCardFailed(account, Jid.getBareAddress(user));
+                        onVCardFailed(account, user);
                     } else {
-                        onVCardReceived(account, Jid.getBareAddress(user), finalVCard);
+                        onVCardReceived(account, user, finalVCard);
                     }
                     }
                 });
@@ -307,12 +316,14 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
                 xmppConnection.setPacketReplyTimeout(120000);
 
+                vCardSaveRequests.add(account);
                 try {
                     vCardManager.saveVCard(vCard);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     LogManager.w(this, "Error saving vCard: " + e.getMessage());
                     isSuccess = false;
                 }
+                vCardSaveRequests.remove(account);
 
                 xmppConnection.setPacketReplyTimeout(ConnectionManager.PACKET_REPLY_TIMEOUT);
 
@@ -331,6 +342,14 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             }
         };
         thread.start();
+    }
+
+    public boolean isVCardRequested(String user) {
+        return vCardRequests.contains(Jid.getBareAddress(user));
+    }
+
+    public boolean isVCardSaveRequested(String account) {
+        return vCardSaveRequests.contains(account);
     }
 
 }
