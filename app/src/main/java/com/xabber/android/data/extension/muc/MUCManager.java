@@ -35,13 +35,16 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.muc.MUC;
 
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -294,7 +297,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         }
         final MultiUserChat multiUserChat;
         try {
-            multiUserChat = new MultiUserChat(xmppConnection, room);
+            multiUserChat = MultiUserChatManager.getInstanceFor(xmppConnection).getMultiUserChat(room);
         } catch (IllegalStateException e) {
             Application.getInstance().onError(R.string.NOT_CONNECTED);
             return;
@@ -324,7 +327,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                         }
                     });
                     return;
-                } catch (final XMPPException e) {
+                } catch (final XMPPException.XMPPErrorException e) {
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -333,13 +336,16 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                             }
                             roomChat.setState(RoomState.error);
                             addAuthorizationError(account, room);
-                            if (e.getXMPPError() != null && e.getXMPPError().getCode() == 409) {
-                                Application.getInstance().onError(R.string.NICK_ALREADY_USED);
-                            } else if (e.getXMPPError() != null && e.getXMPPError().getCode() == 401) {
-                                Application.getInstance().onError(R.string.AUTHENTICATION_FAILED);
-                            } else {
-                                Application.getInstance().onError(R.string.NOT_CONNECTED);
-                            }
+
+                            XMPPError xmppError = e.getXMPPError();
+
+                                if (xmppError != null && xmppError.getCondition() == XMPPError.Condition.conflict) {
+                                    Application.getInstance().onError(R.string.NICK_ALREADY_USED);
+                                } else if (xmppError != null && xmppError.getCondition() == XMPPError.Condition.not_authorized) {
+                                    Application.getInstance().onError(R.string.AUTHENTICATION_FAILED);
+                                } else {
+                                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                                }
                             RosterManager.getInstance().onContactChanged(account, room);
                         }
                     });
@@ -382,8 +388,8 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                 public void run() {
                     try {
                         multiUserChat.leave();
-                    } catch (IllegalStateException e) {
-                        // Do nothing
+                    } catch (SmackException.NotConnectedException e) {
+                        e.printStackTrace();
                     }
                 }
             };
@@ -394,7 +400,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
@@ -439,7 +445,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         invite.setReason("");
         mucUser.setInvite(invite);
         message.addExtension(mucUser);
-        ConnectionManager.getInstance().sendPacket(account, message);
+        ConnectionManager.getInstance().sendStanza(account, message);
         roomChat.putInvite(message.getPacketID(), user);
         roomChat.newAction(roomChat.getNickname(), user, ChatAction.invite_sent);
     }
@@ -464,9 +470,10 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             @Override
             public void run() {
                 Collection<HostedRoom> hostedRooms = null;
+
                 try {
-                    hostedRooms = MultiUserChat.getHostedRooms(xmppConnection, serviceName);
-                } catch (XMPPException e) {
+                    hostedRooms = MultiUserChatManager.getInstanceFor(xmppConnection).getHostedRooms(serviceName);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
                 }
 

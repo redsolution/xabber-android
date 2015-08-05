@@ -1,2 +1,3 @@
 include ':app'
 include ':app:otr4j'
+include ':app:MemorizingTrustManager'

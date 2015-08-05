@@ -14,10 +14,13 @@
  */
 package com.xabber.xmpp.time;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.AbstractIQProvider;
 import com.xabber.xmpp.ProviderUtils;
@@ -28,8 +31,7 @@ public class TimeProvider extends AbstractIQProvider<Time> {
             "^([+-])(\\d{2}):(\\d{2})$|^(Z)$", Pattern.CASE_INSENSITIVE);
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Time instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Time instance) throws XmlPullParserException, IOException, SmackException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();

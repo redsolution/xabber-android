@@ -31,9 +31,9 @@ import net.java.otr4j.OtrException;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
-import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smackx.packet.MUCUser;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
 
 /**
  * Represents normal chat.
@@ -114,7 +114,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(String bareAddress, Packet packet) {
+    protected boolean onPacket(String bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet))
             return false;
         final String resource = Jid.getResource(packet.getFrom());

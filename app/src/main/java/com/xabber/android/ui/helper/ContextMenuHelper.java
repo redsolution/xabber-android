@@ -38,11 +38,11 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
+import com.xabber.android.ui.AccountViewer;
 import com.xabber.android.ui.ChatViewer;
 import com.xabber.android.ui.ConferenceAdd;
 import com.xabber.android.ui.ContactAdd;
 import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -329,7 +329,7 @@ public class ContextMenuHelper {
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(ContactViewer.createIntent(activity, account, GroupManager.IS_ACCOUNT));
+                            activity.startActivity(AccountViewer.createIntent(activity, account));
                             return true;
                         }
                     });

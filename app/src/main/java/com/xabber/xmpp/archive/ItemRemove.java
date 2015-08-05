@@ -38,6 +38,7 @@ public class ItemRemove extends IQ {
     private final Collection<Item> items;
 
     public ItemRemove() {
+        super(ELEMENT_NAME, NAMESPACE);
         items = new ArrayList<Item>();
     }
 

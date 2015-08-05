@@ -36,6 +36,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.util.XmppStringUtils;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ import java.util.Map;
  * Each account has unique full jid (userName@serverName/resource). This jid is
  * persistent and independent from real jid assigned by server. Real full jid
  * (assigned by server) of account can be taken by
- * {@link AccountItem#getRealAccount()}.
+ * {@link AccountItem#getRealJid()}.
  *
  * @author alexander.ivanov
  */
@@ -353,9 +354,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
         }
 
-        String serverName = StringUtils.parseServer(user);
-        String userName = StringUtils.parseName(user);
-        String resource = StringUtils.parseResource(user);
+        String serverName = XmppStringUtils.parseDomain(user);
+        String userName = XmppStringUtils.parseLocalpart(user);
+        String resource = XmppStringUtils.parseResource(user);
         String host = accountType.getHost();
         int port = accountType.getPort();
         boolean tlsRequired = accountType.isTLSRequired();
@@ -503,7 +504,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             result.setColorIndex(colorIndex);
 
             boolean reconnect = false;
-            if (accountItem.getConnectionSettings().isCustom() != custom
+            if (accountItem.getConnectionSettings().isCustomHostAndPort() != custom
                     || !accountItem.getConnectionSettings().getHost().equals(host)
                     || accountItem.getConnectionSettings().getPort() != port
                     || !accountItem.getConnectionSettings().getPassword().equals(password)
@@ -595,7 +596,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         updateAccount(
                 account,
-                connectionSettings.isCustom(),
+                connectionSettings.isCustomHostAndPort(),
                 connectionSettings.getHost(),
                 connectionSettings.getPort(),
                 connectionSettings.getServerName(),
@@ -624,7 +625,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         updateAccount(
                 account,
-                connectionSettings.isCustom(),
+                connectionSettings.isCustomHostAndPort(),
                 connectionSettings.getHost(),
                 connectionSettings.getPort(),
                 connectionSettings.getServerName(),
@@ -653,7 +654,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
         AccountManager.getInstance().updateAccount(
                 account,
-                connectionSettings.isCustom(),
+                connectionSettings.isCustomHostAndPort(),
                 connectionSettings.getHost(),
                 connectionSettings.getPort(),
                 connectionSettings.getServerName(),
@@ -948,10 +949,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Sets status for account.
-     *
-     * @param account
-     * @param statusMode
-     * @param statusText
      */
     private void setStatus(AccountItem accountItem, StatusMode statusMode, String statusText) {
         boolean changed = accountItem.isEnabled()
@@ -1012,9 +1009,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Remove status from presets.
-     *
-     * @param statusMode
-     * @param statusText
      */
     public void removeSavedStatus(final SavedStatus savedStatus) {
         if (!savedStatuses.remove(savedStatus)) {

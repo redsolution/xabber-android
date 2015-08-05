@@ -14,13 +14,17 @@
  */
 package com.xabber.xmpp.archive;
 
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smack.util.PacketParserUtils;
-import org.xmlpull.v1.XmlPullParser;
-
 import com.xabber.xmpp.AbstractIQProvider;
 import com.xabber.xmpp.ProviderUtils;
 import com.xabber.xmpp.rsm.Set;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.util.PacketParserUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 public class ModifiedProvider extends AbstractIQProvider<Modified> {
 
@@ -37,8 +41,7 @@ public class ModifiedProvider extends AbstractIQProvider<Modified> {
     }
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Modified instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Modified instance) throws XmlPullParserException, IOException, SmackException {
         if (super.parseInner(parser, instance))
             return true;
         String name = parser.getName();
@@ -54,9 +57,8 @@ public class ModifiedProvider extends AbstractIQProvider<Modified> {
                 instance.addModified(value);
         } else if (Set.ELEMENT_NAME.equals(name)
                 && Set.NAMESPACE.equals(parser.getNamespace())) {
-            PacketExtension packetExtension = PacketParserUtils
-                    .parsePacketExtension(Set.ELEMENT_NAME, Set.NAMESPACE,
-                            parser);
+            ExtensionElement packetExtension = PacketParserUtils
+                    .parseExtensionElement(Set.ELEMENT_NAME, Set.NAMESPACE, parser);
             if (packetExtension instanceof Set
                     && ((Set) packetExtension).isValid())
                 instance.setRsm((Set) packetExtension);

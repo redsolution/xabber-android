@@ -41,11 +41,11 @@ public enum TLSMode {
 
     SecurityMode getSecurityMode() {
         if (this == enabled)
-            return SecurityMode.enabled;
+            return SecurityMode.ifpossible;
         else if (this == required)
             return SecurityMode.required;
         else if (this == legacy)
-            return SecurityMode.legacy;
+            return SecurityMode.disabled;
         else
             throw new IllegalStateException();
     }

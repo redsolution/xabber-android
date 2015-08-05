@@ -38,6 +38,7 @@ public class Auto extends IQ {
     private boolean save;
 
     public Auto() {
+        super(ELEMENT_NAME, NAMESPACE);
     }
 
     @Override

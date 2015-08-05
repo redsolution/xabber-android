@@ -14,23 +14,10 @@
  */
 package com.xabber.android.data.extension.vcard;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.IQ.Type;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.Presence;
-
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -38,7 +25,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
@@ -47,7 +33,22 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.StructuredName;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.vcard.VCard;
+import com.xabber.xmpp.vcard.VCardProperty;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Manage vCards and there requests.
@@ -55,21 +56,10 @@ import com.xabber.xmpp.vcard.VCard;
  * @author alexander.ivanov
  */
 public class VCardManager implements OnLoadListener, OnPacketListener,
-        OnDisconnectListener, OnRosterReceivedListener,
-        OnAccountRemovedListener {
+        OnRosterReceivedListener, OnAccountRemovedListener {
 
     private static final StructuredName EMPTY_STRUCTURED_NAME = new StructuredName(
             null, null, null, null, null);
-
-    /**
-     * Sent requests.
-     */
-    private final Collection<VCardRequest> requests;
-
-    /**
-     * List of invalid avatar's hashes (hashes without actual avatars).
-     */
-    private final Set<String> invalidHashes;
 
     /**
      * Nick and formatted names for the users.
@@ -84,6 +74,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     private final static VCardManager instance;
 
+    private Set<String> vCardRequests = new ConcurrentSkipListSet<>();
+    private Set<String> vCardSaveRequests = new ConcurrentSkipListSet<>();
+
     static {
         instance = new VCardManager();
         Application.getInstance().addManager(instance);
@@ -94,15 +87,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     private VCardManager() {
-        requests = new ArrayList<VCardRequest>();
-        invalidHashes = new HashSet<String>();
-        names = new HashMap<String, StructuredName>();
-        accountRequested = new ArrayList<String>();
+        names = new HashMap<>();
+        accountRequested = new ArrayList<>();
     }
 
     @Override
     public void onLoad() {
-        final Map<String, StructuredName> names = new HashMap<String, StructuredName>();
+        final Map<String, StructuredName> names = new HashMap<>();
         Cursor cursor = VCardTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
@@ -134,31 +125,19 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         String account = accountItem.getAccount();
-        if (!accountRequested.contains(account)
-                && SettingsManager.connectionLoadVCard()) {
+        if (!accountRequested.contains(account) && SettingsManager.connectionLoadVCard()) {
             String bareAddress = Jid.getBareAddress(accountItem.getRealJid());
             if (bareAddress != null) {
-                request(account, bareAddress, null);
+                request(account, bareAddress);
                 accountRequested.add(account);
             }
         }
 
         // Request vCards for new contacts.
-        for (RosterContact contact : RosterManager.getInstance().getContacts())
-            if (account.equals(contact.getUser())
-                    && !names.containsKey(contact.getUser()))
-                request(account, contact.getUser(), null);
-    }
-
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        String account = ((AccountItem) connection).getAccount();
-        Iterator<VCardRequest> iterator = requests.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().getAccount().equals(account))
-                iterator.remove();
+        for (RosterContact contact : RosterManager.getInstance().getContacts()) {
+            if (account.equals(contact.getUser()) && !names.containsKey(contact.getUser())) {
+                request(account, contact.getUser());
+            }
         }
     }
 
@@ -169,36 +148,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     /**
      * Requests vCard.
-     *
-     * @param account
-     * @param bareAddress
-     * @param hash        avatar's hash that was intent to request vCard. Can be
-     *                    <code>null</code>.
      */
-    public void request(String account, String bareAddress, String hash) {
-        if (hash != null && invalidHashes.contains(hash))
-            return;
-        // User can change avatar before first request will be completed.
-        for (VCardRequest check : requests)
-            if (check.getUser().equals(bareAddress)) {
-                if (hash != null)
-                    check.addHash(hash);
-                return;
-            }
-        VCard packet = new VCard();
-        packet.setTo(bareAddress);
-        packet.setType(Type.GET);
-        VCardRequest request = new VCardRequest(account, bareAddress,
-                packet.getPacketID());
-        requests.add(request);
-        if (hash != null)
-            request.addHash(hash);
-        try {
-            ConnectionManager.getInstance().sendPacket(account, packet);
-        } catch (NetworkException e) {
-            requests.remove(request);
-            onVCardFailed(account, bareAddress);
-        }
+    public void request(String account, String bareAddress) {
+        requestVCard(account, bareAddress);
     }
 
     /**
@@ -225,97 +177,179 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
      * @param bareAddress
      * @return <code>null</code> if there is no info.
      */
-    public StructuredName getStructucedName(String bareAddress) {
+    public StructuredName getStructuredName(String bareAddress) {
         return names.get(bareAddress);
     }
 
-    private void onVCardReceived(final String account,
-                                 final String bareAddress, final VCard vCard) {
-        for (OnVCardListener listener : Application.getInstance()
-                .getUIListeners(OnVCardListener.class))
-            listener.onVCardReceived(account, bareAddress, vCard);
+    private void onVCardReceived(final String account, final String bareAddress, final VCard vCard) {
+        final StructuredName name;
+        if (vCard.getType() == Type.error) {
+            onVCardFailed(account, bareAddress);
+            if (names.containsKey(bareAddress)) {
+                return;
+            }
+            name = EMPTY_STRUCTURED_NAME;
+        } else {
+            for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
+                listener.onVCardReceived(account, bareAddress, vCard);
+            }
+
+            String hash = vCard.getAvatarHash();
+            AvatarManager.getInstance().onAvatarReceived(bareAddress, hash, vCard.getAvatar());
+            name = new StructuredName(vCard.getNickName(), vCard.getField(VCardProperty.FN.name()),
+                    vCard.getFirstName(), vCard.getMiddleName(), vCard.getLastName());
+        }
+        names.put(bareAddress, name);
+        for (RosterContact rosterContact : RosterManager.getInstance().getContacts()) {
+            if (rosterContact.getUser().equals(bareAddress)) {
+                for (OnRosterChangedListener listener : Application.getInstance()
+                        .getManagers(OnRosterChangedListener.class)) {
+                    listener.onContactStructuredInfoChanged(rosterContact, name);
+                }
+            }
+        }
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                VCardTable.getInstance().write(bareAddress, name);
+            }
+        });
+        if (vCard.getFrom() == null) { // account it self
+            AccountManager.getInstance().onAccountChanged(account);
+        } else {
+            RosterManager.getInstance().onContactChanged(account, bareAddress);
+        }
     }
 
     private void onVCardFailed(final String account, final String bareAddress) {
-        for (OnVCardListener listener : Application.getInstance()
-                .getUIListeners(OnVCardListener.class))
+        for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
             listener.onVCardFailed(account, bareAddress);
+        }
+    }
+
+    private void onVCardSaveSuccess(String account) {
+        for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
+            listener.onVCardSaveSuccess(account);
+        }
+    }
+
+    private void onVCardSaveFailed(String account) {
+        for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
+            listener.onVCardSaveFailed(account);
+        }
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress,
-                         Packet packet) {
-        if (!(connection instanceof AccountItem))
+    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
+        if (!(connection instanceof AccountItem)) {
             return;
+        }
         String account = ((AccountItem) connection).getAccount();
-        if (packet instanceof Presence
-                && ((Presence) packet).getType() != Presence.Type.error) {
-            if (bareAddress == null)
+        if (packet instanceof Presence && ((Presence) packet).getType() != Presence.Type.error) {
+            if (bareAddress == null) {
                 return;
-            // Request vCard for new users
-            if (!names.containsKey(bareAddress))
-                if (SettingsManager.connectionLoadVCard())
-                    request(account, bareAddress, null);
-        } else if (packet instanceof IQ) {
-            IQ iq = (IQ) packet;
-            if (iq.getType() != Type.ERROR && !(packet instanceof VCard))
-                return;
-            String packetId = iq.getPacketID();
-            VCardRequest request = null;
-            Iterator<VCardRequest> iterator = requests.iterator();
-            while (iterator.hasNext()) {
-                VCardRequest check = iterator.next();
-                if (check.getPacketId().equals(packetId)) {
-                    request = check;
-                    iterator.remove();
-                    break;
-                }
             }
-            if (request == null || !request.getUser().equals(bareAddress))
-                return;
-            final StructuredName name;
-            if (iq.getType() == Type.ERROR) {
-                onVCardFailed(account, bareAddress);
-                invalidHashes.addAll(request.getHashes());
-                if (names.containsKey(bareAddress))
-                    return;
-                name = EMPTY_STRUCTURED_NAME;
-            } else if (packet instanceof VCard) {
-                VCard vCard = (VCard) packet;
-                onVCardReceived(account, bareAddress, vCard);
-                String hash = vCard.getAvatarHash();
-                for (String check : request.getHashes())
-                    if (!check.equals(hash))
-                        invalidHashes.add(check);
-                AvatarManager.getInstance().onAvatarReceived(bareAddress, hash,
-                        vCard.getAvatar());
-                name = new StructuredName(vCard.getNickName(),
-                        vCard.getFormattedName(), vCard.getFirstName(),
-                        vCard.getMiddleName(), vCard.getLastName());
-            } else
-                throw new IllegalStateException();
-            names.put(bareAddress, name);
-            for (RosterContact rosterContact : RosterManager.getInstance()
-                    .getContacts())
-                if (rosterContact.getUser().equals(bareAddress))
-                    for (OnRosterChangedListener listener : Application
-                            .getInstance().getManagers(
-                                    OnRosterChangedListener.class))
-                        listener.onContactStructuredInfoChanged(rosterContact,
-                                name);
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    VCardTable.getInstance().write(bareAddress, name);
+            // Request vCard for new users
+            if (!names.containsKey(bareAddress)) {
+                if (SettingsManager.connectionLoadVCard()) {
+                    request(account, bareAddress);
                 }
-            });
-            if (iq.getFrom() == null) { // account it self
-                AccountManager.getInstance().onAccountChanged(account);
-            } else {
-                RosterManager.getInstance().onContactChanged(account,
-                        bareAddress);
             }
         }
+    }
+
+    private void requestVCard(final String account, final String srcUser) {
+        final String user = Jid.getBareAddress(srcUser);
+
+        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
+
+        final Thread thread = new Thread("Get vCard user " + user + " for account " + account) {
+            @Override
+            public void run() {
+                VCard vCard = null;
+
+                vCardRequests.add(user);
+                try {
+                    vCard = vCardManager.loadVCard(user);
+                } catch (SmackException.NoResponseException | SmackException.NotConnectedException e) {
+                    LogManager.w(this, "Error getting vCard: " + e.getMessage());
+                } catch (XMPPException.XMPPErrorException e ) {
+                    LogManager.w(this, "XMPP error getting vCard: " + e.getMessage() + e.getXMPPError());
+
+                    if (e.getXMPPError().getCondition() == XMPPError.Condition.item_not_found) {
+                        vCard = new VCard();
+                    }
+
+                } catch (ClassCastException e) {
+                    // http://stackoverflow.com/questions/31498721/error-loading-vcard-information-using-smack-emptyresultiq-cannot-be-cast-to-or
+                    LogManager.w(this, "ClassCastException: " + e.getMessage());
+                    vCard = new VCard();
+                }
+                vCardRequests.remove(user);
+
+                final VCard finalVCard = vCard;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    if (finalVCard == null) {
+                        onVCardFailed(account, user);
+                    } else {
+                        onVCardReceived(account, user, finalVCard);
+                    }
+                    }
+                });
+            }
+        };
+        thread.start();
+    }
+
+    public void saveVCard(final String account, final VCard vCard) {
+        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
+
+        final Thread thread = new Thread("Save vCard for account " + account) {
+            @Override
+            public void run() {
+
+                boolean isSuccess = true;
+
+                xmppConnection.setPacketReplyTimeout(120000);
+
+                vCardSaveRequests.add(account);
+                try {
+                    vCardManager.saveVCard(vCard);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    LogManager.w(this, "Error saving vCard: " + e.getMessage());
+                    isSuccess = false;
+                }
+                vCardSaveRequests.remove(account);
+
+                xmppConnection.setPacketReplyTimeout(ConnectionManager.PACKET_REPLY_TIMEOUT);
+
+                final boolean finalIsSuccess = isSuccess;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalIsSuccess) {
+                            onVCardSaveSuccess(account);
+                        } else {
+                            onVCardSaveFailed(account);
+                        }
+                    }
+                });
+
+            }
+        };
+        thread.start();
+    }
+
+    public boolean isVCardRequested(String user) {
+        return vCardRequests.contains(Jid.getBareAddress(user));
+    }
+
+    public boolean isVCardSaveRequested(String account) {
+        return vCardSaveRequests.contains(account);
     }
 
 }

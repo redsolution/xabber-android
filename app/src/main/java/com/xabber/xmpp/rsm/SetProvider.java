@@ -14,10 +14,14 @@
  */
 package com.xabber.xmpp.rsm;
 
+import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import com.xabber.xmpp.AbstractExtensionProvider;
 import com.xabber.xmpp.ProviderUtils;
+
+import java.io.IOException;
 
 public class SetProvider extends AbstractExtensionProvider<Set> {
 
@@ -27,8 +31,7 @@ public class SetProvider extends AbstractExtensionProvider<Set> {
     }
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Set instance)
-            throws Exception {
+    protected boolean parseInner(XmlPullParser parser, Set instance) throws XmlPullParserException, IOException, SmackException {
         if (super.parseInner(parser, instance))
             return true;
         if (Set.AFTER_NAME.equals(parser.getName()))

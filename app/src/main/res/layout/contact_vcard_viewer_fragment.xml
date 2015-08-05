@@ -14,6 +14,13 @@
         android:orientation="vertical"
         />
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_info_progress_bar"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal" />
+
     <LinearLayout
         android:id="@+id/contact_info_items"
         android:layout_width="match_parent"

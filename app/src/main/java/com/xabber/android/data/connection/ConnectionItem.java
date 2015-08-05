@@ -19,6 +19,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountProtocol;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 
 /**
@@ -41,7 +42,7 @@ public abstract class ConnectionItem {
     /**
      * Connection was requested by user.
      */
-    private boolean connectionRequest;
+    private boolean isConnectionRequestedByUser;
 
     /**
      * Current state.
@@ -68,7 +69,7 @@ public abstract class ConnectionItem {
                 serverName, resource, custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
-        connectionRequest = false;
+        isConnectionRequestedByUser = false;
         disconnectionRequested = false;
         connectionThread = null;
         state = ConnectionState.offline;
@@ -115,14 +116,17 @@ public abstract class ConnectionItem {
      */
     public String getRealJid() {
         ConnectionThread connectionThread = getConnectionThread();
-        if (connectionThread == null)
+        if (connectionThread == null) {
             return null;
+        }
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-        if (xmppConnection == null)
+        if (xmppConnection == null) {
             return null;
+        }
         String user = xmppConnection.getUser();
-        if (user == null)
+        if (user == null) {
             return null;
+        }
         return user;
     }
 
@@ -144,13 +148,12 @@ public abstract class ConnectionItem {
         boolean available = isConnectionAvailable(userRequest);
         if (NetworkManager.getInstance().getState() != NetworkState.available
                 || !available || disconnectionRequested) {
-            ConnectionState target = available ? ConnectionState.waiting
-                    : ConnectionState.offline;
-            if (state == ConnectionState.connected
-                    || state == ConnectionState.authentication
+            ConnectionState target = available ? ConnectionState.waiting : ConnectionState.offline;
+            if (state == ConnectionState.connected || state == ConnectionState.authentication
                     || state == ConnectionState.connecting) {
-                if (userRequest)
-                    connectionRequest = false;
+                if (userRequest) {
+                    isConnectionRequestedByUser = false;
+                }
                 if (connectionThread != null) {
                     disconnect(connectionThread);
                     // Force remove managed connection thread.
@@ -163,18 +166,28 @@ public abstract class ConnectionItem {
             state = target;
             return true;
         } else {
-            if (state == ConnectionState.offline
-                    || state == ConnectionState.waiting) {
-                if (userRequest)
-                    connectionRequest = true;
+            if (state == ConnectionState.offline || state == ConnectionState.waiting) {
+                if (userRequest) {
+                    isConnectionRequestedByUser = true;
+                }
                 state = ConnectionState.connecting;
                 connectionThread = new ConnectionThread(this);
-                if (connectionSettings.isCustom())
-                    connectionThread.start(connectionSettings.getHost(),
-                            connectionSettings.getPort(), false, registerNewAccount);
-                else
-                    connectionThread.start(connectionSettings.getServerName(),
-                            5222, true, registerNewAccount);
+
+                boolean useSRVLookup;
+                String fullyQualifiedDomainName;
+                int port;
+                if (connectionSettings.isCustomHostAndPort()) {
+                    fullyQualifiedDomainName = connectionSettings.getHost();
+                    port = connectionSettings.getPort();
+                    useSRVLookup = false;
+                } else {
+                    fullyQualifiedDomainName = connectionSettings.getServerName();
+                    port = 5222;
+                    useSRVLookup = true;
+                }
+
+                connectionThread.start(fullyQualifiedDomainName, port, useSRVLookup, registerNewAccount);
+
                 return true;
             } else {
                 return false;
@@ -186,13 +199,14 @@ public abstract class ConnectionItem {
      * Disconnect and connect using new connection.
      */
     public void forceReconnect() {
-        if (!getState().isConnectable())
+        if (!getState().isConnectable()) {
             return;
+        }
         disconnectionRequested = true;
-        boolean request = connectionRequest;
-        connectionRequest = false;
+        boolean request = isConnectionRequestedByUser;
+        isConnectionRequestedByUser = false;
         updateConnection(false);
-        connectionRequest = request;
+        isConnectionRequestedByUser = request;
         disconnectionRequested = false;
         updateConnection(false);
     }
@@ -204,8 +218,7 @@ public abstract class ConnectionItem {
         Thread thread = new Thread("Disconnection thread for " + this) {
             @Override
             public void run() {
-                XMPPConnection xmppConnection = connectionThread
-                        .getXMPPConnection();
+                AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
                 if (xmppConnection != null)
                     try {
                         xmppConnection.disconnect();
@@ -253,10 +266,11 @@ public abstract class ConnectionItem {
      * Connection has been established.
      */
     protected void onConnected(ConnectionThread connectionThread) {
-        if (isRegisterAccount())
+        if (isRegisterAccount()) {
             state = ConnectionState.registration;
-        else if (isManaged(connectionThread))
+        } else if (isManaged(connectionThread)) {
             state = ConnectionState.authentication;
+        }
     }
 
     /**
@@ -264,8 +278,9 @@ public abstract class ConnectionItem {
      */
     protected void onAccountRegistered(ConnectionThread connectionThread) {
         registerNewAccount = false;
-        if (isManaged(connectionThread))
+        if (isManaged(connectionThread)) {
             state = ConnectionState.authentication;
+        }
     }
 
     /**
@@ -278,8 +293,9 @@ public abstract class ConnectionItem {
      * Authorization passed.
      */
     protected void onAuthorized(ConnectionThread connectionThread) {
-        if (isManaged(connectionThread))
+        if (isManaged(connectionThread)) {
             state = ConnectionState.connected;
+        }
     }
 
     /**
@@ -291,16 +307,17 @@ public abstract class ConnectionItem {
     private boolean onDisconnect(ConnectionThread connectionThread) {
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
         boolean acceptable = isManaged(connectionThread);
-        if (xmppConnection == null)
+        if (xmppConnection == null) {
             LogManager.i(this, "onClose " + acceptable);
-        else
-            LogManager
-                    .i(this, "onClose " + xmppConnection.hashCode() + " - "
-                            + xmppConnection.connectionCounterValue + ", "
-                            + acceptable);
+        } else {
+            LogManager.i(this, "onClose " + xmppConnection.hashCode() + " - "
+                            + xmppConnection.getConnectionCounter() + ", " + acceptable);
+        }
+
         ConnectionManager.getInstance().onDisconnect(connectionThread);
-        if (acceptable)
+        if (acceptable) {
             connectionThread.shutdown();
+        }
         return acceptable;
     }
 
@@ -311,9 +328,10 @@ public abstract class ConnectionItem {
         if (onDisconnect(connectionThread)) {
             state = ConnectionState.waiting;
             this.connectionThread = null;
-            if (connectionRequest)
+            if (isConnectionRequestedByUser) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
-            connectionRequest = false;
+            }
+            isConnectionRequestedByUser = false;
         }
     }
 

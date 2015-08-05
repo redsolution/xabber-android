@@ -43,12 +43,15 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
     private int contactTitlePaddingBottomBig;
     private int contactTitlePaddingBottomSmall;
     private Toolbar toolbar;
+    private AbstractContact abstractContact;
 
     public ContactTitleExpandableToolbarInflater(AppCompatActivity activity) {
         this.activity = activity;
     }
 
     public void onCreate(AbstractContact abstractContact) {
+        this.abstractContact = abstractContact;
+
         activity.setContentView(R.layout.expandable_contact_title_activity);
         toolbar = (Toolbar) activity.findViewById(R.id.toolbar_overlay);
 
@@ -96,6 +99,8 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
                 updateFlexibleSpaceText(scrollView.getCurrentScrollY());
             }
         });
+
+        ContactTitleInflater.updateTitle(titleView, activity, abstractContact);
     }
 
     protected int getActionBarSize() {

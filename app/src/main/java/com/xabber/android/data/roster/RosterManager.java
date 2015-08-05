@@ -38,9 +38,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.RosterPacket;
-import org.jivesoftware.smack.packet.RosterPacket.ItemType;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.roster.packet.RosterPacket;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -135,7 +134,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     /**
      * Adds new group to be managed.
      *
-     * @param contact
+     * @param group
      */
     void addRosterGroup(RosterGroup group) {
         rosterGroups.put(group.getAccount(), group.getName(), group);
@@ -297,13 +296,13 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     public void createContact(String account, String bareAddress, String name,
                               Collection<String> groups) throws NetworkException {
         RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.SET);
+        packet.setType(IQ.Type.set);
         RosterPacket.Item item = new RosterPacket.Item(bareAddress, name);
         for (String group : groups)
             if (group.trim().length() > 0)
                 item.addGroupName(group);
         packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -316,11 +315,11 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     public void removeContact(String account, String bareAddress)
             throws NetworkException {
         RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.SET);
+        packet.setType(IQ.Type.set);
         RosterPacket.Item item = new RosterPacket.Item(bareAddress, "");
         item.setItemType(RosterPacket.ItemType.remove);
         packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     public void setGroups(String account, String bareAddress, Collection<String> groups) throws NetworkException {
@@ -352,13 +351,13 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
 
     private void updateRosterContact(String account, String bareAddress, String name, Collection<String> groups) throws NetworkException {
         RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.SET);
+        packet.setType(IQ.Type.set);
         RosterPacket.Item item = new RosterPacket.Item(bareAddress, name);
         for (String group : groups) {
             item.addGroupName(group);
         }
         packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -371,7 +370,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     public void removeGroup(String account, String group)
             throws NetworkException {
         RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.SET);
+        packet.setType(IQ.Type.set);
         for (RosterContact contact : rosterContacts.getNested(account).values()) {
             HashSet<String> groups = new HashSet<String>(
                     contact.getGroupNames());
@@ -385,7 +384,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         }
         if (packet.getRosterItemCount() == 0)
             return;
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -424,7 +423,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         if (newGroup.equals(oldGroup))
             return;
         RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.SET);
+        packet.setType(IQ.Type.set);
         for (RosterContact contact : rosterContacts.getNested(account).values()) {
             HashSet<String> groups = new HashSet<String>(
                     contact.getGroupNames());
@@ -440,7 +439,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         }
         if (packet.getRosterItemCount() == 0)
             return;
-        ConnectionManager.getInstance().sendPacket(account, packet);
+        ConnectionManager.getInstance().sendStanza(account, packet);
     }
 
     /**
@@ -501,7 +500,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         String account = ((AccountItem) connection).getAccount();
         requestedRosters.add(account);
         try {
-            ConnectionManager.getInstance().sendPacket(account,
+            ConnectionManager.getInstance().sendStanza(account,
                     new RosterPacket());
         } catch (NetworkException e) {
             LogManager.exception(this, e);
@@ -531,14 +530,13 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
         if (!(packet instanceof RosterPacket))
             return;
-        if (((RosterPacket) packet).getType() != IQ.Type.ERROR) {
+        if (((RosterPacket) packet).getType() != IQ.Type.error) {
             boolean rosterWasReceived = requestedRosters.remove(account);
             ArrayList<RosterContact> remove = new ArrayList<RosterContact>();
             if (rosterWasReceived)
@@ -592,8 +590,8 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
                     for (RosterGroupReference rosterGroup : removeGroupReferences)
                         removeGroupReference(contact, rosterGroup,
                                 removedGroups, removedGroupReference);
-                    contact.setSubscribed(item.getItemType() == ItemType.both
-                            || item.getItemType() == ItemType.to);
+                    contact.setSubscribed(item.getItemType() == RosterPacket.ItemType.both
+                            || item.getItemType() == RosterPacket.ItemType.to);
                 }
             }
             for (RosterContact contact : remove) {
@@ -637,8 +635,6 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
 
     /**
      * Notifies registered {@link OnContactChangedListener}.
-     *
-     * @param entities
      */
     public void onContactChanged(String account, String bareAddress) {
         final ArrayList<BaseEntity> entities = new ArrayList<BaseEntity>();

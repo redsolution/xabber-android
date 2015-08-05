@@ -42,15 +42,13 @@ import com.xabber.android.data.roster.ResourceItem;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.attention.Attention;
 
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPConnectionRegistry;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.ServiceDiscoveryManager;
-
-import java.util.Iterator;
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 /**
  * XEP-0224: Attention.
@@ -68,18 +66,15 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         Application.getInstance().addManager(instance);
 
         enabledLock = new Object();
-        Connection
-                .addConnectionCreationListener(new ConnectionCreationListener() {
-                    @Override
-                    public void connectionCreated(final Connection connection) {
-                        synchronized (enabledLock) {
-                            if (SettingsManager.chatsAttention())
-                                ServiceDiscoveryManager.getInstanceFor(
-                                        connection).addFeature(
-                                        Attention.NAMESPACE);
-                        }
-                    }
-                });
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                synchronized (enabledLock) {
+                    if (SettingsManager.chatsAttention())
+                        ServiceDiscoveryManager.getInstanceFor(connection).addFeature(Attention.NAMESPACE);
+                }
+            }
+        });
     }
 
     private final EntityNotificationProvider<AttentionRequest> attentionRequestProvider = new EntityNotificationProvider<AttentionRequest>(
@@ -121,10 +116,11 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 if (manager == null)
                     continue;
                 boolean contains = false;
-                for (Iterator<String> iterator = manager.getFeatures(); iterator
-                        .hasNext(); )
-                    if (Attention.NAMESPACE.equals(iterator.next()))
+                for (String feature : manager.getFeatures()) {
+                    if (Attention.NAMESPACE.equals(feature)) {
                         contains = true;
+                    }
+                }
                 if (SettingsManager.chatsAttention() == contains)
                     continue;
                 if (SettingsManager.chatsAttention())
@@ -152,8 +148,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress,
-                         Packet packet) {
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         if (!(packet instanceof Message))
@@ -163,7 +158,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         final String account = ((AccountItem) connection).getAccount();
         if (bareAddress == null)
             return;
-        for (PacketExtension packetExtension : packet.getExtensions())
+        for (ExtensionElement packetExtension : packet.getExtensions()) {
             if (packetExtension instanceof Attention) {
                 MessageManager.getInstance().openChat(account, bareAddress);
                 MessageManager.getInstance()
@@ -172,6 +167,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 attentionRequestProvider.add(new AttentionRequest(account,
                         bareAddress), true);
             }
+        }
     }
 
     public void sendAttention(String account, String user)
@@ -198,7 +194,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setTo(to);
         message.setType(Message.Type.headline);
         message.addExtension(new Attention());
-        ConnectionManager.getInstance().sendPacket(account, message);
+        ConnectionManager.getInstance().sendStanza(account, message);
         chat.newAction(null, null, ChatAction.attention_called);
     }
 

@@ -17,6 +17,7 @@ package com.xabber.xmpp.address;
 import java.util.Locale;
 
 import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.util.XmppStringUtils;
 
 /**
  * Provides methods to process Jabber Identifier.
@@ -37,8 +38,7 @@ public class Jid {
      * argument.
      */
     public static String getResource(String user) {
-        return user == null ? null : StringUtils.parseResource(user
-                .toLowerCase(Locale.US));
+        return user == null ? null : XmppStringUtils.parseResource(user.toLowerCase(Locale.US));
     }
 
     /**
@@ -47,8 +47,7 @@ public class Jid {
      * <code>null</code> argument.
      */
     public static String getServer(String user) {
-        return user == null ? null : StringUtils.parseServer(user
-                .toLowerCase(Locale.US));
+        return user == null ? null : XmppStringUtils.parseDomain(user.toLowerCase(Locale.US));
     }
 
     /**
@@ -57,8 +56,7 @@ public class Jid {
      * <code>null</code> argument.
      */
     public static String getName(String user) {
-        return user == null ? null : StringUtils.parseName(user
-                .toLowerCase(Locale.US));
+        return user == null ? null : XmppStringUtils.parseLocalpart(user.toLowerCase(Locale.US));
     }
 
     /**
@@ -67,8 +65,7 @@ public class Jid {
      * <code>null</code> argument.
      */
     public static String getBareAddress(String user) {
-        return user == null ? null : StringUtils.parseBareAddress(user
-                .toLowerCase(Locale.US));
+        return user == null ? null : XmppStringUtils.parseBareJid(user.toLowerCase(Locale.US));
     }
 
     /**

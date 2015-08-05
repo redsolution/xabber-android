@@ -17,9 +17,10 @@ package com.xabber.android.data.extension.capability;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.jivesoftware.smack.util.Base64;
 
 import com.xabber.android.data.entity.BaseEntity;
+
+import org.jivesoftware.smack.util.stringencoder.Base64;
 
 class Capability extends BaseEntity {
 
@@ -80,7 +81,7 @@ class Capability extends BaseEntity {
         try {
             MessageDigest md = MessageDigest.getInstance(hash.toUpperCase());
             byte[] digest = md.digest(value.getBytes());
-            return Base64.encodeBytes(digest);
+            return Base64.encodeToString(digest);
         } catch (NoSuchAlgorithmException nsae) {
             return null;
         }

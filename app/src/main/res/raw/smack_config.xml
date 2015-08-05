@@ -14,9 +14,6 @@
         -->
     </startupClasses>
 
-    <!-- Packet reply timeout in milliseconds -->
-    <packetReplyTimeout>5000</packetReplyTimeout>
-
     <!-- Keep-alive interval in milliseconds -->
     <keepAliveInterval>30000</keepAliveInterval>
 
