@@ -45,7 +45,7 @@
   <string name="account_sasl">Utiliser l\'authentification SASL (recommandé)</string>
   <string name="account_sasl_summary">Désactiver pour les serveurs obsolètes</string>
   <string name="account_store_password">Enregistrer le mot de passe</string>
-  <string name="account_store_password_summary">Désactivez cette option pour demander le mot de passe à chaque connexion</string>
+  <string name="account_store_password_summary">Désactiver cette option pour demander le mot de passe à chaque connexion</string>
   <string name="account_syncable">Intégration aux contacts du système</string>
   <string name="account_syncable_summary">Afficher les contacts de ce compte dans la liste de contacts de l\'appareil</string>
   <string name="account_tls_enable">Activer TLS</string>
@@ -67,7 +67,7 @@
   <string name="account_color_name_red">Rouge</string>
   <string name="account_color_name_blue">Bleu</string>
   <string name="account_color_name_indigo">Indigo</string>
-  <string name="account_color_name_teal">Turquoise</string>
+  <string name="account_color_name_teal">Vert-de-gris</string>
   <string name="account_color_name_blue_grey">Bleu-gris</string>
-  <string name="account_color_name_cyan">Cyan</string>
+  <string name="account_color_name_cyan">Bleu-vert</string>
 </resources>

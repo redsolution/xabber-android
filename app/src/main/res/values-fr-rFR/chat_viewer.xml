@@ -51,7 +51,7 @@
   <string name="action_subject">%1$s  a changé le sujet en : %2$s</string>
   <string name="ATTENTION_IS_NOT_SUPPORTED">Le contact ne supporte pas ou a désactivé la demande d\'attention</string>
   <string name="call_attention">Demander l\'attention</string>
-  <string name="chat_settings">Réglages de la conversation</string>
+  <string name="chat_settings">Paramètres de la conversation</string>
   <string name="chat_state_composing">En train d\'écrire&#8230;</string>
   <string name="chat_state_paused">A écrit un texte&#8230;</string>
   <string name="chat_typed">Écrit à %s</string>

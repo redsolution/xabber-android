@@ -13,6 +13,6 @@
   <string name="manual">Kézi</string>
   <string name="never">Soha</string>
   <string name="required">Kötelező</string>
-  <string name="auto">Automatikus</string>
+  <string name="auto">Automatikusan</string>
   <string name="save">Mentés</string>
 </resources>

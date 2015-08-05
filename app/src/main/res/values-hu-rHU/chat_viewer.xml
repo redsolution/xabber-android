@@ -12,11 +12,11 @@
   <string name="clear_history">Előzmények törlése</string>
   <string name="contact_is_offline">A címzett kijelentkezett. Az elküldött üzeneteid a következő belépésekor lesznek kézbesítve.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">A kapcsolat nem elérhető</string>
-  <string name="FILE_NOT_FOUND">A fájl nem található</string>
+  <string name="FILE_NOT_FOUND">Nincs meg a fájl</string>
   <string name="message_copy">Másolás</string>
   <string name="message_quote">Idéz</string>
   <string name="message_remove">Törlés az előzményekből</string>
-  <string name="message_repeat">Küldés újra</string>
+  <string name="message_repeat">Küldés ismétlése</string>
   <string name="save_history">Előzmények helyi mentése\nAz üzenetelőzmények helyi tárolása</string>
   <string name="show_history">Előzmények megjelenítése</string>
   <string name="action_attention_called">Figyelmet kértél</string>
@@ -53,7 +53,7 @@
   <string name="call_attention">Figyelemkeltés</string>
   <string name="chat_settings">Csevegés beállításai</string>
   <string name="chat_state_composing">Gépel&#8230;</string>
-  <string name="chat_state_paused">Beírt szöveget&#8230;</string>
+  <string name="chat_state_paused">Szöveget írt&#8230;</string>
   <string name="chat_typed">Elküldve: %s</string>
   <string name="export_chat">Csevegés exportálása</string>
   <string name="export_chat_done">Az előzmények exportálva az SD kártyára</string>
