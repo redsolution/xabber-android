@@ -69,11 +69,9 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText suffixName;
     private EditText nickName;
     private String account;
-    private ImageView avatar;
-    private Uri newAvatarImageUri;
     private EditText organization;
     private EditText organizationUnit;
-    private TextView birthDate;
+
     private EditText title;
     private EditText role;
     private EditText url;
@@ -88,12 +86,18 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private LinearLayout fields;
     private TextView avatarSize;
 
-    private Lister lister;
-    private View changeAvatarButton;
-    private Uri photoFileUri;
+    private Listener listener;
+
+    private TextView birthDate;
     private DatePickerDialog datePicker;
 
-    interface Lister {
+    private View changeAvatarButton;
+    private ImageView avatar;
+    private Uri newAvatarImageUri;
+    private Uri photoFileUri;
+    private boolean removeAvatarFlag = false;
+
+    interface Listener {
         void onVCardSavingStarted();
         void onVCardSavingFinished();
     }
@@ -114,7 +118,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        lister = (Lister) activity;
+        listener = (Listener) activity;
     }
 
     @Override
@@ -212,7 +216,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     @Override
     public void onDetach() {
         super.onDetach();
-        lister = null;
+        listener = null;
     }
 
     private void setFieldsFromVCard() {
@@ -319,6 +323,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private void chooseFromGallery() {
         Crop.pickImage(getActivity());
     }
+
     private void takePhoto() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -350,6 +355,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     private void removeAvatar() {
         newAvatarImageUri = null;
+        removeAvatarFlag = true;
         avatar.setImageDrawable(AvatarManager.getInstance().getDefaultAccountAvatar(account));
     }
 
@@ -375,6 +381,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             // null prompts image view to reload file.
             avatar.setImageURI(null);
             avatar.setImageURI(newAvatarImageUri);
+            removeAvatarFlag = false;
 
             File file = new File(newAvatarImageUri.getPath());
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
@@ -413,14 +420,14 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             vCard.setField(VCardProperty.FN.name(), formattedNameText);
         }
 
-        if (newAvatarImageUri != null) {
+        if (removeAvatarFlag) {
+            vCard.removeAvatar();
+        } else if (newAvatarImageUri != null) {
             try {
                 vCard.setAvatar(new URL(newAvatarImageUri.toString()));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-        } else {
-            vCard.removeAvatar();
         }
 
         vCard.setField(VCardProperty.BDAY.name(), getValueFromEditText(birthDate));
@@ -453,13 +460,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public void enableProgressMode() {
         setEnabledRecursive(false, fields);
         progressBar.setVisibility(View.VISIBLE);
-        lister.onVCardSavingStarted();
+        listener.onVCardSavingStarted();
     }
 
     public void disableProgressMode() {
         progressBar.setVisibility(View.GONE);
         setEnabledRecursive(true, fields);
-        lister.onVCardSavingFinished();
+        listener.onVCardSavingFinished();
     }
 
     private void setEnabledRecursive(boolean enabled, ViewGroup viewGroup){
