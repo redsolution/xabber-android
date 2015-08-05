@@ -126,7 +126,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="32dp"
             android:layout_marginTop="24dp"
-            android:src="@drawable/ic_file_image_box_grey600_24dp"
+            android:src="@drawable/ic_camera_grey600_24dp"
             />
 
         <LinearLayout
@@ -195,7 +195,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
 
 
