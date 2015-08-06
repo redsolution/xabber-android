@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,7 +52,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener {
+public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener, TextWatcher {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_USER";
@@ -113,10 +115,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText addressWorkRegion;
     private EditText addressWorkCountry;
     private EditText addressWorkPostalCode;
+    private boolean updateFromVCardFlag = false;
 
     interface Listener {
         void onVCardSavingStarted();
         void onVCardSavingFinished();
+        void enableSave();
     }
 
     public static AccountInfoEditorFragment newInstance(String account, String vCard) {
@@ -165,13 +169,13 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         account_jid = (TextView) view.findViewById(R.id.vcard_jid);
 
-        prefixName = (EditText) view.findViewById(R.id.vcard_prefix_name);
-        formattedName = (EditText) view.findViewById(R.id.vcard_formatted_name);
-        givenName = (EditText) view.findViewById(R.id.vcard_given_name);
-        middleName = (EditText) view.findViewById(R.id.vcard_middle_name);
-        familyName = (EditText) view.findViewById(R.id.vcard_family_name);
-        suffixName = (EditText) view.findViewById(R.id.vcard_suffix_name);
-        nickName = (EditText) view.findViewById(R.id.vcard_nickname);
+        prefixName = setUpInputField(view, R.id.vcard_prefix_name);
+        formattedName = setUpInputField(view, R.id.vcard_formatted_name);
+        givenName = setUpInputField(view, R.id.vcard_given_name);
+        middleName = setUpInputField(view, R.id.vcard_middle_name);
+        familyName = setUpInputField(view, R.id.vcard_family_name);
+        suffixName = setUpInputField(view, R.id.vcard_suffix_name);
+        nickName = setUpInputField(view, R.id.vcard_nickname);
 
         avatar = (ImageView) view.findViewById(R.id.vcard_avatar);
         avatarSize = (TextView) view.findViewById(R.id.vcard_avatar_size_text_view);
@@ -191,6 +195,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                 datePicker.show();
             }
         });
+        birthDate.addTextChangedListener(this);
 
         birthDateRemoveButton = view.findViewById(R.id.vcard_birth_date_remove_button);
         birthDateRemoveButton.setOnClickListener(new View.OnClickListener() {
@@ -200,40 +205,46 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             }
         });
 
-        title = (EditText) view.findViewById(R.id.vcard_title);
-        role = (EditText) view.findViewById(R.id.vcard_role);
-        organization = (EditText) view.findViewById(R.id.vcard_organization_name);
-        organizationUnit = (EditText) view.findViewById(R.id.vcard_organization_unit);
+        title = setUpInputField(view, R.id.vcard_title);
+        role = setUpInputField(view, R.id.vcard_role);
+        organization = setUpInputField(view, R.id.vcard_organization_name);
+        organizationUnit = setUpInputField(view, R.id.vcard_organization_unit);
 
-        url = (EditText) view.findViewById(R.id.vcard_url);
+        url = setUpInputField(view, R.id.vcard_url);
 
-        description = (EditText) view.findViewById(R.id.vcard_decsription);
+        description = setUpInputField(view, R.id.vcard_decsription);
 
-        phoneHome = (EditText) view.findViewById(R.id.vcard_phone_home);
-        phoneWork = (EditText) view.findViewById(R.id.vcard_phone_work);
+        phoneHome = setUpInputField(view, R.id.vcard_phone_home);
+        phoneWork = setUpInputField(view, R.id.vcard_phone_work);
 
-        emailHome = (EditText) view.findViewById(R.id.vcard_email_home);
-        emailWork = (EditText) view.findViewById(R.id.vcard_email_work);
+        emailHome = setUpInputField(view, R.id.vcard_email_home);
+        emailWork = setUpInputField(view, R.id.vcard_email_work);
 
-        addressHomePostOfficeBox = (EditText) view.findViewById(R.id.vcard_address_home_post_office_box);
-        addressHomePostExtended = (EditText) view.findViewById(R.id.vcard_address_home_post_extended);
-        addressHomePostStreet = (EditText) view.findViewById(R.id.vcard_address_home_post_street);
-        addressHomeLocality = (EditText) view.findViewById(R.id.vcard_address_home_locality);
-        addressHomeRegion = (EditText) view.findViewById(R.id.vcard_address_home_region);
-        addressHomeCountry = (EditText) view.findViewById(R.id.vcard_address_home_country);
-        addressHomePostalCode = (EditText) view.findViewById(R.id.vcard_address_home_postal_code);
+        addressHomePostOfficeBox = setUpInputField(view, R.id.vcard_address_home_post_office_box);
+        addressHomePostExtended = setUpInputField(view, R.id.vcard_address_home_post_extended);
+        addressHomePostStreet = setUpInputField(view, R.id.vcard_address_home_post_street);
+        addressHomeLocality = setUpInputField(view, R.id.vcard_address_home_locality);
+        addressHomeRegion = setUpInputField(view, R.id.vcard_address_home_region);
+        addressHomeCountry = setUpInputField(view, R.id.vcard_address_home_country);
+        addressHomePostalCode = setUpInputField(view, R.id.vcard_address_home_postal_code);
 
-        addressWorkPostOfficeBox = (EditText) view.findViewById(R.id.vcard_address_work_post_office_box);
-        addressWorkPostExtended = (EditText) view.findViewById(R.id.vcard_address_work_post_extended);
-        addressWorkPostStreet = (EditText) view.findViewById(R.id.vcard_address_work_post_street);
-        addressWorkLocality = (EditText) view.findViewById(R.id.vcard_address_work_locality);
-        addressWorkRegion = (EditText) view.findViewById(R.id.vcard_address_work_region);
-        addressWorkCountry = (EditText) view.findViewById(R.id.vcard_address_work_country);
-        addressWorkPostalCode = (EditText) view.findViewById(R.id.vcard_address_work_postal_code);
+        addressWorkPostOfficeBox = setUpInputField(view, R.id.vcard_address_work_post_office_box);
+        addressWorkPostExtended = setUpInputField(view, R.id.vcard_address_work_post_extended);
+        addressWorkPostStreet = setUpInputField(view, R.id.vcard_address_work_post_street);
+        addressWorkLocality = setUpInputField(view, R.id.vcard_address_work_locality);
+        addressWorkRegion = setUpInputField(view, R.id.vcard_address_work_region);
+        addressWorkCountry = setUpInputField(view, R.id.vcard_address_work_country);
+        addressWorkPostalCode = setUpInputField(view, R.id.vcard_address_work_postal_code);
 
         setFieldsFromVCard();
 
         return view;
+    }
+
+    private EditText setUpInputField(View rootView, int resourceId) {
+        EditText inputField = (EditText) rootView.findViewById(resourceId);
+        inputField.addTextChangedListener(this);
+        return inputField;
     }
 
     @Override
@@ -264,6 +275,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void setFieldsFromVCard() {
+        updateFromVCardFlag = true;
+
         account_jid.setText(Jid.getBareAddress(account));
 
         formattedName.setText(vCard.getField(VCardProperty.FN.name()));
@@ -321,6 +334,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         addressWorkRegion.setText(vCard.getAddressFieldWork(AddressProperty.REGION.name()));
         addressWorkCountry.setText(vCard.getAddressFieldWork(AddressProperty.CTRY.name()));
         addressWorkPostalCode.setText(vCard.getAddressFieldWork(AddressProperty.PCODE.name()));
+
+        updateFromVCardFlag = false;
     }
 
     public void updateDatePickerDialog() {
@@ -419,6 +434,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         newAvatarImageUri = null;
         removeAvatarFlag = true;
         avatar.setImageDrawable(AvatarManager.getInstance().getDefaultAccountAvatar(account));
+        listener.enableSave();
+        avatarSize.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -448,6 +465,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             File file = new File(newAvatarImageUri.getPath());
             avatarSize.setText(file.length() / KB_SIZE_IN_BYTES + "KB");
             avatarSize.setVisibility(View.VISIBLE);
+            listener.enableSave();
         } else if (resultCode == Crop.RESULT_ERROR) {
             avatarSize.setVisibility(View.INVISIBLE);
             Toast.makeText(getActivity(), Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
@@ -574,6 +592,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         }
 
         disableProgressMode();
+        listener.enableSave();
         Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
         isSaveSuccess = false;
     }
@@ -629,5 +648,22 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         } else {
             birthDateRemoveButton.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (!updateFromVCardFlag) {
+            listener.enableSave();
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }

@@ -73,6 +73,7 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
 
         toolbar.inflateMenu(SAVE_MENU);
         toolbar.setOnMenuItemClickListener(this);
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(false);
     }
 
     @Override
@@ -115,6 +116,10 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
     @Override
     public void onVCardSavingFinished() {
         toolbar.setTitle(R.string.edit_account_user_info);
+    }
+
+    @Override
+    public void enableSave() {
         toolbar.getMenu().findItem(R.id.action_save).setEnabled(true);
     }
 }
