@@ -466,10 +466,9 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public void saveVCard() {
         ChatViewer.hideKeyboard(getActivity());
         updateVCardFromFields();
+        enableProgressMode();
         VCardManager.getInstance().saveVCard(account, vCard);
         isSaveSuccess = false;
-        enableProgressMode();
-
     }
 
     public void enableProgressMode() {

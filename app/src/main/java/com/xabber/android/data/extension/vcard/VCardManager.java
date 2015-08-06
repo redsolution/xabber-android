@@ -25,6 +25,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
@@ -35,8 +36,8 @@ import com.xabber.android.data.roster.StructuredName;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.VCardProperty;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Presence;
@@ -261,8 +262,14 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     private void requestVCard(final String account, final String srcUser) {
         final String user = Jid.getBareAddress(srcUser);
 
-        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
-        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
+        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
+        if (connectionThread == null) {
+            onVCardFailed(account, user);
+            return;
+        }
+
+        final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager
+                = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(connectionThread.getXMPPConnection());
 
         final Thread thread = new Thread("Get vCard user " + user + " for account " + account) {
             @Override
@@ -305,7 +312,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     public void saveVCard(final String account, final VCard vCard) {
-        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
+        if (connectionThread == null) {
+            onVCardSaveFailed(account);
+            return;
+        }
+
+        final AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
 
         final Thread thread = new Thread("Save vCard for account " + account) {

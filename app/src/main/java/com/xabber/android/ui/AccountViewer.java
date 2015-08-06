@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.roster.GroupManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.VCardProperty;
 
@@ -26,7 +25,7 @@ public class AccountViewer extends ContactViewer implements Toolbar.OnMenuItemCl
 
     public static Intent createIntent(Context context, String account) {
         return new EntityIntentBuilder(context, AccountViewer.class)
-                .setAccount(account).setUser(GroupManager.IS_ACCOUNT).build();
+                .setAccount(account).setUser(Jid.getBareAddress(account)).build();
     }
 
     @Override
