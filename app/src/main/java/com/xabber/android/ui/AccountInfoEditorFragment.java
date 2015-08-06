@@ -97,6 +97,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private Uri photoFileUri;
     private boolean removeAvatarFlag = false;
     private View birthDateRemoveButton;
+    private TextView account_jid;
 
     interface Listener {
         void onVCardSavingStarted();
@@ -147,7 +148,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         progressBar = view.findViewById(R.id.vcard_save_progress_bar);
 
-        avatarSize = (TextView) view.findViewById(R.id.vcard_avatar_size_text_view);
+        account_jid = (TextView) view.findViewById(R.id.vcard_jid);
 
         prefixName = (EditText) view.findViewById(R.id.vcard_prefix_name);
         formattedName = (EditText) view.findViewById(R.id.vcard_formatted_name);
@@ -158,6 +159,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         nickName = (EditText) view.findViewById(R.id.vcard_nickname);
 
         avatar = (ImageView) view.findViewById(R.id.vcard_avatar);
+        avatarSize = (TextView) view.findViewById(R.id.vcard_avatar_size_text_view);
         changeAvatarButton = view.findViewById(R.id.vcard_change_avatar);
         changeAvatarButton.setOnClickListener(new View.OnClickListener() {
                                                   @Override
@@ -231,6 +233,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void setFieldsFromVCard() {
+        account_jid.setText(Jid.getBareAddress(account));
+
         formattedName.setText(vCard.getField(VCardProperty.FN.name()));
         prefixName.setText(vCard.getPrefix());
         givenName.setText(vCard.getFirstName());
