@@ -29,6 +29,7 @@ import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.xmpp.address.Jid;
+import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
@@ -98,6 +99,20 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private boolean removeAvatarFlag = false;
     private View birthDateRemoveButton;
     private TextView account_jid;
+    private EditText addressHomePostOfficeBox;
+    private EditText addressHomePostExtended;
+    private EditText addressHomePostStreet;
+    private EditText addressHomeLocality;
+    private EditText addressHomeRegion;
+    private EditText addressHomeCountry;
+    private EditText addressHomePostalCode;
+    private EditText addressWorkPostOfficeBox;
+    private EditText addressWorkPostExtended;
+    private EditText addressWorkPostStreet;
+    private EditText addressWorkLocality;
+    private EditText addressWorkRegion;
+    private EditText addressWorkCountry;
+    private EditText addressWorkPostalCode;
 
     interface Listener {
         void onVCardSavingStarted();
@@ -200,6 +215,22 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         emailHome = (EditText) view.findViewById(R.id.vcard_email_home);
         emailWork = (EditText) view.findViewById(R.id.vcard_email_work);
 
+        addressHomePostOfficeBox = (EditText) view.findViewById(R.id.vcard_address_home_post_office_box);
+        addressHomePostExtended = (EditText) view.findViewById(R.id.vcard_address_home_post_extended);
+        addressHomePostStreet = (EditText) view.findViewById(R.id.vcard_address_home_post_street);
+        addressHomeLocality = (EditText) view.findViewById(R.id.vcard_address_home_locality);
+        addressHomeRegion = (EditText) view.findViewById(R.id.vcard_address_home_region);
+        addressHomeCountry = (EditText) view.findViewById(R.id.vcard_address_home_country);
+        addressHomePostalCode = (EditText) view.findViewById(R.id.vcard_address_home_postal_code);
+
+        addressWorkPostOfficeBox = (EditText) view.findViewById(R.id.vcard_address_work_post_office_box);
+        addressWorkPostExtended = (EditText) view.findViewById(R.id.vcard_address_work_post_extended);
+        addressWorkPostStreet = (EditText) view.findViewById(R.id.vcard_address_work_post_street);
+        addressWorkLocality = (EditText) view.findViewById(R.id.vcard_address_work_locality);
+        addressWorkRegion = (EditText) view.findViewById(R.id.vcard_address_work_region);
+        addressWorkCountry = (EditText) view.findViewById(R.id.vcard_address_work_country);
+        addressWorkPostalCode = (EditText) view.findViewById(R.id.vcard_address_work_postal_code);
+
         setFieldsFromVCard();
 
         return view;
@@ -274,6 +305,22 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         emailHome.setText(vCard.getEmailHome());
         emailWork.setText(vCard.getEmailWork());
+
+        addressHomePostOfficeBox.setText(vCard.getAddressFieldHome(AddressProperty.POBOX.name()));
+        addressHomePostExtended.setText(vCard.getAddressFieldHome(AddressProperty.EXTADR.name()));
+        addressHomePostStreet.setText(vCard.getAddressFieldHome(AddressProperty.STREET.name()));
+        addressHomeLocality.setText(vCard.getAddressFieldHome(AddressProperty.LOCALITY.name()));
+        addressHomeRegion.setText(vCard.getAddressFieldHome(AddressProperty.REGION.name()));
+        addressHomeCountry.setText(vCard.getAddressFieldHome(AddressProperty.CTRY.name()));
+        addressHomePostalCode.setText(vCard.getAddressFieldHome(AddressProperty.PCODE.name()));
+
+        addressWorkPostOfficeBox.setText(vCard.getAddressFieldWork(AddressProperty.POBOX.name()));
+        addressWorkPostExtended.setText(vCard.getAddressFieldWork(AddressProperty.EXTADR.name()));
+        addressWorkPostStreet.setText(vCard.getAddressFieldWork(AddressProperty.STREET.name()));
+        addressWorkLocality.setText(vCard.getAddressFieldWork(AddressProperty.LOCALITY.name()));
+        addressWorkRegion.setText(vCard.getAddressFieldWork(AddressProperty.REGION.name()));
+        addressWorkCountry.setText(vCard.getAddressFieldWork(AddressProperty.CTRY.name()));
+        addressWorkPostalCode.setText(vCard.getAddressFieldWork(AddressProperty.PCODE.name()));
     }
 
     public void updateDatePickerDialog() {
@@ -461,6 +508,22 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         vCard.setEmailHome(getValueFromEditText(emailHome));
         vCard.setEmailWork(getValueFromEditText(emailWork));
+
+        vCard.setAddressFieldHome(AddressProperty.POBOX.name(), getValueFromEditText(addressHomePostOfficeBox));
+        vCard.setAddressFieldHome(AddressProperty.EXTADR.name(), getValueFromEditText(addressHomePostExtended));
+        vCard.setAddressFieldHome(AddressProperty.STREET.name(), getValueFromEditText(addressHomePostStreet));
+        vCard.setAddressFieldHome(AddressProperty.LOCALITY.name(), getValueFromEditText(addressHomeLocality));
+        vCard.setAddressFieldHome(AddressProperty.REGION.name(), getValueFromEditText(addressHomeRegion));
+        vCard.setAddressFieldHome(AddressProperty.CTRY.name(), getValueFromEditText(addressHomeCountry));
+        vCard.setAddressFieldHome(AddressProperty.PCODE.name(), getValueFromEditText(addressHomePostalCode));
+
+        vCard.setAddressFieldWork(AddressProperty.POBOX.name(), getValueFromEditText(addressWorkPostOfficeBox));
+        vCard.setAddressFieldWork(AddressProperty.EXTADR.name(), getValueFromEditText(addressWorkPostExtended));
+        vCard.setAddressFieldWork(AddressProperty.STREET.name(), getValueFromEditText(addressWorkPostStreet));
+        vCard.setAddressFieldWork(AddressProperty.LOCALITY.name(), getValueFromEditText(addressWorkLocality));
+        vCard.setAddressFieldWork(AddressProperty.REGION.name(), getValueFromEditText(addressWorkRegion));
+        vCard.setAddressFieldWork(AddressProperty.CTRY.name(), getValueFromEditText(addressWorkCountry));
+        vCard.setAddressFieldWork(AddressProperty.PCODE.name(), getValueFromEditText(addressWorkPostalCode));
     }
 
     public void saveVCard() {
