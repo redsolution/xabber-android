@@ -21,6 +21,8 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
 
     public static final String ARG_VCARD = "com.xabber.android.ui.AccountInfoEditor.ARG_VCARD";
     public static final int SAVE_MENU = R.menu.save;
+    public static final String ARGUMENT_SAVE_BUTTON_ENABLED = "com.xabber.android.ui.AccountInfoEditor.ARGUMENT_SAVE_BUTTON_ENABLED";
+
     private Toolbar toolbar;
 
 
@@ -64,16 +66,25 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
+        toolbar.inflateMenu(SAVE_MENU);
+        toolbar.setOnMenuItemClickListener(this);
+
+        boolean isSaveButtonEnabled = false;
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, AccountInfoEditorFragment.newInstance(account, vCard)).commit();
+        } else {
+            isSaveButtonEnabled = savedInstanceState.getBoolean(ARGUMENT_SAVE_BUTTON_ENABLED);
         }
+        toolbar.getMenu().findItem(R.id.action_save).setEnabled(isSaveButtonEnabled);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
 
-        toolbar.inflateMenu(SAVE_MENU);
-        toolbar.setOnMenuItemClickListener(this);
-        toolbar.getMenu().findItem(R.id.action_save).setEnabled(false);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARGUMENT_SAVE_BUTTON_ENABLED, toolbar.getMenu().findItem(R.id.action_save).isEnabled());
     }
 
     @Override
