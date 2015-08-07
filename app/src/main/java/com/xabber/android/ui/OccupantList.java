@@ -17,7 +17,9 @@ package com.xabber.android.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -28,6 +30,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
+import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.xmpp.address.Jid;
 
@@ -45,8 +48,7 @@ public class OccupantList extends ManagedListActivity implements
     private String room;
     private OccupantListAdapter listAdapter;
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
+    public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, OccupantList.class)
                 .setAccount(account).setUser(user).build();
     }
@@ -62,55 +64,63 @@ public class OccupantList extends ManagedListActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (isFinishing()) {
             return;
+        }
 
         account = getAccount(getIntent());
         room = Jid.getBareAddress(getUser(getIntent()));
-        if (account == null || room == null
-                || !MUCManager.getInstance().hasRoom(account, room)) {
+        if (account == null || room == null || !MUCManager.getInstance().hasRoom(account, room)) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
             return;
         }
         setContentView(R.layout.list);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(OccupantList.this);
+            }
+        });
+        toolbar.setTitle(room);
+
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.updateWithAccountName(account);
+
 
         listAdapter = new OccupantListAdapter(this, account, room);
         setListAdapter(listAdapter);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
-        Application.getInstance().addUIListener(OnContactChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         listAdapter.onChange();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
-        Application.getInstance().removeUIListener(
-                OnContactChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        if (entities.contains(new BaseEntity(account, room)))
+        if (entities.contains(new BaseEntity(account, room))) {
             listAdapter.onChange();
+        }
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        if (accounts.contains(account))
+        if (accounts.contains(account)) {
             listAdapter.onChange();
+        }
     }
 
 }
