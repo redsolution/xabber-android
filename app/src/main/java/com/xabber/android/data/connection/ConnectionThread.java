@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.connection;
 
-import android.os.Build;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -26,7 +24,9 @@ import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.data.account.OAuthResult;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.StanzaFilter;
@@ -37,6 +37,7 @@ import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.xbill.DNS.Record;
 
 import java.io.IOException;
@@ -64,8 +65,8 @@ import de.duenndns.ssl.MemorizingTrustManager;
  * @author alexander.ivanov
  */
 public class ConnectionThread implements
-        org.jivesoftware.smack.ConnectionListener,
-        org.jivesoftware.smack.StanzaListener {
+        ConnectionListener,
+        StanzaListener, PingFailedListener {
 
     private static Pattern ADDRESS_AND_PORT = Pattern.compile("^(.*):(\\d+)$");
 
@@ -371,6 +372,8 @@ public class ConnectionThread implements
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
         xmppConnection.addConnectionListener(this);
+
+        org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
 
         // We use own roster management.
         Roster.getInstanceFor(xmppConnection).setRosterLoadedAtLogin(false);
@@ -726,6 +729,12 @@ public class ConnectionThread implements
                 ConnectionManager.getInstance().processPacket(ConnectionThread.this, packet);
             }
         });
+    }
+
+    @Override
+    public void pingFailed() {
+        LogManager.i(this, "pingFailed for " + getConnectionItem().getRealJid());
+        getConnectionItem().forceReconnect();
     }
 
     /**
