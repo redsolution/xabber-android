@@ -104,27 +104,26 @@ public class Application extends android.app.Application {
         notified = false;
         closing = false;
         closed = false;
-        uiListeners = new HashMap<Class<? extends BaseUIListener>, Collection<? extends BaseUIListener>>();
-        managerInterfaces = new HashMap<Class<? extends BaseManagerInterface>, Collection<? extends BaseManagerInterface>>();
-        registeredManagers = new ArrayList<Object>();
+        uiListeners = new HashMap<>();
+        managerInterfaces = new HashMap<>();
+        registeredManagers = new ArrayList<>();
 
         handler = new Handler();
-        backgroundExecutor = Executors
-                .newSingleThreadExecutor(new ThreadFactory() {
-                    @Override
-                    public Thread newThread(Runnable runnable) {
-                        Thread thread = new Thread(runnable,
-                                "Background executor service");
-                        thread.setPriority(Thread.MIN_PRIORITY);
-                        thread.setDaemon(true);
-                        return thread;
-                    }
-                });
+        backgroundExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable runnable) {
+                Thread thread = new Thread(runnable, "Background executor service");
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.setDaemon(true);
+                return thread;
+                }
+            });
     }
 
     public static Application getInstance() {
-        if (instance == null)
+        if (instance == null) {
             throw new IllegalStateException();
+        }
         return instance;
     }
 
@@ -156,17 +155,21 @@ public class Application extends android.app.Application {
 
     private void onClose() {
         LogManager.i(this, "onClose");
-        for (Object manager : registeredManagers)
-            if (manager instanceof OnCloseListener)
+        for (Object manager : registeredManagers) {
+            if (manager instanceof OnCloseListener) {
                 ((OnCloseListener) manager).onClose();
+            }
+        }
         closed = true;
     }
 
     private void onUnload() {
         LogManager.i(this, "onUnload");
-        for (Object manager : registeredManagers)
-            if (manager instanceof OnUnloadListener)
+        for (Object manager : registeredManagers) {
+            if (manager instanceof OnUnloadListener) {
                 ((OnUnloadListener) manager).onUnload();
+            }
+        }
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
@@ -175,8 +178,9 @@ public class Application extends android.app.Application {
      * calls will always returns <code>false</code>.
      */
     public boolean doNotify() {
-        if (notified)
+        if (notified) {
             return false;
+        }
         notified = true;
         return true;
     }
@@ -187,8 +191,9 @@ public class Application extends android.app.Application {
      * @return
      */
     public void onServiceStarted() {
-        if (serviceStarted)
+        if (serviceStarted) {
             return;
+        }
         serviceStarted = true;
         LogManager.i(this, "onStart");
         loadFuture = backgroundExecutor.submit(new Callable<Void>() {
@@ -203,9 +208,7 @@ public class Application extends android.app.Application {
                             // Throw exceptions in UI thread if any.
                             try {
                                 loadFuture.get();
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            } catch (ExecutionException e) {
+                            } catch (InterruptedException | ExecutionException e) {
                                 throw new RuntimeException(e);
                             }
                             onInitialized();
@@ -252,41 +255,41 @@ public class Application extends android.app.Application {
         super.onCreate();
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-        ArrayList<String> contactManager = new ArrayList<String>();
-        TypedArray contactManagerClasses = getResources().obtainTypedArray(
-                R.array.contact_managers);
-        for (int index = 0; index < contactManagerClasses.length(); index++)
+        ArrayList<String> contactManager = new ArrayList<>();
+        TypedArray contactManagerClasses = getResources().obtainTypedArray(R.array.contact_managers);
+        for (int index = 0; index < contactManagerClasses.length(); index++) {
             contactManager.add(contactManagerClasses.getString(index));
+        }
         contactManagerClasses.recycle();
 
-        TypedArray managerClasses = getResources().obtainTypedArray(
-                R.array.managers);
-        for (int index = 0; index < managerClasses.length(); index++)
-            if (isContactsSupported()
-                    || !contactManager
-                    .contains(managerClasses.getString(index)))
+        TypedArray managerClasses = getResources().obtainTypedArray(R.array.managers);
+        for (int index = 0; index < managerClasses.length(); index++) {
+            if (isContactsSupported() || !contactManager.contains(managerClasses.getString(index))) {
                 try {
                     Class.forName(managerClasses.getString(index));
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
+            }
+        }
         managerClasses.recycle();
 
-        TypedArray tableClasses = getResources().obtainTypedArray(
-                R.array.tables);
-        for (int index = 0; index < tableClasses.length(); index++)
+        TypedArray tableClasses = getResources().obtainTypedArray(R.array.tables);
+        for (int index = 0; index < tableClasses.length(); index++) {
             try {
                 Class.forName(tableClasses.getString(index));
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
         tableClasses.recycle();
     }
 
     @Override
     public void onLowMemory() {
-        for (OnLowMemoryListener listener : getManagers(OnLowMemoryListener.class))
+        for (OnLowMemoryListener listener : getManagers(OnLowMemoryListener.class)) {
             listener.onLowMemory();
+        }
         super.onLowMemory();
     }
 
@@ -294,8 +297,9 @@ public class Application extends android.app.Application {
      * Service have been destroyed.
      */
     public void onServiceDestroy() {
-        if (closed)
+        if (closed) {
             return;
+        }
         onClose();
         runInBackground(new Runnable() {
             @Override
@@ -320,8 +324,6 @@ public class Application extends android.app.Application {
 
     /**
      * Register new manager.
-     *
-     * @param manager
      */
     public void addManager(Object manager) {
         registeredManagers.add(manager);
@@ -332,16 +334,18 @@ public class Application extends android.app.Application {
      * @return List of registered manager.
      */
     @SuppressWarnings("unchecked")
-    public <T extends BaseManagerInterface> Collection<T> getManagers(
-            Class<T> cls) {
-        if (closed)
+    public <T extends BaseManagerInterface> Collection<T> getManagers(Class<T> cls) {
+        if (closed) {
             return Collections.emptyList();
+        }
         Collection<T> collection = (Collection<T>) managerInterfaces.get(cls);
         if (collection == null) {
-            collection = new ArrayList<T>();
-            for (Object manager : registeredManagers)
-                if (cls.isInstance(manager))
+            collection = new ArrayList<>();
+            for (Object manager : registeredManagers) {
+                if (cls.isInstance(manager)) {
                     collection.add((T) manager);
+                }
+            }
             collection = Collections.unmodifiableCollection(collection);
             managerInterfaces.put(cls, collection);
         }
@@ -361,9 +365,11 @@ public class Application extends android.app.Application {
     }
 
     private void clear() {
-        for (Object manager : registeredManagers)
-            if (manager instanceof OnClearListener)
+        for (Object manager : registeredManagers) {
+            if (manager instanceof OnClearListener) {
                 ((OnClearListener) manager).onClear();
+            }
+        }
     }
 
     /**
@@ -382,8 +388,7 @@ public class Application extends android.app.Application {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends BaseUIListener> Collection<T> getOrCreateUIListeners(
-            Class<T> cls) {
+    private <T extends BaseUIListener> Collection<T> getOrCreateUIListeners(Class<T> cls) {
         Collection<T> collection = (Collection<T>) uiListeners.get(cls);
         if (collection == null) {
             collection = new ArrayList<T>();
@@ -397,8 +402,9 @@ public class Application extends android.app.Application {
      * @return List of registered UI listeners.
      */
     public <T extends BaseUIListener> Collection<T> getUIListeners(Class<T> cls) {
-        if (closed)
+        if (closed) {
             return Collections.emptyList();
+        }
         return Collections.unmodifiableCollection(getOrCreateUIListeners(cls));
     }
 
@@ -406,12 +412,8 @@ public class Application extends android.app.Application {
      * Register new listener.
      * <p/>
      * Should be called from {@link Activity#onResume()}.
-     *
-     * @param cls
-     * @param listener
      */
-    public <T extends BaseUIListener> void addUIListener(Class<T> cls,
-                                                         T listener) {
+    public <T extends BaseUIListener> void addUIListener(Class<T> cls, T listener) {
         getOrCreateUIListeners(cls).add(listener);
     }
 
@@ -419,34 +421,27 @@ public class Application extends android.app.Application {
      * Unregister listener.
      * <p/>
      * Should be called from {@link Activity#onPause()}.
-     *
-     * @param cls
-     * @param listener
      */
-    public <T extends BaseUIListener> void removeUIListener(Class<T> cls,
-                                                            T listener) {
+    public <T extends BaseUIListener> void removeUIListener(Class<T> cls, T listener) {
         getOrCreateUIListeners(cls).remove(listener);
     }
 
     /**
      * Notify about error.
-     *
-     * @param resourceId
      */
     public void onError(final int resourceId) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class))
+                for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
                     onErrorListener.onError(resourceId);
+                }
             }
         });
     }
 
     /**
      * Notify about error.
-     *
-     * @param networkException
      */
     public void onError(NetworkException networkException) {
         LogManager.exception(this, networkException);
@@ -455,8 +450,6 @@ public class Application extends android.app.Application {
 
     /**
      * Submits request to be executed in background.
-     *
-     * @param runnable
      */
     public void runInBackground(final Runnable runnable) {
         backgroundExecutor.submit(new Runnable() {
@@ -473,8 +466,6 @@ public class Application extends android.app.Application {
 
     /**
      * Submits request to be executed in UI thread.
-     *
-     * @param runnable
      */
     public void runOnUiThread(final Runnable runnable) {
         handler.post(runnable);
@@ -482,9 +473,6 @@ public class Application extends android.app.Application {
 
     /**
      * Submits request to be executed in UI thread.
-     *
-     * @param runnable
-     * @param delayMillis
      */
     public void runOnUiThreadDelay(final Runnable runnable, long delayMillis) {
         handler.postDelayed(runnable, delayMillis);
