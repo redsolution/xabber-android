@@ -125,7 +125,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     /**
      * @return <code>null</code> if does not exists.
      */
-    private RoomChat getRoomChat(String account, String room) {
+    public RoomChat getRoomChat(String account, String room) {
         AbstractChat chat = MessageManager.getInstance().getChat(account, room);
         if (chat != null && chat instanceof RoomChat) {
             return (RoomChat) chat;

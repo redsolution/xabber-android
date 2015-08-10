@@ -19,6 +19,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -58,10 +59,12 @@ public class RegularChat extends AbstractChat {
 
     @Override
     public String getTo() {
-        if (resource == null)
+        if (resource == null
+                || (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user)) && getType() != Message.Type.groupchat )) {
             return user;
-        else
+        } else {
             return user + "/" + resource;
+        }
     }
 
     @Override

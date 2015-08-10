@@ -100,6 +100,10 @@ public class ContactTitleExpandableToolbarInflater implements ObservableScrollVi
             }
         });
 
+        updateTitle();
+    }
+
+    public void updateTitle() {
         ContactTitleInflater.updateTitle(titleView, activity, abstractContact);
     }
 

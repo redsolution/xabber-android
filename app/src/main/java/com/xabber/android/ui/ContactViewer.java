@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class ContactViewer extends ManagedActivity implements
-        OnContactChangedListener, OnAccountChangedListener {
+        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener {
 
     protected ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private String account;
@@ -92,7 +92,7 @@ public class ContactViewer extends ManagedActivity implements
             }
         } else {
             account = getAccount(getIntent());
-            bareAddress = Jid.getBareAddress(getUser(getIntent()));
+            bareAddress = getUser(getIntent());
         }
 
         if (bareAddress != null && bareAddress.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
@@ -169,5 +169,10 @@ public class ContactViewer extends ManagedActivity implements
 
     protected String getBareAddress() {
         return bareAddress;
+    }
+
+    @Override
+    public void onVCardReceived() {
+        contactTitleExpandableToolbarInflater.onResume();
     }
 }

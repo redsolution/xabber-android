@@ -20,14 +20,17 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.helper.BarPainter;
@@ -42,7 +45,7 @@ import java.util.Collection;
  * @author alexander.ivanov
  */
 public class OccupantList extends ManagedListActivity implements
-        OnAccountChangedListener, OnContactChangedListener {
+        OnAccountChangedListener, OnContactChangedListener, AdapterView.OnItemClickListener {
 
     private String account;
     private String room;
@@ -92,6 +95,8 @@ public class OccupantList extends ManagedListActivity implements
 
         listAdapter = new OccupantListAdapter(this, account, room);
         setListAdapter(listAdapter);
+
+        getListView().setOnItemClickListener(this);
     }
 
     @Override
@@ -123,4 +128,15 @@ public class OccupantList extends ManagedListActivity implements
         }
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        com.xabber.android.data.extension.muc.Occupant occupant
+                = (com.xabber.android.data.extension.muc.Occupant) listAdapter.getItem(position);
+        LogManager.i(this, occupant.getNickname());
+
+        String occupantFullJid = room + "/" + occupant.getNickname();
+
+        MessageManager.getInstance().openChat(account, occupantFullJid);
+        startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));
+    }
 }

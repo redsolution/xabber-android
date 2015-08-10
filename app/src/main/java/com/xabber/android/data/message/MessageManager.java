@@ -36,6 +36,7 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
@@ -171,7 +172,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @return
      */
     private RegularChat createChat(String account, String user) {
-        RegularChat chat = new RegularChat(account, Jid.getBareAddress(user));
+        RegularChat chat = new RegularChat(account, user);
         addChat(chat);
         return chat;
     }
@@ -477,10 +478,23 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             // archive have been received.
             return;
         }
+
+        String contact = bareAddress;
+
+        if (packet instanceof Message) {
+            Message message = (Message) packet;
+            if (MUCManager.getInstance().hasRoom(account, bareAddress)
+                    && message.getType() != Message.Type.groupchat ) {
+                contact = packet.getFrom();
+            }
+        }
+
+
+
         final String user = packet.getFrom();
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account).values()) {
-            if (chat.onPacket(bareAddress, packet)) {
+            if (chat.onPacket(contact, packet)) {
                 processed = true;
                 break;
             }
@@ -499,7 +513,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     return;
                 }
             }
-            createChat(account, user).onPacket(bareAddress, packet);
+            createChat(account, user).onPacket(contact, packet);
         }
     }
 
