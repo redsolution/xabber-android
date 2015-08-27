@@ -358,7 +358,7 @@
 
 <!-- preference_debug -->
     <string name="debug_log_key">debug_log</string>
-    <bool name="debug_log_default">false</bool>
+    <bool name="debug_log_default">true</bool>
 
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
