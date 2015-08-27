@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">Anniversaire</string>
   <string name="vcard_url">Site Web</string>
   <string name="vcard_organization">Organisation</string>
+  <string name="vcard_organization_unit">Unité organisationnelle</string>
   <string name="vcard_title">Titre de l\'emploi, de la fonction</string>
   <string name="vcard_role">Rôle</string>
   <string name="vcard_other">Autres informations</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">Éditer l\'alias</string>
   <string name="edit_contact_groups">Éditer les groupes</string>
   <string name="remove_contact">Supprimer le contact</string>
+  <string name="edit_account_user_info">Éditer infos utilisateur</string>
+  <string name="account_user_info_save_success">Infos de l\'utilisateur sauvegardées avec succès</string>
+  <string name="account_user_info_save_fail">Échec de la sauvegarde des infos de l\'utilisateur</string>
+  <string name="saving">Sauvegarde en cours&#8230;</string>
+  <string name="choose_from_gallery">Choisir dans la galerie</string>
+  <string name="take_photo">Prendre une photo</string>
+  <string name="remove_avatar">Retirer l\'avatar</string>
+  <string name="change">Changer</string>
 </resources>

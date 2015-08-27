@@ -29,11 +29,14 @@
   <string name="account_custom_summary">Usar configurações de host personalizado em vez de registro SRV</string>
   <string name="account_enabled_summary">Marque para ativar a conta</string>
   <string name="account_invalid_port">A porta deve ser um número (padrão: 5222)</string>
+  <string name="account_invalid_port_range">A porta deve ser um número entre 1 e 65535 (o padrão é: 5222)</string>
   <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 128 (padrão: 10)</string>
   <string name="account_oauth">Autorização</string>
   <string name="account_oauth_invalidated">Não autorizado</string>
   <string name="account_oauth_summary">Configuração de Autenticação</string>
   <string name="account_proxy_host">Servidor proxy</string>
+  <string name="account_proxy_invalid_port_range">A porta de proxy deve ser um número entre 1 e 65535 (o padrão é: 8080)</string>
+  <string name="account_proxy_invalid_port">A porta de proxy deve ser um número (o padrão é: 8080)</string>
   <string name="account_proxy_password">Senha do proxy</string>
   <string name="account_proxy_port">Porta do proxy</string>
   <string name="account_proxy_type">Tipo de proxy</string>

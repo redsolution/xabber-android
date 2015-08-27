@@ -3,7 +3,7 @@
 <resources>
   <string name="EMPTY_NICK_NAME">Nickname non specificato</string>
   <string name="EMPTY_ROOM_NAME">Conferenza non specificata</string>
-  <string name="muc_join">Entra in conferenza</string>
+  <string name="muc_join">Entra nella conferenza</string>
   <string name="muc_nick">Nickname</string>
   <string name="muc_nick_hint">Il tuo nickname nella conferenza</string>
   <string name="muc_password">Password</string>
@@ -16,9 +16,14 @@
   <string name="muc_add">Aggiungi conferenza</string>
   <string name="muc_delete">Rimuovi conferenza</string>
   <string name="muc_delete_confirm">Vuoi davvero rimuovere la conferenza %1$s dall\'account %2$s?</string>
-  <string name="muc_edit">Impostazioni di autenticazione</string>
+  <string name="muc_edit">Impostazioni di autorizzazione</string>
   <string name="muc_invite_confirm">%2$s ti ha invitato ad entrare nella conferenza %3$s. Vuoi entrare con l\'account %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s ti ha invitato ad entrare nella conferenza %3$s: %4$s. Vuoi entrare con l\'account %1$s?</string>
   <string name="muc_leave">Abbandona conferenza</string>
   <string name="muc_save">Salva conferenza</string>
+  <string name="muc_choose_conference">Scegli conferenza</string>
+  <string name="muc_next">Successivo</string>
+  <string name="muc_get_hosted_conferences">Ottieni conferenze ospitate</string>
+  <string name="muc_error_getting_conferences">Errore nell\'ottenere la lista delle conferenze</string>
+  <string name="muc_type_conference_name">Inserire nome conferenza</string>
 </resources>

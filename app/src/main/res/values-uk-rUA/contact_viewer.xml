@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">День народження</string>
   <string name="vcard_url">Веб-сайт</string>
   <string name="vcard_organization">Організація</string>
+  <string name="vcard_organization_unit">Організаційна одиниця</string>
   <string name="vcard_title">Посада</string>
   <string name="vcard_role">Роль</string>
   <string name="vcard_other">Інша інформація</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">Редагувати псевдонім</string>
   <string name="edit_contact_groups">Редагувати групу</string>
   <string name="remove_contact">Видалити контакт</string>
+  <string name="edit_account_user_info">Редагувати інформацію користувача</string>
+  <string name="account_user_info_save_success">Інформація про користувача успішно збережено</string>
+  <string name="account_user_info_save_fail">Не вдалося зберегти інформацію про користувача</string>
+  <string name="saving">Збереження&#8230;</string>
+  <string name="choose_from_gallery">Вибрати з галереї</string>
+  <string name="take_photo">Зробити фото</string>
+  <string name="remove_avatar">Видалити Аватар</string>
+  <string name="change">Змінити</string>
 </resources>

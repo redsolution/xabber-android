@@ -65,6 +65,7 @@
   <string name="events_message_none">Не сповіщати</string>
   <string name="events_show_text">Повідомлення в сповіщеннях\nПоказувати текст повідомлення в області сповіщень</string>
   <string name="events_visible_chat">Сповіщення в поточному чаті\nСповіщати о вхідних повідомлення в поточному чаті</string>
+  <string name="events_suppress_100">Приховати деякі повідомлення статусу\nНе отримувати \'Ця кімната не анонімна\' повідомлення</string>
   <string name="negative_priotiry_summary">%s (Ви не зможете отримувати повідомлення із будь-яких балачок)</string>
   <string name="preference_accounts">XMPP аккаунти\nУправління аккаунтами</string>
   <string name="preference_security">Безпека\nНалаштування безпеки</string>

@@ -29,11 +29,14 @@
   <string name="account_custom_summary">Вказати хост для підключення вручну, замість використання SRV запису</string>
   <string name="account_enabled_summary">Позначте, для включення облікового запису</string>
   <string name="account_invalid_port">Порт має бути числом (типове значення: 5222)</string>
+  <string name="account_invalid_port_range">Порт має бути від 1 до 65535 (за замовчуванням: 5222)</string>
   <string name="account_invalid_priority">Пріоритет має бути в діапазоні між -128 і 128 (типове значення :10)</string>
   <string name="account_oauth">Авторизація</string>
   <string name="account_oauth_invalidated">Не авторизований</string>
   <string name="account_oauth_summary">Налаштування OAuth</string>
   <string name="account_proxy_host">Вузол проксі</string>
+  <string name="account_proxy_invalid_port_range">Проксі порт має бути від 1 до 65535 (за замовчуванням: 8080)</string>
+  <string name="account_proxy_invalid_port">Порт проксі-сервера має бути числом (за замовчуванням: 8080)</string>
   <string name="account_proxy_password">Пароль</string>
   <string name="account_proxy_port">Порт проксі</string>
   <string name="account_proxy_type">Тип проксі</string>

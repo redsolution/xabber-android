@@ -21,4 +21,9 @@
   <string name="muc_invite_confirm_reason">%2$s vous a invité à rejoindre la conférence %3$s : %4$s. La rejoindre avec le compte %1$s ?</string>
   <string name="muc_leave">Quitter la conférence</string>
   <string name="muc_save">Enregistrer la conférence</string>
+  <string name="muc_choose_conference">Choisir une conférence</string>
+  <string name="muc_next">Suivant</string>
+  <string name="muc_get_hosted_conferences">Obtenez la liste des conférences hébergées</string>
+  <string name="muc_error_getting_conferences">Erreur lors de l\'obtention de la liste de conférences</string>
+  <string name="muc_type_conference_name">Entrez le nom de la conférence</string>
 </resources>
