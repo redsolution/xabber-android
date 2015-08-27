@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">誕生日</string>
   <string name="vcard_url">Web サイト</string>
   <string name="vcard_organization">所属</string>
+  <string name="vcard_organization_unit">組織単位</string>
   <string name="vcard_title">肩書, 役職</string>
   <string name="vcard_role">役割</string>
   <string name="vcard_other">その他の情報</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">エイリアスを編集</string>
   <string name="edit_contact_groups">グループを編集</string>
   <string name="remove_contact">連絡先を削除</string>
+  <string name="edit_account_user_info">ユーザー情報を編集</string>
+  <string name="account_user_info_save_success">アカウントのユーザー情報を正常に保存しました</string>
+  <string name="account_user_info_save_fail">アカウントのユーザー情報を保存できませんでした</string>
+  <string name="saving">保存中&#8230;</string>
+  <string name="choose_from_gallery">ギャラリーから選択</string>
+  <string name="take_photo">写真を撮影</string>
+  <string name="remove_avatar">アバターを削除</string>
+  <string name="change">変更</string>
 </resources>

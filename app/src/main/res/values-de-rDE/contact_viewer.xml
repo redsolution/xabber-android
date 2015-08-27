@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">Geburtstag</string>
   <string name="vcard_url">Internetseite</string>
   <string name="vcard_organization">Organisation</string>
+  <string name="vcard_organization_unit">Organisationseinheit</string>
   <string name="vcard_title">Beruf</string>
   <string name="vcard_role">Rolle</string>
   <string name="vcard_other">Andere Informationen</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">Alias bearbeiten</string>
   <string name="edit_contact_groups">Gruppen bearbeiten</string>
   <string name="remove_contact">Kontakt löschen</string>
+  <string name="edit_account_user_info">Benutzer Info bearbeiten</string>
+  <string name="account_user_info_save_success">Kontobenutzerinfo erfolgreich gespeichert</string>
+  <string name="account_user_info_save_fail">Kontobenutzerinfo konnte nicht gespeichert werden</string>
+  <string name="saving">Speichert&#8230;</string>
+  <string name="choose_from_gallery">Aus Galerie wählen</string>
+  <string name="take_photo">Foto aufnehmen</string>
+  <string name="remove_avatar">Avatar entfernen</string>
+  <string name="change">Ändern</string>
 </resources>

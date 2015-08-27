@@ -65,6 +65,7 @@
   <string name="events_message_none">Não avisar</string>
   <string name="events_show_text">Exibir mensagem na notificação\nExibir mensagem de texto na área de notificação</string>
   <string name="events_visible_chat">Notificação na conversa atual\nNotificar mensagens entregues na conversa atual</string>
+  <string name="events_suppress_100">Suprimir algumas mensagens de status\nNão receber a mensagem \'Essa sala não é anônima\"</string>
   <string name="negative_priotiry_summary">%s (você não receberá mensagens de nenhuma conversa)</string>
   <string name="preference_accounts">Contas XMPP\nGerir contas</string>
   <string name="preference_security">Segurança\nConfigurações de segurança</string>

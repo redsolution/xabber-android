@@ -65,42 +65,35 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final String DATE_FORMAT_INT_TO_STRING = "%d-%02d-%02d";
 
     private VCard vCard;
+    private String account;
+    private View progressBar;
+    private boolean isSaveSuccess;
+    private Listener listener;
+    private boolean updateFromVCardFlag = true;
+
+    private TextView account_jid;
+    private LinearLayout fields;
+
+    private EditText formattedName;
     private EditText prefixName;
     private EditText givenName;
     private EditText middleName;
     private EditText familyName;
     private EditText suffixName;
     private EditText nickName;
-    private String account;
-    private EditText organization;
-    private EditText organizationUnit;
 
     private EditText title;
     private EditText role;
+    private EditText organizationUnit;
+    private EditText organization;
+
     private EditText url;
     private EditText description;
     private EditText emailHome;
     private EditText emailWork;
     private EditText phoneHome;
     private EditText phoneWork;
-    private EditText formattedName;
-    private View progressBar;
-    private boolean isSaveSuccess;
-    private LinearLayout fields;
-    private TextView avatarSize;
 
-    private Listener listener;
-
-    private TextView birthDate;
-    private DatePickerDialog datePicker;
-
-    private View changeAvatarButton;
-    private ImageView avatar;
-    private Uri newAvatarImageUri;
-    private Uri photoFileUri;
-    private boolean removeAvatarFlag = false;
-    private View birthDateRemoveButton;
-    private TextView account_jid;
     private EditText addressHomePostOfficeBox;
     private EditText addressHomePostExtended;
     private EditText addressHomePostStreet;
@@ -108,6 +101,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText addressHomeRegion;
     private EditText addressHomeCountry;
     private EditText addressHomePostalCode;
+
     private EditText addressWorkPostOfficeBox;
     private EditText addressWorkPostExtended;
     private EditText addressWorkPostStreet;
@@ -115,7 +109,17 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private EditText addressWorkRegion;
     private EditText addressWorkCountry;
     private EditText addressWorkPostalCode;
-    private boolean updateFromVCardFlag = false;
+
+    private ImageView avatar;
+    private TextView avatarSize;
+    private View changeAvatarButton;
+    private Uri newAvatarImageUri;
+    private Uri photoFileUri;
+    private boolean removeAvatarFlag = false;
+
+    private TextView birthDate;
+    private DatePickerDialog datePicker;
+    private View birthDateRemoveButton;
 
     interface Listener {
         void onVCardSavingStarted();
@@ -258,6 +262,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (vCardManager.isVCardRequested(account) || vCardManager.isVCardSaveRequested(account)) {
             enableProgressMode();
         }
+        updateFromVCardFlag = false;
     }
 
     @Override
@@ -275,8 +280,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void setFieldsFromVCard() {
-        updateFromVCardFlag = true;
-
         account_jid.setText(Jid.getBareAddress(account));
 
         formattedName.setText(vCard.getField(VCardProperty.FN.name()));
@@ -334,8 +337,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         addressWorkRegion.setText(vCard.getAddressFieldWork(AddressProperty.REGION.name()));
         addressWorkCountry.setText(vCard.getAddressFieldWork(AddressProperty.CTRY.name()));
         addressWorkPostalCode.setText(vCard.getAddressFieldWork(AddressProperty.PCODE.name()));
-
-        updateFromVCardFlag = false;
     }
 
     public void updateDatePickerDialog() {
@@ -615,9 +616,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             getActivity().finish();
         } else {
             disableProgressMode();
-
             this.vCard = vCard;
+            updateFromVCardFlag = true;
             setFieldsFromVCard();
+            updateFromVCardFlag = false;
         }
     }
 
@@ -657,7 +659,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (!updateFromVCardFlag) {
+        if (!updateFromVCardFlag && listener != null) {
             listener.enableSave();
         }
     }

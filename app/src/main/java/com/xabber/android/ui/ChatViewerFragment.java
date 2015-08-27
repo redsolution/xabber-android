@@ -565,7 +565,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void showContactInfo() {
         if (MUCManager.getInstance().hasRoom(account, user)) {
-            startActivity(ContactViewer.createIntent(getActivity(), account, user));
+            startActivity(OccupantList.createIntent(getActivity(), account, user));
         } else {
             startActivity(ContactEditor.createIntent(getActivity(), account, user));
         }

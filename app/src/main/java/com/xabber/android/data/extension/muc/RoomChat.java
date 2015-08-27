@@ -153,7 +153,7 @@ public class RoomChat extends AbstractChat {
         return subject;
     }
 
-    MultiUserChat getMultiUserChat() {
+    public MultiUserChat getMultiUserChat() {
         return multiUserChat;
     }
 

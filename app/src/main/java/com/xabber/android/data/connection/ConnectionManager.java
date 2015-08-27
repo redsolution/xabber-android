@@ -209,14 +209,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
             listener.onConnected(connectionThread.getConnectionItem());
         }
-
-        org.jivesoftware.smackx.ping.PingManager.getInstanceFor(connectionThread.getXMPPConnection()).registerPingFailedListener(new PingFailedListener() {
-            @Override
-            public void pingFailed() {
-                LogManager.i(this, "pingFailed for " + connectionThread.getConnectionItem().getRealJid());
-                connectionThread.getConnectionItem().forceReconnect();
-            }
-        });
     }
 
     public void onAuthorized(ConnectionThread connectionThread) {

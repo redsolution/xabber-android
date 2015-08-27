@@ -56,6 +56,11 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private VCard vCard;
     private boolean vCardError;
     private View progressBar;
+    private Listener listener;
+
+    interface Listener {
+        void onVCardReceived();
+    }
 
     public static ContactVcardViewerFragment newInstance(String account, String user) {
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
@@ -67,6 +72,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return fragment;
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        listener = (Listener) activity;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -161,6 +172,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+
+        listener = null;
+    }
+
+    @Override
     public void onVCardReceived(String account, String bareAddress, VCard vCard) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
@@ -168,6 +186,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         this.vCard = vCard;
         this.vCardError = false;
         updateVCard();
+        listener.onVCardReceived();
         progressBar.setVisibility(View.GONE);
     }
 

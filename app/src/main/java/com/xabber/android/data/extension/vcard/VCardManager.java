@@ -260,7 +260,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     private void requestVCard(final String account, final String srcUser) {
-        final String user = Jid.getBareAddress(srcUser);
+        final String user = srcUser;
 
         ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
         if (connectionThread == null) {

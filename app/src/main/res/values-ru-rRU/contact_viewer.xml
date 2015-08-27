@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">Дата рождения</string>
   <string name="vcard_url">Сайт</string>
   <string name="vcard_organization">Организация</string>
+  <string name="vcard_organization_unit">Отдел</string>
   <string name="vcard_title">Должность</string>
   <string name="vcard_role">Должностные функции</string>
   <string name="vcard_other">Общая информация</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">Редактировать псевдоним</string>
   <string name="edit_contact_groups">Редактировать группы</string>
   <string name="remove_contact">Удалить контакт</string>
+  <string name="edit_account_user_info">Редактировать информацию о пользователе</string>
+  <string name="account_user_info_save_success">Информация о пользователе успешно изменена</string>
+  <string name="account_user_info_save_fail">Не удалось сохранить изменения информации о пользователе</string>
+  <string name="saving">Сохранение&#8230;</string>
+  <string name="choose_from_gallery">Выбрать из галереи</string>
+  <string name="take_photo">Сделать фотографию</string>
+  <string name="remove_avatar">Удалить аватар</string>
+  <string name="change">Изменить</string>
 </resources>

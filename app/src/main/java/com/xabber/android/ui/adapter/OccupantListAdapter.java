@@ -99,7 +99,7 @@ public class OccupantListAdapter extends BaseAdapter implements
                     .getAccountAvatar(account));
         else
             avatarView.setImageDrawable(AvatarManager.getInstance()
-                    .getOccupantAvatar(room + "/" + occupant.getNickname()));
+                    .getUserAvatarForContactList(room + "/" + occupant.getNickname()));
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());
         int textStyle;

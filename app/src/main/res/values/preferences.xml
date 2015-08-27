@@ -40,7 +40,6 @@
         <item>com.xabber.android.data.extension.cs.ChatStateManager</item>
         <item>com.xabber.android.data.connection.NetworkManager</item>
         <item>com.xabber.android.data.account.OAuthManager</item>
-        <item>com.xabber.android.data.account.WLMManager</item>
         <item>com.xabber.android.data.roster.SyncManager</item>
         <item>com.xabber.android.data.connection.DNSManager</item>
         <item>com.xabber.android.data.connection.CertificateManager</item>
@@ -359,7 +358,7 @@
 
 <!-- preference_debug -->
     <string name="debug_log_key">debug_log</string>
-    <bool name="debug_log_default">false</bool>
+    <bool name="debug_log_default">true</bool>
 
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
@@ -434,7 +433,7 @@
         <item>@string/account_archive_mode_dont_store</item>
     </string-array>
 
-    <string name="account_archive_mode_default_value">available</string>
+    <string name="account_archive_mode_default_value">local</string>
 
 <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>

@@ -23,7 +23,7 @@
   <string name="muc_save">Guardar sala de charla</string>
   <string name="muc_choose_conference">Elegir sala de charla</string>
   <string name="muc_next">Siguiente</string>
-  <string name="muc_get_hosted_conferences">Obtener conferencias organizadas</string>
-  <string name="muc_error_getting_conferences">Error al obtener conferencias</string>
-  <string name="muc_type_conference_name">Escribir el nombre de la sala de charla</string>
+  <string name="muc_get_hosted_conferences">Obtener salas de charla organizadas</string>
+  <string name="muc_error_getting_conferences">Error al obtener la lista de salas de charla</string>
+  <string name="muc_type_conference_name">Escribe el nombre de la sala de charla</string>
 </resources>

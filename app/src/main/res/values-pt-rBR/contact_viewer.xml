@@ -49,4 +49,12 @@
   <string name="edit_alias">Editar alias</string>
   <string name="edit_contact_groups">Editar Grupos</string>
   <string name="remove_contact">Remover o contato</string>
+  <string name="edit_account_user_info">Editar info. pessoais</string>
+  <string name="account_user_info_save_success">Informações pessoais salvas com sucesso</string>
+  <string name="account_user_info_save_fail">Não foi possível salvar informações pessoais</string>
+  <string name="saving">Salvando&#8230;</string>
+  <string name="choose_from_gallery">Usar foto da galeria</string>
+  <string name="take_photo">Tirar foto</string>
+  <string name="remove_avatar">Remover avatar</string>
+  <string name="change">Alterar foto</string>
 </resources>
