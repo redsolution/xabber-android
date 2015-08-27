@@ -14,10 +14,12 @@
  */
 package com.xabber.android.data.connection;
 
+import android.widget.Toast;
+
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.OAuthManager;
@@ -32,16 +34,13 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StreamError;
-import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.ping.PingFailedListener;
-import org.xbill.DNS.Record;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -138,8 +137,7 @@ public class ConnectionThread implements
                     }
                 });
         ConnectionManager.getInstance().onConnection(this);
-        ConnectionSettings connectionSettings = connectionItem
-                .getConnectionSettings();
+        ConnectionSettings connectionSettings = connectionItem.getConnectionSettings();
         protocol = connectionSettings.getProtocol();
         serverName = connectionSettings.getServerName();
         token = connectionSettings.getPassword();
@@ -147,11 +145,11 @@ public class ConnectionThread implements
         saslEnabled = connectionSettings.isSaslEnabled();
         tlsMode = connectionSettings.getTlsMode();
         compression = connectionSettings.useCompression();
-        if (saslEnabled && protocol == AccountProtocol.gtalk)
-            login = connectionSettings.getUserName() + "@"
-                    + connectionSettings.getServerName();
-        else
+        if (saslEnabled && protocol == AccountProtocol.gtalk) {
+            login = connectionSettings.getUserName() + "@" + connectionSettings.getServerName();
+        } else {
             login = connectionSettings.getUserName();
+        }
         proxyType = connectionSettings.getProxyType();
         proxyHost = connectionSettings.getProxyHost();
         proxyPort = connectionSettings.getProxyPort();
@@ -168,193 +166,24 @@ public class ConnectionThread implements
         return connectionItem;
     }
 
-    /**
-     * Resolve SRV record.
-     *
-     * @param fqdn
-     * @param defaultHost
-     * @param defaultPort
-     */
-    private void srvResolve(final String fqdn, final String defaultHost, final int defaultPort) {
-        final Record[] records = DNSManager.getInstance().fetchRecords(fqdn);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onSRVResolved(fqdn, defaultHost, defaultPort, records);
-            }
-        });
-    }
-
-    /**
-     * Called when srv records are resolved.
-     *
-     * @param fqdn
-     * @param defaultHost
-     * @param defaultPort
-     * @param records
-     */
-    private void onSRVResolved(final String fqdn, final String defaultHost,
-                               final int defaultPort, Record[] records) {
-        DNSManager.getInstance().onRecordsReceived(fqdn, records);
-        final Target target = DNSManager.getInstance().getCurrentTarget(fqdn);
-        if (target == null) {
-            LogManager.i(this, "Use defaults");
-            runOnConnectionThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(proxyType == ProxyType.socks5) {
-                      onReady(defaultHost, defaultPort);
-                    }
-                    else {
-                      addressResolve(null, defaultHost, defaultPort, true);
-                    }
-                }
-            });
-        } else {
-            runOnConnectionThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(proxyType == ProxyType.socks5) {
-                      onReady(target.getHost(), target.getPort());
-                    }
-                    else {
-                      addressResolve(fqdn, target.getHost(), target.getPort(),
-                              true);
-                    }
-                }
-            });
-        }
-    }
-
-    /**
-     * Resolves address to connect to.
-     *
-     * @param fqdn         server name of subsequence SRV lookup. Should be
-     *                     <code>null</code> for custom host work flow.
-     * @param host
-     * @param port
-     * @param firstRequest
-     */
-    private void addressResolve(final String fqdn, final String host, final int port, final boolean firstRequest) {
-        LogManager.i(this, "Resolve " + host + ":" + port);
-        final InetAddress[] addresses = DNSManager.getInstance().fetchAddresses(host);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onAddressResolved(fqdn, host, port, firstRequest, addresses);
-            }
-        });
-    }
-
-    /**
-     * Called when address resolved are resolved.
-     *
-     * @param fqdn
-     * @param host
-     * @param port
-     * @param firstRequest
-     * @param addresses
-     */
-    private void onAddressResolved(final String fqdn, final String host,
-                                   final int port, boolean firstRequest, final InetAddress[] addresses) {
-        DNSManager.getInstance().onAddressesReceived(host, addresses);
-        InetAddress address = DNSManager.getInstance().getNextAddress(host);
-        if (address != null) {
-            onReady(address, port);
-            return;
-        }
-        if (fqdn == null) {
-            if (firstRequest) {
-                onAddressResolved(null, host, port, false, addresses);
-                return;
-            }
-        } else {
-            DNSManager.getInstance().getNextTarget(fqdn);
-            if (DNSManager.getInstance().getCurrentTarget(fqdn) == null
-                    && firstRequest)
-                DNSManager.getInstance().getNextTarget(fqdn);
-            final Target target = DNSManager.getInstance().getCurrentTarget(
-                    fqdn);
-            if (target != null) {
-                runOnConnectionThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addressResolve(fqdn, target.getHost(),
-                                target.getPort(), false);
-                    }
-                });
-                return;
-            }
-        }
-        // TODO correct type of exception
-        RuntimeException exception = new RuntimeException("There is no available address.");
-        LogManager.exception(this, exception);
-        connectionClosedOnError(exception);
-    }
-
-    /**
-     * Called when configuration is ready and xmpp connection instance can be
-     * created.
-     *
-     */
-    private void onReady(final InetAddress address, final int port) {
-        LogManager.i(this, "Use " + address);
-        ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort,
-                proxyUser, proxyPassword);
-
+    private void createConnection(String fqdn, int port, boolean useSRVLookup) {
         XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
-        builder.setHost(address.getHostAddress());
-        builder.setPort(port);
-        builder.setServiceName(serverName);
-
-
-//        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-//                address.getHostAddress(), port, serverName, proxy);
-        onReady(builder);
-    }
-
-    private void onReady(final String host, final int port) {
-        LogManager.i(this, "Use remote DNS for " + host);
-        ProxyInfo proxy = proxyType.getProxyInfo(proxyHost, proxyPort, proxyUser, proxyPassword);
-//        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration(
-//                host, port, serverName, proxy);
-
-        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
-        builder.setHost(host);
-        builder.setPort(port);
-        builder.setServiceName(serverName);
+        if (useSRVLookup) {
+            builder.setServiceName(serverName);
+        } else {
+            builder.setHost(fqdn);
+            builder.setPort(port);
+            builder.setServiceName(serverName);
+        }
 
         onReady(builder);
     }
 
     private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
-        builder.setKeystoreType("AndroidCAStore");
-
-        // Disable smack`s reconnection.
-//        connectionConfiguration.setReconnectionAllowed(false);
-        // We will send custom presence.
-        builder.setSendPresence(false);
-
-
-        if (SettingsManager.securityCheckCertificate()) {
-//            connectionConfiguration.setExpiredCertificatesCheckEnabled(true);
-//            connectionConfiguration.setNotMatchingDomainCheckEnabled(true);
-//            connectionConfiguration.setSelfSignedCertificateEnabled(false);
-//            connectionConfiguration.setVerifyChainEnabled(true);
-//            connectionConfiguration.setVerifyRootCAEnabled(true);
-//            connectionConfiguration.setCertificateListener(CertificateManager
-//                    .getInstance().createCertificateListener(connectionItem));
-        } else {
-//            connectionConfiguration.setExpiredCertificatesCheckEnabled(false);
-//            connectionConfiguration.setNotMatchingDomainCheckEnabled(false);
-//            connectionConfiguration.setSelfSignedCertificateEnabled(true);
-//            connectionConfiguration.setVerifyChainEnabled(false);
-//            connectionConfiguration.setVerifyRootCAEnabled(false);
-        }
-
-//        connectionConfiguration.setSASLAuthenticationEnabled(saslEnabled);
         builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
+        builder.setResource("");
+        builder.setSendPresence(false);
 
         {
             try {
@@ -372,11 +201,9 @@ public class ConnectionThread implements
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
         xmppConnection.addConnectionListener(this);
+        Roster.getInstanceFor(xmppConnection).setRosterLoadedAtLogin(false);
 
         org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
-
-        // We use own roster management.
-        Roster.getInstanceFor(xmppConnection).setRosterLoadedAtLogin(false);
 
         connectionItem.onSRVResolved(this);
         final String password = OAuthManager.getInstance().getPassword(protocol, token);
@@ -459,8 +286,7 @@ public class ConnectionThread implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.onSeeOtherHost(ConnectionThread.this, fqdn,
-                        port, true);
+                connectionItem.onSeeOtherHost(ConnectionThread.this, fqdn, port, true);
             }
         });
     }
@@ -620,7 +446,7 @@ public class ConnectionThread implements
      */
     private void authorization(String password) {
         try {
-            xmppConnection.login(login, password, resource);
+            xmppConnection.login(login, password);
         } catch (IOException | SmackException | XMPPException e) {
             e.printStackTrace();
             connectionClosedOnError(e);
@@ -702,10 +528,21 @@ public class ConnectionThread implements
     }
 
     @Override
-    public void connectionClosedOnError(Exception e) {
+    public void connectionClosedOnError(final Exception e) {
         checkForCertificateError(e);
         if (checkForSeeOtherHost(e))
             return;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Application.getInstance(),
+                        Application.getInstance().getString(R.string.CONNECTION_FAILED) + ": " + e.getMessage(),
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        });
+
         connectionClosed();
     }
 
@@ -770,16 +607,7 @@ public class ConnectionThread implements
         runOnConnectionThread(new Runnable() {
             @Override
             public void run() {
-                if (useSRVLookup)
-                    srvResolve(fqdn, fqdn, port);
-                else {
-                    if(proxyType == ProxyType.socks5) {
-                      onReady(fqdn, port);
-                    }
-                    else {
-                      addressResolve(null, fqdn, port, true);
-                    }
-                }
+                createConnection(fqdn, port, useSRVLookup);
             }
         });
     }
