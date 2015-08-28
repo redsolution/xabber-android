@@ -78,6 +78,7 @@ public class Emoticons {
         addPattern(ANDROID_EMOTICONS, ">:0", R.drawable.emo_im_yelling);
         addPattern(ANDROID_EMOTICONS, ":S", R.drawable.emo_im_lips_are_sealed);
         addPattern(ANDROID_EMOTICONS, ":-S", R.drawable.emo_im_lips_are_sealed);
+        addPattern(ANDROID_EMOTICONS, ":-$", R.drawable.emo_im_lips_are_sealed);
     }
 
     private static void addPattern(Map<Pattern, Integer> map, String smile, int resource) {
