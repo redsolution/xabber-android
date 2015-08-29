@@ -13,18 +13,28 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources>
+
     <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
-
         <!-- for hardware button menu -->
         <item name="panelBackground">?attr/colorPrimary</item>
+    </style>
+
+    <style name="CustomSearchActionBar"
+        parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:searchViewStyle">@style/CustomIconSearchBar</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">17sp</item>
     </style>
+
+    <style name="CustomIconSearchBar" parent="Widget.AppCompat.SearchView">
+        <item name="android:searchHintIcon">@drawable/ic_search_white_24dp</item>
+    </style>
+
 </resources>
