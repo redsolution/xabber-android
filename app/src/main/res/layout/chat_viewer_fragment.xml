@@ -17,6 +17,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/root_view"
     >
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
@@ -67,10 +68,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@null"
+            android:background="@drawable/ripple_background"
             android:contentDescription="@string/otr_encryption"
             android:padding="8dp"
             android:src="@drawable/ic_security_grey_24dp"
+            />
+
+        <ImageButton
+            android:id="@+id/button_emoticon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/ripple_background"
+            android:padding="8dp"
+            android:src="@drawable/ic_emoticon_grey600_24dp"
             />
 
         <Space
@@ -80,7 +91,7 @@
             android:visibility="gone"
             />
 
-        <EditText
+        <github.ankushsachdeva.emojicon.EmojiconEditText
             android:id="@+id/chat_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -102,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@null"
+            android:background="@drawable/ripple_background"
             android:contentDescription="@string/chat_send"
             android:padding="8dp"
             android:src="@drawable/ic_button_send"

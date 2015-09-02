@@ -6,6 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:showIn="@layout/chat_viewer_outgoing_message"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
     >
 
     <TextView
@@ -22,7 +24,7 @@
         android:text="@string/otr_unencrypted_message"
         android:textSize="11sp" />
 
-    <TextView
+    <github.ankushsachdeva.emojicon.EmojiconTextView
         android:id="@+id/message_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
