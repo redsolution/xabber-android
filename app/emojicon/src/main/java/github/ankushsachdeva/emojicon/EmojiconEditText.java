@@ -16,8 +16,6 @@
 
 package github.ankushsachdeva.emojicon;
 
-import github.ankushsachdeva.emojicon.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -31,7 +29,7 @@ public class EmojiconEditText extends EditText {
 
     public EmojiconEditText(Context context) {
         super(context);
-        mEmojiconSize = (int) getTextSize();
+        mEmojiconSize = getLineHeight();
 
     }
 
@@ -47,7 +45,7 @@ public class EmojiconEditText extends EditText {
 
     private void init(AttributeSet attrs) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.Emojicon);
-        mEmojiconSize = (int) a.getDimension(R.styleable.Emojicon_emojiconSize, getTextSize());
+        mEmojiconSize = (int) a.getDimension(R.styleable.Emojicon_emojiconSize, getLineHeight());
         a.recycle();
         setText(getText());
     }

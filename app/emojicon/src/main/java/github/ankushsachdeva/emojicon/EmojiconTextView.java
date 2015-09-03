@@ -16,8 +16,6 @@
 
 package github.ankushsachdeva.emojicon;
 
-import github.ankushsachdeva.emojicon.R;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.SpannableStringBuilder;
@@ -49,10 +47,10 @@ public class EmojiconTextView extends TextView {
 
     private void init(AttributeSet attrs) {
         if (attrs == null) {
-            mEmojiconSize = (int) getTextSize();
+            mEmojiconSize = getLineHeight();
         } else {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.Emojicon);
-            mEmojiconSize = (int) a.getDimension(R.styleable.Emojicon_emojiconSize, getTextSize());
+            mEmojiconSize = (int) a.getDimension(R.styleable.Emojicon_emojiconSize, getLineHeight());
             mTextStart = a.getInteger(R.styleable.Emojicon_emojiconTextStart, 0);
             mTextLength = a.getInteger(R.styleable.Emojicon_emojiconTextLength, -1);
             a.recycle();

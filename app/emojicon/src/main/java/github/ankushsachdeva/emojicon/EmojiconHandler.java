@@ -15,10 +15,11 @@
  */
 package github.ankushsachdeva.emojicon;
 
-import github.ankushsachdeva.emojicon.R;
-
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.Spannable;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 import android.util.SparseIntArray;
 
 /**
@@ -1508,7 +1509,10 @@ public final class EmojiconHandler {
             }
 
             if (icon > 0) {
-                text.setSpan(new EmojiconSpan(context, icon, emojiSize), i, i + skip, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                Drawable myIcon = context.getResources().getDrawable(icon);
+                myIcon.setBounds(0, 0, emojiSize, emojiSize);
+                text.setSpan(new ImageSpan(myIcon, DynamicDrawableSpan.ALIGN_BOTTOM),
+                        i, i + skip, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
     }
