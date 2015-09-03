@@ -20,6 +20,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.OAuthManager;
@@ -533,15 +534,17 @@ public class ConnectionThread implements
         if (checkForSeeOtherHost(e))
             return;
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(Application.getInstance(),
-                        Application.getInstance().getString(R.string.CONNECTION_FAILED) + ": " + e.getMessage(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
+        if (SettingsManager.showConnectionErrors()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(Application.getInstance(),
+                            Application.getInstance().getString(R.string.CONNECTION_FAILED) + ": " + e.getMessage(),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            });
+        }
 
         connectionClosed();
     }

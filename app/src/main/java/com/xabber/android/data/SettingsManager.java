@@ -450,6 +450,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
+    public static boolean showConnectionErrors() {
+        return getBoolean(R.string.debug_connection_errors_key, R.bool.debug_connection_errors_default);
+    }
+
     public static InterfaceTheme interfaceTheme() {
         String value = getString(R.string.interface_theme_key,
                 R.string.interface_theme_default);
