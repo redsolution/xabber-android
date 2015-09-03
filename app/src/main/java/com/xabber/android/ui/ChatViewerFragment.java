@@ -21,9 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -52,6 +55,10 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
+
+import github.ankushsachdeva.emojicon.EmojiconGridView;
+import github.ankushsachdeva.emojicon.EmojiconsPopup;
+import github.ankushsachdeva.emojicon.emoji.Emojicon;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener, ChatMessageAdapter.Message.MessageClickListener {
@@ -203,7 +210,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void afterTextChanged(Editable text) {
-                setSendButtonColor();
+                setUpInputViewButtons();
+
 
                 if (!skipOnTextChanges) {
                     ChatStateManager.getInstance().onComposing(account, user, text);
@@ -212,7 +220,111 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         });
 
+
+        final ImageButton emojiButton = (ImageButton) view.findViewById(R.id.button_emoticon);
+        final View rootView = view.findViewById(R.id.root_view);
+
+
+        // Give the topmost view of your activity layout hierarchy. This will be used to measure soft keyboard height
+        final EmojiconsPopup popup = new EmojiconsPopup(rootView, getActivity());
+
+        //Will automatically set size according to the soft keyboard size
+        popup.setSizeForSoftKeyboard();
+
+        //If the emoji popup is dismissed, change emojiButton to smiley icon
+        popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+            @Override
+            public void onDismiss() {
+                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_emoticon_grey600_24dp);
+            }
+        });
+
+        //If the text keyboard closes, also dismiss the emoji popup
+        popup.setOnSoftKeyboardOpenCloseListener(new EmojiconsPopup.OnSoftKeyboardOpenCloseListener() {
+
+            @Override
+            public void onKeyboardOpen(int keyBoardHeight) {
+
+            }
+
+            @Override
+            public void onKeyboardClose() {
+                if(popup.isShowing())
+                    popup.dismiss();
+            }
+        });
+
+        //On emoji clicked, add it to edittext
+        popup.setOnEmojiconClickedListener(new EmojiconGridView.OnEmojiconClickedListener() {
+
+            @Override
+            public void onEmojiconClicked(Emojicon emojicon) {
+                if (inputView == null || emojicon == null) {
+                    return;
+                }
+
+                int start = inputView.getSelectionStart();
+                int end = inputView.getSelectionEnd();
+                if (start < 0) {
+                    inputView.append(emojicon.getEmoji());
+                } else {
+                    inputView.getText().replace(Math.min(start, end),
+                            Math.max(start, end), emojicon.getEmoji(), 0,
+                            emojicon.getEmoji().length());
+                }
+            }
+        });
+
+        //On backspace clicked, emulate the KEYCODE_DEL key event
+        popup.setOnEmojiconBackspaceClickedListener(new EmojiconsPopup.OnEmojiconBackspaceClickedListener() {
+
+            @Override
+            public void onEmojiconBackspaceClicked(View v) {
+                KeyEvent event = new KeyEvent(
+                        0, 0, 0, KeyEvent.KEYCODE_DEL, 0, 0, 0, 0, KeyEvent.KEYCODE_ENDCALL);
+                inputView.dispatchKeyEvent(event);
+            }
+        });
+
+        // To toggle between text keyboard and emoji keyboard keyboard(Popup)
+        emojiButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                //If popup is not showing => emoji keyboard is not visible, we need to show it
+                if(!popup.isShowing()){
+
+                    //If keyboard is visible, simply show the emoji popup
+                    if(popup.isKeyBoardOpen()){
+                        popup.showAtBottom();
+                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_variant_grey600_24dp);
+                    }
+
+                    //else, open the text keyboard first and immediately after that show the emoji popup
+                    else{
+                        inputView.setFocusableInTouchMode(true);
+                        inputView.requestFocus();
+                        popup.showAtBottomPending();
+                        final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);
+                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_variant_grey600_24dp);
+                    }
+                }
+
+                //If popup is showing, simply dismiss it to show the undelying text keyboard
+                else{
+                    popup.dismiss();
+                }
+            }
+        });
+
         return view;
+    }
+
+    private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){
+        iconToBeChanged.setImageResource(drawableResourceId);
     }
 
     @Override
@@ -256,7 +368,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         popup.show();
     }
 
-    private void setSendButtonColor() {
+    private void setUpInputViewButtons() {
         boolean empty = inputView.getText().toString().trim().isEmpty();
 
         if (empty != isInputEmpty) {
@@ -264,12 +376,15 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             if (isInputEmpty) {
                 sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+                securityButton.setVisibility(View.VISIBLE);
             } else {
                 sendButton.setImageResource(R.drawable.ic_button_send);
                 sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+                securityButton.setVisibility(View.GONE);
             }
         }
     }
+
 
 
     public void restoreInputState() {

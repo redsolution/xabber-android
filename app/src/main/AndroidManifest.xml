@@ -14,7 +14,8 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xabber.android" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.xabber.android">
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -39,6 +40,7 @@
 
 
     <application
+        tools:replace="label, icon"
         android:name=".data.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
