@@ -210,7 +210,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void afterTextChanged(Editable text) {
-                setSendButtonColor();
+                setUpInputViewButtons();
+
 
                 if (!skipOnTextChanges) {
                     ChatStateManager.getInstance().onComposing(account, user, text);
@@ -367,7 +368,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         popup.show();
     }
 
-    private void setSendButtonColor() {
+    private void setUpInputViewButtons() {
         boolean empty = inputView.getText().toString().trim().isEmpty();
 
         if (empty != isInputEmpty) {
@@ -375,12 +376,15 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             if (isInputEmpty) {
                 sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+                securityButton.setVisibility(View.VISIBLE);
             } else {
                 sendButton.setImageResource(R.drawable.ic_button_send);
                 sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+                securityButton.setVisibility(View.GONE);
             }
         }
     }
+
 
 
     public void restoreInputState() {
