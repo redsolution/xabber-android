@@ -71,6 +71,7 @@
             android:background="@drawable/ripple_background"
             android:padding="8dp"
             android:src="@drawable/ic_emoticon_grey600_24dp"
+            android:alpha="0.5"
             />
 
         <Space
