@@ -9,4 +9,11 @@
         android:title="@string/cache_clear"
         android:key="@string/cache_clear_key"
         android:dialogMessage="@string/cache_clear_warning"/>
+
+    <CheckBoxPreference
+        android:title="@string/debug_connection_errors_title"
+        android:key="@string/debug_connection_errors_key"
+        android:defaultValue="@bool/debug_connection_errors_default"
+        />
+
 </PreferenceScreen>

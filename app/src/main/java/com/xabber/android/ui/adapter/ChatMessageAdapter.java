@@ -16,6 +16,7 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -219,7 +221,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         message.messageText.setTextAppearance(context, appearanceStyle);
 
-        message.messageText.setText(messageItem.getSpannable());
+        final Spannable spannable = messageItem.getSpannable();
+        Emoticons.getSmiledText(context, spannable, message.messageText);
+        message.messageText.setText(spannable);
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 

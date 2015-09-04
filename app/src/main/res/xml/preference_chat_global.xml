@@ -26,6 +26,14 @@
         android:title="@string/chats_hide_keyboard"
         />
 
+    <ListPreference
+        android:title="@string/interface_smiles"
+        android:key="@string/interface_smiles_key"
+        android:entries="@array/interface_smiles_entries"
+        android:entryValues="@array/interface_smiles_entryvalues"
+        android:defaultValue="@string/interface_smiles_default"
+        />
+
     <CheckBoxPreference
         android:defaultValue="@bool/chats_show_background_default"
         android:key="@string/chats_show_background_key"

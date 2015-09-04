@@ -35,9 +35,13 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
+import com.xabber.android.utils.Emoticons;
 import com.xabber.xmpp.carbon.CarbonManager;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Manage operations with common settings.
@@ -446,6 +450,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
+    public static boolean showConnectionErrors() {
+        return getBoolean(R.string.debug_connection_errors_key, R.bool.debug_connection_errors_default);
+    }
+
     public static InterfaceTheme interfaceTheme() {
         String value = getString(R.string.interface_theme_key,
                 R.string.interface_theme_default);
@@ -460,6 +468,17 @@ public class SettingsManager implements OnInitializedListener,
             return InterfaceTheme.normal;
         else
             throw new IllegalStateException();
+    }
+
+    public static Map<Pattern, Integer> interfaceSmiles() {
+        String value = getString(R.string.interface_smiles_key, R.string.interface_smiles_default);
+        if (Application.getInstance().getString(R.string.interface_smiles_none_value).equals(value)) {
+            return Collections.unmodifiableMap(Emoticons.NONE_EMOTICONS);
+        } else if (Application.getInstance().getString(R.string.interface_smiles_android_value).equals(value)) {
+            return Collections.unmodifiableMap(Emoticons.ANDROID_EMOTICONS);
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     public static boolean securityCheckCertificate() {

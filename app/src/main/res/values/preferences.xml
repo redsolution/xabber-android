@@ -353,12 +353,14 @@
     <string name="connection_use_carbons_key">connection_use_carbons</string>
     <bool name="connection_use_carbons_default">false</bool>
 
-<!-- preference_cache -->
+<!-- preference_debug -->
     <string name="cache_clear_key">cache_clear</string>
 
-<!-- preference_debug -->
     <string name="debug_log_key">debug_log</string>
     <bool name="debug_log_default">true</bool>
+
+    <string name="debug_connection_errors_key">connection_errors</string>
+    <bool name="debug_connection_errors_default">false</bool>
 
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>

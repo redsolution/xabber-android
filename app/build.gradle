@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 215
-        versionName '1.0.42'
+        versionCode 217
+        versionName '1.0.44'
     }
 
     compileOptions {
@@ -71,6 +71,7 @@ dependencies {
     compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
     compile project('otr4j')
     compile project('MemorizingTrustManager')
+    compile project('emojicon')
 
     compile 'com.soundcloud.android:android-crop:1.0.0@aar'
 }

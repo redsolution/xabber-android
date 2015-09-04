@@ -15,8 +15,8 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.ui.OccupantList;
+import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
 public class ContactItemInflater {
@@ -121,7 +121,7 @@ public class ContactItemInflater {
             viewHolder.secondLineMessage.setVisibility(View.GONE);
         } else {
             viewHolder.secondLineMessage.setVisibility(View.VISIBLE);
-            viewHolder.secondLineMessage.setText(statusText.trim());
+            viewHolder.secondLineMessage.setText(Emoticons.getSmiledText(context, statusText, viewHolder.secondLineMessage));
         }
 
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
