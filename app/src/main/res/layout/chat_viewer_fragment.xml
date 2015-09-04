@@ -106,6 +106,7 @@
             android:contentDescription="@string/otr_encryption"
             android:padding="8dp"
             android:src="@drawable/ic_security_grey_24dp"
+            android:alpha="0.5"
             />
 
         <ImageButton
