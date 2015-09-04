@@ -150,7 +150,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
-        View spacer = view.findViewById(R.id.button_security_spacer);
 
         if (abstractChat instanceof RegularChat) {
             securityButton.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +160,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             });
         } else {
             securityButton.setVisibility(View.GONE);
-            spacer.setVisibility(View.VISIBLE);
         }
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this);

@@ -74,13 +74,6 @@
             android:alpha="0.5"
             />
 
-        <Space
-            android:id="@+id/button_security_spacer"
-            android:layout_width="16dp"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            />
-
         <github.ankushsachdeva.emojicon.EmojiconEditText
             android:id="@+id/chat_input"
             android:layout_width="0dp"
