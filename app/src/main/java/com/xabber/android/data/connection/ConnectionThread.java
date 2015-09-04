@@ -183,7 +183,6 @@ public class ConnectionThread implements
     private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
         builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
-        builder.setResource("");
         builder.setSendPresence(false);
 
         {
@@ -447,7 +446,7 @@ public class ConnectionThread implements
      */
     private void authorization(String password) {
         try {
-            xmppConnection.login(login, password);
+            xmppConnection.login(login, password, resource);
         } catch (IOException | SmackException | XMPPException e) {
             e.printStackTrace();
             connectionClosedOnError(e);
