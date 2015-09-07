@@ -189,6 +189,7 @@ public class ConnectionThread implements
             try {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+                mtm.setTrustByDefault(!SettingsManager.securityCheckCertificate());
                 sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
                 builder.setCustomSSLContext(sslContext);
                 builder.setHostnameVerifier(

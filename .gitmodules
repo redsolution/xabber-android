@@ -3,4 +3,4 @@
 	url = https://github.com/otr4j/otr4j.git
 [submodule "app/MemorizingTrustManager"]
 	path = app/MemorizingTrustManager
-	url = https://github.com/ge0rg/MemorizingTrustManager.git
+	url = https://github.com/redsolution/MemorizingTrustManager.git
