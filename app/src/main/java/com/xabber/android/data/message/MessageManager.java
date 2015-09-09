@@ -172,7 +172,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @return
      */
     private RegularChat createChat(String account, String user) {
-        RegularChat chat = new RegularChat(account, user);
+        RegularChat chat = new RegularChat(account, Jid.getBareAddress(user));
         addChat(chat);
         return chat;
     }
