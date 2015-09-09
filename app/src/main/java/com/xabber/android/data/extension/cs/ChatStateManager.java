@@ -244,8 +244,9 @@ public class ChatStateManager implements OnDisconnectListener,
         if (text.length() == 0) {
             updateChatState(account, user, ChatState.active);
             return;
-        } else
+        } else {
             updateChatState(account, user, ChatState.composing);
+        }
         Intent intent = ComposingPausedReceiver.createIntent(
                 Application.getInstance(), account, user);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
@@ -261,6 +262,10 @@ public class ChatStateManager implements OnDisconnectListener,
     public void onPaused(String account, String user) {
         if (account == null || user == null)
             return;
+        if (sent.get(account, user) != ChatState.composing) {
+            return;
+        }
+
         updateChatState(account, user, ChatState.paused);
         pauseIntents.remove(account, user);
     }

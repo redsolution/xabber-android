@@ -30,6 +30,7 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.view.PagerAdapter;
@@ -85,6 +86,7 @@ public class EmojiconsPopup extends PopupWindow implements ViewPager.OnPageChang
 
         //default size
         setSize((int) mContext.getResources().getDimension(R.dimen.keyboard_height), LayoutParams.MATCH_PARENT);
+        setBackgroundDrawable(new BitmapDrawable());
     }
 
     /**

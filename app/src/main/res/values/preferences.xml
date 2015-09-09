@@ -439,7 +439,7 @@
 
 <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>
-    <bool name="security_check_certificate_default">false</bool>
+    <bool name="security_check_certificate_default">true</bool>
 
     <string name="security_clear_certificate_key">security_clear_certificate</string>
 

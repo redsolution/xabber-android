@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.duenndns.ssl.MemorizingTrustManager;
+
 /**
  * Manage certificate exceptions.
  * <p/>
@@ -402,9 +404,9 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
     public void removeCertificates() {
         pendingCertificateProvider.clearNotifications();
         ignoreCertificates.clear();
-        for (CertificateInvalidReason reason : CertificateInvalidReason
-                .values())
+        for (CertificateInvalidReason reason : CertificateInvalidReason.values()) {
             keyStores.put(reason, createKeyStore(reason));
+        }
         Application.getInstance().runInBackground(new Runnable() {
 
             @Override
@@ -414,5 +416,16 @@ public class CertificateManager implements OnLoadListener, OnClearListener {
             }
 
         });
+
+
+        MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+        final Enumeration<String> certificates = mtm.getCertificates();
+        while (certificates.hasMoreElements()) {
+            try {
+                mtm.deleteCertificate(certificates.nextElement());
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -56,6 +56,9 @@ import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
@@ -85,6 +88,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private LinearLayoutManager layoutManager;
     private MessageItem clickedMessageItem;
     private AccountPainter accountPainter;
+
+    private Timer stopTypingTimer = new Timer();
+    private final long STOP_TYPING_DELAY = 4000; // in ms
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -150,7 +156,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
-        View spacer = view.findViewById(R.id.button_security_spacer);
 
         if (abstractChat instanceof RegularChat) {
             securityButton.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +166,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             });
         } else {
             securityButton.setVisibility(View.GONE);
-            spacer.setVisibility(View.VISIBLE);
         }
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this);
@@ -202,6 +206,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!skipOnTextChanges && stopTypingTimer != null) {
+                    stopTypingTimer.cancel();
+                }
             }
 
             @Override
@@ -212,10 +219,25 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             public void afterTextChanged(Editable text) {
                 setUpInputViewButtons();
 
-
-                if (!skipOnTextChanges) {
-                    ChatStateManager.getInstance().onComposing(account, user, text);
+                if (skipOnTextChanges) {
+                    return;
                 }
+
+                ChatStateManager.getInstance().onComposing(account, user, text);
+
+                stopTypingTimer = new Timer();
+                stopTypingTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Application.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ChatStateManager.getInstance().onPaused(account, user);
+                            }
+                        });
+                    }
+
+                }, STOP_TYPING_DELAY);
             }
 
         });
@@ -404,6 +426,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Override
     public void onPause() {
         super.onPause();
+
+        ChatStateManager.getInstance().onPaused(account, user);
+
         saveInputState();
         listener.unregisterChat(this);
     }
