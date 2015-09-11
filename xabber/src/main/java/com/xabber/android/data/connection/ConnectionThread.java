@@ -38,6 +38,7 @@ import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 
@@ -185,18 +186,20 @@ public class ConnectionThread implements
         builder.setCompressionEnabled(compression);
         builder.setSendPresence(false);
 
-        {
-            try {
+        try {
+            if (SettingsManager.securityCheckCertificate()) {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
-                mtm.setTrustByDefault(!SettingsManager.securityCheckCertificate());
                 sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
                 builder.setCustomSSLContext(sslContext);
                 builder.setHostnameVerifier(
                         mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()));
-            } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                e.printStackTrace();
+            } else {
+                TLSUtils.acceptAllCertificates(builder);
+                TLSUtils.disableHostnameVerificationForTlsCertificicates(builder);
             }
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
         }
 
         xmppConnection = new XMPPTCPConnection(builder.build());
