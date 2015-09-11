@@ -136,7 +136,8 @@ public class OccupantList extends ManagedListActivity implements
 
         String occupantFullJid = room + "/" + occupant.getNickname();
 
-        MessageManager.getInstance().openChat(account, occupantFullJid);
-        startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));
+        // TODO: implement private chats.
+        // MessageManager.getInstance().openChat(account, occupantFullJid);
+        // startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));
     }
 }
