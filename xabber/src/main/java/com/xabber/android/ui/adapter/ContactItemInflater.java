@@ -22,13 +22,11 @@ import com.xabber.android.utils.StringUtils;
 public class ContactItemInflater {
 
     final Context context;
-    private final int elevation;
     private int[] accountMainColors;
 
     public ContactItemInflater(Context context) {
         this.context = context;
         accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
-        elevation = context.getResources().getDimensionPixelSize(R.dimen.contact_elevation);
     }
 
     public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact contact) {
@@ -39,9 +37,6 @@ public class ContactItemInflater {
             viewHolder = new ContactListItemViewHolder(view);
             viewHolder.statusIconSeparator.setVisibility(View.INVISIBLE);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.setElevation(elevation);
-            }
             view.setTag(viewHolder);
         } else {
             view = convertView;
