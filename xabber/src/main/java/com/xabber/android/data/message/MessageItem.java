@@ -211,7 +211,7 @@ public class MessageItem implements Comparable<MessageItem> {
         read = true;
     }
 
-    void markAsDelivered() {
+    public void markAsDelivered() {
         delivered = true;
     }
 

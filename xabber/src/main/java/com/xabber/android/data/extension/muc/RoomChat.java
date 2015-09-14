@@ -228,6 +228,9 @@ public class RoomChat extends AbstractChat {
                 for (MessageItem messageItem : messages) {
                     // Search for duplicates
                     if (packetID != null && packetID.equals(messageItem.getPacketID())) {
+                        // Server send our own message back
+                        messageItem.markAsDelivered();
+                        RosterManager.getInstance().onContactChanged(account, user);
                         return true;
                     }
                     if (delay != null) {
