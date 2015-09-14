@@ -185,6 +185,12 @@ public class RoomChat extends AbstractChat {
         if (!super.onPacket(bareAddress, packet)) {
             return false;
         }
+
+        MUCUser mucUserExtension = MUC.getMUCUserExtension(packet);
+        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
+            return false;
+        }
+
         final String from = packet.getFrom();
         final String resource = XmppStringUtils.parseResource(from);
         if (packet instanceof Message) {
