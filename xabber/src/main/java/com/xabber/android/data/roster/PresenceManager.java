@@ -28,9 +28,11 @@ import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
+import com.xabber.xmpp.avatar.VCardUpdate;
 
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Presence;
@@ -379,10 +381,18 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
      * @throws NetworkException
      */
     public void resendPresence(String account) throws NetworkException {
+        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(Jid.getBareAddress(account)));
+    }
+
+    public void sendVCardUpdatePresence(String account, String hash) throws NetworkException {
         if (!readyAccounts.contains(account))
             throw new NetworkException(R.string.NOT_CONNECTED);
-        ConnectionManager.getInstance().sendStanza(account,
-                AccountManager.getInstance().getAccount(account).getPresence());
+        final Presence presence = AccountManager.getInstance().getAccount(account).getPresence();
+
+        final VCardUpdate vCardUpdate = new VCardUpdate();
+        vCardUpdate.setPhotoHash(hash);
+        presence.addExtension(vCardUpdate);
+        ConnectionManager.getInstance().sendStanza(account, presence);
     }
 
 }

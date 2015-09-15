@@ -18,6 +18,7 @@ import android.database.Cursor;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -30,6 +31,7 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.StructuredName;
@@ -332,7 +334,9 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 vCardSaveRequests.add(account);
                 try {
                     vCardManager.saveVCard(vCard);
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    PresenceManager.getInstance().sendVCardUpdatePresence(account, vCard.getAvatarHash());
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException | NetworkException e) {
                     LogManager.w(this, "Error saving vCard: " + e.getMessage());
                     isSuccess = false;
                 }

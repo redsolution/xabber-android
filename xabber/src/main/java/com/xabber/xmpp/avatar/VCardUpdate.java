@@ -93,8 +93,11 @@ public class VCardUpdate extends PacketExtension {
 
     @Override
     public void serializeContent(XmlSerializer serializer) throws IOException {
-        if (photoHash != null)
+        if (photoHash != null) {
             SerializerUtils.addTextTag(serializer, PHOTO_NAME, photoHash);
+        } else {
+            SerializerUtils.addEmtpyTag(serializer, PHOTO_NAME);
+        }
     }
 
 }

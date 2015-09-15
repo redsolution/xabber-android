@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -230,8 +231,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * avatar or avatar doesn't exists.
      */
     private Bitmap getBitmap(String bareAddress) {
-        String hash = hashes.get(bareAddress);
-        if (hash == null || hash.equals(EMPTY_HASH)) {
+        String hash = getHash(bareAddress);
+        if (hash == null) {
             return null;
         }
         Bitmap bitmap = bitmaps.get(hash);
@@ -240,6 +241,15 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         } else {
             return bitmap;
         }
+    }
+
+    @Nullable
+    public String getHash(String bareAddress) {
+        String hash = hashes.get(bareAddress);
+        if (hash == null || hash.equals(EMPTY_HASH)) {
+            return null;
+        }
+        return hash;
     }
 
     /**
