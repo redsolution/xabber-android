@@ -70,7 +70,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      */
     private static final int MAX_SIZE = 256;
 
-    private static final String EMPTY_HASH = "";
+    public static final String EMPTY_HASH = "";
     private static final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private final static AvatarManager instance;
 
@@ -232,7 +232,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      */
     private Bitmap getBitmap(String bareAddress) {
         String hash = getHash(bareAddress);
-        if (hash == null) {
+        if (hash == null || hash.equals(EMPTY_HASH)) {
             return null;
         }
         Bitmap bitmap = bitmaps.get(hash);
@@ -246,9 +246,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     @Nullable
     public String getHash(String bareAddress) {
         String hash = hashes.get(bareAddress);
-        if (hash == null || hash.equals(EMPTY_HASH)) {
-            return null;
-        }
         return hash;
     }
 
@@ -445,7 +442,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     private void onPhotoReady(final String account, final String bareAddress, VCardUpdate vCardUpdate) {
         if (vCardUpdate.isEmpty()) {
-            setHash(bareAddress, null);
+            setHash(bareAddress, EMPTY_HASH);
             return;
         }
         final String hash = vCardUpdate.getPhotoHash();

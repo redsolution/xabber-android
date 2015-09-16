@@ -201,6 +201,20 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             AvatarManager.getInstance().onAvatarReceived(bareAddress, hash, vCard.getAvatar());
             name = new StructuredName(vCard.getNickName(), vCard.getField(VCardProperty.FN.name()),
                     vCard.getFirstName(), vCard.getMiddleName(), vCard.getLastName());
+
+            Application.getInstance().runInBackground(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (Jid.getBareAddress(account).equals(bareAddress)) {
+                            PresenceManager.getInstance().resendPresence(account);
+                        }
+                    } catch (NetworkException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
         }
         names.put(bareAddress, name);
         for (RosterContact rosterContact : RosterManager.getInstance().getContacts()) {
@@ -262,25 +276,25 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     private void requestVCard(final String account, final String srcUser) {
-        final String user = srcUser;
+        final String userBareJid = Jid.getBareAddress(srcUser);
 
         ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
         if (connectionThread == null) {
-            onVCardFailed(account, user);
+            onVCardFailed(account, userBareJid);
             return;
         }
 
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager
                 = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(connectionThread.getXMPPConnection());
 
-        final Thread thread = new Thread("Get vCard user " + user + " for account " + account) {
+        final Thread thread = new Thread("Get vCard user " + userBareJid + " for account " + account) {
             @Override
             public void run() {
                 VCard vCard = null;
 
-                vCardRequests.add(user);
+                vCardRequests.add(userBareJid);
                 try {
-                    vCard = vCardManager.loadVCard(user);
+                    vCard = vCardManager.loadVCard(userBareJid);
                 } catch (SmackException.NoResponseException | SmackException.NotConnectedException e) {
                     LogManager.w(this, "Error getting vCard: " + e.getMessage());
                 } catch (XMPPException.XMPPErrorException e ) {
@@ -295,17 +309,17 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                     LogManager.w(this, "ClassCastException: " + e.getMessage());
                     vCard = new VCard();
                 }
-                vCardRequests.remove(user);
+                vCardRequests.remove(userBareJid);
 
                 final VCard finalVCard = vCard;
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    if (finalVCard == null) {
-                        onVCardFailed(account, user);
-                    } else {
-                        onVCardReceived(account, user, finalVCard);
-                    }
+                        if (finalVCard == null) {
+                            onVCardFailed(account, userBareJid);
+                        } else {
+                            onVCardReceived(account, userBareJid, finalVCard);
+                        }
                     }
                 });
             }
@@ -334,7 +348,11 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 vCardSaveRequests.add(account);
                 try {
                     vCardManager.saveVCard(vCard);
-                    PresenceManager.getInstance().sendVCardUpdatePresence(account, vCard.getAvatarHash());
+                    String avatarHash = vCard.getAvatarHash();
+                    if (avatarHash == null) {
+                        avatarHash = AvatarManager.EMPTY_HASH;
+                    }
+                    PresenceManager.getInstance().sendVCardUpdatePresence(account, avatarHash);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | NetworkException e) {
                     LogManager.w(this, "Error saving vCard: " + e.getMessage());

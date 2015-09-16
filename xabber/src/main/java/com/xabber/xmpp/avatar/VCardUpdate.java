@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import org.xmlpull.v1.XmlSerializer;
 
+import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.xmpp.PacketExtension;
 import com.xabber.xmpp.SerializerUtils;
 
@@ -93,10 +94,14 @@ public class VCardUpdate extends PacketExtension {
 
     @Override
     public void serializeContent(XmlSerializer serializer) throws IOException {
-        if (photoHash != null) {
-            SerializerUtils.addTextTag(serializer, PHOTO_NAME, photoHash);
-        } else {
+        if (photoHash == null) {
+            return;
+        }
+
+        if (photoHash.equals(AvatarManager.EMPTY_HASH)) {
             SerializerUtils.addEmtpyTag(serializer, PHOTO_NAME);
+        } else {
+            SerializerUtils.addTextTag(serializer, PHOTO_NAME, photoHash);
         }
     }
 
