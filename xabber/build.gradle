@@ -51,7 +51,7 @@ repositories {
 }
 
 ext {
-    smackVersion = '4.1.3'
+    smackVersion = '4.1.4'
 }
 
 dependencies {
