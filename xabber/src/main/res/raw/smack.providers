@@ -100,4 +100,13 @@
         <namespace>urn:xmpp:forward:0</namespace>
         <className>com.xabber.xmpp.carbon.ForwardedProvider</className>
     </extensionProvider>
+
+    <!-- HTTP File Upload -->
+    <iqProvider>
+        <elementName>slot</elementName>
+        <namespace>eu:siacs:conversations:http:upload</namespace>
+        <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
+    </iqProvider>
+
+
 </smackProviders>
