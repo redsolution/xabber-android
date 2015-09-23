@@ -9,10 +9,13 @@ import com.loopj.android.http.RequestParams;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnResponseListener;
+import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Request;
 import com.xabber.xmpp.httpfileupload.Slot;
 
@@ -52,7 +55,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         return uploadServers.containsKey(account);
     }
 
-    public void uploadFile(final Context context, final String account, String filePath, final HttpUploadListener listener) {
+    public void uploadFile(final Context context, final String account, final String user, final String filePath) {
         final String uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             return;
@@ -65,73 +68,101 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         httpFileUpload.setSize(String.valueOf(file.length()));
         httpFileUpload.setTo(uploadServerUrl);
 
-        new Thread("Thread to upload file " + filePath + " for account " + account) {
-            @Override
-            public void run() {
-                try {
-                    ConnectionManager.getInstance().sendRequest(account, httpFileUpload, new OnResponseListener() {
 
-                        @Override
-                        public void onReceived(String account, String packetId, IQ iq) {
-                            if (!(iq instanceof Slot)) {
-                                return;
-                            }
+        try {
+            ConnectionManager.getInstance().sendRequest(account, httpFileUpload, new OnResponseListener() {
+                @Override
+                public void onReceived(final String account, String packetId, IQ iq) {
+                    if (!httpFileUpload.getStanzaId().equals(packetId) || !(iq instanceof Slot)) {
+                        return;
+                    }
 
-                            final Slot slot = (Slot) iq;
-
-                            AsyncHttpClient client = new AsyncHttpClient();
-                            client.setConnectTimeout(60 * 1000);
-                            client.setLoggingEnabled(true);
-
-                            FileEntity fileEntity = new FileEntity(file, ContentType.DEFAULT_BINARY);
-                            client.put(context, slot.getPutUrl(), fileEntity, CONTENT_TYPE, new AsyncHttpResponseHandler() {
-                                @Override
-                                public void onProgress(long bytesWritten, long totalSize) {
-                                    super.onProgress(bytesWritten, totalSize);
-                                    LogManager.i(this, "onProgress: " + bytesWritten);
-                                }
-
-                                @Override
-                                public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                                    LogManager.i(this, "onSuccess " + i);
-                                    Application.getInstance().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            listener.onSuccessfullUpload(slot.getGetUrl());
-                                        }
-                                    });
-
-                                }
-
-                                @Override
-                                public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                                    LogManager.i(this, "onFailure " + i);
-
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onError(String account, String packetId, IQ iq) {
-
-                        }
-
-                        @Override
-                        public void onTimeout(String account, String packetId) {
-
-                        }
-
-                        @Override
-                        public void onDisconnect(String account, String packetId) {
-
-                        }
-                    });
-                } catch (NetworkException e) {
-                    e.printStackTrace();
+                    uploadFileToSlot(account, (Slot) iq);
                 }
-            }
-        }.run();
+
+
+                private void uploadFileToSlot(final String account, final Slot slot) {
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    client.setConnectTimeout(60 * 1000);
+                    client.setLoggingEnabled(SettingsManager.debugLog());
+                    client.setResponseTimeout(60 * 1000);
+
+                    FileEntity fileEntity = new FileEntity(file, ContentType.DEFAULT_BINARY);
+
+
+                    LogManager.i(this, "fileEntity.getContentLength() " + fileEntity.getContentLength());
+
+                    client.put(context, slot.getPutUrl(), fileEntity, CONTENT_TYPE, new AsyncHttpResponseHandler() {
+
+                        MessageItem fileMessage;
+
+                        @Override
+                        public void onStart() {
+                            super.onStart();
+                            LogManager.i(this, "onStart");
+
+                            fileMessage = MessageManager.getInstance().createFileMessage(account, user, file);
+                        }
+
+                        @Override
+                        public void onSuccess(int i, Header[] headers, byte[] bytes) {
+                            LogManager.i(this, "onSuccess " + i);
+                            MessageManager.getInstance().replaceMessage(account, user, fileMessage, slot.getGetUrl());
+                        }
+
+                        @Override
+                        public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+                            LogManager.i(this, "onFailure " + i);
+
+                            MessageManager.getInstance().updateMessageWithError(account, user, fileMessage, file.getName());
+
+                        }
+
+                        @Override
+                        public void onRetry(int retryNo) {
+                            super.onRetry(retryNo);
+                            LogManager.i(this, "onRetry " + retryNo);
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            super.onCancel();
+
+                            LogManager.i(this, "onCancel");
+
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            super.onFinish();
+                            LogManager.i(this, "onFinish");
+                        }
+
+
+                    });
+                }
+
+                @Override
+                public void onError(String account, String packetId, IQ iq) {
+
+                }
+
+                @Override
+                public void onTimeout(String account, String packetId) {
+
+                }
+
+                @Override
+                public void onDisconnect(String account, String packetId) {
+
+                }
+            });
+        } catch (NetworkException e) {
+            e.printStackTrace();
+        }
     }
+
+
 
 
     private void discoverSupport(XMPPConnection xmppConnection) throws SmackException.NotConnectedException,

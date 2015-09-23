@@ -420,6 +420,27 @@ public abstract class AbstractChat extends BaseEntity {
         return messageItem;
     }
 
+    protected MessageItem newFileMessage(String fileName, String path, boolean isError) {
+        Date timestamp = new Date();
+
+        MessageItem messageItem = new MessageItem(this, NO_RECORD_TAG, "", fileName, null, timestamp,
+                null, false, true, false, false, false,
+                false, false);
+
+        messageItem.setIsFileMessage(true);
+        if (isError) {
+            messageItem.markAsError();
+        }
+        messageItem.setFilePath(path);
+
+
+        messages.add(messageItem);
+        sort();
+
+        MessageManager.getInstance().onChatChanged(account, user, false);
+        return messageItem;
+    }
+
     private void requestToWriteMessage(final MessageItem messageItem,
                                        final String resource, final String text, final ChatAction action,
                                        final Date timestamp, final Date delayTimestamp,

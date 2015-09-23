@@ -17,10 +17,13 @@ package com.xabber.android.ui.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -225,6 +228,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
 
+        if (!messageItem.isFileMessage()) {
+            Linkify.addLinks(message.messageText, Linkify.ALL);
+            message.messageText.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
         String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
@@ -241,14 +249,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setStatusIcon(MessageItem messageItem, OutgoingMessage message) {
         message.statusIcon.setVisibility(View.VISIBLE);
+        message.progressBar.setVisibility(View.GONE);
+
+        if (messageItem.isFileMessage() && !messageItem.isError()) {
+            message.progressBar.setVisibility(View.VISIBLE);
+        }
 
         int messageIcon = R.drawable.ic_message_delivered_18dp;
         if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_18dp;
-        } else if (!messageItem.isSent()) {
+        } else if (!messageItem.isFileMessage() && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_18dp;
         } else if (!messageItem.isDelivered()) {
-            message.statusIcon.setVisibility(View.INVISIBLE);
+            message.statusIcon.setVisibility(View.GONE);
         }
 
         message.statusIcon.setImageResource(messageIcon);
@@ -366,10 +379,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static class OutgoingMessage extends Message {
 
         public ImageView statusIcon;
+        public ProgressBar progressBar;
 
         public OutgoingMessage(View itemView, MessageClickListener listener) {
             super(itemView, listener);
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
         }
     }
 }

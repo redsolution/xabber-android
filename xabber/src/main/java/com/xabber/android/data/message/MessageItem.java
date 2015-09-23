@@ -88,6 +88,12 @@ public class MessageItem implements Comparable<MessageItem> {
      */
     private String packetID;
 
+    /**
+     * Outgoing file message
+     */
+    private boolean isFileMessage;
+    private String filePath;
+
     public MessageItem(AbstractChat chat, String tag, String resource,
                        String text, ChatAction action, Date timestamp,
                        Date delayTimestamp, boolean incoming, boolean read, boolean sent,
@@ -109,6 +115,7 @@ public class MessageItem implements Comparable<MessageItem> {
         this.offline = offline;
         this.id = null;
         this.packetID = null;
+        this.isFileMessage = false;
     }
 
     public AbstractChat getChat() {
@@ -220,4 +227,19 @@ public class MessageItem implements Comparable<MessageItem> {
         return timestamp.compareTo(another.timestamp);
     }
 
+    public boolean isFileMessage() {
+        return isFileMessage;
+    }
+
+    public void setIsFileMessage(boolean isFileMessage) {
+        this.isFileMessage = isFileMessage;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
 }

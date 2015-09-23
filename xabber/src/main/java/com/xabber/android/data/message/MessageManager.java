@@ -210,8 +210,43 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (chat == null) {
             chat = createChat(account, user);
         }
+        sendMessage(text, chat);
+    }
+
+    private void sendMessage(String text, AbstractChat chat) {
         MessageItem messageItem = chat.newMessage(text);
         chat.sendQueue(messageItem);
+    }
+
+    public MessageItem createFileMessage(String account, String user, File file) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            chat = createChat(account, user);
+        }
+
+        chat.openChat();
+        return chat.newFileMessage(String.format(Application.getInstance().getString(R.string.sending_file), file.getName()), file.getPath(), false);
+    }
+
+    public void replaceMessage(String account, String user, MessageItem srcFileMessage, String text) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            return;
+        }
+
+        chat.removeMessage(srcFileMessage);
+        sendMessage(text, chat);
+
+    }
+
+    public void updateMessageWithError(String account, String user, MessageItem srcFileMessage, String text) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            return;
+        }
+
+        chat.removeMessage(srcFileMessage);
+        chat.newFileMessage(String.format(Application.getInstance().getString(R.string.error_sending_file), text), srcFileMessage.getFilePath(), true);
     }
 
     /**

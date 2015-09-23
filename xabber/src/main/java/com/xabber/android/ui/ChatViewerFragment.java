@@ -403,7 +403,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             return;
         }
 
-        HttpFileUploadManager.getInstance().uploadFile(getActivity(), account, path, this);
+        uploadFile(path);
+    }
+
+    private void uploadFile(String path) {
+        HttpFileUploadManager.getInstance().uploadFile(getActivity(), account, user, path);
     }
 
     private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){
@@ -712,7 +716,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             /* message popup menu */
 
             case R.id.action_message_repeat:
-                sendMessage(clickedMessageItem.getText());
+                if (clickedMessageItem.isFileMessage()) {
+                    uploadFile(clickedMessageItem.getFilePath());
+                } else {
+                    sendMessage(clickedMessageItem.getText());
+                }
                 return true;
 
             case R.id.action_message_copy:
@@ -814,8 +822,16 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             popup.inflate(R.menu.chat_context_menu);
             popup.setOnMenuItemClickListener(this);
 
-            if (chatMessageAdapter.getMessageItem(position).isError()) {
-                popup.getMenu().findItem(R.id.action_message_repeat).setVisible(true);
+            final Menu menu = popup.getMenu();
+
+            if (clickedMessageItem.isError()) {
+                menu.findItem(R.id.action_message_repeat).setVisible(true);
+            }
+
+            if (clickedMessageItem.isFileMessage()) {
+                menu.findItem(R.id.action_message_copy).setVisible(false);
+                menu.findItem(R.id.action_message_quote).setVisible(false);
+                menu.findItem(R.id.action_message_remove).setVisible(false);
             }
 
             popup.show();
@@ -831,7 +847,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public void onSuccessfullUpload(String getUrl) {
-        MessageManager.getInstance().sendMessage(account, user, getUrl);
     }
 
     public interface ChatViewerFragmentListener {
