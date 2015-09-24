@@ -332,6 +332,14 @@ public class SettingsManager implements OnInitializedListener,
             throw new IllegalStateException();
     }
 
+    public static String chatsChooseBackground() {
+        return getString(R.string.chats_background_choice_key, R.string.chats_background_choice_default);
+    }
+
+    public static void setChatsChooseBackground(String background_uri) {
+        setString(R.string.chats_background_choice_key, background_uri);
+    }
+
     public static boolean chatsShowBackground() {
         return getBoolean(R.string.chats_show_background_key, R.bool.chats_show_background_default);
     }

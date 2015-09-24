@@ -40,6 +40,14 @@
         android:title="@string/chats_show_background"
         />
 
+    <Preference
+        android:key="@string/chats_background_choice_key"
+        android:title="Choose a background"
+        android:defaultValue="@string/chats_background_choice_default"
+        android:persistent="true">
+    </Preference>
+
+
     <ListPreference
         android:defaultValue="@string/chats_font_size_default"
         android:entries="@array/chats_font_size_entries"

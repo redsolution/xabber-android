@@ -248,6 +248,8 @@
 
     <string name="chats_show_background_key">chats_show_background</string>
     <bool name="chats_show_background_default">true</bool>
+    <string name="chats_background_choice_key">chats_choose_background</string>
+    <string name="chats_background_choice_default">false</string>
 
     <string name="chats_font_size_key">chats_font_size</string>
     <string name="chats_font_size_small_value">small</string>

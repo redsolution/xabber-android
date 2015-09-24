@@ -17,12 +17,20 @@ package com.xabber.android.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
@@ -43,6 +51,7 @@ import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -189,6 +198,16 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         initChats();
     }
 
+    private void createBackground(ViewPager viewPager, Uri bitmap_uri) throws IOException {
+        Bitmap bg_bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), bitmap_uri);
+        DisplayMetrics display = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(display);
+        int height = display.heightPixels;
+        int width = display.widthPixels;
+        BackgroundWorkerTask task = new BackgroundWorkerTask(viewPager, width, height);
+        task.execute(bg_bitmap);
+    }
+
     private void initChats() {
         if (initialChat != null) {
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), initialChat, this);
@@ -201,7 +220,16 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager.setOnPageChangeListener(this);
 
         if (SettingsManager.chatsShowBackground()) {
-            viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            if (SettingsManager.chatsChooseBackground() != "false") {
+                Uri bm_uri = Uri.parse(SettingsManager.chatsChooseBackground());
+                try {
+                    createBackground(viewPager, bm_uri);
+                } catch (IOException e) {
+                    viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+                }
+            } else {
+                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            }
         }
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
