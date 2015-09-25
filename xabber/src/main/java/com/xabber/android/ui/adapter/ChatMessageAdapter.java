@@ -15,6 +15,11 @@
 package com.xabber.android.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
@@ -22,10 +27,14 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xabber.android.R;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
@@ -40,12 +49,21 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.Emoticons;
+import com.xabber.android.utils.MimeUtils;
 import com.xabber.android.utils.StringUtils;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
@@ -142,15 +160,17 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 setUpMessage(messageItem, (Message) holder);
                 setStatusIcon(messageItem, (OutgoingMessage) holder);
+                setUpFileMessage((Message) holder, messageItem);
                 break;
         }
 
     }
 
-    private void setUpIncomingMessage(IncomingMessage incomingMessage, MessageItem messageItem) {
+    private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
         setUpMessage(messageItem, incomingMessage);
 
         setUpAvatar(messageItem, incomingMessage);
+        setUpFileMessage(incomingMessage, messageItem);
 
         if (messageItem.getText().trim().isEmpty()) {
             incomingMessage.messageBalloon.setVisibility(View.GONE);
@@ -161,7 +181,124 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
         }
+    }
 
+    // TODO: refactoring needed
+    private void setUpFileMessage(final Message message, final MessageItem messageItem) {
+        message.downloadProgressBar.setVisibility(View.GONE);
+        message.attachmentButton.setVisibility(View.GONE);
+        message.downloadButton.setVisibility(View.GONE);
+
+
+        if (StringUtils.treatAsDownloadable(messageItem.getText())) {
+            final String path;
+            final URL url;
+            try {
+                url = new URL(messageItem.getText());
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            path = url.getPath();
+
+            String filename = path.substring(path.lastIndexOf('/') + 1).toLowerCase();
+            message.messageText.setText(filename);
+
+
+            final File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Xabber/Cache/" + path);
+
+            message.attachmentButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Intent intent = new Intent(Intent.ACTION_VIEW);
+                    final String extension = StringUtils.extractRelevantExtension(url);
+
+                    intent.setDataAndType(Uri.fromFile(file), MimeUtils.guessMimeTypeFromExtension(extension));
+
+
+                    PackageManager manager = context.getPackageManager();
+                    List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
+                    if (infos.size() > 0) {
+                        context.startActivity(intent);
+                    } else{
+                        Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+
+            if (file.exists()) {
+                message.attachmentButton.setVisibility(View.VISIBLE);
+            } else {
+
+                message.downloadButton.setVisibility(View.VISIBLE);
+                message.downloadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AsyncHttpClient client = new AsyncHttpClient();
+                        client.setConnectTimeout(60 * 1000);
+                        client.setLoggingEnabled(SettingsManager.debugLog());
+                        client.setResponseTimeout(60 * 1000);
+                        client.get(messageItem.getText(), new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onStart() {
+                                message.downloadProgressBar.setVisibility(View.VISIBLE);
+                                message.downloadButton.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                LogManager.i(this, "onSuccess: " + statusCode);
+
+                                try {
+                                    new File(file.getParent()).mkdirs();
+                                    file.createNewFile();
+                                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                                    bos.write(responseBody);
+                                    bos.flush();
+                                    bos.close();
+
+
+                                    message.downloadProgressBar.setVisibility(View.GONE);
+                                    message.attachmentButton.setVisibility(View.VISIBLE);
+
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+
+                                    file.delete();
+
+                                    message.downloadProgressBar.setVisibility(View.GONE);
+                                    message.downloadButton.setVisibility(View.VISIBLE);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                LogManager.i(this, "onFailure: " + statusCode);
+
+                                message.downloadProgressBar.setVisibility(View.GONE);
+                                message.downloadButton.setVisibility(View.VISIBLE);
+
+                            }
+
+                            @Override
+                            public void onProgress(long bytesWritten, long totalSize) {
+                                LogManager.i(this, "onProgress: " + bytesWritten + " / " + totalSize);
+                            }
+
+                            @Override
+                            public void onFinish() {
+
+
+                            }
+                        });
+                    }
+                });
+
+            }
+        }
     }
 
     @Override
@@ -342,6 +479,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         MessageClickListener onClickListener;
 
+        public ImageButton downloadButton;
+        public ImageButton attachmentButton;
+        public ProgressBar downloadProgressBar;
+
+
         public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
             this.onClickListener = onClickListener;
@@ -351,6 +493,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
             messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
+
+            downloadButton = (ImageButton) itemView.findViewById(R.id.message_download_button);
+            attachmentButton = (ImageButton) itemView.findViewById(R.id.message_attachment_button);
+            downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
 
             itemView.setOnClickListener(this);
         }

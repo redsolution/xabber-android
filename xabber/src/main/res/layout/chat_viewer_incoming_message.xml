@@ -32,7 +32,7 @@
         android:src="@drawable/ic_avatar_1"
         />
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/message_balloon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,9 +59,38 @@
 
         android:paddingTop="8dp">
 
-        <include layout="@layout/chat_viewer_message" />
+        <ImageButton
+            android:id="@+id/message_download_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_download_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
 
-    </FrameLayout>
+        <ImageButton
+            android:id="@+id/message_attachment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_attachment_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ProgressBar
+            android:id="@+id/message_download_progress_bar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="12dp"
+            android:layout_gravity="bottom" />
+
+
+        <include layout="@layout/chat_viewer_message"
+            />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/message_time"

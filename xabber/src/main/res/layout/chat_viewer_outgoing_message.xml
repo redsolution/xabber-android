@@ -19,7 +19,7 @@
     android:layout_height="wrap_content"
     >
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/message_balloon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,11 +41,43 @@
         android:paddingRight="16dp"
 
         android:paddingTop="8dp"
+        android:gravity="center_vertical"
         >
 
-        <include layout="@layout/chat_viewer_message" />
+        <include layout="@layout/chat_viewer_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
 
-    </FrameLayout>
+        <ImageButton
+            android:id="@+id/message_download_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_download_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ImageButton
+            android:id="@+id/message_attachment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_attachment_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ProgressBar
+            android:id="@+id/message_download_progress_bar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="12dp"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/message_time"

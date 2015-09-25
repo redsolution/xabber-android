@@ -17,11 +17,21 @@ package com.xabber.android.utils;
 import android.content.Context;
 import android.content.res.Resources;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Helper class to get plural forms.
@@ -147,6 +157,66 @@ public class StringUtils {
             DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
             return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
         }
+    }
+
+    public static boolean treatAsDownloadable(String text) {
+        if (text.trim().contains(" ")) {
+            return false;
+        }
+        try {
+            URL url = new URL(text);
+            if (!url.getProtocol().equalsIgnoreCase("http") && !url.getProtocol().equalsIgnoreCase("https")) {
+                return false;
+            }
+            String extension = extractRelevantExtension(url);
+            if (extension == null) {
+                return false;
+            }
+            String ref = url.getRef();
+            boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
+
+            if (encrypted) {
+                if (MimeUtils.guessMimeTypeFromExtension(extension) != null) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
+
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
+
+    public static String extractRelevantExtension(URL url) {
+        String path = url.getPath();
+        return extractRelevantExtension(path);
+    }
+
+    public static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe"};
+    public static final String[] VALID_CRYPTO_EXTENSIONS = {"pgp", "gpg", "otr"};
+    public static final String[] WELL_KNOWN_EXTENSIONS = {"pdf","m4a","mp4"};
+
+    private static String extractRelevantExtension(String path) {
+        if (path == null || path.isEmpty()) {
+            return null;
+        }
+
+        String filename = path.substring(path.lastIndexOf('/') + 1).toLowerCase();
+        int dotPosition = filename.lastIndexOf(".");
+
+        if (dotPosition != -1) {
+            String extension = filename.substring(dotPosition + 1);
+            // we want the real file extension, not the crypto one
+            if (Arrays.asList(VALID_CRYPTO_EXTENSIONS).contains(extension)) {
+                return extractRelevantExtension(path.substring(0,dotPosition));
+            } else {
+                return extension;
+            }
+        }
+        return null;
     }
 
 }

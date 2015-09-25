@@ -85,5 +85,6 @@
 
     <string name="sending_file">Sending file %s</string>
     <string name="error_sending_file">Error sending file %s</string>
+    <string name="no_application_to_open_file">No application found to open this file</string>
 
 </resources>
