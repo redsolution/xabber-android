@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.helper;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;

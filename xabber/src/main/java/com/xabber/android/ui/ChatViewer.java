@@ -48,6 +48,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
+import com.xabber.android.ui.helper.BackgroundWorkerTask;
 import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 
