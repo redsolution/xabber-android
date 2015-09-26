@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="@string/debug_log"
+        android:key="@string/debug_log_key"
+        android:defaultValue="@bool/debug_log_default"
+        />
+    <com.xabber.android.ui.preferences.CacheClearDialog
+        android:title="@string/cache_clear"
+        android:key="@string/cache_clear_key"
+        android:dialogMessage="@string/cache_clear_warning"/>
+
+    <CheckBoxPreference
+        android:title="@string/debug_connection_errors_title"
+        android:key="@string/debug_connection_errors_key"
+        android:defaultValue="@bool/debug_connection_errors_default"
+        />
+
+</PreferenceScreen>

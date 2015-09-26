@@ -1,3 +1,4 @@
-include ':app'
-include ':app:otr4j'
-include ':app:MemorizingTrustManager'
+include ':xabber'
+include ':xabber:otr4j'
+include ':xabber:MemorizingTrustManager'
+include ':xabber:emojicon'
