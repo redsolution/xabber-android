@@ -20,27 +20,22 @@
 
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
-    </style>
-
-    <style name="ThemeDark" parent="Base.ThemeDark"></style>
-
-
-    <style name="Base.ThemeDark" parent="Theme.AppCompat.NoActionBar">
-        <!--for text selection toolbar to be above usual toolbar -->
-        <item name="windowActionModeOverlay">true</item>
+		
+        <!-- for hardware button menu -->
+        <item name="panelBackground">?attr/colorPrimary</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="CollapsingToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">32sp</item>
-        <item name="android:shadowColor">@color/grey_700</item>
-        <item name="android:shadowDx">10</item>
-        <item name="android:shadowDy">10</item>
-        <item name="android:shadowRadius">20</item>
-        <item name="android:textColor">@color/grey_50</item>
-
+	<style name="CustomSearchActionBar"
+        parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:searchViewStyle">@style/CustomIconSearchBar</item>
     </style>
+
+    <style name="CustomIconSearchBar" parent="Widget.AppCompat.SearchView">
+        <item name="android:searchHintIcon">@drawable/ic_search_white_24dp</item>
+    </style>
+
 </resources>
