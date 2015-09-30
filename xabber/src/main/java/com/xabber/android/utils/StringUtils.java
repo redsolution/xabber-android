@@ -16,11 +16,8 @@ package com.xabber.android.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.webkit.MimeTypeMap;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -29,9 +26,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Helper class to get plural forms.
@@ -176,7 +170,7 @@ public class StringUtils {
             boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
 
             if (encrypted) {
-                if (MimeUtils.guessMimeTypeFromExtension(extension) != null) {
+                if (MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) != null) {
                     return true;
                 } else {
                     return false;

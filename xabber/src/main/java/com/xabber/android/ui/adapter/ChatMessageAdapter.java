@@ -27,6 +27,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -49,7 +50,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.android.utils.MimeUtils;
 import com.xabber.android.utils.StringUtils;
 
 import java.io.BufferedOutputStream;
@@ -214,7 +214,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     final Intent intent = new Intent(Intent.ACTION_VIEW);
                     final String extension = StringUtils.extractRelevantExtension(url);
 
-                    intent.setDataAndType(Uri.fromFile(file), MimeUtils.guessMimeTypeFromExtension(extension));
+                    intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
 
 
                     PackageManager manager = context.getPackageManager();
