@@ -189,7 +189,7 @@ public class StringUtils {
         return extractRelevantExtension(path);
     }
 
-    public static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe"};
+    public static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe", "gif"};
     public static final String[] VALID_CRYPTO_EXTENSIONS = {"pgp", "gpg", "otr"};
     public static final String[] WELL_KNOWN_EXTENSIONS = {"pdf","m4a","mp4"};
 

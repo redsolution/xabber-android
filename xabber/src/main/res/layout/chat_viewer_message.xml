@@ -31,4 +31,12 @@
         android:minWidth="160dp"
         android:text="Some text\n line \nrgregrere" />
 
+    <ImageView
+        android:id="@+id/message_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:adjustViewBounds="true"
+        />
+
 </LinearLayout>

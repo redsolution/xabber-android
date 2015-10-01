@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
@@ -30,13 +32,16 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -59,6 +64,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -188,11 +194,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.downloadProgressBar.setVisibility(View.GONE);
         message.attachmentButton.setVisibility(View.GONE);
         message.downloadButton.setVisibility(View.GONE);
-
+        message.messageImage.setVisibility(View.GONE);
+        message.messageText.setVisibility(View.VISIBLE);
 
         if (StringUtils.treatAsDownloadable(messageItem.getText())) {
             final String path;
             final URL url;
+
             try {
                 url = new URL(messageItem.getText());
             } catch (MalformedURLException e) {
@@ -205,6 +213,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             String filename = path.substring(path.lastIndexOf('/') + 1).toLowerCase();
             message.messageText.setText(filename);
 
+            final String extension = StringUtils.extractRelevantExtension(url);
 
             final File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Xabber/Cache/" + path);
 
@@ -212,16 +221,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 @Override
                 public void onClick(View v) {
                     final Intent intent = new Intent(Intent.ACTION_VIEW);
-                    final String extension = StringUtils.extractRelevantExtension(url);
-
                     intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
-
 
                     PackageManager manager = context.getPackageManager();
                     List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
                     if (infos.size() > 0) {
                         context.startActivity(intent);
-                    } else{
+                    } else {
                         Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -229,9 +235,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
 
             if (file.exists()) {
-                message.attachmentButton.setVisibility(View.VISIBLE);
+                onFileExists(message, extension, file);
             } else {
-
                 message.downloadButton.setVisibility(View.VISIBLE);
                 message.downloadButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -248,29 +253,49 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             }
 
                             @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
                                 LogManager.i(this, "onSuccess: " + statusCode);
 
-                                try {
-                                    new File(file.getParent()).mkdirs();
-                                    file.createNewFile();
-                                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                                    bos.write(responseBody);
-                                    bos.flush();
-                                    bos.close();
+                                message.downloadProgressBar.setVisibility(View.GONE);
 
+                                Application.getInstance().runInBackground(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        new File(file.getParent()).mkdirs();
+                                        try {
+                                            file.createNewFile();
+                                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                                            bos.write(responseBody);
+                                            bos.flush();
+                                            bos.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                            file.delete();
+                                            message.downloadButton.setVisibility(View.VISIBLE);
+                                        }
+                                    }
+                                });
 
-                                    message.downloadProgressBar.setVisibility(View.GONE);
+                                if (Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension)) {
+                                    message.messageText.setVisibility(View.GONE);
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inJustDecodeBounds = true;
+
+                                    //Returns null, sizes are in the options variable
+                                    BitmapFactory.decodeByteArray(responseBody, 0, responseBody.length, options);
+
+                                    ImageScaler imageScaler = new ImageScaler(options.outHeight, options.outWidth).invoke();
+
+                                    message.messageImage.setVisibility(View.VISIBLE);
+
+                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageScaler.getScalledW(), imageScaler.getScalledH());
+                                    message.messageImage.setLayoutParams(layoutParams);
+
+                                    LogManager.i(this, String.format("Loading image from bytes. src: %d x %d, dst: %d x %d", options.outHeight, options.outWidth, imageScaler.getScalledW(), imageScaler.getScalledH()));
+                                    Glide.with(context).load(responseBody).crossFade().override(imageScaler.getScalledW(), imageScaler.getScalledH()).into(message.messageImage);
+
+                                } else {
                                     message.attachmentButton.setVisibility(View.VISIBLE);
-
-
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-
-                                    file.delete();
-
-                                    message.downloadProgressBar.setVisibility(View.GONE);
-                                    message.downloadButton.setVisibility(View.VISIBLE);
                                 }
                             }
 
@@ -297,7 +322,39 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     }
                 });
 
+                // TODO download images on message receiving
+                if (Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension)) {
+                    message.downloadButton.callOnClick();
+                }
             }
+        }
+    }
+
+    private void onFileExists(Message message, String extension, File file) {
+        if (Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension)) {
+            message.messageText.setVisibility(View.GONE);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+
+            //Returns null, sizes are in the options variable
+            BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+            final int height = options.outHeight;
+            final int width = options.outWidth;
+
+            ImageScaler imageScaler = new ImageScaler(height, width).invoke();
+            int scalledW = imageScaler.getScalledW();
+            int scalledH = imageScaler.getScalledH();
+
+            message.messageImage.setVisibility(View.VISIBLE);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(scalledW, scalledH);
+            message.messageImage.setLayoutParams(layoutParams);
+
+            LogManager.i(this, String.format("Loading image from file. src: %d x %d, dst: %d x %d", width, height, scalledW, scalledH));
+            Glide.with(context).load(file).crossFade().override(scalledW, scalledH).into(message.messageImage);
+
+        } else {
+            message.attachmentButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -482,6 +539,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public ImageButton downloadButton;
         public ImageButton attachmentButton;
         public ProgressBar downloadProgressBar;
+        public ImageView messageImage;
 
 
         public Message(View itemView, MessageClickListener onClickListener) {
@@ -497,6 +555,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             downloadButton = (ImageButton) itemView.findViewById(R.id.message_download_button);
             attachmentButton = (ImageButton) itemView.findViewById(R.id.message_attachment_button);
             downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
+            messageImage = (ImageView) itemView.findViewById(R.id.message_image);
 
             itemView.setOnClickListener(this);
         }
@@ -531,6 +590,63 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             super(itemView, listener);
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
             progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
+        }
+    }
+
+    private class ImageScaler {
+        private int height;
+        private int width;
+        private int scalledW;
+        private int scalledH;
+
+        public ImageScaler(int height, int width) {
+            this.height = height;
+            this.width = width;
+        }
+
+        public int getScalledW() {
+            return scalledW;
+        }
+
+        public int getScalledH() {
+            return scalledH;
+        }
+
+        public ImageScaler invoke() {
+            Resources resources = context.getResources();
+            final int maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
+            final int minImageSize = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
+
+            if (width <= height) {
+                if (height > maxImageSize) {
+                    scalledW = (int) (width / ((double) height / maxImageSize));
+                    scalledH = maxImageSize;
+                } else if (width < minImageSize) {
+                    scalledW = minImageSize;
+                    scalledH = (int) (height / ((double) width / minImageSize));
+                    if (scalledH > maxImageSize) {
+                        scalledH = maxImageSize;
+                    }
+                } else {
+                    scalledW = width;
+                    scalledH = height;
+                }
+            } else {
+                if (width > maxImageSize) {
+                    scalledW = maxImageSize;
+                    scalledH = (int) (height / ((double) width / maxImageSize));
+                } else if (height < minImageSize) {
+                    scalledW = (int) (width / ((double) height / minImageSize));
+                    if (scalledW > maxImageSize) {
+                        scalledW = maxImageSize;
+                    }
+                    scalledH = minImageSize;
+                } else {
+                    scalledW = width;
+                    scalledH = height;
+                }
+            }
+            return this;
         }
     }
 }
