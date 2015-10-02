@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -62,6 +64,12 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.utils.FileUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -616,6 +624,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+
         switch (item.getItemId()) {
             /* security menu */
 
@@ -719,9 +728,55 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 updateChat();
                 return true;
 
+            case R.id.action_message_open_file:
+                ChatMessageAdapter.openFile(getActivity(), new File(clickedMessageItem.getFilePath()));
+                return true;
+
+            case R.id.action_message_save_file:
+                Application.getInstance().runInBackground(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            saveFile();
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.file_saved_successfully, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.could_not_save_file, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
+                return true;
+
             default:
                 return false;
         }
+    }
+
+    private void saveFile() throws IOException {
+        File srcFile = new File(clickedMessageItem.getFilePath());
+        File dstFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), srcFile.getName());
+
+        InputStream in = new FileInputStream(srcFile);
+        OutputStream out = new FileOutputStream(dstFile);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
     }
 
     private void showHistory(String account, String user) {
@@ -814,6 +869,13 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 menu.findItem(R.id.action_message_copy).setVisible(false);
                 menu.findItem(R.id.action_message_quote).setVisible(false);
                 menu.findItem(R.id.action_message_remove).setVisible(false);
+            }
+
+            final String filePath = clickedMessageItem.getFilePath();
+
+            if (filePath != null && new File(filePath).exists()) {
+                menu.findItem(R.id.action_message_open_file).setVisible(true);
+                menu.findItem(R.id.action_message_save_file).setVisible(true);
             }
 
             popup.show();

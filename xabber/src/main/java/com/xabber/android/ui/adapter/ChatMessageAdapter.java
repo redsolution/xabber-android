@@ -218,10 +218,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             final File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Xabber/Cache/" + path);
 
+            messageItem.setFilePath(file.getPath());
+
             message.attachmentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openFile(file, extension);
+                    openFile(context, file);
                 }
             });
 
@@ -271,7 +273,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                                         message.messageImage.setOnClickListener(new View.OnClickListener() {
                                                             @Override
                                                             public void onClick(View v) {
-                                                                openFile(file, extension);
+                                                                openFile(context, file);
                                                             }
                                                         });
                                                     } else {
@@ -364,9 +366,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension);
     }
 
-    private void openFile(File file, String extension) {
+    public static void openFile(Context context, File file) {
         final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
+        intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                        MimeTypeMap.getFileExtensionFromUrl(file.toURI().toString())));
 
         PackageManager manager = context.getPackageManager();
         List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
@@ -402,7 +405,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.messageImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openFile(file, extension);
+                    openFile(context, file);
                 }
             });
 

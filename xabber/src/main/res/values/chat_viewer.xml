@@ -16,6 +16,8 @@
     <string name="message_quote">Quote</string>
     <string name="message_remove">Remove from history</string>
     <string name="message_repeat">Retry sending</string>
+    <string name="message_open_file">Open</string>
+    <string name="message_save_file">Save</string>
     <string name="save_history">Save local history\nStore message history locally</string>
     <string name="show_history">Show history</string>
     <string name="action_attention_called">Call attention was sent</string>
@@ -86,5 +88,7 @@
     <string name="sending_file">Sending file %s</string>
     <string name="error_sending_file">Error sending file %s</string>
     <string name="no_application_to_open_file">No application found to open this file</string>
+    <string name="could_not_save_file">Could not save file</string>
+    <string name="file_saved_successfully">File saved successfully</string>
 
 </resources>
