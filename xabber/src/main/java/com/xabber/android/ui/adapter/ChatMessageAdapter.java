@@ -70,6 +70,7 @@ import java.util.Date;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpHeaders;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
@@ -231,6 +232,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (file.exists()) {
                 onFileExists(message, extension, file);
             } else {
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.head(messageItem.getText(), new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        for (Header header : headers) {
+                            if (header.getName().equals(HttpHeaders.CONTENT_LENGTH)) {
+                                message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, Long.parseLong(header.getValue())));
+                                message.messageFileInfo.setVisibility(View.VISIBLE);
+                                break;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                    }
+                });
+
+
                 message.downloadButton.setVisibility(View.VISIBLE);
                 message.downloadButton.setOnClickListener(new View.OnClickListener() {
                     @Override
