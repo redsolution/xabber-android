@@ -196,10 +196,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.attachmentButton.setVisibility(View.GONE);
         message.downloadButton.setVisibility(View.GONE);
         message.messageImage.setVisibility(View.GONE);
-        message.messageText.setVisibility(View.VISIBLE);
+
         message.messageFileInfo.setVisibility(View.GONE);
 
         if (StringUtils.treatAsDownloadable(messageItem.getText())) {
+            message.messageText.setVisibility(View.GONE);
+            message.messageTextForFileName.setVisibility(View.VISIBLE);
+
             final String path;
             final URL url;
 
@@ -213,7 +216,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             path = url.getPath();
 
             String filename = path.substring(path.lastIndexOf('/') + 1).toLowerCase();
-            message.messageText.setText(filename);
+            message.messageTextForFileName.setText(filename);
 
             final String extension = StringUtils.extractRelevantExtension(url);
 
@@ -321,7 +324,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                 });
 
                                 if (extensionIsImage(extension)) {
-                                    message.messageText.setVisibility(View.GONE);
+                                    message.messageTextForFileName.setVisibility(View.GONE);
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inJustDecodeBounds = true;
 
@@ -403,7 +406,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void onFileExists(Message message, final String extension, final File file) {
         if (extensionIsImage(extension)) {
-            message.messageText.setVisibility(View.GONE);
+            message.messageTextForFileName.setVisibility(View.GONE);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
 
@@ -497,15 +500,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         message.messageText.setTextAppearance(context, appearanceStyle);
+        message.messageTextForFileName.setTextAppearance(context, appearanceStyle);
 
         final Spannable spannable = messageItem.getSpannable();
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
-
-        if (!messageItem.isUploadFileMessage()) {
-            Linkify.addLinks(message.messageText, Linkify.ALL);
-            message.messageText.setMovementMethod(LinkMovementMethod.getInstance());
-        }
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
@@ -621,6 +620,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public ProgressBar downloadProgressBar;
         public ImageView messageImage;
         public TextView messageFileInfo;
+        public TextView messageTextForFileName;
 
 
         public Message(View itemView, MessageClickListener onClickListener) {
@@ -638,6 +638,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
             messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
+            messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
 
             itemView.setOnClickListener(this);
         }
