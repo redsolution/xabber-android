@@ -30,17 +30,12 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnResponseListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
@@ -66,23 +61,10 @@ import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.utils.FileUtils;
-import com.xabber.xmpp.httpfileupload.Request;
-import com.xabber.xmpp.httpfileupload.Slot;
 
-import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-
-import java.io.File;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.entity.ContentType;
-import cz.msebera.android.httpclient.entity.FileEntity;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
@@ -716,7 +698,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             /* message popup menu */
 
             case R.id.action_message_repeat:
-                if (clickedMessageItem.isFileMessage()) {
+                if (clickedMessageItem.isUploadFileMessage()) {
                     uploadFile(clickedMessageItem.getFilePath());
                 } else {
                     sendMessage(clickedMessageItem.getText());
@@ -828,7 +810,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 menu.findItem(R.id.action_message_repeat).setVisible(true);
             }
 
-            if (clickedMessageItem.isFileMessage()) {
+            if (clickedMessageItem.isUploadFileMessage()) {
                 menu.findItem(R.id.action_message_copy).setVisible(false);
                 menu.findItem(R.id.action_message_quote).setVisible(false);
                 menu.findItem(R.id.action_message_remove).setVisible(false);

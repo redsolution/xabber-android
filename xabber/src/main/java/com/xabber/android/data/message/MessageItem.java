@@ -91,7 +91,7 @@ public class MessageItem implements Comparable<MessageItem> {
     /**
      * Outgoing file message
      */
-    private boolean isFileMessage;
+    private boolean isUploadFileMessage;
     private String filePath;
 
     public MessageItem(AbstractChat chat, String tag, String resource,
@@ -115,7 +115,7 @@ public class MessageItem implements Comparable<MessageItem> {
         this.offline = offline;
         this.id = null;
         this.packetID = null;
-        this.isFileMessage = false;
+        this.isUploadFileMessage = false;
     }
 
     public AbstractChat getChat() {
@@ -227,12 +227,12 @@ public class MessageItem implements Comparable<MessageItem> {
         return timestamp.compareTo(another.timestamp);
     }
 
-    public boolean isFileMessage() {
-        return isFileMessage;
+    public boolean isUploadFileMessage() {
+        return isUploadFileMessage;
     }
 
-    public void setIsFileMessage(boolean isFileMessage) {
-        this.isFileMessage = isFileMessage;
+    public void setIsUploadFileMessage(boolean isFileMessage) {
+        this.isUploadFileMessage = isFileMessage;
     }
 
     public void setFilePath(String filePath) {

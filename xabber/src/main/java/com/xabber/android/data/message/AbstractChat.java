@@ -427,7 +427,7 @@ public abstract class AbstractChat extends BaseEntity {
                 null, false, true, false, false, false,
                 false, false);
 
-        messageItem.setIsFileMessage(true);
+        messageItem.setIsUploadFileMessage(true);
         if (isError) {
             messageItem.markAsError();
         }

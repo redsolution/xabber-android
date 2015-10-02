@@ -452,7 +452,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
 
-        if (!messageItem.isFileMessage()) {
+        if (!messageItem.isUploadFileMessage()) {
             Linkify.addLinks(message.messageText, Linkify.ALL);
             message.messageText.setMovementMethod(LinkMovementMethod.getInstance());
         }
@@ -475,14 +475,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.statusIcon.setVisibility(View.VISIBLE);
         message.progressBar.setVisibility(View.GONE);
 
-        if (messageItem.isFileMessage() && !messageItem.isError()) {
+        if (messageItem.isUploadFileMessage() && !messageItem.isError()) {
             message.progressBar.setVisibility(View.VISIBLE);
         }
 
         int messageIcon = R.drawable.ic_message_delivered_18dp;
         if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_18dp;
-        } else if (!messageItem.isFileMessage() && !messageItem.isSent()) {
+        } else if (!messageItem.isUploadFileMessage() && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_18dp;
         } else if (!messageItem.isDelivered()) {
             message.statusIcon.setVisibility(View.GONE);
