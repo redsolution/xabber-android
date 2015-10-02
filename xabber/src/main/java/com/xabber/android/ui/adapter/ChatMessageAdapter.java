@@ -221,16 +221,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.attachmentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
-
-                    PackageManager manager = context.getPackageManager();
-                    List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
-                    if (infos.size() > 0) {
-                        context.startActivity(intent);
-                    } else {
-                        Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
-                    }
+                    openFile(file, extension);
                 }
             });
 
@@ -275,6 +266,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                                 public void run() {
                                                     message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, file.length()));
                                                     message.messageFileInfo.setVisibility(View.VISIBLE);
+
+                                                    if (extensionIsImage(extension)) {
+                                                        message.messageImage.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                openFile(file, extension);
+                                                            }
+                                                        });
+                                                    } else {
+                                                        message.attachmentButton.setVisibility(View.VISIBLE);
+                                                    }
+
                                                 }
                                             });
 
@@ -294,7 +297,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                     }
                                 });
 
-                                if (Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension)) {
+                                if (extensionIsImage(extension)) {
                                     message.messageText.setVisibility(View.GONE);
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inJustDecodeBounds = true;
@@ -312,9 +315,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                     LogManager.i(this, String.format("Loading image from bytes. src: %d x %d, dst: %d x %d", options.outHeight, options.outWidth, imageScaler.getScalledW(), imageScaler.getScalledH()));
                                     Glide.with(context).load(responseBody).crossFade().override(imageScaler.getScalledW(), imageScaler.getScalledH()).into(message.messageImage);
 
-                                } else {
-                                    message.attachmentButton.setVisibility(View.VISIBLE);
                                 }
+
+
                             }
 
                             @Override
@@ -350,15 +353,32 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
 
                 // TODO download images on message receiving
-                if (Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension)) {
+                if (extensionIsImage(extension)) {
                     message.downloadButton.callOnClick();
                 }
             }
         }
     }
 
-    private void onFileExists(Message message, String extension, File file) {
-        if (Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension)) {
+    private boolean extensionIsImage(String extension) {
+        return Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension);
+    }
+
+    private void openFile(File file, String extension) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension));
+
+        PackageManager manager = context.getPackageManager();
+        List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
+        if (infos.size() > 0) {
+            context.startActivity(intent);
+        } else {
+            Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onFileExists(Message message, final String extension, final File file) {
+        if (extensionIsImage(extension)) {
             message.messageText.setVisibility(View.GONE);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
@@ -379,6 +399,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             LogManager.i(this, String.format("Loading image from file. src: %d x %d, dst: %d x %d", width, height, scalledW, scalledH));
             Glide.with(context).load(file).crossFade().override(scalledW, scalledH).into(message.messageImage);
+            message.messageImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openFile(file, extension);
+                }
+            });
 
         } else {
             message.attachmentButton.setVisibility(View.VISIBLE);
