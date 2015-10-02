@@ -196,6 +196,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.downloadButton.setVisibility(View.GONE);
         message.messageImage.setVisibility(View.GONE);
         message.messageText.setVisibility(View.VISIBLE);
+        message.messageFileInfo.setVisibility(View.GONE);
 
         if (StringUtils.treatAsDownloadable(messageItem.getText())) {
             final String path;
@@ -268,10 +269,27 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                                             bos.write(responseBody);
                                             bos.flush();
                                             bos.close();
+
+                                            Application.getInstance().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, file.length()));
+                                                    message.messageFileInfo.setVisibility(View.VISIBLE);
+                                                }
+                                            });
+
+
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                             file.delete();
-                                            message.downloadButton.setVisibility(View.VISIBLE);
+
+                                            Application.getInstance().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    message.downloadButton.setVisibility(View.VISIBLE);
+                                                }
+                                            });
+
                                         }
                                     }
                                 });
@@ -311,6 +329,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                             @Override
                             public void onProgress(long bytesWritten, long totalSize) {
                                 LogManager.i(this, "onProgress: " + bytesWritten + " / " + totalSize);
+
+                                String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
+                                // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
+                                if (bytesWritten <= totalSize) {
+                                    progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
+                                }
+
+                                message.messageFileInfo.setText(progress);
+                                message.messageFileInfo.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -356,6 +383,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             message.attachmentButton.setVisibility(View.VISIBLE);
         }
+
+        message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, file.length()));
+        message.messageFileInfo.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -540,6 +570,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public ImageButton attachmentButton;
         public ProgressBar downloadProgressBar;
         public ImageView messageImage;
+        public TextView messageFileInfo;
 
 
         public Message(View itemView, MessageClickListener onClickListener) {
@@ -556,6 +587,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             attachmentButton = (ImageButton) itemView.findViewById(R.id.message_attachment_button);
             downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
+            messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
 
             itemView.setOnClickListener(this);
         }

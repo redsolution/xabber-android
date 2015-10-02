@@ -107,4 +107,21 @@
 
         android:textSize="10sp"
         />
+
+    <TextView
+        android:id="@+id/message_file_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/message_balloon"
+        android:layout_toEndOf="@+id/message_time"
+        android:layout_toRightOf="@+id/message_time"
+
+        android:paddingLeft="8dp"
+
+        android:text="231KB"
+
+        android:textSize="10sp"
+        />
+
 </RelativeLayout>
