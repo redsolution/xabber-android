@@ -35,6 +35,11 @@
         android:defaultValue="@bool/connection_load_vcard_default"
         />
     <CheckBoxPreference
+        android:title="@string/connection_load_images"
+        android:key="@string/connection_load_images_key"
+        android:defaultValue="@bool/connection_load_images_default"
+        />
+    <CheckBoxPreference
         android:title="@string/connection_use_carbons"
         android:key="@string/connection_use_carbons_key"
         android:defaultValue="@bool/connection_use_carbons_default"

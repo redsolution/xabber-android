@@ -411,6 +411,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_load_vcard_default);
     }
 
+    public static boolean connectionLoadImages() {
+        return getBoolean(R.string.connection_load_images_key,
+                R.bool.connection_load_images_default);
+    }
+
     public static boolean connectionUseCarbons() {
         return getBoolean(R.string.connection_use_carbons_key,
                 R.bool.connection_use_carbons_default);

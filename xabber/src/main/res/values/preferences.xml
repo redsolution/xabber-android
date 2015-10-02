@@ -351,6 +351,9 @@
     <string name="connection_load_vcard_key">connection_load_vcard</string>
     <bool name="connection_load_vcard_default">true</bool>
 
+    <string name="connection_load_images_key">connection_load_images</string>
+    <bool name="connection_load_images_default">true</bool>
+
     <string name="connection_use_carbons_key">connection_use_carbons</string>
     <bool name="connection_use_carbons_default">false</bool>
 

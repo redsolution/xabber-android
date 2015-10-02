@@ -379,7 +379,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
 
                 // TODO download images on message receiving
-                if (extensionIsImage(extension)) {
+                if (SettingsManager.connectionLoadImages() && extensionIsImage(extension)) {
                     message.downloadButton.callOnClick();
                 }
             }
