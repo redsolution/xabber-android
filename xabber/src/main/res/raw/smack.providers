@@ -104,7 +104,7 @@
     <!-- HTTP File Upload -->
     <iqProvider>
         <elementName>slot</elementName>
-        <namespace>eu:siacs:conversations:http:upload</namespace>
+        <namespace>urn:xmpp:http:upload</namespace>
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
 

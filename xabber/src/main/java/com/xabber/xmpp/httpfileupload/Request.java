@@ -13,7 +13,7 @@ import java.io.IOException;
 public class Request extends IQ {
 
     public static final String ELEMENT_NAME = "request";
-    public static final String NAMESPACE = "eu:siacs:conversations:http:upload";
+    public static final String NAMESPACE = "urn:xmpp:http:upload";
 
     public static final String FILENAME = "filename";
     public static final String SIZE = "size";
