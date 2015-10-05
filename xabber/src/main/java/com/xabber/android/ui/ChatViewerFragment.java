@@ -1,6 +1,7 @@
 package com.xabber.android.ui;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -25,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -777,6 +779,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
         in.close();
         out.close();
+
+        final String mimeTypeFromExtension = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(dstFile.toURI().toString()));
+        if (mimeTypeFromExtension != null) {
+            final DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+            downloadManager.addCompletedDownload(dstFile.getName(), getString(R.string.received_by), true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
+        }
     }
 
     private void showHistory(String account, String user) {
