@@ -83,7 +83,6 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
                 private void uploadFileToSlot(final String account, final Slot slot) {
                     AsyncHttpClient client = new AsyncHttpClient();
-                    client.setConnectTimeout(60 * 1000);
                     client.setLoggingEnabled(SettingsManager.debugLog());
                     client.setResponseTimeout(60 * 1000);
 
