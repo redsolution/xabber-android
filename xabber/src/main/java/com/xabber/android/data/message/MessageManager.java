@@ -225,7 +225,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         chat.openChat();
-        return chat.newFileMessage(String.format(Application.getInstance().getString(R.string.sending_file), file.getName()), file.getPath(), false);
+        return chat.newFileMessage(FileManager.getFileName(file.getPath()), file, false);
     }
 
     public void replaceMessage(String account, String user, MessageItem srcFileMessage, String text) {
@@ -235,8 +235,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         chat.removeMessage(srcFileMessage);
-        sendMessage(text, chat);
-
+        MessageItem messageItem = chat.newMessage(text);
+        messageItem.setFile(srcFileMessage.getFile());
+        chat.sendQueue(messageItem);
     }
 
     public void updateMessageWithError(String account, String user, MessageItem srcFileMessage, String text) {
@@ -246,7 +247,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         chat.removeMessage(srcFileMessage);
-        chat.newFileMessage(String.format(Application.getInstance().getString(R.string.error_sending_file), text), srcFileMessage.getFilePath(), true);
+        chat.newFileMessage(String.format(Application.getInstance().getString(R.string.error_sending_file), text), srcFileMessage.getFile(), true);
     }
 
     /**

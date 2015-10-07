@@ -1,7 +1,6 @@
 package com.xabber.android.ui;
 
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -9,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,6 +49,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
@@ -67,11 +65,7 @@ import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.utils.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -710,7 +704,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             case R.id.action_message_repeat:
                 if (clickedMessageItem.isUploadFileMessage()) {
-                    uploadFile(clickedMessageItem.getFilePath());
+                    uploadFile(clickedMessageItem.getFile().getPath());
                 } else {
                     sendMessage(clickedMessageItem.getText());
                 }
@@ -731,7 +725,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_message_open_file:
-                ChatMessageAdapter.openFile(getActivity(), new File(clickedMessageItem.getFilePath()));
+                FileManager.openFile(getActivity(), clickedMessageItem.getFile());
                 return true;
 
             case R.id.action_message_save_file:
@@ -739,7 +733,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     @Override
                     public void run() {
                         try {
-                            saveFile();
+                            FileManager.saveFileToDownloads(clickedMessageItem.getFile());
                             Application.getInstance().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -761,29 +755,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             default:
                 return false;
-        }
-    }
-
-    private void saveFile() throws IOException {
-        File srcFile = new File(clickedMessageItem.getFilePath());
-        File dstFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), srcFile.getName());
-
-        InputStream in = new FileInputStream(srcFile);
-        OutputStream out = new FileOutputStream(dstFile);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-
-        final String mimeTypeFromExtension = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(dstFile.toURI().toString()));
-        if (mimeTypeFromExtension != null) {
-            final DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-            downloadManager.addCompletedDownload(dstFile.getName(), getString(R.string.received_by), true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
         }
     }
 
@@ -879,9 +850,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 menu.findItem(R.id.action_message_remove).setVisible(false);
             }
 
-            final String filePath = clickedMessageItem.getFilePath();
+            final File file = clickedMessageItem.getFile();
 
-            if (filePath != null && new File(filePath).exists()) {
+            if (file != null && file.exists()) {
                 menu.findItem(R.id.action_message_open_file).setVisible(true);
                 menu.findItem(R.id.action_message_save_file).setVisible(true);
             }

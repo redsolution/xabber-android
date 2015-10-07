@@ -15,31 +15,17 @@
 package com.xabber.android.ui.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -48,6 +34,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -55,20 +42,11 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpHeaders;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
@@ -172,6 +150,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
+        LogManager.i(this, "setUpIncomingMessage " + messageItem.getText());
+
         setUpMessage(messageItem, incomingMessage);
 
         setUpAvatar(messageItem, incomingMessage);
@@ -188,246 +168,74 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    // TODO: refactoring needed
-    private void setUpFileMessage(final Message message, final MessageItem messageItem) {
-        message.downloadProgressBar.setVisibility(View.GONE);
-        message.attachmentButton.setVisibility(View.GONE);
-        message.downloadButton.setVisibility(View.GONE);
-        message.messageImage.setVisibility(View.GONE);
+    private void setUpFileMessage(final Message messageView, final MessageItem messageItem) {
+        messageView.downloadProgressBar.setVisibility(View.GONE);
+        messageView.attachmentButton.setVisibility(View.GONE);
+        messageView.downloadButton.setVisibility(View.GONE);
+        messageView.messageImage.setVisibility(View.GONE);
+        messageView.messageFileInfo.setVisibility(View.GONE);
+        messageView.messageTextForFileName.setVisibility(View.GONE);
 
-        message.messageFileInfo.setVisibility(View.GONE);
+        if (messageItem.getFile() == null) {
+            return;
+        }
 
-        if (StringUtils.treatAsDownloadable(messageItem.getText())) {
-            message.messageText.setVisibility(View.GONE);
-            message.messageTextForFileName.setVisibility(View.VISIBLE);
+        LogManager.i(this, "processing file messageView " + messageItem.getText());
 
-            final String path;
-            final URL url;
+        messageView.messageText.setVisibility(View.GONE);
+        messageView.messageTextForFileName.setText(FileManager.getFileName(messageItem.getFile().getPath()));
+        messageView.messageTextForFileName.setVisibility(View.VISIBLE);
 
-            try {
-                url = new URL(messageItem.getText());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return;
+        messageView.attachmentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileManager.openFile(context, messageItem.getFile());
             }
+        });
 
-            path = url.getPath();
+        final Long fileSize = messageItem.getFileSize();
+        if (fileSize != null) {
+            messageView.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, fileSize));
+            messageView.messageFileInfo.setVisibility(View.VISIBLE);
+        }
 
-            String filename = path.substring(path.lastIndexOf('/') + 1).toLowerCase();
-            message.messageTextForFileName.setText(filename);
 
-            final String extension = StringUtils.extractRelevantExtension(url);
-
-            final File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Xabber/Cache/" + path);
-
-            messageItem.setFilePath(file.getPath());
-
-            message.attachmentButton.setOnClickListener(new View.OnClickListener() {
+        if (messageItem.getFile().exists()) {
+            onFileExists(messageView, messageItem.getFile());
+        } else {
+            messageView.downloadButton.setVisibility(View.VISIBLE);
+            messageView.downloadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openFile(context, file);
+                    messageView.downloadButton.setVisibility(View.GONE);
+                    messageView.downloadProgressBar.setVisibility(View.VISIBLE);
+                    FileManager.downloadFile(messageItem, new FileManager.ProgressListener() {
+                        @Override
+                        public void onProgress(long bytesWritten, long totalSize) {
+                            String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
+                            // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
+                            if (bytesWritten <= totalSize) {
+                                progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
+                            }
+                            messageView.messageFileInfo.setText(progress);
+                            messageView.messageFileInfo.setVisibility(View.VISIBLE);
+                        }
+                    });
                 }
             });
 
-
-            if (file.exists()) {
-                onFileExists(message, extension, file);
-            } else {
-                AsyncHttpClient client = new AsyncHttpClient();
-                client.head(messageItem.getText(), new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        for (Header header : headers) {
-                            if (header.getName().equals(HttpHeaders.CONTENT_LENGTH)) {
-                                message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, Long.parseLong(header.getValue())));
-                                message.messageFileInfo.setVisibility(View.VISIBLE);
-                                break;
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-                    }
-                });
-
-
-                message.downloadButton.setVisibility(View.VISIBLE);
-                message.downloadButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        AsyncHttpClient client = new AsyncHttpClient();
-                        client.setConnectTimeout(60 * 1000);
-                        client.setLoggingEnabled(SettingsManager.debugLog());
-                        client.setResponseTimeout(60 * 1000);
-                        client.get(messageItem.getText(), new AsyncHttpResponseHandler() {
-                            @Override
-                            public void onStart() {
-                                message.downloadProgressBar.setVisibility(View.VISIBLE);
-                                message.downloadButton.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
-                                LogManager.i(this, "onSuccess: " + statusCode);
-
-                                message.downloadProgressBar.setVisibility(View.GONE);
-
-                                Application.getInstance().runInBackground(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        new File(file.getParent()).mkdirs();
-                                        try {
-                                            file.createNewFile();
-                                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                                            bos.write(responseBody);
-                                            bos.flush();
-                                            bos.close();
-
-                                            Application.getInstance().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, file.length()));
-                                                    message.messageFileInfo.setVisibility(View.VISIBLE);
-
-                                                    if (extensionIsImage(extension)) {
-                                                        message.messageImage.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                openFile(context, file);
-                                                            }
-                                                        });
-                                                    } else {
-                                                        message.attachmentButton.setVisibility(View.VISIBLE);
-                                                    }
-
-                                                }
-                                            });
-
-
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                            file.delete();
-
-                                            Application.getInstance().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    message.downloadButton.setVisibility(View.VISIBLE);
-                                                }
-                                            });
-
-                                        }
-                                    }
-                                });
-
-                                if (extensionIsImage(extension)) {
-                                    message.messageTextForFileName.setVisibility(View.GONE);
-                                    BitmapFactory.Options options = new BitmapFactory.Options();
-                                    options.inJustDecodeBounds = true;
-
-                                    //Returns null, sizes are in the options variable
-                                    BitmapFactory.decodeByteArray(responseBody, 0, responseBody.length, options);
-
-                                    ImageScaler imageScaler = new ImageScaler(options.outHeight, options.outWidth).invoke();
-
-                                    message.messageImage.setVisibility(View.VISIBLE);
-
-                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(imageScaler.getScalledW(), imageScaler.getScalledH());
-                                    message.messageImage.setLayoutParams(layoutParams);
-
-                                    LogManager.i(this, String.format("Loading image from bytes. src: %d x %d, dst: %d x %d", options.outHeight, options.outWidth, imageScaler.getScalledW(), imageScaler.getScalledH()));
-                                    Glide.with(context).load(responseBody).crossFade().override(imageScaler.getScalledW(), imageScaler.getScalledH()).into(message.messageImage);
-
-                                }
-
-
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                LogManager.i(this, "onFailure: " + statusCode);
-
-                                message.downloadProgressBar.setVisibility(View.GONE);
-                                message.downloadButton.setVisibility(View.VISIBLE);
-
-                            }
-
-                            @Override
-                            public void onProgress(long bytesWritten, long totalSize) {
-                                LogManager.i(this, "onProgress: " + bytesWritten + " / " + totalSize);
-
-                                String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
-                                // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
-                                if (bytesWritten <= totalSize) {
-                                    progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
-                                }
-
-                                message.messageFileInfo.setText(progress);
-                                message.messageFileInfo.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onFinish() {
-
-
-                            }
-                        });
-                    }
-                });
-
-                // TODO download images on message receiving
-                if (SettingsManager.connectionLoadImages() && extensionIsImage(extension)) {
-                    message.downloadButton.callOnClick();
-                }
             }
-        }
     }
 
-    private boolean extensionIsImage(String extension) {
-        return Arrays.asList(StringUtils.VALID_IMAGE_EXTENSIONS).contains(extension);
-    }
-
-    public static void openFile(Context context, File file) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                        MimeTypeMap.getFileExtensionFromUrl(file.toURI().toString())));
-
-        PackageManager manager = context.getPackageManager();
-        List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
-        if (infos.size() > 0) {
-            context.startActivity(intent);
-        } else {
-            Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void onFileExists(Message message, final String extension, final File file) {
-        if (extensionIsImage(extension)) {
+    private void onFileExists(Message message, final File file) {
+        if (FileManager.fileIsImage(file)) {
             message.messageTextForFileName.setVisibility(View.GONE);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-
-            //Returns null, sizes are in the options variable
-            BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-            final int height = options.outHeight;
-            final int width = options.outWidth;
-
-            ImageScaler imageScaler = new ImageScaler(height, width).invoke();
-            int scalledW = imageScaler.getScalledW();
-            int scalledH = imageScaler.getScalledH();
-
             message.messageImage.setVisibility(View.VISIBLE);
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(scalledW, scalledH);
-            message.messageImage.setLayoutParams(layoutParams);
-
-            LogManager.i(this, String.format("Loading image from file. src: %d x %d, dst: %d x %d", width, height, scalledW, scalledH));
-            Glide.with(context).load(file).crossFade().override(scalledW, scalledH).into(message.messageImage);
+            FileManager.loadImageFromFile(file, message.messageImage);
             message.messageImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openFile(context, file);
+                    FileManager.openFile(context, file);
                 }
             });
 
@@ -454,6 +262,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             return null;
         }
+
+
+
     }
 
     @Override
@@ -503,6 +314,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final Spannable spannable = messageItem.getSpannable();
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
+        message.messageText.setVisibility(View.VISIBLE);
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
@@ -671,63 +483,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             super(itemView, listener);
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
             progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
-        }
-    }
-
-    private class ImageScaler {
-        private int height;
-        private int width;
-        private int scalledW;
-        private int scalledH;
-
-        public ImageScaler(int height, int width) {
-            this.height = height;
-            this.width = width;
-        }
-
-        public int getScalledW() {
-            return scalledW;
-        }
-
-        public int getScalledH() {
-            return scalledH;
-        }
-
-        public ImageScaler invoke() {
-            Resources resources = context.getResources();
-            final int maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
-            final int minImageSize = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
-
-            if (width <= height) {
-                if (height > maxImageSize) {
-                    scalledW = (int) (width / ((double) height / maxImageSize));
-                    scalledH = maxImageSize;
-                } else if (width < minImageSize) {
-                    scalledW = minImageSize;
-                    scalledH = (int) (height / ((double) width / minImageSize));
-                    if (scalledH > maxImageSize) {
-                        scalledH = maxImageSize;
-                    }
-                } else {
-                    scalledW = width;
-                    scalledH = height;
-                }
-            } else {
-                if (width > maxImageSize) {
-                    scalledW = maxImageSize;
-                    scalledH = (int) (height / ((double) width / maxImageSize));
-                } else if (height < minImageSize) {
-                    scalledW = (int) (width / ((double) height / minImageSize));
-                    if (scalledW > maxImageSize) {
-                        scalledW = maxImageSize;
-                    }
-                    scalledH = minImageSize;
-                } else {
-                    scalledW = width;
-                    scalledH = height;
-                }
-            }
-            return this;
         }
     }
 }

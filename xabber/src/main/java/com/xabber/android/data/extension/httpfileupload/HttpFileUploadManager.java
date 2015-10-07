@@ -98,20 +98,20 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                         @Override
                         public void onStart() {
                             super.onStart();
-                            LogManager.i(this, "onStart");
+                            LogManager.i(this, "uploadFileToSlot onStart");
 
                             fileMessage = MessageManager.getInstance().createFileMessage(account, user, file);
                         }
 
                         @Override
                         public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                            LogManager.i(this, "onSuccess " + i);
+                            LogManager.i(this, "uploadFileToSlot onSuccess " + i);
                             MessageManager.getInstance().replaceMessage(account, user, fileMessage, slot.getGetUrl());
                         }
 
                         @Override
                         public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                            LogManager.i(this, "onFailure " + i);
+                            LogManager.i(this, "uploadFileToSlot onFailure " + i);
 
                             MessageManager.getInstance().updateMessageWithError(account, user, fileMessage, file.getName());
 
@@ -120,21 +120,21 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                         @Override
                         public void onRetry(int retryNo) {
                             super.onRetry(retryNo);
-                            LogManager.i(this, "onRetry " + retryNo);
+                            LogManager.i(this, "uploadFileToSlot onRetry " + retryNo);
                         }
 
                         @Override
                         public void onCancel() {
                             super.onCancel();
 
-                            LogManager.i(this, "onCancel");
+                            LogManager.i(this, "uploadFileToSlot onCancel");
 
                         }
 
                         @Override
                         public void onFinish() {
                             super.onFinish();
-                            LogManager.i(this, "onFinish");
+                            LogManager.i(this, "uploadFileToSlot onFinish");
                         }
 
 
