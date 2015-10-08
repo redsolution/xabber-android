@@ -199,32 +199,39 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageView.messageFileInfo.setVisibility(View.VISIBLE);
         }
 
-
         if (messageItem.getFile().exists()) {
             onFileExists(messageView, messageItem.getFile());
         } else {
-            messageView.downloadButton.setVisibility(View.VISIBLE);
-            messageView.downloadButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    messageView.downloadButton.setVisibility(View.GONE);
-                    messageView.downloadProgressBar.setVisibility(View.VISIBLE);
-                    FileManager.downloadFile(messageItem, new FileManager.ProgressListener() {
-                        @Override
-                        public void onProgress(long bytesWritten, long totalSize) {
-                            String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
-                            // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
-                            if (bytesWritten <= totalSize) {
-                                progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
-                            }
-                            messageView.messageFileInfo.setText(progress);
-                            messageView.messageFileInfo.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
-            });
-
+            if (SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
+                LogManager.i(this, "Downloading file from message adapter");
+                downloadFile(messageView, messageItem);
+            } else {
+                messageView.downloadButton.setVisibility(View.VISIBLE);
+                messageView.downloadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        downloadFile(messageView, messageItem);
+                    }
+                });
             }
+        }
+    }
+
+    private void downloadFile(final Message messageView, MessageItem messageItem) {
+        messageView.downloadButton.setVisibility(View.GONE);
+        messageView.downloadProgressBar.setVisibility(View.VISIBLE);
+        FileManager.getInstance().downloadFile(messageItem, new FileManager.ProgressListener() {
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
+                // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
+                if (bytesWritten <= totalSize) {
+                    progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
+                }
+                messageView.messageFileInfo.setText(progress);
+                messageView.messageFileInfo.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void onFileExists(Message message, final File file) {

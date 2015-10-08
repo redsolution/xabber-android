@@ -178,7 +178,7 @@ public abstract class AbstractChat extends BaseEntity {
      */
     private void addMessages(Collection<MessageItem> messageItems) {
         for (MessageItem messageItem : messageItems) {
-            FileManager.processFileMessage(messageItem);
+            FileManager.processFileMessage(messageItem, false);
         }
 
         messages.addAll(messageItems);
@@ -405,7 +405,7 @@ public abstract class AbstractChat extends BaseEntity {
                 : NO_RECORD_TAG, resource, text, action, timestamp,
                 delayTimestamp, incoming, read, send, false, incoming,
                 unencrypted, offline);
-        FileManager.processFileMessage(messageItem);
+        FileManager.processFileMessage(messageItem, true);
 
         messages.add(messageItem);
         updateSendQuery(messageItem);

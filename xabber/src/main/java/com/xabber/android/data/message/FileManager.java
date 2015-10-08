@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,7 +26,6 @@ import com.xabber.android.data.SettingsManager;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +34,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpHeaders;
@@ -48,16 +48,32 @@ public class FileManager {
     private static final String CACHE_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()
             + "/"  +  Application.getInstance().getString(R.string.application_title_short) + "/Cache/";
 
-    public static void processFileMessage (final MessageItem messageItem) {
+
+    private Set<String> startedDownloads;
+
+    private final static FileManager instance;
+
+    static {
+        instance = new FileManager();
+        Application.getInstance().addManager(instance);
+    }
+
+    public static FileManager getInstance() {
+        return instance;
+    }
+
+    public FileManager() {
+        this.startedDownloads = new ConcurrentSkipListSet<>();
+    }
+
+    public static void processFileMessage (final MessageItem messageItem, boolean download) {
         if (!treatAsDownloadable(messageItem.getText())) {
             return;
         }
 
         LogManager.i(FileManager.class, "Processing file message " + messageItem.getText());
 
-        final String path;
         final URL url;
-
         try {
             url = new URL(messageItem.getText());
         } catch (MalformedURLException e) {
@@ -73,10 +89,8 @@ public class FileManager {
         }
 
         if (!file.exists()) {
-
-
-            if (SettingsManager.connectionLoadImages() && extensionIsImage(extractRelevantExtension(url))) {
-                downloadFile(messageItem, null);
+            if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
+                FileManager.getInstance().downloadFile(messageItem, null);
             } else {
                 getFileUrlSize(messageItem);
             }
@@ -116,14 +130,26 @@ public class FileManager {
         void onProgress(long bytesWritten, long totalSize);
     }
 
-    public static void downloadFile(final MessageItem messageItem, final ProgressListener progressListener) {
-        LogManager.i(FileManager.class, "Downloading file " + messageItem.getText());
+    public void downloadFile(final MessageItem messageItem, final ProgressListener progressListener) {
+        final String downloadUrl = messageItem.getText();
+        if (startedDownloads.contains(downloadUrl)) {
+            LogManager.i(FileManager.class, "Downloading of file " + downloadUrl + " already started");
+            return;
+        }
+        LogManager.i(FileManager.class, "Downloading file " + downloadUrl);
+        startedDownloads.add(downloadUrl);
 
-        AsyncHttpClient client = new AsyncHttpClient();
+        final AsyncHttpClient client = new AsyncHttpClient();
         client.setLoggingEnabled(SettingsManager.debugLog());
         client.setResponseTimeout(60 * 1000);
 
-        client.get(messageItem.getText(), new AsyncHttpResponseHandler() {
+        client.get(downloadUrl, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                LogManager.i(FileManager.class, "on download start");
+            }
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
                 LogManager.i(FileManager.class, "on download onSuccess: " + statusCode);
@@ -148,6 +174,7 @@ public class FileManager {
             @Override
             public void onFinish() {
                 super.onFinish();
+                startedDownloads.remove(downloadUrl);
                 MessageManager.getInstance().onChatChanged(messageItem.getChat().getAccount(), messageItem.getChat().getUser(), false);
             }
         });
