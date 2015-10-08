@@ -79,4 +79,5 @@
   <string name="connection_use_carbons">Сообщения carbons\nМожет работать нестабильно! Принимать сообщения других сессий Вашей учетной записи. Отключение поможет сэкономить трафик.</string>
   <string name="events_phrases">Ключевые фразы\nНастройки уведомлений о сообщениях содержащих ключевые фразы</string>
   <string name="security_clear_certificate_warning">Вы действительно хотите удалить все игнорируемые сертификаты?</string>
+  <string name="debug_connection_errors_title">Показать ошибки связи\nОшибки связи</string>
 </resources>

@@ -45,7 +45,7 @@
   <string name="vcard_type_modem">Модем</string>
   <string name="vcard_type_msg">Голосовая почта</string>
   <string name="vcard_type_internet">Интернет</string>
-  <string name="please_wait">Пожалуйста, подождите...</string>
+  <string name="please_wait">Пожалуйста, подождите&#8230;</string>
   <string name="unknown">Не известно</string>
   <string name="edit_alias">Редактировать псевдоним</string>
   <string name="edit_contact_groups">Редактировать группы</string>

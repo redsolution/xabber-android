@@ -79,4 +79,5 @@
   <string name="connection_use_carbons">carbon copy Mode\nMöglicherweise instabil! Wird Sitzungen für dasselbe Konto auf diesem Client teilen. Deaktivieren, um die Datennutzung zu reduzieren.</string>
   <string name="events_phrases">Schlüsselbegriffe\nBenachrichtigung wenn Nachrichten voreingestellte Begriffe enthalten und auswahl des dazugehörigen Klanges</string>
   <string name="security_clear_certificate_warning">Wollen Sie wirklich alle ignorierten Zertifikate entfernen?</string>
+  <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>
 </resources>

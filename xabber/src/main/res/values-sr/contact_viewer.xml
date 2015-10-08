@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">Рођендан</string>
   <string name="vcard_url">Вебсајт</string>
   <string name="vcard_organization">Организација</string>
+  <string name="vcard_organization_unit">Организациона јединица</string>
   <string name="vcard_title">Радно место, функција</string>
   <string name="vcard_role">Улога</string>
   <string name="vcard_other">Остали подаци</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">Уреди псеудоним</string>
   <string name="edit_contact_groups">Уреди групе</string>
   <string name="remove_contact">Уклони контакт</string>
+  <string name="edit_account_user_info">Уреди податке о кориснику</string>
+  <string name="account_user_info_save_success">Подаци о кориснику налога успешно сачувани</string>
+  <string name="account_user_info_save_fail">Нисам могао да сачувам податке о кориснику налога</string>
+  <string name="saving">Уписујем&#8230;</string>
+  <string name="choose_from_gallery">Изабери из галерије</string>
+  <string name="take_photo">Фотографиши</string>
+  <string name="remove_avatar">Уклони аватар</string>
+  <string name="change">Промени</string>
 </resources>

@@ -10,7 +10,7 @@
   <string name="group_is_empty">Definir o nome do grupo</string>
   <string name="group_name">Nome do grupo</string>
   <string name="choose_account">Escolha uma conta</string>
-  <string name="EMPTY_ACCOUNT">Por favor seleccione uma conta</string>
+  <string name="EMPTY_ACCOUNT">Por favor, selecione uma conta</string>
   <string name="add_new_group">Adicionar novo grupo&#8230;</string>
   <string name="accept_contact">Autorizar</string>
   <string name="decline_contact">Rejeitar</string>

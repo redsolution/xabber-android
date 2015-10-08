@@ -3,7 +3,7 @@
 <resources>
   <string name="phrase_add">Přidat frázi</string>
   <string name="phrase_delete">Odstranit frázi</string>
-  <string name="phrase_delete_confirm">Opravdu chcete odstranit fráze: %s?</string>
+  <string name="phrase_delete_confirm">Opravdu chcete odstranit frázi: %s?</string>
   <string name="phrase_empty">&lt; Libovolný text &gt;</string>
   <string name="phrase_group">Součástí skupiny kontaktů</string>
   <string name="phrase_regexp">Regulární výraz</string>

@@ -79,4 +79,5 @@
   <string name="connection_use_carbons">Carbon-copied mód\nMůže způsobovat problémy! Umožňuje přijímat zprávy ve více klientech současně. Musí být podpora i na serveru.</string>
   <string name="events_phrases">Notifikace dle klíčového slova\nVytvoří Vaši vlastní notifikaci, na základě specifické fráze v příchozí zprávě</string>
   <string name="security_clear_certificate_warning">Opravdu chcete odstranit všechny ignorované certifikáty?</string>
+  <string name="debug_connection_errors_title">Ukázat chyby připojení\nZobrazovat výjimky připojení ve vyskakovacích oknech</string>
 </resources>

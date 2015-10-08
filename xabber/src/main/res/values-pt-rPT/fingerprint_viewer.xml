@@ -4,7 +4,7 @@
   <string name="otr_fingerprint_description">Para verificar a identidade do seu interlocutor, peça-lhe para fornecer a suas impressão digital e compare-a com a especificada abaixo. Não deve usar a conversa XMPP para este propósito.</string>
   <string name="otr_is_verified">O contacto é de confiança</string>
   <string name="otr_local_fingerprint">A sua impressão digital:</string>
-  <string name="otr_remote_fingerprint">A impressão digital de seu interlocutor:</string>
+  <string name="otr_remote_fingerprint">A impressão digital do seu interlocutor:</string>
   <string name="otr_scan_fingerprint">Digitalizar o código QR da impressão digital do seu interlocutor</string>
   <string name="otr_show_fingerprint">Mostrar o código QR da sua impressão digital</string>
   <string name="otr_copy_fingerprint">Copiar a sua impressão digital para área de transferência</string>

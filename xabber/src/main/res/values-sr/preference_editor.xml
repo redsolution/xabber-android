@@ -79,4 +79,5 @@
   <string name="connection_use_carbons">Индиго режим\nМоже бити нестабилан! Делиће сесије истог налога у свим програмима. Искључите да смањите пренос података.</string>
   <string name="events_phrases">Кључне речи\nНаправите посебна обавештења кад примљене поруке садрже наведене речи</string>
   <string name="security_clear_certificate_warning">Желите ли заиста да уклоните све игнорисане сертификате?</string>
+  <string name="debug_connection_errors_title">Приказ грешака везе\nИскачуће поруке при грешкама повезивања</string>
 </resources>

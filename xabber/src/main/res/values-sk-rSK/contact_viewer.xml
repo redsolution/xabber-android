@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">Narodeniny</string>
   <string name="vcard_url">Webová stránka</string>
   <string name="vcard_organization">Organizácia</string>
+  <string name="vcard_organization_unit">Pracovná funkcia</string>
   <string name="vcard_title">Zamestnanie, funkcia</string>
   <string name="vcard_role">Funkcia</string>
   <string name="vcard_other">Iné informácie</string>
@@ -49,4 +50,12 @@
   <string name="edit_alias">Upraviť alias</string>
   <string name="edit_contact_groups">Upraviť skupiny</string>
   <string name="remove_contact">Odstrániť kontakt</string>
+  <string name="edit_account_user_info">Upraviť užívateľa</string>
+  <string name="account_user_info_save_success">Informácie o používateľovi úspešne uložené</string>
+  <string name="account_user_info_save_fail">Nepodarilo sa uložiť informácie o používateľovi</string>
+  <string name="saving">Ukladam&#8230;</string>
+  <string name="choose_from_gallery">Vybrať z galérie</string>
+  <string name="take_photo">Odfotiť</string>
+  <string name="remove_avatar">Odstranit avatar</string>
+  <string name="change">Zmenit</string>
 </resources>

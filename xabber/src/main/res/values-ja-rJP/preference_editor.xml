@@ -79,4 +79,5 @@
   <string name="connection_use_carbons">カーボン コピー モード\n不安定になることがあります! このクライアントで同じアカウントのセッションを共有します。無効にすると、トラフィックの使用状況を削減します。</string>
   <string name="events_phrases">キーフレーズ\n指定したフレーズが含まれるメッセージを通知します</string>
   <string name="security_clear_certificate_warning">無視された証明書をすべて削除してもよろしいですか?</string>
+  <string name="debug_connection_errors_title">接続エラーを表示\n接続例外のポップアップを表示します</string>
 </resources>

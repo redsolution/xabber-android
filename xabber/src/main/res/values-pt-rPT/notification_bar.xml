@@ -27,12 +27,12 @@
   <string name="connection_state_waiting_2">%1$d de %2$d %3$s a aguardar ligação</string>
   <string name="connection_state_waiting_5">Contas</string>
   <string name="connection_state_offline">%1$d %2$s desligada(s)</string>
-  <string name="archive_available_request_message">Deseja armazenar o histórico das mensagens no servidor?\nHabilita o Xabber a carregar o histórico de mensagens de todos os seus dispositivos, usando esta conta.\nEsta funcionalidade usará mais tráfego na sua rede e reduzirá a velocidade da sua ligação.\nATENÇÃO: Todo o histórico local será removido.</string>
+  <string name="archive_available_request_message">Deseja guardar o histórico das mensagens no servidor?\nIsto permite à Xabber carregar o histórico das mensagens de todos os dispositivos, usando esta conta.\nEsta funcionalidade usará algum tráfego adicional e irá reduzir a velocidade da ligação.\nAVISO: Será removido todo o histórico local.</string>
   <string name="archive_available_request_title">Activar o arquivo de mensagens?</string>
   <string name="INVALID_CERTIFICATE">Certificado inválido</string>
   <string name="muc_invite_message">Deseja entrar na conferência?</string>
   <string name="otr_verification_in_progress">Seleccione para abortar.</string>
-  <string name="PASSWORD_REQUIRED">Palavra-passe obrigatória</string>
+  <string name="PASSWORD_REQUIRED">Senha necessária</string>
   <string name="pay_attention">Pedido de atenção</string>
   <string name="subscription_request_message">Pedido de autorização</string>
 </resources>
