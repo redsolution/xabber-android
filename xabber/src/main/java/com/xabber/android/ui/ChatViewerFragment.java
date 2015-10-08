@@ -386,6 +386,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
 
         if (path == null) {
+            Toast.makeText(getActivity(), R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
             return;
         }
 
