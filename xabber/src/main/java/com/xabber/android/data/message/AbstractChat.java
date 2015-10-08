@@ -38,6 +38,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -162,8 +163,9 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (MessageItem messageItem : messageItems)
+                for (MessageItem messageItem : messageItems) {
                     updateSendQuery(messageItem);
+                }
                 addMessages(messageItems);
             }
         });
@@ -175,6 +177,10 @@ public abstract class AbstractChat extends BaseEntity {
      * @param messageItems
      */
     private void addMessages(Collection<MessageItem> messageItems) {
+        for (MessageItem messageItem : messageItems) {
+            FileManager.processFileMessage(messageItem, false);
+        }
+
         messages.addAll(messageItems);
         sort();
         MessageManager.getInstance().onChatChanged(account, user, false);
@@ -399,6 +405,8 @@ public abstract class AbstractChat extends BaseEntity {
                 : NO_RECORD_TAG, resource, text, action, timestamp,
                 delayTimestamp, incoming, read, send, false, incoming,
                 unencrypted, offline);
+        FileManager.processFileMessage(messageItem, true);
+
         messages.add(messageItem);
         updateSendQuery(messageItem);
         sort();
@@ -417,6 +425,26 @@ public abstract class AbstractChat extends BaseEntity {
         }
 
         MessageManager.getInstance().onChatChanged(account, user, incoming);
+        return messageItem;
+    }
+
+    protected MessageItem newFileMessage(String text, File file, boolean isError) {
+        Date timestamp = new Date();
+
+        MessageItem messageItem = new MessageItem(this, NO_RECORD_TAG, "", text, null, timestamp,
+                null, false, true, false, false, false,
+                false, false);
+
+        messageItem.setIsUploadFileMessage(true);
+        if (isError) {
+            messageItem.markAsError();
+        }
+        messageItem.setFile(file);
+
+        messages.add(messageItem);
+        sort();
+
+        MessageManager.getInstance().onChatChanged(account, user, false);
         return messageItem;
     }
 

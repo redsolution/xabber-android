@@ -28,8 +28,25 @@
         android:id="@+id/message_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:autoLink="all"
         android:minWidth="160dp"
+        android:autoLink="all"
         android:text="Some text\n line \nrgregrere" />
+
+    <TextView
+        android:id="@+id/message_text_for_filenames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="160dp"
+        android:text="some_file_name.txt"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:id="@+id/message_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:adjustViewBounds="true"
+        />
 
 </LinearLayout>

@@ -26,4 +26,8 @@
     <dimen name="contact_name_height_show_status">24dip</dimen>
 
     <dimen name="expander_height">38dip</dimen>
+
+    <dimen name="min_chat_image_size">48dp</dimen>
+    <dimen name="max_chat_image_size">288dp</dimen>
+
 </resources>

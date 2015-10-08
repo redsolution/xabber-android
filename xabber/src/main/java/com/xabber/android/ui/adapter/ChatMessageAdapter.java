@@ -20,7 +20,9 @@ import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -32,6 +34,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.ChatAction;
+import com.xabber.android.data.message.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -39,6 +42,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -139,15 +143,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 setUpMessage(messageItem, (Message) holder);
                 setStatusIcon(messageItem, (OutgoingMessage) holder);
+                setUpFileMessage((Message) holder, messageItem);
                 break;
         }
 
     }
 
-    private void setUpIncomingMessage(IncomingMessage incomingMessage, MessageItem messageItem) {
+    private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
+        LogManager.i(this, "setUpIncomingMessage " + messageItem.getText());
+
         setUpMessage(messageItem, incomingMessage);
 
         setUpAvatar(messageItem, incomingMessage);
+        setUpFileMessage(incomingMessage, messageItem);
 
         if (messageItem.getText().trim().isEmpty()) {
             incomingMessage.messageBalloon.setVisibility(View.GONE);
@@ -158,7 +166,92 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             incomingMessage.messageBalloon.setVisibility(View.VISIBLE);
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
         }
+    }
 
+    private void setUpFileMessage(final Message messageView, final MessageItem messageItem) {
+        messageView.downloadProgressBar.setVisibility(View.GONE);
+        messageView.attachmentButton.setVisibility(View.GONE);
+        messageView.downloadButton.setVisibility(View.GONE);
+        messageView.messageImage.setVisibility(View.GONE);
+        messageView.messageFileInfo.setVisibility(View.GONE);
+        messageView.messageTextForFileName.setVisibility(View.GONE);
+
+        if (messageItem.getFile() == null) {
+            return;
+        }
+
+        LogManager.i(this, "processing file messageView " + messageItem.getText());
+
+        messageView.messageText.setVisibility(View.GONE);
+        messageView.messageTextForFileName.setText(FileManager.getFileName(messageItem.getFile().getPath()));
+        messageView.messageTextForFileName.setVisibility(View.VISIBLE);
+
+        messageView.attachmentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileManager.openFile(context, messageItem.getFile());
+            }
+        });
+
+        final Long fileSize = messageItem.getFileSize();
+        if (fileSize != null) {
+            messageView.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, fileSize));
+            messageView.messageFileInfo.setVisibility(View.VISIBLE);
+        }
+
+        if (messageItem.getFile().exists()) {
+            onFileExists(messageView, messageItem.getFile());
+        } else {
+            if (SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
+                LogManager.i(this, "Downloading file from message adapter");
+                downloadFile(messageView, messageItem);
+            } else {
+                messageView.downloadButton.setVisibility(View.VISIBLE);
+                messageView.downloadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        downloadFile(messageView, messageItem);
+                    }
+                });
+            }
+        }
+    }
+
+    private void downloadFile(final Message messageView, MessageItem messageItem) {
+        messageView.downloadButton.setVisibility(View.GONE);
+        messageView.downloadProgressBar.setVisibility(View.VISIBLE);
+        FileManager.getInstance().downloadFile(messageItem, new FileManager.ProgressListener() {
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
+                // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
+                if (bytesWritten <= totalSize) {
+                    progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
+                }
+                messageView.messageFileInfo.setText(progress);
+                messageView.messageFileInfo.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void onFileExists(Message message, final File file) {
+        if (FileManager.fileIsImage(file)) {
+            message.messageTextForFileName.setVisibility(View.GONE);
+            message.messageImage.setVisibility(View.VISIBLE);
+            FileManager.loadImageFromFile(file, message.messageImage);
+            message.messageImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FileManager.openFile(context, file);
+                }
+            });
+
+        } else {
+            message.attachmentButton.setVisibility(View.VISIBLE);
+        }
+
+        message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, file.length()));
+        message.messageFileInfo.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -176,6 +269,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             return null;
         }
+
+
+
     }
 
     @Override
@@ -220,10 +316,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         message.messageText.setTextAppearance(context, appearanceStyle);
+        message.messageTextForFileName.setTextAppearance(context, appearanceStyle);
 
         final Spannable spannable = messageItem.getSpannable();
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
+        message.messageText.setVisibility(View.VISIBLE);
 
         message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
@@ -241,14 +339,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setStatusIcon(MessageItem messageItem, OutgoingMessage message) {
         message.statusIcon.setVisibility(View.VISIBLE);
+        message.progressBar.setVisibility(View.GONE);
+
+        if (messageItem.isUploadFileMessage() && !messageItem.isError()) {
+            message.progressBar.setVisibility(View.VISIBLE);
+        }
 
         int messageIcon = R.drawable.ic_message_delivered_18dp;
         if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_18dp;
-        } else if (!messageItem.isSent()) {
+        } else if (!messageItem.isUploadFileMessage() && !messageItem.isSent()) {
             messageIcon = R.drawable.ic_message_not_sent_18dp;
         } else if (!messageItem.isDelivered()) {
-            message.statusIcon.setVisibility(View.INVISIBLE);
+            message.statusIcon.setVisibility(View.GONE);
         }
 
         message.statusIcon.setImageResource(messageIcon);
@@ -329,6 +432,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         MessageClickListener onClickListener;
 
+        public ImageButton downloadButton;
+        public ImageButton attachmentButton;
+        public ProgressBar downloadProgressBar;
+        public ImageView messageImage;
+        public TextView messageFileInfo;
+        public TextView messageTextForFileName;
+
+
         public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
             this.onClickListener = onClickListener;
@@ -338,6 +449,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
             messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
+
+            downloadButton = (ImageButton) itemView.findViewById(R.id.message_download_button);
+            attachmentButton = (ImageButton) itemView.findViewById(R.id.message_attachment_button);
+            downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
+            messageImage = (ImageView) itemView.findViewById(R.id.message_image);
+            messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
+            messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
 
             itemView.setOnClickListener(this);
         }
@@ -366,10 +484,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public static class OutgoingMessage extends Message {
 
         public ImageView statusIcon;
+        public ProgressBar progressBar;
 
         public OutgoingMessage(View itemView, MessageClickListener listener) {
             super(itemView, listener);
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
+            progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
         }
     }
 }

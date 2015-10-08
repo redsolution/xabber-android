@@ -92,6 +92,17 @@
          />
 
         <ImageButton
+            android:id="@+id/button_attach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_background"
+            android:padding="8dp"
+            android:src="@drawable/ic_paperclip_grey600_24dp"
+            android:alpha="0.5"
+            />
+
+
+        <ImageButton
             android:id="@+id/button_security"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

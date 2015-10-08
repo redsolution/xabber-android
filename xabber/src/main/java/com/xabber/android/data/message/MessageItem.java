@@ -17,6 +17,7 @@ package com.xabber.android.data.message;
 import android.text.Spannable;
 import android.text.SpannableString;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -88,6 +89,14 @@ public class MessageItem implements Comparable<MessageItem> {
      */
     private String packetID;
 
+    /**
+     * Outgoing file message
+     */
+    private boolean isUploadFileMessage;
+    private File file;
+    private Long fileSize;
+
+
     public MessageItem(AbstractChat chat, String tag, String resource,
                        String text, ChatAction action, Date timestamp,
                        Date delayTimestamp, boolean incoming, boolean read, boolean sent,
@@ -109,6 +118,7 @@ public class MessageItem implements Comparable<MessageItem> {
         this.offline = offline;
         this.id = null;
         this.packetID = null;
+        this.isUploadFileMessage = false;
     }
 
     public AbstractChat getChat() {
@@ -220,4 +230,27 @@ public class MessageItem implements Comparable<MessageItem> {
         return timestamp.compareTo(another.timestamp);
     }
 
+    public boolean isUploadFileMessage() {
+        return isUploadFileMessage;
+    }
+
+    public void setIsUploadFileMessage(boolean isFileMessage) {
+        this.isUploadFileMessage = isFileMessage;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
 }

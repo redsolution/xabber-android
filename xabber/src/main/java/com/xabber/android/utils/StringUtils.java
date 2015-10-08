@@ -16,9 +16,13 @@ package com.xabber.android.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.webkit.MimeTypeMap;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;

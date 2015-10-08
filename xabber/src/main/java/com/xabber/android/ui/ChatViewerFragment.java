@@ -5,6 +5,8 @@ import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,9 +29,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -37,12 +41,15 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
@@ -55,7 +62,10 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
+import com.xabber.android.utils.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -64,12 +74,13 @@ import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
-        View.OnClickListener, Toolbar.OnMenuItemClickListener, ChatMessageAdapter.Message.MessageClickListener {
+        View.OnClickListener, Toolbar.OnMenuItemClickListener, ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
     private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
+    public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
     boolean isInputEmpty = true;
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -91,6 +102,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private Timer stopTypingTimer = new Timer();
     private final long STOP_TYPING_DELAY = 4000; // in ms
+    private ImageButton attachButton;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -272,7 +284,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void onKeyboardClose() {
-                if(popup.isShowing())
+                if (popup.isShowing())
                     popup.dismiss();
             }
         });
@@ -342,7 +354,47 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             }
         });
 
+        attachButton = (ImageButton) view.findViewById(R.id.button_attach);
+        attachButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attach();
+            }
+        });
+
         return view;
+    }
+
+    private void attach() {
+        Intent intent = (new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE));
+        startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent result) {
+        if (requestCode != FILE_SELECT_ACTIVITY_REQUEST_CODE) {
+            return;
+        }
+
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        final Uri fileUri = result.getData();
+        final String path = FileUtils.getPath(getActivity(), fileUri);
+
+        LogManager.i(this, String.format("File uri: %s, path: %s", fileUri, path));
+
+        if (path == null) {
+            Toast.makeText(getActivity(), R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        uploadFile(path);
+    }
+
+    private void uploadFile(String path) {
+        HttpFileUploadManager.getInstance().uploadFile(account, user, path);
     }
 
     private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){
@@ -395,15 +447,21 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         if (empty != isInputEmpty) {
             isInputEmpty = empty;
+        }
 
-            if (isInputEmpty) {
-                sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
-                securityButton.setVisibility(View.VISIBLE);
+        if (isInputEmpty) {
+            sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+            securityButton.setVisibility(View.VISIBLE);
+            if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
+                attachButton.setVisibility(View.VISIBLE);
             } else {
-                sendButton.setImageResource(R.drawable.ic_button_send);
-                sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
-                securityButton.setVisibility(View.GONE);
+                attachButton.setVisibility(View.GONE);
             }
+        } else {
+            sendButton.setImageResource(R.drawable.ic_button_send);
+            sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+            securityButton.setVisibility(View.GONE);
+            attachButton.setVisibility(View.GONE);
         }
     }
 
@@ -563,6 +621,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+
         switch (item.getItemId()) {
             /* security menu */
 
@@ -645,7 +704,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             /* message popup menu */
 
             case R.id.action_message_repeat:
-                sendMessage(clickedMessageItem.getText());
+                if (clickedMessageItem.isUploadFileMessage()) {
+                    uploadFile(clickedMessageItem.getFile().getPath());
+                } else {
+                    sendMessage(clickedMessageItem.getText());
+                }
                 return true;
 
             case R.id.action_message_copy:
@@ -660,6 +723,35 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             case R.id.action_message_remove:
                 MessageManager.getInstance().removeMessage(clickedMessageItem);
                 updateChat();
+                return true;
+
+            case R.id.action_message_open_file:
+                FileManager.openFile(getActivity(), clickedMessageItem.getFile());
+                return true;
+
+            case R.id.action_message_save_file:
+                Application.getInstance().runInBackground(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            FileManager.saveFileToDownloads(clickedMessageItem.getFile());
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.file_saved_successfully, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getActivity(), R.string.could_not_save_file, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
                 return true;
 
             default:
@@ -747,8 +839,23 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             popup.inflate(R.menu.chat_context_menu);
             popup.setOnMenuItemClickListener(this);
 
-            if (chatMessageAdapter.getMessageItem(position).isError()) {
-                popup.getMenu().findItem(R.id.action_message_repeat).setVisible(true);
+            final Menu menu = popup.getMenu();
+
+            if (clickedMessageItem.isError()) {
+                menu.findItem(R.id.action_message_repeat).setVisible(true);
+            }
+
+            if (clickedMessageItem.isUploadFileMessage()) {
+                menu.findItem(R.id.action_message_copy).setVisible(false);
+                menu.findItem(R.id.action_message_quote).setVisible(false);
+                menu.findItem(R.id.action_message_remove).setVisible(false);
+            }
+
+            final File file = clickedMessageItem.getFile();
+
+            if (file != null && file.exists()) {
+                menu.findItem(R.id.action_message_open_file).setVisible(true);
+                menu.findItem(R.id.action_message_save_file).setVisible(true);
             }
 
             popup.show();
@@ -760,6 +867,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             shakeAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
         }
         toolbar.findViewById(R.id.name_holder).startAnimation(shakeAnimation);
+    }
+
+    @Override
+    public void onSuccessfullUpload(String getUrl) {
     }
 
     public interface ChatViewerFragmentListener {
