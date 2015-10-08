@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +27,7 @@ import com.xabber.android.data.SettingsManager;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -337,7 +339,10 @@ public class FileManager {
             mimeTypeFromExtension = "application/octet-stream";
         }
         final DownloadManager downloadManager = (DownloadManager) Application.getInstance().getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.addCompletedDownload(dstFile.getName(), Application.getInstance().getString(R.string.received_by), true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
+        downloadManager.addCompletedDownload(dstFile.getName(),
+                String.format(Application.getInstance().getString(R.string.received_by),
+                Application.getInstance().getString(R.string.application_title_short)),
+                true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
     }
 
     public static void saveFileToCache(File srcFile, URL url) throws IOException {

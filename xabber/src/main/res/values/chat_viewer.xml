@@ -90,6 +90,6 @@
     <string name="no_application_to_open_file">No application found to open this file</string>
     <string name="could_not_save_file">Could not save file</string>
     <string name="file_saved_successfully">File saved successfully</string>
-    <string name="received_by">Received by Xabber</string>
+    <string name="received_by">Received by %s</string>
 
 </resources>
