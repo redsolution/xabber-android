@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,7 +51,7 @@ public class FileManager {
             return;
         }
 
-        LogManager.i(messageItem, "Processing file message " + messageItem.getText());
+        LogManager.i(FileManager.class, "Processing file message " + messageItem.getText());
 
         final String path;
         final URL url;
@@ -62,12 +63,10 @@ public class FileManager {
             return;
         }
 
-        path = url.getPath();
-
         File file = messageItem.getFile();
 
         if (file == null) {
-            file = new File(CACHE_DIRECTORY + path);
+            file = new File(getCachePath(url));
             messageItem.setFile(file);
         }
 
@@ -82,8 +81,13 @@ public class FileManager {
         }
     }
 
+    @NonNull
+    private static String getCachePath(URL url) {
+        return CACHE_DIRECTORY + url.getHost() + "/" + url.getPath();
+    }
+
     private static void getFileUrlSize(final MessageItem messageItem) {
-        LogManager.i(messageItem, "Requesting file size");
+        LogManager.i(FileManager.class, "Requesting file size");
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.head(messageItem.getText(), new AsyncHttpResponseHandler() {
@@ -111,29 +115,28 @@ public class FileManager {
     }
 
     public static void downloadFile(final MessageItem messageItem, final ProgressListener progressListener) {
-        LogManager.i(messageItem, "Downloading file " + messageItem.getText());
+        LogManager.i(FileManager.class, "Downloading file " + messageItem.getText());
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.setConnectTimeout(60 * 1000);
         client.setLoggingEnabled(SettingsManager.debugLog());
         client.setResponseTimeout(60 * 1000);
 
         client.get(messageItem.getText(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
-                LogManager.i(this, "on download onSuccess: " + statusCode);
+                LogManager.i(FileManager.class, "on download onSuccess: " + statusCode);
                 saveFile(responseBody, messageItem.getFile());
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                LogManager.i(this, "on download onFailure: " + statusCode);
+                LogManager.i(FileManager.class, "on download onFailure: " + statusCode);
 
             }
 
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
-                LogManager.i(this, "on download onProgress: " + bytesWritten + " / " + totalSize);
+                LogManager.i(FileManager.class, "on download onProgress: " + bytesWritten + " / " + totalSize);
 
                 if (progressListener != null) {
                     progressListener.onProgress(bytesWritten, totalSize);
@@ -149,14 +152,13 @@ public class FileManager {
     }
 
     private static void saveFile(final byte[] responseBody, final File file) {
-        LogManager.i(file, "Saving file " + file.getPath());
+        LogManager.i(FileManager.class, "Saving file " + file.getPath());
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 new File(file.getParent()).mkdirs();
                 try {
-                    file.createNewFile();
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
                     bos.write(responseBody);
                     bos.flush();
@@ -196,7 +198,7 @@ public class FileManager {
     }
 
     public static void loadImageFromFile(File file, ImageView imageView) {
-        LogManager.i(file, "Loading image from file " + file.getPath());
+        LogManager.i(FileManager.class, "Loading image from file " + file.getPath());
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -327,7 +329,26 @@ public class FileManager {
     }
 
     public static void saveFileToDownloads(File srcFile) throws IOException {
-        File dstFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), srcFile.getName());
+        LogManager.i(FileManager.class, "Saving file to downloads");
+        final File dstFile = copyFile(srcFile, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + srcFile.getName());
+
+        String mimeTypeFromExtension = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(dstFile.toURI().toString()));
+        if (mimeTypeFromExtension == null) {
+            mimeTypeFromExtension = "application/octet-stream";
+        }
+        final DownloadManager downloadManager = (DownloadManager) Application.getInstance().getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadManager.addCompletedDownload(dstFile.getName(), Application.getInstance().getString(R.string.received_by), true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
+    }
+
+    public static void saveFileToCache(File srcFile, URL url) throws IOException {
+        LogManager.i(FileManager.class, "Saving file to cache");
+        copyFile(srcFile, getCachePath(url));
+    }
+
+    public static File copyFile(File srcFile, String dstPath) throws IOException {
+        File dstFile = new File(dstPath);
+
+        new File(dstFile.getParent()).mkdirs();
 
         InputStream in = new FileInputStream(srcFile);
         OutputStream out = new FileOutputStream(dstFile);
@@ -341,11 +362,6 @@ public class FileManager {
         in.close();
         out.close();
 
-        String mimeTypeFromExtension = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(dstFile.toURI().toString()));
-        if (mimeTypeFromExtension == null) {
-            mimeTypeFromExtension = "application/octet-stream";
-        }
-        final DownloadManager downloadManager = (DownloadManager) Application.getInstance().getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.addCompletedDownload(dstFile.getName(), Application.getInstance().getString(R.string.received_by), true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
+        return dstFile;
     }
 }

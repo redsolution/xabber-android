@@ -393,7 +393,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void uploadFile(String path) {
-        HttpFileUploadManager.getInstance().uploadFile(getActivity(), account, user, path);
+        HttpFileUploadManager.getInstance().uploadFile(account, user, path);
     }
 
     private void changeEmojiKeyboardIcon(ImageView iconToBeChanged, int drawableResourceId){

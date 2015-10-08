@@ -1,8 +1,6 @@
 package com.xabber.android.data.extension.httpfileupload;
 
 
-import android.content.Context;
-
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -14,6 +12,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnResponseListener;
+import com.xabber.android.data.message.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Request;
@@ -26,6 +25,9 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +57,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         return uploadServers.containsKey(account);
     }
 
-    public void uploadFile(final Context context, final String account, final String user, final String filePath) {
+    public void uploadFile(final String account, final String user, final String filePath) {
         final String uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             return;
@@ -91,7 +93,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
                     LogManager.i(this, "fileEntity.getContentLength() " + fileEntity.getContentLength());
 
-                    client.put(context, slot.getPutUrl(), fileEntity, CONTENT_TYPE, new AsyncHttpResponseHandler() {
+                    client.put(Application.getInstance(), slot.getPutUrl(), fileEntity, CONTENT_TYPE, new AsyncHttpResponseHandler() {
 
                         MessageItem fileMessage;
 
@@ -107,6 +109,10 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                         public void onSuccess(int i, Header[] headers, byte[] bytes) {
                             LogManager.i(this, "uploadFileToSlot onSuccess " + i);
                             MessageManager.getInstance().replaceMessage(account, user, fileMessage, slot.getGetUrl());
+
+                            if (FileManager.fileIsImage(file)) {
+                                saveImageToCache(slot.getGetUrl(), file);
+                            }
                         }
 
                         @Override
@@ -161,8 +167,27 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         }
     }
 
+    private void saveImageToCache(String getUrl, final File file) {
+        final URL url;
+        try {
+            url = new URL(getUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return;
+        }
 
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
+                    FileManager.saveFileToCache(file, url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void discoverSupport(XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
             XMPPException.XMPPErrorException, SmackException.NoResponseException {
@@ -194,7 +219,6 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                 } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
                     e.printStackTrace();
                 }
-
             }
         }.start();
     }
