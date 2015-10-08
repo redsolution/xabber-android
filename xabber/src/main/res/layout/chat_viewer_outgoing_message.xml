@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_message_outgoing"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <LinearLayout
+        android:id="@+id/message_balloon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+
+        android:layout_marginEnd="6dp"
+        android:layout_marginLeft="48dp"
+
+        android:layout_marginRight="6dp"
+        android:layout_marginStart="48dp"
+
+        android:background="@drawable/message_outgoing_states"
+        android:paddingBottom="8dp"
+        android:paddingEnd="16dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="16dp"
+
+        android:paddingTop="8dp"
+        android:gravity="center_vertical"
+        >
+
+        <include layout="@layout/chat_viewer_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+
+        <ImageButton
+            android:id="@+id/message_download_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_download_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ImageButton
+            android:id="@+id/message_attachment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_attachment_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ProgressBar
+            android:id="@+id/message_download_progress_bar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="12dp"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/message_balloon"
+
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+
+        android:text="Feb 19, 2015 4:39 PM"
+
+        android:textSize="10sp"
+        />
+
+    <ImageView
+        android:id="@+id/message_status_icon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_alignBottom="@+id/message_time"
+        android:layout_toLeftOf="@+id/message_time"
+
+        android:src="@drawable/ic_message_delivered_18dp"
+        />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/message_progress_bar"
+        android:layout_alignBottom="@+id/message_time"
+        android:layout_toLeftOf="@+id/message_status_icon"
+        android:layout_toStartOf="@+id/message_status_icon" />
+
+    <TextView
+        android:id="@+id/message_file_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/message_balloon"
+        android:layout_toStartOf="@+id/message_progress_bar"
+        android:layout_toLeftOf="@+id/message_progress_bar"
+
+        android:paddingRight="8dp"
+        android:paddingEnd="8dp"
+
+        android:text="231KB"
+
+        android:textSize="10sp"
+        />
+
+</RelativeLayout>
