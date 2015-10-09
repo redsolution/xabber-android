@@ -80,7 +80,7 @@ public class RoomChat extends AbstractChat {
     private MultiUserChat multiUserChat;
 
     RoomChat(String account, String user, String nickname, String password) {
-        super(account, user);
+        super(account, user, false);
         this.nickname = nickname;
         this.password = password;
         requested = false;
