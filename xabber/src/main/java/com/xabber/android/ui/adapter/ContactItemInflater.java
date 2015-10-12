@@ -1,8 +1,8 @@
 package com.xabber.android.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.OccupantList;
+import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
@@ -124,12 +124,12 @@ public class ContactItemInflater {
     }
 
     private void onAvatarClick(AbstractContact contact) {
+        Intent intent;
         if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
-            context.startActivity(
-                    OccupantList.createIntent(context, contact.getAccount(), contact.getUser()));
+            intent = ContactViewer.createIntent(context, contact.getAccount(), contact.getUser());
         } else {
-            context.startActivity(
-                    ContactEditor.createIntent(context, contact.getAccount(), contact.getUser()));
+            intent = ContactEditor.createIntent(context, contact.getAccount(), contact.getUser());
         }
+        context.startActivity(intent);
     }
 }
