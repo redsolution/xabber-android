@@ -371,7 +371,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     if ("".equals(resource)) {
                         message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                     } else {
-                        message.avatar.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(user + "/" + resource));
+                        message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user + "/" + resource));
                     }
                 } else {
                     message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));
