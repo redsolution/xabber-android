@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.roster;
 
+import android.support.annotation.Nullable;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -29,6 +31,8 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
@@ -205,13 +209,39 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     }
 
     public StatusMode getStatusMode(String account, String bareAddress) {
+        final Occupant occupant = getOccupant(account, bareAddress);
+        if (occupant != null) {
+            return occupant.getStatusMode();
+        }
+
         ResourceItem resourceItem = getResourceItem(account, bareAddress);
         if (resourceItem == null)
             return StatusMode.unavailable;
         return resourceItem.getStatusMode();
     }
 
+    /**
+     * if contact is private MUC chat
+     */
+    @Nullable
+    private Occupant getOccupant(String account, String bareAddress) {
+        if (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(bareAddress))) {
+            final Collection<Occupant> occupants = MUCManager.getInstance().getOccupants(account, Jid.getBareAddress(bareAddress));
+            for (Occupant occupant : occupants) {
+                if (occupant.getNickname().equals(Jid.getResource(bareAddress))) {
+                    return occupant;
+                }
+            }
+        }
+        return null;
+    }
+
     public String getStatusText(String account, String bareAddress) {
+        final Occupant occupant = getOccupant(account, bareAddress);
+        if (occupant != null) {
+            return occupant.getStatusText();
+        }
+
         ResourceItem resourceItem = getResourceItem(account, bareAddress);
         if (resourceItem == null)
             return "";
