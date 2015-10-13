@@ -14,6 +14,7 @@
  */
 package com.xabber.android.ui;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
@@ -106,8 +108,17 @@ public class ContactViewer extends ManagedActivity implements
         }
 
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.scrollable_container, ContactVcardViewerFragment.newInstance(account, bareAddress)).commit();
+
+            Fragment fragment;
+            if (MUCManager.getInstance().hasRoom(account, bareAddress)) {
+                fragment = ConferenceInfoFragment.newInstance(account, bareAddress);
+            } else {
+                fragment = ContactVcardViewerFragment.newInstance(account, bareAddress);
+            }
+
+            getFragmentManager().beginTransaction().add(R.id.scrollable_container, fragment).commit();
+
+
         }
 
 

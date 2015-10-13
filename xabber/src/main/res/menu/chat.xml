@@ -81,7 +81,8 @@
         android:orderInCategory="200"
         android:title="@string/occupant_list"
         android:visible="false"
-        app:showAsAction="never"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_account_multiple_white_24dp"
         />
 
     <item

@@ -44,7 +44,7 @@
   <string name="vcard_type_video">Vídeo</string>
   <string name="vcard_type_modem">Modem</string>
   <string name="vcard_type_msg">Mensagens de voz</string>
-  <string name="vcard_type_internet">Correio eletrónico</string>
+  <string name="vcard_type_internet">Correio electrónico</string>
   <string name="please_wait">Por favor, aguarde&#8230;</string>
   <string name="unknown">Desconhecido</string>
   <string name="edit_alias">Editar Pseudónimo</string>

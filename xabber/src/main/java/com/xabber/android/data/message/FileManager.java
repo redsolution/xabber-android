@@ -214,8 +214,7 @@ public class FileManager {
     }
     public static void openFile(Context context, File file) {
         final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(file), MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                MimeTypeMap.getFileExtensionFromUrl(file.toURI().toString())));
+        intent.setDataAndType(Uri.fromFile(file), getFileMimeType(file));
 
         PackageManager manager = context.getPackageManager();
         List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
@@ -224,6 +223,14 @@ public class FileManager {
         } else {
             Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static String getFileMimeType(File file) {
+        return getExtensionMimeType(MimeTypeMap.getFileExtensionFromUrl(file.toURI().toString()));
+    }
+
+    private static String getExtensionMimeType(String extension) {
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
     }
 
     public static void loadImageFromFile(File file, ImageView imageView) {
@@ -259,7 +266,7 @@ public class FileManager {
             boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
 
             if (encrypted) {
-                if (MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) != null) {
+                if (getExtensionMimeType(extension) != null) {
                     return true;
                 } else {
                     return false;
@@ -287,7 +294,7 @@ public class FileManager {
         int dotPosition = filename.lastIndexOf(".");
 
         if (dotPosition != -1) {
-            String extension = filename.substring(dotPosition + 1);
+            String extension = filename.substring(dotPosition + 1).toLowerCase();
             // we want the real file extension, not the crypto one
             if (Arrays.asList(VALID_CRYPTO_EXTENSIONS).contains(extension)) {
                 return extractRelevantExtension(path.substring(0,dotPosition));
@@ -361,7 +368,7 @@ public class FileManager {
         LogManager.i(FileManager.class, "Saving file to downloads");
         final File dstFile = copyFile(srcFile, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + srcFile.getName());
 
-        String mimeTypeFromExtension = MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(dstFile.toURI().toString()));
+        String mimeTypeFromExtension = getFileMimeType(dstFile);
         if (mimeTypeFromExtension == null) {
             mimeTypeFromExtension = "application/octet-stream";
         }

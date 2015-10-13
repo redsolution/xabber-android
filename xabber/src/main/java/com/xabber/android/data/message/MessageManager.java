@@ -172,7 +172,13 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @return
      */
     private RegularChat createChat(String account, String user) {
-        RegularChat chat = new RegularChat(account, Jid.getBareAddress(user));
+        RegularChat chat = new RegularChat(account, user, false);
+        addChat(chat);
+        return chat;
+    }
+
+    private RegularChat createPrivateMucChat(String account, String user) {
+        RegularChat chat = new RegularChat(account, user, true);
         addChat(chat);
         return chat;
     }
@@ -288,6 +294,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return chat;
     }
 
+    public AbstractChat getOrCreatePrivateMucChat(String account, String user) {
+        AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            chat = createPrivateMucChat(account, user);
+        }
+        return chat;
+    }
+
+
     /**
      * Force open chat (make it active).
      *
@@ -296,6 +311,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void openChat(String account, String user) {
         getOrCreateChat(account, user).openChat();
+    }
+
+    public void openPrivateMucChat(String account, String user) {
+        getOrCreatePrivateMucChat(account, user).openChat();
     }
 
     /**
@@ -549,7 +568,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     return;
                 }
             }
-            createChat(account, user).onPacket(contact, packet);
+            if (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user))) {
+                createPrivateMucChat(account, user).onPacket(contact, packet);
+            } else {
+                createChat(account, user).onPacket(contact, packet);
+            }
         }
     }
 

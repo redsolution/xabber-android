@@ -141,6 +141,14 @@ public class MessageItem implements Comparable<MessageItem> {
         return text;
     }
 
+    public String getDisplayText() {
+        if (file != null) {
+            return file.getName();
+        } else {
+            return text;
+        }
+    }
+
     public Spannable getSpannable() {
         if (spannable == null) {
             spannable = new SpannableString(text);

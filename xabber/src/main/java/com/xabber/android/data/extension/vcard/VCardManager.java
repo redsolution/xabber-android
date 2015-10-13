@@ -29,6 +29,7 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.PresenceManager;
@@ -266,17 +267,24 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             if (bareAddress == null) {
                 return;
             }
+
+            String addressForVcard = bareAddress;
+
+            if (MUCManager.getInstance().hasRoom(account, bareAddress)) {
+                addressForVcard = packet.getFrom();
+            }
+
             // Request vCard for new users
-            if (!names.containsKey(bareAddress)) {
+            if (!names.containsKey(addressForVcard)) {
                 if (SettingsManager.connectionLoadVCard()) {
-                    request(account, bareAddress);
+                    request(account, addressForVcard);
                 }
             }
         }
     }
 
     private void requestVCard(final String account, final String srcUser) {
-        final String userBareJid = Jid.getBareAddress(srcUser);
+        final String userBareJid = srcUser;
 
         ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
         if (connectionThread == null) {

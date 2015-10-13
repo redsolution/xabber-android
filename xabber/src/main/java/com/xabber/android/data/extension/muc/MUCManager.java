@@ -44,6 +44,7 @@ import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 
 import java.util.ArrayList;
@@ -488,5 +489,36 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         };
         thread.start();
 
+    }
+
+    public interface RoomInfoListener {
+        void onRoomInfoReceived(RoomInfo finalRoomInfo);
+    }
+
+    public static void requestRoomInfo(final String account, final String roomJid, final RoomInfoListener listener) {
+        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+
+        final Thread thread = new Thread("Get room " + roomJid + " info for account " + account) {
+            @Override
+            public void run() {
+                RoomInfo roomInfo = null;
+
+                try {
+                    LogManager.i(MUCManager.class, "Requesting room info " + roomJid);
+                    roomInfo = MultiUserChatManager.getInstanceFor(xmppConnection).getRoomInfo(roomJid);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                }
+
+                final RoomInfo finalRoomInfo = roomInfo;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onRoomInfoReceived(finalRoomInfo);
+                    }
+                });
+            }
+        };
+        thread.start();
     }
 }

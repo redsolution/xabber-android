@@ -29,6 +29,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.carbon.CarbonManager;
 
@@ -104,8 +105,10 @@ public abstract class AbstractChat extends BaseEntity {
     private String threadId;
     private boolean isLastMessageIncoming;
 
-    protected AbstractChat(final String account, final String user) {
-        super(account, user);
+    private boolean isPrivateMucChat;
+
+    protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
+        super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
         threadId = StringUtils.randomString(12);
         active = false;
         trackStatus = false;
@@ -115,6 +118,7 @@ public abstract class AbstractChat extends BaseEntity {
         historyIds = new ArrayList<Long>();
         messages = new ArrayList<MessageItem>();
         sendQuery = new ArrayList<MessageItem>();
+        this.isPrivateMucChat = isPrivateMucChat;
         updateCreationTime();
 
         Application.getInstance().runInBackground(new Runnable() {
@@ -410,7 +414,7 @@ public abstract class AbstractChat extends BaseEntity {
         messages.add(messageItem);
         updateSendQuery(messageItem);
         sort();
-        if (save)
+        if (save && !isPrivateMucChat)
             requestToWriteMessage(messageItem, resource, text, action,
                     timestamp, delayTimestamp, incoming, read, send);
 
@@ -476,7 +480,7 @@ public abstract class AbstractChat extends BaseEntity {
         for (int index = messages.size() - 1; index >= 0; index--) {
             MessageItem messageItem = messages.get(index);
             if (messageItem.getAction() == null) {
-                lastText = messageItem.getText();
+                lastText = messageItem.getDisplayText();
                 lastTime = messageItem.getTimestamp();
                 isLastMessageIncoming = messageItem.isIncoming();
                 return;

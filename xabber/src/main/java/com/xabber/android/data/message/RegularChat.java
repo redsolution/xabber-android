@@ -48,8 +48,9 @@ public class RegularChat extends AbstractChat {
      */
     private String resource;
 
-    RegularChat(String account, String user) {
-        super(account, user);
+
+    RegularChat(String account, String user, boolean isPrivateMucChat) {
+        super(account, user, isPrivateMucChat);
         resource = null;
     }
 

@@ -17,6 +17,8 @@
   <string name="message_quote">引用</string>
   <string name="message_remove">履歴から削除</string>
   <string name="message_repeat">送信をリトライ</string>
+  <string name="message_open_file">開く</string>
+  <string name="message_save_file">保存</string>
   <string name="save_history">ローカルの履歴を保存\nメッセージの履歴をローカルに保存します</string>
   <string name="show_history">履歴を表示</string>
   <string name="action_attention_called">アテンション呼び出しが送信されました</string>
@@ -80,4 +82,11 @@
   <string name="chat_events_show_text_global">グローバル設定を使用する</string>
   <string name="chat_events_show_text_always">メッセージ テキストを表示する</string>
   <string name="chat_events_show_text_never">メッセージ テキストを非表示にする</string>
+  <string name="sending_file">ファイル %s を送信中</string>
+  <string name="error_sending_file">ファイル %s 送信時にエラー</string>
+  <string name="no_application_to_open_file">このファイルを開くアプリケーションがありません</string>
+  <string name="could_not_save_file">ファイルを保存できません</string>
+  <string name="file_saved_successfully">ファイルが正常に保存されました</string>
+  <string name="received_by">%s が受信しました</string>
+  <string name="could_not_get_path_to_file">ファイルのパスを取得できません</string>
 </resources>

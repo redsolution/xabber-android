@@ -57,4 +57,9 @@
     <string name="take_photo">Take photo</string>
     <string name="remove_avatar">Remove avatar</string>
     <string name="change">Change</string>
+    <string name="could_not_get_room_info">Could not get conference information</string>
+    <string name="conference_name">Name</string>
+    <string name="conference_description">Description</string>
+    <string name="conference_subject">Subject</string>
+    <string name="message_info_occupants_number">Occupants: %d</string>
 </resources>
