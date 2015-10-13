@@ -471,7 +471,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         } else {
             messageNotifications.remove(messageNotification);
         }
-        messageNotification.addMessage(messageItem.getText());
+        messageNotification.addMessage(messageItem.getDisplayText());
         messageNotifications.add(messageNotification);
 
         final String account = messageNotification.getAccount();

@@ -480,7 +480,7 @@ public abstract class AbstractChat extends BaseEntity {
         for (int index = messages.size() - 1; index >= 0; index--) {
             MessageItem messageItem = messages.get(index);
             if (messageItem.getAction() == null) {
-                lastText = messageItem.getText();
+                lastText = messageItem.getDisplayText();
                 lastTime = messageItem.getTimestamp();
                 isLastMessageIncoming = messageItem.isIncoming();
                 return;
