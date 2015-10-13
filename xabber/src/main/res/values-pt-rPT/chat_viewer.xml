@@ -17,6 +17,8 @@
   <string name="message_quote">Citar</string>
   <string name="message_remove">Remover do histórico</string>
   <string name="message_repeat">Tentar novamente</string>
+  <string name="message_open_file">Abrir</string>
+  <string name="message_save_file">Guardar</string>
   <string name="save_history">Guardar histórico localmente\nGuarda o histórico das mensagens localmente no dispositivo</string>
   <string name="show_history">Mostrar histórico</string>
   <string name="action_attention_called">Chamada de atenção enviada</string>
@@ -61,7 +63,7 @@
   <string name="export_chat_send">Enviar depois de exportar</string>
   <string name="export_chat_title">Insira o nome do ficheiro</string>
   <string name="muc_invite">Convidar para conversar</string>
-  <string name="muc_is_unavailable">Não foi possível entregar as suas mensagens. Por favor, junte-se à conversação</string>
+  <string name="muc_is_unavailable">As mensagens não puderam ser entregues. Por favor entre na conversa</string>
   <string name="occupant_list">Lista de Participantes</string>
   <string name="otr_encryption">Encriptação OTR</string>
   <string name="otr_end">Parar encriptação</string>
@@ -80,4 +82,5 @@
   <string name="chat_events_show_text_global">Usar definições globais</string>
   <string name="chat_events_show_text_always">Mostrar o texto</string>
   <string name="chat_events_show_text_never">Esconder o texto</string>
+  <string name="sending_file">A enviar o ficheiro %s</string>
 </resources>

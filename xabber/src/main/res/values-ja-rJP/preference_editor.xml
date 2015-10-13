@@ -76,6 +76,7 @@
   <string name="chats_attention">注意\n受信注意リクエストに反応します</string>
   <string name="chats_attention_sound">注意サウンド\n着信音を選択します</string>
   <string name="connection_load_vcard">vCard をロード\n連絡先の個人情報およびアバターをロードして更新します. 無効にすると通信の使用量が減ります.</string>
+  <string name="connection_load_images">画像をロード\nファイルの URL から自動的に画像を読み込みます。トラフィック使用量を削減するには、無効にします。</string>
   <string name="connection_use_carbons">カーボン コピー モード\n不安定になることがあります! このクライアントで同じアカウントのセッションを共有します。無効にすると、トラフィックの使用状況を削減します。</string>
   <string name="events_phrases">キーフレーズ\n指定したフレーズが含まれるメッセージを通知します</string>
   <string name="security_clear_certificate_warning">無視された証明書をすべて削除してもよろしいですか?</string>

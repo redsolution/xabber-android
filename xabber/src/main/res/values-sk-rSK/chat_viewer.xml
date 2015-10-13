@@ -17,6 +17,8 @@
   <string name="message_quote">Citovať</string>
   <string name="message_remove">Odstrániť z histórie</string>
   <string name="message_repeat">Znovu poslať</string>
+  <string name="message_open_file">Otvoriť</string>
+  <string name="message_save_file">Uložiť</string>
   <string name="save_history">Ukladať lokálnu históriu\nUložiť históriu správ lokálne</string>
   <string name="show_history">Zobraziť históriu</string>
   <string name="action_attention_called">Žiadosť o pozornosť bola zaslaná</string>
@@ -80,4 +82,11 @@
   <string name="chat_events_show_text_global">Použiť globálne nastavenia</string>
   <string name="chat_events_show_text_always">Zobraziť text správy</string>
   <string name="chat_events_show_text_never">Skryť text správy</string>
+  <string name="sending_file">Odosielam súbor %s</string>
+  <string name="error_sending_file">Chyba pri odosielaní súboru %s</string>
+  <string name="no_application_to_open_file">Na otvorenie tohto typu súboru nebola nájdená žiadna aplikácia</string>
+  <string name="could_not_save_file">Nepodarilo sa uložiť súbor</string>
+  <string name="file_saved_successfully">Súbor úspešne uložený</string>
+  <string name="received_by">Prijatá %s</string>
+  <string name="could_not_get_path_to_file">Nepodarilo sa nájsť cestu k súboru</string>
 </resources>

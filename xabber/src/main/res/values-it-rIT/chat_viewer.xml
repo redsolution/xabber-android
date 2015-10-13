@@ -17,6 +17,8 @@
   <string name="message_quote">Cita</string>
   <string name="message_remove">Rimuovi dalla cronologia</string>
   <string name="message_repeat">Ritenta invio</string>
+  <string name="message_open_file">Apri</string>
+  <string name="message_save_file">Salva</string>
   <string name="save_history">Salva cronologia in locale \nMemorizza la cronologia dei messaggi localmente</string>
   <string name="show_history">Mostra la cronologia</string>
   <string name="action_attention_called">La richiesta d\'attenzione è stata inviata</string>
@@ -80,4 +82,11 @@
   <string name="chat_events_show_text_global">Usa impostazioni globali</string>
   <string name="chat_events_show_text_always">Mostra il testo del messaggio</string>
   <string name="chat_events_show_text_never">Nascondi il testo del messaggio</string>
+  <string name="sending_file">Invio file %s</string>
+  <string name="error_sending_file">Errore nell\'invio del file %s</string>
+  <string name="no_application_to_open_file">Nessuna applicazione trovata per aprire questo file</string>
+  <string name="could_not_save_file">Impossibile salvare il file</string>
+  <string name="file_saved_successfully">File salvato con successo</string>
+  <string name="received_by">Ricevuto da %s</string>
+  <string name="could_not_get_path_to_file">Impossibile ottenere il percorso del file</string>
 </resources>
