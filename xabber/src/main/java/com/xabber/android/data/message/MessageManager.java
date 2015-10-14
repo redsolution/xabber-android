@@ -287,9 +287,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @return
      */
     public AbstractChat getOrCreateChat(String account, String user) {
-        AbstractChat chat = getChat(account, user);
+        String bareAddress = Jid.getBareAddress(user);
+
+        if (MUCManager.getInstance().hasRoom(account, bareAddress) && Jid.getResource(user) != null) {
+            return getOrCreatePrivateMucChat(account, user);
+        }
+
+        AbstractChat chat = getChat(account, bareAddress);
         if (chat == null) {
-            chat = createChat(account, user);
+            chat = createChat(account, bareAddress);
         }
         return chat;
     }

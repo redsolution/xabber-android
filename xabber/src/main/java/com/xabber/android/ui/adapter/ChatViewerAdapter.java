@@ -40,7 +40,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         this.finishUpdateListener = finishUpdateListener;
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), Jid.getBareAddress(chat.getUser()));
+        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
 
         updateChats();
     }
