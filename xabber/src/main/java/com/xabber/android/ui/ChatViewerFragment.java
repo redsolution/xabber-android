@@ -63,6 +63,7 @@ import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 import com.xabber.android.utils.FileUtils;
+import com.xabber.xmpp.address.Jid;
 
 import java.io.File;
 import java.io.IOException;
@@ -754,6 +755,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 });
                 return true;
 
+            case R.id.action_message_open_muc_private_chat:
+                String occupantFullJid = user + "/" + clickedMessageItem.getResource();
+                MessageManager.getInstance().openChat(account, occupantFullJid);
+                startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+                return true;
+
             default:
                 return false;
         }
@@ -858,6 +865,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             if (file != null && file.exists()) {
                 menu.findItem(R.id.action_message_open_file).setVisible(true);
                 menu.findItem(R.id.action_message_save_file).setVisible(true);
+            }
+
+            if (clickedMessageItem.isIncoming() && MUCManager.getInstance().hasRoom(account, user)) {
+                menu.findItem(R.id.action_message_open_muc_private_chat).setVisible(true);
             }
 
             popup.show();

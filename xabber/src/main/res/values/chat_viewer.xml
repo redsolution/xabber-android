@@ -92,5 +92,6 @@
     <string name="file_saved_successfully">File saved successfully</string>
     <string name="received_by">Received by %s</string>
     <string name="could_not_get_path_to_file">Could not get path to file</string>
+    <string name="message_open_private_chat">Open private chat</string>
 
 </resources>
