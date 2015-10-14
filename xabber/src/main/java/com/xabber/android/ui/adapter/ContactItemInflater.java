@@ -18,6 +18,7 @@ import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.ContactViewer;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
+import com.xabber.xmpp.address.Jid;
 
 public class ContactItemInflater {
 
@@ -68,6 +69,13 @@ public class ContactItemInflater {
         });
 
         viewHolder.name.setText(contact.getName());
+
+        if (MUCManager.getInstance().hasRoom(contact.getAccount(), Jid.getBareAddress(contact.getName()))) {
+            viewHolder.mucIndicator.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.mucIndicator.setVisibility(View.GONE);
+        }
+
         String statusText;
 
         viewHolder.outgoingMessageIndicator.setVisibility(View.GONE);

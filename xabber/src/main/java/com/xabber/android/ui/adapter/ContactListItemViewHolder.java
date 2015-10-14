@@ -19,6 +19,7 @@ class ContactListItemViewHolder {
     final View statusIconSeparator;
     final ImageView statusIcon;
     final ImageView offlineShadow;
+    final ImageView mucIndicator;
 
     public ContactListItemViewHolder(View view) {
         color = (ImageView) view.findViewById(R.id.account_color_indicator);
@@ -32,5 +33,6 @@ class ContactListItemViewHolder {
         statusIconSeparator = view.findViewById(R.id.status_icon_separator);
         statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
+        mucIndicator = (ImageView) view.findViewById(R.id.contact_list_item_muc_indicator);
     }
 }
