@@ -563,16 +563,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (body == null) {
                 return;
             }
+
+            if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user))) {
+                createPrivateMucChat(account, user).onPacket(contact, packet);
+                return;
+            }
+
             for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof MUCUser) {
                     return;
                 }
             }
-            if (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user))) {
-                createPrivateMucChat(account, user).onPacket(contact, packet);
-            } else {
-                createChat(account, user).onPacket(contact, packet);
-            }
+
+            createChat(account, user).onPacket(contact, packet);
         }
     }
 
