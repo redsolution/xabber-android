@@ -554,18 +554,28 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
         Bitmap srcBitmap = BitmapFactory.decodeFile(srcPath);
 
+        FileOutputStream out = null;
         try {
             Bitmap oriented = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(), srcBitmap.getHeight(), matrix, true);
             srcBitmap.recycle();
 
             final File rotateImageFile = createImageFile(ROTATE_FILE_NAME);
-            FileOutputStream out = new FileOutputStream(rotateImageFile);
-            oriented.compress(Bitmap.CompressFormat.JPEG, 100, out);
-
+            out = new FileOutputStream(rotateImageFile);
+            oriented.compress(Bitmap.CompressFormat.JPEG, 85, out);
+            oriented.recycle();
             return Uri.fromFile(rotateImageFile);
         } catch (IOException | OutOfMemoryError e) {
             e.printStackTrace();
             return srcUri;
+        } finally {
+            try {
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -602,7 +612,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                 break;
             case Crop.RESULT_ERROR:
                 avatarSize.setVisibility(View.INVISIBLE);
-                Toast.makeText(getActivity(), Crop.getError(result).getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.error_during_crop, Toast.LENGTH_SHORT).show();
                 // no break!
             default:
                 newAvatarImageUri = null;

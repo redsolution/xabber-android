@@ -14,4 +14,5 @@
     <string name="accept_contact">Authorize</string>
     <string name="decline_contact">Discard</string>
     <string name="processing_image">Processing image...</string>
+    <string name="error_during_crop">Error during image crop</string>
 </resources>
