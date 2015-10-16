@@ -119,13 +119,13 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
     }
 
     @Override
-    public void onVCardSavingStarted() {
-        toolbar.setTitle(R.string.saving);
+    public void onProgressModeStarted(String message) {
+        toolbar.setTitle(message);
         toolbar.getMenu().findItem(R.id.action_save).setEnabled(false);
     }
 
     @Override
-    public void onVCardSavingFinished() {
+    public void onProgressModeFinished() {
         toolbar.setTitle(R.string.edit_account_user_info);
     }
 
