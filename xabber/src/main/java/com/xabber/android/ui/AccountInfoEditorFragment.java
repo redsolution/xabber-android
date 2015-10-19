@@ -481,39 +481,56 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private void beginCrop(final Uri source) {
         newAvatarImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), TEMP_FILE_NAME));
 
-        if (FileManager.isImageSizeGreater(source, MAX_IMAGE_SIZE) || FileManager.isImageNeedRotation(source)) {
-            enableProgressMode(getString(R.string.processing_image));
-            Glide.with(this).load(source).asBitmap().toBytes().override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE).into(new SimpleTarget<byte[]>() {
-                @Override
-                public void onResourceReady(final byte[] data, GlideAnimation anim) {
-                    Application.getInstance().runInBackground(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
-                            if (rotatedImage == null) return;
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, MAX_IMAGE_SIZE)
+                        || FileManager.isImageNeedRotation(source);
 
-                            Application.getInstance().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    startImageCropActivity(rotatedImage);
-                                    disableProgressMode();
-                                }
-                            });
-
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isImageNeedPreprocess) {
+                            preprocessAndStartCrop(source);
+                        } else {
+                            startImageCropActivity(source);
                         }
-                    });
-                }
+                    }
+                });
+            }
+        });
+    }
 
-                @Override
-                public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                    super.onLoadFailed(e, errorDrawable);
-                    disableProgressMode();
-                    Toast.makeText(getActivity(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            startImageCropActivity(source);
-        }
+    private void preprocessAndStartCrop(Uri source) {
+        enableProgressMode(getString(R.string.processing_image));
+        Glide.with(this).load(source).asBitmap().toBytes().override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE).into(new SimpleTarget<byte[]>() {
+            @Override
+            public void onResourceReady(final byte[] data, GlideAnimation anim) {
+                Application.getInstance().runInBackground(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                        if (rotatedImage == null) return;
+
+                        Application.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startImageCropActivity(rotatedImage);
+                                disableProgressMode();
+                            }
+                        });
+
+                    }
+                });
+            }
+
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+                disableProgressMode();
+                Toast.makeText(getActivity(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void startImageCropActivity(Uri srcUri) {
