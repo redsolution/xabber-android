@@ -49,7 +49,7 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.FileManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
@@ -62,8 +62,7 @@ import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.ChatContactSettings;
-import com.xabber.android.utils.FileUtils;
-import com.xabber.xmpp.address.Jid;
+import com.xabber.android.data.extension.file.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

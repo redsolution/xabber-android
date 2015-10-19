@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -26,15 +23,18 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.soundcloud.android.crop.Crop;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.utils.FileUtils;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
@@ -45,7 +45,6 @@ import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -74,6 +73,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final int TAKE_PHOTO_REQUEST_CODE = 3;
     public static final String DATE_FORMAT = "yyyy-mm-dd";
     public static final String DATE_FORMAT_INT_TO_STRING = "%d-%02d-%02d";
+    public static final int MAX_IMAGE_SIZE = 512;
 
     private VCard vCard;
     private String account;
@@ -445,7 +445,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             File imageFile = null;
             try {
-                imageFile = createImageFile(TEMP_FILE_NAME);
+                imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -457,15 +457,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                 startActivityForResult(takePictureIntent, TAKE_PHOTO_REQUEST_CODE);
             }
         }
-    }
-
-    private File createImageFile(String name) throws IOException {
-        // Create an image file name
-        return File.createTempFile(
-                name,  /* prefix */
-                ".jpg",         /* suffix */
-                Application.getInstance().getExternalFilesDir(null)      /* directory */
-        );
     }
 
     private void removeAvatar() {
@@ -487,122 +478,50 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     }
 
-    private Uri rotateImageIfNeeded(Uri srcUri) {
-        LogManager.i(this, "rotateImageIfNeeded: " + srcUri);
-
-        final String srcPath = FileUtils.getPath(Application.getInstance(), srcUri);
-        if (srcPath == null) {
-            return srcUri;
-        }
-
-        ExifInterface exif;
-        try {
-            exif = new ExifInterface(srcPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return srcUri;
-        }
-
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
-        Matrix matrix = new Matrix();
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                LogManager.i(this, "ORIENTATION_FLIP_HORIZONTAL");
-                matrix.setScale(-1, 1);
-                break;
-
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                LogManager.i(this, "ORIENTATION_ROTATE_180");
-                matrix.setRotate(180);
-                break;
-
-            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                LogManager.i(this, "ORIENTATION_FLIP_VERTICAL");
-                matrix.setRotate(180);
-                matrix.postScale(-1, 1);
-                break;
-
-            case ExifInterface.ORIENTATION_TRANSPOSE:
-                LogManager.i(this, "ORIENTATION_TRANSPOSE");
-                matrix.setRotate(90);
-                matrix.postScale(-1, 1);
-                break;
-
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                LogManager.i(this, "ORIENTATION_ROTATE_90");
-                matrix.setRotate(90);
-                break;
-
-            case ExifInterface.ORIENTATION_TRANSVERSE:
-                LogManager.i(this, "ORIENTATION_TRANSVERSE");
-                matrix.setRotate(-90);
-                matrix.postScale(-1, 1);
-                break;
-
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                LogManager.i(this, "ORIENTATION_ROTATE_270");
-                matrix.setRotate(-90);
-                break;
-
-            case ExifInterface.ORIENTATION_NORMAL:
-            case ExifInterface.ORIENTATION_UNDEFINED:
-            default:
-                LogManager.i(this, "default orientation");
-                return srcUri;
-        }
-
-        Bitmap srcBitmap = BitmapFactory.decodeFile(srcPath);
-
-        FileOutputStream out = null;
-        try {
-            Bitmap oriented = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(), srcBitmap.getHeight(), matrix, true);
-            srcBitmap.recycle();
-
-            final File rotateImageFile = createImageFile(ROTATE_FILE_NAME);
-            out = new FileOutputStream(rotateImageFile);
-            oriented.compress(Bitmap.CompressFormat.JPEG, 85, out);
-            oriented.recycle();
-            return Uri.fromFile(rotateImageFile);
-        } catch (IOException | OutOfMemoryError e) {
-            e.printStackTrace();
-            return srcUri;
-        } finally {
-            try {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void beginCrop(final Uri source) {
         newAvatarImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), TEMP_FILE_NAME));
 
-        enableProgressMode(getString(R.string.processing_image));
+        if (FileManager.isImageSizeGreater(source, MAX_IMAGE_SIZE) || FileManager.isImageNeedRotation(source)) {
+            enableProgressMode(getString(R.string.processing_image));
+            Glide.with(this).load(source).asBitmap().toBytes().override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE).into(new SimpleTarget<byte[]>() {
+                @Override
+                public void onResourceReady(final byte[] data, GlideAnimation anim) {
+                    Application.getInstance().runInBackground(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                            if (rotatedImage == null) return;
 
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                final Uri imageToCrop = rotateImageIfNeeded(source);
+                            Application.getInstance().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startImageCropActivity(rotatedImage);
+                                    disableProgressMode();
+                                }
+                            });
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Activity activity = getActivity();
-                        if (activity == null) {
-                            return;
                         }
-                        disableProgressMode();
-                        LogManager.i(this, "Starting crop: " + imageToCrop);
-                        Crop.of(imageToCrop, newAvatarImageUri).withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS).start(activity);
-                    }
-                });
-            }
-        });
+                    });
+                }
+
+                @Override
+                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                    super.onLoadFailed(e, errorDrawable);
+                    disableProgressMode();
+                    Toast.makeText(getActivity(), R.string.error_during_image_processing, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            startImageCropActivity(source);
+        }
+    }
+
+    private void startImageCropActivity(Uri srcUri) {
+        final Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        Crop.of(srcUri, newAvatarImageUri).withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS).start(activity);
     }
 
     private void handleCrop(int resultCode, Intent result) {

@@ -15,4 +15,5 @@
     <string name="decline_contact">Discard</string>
     <string name="processing_image">Processing image...</string>
     <string name="error_during_crop">Error during image crop</string>
+    <string name="error_during_image_processing">Error during image processing</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.xabber.android.utils;
+package com.xabber.android.data.extension.file;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;

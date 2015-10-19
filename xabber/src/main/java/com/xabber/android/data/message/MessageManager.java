@@ -36,6 +36,7 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -48,8 +49,6 @@ import com.xabber.xmpp.delay.Delay;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 

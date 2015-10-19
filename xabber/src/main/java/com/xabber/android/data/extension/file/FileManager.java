@@ -1,4 +1,4 @@
-package com.xabber.android.data.message;
+package com.xabber.android.data.extension.file;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -7,9 +7,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,10 +24,13 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.message.MessageManager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -375,7 +380,7 @@ public class FileManager {
         final DownloadManager downloadManager = (DownloadManager) Application.getInstance().getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.addCompletedDownload(dstFile.getName(),
                 String.format(Application.getInstance().getString(R.string.received_by),
-                Application.getInstance().getString(R.string.application_title_short)),
+                        Application.getInstance().getString(R.string.application_title_short)),
                 true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
     }
 
@@ -403,4 +408,97 @@ public class FileManager {
 
         return dstFile;
     }
+
+    public static boolean isImageSizeGreater(Uri srcUri, int maxSize) {
+        final String srcPath = FileUtils.getPath(Application.getInstance(), srcUri);
+        if (srcPath == null) {
+            return false;
+        }
+
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(new File(srcPath));
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(fis, null, options);
+        try {
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return options.outHeight > maxSize || options.outWidth > maxSize;
+    }
+
+    public static boolean isImageNeedRotation(Uri srcUri) {
+        final String srcPath = FileUtils.getPath(Application.getInstance(), srcUri);
+        if (srcPath == null) {
+            return false;
+        }
+
+        ExifInterface exif;
+        try {
+            exif = new ExifInterface(srcPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+            case ExifInterface.ORIENTATION_ROTATE_180:
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+            case ExifInterface.ORIENTATION_ROTATE_90:
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return true;
+
+            case ExifInterface.ORIENTATION_NORMAL:
+            case ExifInterface.ORIENTATION_UNDEFINED:
+            default:
+                return false;
+        }
+    }
+
+    @Nullable
+    public static Uri saveImage(byte[] data, String fileName) {
+        final File rotateImageFile;
+        BufferedOutputStream bos = null;
+        try {
+            rotateImageFile = createTempImageFile(fileName);
+            bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
+            bos.write(data);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.flush();
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return Uri.fromFile(rotateImageFile);
+    }
+
+    public static File createTempImageFile(String name) throws IOException {
+        // Create an image file name
+        return File.createTempFile(
+                name,  /* prefix */
+                ".jpg",         /* suffix */
+                Application.getInstance().getExternalFilesDir(null)      /* directory */
+        );
+    }
+
 }
