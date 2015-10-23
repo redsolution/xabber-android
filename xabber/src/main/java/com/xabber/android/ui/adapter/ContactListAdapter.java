@@ -23,6 +23,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -140,7 +141,22 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
             handler.removeCallbacks(this);
         }
 
-        final Collection<RosterContact> rosterContacts = RosterManager.getInstance().getContacts();
+        final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getContacts();
+
+        Map<String, Collection<String>> blockedContacts = new TreeMap<>();
+        for (String account : AccountManager.getInstance().getAccounts()) {
+            blockedContacts.put(account, BlockingManager.getInstance().getBlockedContacts(account));
+        }
+
+        final Collection<RosterContact> rosterContacts = new ArrayList<>();
+        for (RosterContact contact : allRosterContacts) {
+            if (blockedContacts.containsKey(contact.getAccount())) {
+                if (!blockedContacts.get(contact.getAccount()).contains(contact.getUser())) {
+                    rosterContacts.add(contact);
+                }
+            }
+        }
+
         final boolean showOffline = SettingsManager.contactsShowOffline();
         final boolean showGroups = SettingsManager.contactsShowGroups();
         final boolean showEmptyGroups = SettingsManager.contactsShowEmptyGroups();

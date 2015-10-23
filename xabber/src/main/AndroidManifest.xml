@@ -411,6 +411,16 @@
             android:name=".ui.ConferenceFilterActivity">
         </activity>
 
+        <activity
+            android:name=".ui.BlockedListActivity"
+            android:parentActivityName=".ui.ContactList" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.ContactList" />
+        </activity>
+
         <service android:name=".service.XabberService" />
         <service
             android:name=".service.SyncAdapterService"

@@ -22,6 +22,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -31,6 +32,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -144,6 +146,25 @@ public class ContextMenuHelper {
 
                 });
 
+        menu.findItem(R.id.action_block_contact).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(activity, R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onError() {
+                                Toast.makeText(activity, R.string.error_blocking_contact, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return true;
+            }
+        });
+
         menu.findItem(R.id.action_close_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
 
@@ -224,6 +245,10 @@ public class ContextMenuHelper {
             if (!MessageManager.getInstance().hasActiveChat(account, user)) {
                 menu.findItem(R.id.action_close_chat).setVisible(false);
             }
+
+            if (!BlockingManager.getInstance().isSupported(account)) {
+                menu.findItem(R.id.action_block_contact).setVisible(false);
+            }
             if (abstractContact.getStatusMode() != StatusMode.unsubscribed) {
                 menu.findItem(R.id.action_request_subscription).setVisible(false);
             }
@@ -232,6 +257,7 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_contact_info).setVisible(false);
             menu.findItem(R.id.action_edit_contact_groups).setVisible(false);
             menu.findItem(R.id.action_delete_contact).setVisible(false);
+            menu.findItem(R.id.action_block_contact).setVisible(false);
             menu.findItem(R.id.action_close_chat).setVisible(false);
             menu.findItem(R.id.action_request_subscription).setVisible(false);
 

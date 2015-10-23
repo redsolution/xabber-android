@@ -24,6 +24,9 @@
     <item android:id="@+id/action_delete_contact"
         android:title="@string/contact_delete" />
 
+    <item android:id="@+id/action_block_contact"
+        android:title="@string/contact_block" />
+
     <item android:id="@+id/action_close_chat"
         android:title="@string/close_chat" />
 
