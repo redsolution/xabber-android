@@ -50,7 +50,6 @@ import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
-import com.xabber.android.ui.preferences.AccountEditor;
 
 /**
  * Helper class for context menu creation.
@@ -322,14 +321,14 @@ public class ContextMenuHelper {
         }
 
         menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditor.createIntent(activity, account));
-        menu.findItem(R.id.action_edit_account).setIntent(AccountEditor.createIntent(activity, account));
+        menu.findItem(R.id.action_edit_account).setIntent(AccountViewer.createAccountPreferencesIntent(activity, account));
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountViewer.createIntent(activity, account));
+                            activity.startActivity(AccountViewer.createAccountPreferencesIntent(activity, account));
                             return true;
                         }
                     });

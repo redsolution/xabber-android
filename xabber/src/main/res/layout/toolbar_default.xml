@@ -9,6 +9,5 @@
     app:titleTextAppearance="@style/ToolbarTitle"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    android:background="?attr/colorPrimary"
     android:elevation="8dp"
     />

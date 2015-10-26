@@ -31,4 +31,8 @@ public class BarPainter {
         toolbar.setBackgroundColor(accountPainter.getAccountMainColorByColorName(targetColorName));
         statusBarPainter.updateWithColor(accountPainter.getAccountDarkColorByColorName(targetColorName));
     }
+
+    public AccountPainter getAccountPainter() {
+        return accountPainter;
+    }
 }

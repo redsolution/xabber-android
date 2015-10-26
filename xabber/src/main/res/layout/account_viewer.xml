@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/expandable_fake_toolbar"
+            android:id="@+id/expandable_contact_title"
+            />
+
+        <include layout="@layout/toolbar_default"
+            />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_container"
+        android:layout_below="@id/expandable_contact_title"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollable_container"
+        android:layout_below="@id/expandable_contact_title"
+        />
+
+
+</RelativeLayout>

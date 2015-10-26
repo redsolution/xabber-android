@@ -20,7 +20,6 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="@dimen/toolbar_height"
                 android:paddingBottom="8dp"
                 android:id="@+id/scrollable_container"
             />

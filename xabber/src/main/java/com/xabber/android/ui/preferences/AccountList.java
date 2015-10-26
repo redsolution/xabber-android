@@ -27,6 +27,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.ui.AccountAdd;
+import com.xabber.android.ui.AccountViewer;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
@@ -69,7 +70,7 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
 
     @Override
     protected Intent getEditIntent(String actionWith) {
-        return AccountEditor.createIntent(this, actionWith);
+        return AccountViewer.createAccountPreferencesIntent(this, actionWith);
     }
 
     @Override

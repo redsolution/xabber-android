@@ -66,7 +66,6 @@ import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.android.ui.preferences.AccountEditor;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.address.Jid;
@@ -639,6 +638,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onAccountSelected(String account) {
         drawerLayout.closeDrawers();
-        startActivity(AccountEditor.createIntent(this, account));
+        startActivity(AccountViewer.createAccountInfoIntent(this, account));
     }
 }

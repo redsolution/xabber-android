@@ -5,9 +5,6 @@
 
     <include layout="@layout/toolbar_default" />
 
-    <RelativeLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <include layout="@layout/fragment_container" />
 
 </LinearLayout>

@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/expandable_contact_title"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/toolbar_height"
+    android:layout_height="wrap_content"
     android:background="@color/green_500"
     android:elevation="8dp"
-    tools:showIn="@layout/expandable_contact_title_activity">
+    tools:showIn="@layout/expandable_contact_title_activity"
+    android:orientation="vertical"
+    >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"/>
 
     <LinearLayout
         android:id="@+id/contact_name_panel"
@@ -17,6 +23,7 @@
         android:minHeight="?android:attr/actionBarSize"
         android:orientation="horizontal"
         android:layout_gravity="bottom"
+        android:paddingLeft="10dp"
         android:paddingBottom="10dp">
 
         <ImageView
@@ -68,4 +75,4 @@
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>
