@@ -39,7 +39,7 @@
             app:expandedTitleMarginBottom="56dp"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="88dp"
-            app:expandedTitleTextAppearance="@style/CollapsingToolbarTitle"
+            app:expandedTitleTextAppearance="@style/AboutViewCollapsingToolbar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <FrameLayout

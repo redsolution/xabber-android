@@ -113,7 +113,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
         bestContact = RosterManager.getInstance().getBestContact(account, Jid.getBareAddress(account));
 
-        contactTitleView = findViewById(R.id.expandable_contact_title);
+        contactTitleView = findViewById(R.id.contact_title_expanded);
         contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(account));
         statusIcon = findViewById(R.id.status_icon);
         statusText = (TextView) findViewById(R.id.status_text);

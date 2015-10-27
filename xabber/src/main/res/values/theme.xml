@@ -34,13 +34,19 @@
         <item name="android:textSize">17sp</item>
     </style>
 
-    <style name="CollapsingToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+    <style name="AboutViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">32sp</item>
         <item name="android:shadowColor">@color/grey_700</item>
         <item name="android:shadowDx">10</item>
         <item name="android:shadowDy">10</item>
         <item name="android:shadowRadius">20</item>
         <item name="android:textColor">@color/grey_50</item>
-
     </style>
+
+    <style name="ContactViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>
