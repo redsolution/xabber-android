@@ -201,6 +201,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         preferencesFragmentContainer.setVisibility(vCardVisible ? View.GONE : View.VISIBLE);
         vCardFragmentContainer.setVisibility(vCardVisible ? View.VISIBLE : View.GONE);
         toolbar.getMenu().findItem(R.id.action_account_settings).setVisible(vCardVisible);
+        toolbar.getMenu().findItem(R.id.action_edit_account_user_info).setVisible(vCardVisible);
         toolbar.getMenu().findItem(R.id.action_account_user_info).setVisible(!vCardVisible);
     }
 
