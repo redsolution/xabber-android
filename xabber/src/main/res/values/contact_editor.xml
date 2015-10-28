@@ -16,4 +16,6 @@
     <string name="processing_image">Processing image...</string>
     <string name="error_during_crop">Error during image crop</string>
     <string name="error_during_image_processing">Error during image processing</string>
+    <string name="account_settings">Account settings</string>
+    <string name="account_user_info">Account info</string>
 </resources>

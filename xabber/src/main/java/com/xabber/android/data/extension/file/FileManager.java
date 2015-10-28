@@ -267,6 +267,11 @@ public class FileManager {
             if (extension == null) {
                 return false;
             }
+
+            if (Arrays.asList(WebExtensions.WEB_EXTENSIONS).contains(extension)) {
+                return false;
+            }
+
             String ref = url.getRef();
             boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
 

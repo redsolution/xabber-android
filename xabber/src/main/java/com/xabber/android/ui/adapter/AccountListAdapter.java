@@ -18,7 +18,9 @@ import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -56,7 +58,7 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
         } else {
             view = convertView;
         }
-        String account = getItem(position);
+        final String account = getItem(position);
 
         int accountColor = accountColors[accountManager.getColorLevel(account)];
 
@@ -65,12 +67,25 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
         ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
-        AccountItem accountItem = accountManager.getAccount(account);
+        Switch accountSwitch = (Switch) view.findViewById(R.id.account_switch);
+
+        final AccountItem accountItem = accountManager.getAccount(account);
+
+        accountSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                AccountManager.getInstance().setEnabled(account, isChecked);
+            }
+        });
+
+
         ConnectionState state;
         if (accountItem == null) {
             state = ConnectionState.offline;
+            accountSwitch.setChecked(false);
         } else {
             state = accountItem.getState();
+            accountSwitch.setChecked(accountItem.isEnabled());
         }
         ((TextView) view.findViewById(R.id.status)).setText(getActivity().getString(state.getStringId()));
         return view;

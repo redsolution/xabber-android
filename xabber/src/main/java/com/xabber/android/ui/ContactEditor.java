@@ -30,7 +30,7 @@ public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Toolbar toolbar = contactTitleExpandableToolbarInflater.getToolbar();
+        Toolbar toolbar = getToolbar();
 
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getBareAddress());
         if (rosterContact != null) {

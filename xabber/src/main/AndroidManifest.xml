@@ -116,16 +116,6 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:name=".ui.preferences.AccountEditor"
-            android:label="@string/account_editor"
-            android:parentActivityName=".ui.preferences.AccountList" >
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.AccountList" />
-        </activity>
-        <activity
             android:name=".ui.OccupantList"
             android:label="@string/occupant_list"
             android:parentActivityName=".ui.ChatViewer" >
@@ -255,12 +245,12 @@
 
         <activity
             android:name=".ui.AccountViewer"
-            android:parentActivityName=".ui.ContactList" >
+            android:parentActivityName=".ui.preferences.AccountList" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.ContactList" />
+                android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
 
         <activity

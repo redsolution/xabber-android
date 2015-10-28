@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -37,8 +38,10 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.ContactTitleExpandableToolbarInflater;
+import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.helper.StatusBarPainter;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
@@ -47,10 +50,12 @@ import java.util.List;
 public class ContactViewer extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener {
 
-    protected ContactTitleExpandableToolbarInflater contactTitleExpandableToolbarInflater;
     private String account;
     private String bareAddress;
     private TextView contactNameView;
+    private Toolbar toolbar;
+    private View contactTitleView;
+    private AbstractContact bestContact;
 
     public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, ContactViewer.class)
@@ -63,6 +68,10 @@ public class ContactViewer extends ManagedActivity implements
 
     private static String getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
+    }
+
+    protected Toolbar getToolbar() {
+        return toolbar;
     }
 
     @Override
@@ -107,6 +116,8 @@ public class ContactViewer extends ManagedActivity implements
             return;
         }
 
+        setContentView(R.layout.contact_viewer);
+
         if (savedInstanceState == null) {
 
             Fragment fragment;
@@ -121,17 +132,9 @@ public class ContactViewer extends ManagedActivity implements
 
         }
 
+        bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
 
-        contactTitleExpandableToolbarInflater = new ContactTitleExpandableToolbarInflater(this);
-        AbstractContact bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
-        contactTitleExpandableToolbarInflater.onCreate(bestContact);
-
-        View contactTitleView = findViewById(R.id.expandable_contact_title);
-        contactTitleView.findViewById(R.id.status_icon).setVisibility(View.GONE);
-        contactTitleView.findViewById(R.id.status_text).setVisibility(View.GONE);
-        contactNameView = (TextView) contactTitleView.findViewById(R.id.name);
-
-        Toolbar toolbar = contactTitleExpandableToolbarInflater.getToolbar();
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +142,27 @@ public class ContactViewer extends ManagedActivity implements
                 NavUtils.navigateUpFromSameTask(ContactViewer.this);
             }
         });
+
+
+        StatusBarPainter statusBarPainter = new StatusBarPainter(this);
+        statusBarPainter.updateWithAccountName(account);
+
+        AccountPainter accountPainter = new AccountPainter(this);
+
+        contactTitleView = findViewById(R.id.contact_title_expanded);
+        findViewById(R.id.status_icon).setVisibility(View.GONE);
+        contactTitleView.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        contactNameView = (TextView) findViewById(R.id.name);
+        contactNameView.setVisibility(View.INVISIBLE);
+
+        CollapsingToolbarLayout collapsingToolbar =
+                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle(bestContact.getName());
+
+
+
+        collapsingToolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        collapsingToolbar.setContentScrimColor(accountPainter.getAccountMainColor(account));
     }
 
     @Override
@@ -146,8 +170,7 @@ public class ContactViewer extends ManagedActivity implements
         super.onResume();
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-
-        contactTitleExpandableToolbarInflater.onResume();
+        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
     }
 
     @Override
@@ -184,6 +207,6 @@ public class ContactViewer extends ManagedActivity implements
 
     @Override
     public void onVCardReceived() {
-        contactTitleExpandableToolbarInflater.onResume();
+        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
     }
 }

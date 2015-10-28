@@ -198,7 +198,6 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         this.vCard = null;
         this.vCardError = true;
         progressBar.setVisibility(View.GONE);
-        Application.getInstance().onError(R.string.XMPP_EXCEPTION);
     }
 
     @Override

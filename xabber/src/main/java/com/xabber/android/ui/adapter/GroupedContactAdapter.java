@@ -277,7 +277,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(AccountViewer.createIntent(activity, account));
+                activity.startActivity(AccountViewer.createAccountInfoIntent(activity, account));
             }
         });
 
