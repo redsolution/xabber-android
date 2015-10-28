@@ -64,4 +64,5 @@
     <string name="unblock_contact">Unblock contact</string>
     <string name="contact_unblocked_successfully">Contact unblocked successfully</string>
     <string name="error_unblocking_contact">Error unblocking contact</string>
+    <string name="block_contact_confirm">Do you really want to block contact %1$s from account %2$s?</string>
 </resources>

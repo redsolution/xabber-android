@@ -22,7 +22,6 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -48,6 +47,7 @@ import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
@@ -149,17 +149,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        BlockingManager.getInstance().blockContact(account, user, new BlockingManager.BlockContactListener() {
-                            @Override
-                            public void onSuccess() {
-                                Toast.makeText(activity, R.string.contact_blocked_successfully, Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onError() {
-                                Toast.makeText(activity, R.string.error_blocking_contact, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        BlockContactDialog.newInstance(account, user).show(activity.getFragmentManager(), BlockContactDialog.class.getName());
                         return true;
             }
         });
