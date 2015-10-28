@@ -221,6 +221,18 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         unblockRequest.setType(IQ.Type.set);
         unblockRequest.addItem(contactJid);
 
+        sendUnblock(account, listener, unblockRequest);
+    }
+
+    public void unblockAll(String account, final UnblockContactListener listener) {
+        final Unblock unblockRequest  = new Unblock();
+        unblockRequest.setType(IQ.Type.set);
+        unblockRequest.addItems(blockListsForAccounts.get(account));
+
+        sendUnblock(account, listener, unblockRequest);
+    }
+
+    private void sendUnblock(String account, final UnblockContactListener listener, final Unblock unblockRequest) {
         try {
             ConnectionManager.getInstance().sendRequest(account, unblockRequest, new OnResponseListener() {
 
