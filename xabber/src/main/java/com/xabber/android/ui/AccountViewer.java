@@ -94,6 +94,9 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
             showAccountInfo = intent.getBooleanExtra(INTENT_SHOW_ACCOUNT_INFO, true);
         }
 
+        if (!accountItem.getFactualStatusMode().isOnline()) {
+            showAccountInfo = false;
+        }
 
         setContentView(R.layout.account_viewer);
 
