@@ -15,6 +15,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -185,6 +186,10 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
             case R.id.action_account_user_info:
                 showAccountInfo();
+                return true;
+
+            case R.id.action_block_list:
+                startActivity(BlockedListActivity.createIntent(this, account));
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -203,9 +208,14 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         showAccountInfo = vCardVisible;
         preferencesFragmentContainer.setVisibility(vCardVisible ? View.GONE : View.VISIBLE);
         vCardFragmentContainer.setVisibility(vCardVisible ? View.VISIBLE : View.GONE);
-        toolbar.getMenu().findItem(R.id.action_account_settings).setVisible(vCardVisible);
-        toolbar.getMenu().findItem(R.id.action_edit_account_user_info).setVisible(vCardVisible);
-        toolbar.getMenu().findItem(R.id.action_account_user_info).setVisible(!vCardVisible);
+        Menu toolbarMenu = toolbar.getMenu();
+        toolbarMenu.findItem(R.id.action_account_settings).setVisible(vCardVisible);
+        toolbarMenu.findItem(R.id.action_edit_account_user_info).setVisible(vCardVisible);
+        toolbarMenu.findItem(R.id.action_account_user_info).setVisible(!vCardVisible);
+
+        boolean showBlockListAction = BlockingManager.getInstance().isSupported(account) && vCardVisible;
+        toolbarMenu.findItem(R.id.action_block_list).setVisible(showBlockListAction);
+
         toolbar.setTitle(getString(vCardVisible ? R.string.account_user_info : R.string.account_settings));
     }
 

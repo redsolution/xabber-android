@@ -14,9 +14,9 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
@@ -26,13 +26,23 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     private BlockedListAdapter adapter;
     private String account;
 
-    public static Intent createIntent(Context context) {
-        return new Intent(context, BlockedListActivity.class);
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, BlockedListActivity.class).setAccount(account).build();
+    }
+
+    private static String getAccount(Intent intent) {
+        return AccountIntentBuilder.getAccount(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        account = getAccount(getIntent());
+        if (account == null) {
+            finish();
+            return;
+        }
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
@@ -45,8 +55,6 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
             }
         });
         toolbar.setTitle(R.string.block_list);
-
-        account = (String) AccountManager.getInstance().getAccounts().toArray()[0];
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);

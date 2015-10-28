@@ -50,7 +50,6 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
@@ -357,14 +356,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.contact_list, menu);
         menu.findItem(R.id.action_search).setVisible(false);
-
-        for (String account : AccountManager.getInstance().getAccounts()) {
-            if (BlockingManager.getInstance().isSupported(account)) {
-                menu.findItem(R.id.action_block_list).setVisible(true);
-                break;
-            }
-        }
-
         return true;
     }
 
@@ -441,9 +432,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 return true;
             case R.id.action_chat_list:
                 startActivity(ChatViewer.createRecentChatsIntent(this));
-                return true;
-            case R.id.action_block_list:
-                startActivity(BlockedListActivity.createIntent(this));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

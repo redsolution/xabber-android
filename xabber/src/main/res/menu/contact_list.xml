@@ -41,11 +41,4 @@
         android:title="@string/close_chats"
         app:showAsAction="never"
         />
-
-    <item android:id="@+id/action_block_list"
-        android:orderInCategory="160"
-        android:title="@string/block_list"
-        app:showAsAction="never"
-        android:visible="false"
-        />
 </menu>
