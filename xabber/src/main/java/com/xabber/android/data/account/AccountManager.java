@@ -678,6 +678,35 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         );
     }
 
+    public void setEnabled(String account, boolean enabled) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
+        AccountManager.getInstance().updateAccount(
+                account,
+                connectionSettings.isCustomHostAndPort(),
+                connectionSettings.getHost(),
+                connectionSettings.getPort(),
+                connectionSettings.getServerName(),
+                connectionSettings.getUserName(),
+                accountItem.isStorePassword(),
+                connectionSettings.getPassword(),
+                connectionSettings.getResource(),
+                accountItem.getPriority(),
+                enabled,
+                connectionSettings.isSaslEnabled(),
+                connectionSettings.getTlsMode(),
+                connectionSettings.useCompression(),
+                connectionSettings.getProxyType(),
+                connectionSettings.getProxyHost(),
+                connectionSettings.getProxyPort(),
+                connectionSettings.getProxyUser(),
+                connectionSettings.getProxyPassword(),
+                accountItem.isSyncable(),
+                accountItem.getArchiveMode(),
+                accountItem.getColorIndex()
+        );
+    }
+
     public ArchiveMode getArchiveMode(String account) {
         AccountItem accountItem = getAccount(account);
         if (accountItem == null) {
