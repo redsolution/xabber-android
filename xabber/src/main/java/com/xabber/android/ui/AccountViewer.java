@@ -165,7 +165,16 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(ACCOUNT_VIEWER_MENU, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_account_settings).setVisible(showAccountInfo);
+        menu.findItem(R.id.action_edit_account_user_info).setVisible(showAccountInfo);
+        menu.findItem(R.id.action_account_user_info).setVisible(!showAccountInfo);
+        boolean showBlockListAction = BlockingManager.getInstance().isSupported(account) && showAccountInfo;
+        menu.findItem(R.id.action_block_list).setVisible(showBlockListAction);
         return true;
     }
 
@@ -208,13 +217,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         showAccountInfo = vCardVisible;
         preferencesFragmentContainer.setVisibility(vCardVisible ? View.GONE : View.VISIBLE);
         vCardFragmentContainer.setVisibility(vCardVisible ? View.VISIBLE : View.GONE);
-        Menu toolbarMenu = toolbar.getMenu();
-        toolbarMenu.findItem(R.id.action_account_settings).setVisible(vCardVisible);
-        toolbarMenu.findItem(R.id.action_edit_account_user_info).setVisible(vCardVisible);
-        toolbarMenu.findItem(R.id.action_account_user_info).setVisible(!vCardVisible);
-
-        boolean showBlockListAction = BlockingManager.getInstance().isSupported(account) && vCardVisible;
-        toolbarMenu.findItem(R.id.action_block_list).setVisible(showBlockListAction);
+        onPrepareOptionsMenu(toolbar.getMenu());
 
         toolbar.setTitle(getString(vCardVisible ? R.string.account_user_info : R.string.account_settings));
     }
