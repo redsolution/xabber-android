@@ -245,12 +245,12 @@
 
         <activity
             android:name=".ui.AccountViewer"
-            android:parentActivityName=".ui.ContactList" >
+            android:parentActivityName=".ui.preferences.AccountList" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.ContactList" />
+                android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
 
         <activity
