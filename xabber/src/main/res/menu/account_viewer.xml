@@ -6,7 +6,7 @@
         android:title="@string/block_list"
         app:showAsAction="always"
         android:orderInCategory="90"
-        android:icon="@drawable/ic_block_list_white_24dp"
+        android:icon="@drawable/ic_account_remove_white_24dp"
         />
 
     <item android:id="@+id/action_edit_account_user_info"
