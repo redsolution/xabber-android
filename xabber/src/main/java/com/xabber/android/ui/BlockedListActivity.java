@@ -19,6 +19,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
+import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
@@ -112,7 +113,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_unblock_all:
-                BlockingManager.getInstance().unblockAll(account, this);
+                UnblockAllContactsDialog.newInstance(account).show(getFragmentManager(), UnblockAllContactsDialog.class.getName());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
