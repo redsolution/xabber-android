@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -23,12 +22,17 @@ import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ManagedActivity;
 
+import java.util.ArrayList;
+
 public class BlockedListActivity extends ManagedActivity implements BlockedListAdapter.OnBlockedContactClickListener,
         OnBlockedListChangedListener, BlockingManager.UnblockContactListener, Toolbar.OnMenuItemClickListener {
 
+    public static final String SAVED_CHECKED_CONTACTS = "com.xabber.android.ui.BlockedListActivity.SAVED_CHECKED_CONTACTS";
     private BlockedListAdapter adapter;
     private String account;
     private Toolbar toolbar;
+    private BarPainter barPainter;
+    private int previousSize;
 
     public static Intent createIntent(Context context, String account) {
         return new AccountIntentBuilder(context, BlockedListActivity.class).setAccount(account).build();
@@ -52,24 +56,29 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        toolbar.setTitle(R.string.block_list);
         toolbar.inflateMenu(R.menu.block_list);
         toolbar.setOnMenuItemClickListener(this);
 
-        BarPainter barPainter = new BarPainter(this, toolbar);
-        barPainter.updateWithAccountName(account);
+        barPainter = new BarPainter(this, toolbar);
 
         RecyclerView recyclerView = new RecyclerView(this);
         ((RelativeLayout)findViewById(R.id.fragment_container)).addView(recyclerView);
 
-        adapter = new BlockedListAdapter(this, account);
+
+
+        adapter = new BlockedListAdapter(account);
         adapter.setListener(this);
+
+
+        if (savedInstanceState != null) {
+            final ArrayList<String> checkedContacts = savedInstanceState.getStringArrayList(SAVED_CHECKED_CONTACTS);
+            if (checkedContacts != null) {
+                adapter.setCheckedContacts(checkedContacts);
+            }
+        }
+
+        previousSize = -1;
+        updateToolbar();
 
         recyclerView.setAdapter(adapter);
 
@@ -105,6 +114,12 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList(SAVED_CHECKED_CONTACTS, adapter.getCheckedContacts());
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
         return onOptionsItemSelected(item);
     }
@@ -121,17 +136,44 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     @Override
-    public void onBlockedContactClick(View itemView, final String contact) {
-        PopupMenu popup = new PopupMenu(this, itemView);
-        popup.inflate(R.menu.blocked_contact_context_menu);
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                BlockingManager.getInstance().unblockContact(account, contact, BlockedListActivity.this);
-                return true;
-            }
-        });
-        popup.show();
+    public void onBlockedContactClick() {
+        updateToolbar();
+    }
+
+    private void updateToolbar() {
+        final ArrayList<String> checkedContacts = adapter.getCheckedContacts();
+
+        final int currentSize = checkedContacts.size();
+
+        if (currentSize == previousSize) {
+            return;
+        }
+
+        if (currentSize == 0) {
+            toolbar.setTitle(R.string.block_list);
+            barPainter.updateWithAccountName(account);
+
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+
+        } else {
+            toolbar.setTitle(String.valueOf(currentSize));
+            barPainter.setGrey();
+
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    adapter.setCheckedContacts(new ArrayList<String>());
+                    adapter.onChange();
+                }
+            });
+        }
+
+        previousSize = currentSize;
     }
 
     @Override
@@ -141,6 +183,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     private void update() {
         adapter.onChange();
+        updateToolbar();
         onPrepareOptionsMenu(toolbar.getMenu());
     }
 
