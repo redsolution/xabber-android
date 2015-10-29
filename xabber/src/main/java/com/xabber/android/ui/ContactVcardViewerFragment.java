@@ -16,6 +16,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.VcardMaps;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
@@ -25,6 +26,7 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ResourceItem;
+import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;
@@ -214,6 +216,11 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void onAccountsChanged(Collection<String> accounts) {
         if (accounts.contains(account)) {
             updateContact(account, user);
+            if (Jid.getBareAddress(account).equals(Jid.getBareAddress(user))) {
+                if (AccountManager.getInstance().getAccount(account).getFactualStatusMode().isOnline()) {
+                    VCardManager.getInstance().request(account, Jid.getBareAddress(account));
+                }
+            }
         }
     }
 
