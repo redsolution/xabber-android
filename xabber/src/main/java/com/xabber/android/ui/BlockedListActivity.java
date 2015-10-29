@@ -27,6 +27,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     private BlockedListAdapter adapter;
     private String account;
+    private Toolbar toolbar;
 
     public static Intent createIntent(Context context, String account) {
         return new AccountIntentBuilder(context, BlockedListActivity.class).setAccount(account).build();
@@ -48,7 +49,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,11 +83,17 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final boolean blockListIsEmpty = BlockingManager.getInstance().getBlockedContacts(account).isEmpty();
+        menu.findItem(R.id.action_unblock_all).setVisible(!blockListIsEmpty);
+        return true;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        adapter.onChange();
-
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
+        update();
     }
 
     @Override
@@ -128,7 +135,12 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     @Override
     public void onBlockedListChanged(String account) {
+        update();
+    }
+
+    private void update() {
         adapter.onChange();
+        onPrepareOptionsMenu(toolbar.getMenu());
     }
 
     @Override
