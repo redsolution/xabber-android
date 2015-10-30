@@ -86,6 +86,13 @@
         />
 
     <item
+        android:id="@+id/action_block_contact"
+        android:orderInCategory="205"
+        android:title="@string/contact_block"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_close_chat"
         android:icon="@drawable/ic_clear_white_24dp"
         android:orderInCategory="210"

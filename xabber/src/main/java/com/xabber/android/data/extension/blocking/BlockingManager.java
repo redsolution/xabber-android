@@ -10,6 +10,7 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.connection.OnResponseListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.xmpp.blocking.Block;
 import com.xabber.xmpp.blocking.BlockList;
@@ -209,6 +210,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     private void blockContactLocally(String account, String contactJid) {
         MessageManager.getInstance().closeChat(account, contactJid);
+        NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
 
     public interface UnblockContactListener {
