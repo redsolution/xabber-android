@@ -12,24 +12,22 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui.helper;
+package com.xabber.android.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import com.xabber.android.data.ActivityManager;
 
 /**
- * Base class for all ListActivities.
+ * Base class for all Activities.
  * <p/>
  * Adds custom activity logic.
  *
  * @author alexander.ivanov
  */
-public abstract class ManagedListActivity extends AppCompatActivity {
+public abstract class ManagedActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +76,6 @@ public abstract class ManagedListActivity extends AppCompatActivity {
     public void startActivityForResult(Intent intent, int requestCode) {
         ActivityManager.getInstance().updateIntent(this, intent);
         super.startActivityForResult(intent, requestCode);
-    }
-
-    public ListView getListView() {
-        return (ListView) findViewById(android.R.id.list);
-    }
-
-    public void setListAdapter(ListAdapter adapter) {
-        getListView().setAdapter(adapter);
     }
 
 }

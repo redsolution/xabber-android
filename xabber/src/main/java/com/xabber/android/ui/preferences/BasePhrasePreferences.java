@@ -7,7 +7,7 @@ import android.support.v7.widget.Toolbar;
 import com.xabber.android.R;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.activity.ManagedActivity;
 
 public abstract class BasePhrasePreferences extends ManagedActivity
         implements PhraseEditorFragment.OnPhraseEditorFragmentInteractionListener {

@@ -26,9 +26,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
-import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.ContactViewer;
-import com.xabber.android.ui.OccupantList;
+import com.xabber.android.ui.activity.ContactViewer;
+import com.xabber.android.ui.activity.OccupantList;
 import com.xabber.xmpp.muc.Role;
 
 import java.util.ArrayList;

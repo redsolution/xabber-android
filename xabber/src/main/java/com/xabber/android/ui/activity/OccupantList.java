@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,11 +30,9 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedListActivity;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -42,7 +42,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
-import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
@@ -51,8 +50,8 @@ public class FingerprintViewer extends ManagedActivity implements
         OnCheckedChangeListener, OnAccountChangedListener,
         OnContactChangedListener, OnClickListener {
 
-    private static final String SAVED_REMOTE_FINGERPRINT = "com.xabber.android.ui.FingerprintViewer.SAVED_REMOTE_FINGERPRINT";
-    private static final String SAVED_LOCAL_FINGERPRINT = "com.xabber.android.ui.FingerprintViewer.SAVED_LOCAL_FINGERPRINT";
+    private static final String SAVED_REMOTE_FINGERPRINT = "com.xabber.android.ui.activity.FingerprintViewer.SAVED_REMOTE_FINGERPRINT";
+    private static final String SAVED_LOCAL_FINGERPRINT = "com.xabber.android.ui.activity.FingerprintViewer.SAVED_LOCAL_FINGERPRINT";
     ContactTitleActionBarInflater contactTitleActionBarInflater;
     private String account;
     private String user;

@@ -19,6 +19,9 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ConferenceFilterActivity;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 import com.xabber.android.ui.helper.AccountPainter;
@@ -292,7 +295,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         roomView.setSelection(stringExtra.length());
     }
 
-    interface Listener {
+    public interface Listener {
         void onAccountSelected(String account);
     }
 }

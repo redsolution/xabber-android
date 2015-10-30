@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
-import com.xabber.android.ui.helper.ManagedActivity;
 
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.muc.HostedRoom;
@@ -29,10 +28,10 @@ import java.util.List;
 public class ConferenceFilterActivity extends ManagedActivity implements TextWatcher, View.OnClickListener,
         AdapterView.OnItemClickListener, TextView.OnEditorActionListener {
 
-    public static final String ARG_CONFERENCE_NAME = "com.xabber.android.ui.ConferenceFilterActivity.ARG_CONFERENCE_NAME";
-    public static final String ARG_CONFERENCE_LIST_NAMES = "com.xabber.android.ui.ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES";
-    public static final String ARG_CONFERENCE_LIST_JIDS = "com.xabber.android.ui.ConferenceFilterActivity.ARG_CONFERENCE_LIST_JIDS";
-    public static final String ARG_CONFERENCE_LIST = "com.xabber.android.ui.ConferenceFilterActivity.ARG_CONFERENCE_LIST";
+    public static final String ARG_CONFERENCE_NAME = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_NAME";
+    public static final String ARG_CONFERENCE_LIST_NAMES = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES";
+    public static final String ARG_CONFERENCE_LIST_JIDS = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_LIST_JIDS";
+    public static final String ARG_CONFERENCE_LIST = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_LIST";
 
 
     public static final int REQUEST_CODE_FILTER_ROOMS = 1;

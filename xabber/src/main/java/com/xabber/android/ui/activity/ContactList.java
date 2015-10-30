@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -58,14 +58,15 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ContactListFragment.ContactListFragmentListener;
+import com.xabber.android.ui.fragment.ContactListDrawerFragment;
+import com.xabber.android.ui.fragment.ContactListFragment;
+import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.address.Jid;
@@ -86,12 +87,12 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     /**
      * Select contact to be invited to the room was requested.
      */
-    private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.ContactList.ACTION_ROOM_INVITE";
+    private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
-    private static final String SAVED_ACTION = "com.xabber.android.ui.ContactList.SAVED_ACTION";
-    private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.ContactList.SAVED_SEND_TEXT";
+    private static final String SAVED_ACTION = "com.xabber.android.ui.activity.ContactList.SAVED_ACTION";
+    private static final String SAVED_SEND_TEXT = "com.xabber.android.ui.activity.ContactList.SAVED_SEND_TEXT";
 
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 

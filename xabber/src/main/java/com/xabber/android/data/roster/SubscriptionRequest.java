@@ -21,7 +21,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.ContactSubscription;
+import com.xabber.android.ui.activity.ContactSubscription;
 
 public class SubscriptionRequest extends BaseEntity implements EntityNotificationItem {
 

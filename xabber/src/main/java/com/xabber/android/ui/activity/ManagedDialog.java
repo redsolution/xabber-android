@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui.helper;
+package com.xabber.android.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.helper.SingleActivity;
 
 /**
  * Helper for dialog activities.

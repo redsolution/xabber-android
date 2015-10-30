@@ -30,7 +30,7 @@ public class PasswordRequest extends AccountRelated implements
 
     @Override
     public Intent getIntent() {
-        return com.xabber.android.ui.PasswordRequest.createIntent(
+        return com.xabber.android.ui.activity.PasswordRequest.createIntent(
                 Application.getInstance(), account);
     }
 

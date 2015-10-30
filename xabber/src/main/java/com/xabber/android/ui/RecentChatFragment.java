@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.ui.activity.ChatViewer;
 import com.xabber.android.ui.adapter.ChatListAdapter;
 import com.xabber.android.ui.helper.AccountPainter;
 

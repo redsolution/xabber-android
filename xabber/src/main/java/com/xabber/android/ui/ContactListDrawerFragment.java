@@ -130,7 +130,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
         listener.onAccountSelected((String) listView.getItemAtPosition(position));
     }
 
-    interface ContactListDrawerListener {
+    public interface ContactListDrawerListener {
         void onContactListDrawerListener(int viewId);
 
         void onAccountSelected(String account);

@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;

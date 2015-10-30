@@ -26,12 +26,12 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
-import com.xabber.android.ui.AccountAdd;
-import com.xabber.android.ui.AccountViewer;
-import com.xabber.android.ui.StatusEditor;
+import com.xabber.android.ui.activity.AccountAdd;
+import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 import java.util.Collection;
 

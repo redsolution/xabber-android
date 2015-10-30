@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +31,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
-import com.xabber.android.ui.helper.ManagedActivity;
 
 public class AboutViewer extends ManagedActivity implements View.OnClickListener {
 

@@ -12,39 +12,36 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.connection.ConnectionManager;
 
 /**
- * Activity to clear all notifications.
+ * Activity launched from notification bar to reconnect disconnected accounts.
  *
  * @author alexander.ivanov
  */
-public class ClearNotifications extends Activity {
+public class ReconnectionActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogManager.i(this, "onCreate");
-        if (Application.getInstance().isInitialized())
-            NotificationManager.getInstance().onClearNotifications();
+        LogManager.i(this, "onReconnect");
+        ConnectionManager.getInstance().updateConnections(false);
+        Intent intent = ContactList.createIntent(this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
         finish();
     }
 
     public static Intent createIntent(Context context) {
-        Intent intent = new Intent(context, ClearNotifications.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION
-                | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP
-                | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return intent;
+        return new Intent(context, ReconnectionActivity.class);
     }
 
 }

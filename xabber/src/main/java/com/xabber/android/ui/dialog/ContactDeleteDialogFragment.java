@@ -8,8 +8,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ContactList;
-import com.xabber.android.ui.ContactViewer;
+import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ContactViewer;
 
 public class ContactDeleteDialogFragment extends ConfirmDialogFragment {
 

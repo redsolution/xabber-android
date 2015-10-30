@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 import com.xabber.android.ui.widget.RingtonePreference;
 
 import java.util.HashMap;

@@ -35,6 +35,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.ui.activity.ChatViewer;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
@@ -132,7 +133,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private DatePickerDialog datePicker;
     private View birthDateRemoveButton;
 
-    interface Listener {
+    public interface Listener {
         void onProgressModeStarted(String message);
         void onProgressModeFinished();
         void enableSave();

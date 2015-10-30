@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +10,8 @@ import android.view.WindowManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.ui.fragment.ConferenceSelectFragment;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
 
 public class ConferenceSelectActivity extends ManagedActivity implements ConferenceSelectFragment.Listener {
 

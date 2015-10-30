@@ -33,7 +33,7 @@ import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
 import com.xabber.android.ui.dialog.ConfirmDialogListener;
 import com.xabber.android.ui.dialog.DialogBuilder;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedListActivity;
+import com.xabber.android.ui.activity.ManagedListActivity;
 
 /**
  * Provide possibility to add, edit and delete list items.

@@ -20,6 +20,8 @@ import java.util.Map;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.xabber.android.ui.activity.ManagedActivity;
+
 /**
  * Single activity instance.
  * <p/>

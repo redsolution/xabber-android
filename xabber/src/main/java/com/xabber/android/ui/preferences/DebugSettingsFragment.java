@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 public class DebugSettingsFragment extends android.preference.PreferenceFragment {
     @Override

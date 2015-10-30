@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,10 +19,11 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
-import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.VCardProperty;
@@ -38,8 +39,8 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
     public static final int ACCOUNT_VIEWER_MENU = R.menu.account_viewer;
     public static final int ACCOUNT_INFO_EDITOR_REQUEST_CODE = 1;
-    public static final String INTENT_SHOW_ACCOUNT_INFO = "com.xabber.android.ui.AccountViewer.INTENT_SHOW_ACCOUNT_INFO";
-    public static final String SAVE_SHOW_ACCOUNT_INFO = "com.xabber.android.ui.AccountViewer.SAVE_SHOW_ACCOUNT_INFO";
+    public static final String INTENT_SHOW_ACCOUNT_INFO = "com.xabber.android.ui.activity.AccountViewer.INTENT_SHOW_ACCOUNT_INFO";
+    public static final String SAVE_SHOW_ACCOUNT_INFO = "com.xabber.android.ui.activity.AccountViewer.SAVE_SHOW_ACCOUNT_INFO";
 
     private String account;
     private AccountItem accountItem;

@@ -14,11 +14,10 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.ContactViewer;
+import com.xabber.android.ui.activity.ContactEditor;
+import com.xabber.android.ui.activity.ContactViewer;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
-import com.xabber.xmpp.address.Jid;
 
 public class ContactItemInflater {
 

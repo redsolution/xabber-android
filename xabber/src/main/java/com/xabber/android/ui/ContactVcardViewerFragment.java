@@ -60,7 +60,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private View progressBar;
     private Listener listener;
 
-    interface Listener {
+    public interface Listener {
         void onVCardReceived();
     }
 

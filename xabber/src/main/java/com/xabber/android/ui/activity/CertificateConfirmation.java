@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +27,6 @@ import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.PendingCertificate;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
-import com.xabber.android.ui.helper.ManagedDialog;
 
 import java.util.NoSuchElementException;
 
@@ -38,7 +37,7 @@ import java.util.NoSuchElementException;
  */
 public class CertificateConfirmation extends ManagedDialog {
 
-    private static final String SAVED_SHOW_DETAILS = "com.xabber.android.ui.CertificateConfirmation.SHOW_DETAILS";
+    private static final String SAVED_SHOW_DETAILS = "com.xabber.android.ui.activity.CertificateConfirmation.SHOW_DETAILS";
 
     private PendingCertificate pendingCertificate;
     private boolean showDetails;

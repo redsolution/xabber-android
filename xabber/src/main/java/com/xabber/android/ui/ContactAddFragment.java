@@ -25,9 +25,9 @@ import java.util.Collection;
 public class ContactAddFragment extends GroupEditorFragment
         implements AdapterView.OnItemSelectedListener, ContactAdder {
 
-    private static final String SAVED_NAME = "com.xabber.android.ui.ContactAdd.SAVED_NAME";
-    private static final String SAVED_ACCOUNT = "com.xabber.android.ui.ContactAdd.SAVED_ACCOUNT";
-    private static final String SAVED_USER = "com.xabber.android.ui.ContactAdd.SAVED_USER";
+    private static final String SAVED_NAME = "com.xabber.android.ui.activity.ContactAddFragment.SAVED_NAME";
+    private static final String SAVED_ACCOUNT = "com.xabber.android.ui.activity.ContactAddFragment.SAVED_ACCOUNT";
+    private static final String SAVED_USER = "com.xabber.android.ui.activity.ContactAddFragment.SAVED_USER";
     Listener listenerActivity;
     private Spinner accountView;
     private EditText userView;

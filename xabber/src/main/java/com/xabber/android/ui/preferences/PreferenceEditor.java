@@ -23,7 +23,7 @@ import android.support.v7.widget.Toolbar;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
+import com.xabber.android.ui.activity.ManagedActivity;
 
 public class PreferenceEditor extends ManagedActivity
         implements PreferencesFragment.OnPreferencesFragmentInteractionListener {

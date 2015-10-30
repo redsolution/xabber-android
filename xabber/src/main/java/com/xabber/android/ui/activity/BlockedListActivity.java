@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,14 +20,13 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
 
 import java.util.ArrayList;
 
 public class BlockedListActivity extends ManagedActivity implements BlockedListAdapter.OnBlockedContactClickListener,
         OnBlockedListChangedListener, BlockingManager.UnblockContactListener, Toolbar.OnMenuItemClickListener {
 
-    public static final String SAVED_CHECKED_CONTACTS = "com.xabber.android.ui.BlockedListActivity.SAVED_CHECKED_CONTACTS";
+    public static final String SAVED_CHECKED_CONTACTS = "com.xabber.android.ui.activity.BlockedListActivity.SAVED_CHECKED_CONTACTS";
     private BlockedListAdapter adapter;
     private String account;
     private Toolbar toolbar;

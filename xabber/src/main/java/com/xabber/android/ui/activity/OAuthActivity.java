@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -29,7 +29,6 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.OAuthManager;
-import com.xabber.android.ui.helper.ManagedActivity;
 
 /**
  * Activity with WebView for OAuth authorization.
@@ -41,8 +40,8 @@ public class OAuthActivity extends ManagedActivity {
     private static final String EXTRA_INVALIDATE = "com.xabber.android.ui.OAuthVerifier.EXTRA_CANCELED";
     private static final String EXTRA_REFRESH_TOKEN = "com.xabber.android.ui.OAuthVerifier.EXTRA_REFRESH_TOKEN";
 
-    private static final String SAVED_URL = "com.xabber.android.ui.OAuthActivity.URL";
-    private static final String SAVED_CODE = "com.xabber.android.ui.OAuthActivity.CODE";
+    private static final String SAVED_URL = "com.xabber.android.ui.activity.OAuthActivity.URL";
+    private static final String SAVED_CODE = "com.xabber.android.ui.activity.OAuthActivity.CODE";
 
     private WebView webView;
     private String code;

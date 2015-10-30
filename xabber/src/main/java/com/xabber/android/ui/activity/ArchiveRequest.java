@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,60 +21,53 @@ import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.extension.muc.RoomInvite;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.ui.helper.ManagedDialog;
 
-public class MUCInvite extends ManagedDialog {
+/**
+ * Dialog with request to enable message archive.
+ *
+ * @author alexander.ivanov
+ */
+public class ArchiveRequest extends ManagedDialog {
 
     private String account;
-    private String room;
-    private RoomInvite roomInvite;
 
-    public static Intent createIntent(Context context, String account,
-                                      String room) {
-        return new EntityIntentBuilder(context, MUCInvite.class)
-                .setAccount(account).setUser(room).build();
+    public static Intent createIntent(Context context, String account) {
+        return new AccountIntentBuilder(context, ArchiveRequest.class)
+                .setAccount(account).build();
     }
 
     private static String getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        account = getAccount(intent);
-        room = getUser(intent);
-        roomInvite = MUCManager.getInstance().getInvite(account, room);
-        if (roomInvite == null) {
-            Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
+        findViewById(android.R.id.button3).setVisibility(View.GONE);
+        setDialogMessage(R.string.archive_available_request_message);
+        account = getAccount(getIntent());
+        if (AccountManager.getInstance().getAccount(account) == null) {
+            Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
             return;
         }
-        setDialogMessage(roomInvite.getConfirmation());
-        setDialogTitle(R.string.subscription_request_message);
-        findViewById(android.R.id.button3).setVisibility(View.GONE);
     }
 
     @Override
     public void onAccept() {
         super.onAccept();
-        startActivity(ConferenceAdd.createIntent(this, account, room));
+        AccountManager.getInstance()
+                .setArchiveMode(account, ArchiveMode.server);
         finish();
     }
 
     @Override
     public void onDecline() {
         super.onDecline();
-        MUCManager.getInstance().removeInvite(roomInvite);
+        AccountManager.getInstance().setArchiveMode(account, ArchiveMode.local);
         finish();
     }
 

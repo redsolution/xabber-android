@@ -22,7 +22,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.MUCInvite;
+import com.xabber.android.ui.activity.MUCInvite;
 
 /**
  * Invite to join the room.

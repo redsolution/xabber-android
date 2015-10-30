@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -38,9 +38,10 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.fragment.ConferenceInfoFragment;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
-import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 import com.xabber.xmpp.address.Jid;
 

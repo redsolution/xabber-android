@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 
 import android.content.Context;
@@ -14,14 +14,14 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
 
 public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditorFragment.Listener {
 
-    public static final String ARG_VCARD = "com.xabber.android.ui.AccountInfoEditor.ARG_VCARD";
+    public static final String ARG_VCARD = "com.xabber.android.ui.activity.AccountInfoEditor.ARG_VCARD";
     public static final int SAVE_MENU = R.menu.save;
-    public static final String ARGUMENT_SAVE_BUTTON_ENABLED = "com.xabber.android.ui.AccountInfoEditor.ARGUMENT_SAVE_BUTTON_ENABLED";
+    public static final String ARGUMENT_SAVE_BUTTON_ENABLED = "com.xabber.android.ui.activity.AccountInfoEditor.ARGUMENT_SAVE_BUTTON_ENABLED";
 
     private Toolbar toolbar;
 

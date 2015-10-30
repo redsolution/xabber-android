@@ -6,8 +6,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedActivity;
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 public class NotificationsSettings extends ManagedActivity {
     @Override

@@ -12,12 +12,11 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +31,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.SubscriptionRequest;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.SingleActivity;

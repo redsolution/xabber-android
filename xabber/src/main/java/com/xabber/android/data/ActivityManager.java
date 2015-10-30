@@ -21,8 +21,8 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.ContactList;
-import com.xabber.android.ui.LoadActivity;
+import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.LoadActivity;
 
 import java.util.ArrayList;
 import java.util.Iterator;

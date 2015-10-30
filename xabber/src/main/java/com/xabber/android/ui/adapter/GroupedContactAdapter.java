@@ -37,7 +37,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.AccountViewer;
+import com.xabber.android.ui.activity.AccountViewer;
 
 import java.util.ArrayList;
 import java.util.Collection;

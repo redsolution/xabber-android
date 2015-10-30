@@ -35,6 +35,8 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.ui.activity.AccountAdd;
+import com.xabber.android.ui.activity.ContactAdd;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
 import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.ContactListAdapter;
@@ -349,18 +351,18 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     /**
      * Force stop contact list updates before pause or application close.
      */
-    void unregisterListeners() {
+    public void unregisterListeners() {
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
         adapter.removeRefreshRequests();
     }
 
-    UpdatableAdapter getAdapter() {
+    public UpdatableAdapter getAdapter() {
         return adapter;
     }
 
-    Filterable getFilterableAdapter() {
+    public Filterable getFilterableAdapter() {
         return adapter;
     }
 
@@ -400,7 +402,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     /**
      * Scroll to the top of contact list.
      */
-    void scrollUp() {
+    public void scrollUp() {
         if (listView.getCount() > 0) {
             listView.setSelection(0);
         }

@@ -15,6 +15,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
+import com.xabber.android.ui.activity.ChatViewer;
 
 import org.jxmpp.util.XmppStringUtils;
 

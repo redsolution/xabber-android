@@ -20,7 +20,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.ConferenceAdd;
+import com.xabber.android.ui.activity.ConferenceAdd;
 
 public class RoomAuthorizationError extends BaseEntity implements EntityNotificationItem {
 

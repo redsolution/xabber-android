@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,12 +43,11 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedListActivity;
 
 public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
-    private static final String SAVED_TEXT = "com.xabber.android.ui.StatusEditor.SAVED_TEXT";
-    private static final String SAVED_MODE = "com.xabber.android.ui.StatusEditor.SAVED_MODE";
+    private static final String SAVED_TEXT = "com.xabber.android.ui.activity.StatusEditor.SAVED_TEXT";
+    private static final String SAVED_MODE = "com.xabber.android.ui.activity.StatusEditor.SAVED_MODE";
 
     private String account;
     private Spinner statusModeView;

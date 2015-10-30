@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui;
+package com.xabber.android.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,9 +40,10 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
-import com.xabber.android.ui.helper.ManagedActivity;
 import com.xabber.android.ui.helper.StatusBarPainter;
 
 import java.util.Collection;
@@ -67,14 +68,14 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
     private static final String ACTION_SHORTCUT = "com.xabber.android.data.ACTION_SHORTCUT";
 
-    private static final String SAVED_INITIAL_ACCOUNT = "com.xabber.android.ui.ChatViewer.SAVED_INITIAL_ACCOUNT";
-    private static final String SAVED_INITIAL_USER = "com.xabber.android.ui.ChatViewer.SAVED_INITIAL_USER";
+    private static final String SAVED_INITIAL_ACCOUNT = "com.xabber.android.ui.activity.ChatViewer.SAVED_INITIAL_ACCOUNT";
+    private static final String SAVED_INITIAL_USER = "com.xabber.android.ui.activity.ChatViewer.SAVED_INITIAL_USER";
 
-    private static final String SAVED_IS_RECENT_CHATS_SELECTED = "com.xabber.android.ui.ChatViewer.SAVED_IS_RECENT_CHATS_SELECTED";
-    private static final String SAVED_SELECTED_ACCOUNT = "com.xabber.android.ui.ChatViewer.SAVED_SELECTED_ACCOUNT";
-    private static final String SAVED_SELECTED_USER = "com.xabber.android.ui.ChatViewer.SAVED_SELECTED_USER";
+    private static final String SAVED_IS_RECENT_CHATS_SELECTED = "com.xabber.android.ui.activity.ChatViewer.SAVED_IS_RECENT_CHATS_SELECTED";
+    private static final String SAVED_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatViewer.SAVED_SELECTED_ACCOUNT";
+    private static final String SAVED_SELECTED_USER = "com.xabber.android.ui.activity.ChatViewer.SAVED_SELECTED_USER";
 
-    private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.ChatViewer.EXIT_ON_SEND";
+    private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatViewer.EXIT_ON_SEND";
     ChatScrollIndicatorAdapter chatScrollIndicatorAdapter;
     ChatViewerAdapter chatViewerAdapter;
     ViewPager viewPager;
