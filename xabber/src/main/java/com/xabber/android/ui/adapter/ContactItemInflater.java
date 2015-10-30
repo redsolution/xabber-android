@@ -70,7 +70,7 @@ public class ContactItemInflater {
 
         viewHolder.name.setText(contact.getName());
 
-        if (MUCManager.getInstance().hasRoom(contact.getAccount(), Jid.getBareAddress(contact.getUser()))) {
+        if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
             viewHolder.mucIndicator.setVisibility(View.VISIBLE);
         } else {
             viewHolder.mucIndicator.setVisibility(View.GONE);
