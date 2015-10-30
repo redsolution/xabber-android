@@ -78,8 +78,6 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         }
 
         previousSize = -1;
-        updateToolbar();
-
         recyclerView.setAdapter(adapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -96,6 +94,8 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     public boolean onPrepareOptionsMenu(Menu menu) {
         final boolean blockListIsEmpty = BlockingManager.getInstance().getBlockedContacts(account).isEmpty();
         menu.findItem(R.id.action_unblock_all).setVisible(!blockListIsEmpty);
+        final boolean checkContactsIsEmpty = adapter.getCheckedContacts().isEmpty();
+        menu.findItem(R.id.action_unblock_selected).setVisible(!checkContactsIsEmpty);
         return true;
     }
 
@@ -130,6 +130,8 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
             case R.id.action_unblock_all:
                 UnblockAllContactsDialog.newInstance(account).show(getFragmentManager(), UnblockAllContactsDialog.class.getName());
                 return true;
+            case R.id.action_unblock_selected:
+                BlockingManager.getInstance().unblockContacts(account, adapter.getCheckedContacts(), this);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -138,6 +140,11 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     @Override
     public void onBlockedContactClick() {
         updateToolbar();
+        updateMenu();
+    }
+
+    private void updateMenu() {
+        onPrepareOptionsMenu(toolbar.getMenu());
     }
 
     private void updateToolbar() {
@@ -184,16 +191,16 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     private void update() {
         adapter.onChange();
         updateToolbar();
-        onPrepareOptionsMenu(toolbar.getMenu());
+        updateMenu();
     }
 
     @Override
     public void onSuccess() {
-        Toast.makeText(BlockedListActivity.this, getString(R.string.contact_unblocked_successfully), Toast.LENGTH_SHORT).show();
+        Toast.makeText(BlockedListActivity.this, getString(R.string.contacts_unblocked_successfully), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onError() {
-        Toast.makeText(BlockedListActivity.this, getString(R.string.error_unblocking_contact), Toast.LENGTH_SHORT).show();
+        Toast.makeText(BlockedListActivity.this, getString(R.string.error_unblocking_contacts), Toast.LENGTH_SHORT).show();
     }
 }

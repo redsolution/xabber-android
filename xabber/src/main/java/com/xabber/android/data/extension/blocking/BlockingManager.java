@@ -216,20 +216,18 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         void onError();
     }
 
-    public void unblockContact(String account, final String contactJid, final UnblockContactListener listener) {
+    public void unblockContacts(String account, final List<String> contacts, final UnblockContactListener listener) {
         final Unblock unblockRequest  = new Unblock();
         unblockRequest.setType(IQ.Type.set);
-        unblockRequest.addItem(contactJid);
+        for (String contact : contacts) {
+            unblockRequest.addItem(contact);
+        }
 
         sendUnblock(account, listener, unblockRequest);
     }
 
     public void unblockAll(String account, final UnblockContactListener listener) {
-        final Unblock unblockRequest  = new Unblock();
-        unblockRequest.setType(IQ.Type.set);
-        unblockRequest.addItems(blockListsForAccounts.get(account));
-
-        sendUnblock(account, listener, unblockRequest);
+        unblockContacts(account, blockListsForAccounts.get(account), listener);
     }
 
     private void sendUnblock(String account, final UnblockContactListener listener, final Unblock unblockRequest) {
@@ -267,6 +265,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             });
         } catch (NetworkException e) {
             e.printStackTrace();
+            listener.onError();
         }
     }
 
