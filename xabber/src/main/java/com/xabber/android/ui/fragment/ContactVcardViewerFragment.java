@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -47,10 +47,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class ContactVcardViewerFragment extends Fragment implements OnContactChangedListener, OnAccountChangedListener, OnVCardListener {
-    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.ContactVcardViewerFragment.ARGUMENT_ACCOUNT";
-    public static final String ARGUMENT_USER = "com.xabber.android.ui.ContactVcardViewerFragment.ARGUMENT_USER";
-    private static final String SAVED_VCARD = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD";
-    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_USER = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_USER";
+    private static final String SAVED_VCARD = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD";
+    private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
     String account;
     String user;
     private LinearLayout xmppItems;

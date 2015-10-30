@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -14,9 +14,9 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import org.jivesoftware.smackx.muc.RoomInfo;
 
 public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomInfoListener {
-    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.ConferenceInfoFragment.ARGUMENT_ACCOUNT";
-    public static final String ARGUMENT_ROOM = "com.xabber.android.ui.ConferenceInfoFragment.ARGUMENT_ROOM";
-    public static final String SAVE_IS_LOADED = "com.xabber.android.ui.ConferenceInfoFragment.SAVE_IS_LOADED";
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.ConferenceInfoFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_ROOM = "com.xabber.android.ui.fragment.ConferenceInfoFragment.ARGUMENT_ROOM";
+    public static final String SAVE_IS_LOADED = "com.xabber.android.ui.fragment.ConferenceInfoFragment.SAVE_IS_LOADED";
 
     private String account;
     private String room;

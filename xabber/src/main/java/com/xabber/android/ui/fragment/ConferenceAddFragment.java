@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
@@ -21,8 +21,8 @@ import org.jxmpp.util.XmppStringUtils;
 
 public class ConferenceAddFragment extends Fragment {
 
-    protected static final String ARG_ACCOUNT = "com.xabber.android.ui.ConferenceAddFragment.ARG_ACCOUNT";
-    protected static final String ARG_CONFERENCE_JID = "com.xabber.android.ui.ConferenceAddFragment.ARG_CONFERENCE_NAME";
+    protected static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.ConferenceAddFragment.ARG_ACCOUNT";
+    protected static final String ARG_CONFERENCE_JID = "com.xabber.android.ui.fragment.ConferenceAddFragment.ARG_CONFERENCE_NAME";
 
     private EditText nickView;
     private EditText passwordView;

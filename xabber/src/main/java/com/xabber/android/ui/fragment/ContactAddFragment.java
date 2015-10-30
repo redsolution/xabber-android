@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,6 +18,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.helper.ContactAdder;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 
 import java.util.Collection;
@@ -25,9 +26,9 @@ import java.util.Collection;
 public class ContactAddFragment extends GroupEditorFragment
         implements AdapterView.OnItemSelectedListener, ContactAdder {
 
-    private static final String SAVED_NAME = "com.xabber.android.ui.activity.ContactAddFragment.SAVED_NAME";
-    private static final String SAVED_ACCOUNT = "com.xabber.android.ui.activity.ContactAddFragment.SAVED_ACCOUNT";
-    private static final String SAVED_USER = "com.xabber.android.ui.activity.ContactAddFragment.SAVED_USER";
+    private static final String SAVED_NAME = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_NAME";
+    private static final String SAVED_ACCOUNT = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_ACCOUNT";
+    private static final String SAVED_USER = "com.xabber.android.ui.fragment..ContactAddFragment.SAVED_USER";
     Listener listenerActivity;
     private Spinner accountView;
     private EditText userView;

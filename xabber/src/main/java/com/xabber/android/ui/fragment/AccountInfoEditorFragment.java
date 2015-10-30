@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -60,11 +60,11 @@ import java.util.TimeZone;
 
 public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener, TextWatcher {
 
-    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
-    public static final String ARGUMENT_VCARD = "com.xabber.android.ui.AccountInfoEditorFragment.ARGUMENT_USER";
-    public static final String SAVE_NEW_AVATAR_IMAGE_URI = "com.xabber.android.ui.AccountInfoEditorFragment.SAVE_NEW_AVATAR_IMAGE_URI";
-    public static final String SAVE_PHOTO_FILE_URI = "com.xabber.android.ui.AccountInfoEditorFragment.SAVE_PHOTO_FILE_URI";
-    public static final String SAVE_REMOVE_AVATAR_FLAG = "com.xabber.android.ui.AccountInfoEditorFragment.SAVE_REMOVE_AVATAR_FLAG";
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_VCARD = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.ARGUMENT_USER";
+    public static final String SAVE_NEW_AVATAR_IMAGE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_NEW_AVATAR_IMAGE_URI";
+    public static final String SAVE_PHOTO_FILE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_PHOTO_FILE_URI";
+    public static final String SAVE_REMOVE_AVATAR_FLAG = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_REMOVE_AVATAR_FLAG";
 
     public static final int ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST = 2;
     public static final int MAX_AVATAR_SIZE_PIXELS = 192;

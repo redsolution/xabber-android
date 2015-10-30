@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import com.xabber.android.ui.helper.OrbotHelper;
 
 public class AccountAddFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    private static final String SAVED_ACCOUNT_TYPE = "com.xabber.android.ui.AccountAddFragment.ACCOUNT_TYPE";
+    private static final String SAVED_ACCOUNT_TYPE = "com.xabber.android.ui.fragment.AccountAddFragment.ACCOUNT_TYPE";
     private CheckBox storePasswordView;
     private CheckBox useOrbotView;
     private CheckBox createAccountCheckBox;

@@ -1,4 +1,4 @@
-package com.xabber.android.ui;
+package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -26,12 +26,12 @@ import java.util.HashSet;
 
 public class GroupEditorFragment extends ListFragment implements TextWatcher, View.OnClickListener {
 
-    protected static final String ARG_ACCOUNT = "com.xabber.android.ui.GroupEditorFragment.ARG_ACCOUNT";
-    protected static final String ARG_USER = "com.xabber.android.ui.GroupEditorFragment.ARG_USER";
+    protected static final String ARG_ACCOUNT = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_ACCOUNT";
+    protected static final String ARG_USER = "com.xabber.android.ui.fragment.GroupEditorFragment.ARG_USER";
 
-    private static final String SAVED_GROUPS = "com.xabber.android.ui.GroupEditorFragment.SAVED_GROUPS";
-    private static final String SAVED_SELECTED = "com.xabber.android.ui.GroupEditorFragment.SAVED_SELECTED";
-    private static final String SAVED_ADD_GROUP_NAME = "com.xabber.android.ui.GroupEditorFragment.SAVED_ADD_GROUP_NAME";
+    private static final String SAVED_GROUPS = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_GROUPS";
+    private static final String SAVED_SELECTED = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_SELECTED";
+    private static final String SAVED_ADD_GROUP_NAME = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_ADD_GROUP_NAME";
 
     private String account;
     private String user;
