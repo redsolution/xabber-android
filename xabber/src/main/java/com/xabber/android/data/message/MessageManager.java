@@ -303,7 +303,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public AbstractChat getOrCreateChat(String account, String user) {
         String bareAddress = Jid.getBareAddress(user);
 
-        if (MUCManager.getInstance().hasRoom(account, bareAddress) && Jid.getResource(user) != null) {
+        if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
             return getOrCreatePrivateMucChat(account, user);
         }
 
