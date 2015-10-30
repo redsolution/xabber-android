@@ -36,6 +36,7 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -61,6 +62,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -160,7 +163,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public Collection<AbstractChat> getChats() {
-        return Collections.unmodifiableCollection(chats.values());
+        final Map<String, List<String>> blockedContacts = BlockingManager.getInstance().getBlockedContacts();
+        List<AbstractChat> unblockedChats = new ArrayList<>();
+        for (AbstractChat chat : chats.values()) {
+            final List<String> contacts = blockedContacts.get(chat.getAccount());
+            if (contacts != null) {
+                if (contacts.contains(chat.getUser())) {
+                    continue;
+                }
+            }
+            unblockedChats.add(chat);
+        }
+
+        return Collections.unmodifiableCollection(unblockedChats);
     }
 
     /**
@@ -288,7 +303,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     public AbstractChat getOrCreateChat(String account, String user) {
         String bareAddress = Jid.getBareAddress(user);
 
-        if (MUCManager.getInstance().hasRoom(account, bareAddress) && Jid.getResource(user) != null) {
+        if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
             return getOrCreatePrivateMucChat(account, user);
         }
 

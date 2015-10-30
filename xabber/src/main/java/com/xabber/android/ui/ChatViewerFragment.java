@@ -58,6 +58,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
+import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
@@ -565,6 +566,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (abstractChat instanceof RegularChat) {
             menu.findItem(R.id.action_view_contact).setVisible(true);
             menu.findItem(R.id.action_close_chat).setVisible(true);
+            if (!MUCManager.getInstance().isMucPrivateChat(account, user)) {
+                menu.findItem(R.id.action_block_contact).setVisible(true);
+            }
         }
     }
 
@@ -681,6 +685,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             case R.id.action_call_attention:
                 callAttention();
+                return true;
+
+            case R.id.action_block_contact:
+                BlockContactDialog.newInstance(account, user).show(getFragmentManager(), BlockContactDialog.class.getName());
                 return true;
 
             /* conference specific options menu */

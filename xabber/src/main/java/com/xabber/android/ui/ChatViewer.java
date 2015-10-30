@@ -32,6 +32,8 @@ import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -55,7 +57,7 @@ import java.util.HashSet;
 public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
         OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener,
-        ChatViewerFragment.ChatViewerFragmentListener {
+        ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener {
 
     /**
      * Attention request.
@@ -284,6 +286,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
 
         chatViewerAdapter.updateChats();
         chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
@@ -333,6 +336,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
         MessageManager.getInstance().removeVisibleChat();
         isVisible = false;
     }
@@ -513,6 +517,17 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             ActivityManager.getInstance().clearStack(false);
             if (!ActivityManager.getInstance().hasContactList(this)) {
                 startActivity(ContactList.createIntent(this));
+            }
+        }
+    }
+
+    @Override
+    public void onBlockedListChanged(String account) {
+        // if chat of blocked contact is currently opened, it should be closed
+        if (selectedChat != null) {
+            final Collection<String> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+            if (blockedContacts.contains(selectedChat.getUser())) {
+                close();
             }
         }
     }

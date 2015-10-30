@@ -31,6 +31,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -46,6 +47,7 @@ import com.xabber.android.ui.ContactEditor;
 import com.xabber.android.ui.GroupEditor;
 import com.xabber.android.ui.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
@@ -143,6 +145,15 @@ public class ContextMenuHelper {
 
                 });
 
+        menu.findItem(R.id.action_block_contact).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        BlockContactDialog.newInstance(account, user).show(activity.getFragmentManager(), BlockContactDialog.class.getName());
+                        return true;
+            }
+        });
+
         menu.findItem(R.id.action_close_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
 
@@ -223,6 +234,11 @@ public class ContextMenuHelper {
             if (!MessageManager.getInstance().hasActiveChat(account, user)) {
                 menu.findItem(R.id.action_close_chat).setVisible(false);
             }
+
+            if (!BlockingManager.getInstance().isSupported(account)
+                    || MUCManager.getInstance().isMucPrivateChat(account, user)) {
+                menu.findItem(R.id.action_block_contact).setVisible(false);
+            }
             if (abstractContact.getStatusMode() != StatusMode.unsubscribed) {
                 menu.findItem(R.id.action_request_subscription).setVisible(false);
             }
@@ -231,6 +247,7 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_contact_info).setVisible(false);
             menu.findItem(R.id.action_edit_contact_groups).setVisible(false);
             menu.findItem(R.id.action_delete_contact).setVisible(false);
+            menu.findItem(R.id.action_block_contact).setVisible(false);
             menu.findItem(R.id.action_close_chat).setVisible(false);
             menu.findItem(R.id.action_request_subscription).setVisible(false);
 
