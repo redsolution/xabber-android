@@ -16,11 +16,13 @@ package com.xabber.android.ui.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -35,48 +37,61 @@ import com.xabber.android.data.roster.RosterManager;
 
 import java.io.File;
 
-public class ChatExportDialogFragment extends ConfirmDialogFragment {
+public class ChatExportDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private static final String ACCOUNT = "ACCOUNT";
-    private static final String USER = "USER";
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_USER";
+
     private String account;
     private String user;
+
     private EditText nameView;
     private CheckBox sendView;
-    private Activity activity;
 
-    public static DialogFragment newInstance(String account, String user) {
-        return new ChatExportDialogFragment().putAgrument(ACCOUNT, account).putAgrument(USER, user);
+    public static ChatExportDialogFragment newInstance(String account, String user) {
+        ChatExportDialogFragment fragment = new ChatExportDialogFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_USER, user);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
-    protected Builder getBuilder() {
-        activity = getActivity();
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        account = args.getString(ARGUMENT_ACCOUNT, null);
+        user = args.getString(ARGUMENT_USER, null);
 
-        account = getArguments().getString(ACCOUNT);
-        user = getArguments().getString(USER);
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.export_chat_title);
-        View layout = activity.getLayoutInflater().inflate(R.layout.export_chat, null);
+        View layout = getActivity().getLayoutInflater().inflate(R.layout.export_chat, null);
         nameView = (EditText) layout.findViewById(R.id.name);
         sendView = (CheckBox) layout.findViewById(R.id.send);
         nameView.setText(getString(R.string.export_chat_mask,
                 AccountManager.getInstance().getVerboseName(account),
                 RosterManager.getInstance().getName(account, user)));
-        builder.setView(layout);
-        return builder;
+
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.export_chat_title)
+                .setView(layout)
+                .setPositiveButton(R.string.export_chat, this)
+                .setNegativeButton(android.R.string.cancel, this).create();
     }
 
     @Override
-    protected boolean onPositiveClick() {
+    public void onClick(DialogInterface dialog, int which) {
+        if (which != Dialog.BUTTON_POSITIVE) {
+            return;
+        }
+
         String name = nameView.getText().toString();
         if ("".equals(name)) {
-            return false;
+            return;
         }
         new ChatExportAsyncTask(account, user, name, sendView.isChecked()).execute();
-        return true;
     }
 
+    // TODO get rid of async task
     private class ChatExportAsyncTask extends AsyncTask<Void, Void, File> {
 
         private final String account;
@@ -103,6 +118,8 @@ public class ChatExportDialogFragment extends ConfirmDialogFragment {
 
         @Override
         public void onPostExecute(File result) {
+            Activity activity = getActivity();
+
             if (result == null || activity == null) {
                 return;
             }
