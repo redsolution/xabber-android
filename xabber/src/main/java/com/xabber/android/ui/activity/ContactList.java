@@ -62,7 +62,7 @@ import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
-import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChoosedListener;
+import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.dialog.TranslationDialog;
@@ -82,7 +82,7 @@ import java.util.Locale;
  * @author alexander.ivanov
  */
 public class ContactList extends ManagedActivity implements OnAccountChangedListener,
-        View.OnClickListener, OnChoosedListener, ContactListFragmentListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
+        View.OnClickListener, OnChooseListener, ContactListFragmentListener, ContactListDrawerFragment.ContactListDrawerListener, Toolbar.OnMenuItemClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
