@@ -2,7 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +22,7 @@ import com.xabber.android.data.account.AccountType;
 import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.AccountViewer;
 import com.xabber.android.ui.adapter.AccountTypeAdapter;
-import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
+import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OrbotHelper;
 
 public class AccountAddFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -106,7 +106,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
     public void addAccount() {
         if (useOrbotView.isChecked() && !OrbotHelper.isOrbotInstalled()) {
-            OrbotInstallerDialogBuilder.show(getActivity());
+            OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
             return;
         }
 

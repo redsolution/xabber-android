@@ -14,39 +14,42 @@
  */
 package com.xabber.android.ui.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.helper.OrbotHelper;
 
-/**
- * Orbot installer dialog builder.
- *
- * @author alexander.ivanov
- */
-public class OrbotInstallerDialogBuilder {
+public class OrbotInstallerDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     private final static String MARKET_SEARCH = "market://search?q=pname:%s";
 
-    public static void show(final Activity activity) {
-        new AlertDialog.Builder(activity)
-                .setTitle(R.string.orbot_required_title)
-                .setMessage(R.string.orbot_required_message)
-                .setPositiveButton(android.R.string.yes,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int w) {
-                                Uri uri = Uri.parse(String.format(MARKET_SEARCH, OrbotHelper.URI_ORBOT));
-                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                activity.startActivity(intent);
-                            }
-                        })
-                .setNegativeButton(android.R.string.no, null)
-                .show();
+    public static DialogFragment newInstance() {
+        return new OrbotInstallerDialog();
     }
 
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.orbot_required_title)
+                .setMessage(R.string.orbot_required_message)
+                .setPositiveButton(R.string.install_orbot, this)
+                .setNegativeButton(android.R.string.cancel, this)
+                .setCancelable(false)
+                .create();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (which == Dialog.BUTTON_POSITIVE) {
+            Uri uri = Uri.parse(String.format(MARKET_SEARCH, OrbotHelper.URI_ORBOT));
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            getActivity().startActivity(intent);
+        }
+    }
 }

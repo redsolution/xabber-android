@@ -93,6 +93,11 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         }
 
         if (getString(R.string.account_proxy_type_key).equals(key)) {
+            if (getString(R.string.orbot).equals(newValue) && !OrbotHelper.isOrbotInstalled()) {
+                mListener.showOrbotDialog();
+                return false;
+            }
+
             boolean enabled = !getString(R.string.account_proxy_type_none).equals(newValue)
                     && !getString(R.string.orbot).equals(newValue);
             for (int id : new Integer[]{R.string.account_proxy_host_key,

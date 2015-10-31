@@ -21,7 +21,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
-import com.xabber.android.ui.dialog.OrbotInstallerDialogBuilder;
+import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
@@ -283,7 +283,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
     @Override
     public void showOrbotDialog() {
-        OrbotInstallerDialogBuilder.show(this);
+        OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.newInstance().getTag());
     }
 
     @Override
