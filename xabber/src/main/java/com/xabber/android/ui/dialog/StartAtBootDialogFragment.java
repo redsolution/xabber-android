@@ -1,34 +1,35 @@
 package com.xabber.android.ui.dialog;
 
-import android.app.AlertDialog.Builder;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 
-public class StartAtBootDialogFragment extends ConfirmDialogFragment {
+public class StartAtBootDialogFragment extends DialogFragment implements DialogInterface.OnClickListener  {
 
     public static DialogFragment newInstance() {
         return new StartAtBootDialogFragment();
     }
 
     @Override
-    protected Builder getBuilder() {
-        return new Builder(getActivity())
-                .setMessage(R.string.start_at_boot_suggest);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.start_at_boot_suggest)
+                .setPositiveButton(R.string.start_at_boot, this)
+                .setNegativeButton(android.R.string.cancel, this)
+                .setCancelable(false)
+                .create();
     }
 
     @Override
-    protected boolean onPositiveClick() {
+    public void onClick(DialogInterface dialog, int which) {
         SettingsManager.setStartAtBootSuggested();
-        SettingsManager.setConnectionStartAtBoot(true);
-        return true;
+        if (which == Dialog.BUTTON_POSITIVE) {
+            SettingsManager.setConnectionStartAtBoot(true);
+        }
     }
-
-    @Override
-    protected boolean onNegativeClicked() {
-        SettingsManager.setStartAtBootSuggested();
-        return true;
-    }
-
 }
