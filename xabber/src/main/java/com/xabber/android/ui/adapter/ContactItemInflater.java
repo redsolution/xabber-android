@@ -71,6 +71,10 @@ public class ContactItemInflater {
 
         if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
             viewHolder.mucIndicator.setVisibility(View.VISIBLE);
+            viewHolder.mucIndicator.setImageResource(R.drawable.ic_muc_indicator_black_16dp);
+        } else if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
+            viewHolder.mucIndicator.setVisibility(View.VISIBLE);
+            viewHolder.mucIndicator.setImageResource(R.drawable.ic_muc_private_chat_indicator_black_16dp);
         } else {
             viewHolder.mucIndicator.setVisibility(View.GONE);
         }
