@@ -114,14 +114,14 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * {@link #IS_ACCOUNT}, {@link #NO_ACCOUNT}.
      */
     public String getGroupName(String account, String group) {
-        if (group == GroupManager.NO_GROUP)
+        if (GroupManager.NO_GROUP.equals(group))
             return Application.getInstance().getString(R.string.group_none);
-        else if (group == GroupManager.IS_ROOM)
+        else if (GroupManager.IS_ROOM.equals(group))
             return Application.getInstance().getString(R.string.group_room);
-        else if (group == GroupManager.ACTIVE_CHATS)
+        else if (GroupManager.ACTIVE_CHATS.equals(group))
             return Application.getInstance().getString(
                     R.string.group_active_chat);
-        else if (group == GroupManager.IS_ACCOUNT)
+        else if (GroupManager.IS_ACCOUNT.equals(group))
             return AccountManager.getInstance().getVerboseName(account);
         return group;
     }
