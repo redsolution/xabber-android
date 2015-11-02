@@ -345,7 +345,7 @@ public class ContextMenuHelper {
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountViewer.createAccountPreferencesIntent(activity, account));
+                            activity.startActivity(AccountViewer.createAccountInfoIntent(activity, account));
                             return true;
                         }
                     });
