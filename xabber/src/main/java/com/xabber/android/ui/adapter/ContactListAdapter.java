@@ -24,6 +24,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -301,6 +302,9 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                     final String group;
                     final boolean online;
                     if (abstractChat instanceof RoomChat) {
+                        group = GroupManager.IS_ROOM;
+                        online = abstractContact.getStatusMode().isOnline();
+                    } else if (MUCManager.getInstance().isMucPrivateChat(abstractChat.getAccount(), abstractChat.getUser())) {
                         group = GroupManager.IS_ROOM;
                         online = abstractContact.getStatusMode().isOnline();
                     } else {
