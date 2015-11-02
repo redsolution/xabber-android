@@ -31,6 +31,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
@@ -53,10 +54,10 @@ public class ContactViewer extends ManagedActivity implements
 
     private String account;
     private String bareAddress;
-    private TextView contactNameView;
     private Toolbar toolbar;
     private View contactTitleView;
     private AbstractContact bestContact;
+    private CollapsingToolbarLayout collapsingToolbar;
 
     public static Intent createIntent(Context context, String account, String user) {
         return new EntityIntentBuilder(context, ContactViewer.class)
@@ -153,14 +154,11 @@ public class ContactViewer extends ManagedActivity implements
         contactTitleView = findViewById(R.id.contact_title_expanded);
         findViewById(R.id.status_icon).setVisibility(View.GONE);
         contactTitleView.setBackgroundColor(accountPainter.getAccountMainColor(account));
-        contactNameView = (TextView) findViewById(R.id.name);
+        TextView contactNameView = (TextView) findViewById(R.id.name);
         contactNameView.setVisibility(View.INVISIBLE);
 
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(bestContact.getName());
-
-
 
         collapsingToolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
         collapsingToolbar.setContentScrimColor(accountPainter.getAccountMainColor(account));
@@ -172,6 +170,7 @@ public class ContactViewer extends ManagedActivity implements
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
+        updateName();
     }
 
     @Override
@@ -185,16 +184,30 @@ public class ContactViewer extends ManagedActivity implements
     public void onContactsChanged(Collection<BaseEntity> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, bareAddress)) {
-                contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
+                updateName();
                 break;
             }
+        }
+    }
+
+    private void updateName() {
+        if (MUCManager.getInstance().isMucPrivateChat(account, bareAddress)) {
+            String vCardName = VCardManager.getInstance().getName(bareAddress);
+            if (!"".equals(vCardName)) {
+                collapsingToolbar.setTitle(vCardName);
+            } else {
+                collapsingToolbar.setTitle(Jid.getResource(bareAddress));
+            }
+
+        } else {
+            collapsingToolbar.setTitle(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
         }
     }
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
         if (accounts.contains(account)) {
-            contactNameView.setText(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
+            updateName();
         }
     }
 
