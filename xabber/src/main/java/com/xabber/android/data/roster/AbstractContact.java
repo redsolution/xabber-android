@@ -48,12 +48,21 @@ public class AbstractContact extends BaseEntity {
      */
     public String getName() {
         String vCardName = VCardManager.getInstance().getName(user);
-        if (!"".equals(vCardName))
-            return vCardName;
 
         if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-            return String.format("%s (%s)", Jid.getResource(user), Jid.getBareAddress(user));
+            String name;
+
+            if (!"".equals(vCardName)) {
+                name = vCardName;
+            } else {
+                name = Jid.getResource(user);
+            }
+
+            return String.format("%s (%s)", name, Jid.getBareAddress(user));
         }
+
+        if (!"".equals(vCardName))
+            return vCardName;
 
         return user;
     }

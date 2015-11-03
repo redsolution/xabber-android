@@ -40,6 +40,9 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.message.chat.MucPrivateChatNotification;
+import com.xabber.android.data.notification.EntityNotificationProvider;
+import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterManager;
@@ -79,6 +82,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     private final static MessageManager instance;
 
+    private final EntityNotificationProvider<MucPrivateChatNotification> mucPrivateChatRequestProvider;
+
     static {
         instance = new MessageManager();
         Application.getInstance().addManager(instance);
@@ -97,6 +102,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     private MessageManager() {
         chats = new NestedMap<>();
+
+        mucPrivateChatRequestProvider = new EntityNotificationProvider<>
+                (R.drawable.ic_stat_muc_private_chat_request_white_24dp);
+        mucPrivateChatRequestProvider.setCanClearNotifications(false);
     }
 
     public static MessageManager getInstance() {
@@ -146,6 +155,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void onLoaded(Set<BaseEntity> loadChats) {
+        NotificationManager.getInstance().registerNotificationProvider(mucPrivateChatRequestProvider);
+
         for (BaseEntity baseEntity : loadChats) {
             if (getChat(baseEntity.getAccount(), Jid.getBareAddress(baseEntity.getUser())) == null) {
                 createChat(baseEntity.getAccount(), baseEntity.getUser());
@@ -574,7 +585,17 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 break;
             }
         }
-        if (getChat(account, user) != null) {
+
+        final AbstractChat chat = getChat(account, user);
+
+        if (chat != null && packet instanceof Message) {
+            if (chat.isPrivateMucChat() && !chat.isPrivateMucChatAccepted()) {
+                if (mucPrivateChatRequestProvider.get(chat.getAccount(), chat.getUser()) == null) {
+                    mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
+                }
+            }
+
+
             return;
         }
         if (!processed && packet instanceof Message) {
@@ -586,6 +607,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user))) {
                 createPrivateMucChat(account, user).onPacket(contact, packet);
+                mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
                 return;
             }
 
@@ -773,4 +795,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
+    public void acceptMucPrivateChat(String account, String user) {
+        mucPrivateChatRequestProvider.remove(account, user);
+        getOrCreatePrivateMucChat(account, user).setIsPrivateMucChatAccepted(true);
+    }
+
+    public void discardMucPrivateChat(String account, String user) {
+        mucPrivateChatRequestProvider.remove(account, user);
+    }
 }

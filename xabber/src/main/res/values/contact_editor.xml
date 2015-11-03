@@ -18,4 +18,6 @@
     <string name="error_during_image_processing">Error during image processing</string>
     <string name="account_settings">Account settings</string>
     <string name="account_user_info">Account info</string>
+    <string name="conference_private_chat_invitation">%1$s from %2$s wants to start private chat with you</string>
+    <string name="accept_muc_private_chat">Accept</string>
 </resources>

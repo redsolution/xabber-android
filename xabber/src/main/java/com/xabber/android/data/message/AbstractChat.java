@@ -107,6 +107,8 @@ public abstract class AbstractChat extends BaseEntity {
     private boolean isLastMessageIncoming;
 
     private boolean isPrivateMucChat;
+    private boolean isPrivateMucChatAccepted;
+
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -120,6 +122,7 @@ public abstract class AbstractChat extends BaseEntity {
         messages = new ArrayList<MessageItem>();
         sendQuery = new ArrayList<MessageItem>();
         this.isPrivateMucChat = isPrivateMucChat;
+        isPrivateMucChatAccepted = false;
         updateCreationTime();
 
         Application.getInstance().runInBackground(new Runnable() {
@@ -269,6 +272,10 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     public boolean isActive() {
+        if (isPrivateMucChat && !isPrivateMucChatAccepted) {
+            return false;
+        }
+
         return active;
     }
 
@@ -405,6 +412,10 @@ public abstract class AbstractChat extends BaseEntity {
             openChat();
         if (!incoming)
             notify = false;
+
+        if (isPrivateMucChat && !isPrivateMucChatAccepted) {
+            notify = false;
+        }
 
         MessageItem messageItem = new MessageItem(this, record ? null
                 : NO_RECORD_TAG, resource, text, action, timestamp,
@@ -718,5 +729,17 @@ public abstract class AbstractChat extends BaseEntity {
 
     public boolean isLastMessageIncoming() {
         return isLastMessageIncoming;
+    }
+
+    public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
+        this.isPrivateMucChatAccepted = isPrivateMucChatAccepted;
+    }
+
+    public boolean isPrivateMucChat() {
+        return isPrivateMucChat;
+    }
+
+    public boolean isPrivateMucChatAccepted() {
+        return isPrivateMucChatAccepted;
     }
 }

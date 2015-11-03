@@ -1,17 +1,3 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- *
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
- */
 package com.xabber.android.ui.activity;
 
 import android.content.Context;
@@ -25,26 +11,23 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.data.roster.SubscriptionRequest;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.helper.SingleActivity;
+import com.xabber.xmpp.address.Jid;
 
-public class ContactSubscription extends SingleActivity implements View.OnClickListener, ContactVcardViewerFragment.Listener {
+public class MucPrivateChatRequest extends SingleActivity implements View.OnClickListener, ContactVcardViewerFragment.Listener {
 
     private String account;
     private String user;
-    private SubscriptionRequest subscriptionRequest;
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
-        return new EntityIntentBuilder(context, ContactSubscription.class)
+    public static Intent createIntent(Context context, String account, String user) {
+        return new EntityIntentBuilder(context, MucPrivateChatRequest.class)
                 .setAccount(account).setUser(user).build();
     }
 
@@ -63,16 +46,10 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
         Intent intent = getIntent();
         account = getAccount(intent);
         user = getUser(intent);
-        subscriptionRequest = PresenceManager.getInstance().getSubscriptionRequest(account, user);
-        if (subscriptionRequest == null) {
-            Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
-            finish();
-            return;
-        }
 
         setContentView(R.layout.contact_subscription);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setTitle(getString(R.string.subscription_request_message));
+        toolbar.setTitle(R.string.conference_private_chat);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,14 +70,14 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
 
         ((ImageView)fakeToolbar.findViewById(R.id.avatar)).setImageDrawable(abstractContact.getAvatar());
 
-        ((TextView)fakeToolbar.findViewById(R.id.dialog_message)).setText(subscriptionRequest.getConfirmation());
+        ((TextView)fakeToolbar.findViewById(R.id.dialog_message)).setText(String.format(getString(R.string.conference_private_chat_invitation), Jid.getResource(user), Jid.getBareAddress(user)));
 
         Button acceptButton = (Button) findViewById(R.id.accept_button);
+        acceptButton.setText(R.string.accept_muc_private_chat);
         acceptButton.setTextColor(accountPainter.getAccountMainColor(account));
         acceptButton.setOnClickListener(this);
 
         findViewById(R.id.decline_button).setOnClickListener(this);
-
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -124,25 +101,13 @@ public class ContactSubscription extends SingleActivity implements View.OnClickL
     }
 
     public void onAccept() {
-        try {
-            PresenceManager.getInstance().acceptSubscription(
-                    subscriptionRequest.getAccount(),
-                    subscriptionRequest.getUser());
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
-        startActivity(ContactAdd.createIntent(this, account, user));
+        MessageManager.getInstance().acceptMucPrivateChat(account, user);
+        startActivity(ChatViewer.createSpecificChatIntent(Application.getInstance(), account, user));
         finish();
     }
 
     public void onDecline() {
-        try {
-            PresenceManager.getInstance().discardSubscription(
-                    subscriptionRequest.getAccount(),
-                    subscriptionRequest.getUser());
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
+        MessageManager.getInstance().discardMucPrivateChat(account, user);
         finish();
     }
 

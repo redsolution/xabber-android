@@ -95,7 +95,7 @@ public class MessageNotificationCreator {
     }
 
     private String getContactName(MessageNotification message) {
-        return RosterManager.getInstance().getName(message.getAccount(), message.getUser());
+        return RosterManager.getInstance().getBestContact(message.getAccount(), message.getUser()).getName();
     }
 
     private CharSequence getMultiContactTitle(int messageCount) {
