@@ -11,6 +11,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 
 public class UnblockAllContactsDialog extends DialogFragment implements DialogInterface.OnClickListener, BlockingManager.BlockContactListener, BlockingManager.UnblockContactListener {
 
@@ -44,6 +45,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
             BlockingManager.getInstance().unblockAll(account, this);
+            PrivateMucChatBlockingManager.getInstance().unblockAll(account);
         }
     }
 

@@ -37,6 +37,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -175,14 +176,23 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public Collection<AbstractChat> getChats() {
         final Map<String, List<String>> blockedContacts = BlockingManager.getInstance().getBlockedContacts();
+        final Map<String, List<String>> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts();
         List<AbstractChat> unblockedChats = new ArrayList<>();
         for (AbstractChat chat : chats.values()) {
-            final List<String> contacts = blockedContacts.get(chat.getAccount());
-            if (contacts != null) {
-                if (contacts.contains(chat.getUser())) {
+            final List<String> blockedContactsForAccount = blockedContacts.get(chat.getAccount());
+            if (blockedContactsForAccount != null) {
+                if (blockedContactsForAccount.contains(chat.getUser())) {
                     continue;
                 }
             }
+
+            final List<String> blockedMucContactsForAccount = blockedMucContacts.get(chat.getAccount());
+            if (blockedMucContactsForAccount != null) {
+                if (blockedMucContactsForAccount.contains(chat.getUser())) {
+                    continue;
+                }
+            }
+
             unblockedChats.add(chat);
         }
 

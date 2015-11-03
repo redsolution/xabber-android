@@ -34,6 +34,7 @@ import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -528,6 +529,11 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         if (selectedChat != null) {
             final Collection<String> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
             if (blockedContacts.contains(selectedChat.getUser())) {
+                close();
+            }
+
+            final Collection<String> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
+            if (blockedMucContacts.contains(selectedChat.getUser())) {
                 close();
             }
         }

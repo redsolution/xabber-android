@@ -24,6 +24,7 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -413,8 +414,11 @@ public abstract class AbstractChat extends BaseEntity {
         if (!incoming)
             notify = false;
 
-        if (isPrivateMucChat && !isPrivateMucChatAccepted) {
-            notify = false;
+        if (isPrivateMucChat) {
+            if (!isPrivateMucChatAccepted
+                    || PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(user)) {
+                notify = false;
+            }
         }
 
         MessageItem messageItem = new MessageItem(this, record ? null
