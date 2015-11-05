@@ -176,7 +176,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public Collection<AbstractChat> getChats() {
         final Map<String, List<String>> blockedContacts = BlockingManager.getInstance().getBlockedContacts();
-        final Map<String, List<String>> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts();
+        final Map<String, Collection<String>> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts();
         List<AbstractChat> unblockedChats = new ArrayList<>();
         for (AbstractChat chat : chats.values()) {
             final List<String> blockedContactsForAccount = blockedContacts.get(chat.getAccount());
@@ -186,7 +186,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
 
-            final List<String> blockedMucContactsForAccount = blockedMucContacts.get(chat.getAccount());
+            final Collection<String> blockedMucContactsForAccount = blockedMucContacts.get(chat.getAccount());
             if (blockedMucContactsForAccount != null) {
                 if (blockedMucContactsForAccount.contains(chat.getUser())) {
                     continue;
