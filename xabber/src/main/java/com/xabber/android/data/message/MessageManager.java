@@ -601,7 +601,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (chat != null && packet instanceof Message) {
             if (chat.isPrivateMucChat() && !chat.isPrivateMucChatAccepted()) {
                 if (mucPrivateChatRequestProvider.get(chat.getAccount(), chat.getUser()) == null) {
-                    mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
+                    if (!PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(chat.getUser())) {
+                        mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
+                    }
                 }
             }
 
@@ -617,7 +619,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user))) {
                 createPrivateMucChat(account, user).onPacket(contact, packet);
-                mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
+                if (!PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(user)) {
+                    mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
+                }
                 return;
             }
 
