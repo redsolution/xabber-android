@@ -278,16 +278,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.ChatViewer" />
         </activity>
-        <activity
-            android:name=".ui.activity.ContactSubscription"
-            android:parentActivityName=".ui.activity.ContactList">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ContactList" />
-        </activity>
-        <activity android:name=".ui.activity.MUCInvite" />
         <activity android:name=".ui.activity.CertificateConfirmation" />
         <activity android:name=".ui.activity.PasswordRequest" />
         <activity android:name=".ui.activity.ArchiveRequest" />
@@ -444,7 +434,6 @@
         <receiver android:name=".receiver.GoXaReceiver" />
         <receiver android:name=".receiver.ComposingPausedReceiver" />
 
-        <activity android:name=".ui.activity.MucPrivateChatRequest"></activity>
     </application>
 
 </manifest>

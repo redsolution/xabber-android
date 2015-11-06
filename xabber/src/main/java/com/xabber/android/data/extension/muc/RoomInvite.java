@@ -23,7 +23,6 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactList;
-import com.xabber.android.ui.activity.MUCInvite;
 import com.xabber.xmpp.address.Jid;
 
 /**
