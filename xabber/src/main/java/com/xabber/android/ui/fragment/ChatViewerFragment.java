@@ -574,9 +574,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (abstractChat instanceof RegularChat) {
             menu.findItem(R.id.action_view_contact).setVisible(true);
             menu.findItem(R.id.action_close_chat).setVisible(true);
-            if (!MUCManager.getInstance().isMucPrivateChat(account, user)) {
-                menu.findItem(R.id.action_block_contact).setVisible(true);
-            }
+            menu.findItem(R.id.action_block_contact).setVisible(true);
         }
     }
 

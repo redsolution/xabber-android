@@ -58,6 +58,9 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
+import com.xabber.android.ui.dialog.MucInviteDialog;
+import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
@@ -88,6 +91,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
      * Select contact to be invited to the room was requested.
      */
     private static final String ACTION_ROOM_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_ROOM_INVITE";
+    private static final String ACTION_MUC_PRIVATE_CHAT_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE";
+    private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.ContactList.ACTION_CONTACT_SUBSCRIPTION";
+    private static final String ACTION_INCOMING_MUC_INVITE = "com.xabber.android.ui.activity.ContactList.ACTION_INCOMING_MUC_INVITE";
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
@@ -130,6 +136,27 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
                 .setAccount(account).setUser(room).build();
         intent.setAction(ACTION_ROOM_INVITE);
+        return intent;
+    }
+
+    public static Intent createMucPrivateChatInviteIntent(Context context, String account, String user) {
+        Intent intent = new EntityIntentBuilder(context, ContactList.class)
+                .setAccount(account).setUser(user).build();
+        intent.setAction(ACTION_MUC_PRIVATE_CHAT_INVITE);
+        return intent;
+    }
+
+    public static Intent createContactSubscriptionIntent(Context context, String account, String user) {
+        Intent intent = new EntityIntentBuilder(context, ContactList.class)
+                .setAccount(account).setUser(user).build();
+        intent.setAction(ACTION_CONTACT_SUBSCRIPTION);
+        return intent;
+    }
+
+    public static Intent createMucInviteIntent(Context context, String account, String user) {
+        Intent intent = new EntityIntentBuilder(context, ContactList.class)
+                .setAccount(account).setUser(user).build();
+        intent.setAction(ACTION_INCOMING_MUC_INVITE);
         return intent;
     }
 
@@ -310,6 +337,22 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                     }
                     break;
                 }
+
+                case ContactList.ACTION_MUC_PRIVATE_CHAT_INVITE:
+                    action = null;
+                    showMucPrivateChatDialog();
+                    break;
+
+                case ContactList.ACTION_CONTACT_SUBSCRIPTION:
+                    action = null;
+                    showContactSubscriptionDialog();
+                    break;
+
+                case ContactList.ACTION_INCOMING_MUC_INVITE:
+                    action = null;
+                    showMucInviteDialog();
+                    break;
+
             }
         }
 
@@ -335,6 +378,33 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                             .show(getFragmentManager(), "CONTACT_INTEGRATION");
                 }
             }
+        }
+    }
+
+    private void showMucInviteDialog() {
+        Intent intent = getIntent();
+        String account = getRoomInviteAccount(intent);
+        String user = getRoomInviteUser(intent);
+        if (account != null && user != null) {
+            MucInviteDialog.newInstance(account, user).show(getFragmentManager(), MucInviteDialog.class.getName());
+        }
+    }
+
+    private void showContactSubscriptionDialog() {
+        Intent intent = getIntent();
+        String account = getRoomInviteAccount(intent);
+        String user = getRoomInviteUser(intent);
+        if (account != null && user != null) {
+            ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
+        }
+    }
+
+    private void showMucPrivateChatDialog() {
+        Intent intent = getIntent();
+        String account = getRoomInviteAccount(intent);
+        String user = getRoomInviteUser(intent);
+        if (account != null && user != null) {
+            MucPrivateChatInvitationDialog.newInstance(account, user).show(getFragmentManager(), MucPrivateChatInvitationDialog.class.getName());
         }
     }
 

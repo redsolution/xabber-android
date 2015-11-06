@@ -26,4 +26,6 @@
     <string name="muc_get_hosted_conferences">Get hosted conferences</string>
     <string name="muc_error_getting_conferences">Error getting conferences</string>
     <string name="muc_type_conference_name">Type conference name</string>
+    <string name="contact_is_blocked">Contact is blocked!</string>
+    <string name="conference_invitation">Conference invitation</string>
 </resources>
