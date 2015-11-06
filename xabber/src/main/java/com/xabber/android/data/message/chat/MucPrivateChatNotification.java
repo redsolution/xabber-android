@@ -7,7 +7,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.MucPrivateChatRequest;
+import com.xabber.android.ui.activity.ContactList;
 
 public class MucPrivateChatNotification extends BaseEntity implements EntityNotificationItem {
 
@@ -17,7 +17,7 @@ public class MucPrivateChatNotification extends BaseEntity implements EntityNoti
 
     @Override
     public Intent getIntent() {
-        return MucPrivateChatRequest.createIntent(Application.getInstance(), account, user);
+        return ContactList.createMucPrivateChatInviteIntent(Application.getInstance(), account, user);
     }
 
     @Override
