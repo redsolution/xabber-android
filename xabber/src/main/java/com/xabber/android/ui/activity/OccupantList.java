@@ -21,15 +21,19 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.helper.BarPainter;
@@ -133,6 +137,16 @@ public class OccupantList extends ManagedListActivity implements
         LogManager.i(this, occupant.getNickname());
 
         String occupantFullJid = room + "/" + occupant.getNickname();
+
+        if (PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(occupantFullJid)) {
+            Toast.makeText(this, R.string.contact_is_blocked, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        final AbstractChat mucPrivateChat = MessageManager.getInstance().getOrCreatePrivateMucChat(account, occupantFullJid);
+        mucPrivateChat.setIsPrivateMucChatAccepted(true);
+
         startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));
     }
 }

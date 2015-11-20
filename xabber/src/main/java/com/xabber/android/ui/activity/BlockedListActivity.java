@@ -16,6 +16,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
@@ -91,8 +92,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        final boolean blockListIsEmpty = BlockingManager.getInstance().getBlockedContacts(account).isEmpty();
-        menu.findItem(R.id.action_unblock_all).setVisible(!blockListIsEmpty);
+        menu.findItem(R.id.action_unblock_all).setVisible(adapter.getItemCount() > 0);
         final boolean checkContactsIsEmpty = adapter.getCheckedContacts().isEmpty();
         menu.findItem(R.id.action_unblock_selected).setVisible(!checkContactsIsEmpty);
         return true;
@@ -131,6 +131,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
                 return true;
             case R.id.action_unblock_selected:
                 BlockingManager.getInstance().unblockContacts(account, adapter.getCheckedContacts(), this);
+                PrivateMucChatBlockingManager.getInstance().unblockContacts(account, adapter.getCheckedContacts());
             default:
                 return super.onOptionsItemSelected(item);
         }

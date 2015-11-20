@@ -11,6 +11,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.RosterManager;
 
 public class BlockContactDialog extends DialogFragment implements DialogInterface.OnClickListener, BlockingManager.BlockContactListener {
@@ -39,7 +41,7 @@ public class BlockContactDialog extends DialogFragment implements DialogInterfac
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.block_contact_confirm),
-                        RosterManager.getInstance().getName(account, user),
+                        RosterManager.getInstance().getBestContact(account, user).getName(),
                         AccountManager.getInstance().getVerboseName(account)))
                 .setPositiveButton(R.string.contact_block, this)
                 .setNegativeButton(android.R.string.cancel, this).create();
@@ -49,7 +51,13 @@ public class BlockContactDialog extends DialogFragment implements DialogInterfac
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
-            BlockingManager.getInstance().blockContact(account, user, this);
+
+            if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
+                PrivateMucChatBlockingManager.getInstance().blockContact(account, user);
+                onSuccess();
+            } else {
+                BlockingManager.getInstance().blockContact(account, user, this);
+            }
         }
     }
 

@@ -236,7 +236,7 @@ public class ContextMenuHelper {
             }
 
             if (!BlockingManager.getInstance().isSupported(account)
-                    || MUCManager.getInstance().isMucPrivateChat(account, user)) {
+                    && !MUCManager.getInstance().isMucPrivateChat(account, user)) {
                 menu.findItem(R.id.action_block_contact).setVisible(false);
             }
             if (abstractContact.getStatusMode() != StatusMode.unsubscribed) {

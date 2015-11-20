@@ -219,6 +219,10 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
     }
 
     public void unblockContacts(String account, final List<String> contacts, final UnblockContactListener listener) {
+        if (!isSupported(account)) {
+            return;
+        }
+
         final Unblock unblockRequest  = new Unblock();
         unblockRequest.setType(IQ.Type.set);
         for (String contact : contacts) {
