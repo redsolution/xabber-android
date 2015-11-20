@@ -4,6 +4,7 @@ package com.xabber.android.data.extension.httpfileupload;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -149,7 +150,8 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
                 @Override
                 public void onError(String account, String packetId, IQ iq) {
-
+                    LogManager.i(this, "On HTTP file upload slot error");
+                    Application.getInstance().onError(R.string.http_file_upload_slot_error);
                 }
 
                 @Override
