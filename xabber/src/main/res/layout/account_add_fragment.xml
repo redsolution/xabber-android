@@ -23,21 +23,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/account_type" />
-
-        <Spinner
-            android:id="@+id/account_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dip"
-            android:paddingTop="4dip"
-            android:prompt="@string/account_type"
-            />
-
-
         <LinearLayout
             android:id="@+id/auth_panel"
             android:layout_width="match_parent"
@@ -55,7 +40,7 @@
                 android:id="@+id/account_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint=""
+                android:hint="@string/name_example_com"
                 android:inputType="textEmailAddress"
                 android:singleLine="true"
                 android:text="" />
@@ -121,6 +106,7 @@
             android:id="@+id/account_help"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:text="@string/account_type_helps_xmpp"
             android:autoLink="all" />
     </LinearLayout>
 </ScrollView>

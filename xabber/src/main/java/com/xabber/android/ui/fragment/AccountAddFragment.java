@@ -1,17 +1,14 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -21,23 +18,18 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountType;
 import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.AccountViewer;
-import com.xabber.android.ui.adapter.AccountTypeAdapter;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OrbotHelper;
 
-public class AccountAddFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AccountAddFragment extends Fragment implements View.OnClickListener {
 
-    private static final String SAVED_ACCOUNT_TYPE = "com.xabber.android.ui.fragment.AccountAddFragment.ACCOUNT_TYPE";
     private CheckBox storePasswordView;
     private CheckBox useOrbotView;
     private CheckBox createAccountCheckBox;
-    private Spinner accountTypeView;
     private LinearLayout passwordConfirmView;
     private EditText userView;
     private EditText passwordView;
     private EditText passwordConfirmEditText;
-    private View authPanel;
-    private TextView accountHelpView;
 
     public static AccountAddFragment newInstance() {
         return new AccountAddFragment();
@@ -47,47 +39,18 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.account_add_fragment, container, false);
 
-        accountTypeView = (Spinner) view.findViewById(R.id.account_type);
-        accountTypeView.setAdapter(new AccountTypeAdapter(getActivity()));
-        accountTypeView.setOnItemSelectedListener(this);
-
-        String accountType;
-        if (savedInstanceState == null) {
-            accountType = null;
-        } else {
-            accountType = savedInstanceState.getString(SAVED_ACCOUNT_TYPE);
-        }
-
-        accountTypeView.setSelection(0);
-        for (int position = 0; position < accountTypeView.getCount(); position++) {
-            if (((AccountType) accountTypeView.getItemAtPosition(position)).getName().equals(accountType)){
-                accountTypeView.setSelection(position);
-                break;
-            }
-        }
-
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
         createAccountCheckBox = (CheckBox) view.findViewById(R.id.register_account);
         createAccountCheckBox.setOnClickListener(this);
 
-        authPanel = view.findViewById(R.id.auth_panel);
-
         userView = (EditText) view.findViewById(R.id.account_user_name);
-        accountHelpView = (TextView) view.findViewById(R.id.account_help);
         passwordView = (EditText) view.findViewById(R.id.account_password);
         passwordConfirmEditText = (EditText) view.findViewById(R.id.confirm_password);
 
         passwordConfirmView = (LinearLayout) view.findViewById(R.id.confirm_password_layout);
 
         return view;
-    }
-
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(SAVED_ACCOUNT_TYPE, ((AccountType) accountTypeView.getSelectedItem()).getName());
     }
 
     @Override
@@ -116,7 +79,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             return;
         }
 
-        AccountType accountType = (AccountType) accountTypeView.getSelectedItem();
+        AccountType accountType = AccountManager.getInstance().getAccountTypes().get(0);
 
         String account;
         try {
@@ -135,19 +98,5 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         getActivity().setResult(Activity.RESULT_OK, AccountAdd.createAuthenticatorResult(account));
         startActivity(AccountViewer.createAccountPreferencesIntent(getActivity(), account));
         getActivity().finish();
-    }
-
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        AccountType accountType = (AccountType) accountTypeView.getSelectedItem();
-        authPanel.setVisibility(View.VISIBLE);
-        accountHelpView.setText(accountType.getHelp());
-        userView.setHint(accountType.getHint());
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        accountTypeView.setSelection(0);
     }
 }
