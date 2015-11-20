@@ -93,5 +93,6 @@
     <string name="received_by">Received by %s</string>
     <string name="could_not_get_path_to_file">Could not get path to file</string>
     <string name="message_open_private_chat">Open private chat</string>
+    <string name="http_file_upload_slot_error">Could not upload file. Too large?</string>
 
 </resources>
