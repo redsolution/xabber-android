@@ -87,6 +87,15 @@
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:hint="@string/vcard_nick_name"
+                        android:layout_gravity="center_vertical"
+                        android:id="@+id/vcard_nickname"
+                        android:singleLine="true"
+                        />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:hint="@string/vcard_formatted_name"
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_formatted_name"
@@ -137,15 +146,6 @@
                         android:hint="@string/vcard_suffix_name"
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_suffix_name"
-                        android:singleLine="true"
-                        />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/vcard_nick_name"
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/vcard_nickname"
                         android:singleLine="true"
                         />
 
