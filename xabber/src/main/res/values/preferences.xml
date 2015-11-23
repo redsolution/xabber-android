@@ -358,6 +358,9 @@
     <string name="connection_use_carbons_key">connection_use_carbons</string>
     <bool name="connection_use_carbons_default">false</bool>
 
+    <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
+    <bool name="connection_use_plain_text_auth_default">false</bool>
+
 <!-- preference_debug -->
     <string name="cache_clear_key">cache_clear</string>
 

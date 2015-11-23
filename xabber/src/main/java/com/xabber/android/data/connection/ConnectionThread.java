@@ -28,6 +28,7 @@ import com.xabber.android.data.account.OAuthResult;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -36,6 +37,7 @@ import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
@@ -46,6 +48,7 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -202,6 +205,8 @@ public class ConnectionThread implements
             e.printStackTrace();
         }
 
+        setUpSASL();
+
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
         xmppConnection.addConnectionListener(this);
@@ -225,6 +230,23 @@ public class ConnectionThread implements
                     passwordRequest();
                 }
             });
+        }
+    }
+
+    private void setUpSASL() {
+        if (SettingsManager.connectionUsePlainTextAuth()) {
+            final Map<String, String> registeredSASLMechanisms = SASLAuthentication.getRegisterdSASLMechanisms();
+            for (String mechanism : registeredSASLMechanisms.values()) {
+                SASLAuthentication.blacklistSASLMechanism(mechanism);
+            }
+
+            SASLAuthentication.unBlacklistSASLMechanism(SASLPlainMechanism.NAME);
+
+        } else {
+            final Map<String, String> registeredSASLMechanisms = SASLAuthentication.getRegisterdSASLMechanisms();
+            for (String mechanism : registeredSASLMechanisms.values()) {
+                SASLAuthentication.unBlacklistSASLMechanism(mechanism);
+            }
         }
     }
 

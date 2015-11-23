@@ -77,6 +77,7 @@
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
     <string name="connection_use_carbons">Carbon-copied mode\nMay be unstable! Will share sessions for the same account on this client. Disable to reduce traffic usage.</string>
+    <string name="connection_use_plain_text_auth">Plain text auth\nUse plain text authentication for all accounts. Not recommended.</string>
     <string name="events_phrases">Key phrases\nCreate custom notifications for received messages that contain specific phrases</string>
     <string name="security_clear_certificate_warning">Do you really want to remove all ignored certificates?</string>
     <string name="debug_connection_errors_title">Show connection errors\nDisplay connection exceptions pop-ups</string>

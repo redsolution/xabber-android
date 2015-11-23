@@ -421,6 +421,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_use_carbons_default);
     }
 
+    public static boolean connectionUsePlainTextAuth() {
+        return getBoolean(R.string.connection_use_plain_text_auth_key,
+                R.bool.connection_use_plain_text_auth_default);
+    }
+
     public static boolean connectionAdjustPriority() {
         return getBoolean(R.string.connection_adjust_priority_key,
                 R.bool.connection_adjust_priority_default);
