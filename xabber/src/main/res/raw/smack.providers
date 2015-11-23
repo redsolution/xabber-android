@@ -9,19 +9,6 @@
         <className>com.xabber.xmpp.avatar.VCardUpdateProvider</className>
     </extensionProvider>
 
-    <!-- Message Delivery Receipts -->
-    <extensionProvider>
-        <elementName>request</elementName>
-        <namespace>urn:xmpp:receipts</namespace>
-        <className>com.xabber.xmpp.receipt.RequestProvider</className>
-    </extensionProvider>
-
-    <extensionProvider>
-        <elementName>received</elementName>
-        <namespace>urn:xmpp:receipts</namespace>
-        <className>com.xabber.xmpp.receipt.ReceivedProvider</className>
-    </extensionProvider>
-
     <!-- Result Set Management -->
     <extensionProvider>
         <elementName>set</elementName>
