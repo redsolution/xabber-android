@@ -374,7 +374,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
         }
         if ("".equals(resource)) {
-            resource = "android" + StringUtils.randomString(8);
+            resource =  application.getString(R.string.default_resource_value) + StringUtils.randomString(8);
         }
 
         if (accountType.getId() == R.array.account_type_xmpp) {
@@ -395,7 +395,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             if (getAccount(userName + '@' + serverName + '/' + resource) == null) {
                 break;
             }
-            resource = "android" + StringUtils.randomString(8);
+            resource = application.getString(R.string.default_resource_value) + StringUtils.randomString(8);
         }
 
 
