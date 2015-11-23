@@ -21,6 +21,10 @@ android {
         disable 'MissingTranslation'
     }
 
+    dexOptions {
+        incremental true
+    }
+
     productFlavors {
 
         dev {
