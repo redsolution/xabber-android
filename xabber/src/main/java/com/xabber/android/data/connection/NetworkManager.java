@@ -173,7 +173,6 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onAvailable(int type) {
         state = NetworkState.available;
         LogManager.i(this, "Available");
-        DNSManager.getInstance().requestResolverUpdate();
         if (type == ConnectivityManager.TYPE_WIFI)
             ConnectionManager.getInstance().forceReconnect();
         else
@@ -195,7 +194,6 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onResume() {
         state = NetworkState.available;
         LogManager.i(this, "Resume");
-        DNSManager.getInstance().requestResolverUpdate();
         ConnectionManager.getInstance().updateConnections(false);
         // TODO: ConnectionManager.getInstance().forceKeepAlive();
     }
