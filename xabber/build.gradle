@@ -50,10 +50,6 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 ext {
     smackVersion = '4.1.5'
 }
