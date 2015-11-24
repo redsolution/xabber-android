@@ -31,9 +31,9 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
-import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -44,6 +44,12 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.xmpp.address.Jid;
 
+import org.jivesoftware.smack.util.StringUtils;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.util.Collection;
 
 public class FingerprintViewer extends ManagedActivity implements
@@ -229,15 +235,31 @@ public class FingerprintViewer extends ManagedActivity implements
         scanView.setEnabled(remoteFingerprint != null);
         verifiedView.setEnabled(remoteFingerprint != null);
         ((TextView) findViewById(R.id.otr_remote_fingerprint)).setText(
-                remoteFingerprint == null ? getString(R.string.unknown) : CertificateManager.showFingerprint(remoteFingerprint));
+                remoteFingerprint == null ? getString(R.string.unknown) : showFingerprint(remoteFingerprint));
         showView.setEnabled(localFingerprint != null);
         copyView.setEnabled(localFingerprint != null);
         ((TextView) findViewById(R.id.otr_local_fingerprint)).setText(
-                localFingerprint == null ? getString(R.string.unknown) : CertificateManager.showFingerprint(localFingerprint));
+                localFingerprint == null ? getString(R.string.unknown) : showFingerprint(localFingerprint));
 
         contactTitleActionBarInflater.update(abstractContact);
 
         isUpdating = false;
+    }
+
+    /**
+     * @param fingerprint
+     * @return Formatted fingerprint to be shown.
+     */
+    private static String showFingerprint(String fingerprint) {
+        if (fingerprint == null)
+            return null;
+        StringBuffer buffer = new StringBuffer();
+        for (int index = 0; index < fingerprint.length(); index++) {
+            if (index > 0 && index % 2 == 0)
+                buffer.append(':');
+            buffer.append(fingerprint.charAt(index));
+        }
+        return buffer.toString().toUpperCase();
     }
 
 }

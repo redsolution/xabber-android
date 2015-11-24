@@ -278,7 +278,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.ChatViewer" />
         </activity>
-        <activity android:name=".ui.activity.CertificateConfirmation" />
         <activity android:name=".ui.activity.PasswordRequest" />
         <activity android:name=".ui.activity.ArchiveRequest" />
         <activity
