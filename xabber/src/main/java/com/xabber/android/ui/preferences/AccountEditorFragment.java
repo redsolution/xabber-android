@@ -36,6 +36,8 @@ public class AccountEditorFragment extends BaseSettingsFragment {
             getPreferenceScreen().removePreference(findPreference(getString(R.string.account_syncable_key)));
         }
 
+        getPreferenceScreen().removePreference(findPreference(getString(R.string.account_sasl_key)));
+
         AccountManager.getInstance().removeAuthorizationError(mListener.getAccount());
     }
 
