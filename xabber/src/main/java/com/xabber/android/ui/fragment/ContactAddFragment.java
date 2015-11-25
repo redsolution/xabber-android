@@ -21,6 +21,9 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactAdder;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+
 import java.util.Collection;
 
 public class ContactAddFragment extends GroupEditorFragment
@@ -192,12 +195,17 @@ public class ContactAddFragment extends GroupEditorFragment
             RosterManager.getInstance().createContact(account, user,
                     nameView.getText().toString(), getSelected());
             PresenceManager.getInstance().requestSubscription(account, user);
+            MessageManager.getInstance().openChat(account, user);
+        } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
+            Application.getInstance().onError(R.string.NOT_CONNECTED);
+        } catch (XMPPException.XMPPErrorException e) {
+            Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+        } catch (SmackException.NoResponseException e) {
+            Application.getInstance().onError(R.string.CONNECTION_FAILED);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
-            getActivity().finish();
-            return;
         }
-        MessageManager.getInstance().openChat(account, user);
+
         getActivity().finish();
     }
 

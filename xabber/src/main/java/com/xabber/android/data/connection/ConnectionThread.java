@@ -25,6 +25,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.data.account.OAuthResult;
+import com.xabber.android.data.roster.AccountRosterListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionListener;
@@ -37,6 +38,7 @@ import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterLoadedListener;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -210,7 +212,11 @@ public class ConnectionThread implements
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
         xmppConnection.addConnectionListener(this);
-        Roster.getInstanceFor(xmppConnection).setRosterLoadedAtLogin(false);
+
+
+        AccountRosterListener rosterListener = new AccountRosterListener(((AccountItem)connectionItem).getAccount());
+        Roster.getInstanceFor(xmppConnection).addRosterListener(rosterListener);
+        Roster.getInstanceFor(xmppConnection).addRosterLoadedListener(rosterListener);
 
         org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
 

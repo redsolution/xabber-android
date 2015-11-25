@@ -89,13 +89,10 @@ public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemCl
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                try {
-                    RosterManager.getInstance().setName(getAccount(), getBareAddress(), input.getText().toString());
-                } catch (NetworkException e) {
-                    Application.getInstance().onError(e);
-                }
+                RosterManager.getInstance().setName(getAccount(), getBareAddress(), input.getText().toString());
             }
         });
+
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

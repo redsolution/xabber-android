@@ -337,8 +337,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             color = activeChatsColor;
             viewHolder.name.setText(name);
         } else {
-            viewHolder.name.setText(name + " (" + configuration.getOnline()
-                    + "/" + configuration.getTotal() + ")");
+            viewHolder.name.setText(String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal()));
 
             color = accountSubgroupColors[level];
             viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);
