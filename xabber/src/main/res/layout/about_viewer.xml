@@ -161,7 +161,6 @@
                     android:id="@+id/about_xabber_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:autoLink="email"
                     android:text="@string/about_xabber_email"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColorLink="@color/white" />
