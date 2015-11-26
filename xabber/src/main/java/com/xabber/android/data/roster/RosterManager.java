@@ -58,8 +58,10 @@ public class RosterManager {
         Application.getInstance().addManager(instance);
     }
 
-    private RosterManager() {
+    private Collection<RosterContact> allRosterContacts;
 
+    private RosterManager() {
+        allRosterContacts = new ArrayList<>();
     }
 
     public static RosterManager getInstance() {
@@ -89,7 +91,11 @@ public class RosterManager {
     }
 
     public Collection<RosterContact> getContacts() {
-        Collection<RosterContact> allRosterContacts = new ArrayList<>();
+        return Collections.unmodifiableCollection(allRosterContacts);
+    }
+
+    void updateContacts() {
+        allRosterContacts.clear();
         for (String account : AccountManager.getInstance().getAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);
             if (roster == null) {
@@ -106,7 +112,6 @@ public class RosterManager {
 
             }
         }
-        return Collections.unmodifiableCollection(allRosterContacts);
     }
 
     @NonNull

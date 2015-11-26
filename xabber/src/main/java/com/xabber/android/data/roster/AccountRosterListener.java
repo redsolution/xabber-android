@@ -46,6 +46,8 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
     }
 
     private void update(Collection<String> addresses) {
+        RosterManager.getInstance().updateContacts();
+
         Collection<BaseEntity> entities = new ArrayList<>();
 
         for (String address : addresses) {
@@ -57,6 +59,8 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
     @Override
     public void onRosterLoaded(Roster roster) {
+        RosterManager.getInstance().updateContacts();
+
         final AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
 
         for (OnRosterReceivedListener listener : Application.getInstance().getManagers(OnRosterReceivedListener.class)) {
