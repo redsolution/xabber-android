@@ -22,8 +22,12 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.OnAccountDisabledListener;
+import com.xabber.android.data.account.OnAccountEnabledListener;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
@@ -49,7 +53,8 @@ import java.util.Set;
  *
  * @author alexander.ivanov
  */
-public class RosterManager {
+public class RosterManager implements OnDisconnectListener, OnAccountEnabledListener,
+        OnAccountDisabledListener {
 
     private final static RosterManager instance;
 
@@ -455,6 +460,39 @@ public class RosterManager {
     public boolean isRosterReceived(String account) {
         final Roster roster = getRoster(account);
         return roster != null && roster.isLoaded();
+    }
+
+    @Override
+    public void onDisconnect(ConnectionItem connection) {
+        if (!(connection instanceof AccountItem))
+            return;
+        String account = ((AccountItem) connection).getAccount();
+        for (RosterContact contact : allRosterContacts) {
+            if (contact.getAccount().equals(account)) {
+                contact.setConnected(false);
+            }
+        }
+    }
+
+    @Override
+    public void onAccountEnabled(AccountItem accountItem) {
+        setEnabled(accountItem.getAccount(), true);
+    }
+
+    @Override
+    public void onAccountDisabled(AccountItem accountItem) {
+        setEnabled(accountItem.getAccount(), false);
+    }
+
+    /**
+     * Sets whether contacts in accounts are enabled.
+     */
+    private void setEnabled(String account, boolean enabled) {
+        for (RosterContact contact : allRosterContacts) {
+            if (contact.getAccount().equals(account)) {
+                contact.setEnabled(enabled);
+            }
+        }
     }
 
     /**
