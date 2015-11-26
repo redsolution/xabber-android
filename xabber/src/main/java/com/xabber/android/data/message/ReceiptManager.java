@@ -89,8 +89,6 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener, R
 
     @Override
     public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
-        LogManager.i(this, "onPacket");
-
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();

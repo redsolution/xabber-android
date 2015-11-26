@@ -49,11 +49,7 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
-            try {
-                RosterManager.getInstance().removeContact(account, user);
-            } catch (NetworkException e) {
-                Application.getInstance().onError(e);
-            }
+            RosterManager.getInstance().removeContact(account, user);
 
             if (getActivity() instanceof ContactViewer) {
                 startActivity(ContactList.createIntent(getActivity()));

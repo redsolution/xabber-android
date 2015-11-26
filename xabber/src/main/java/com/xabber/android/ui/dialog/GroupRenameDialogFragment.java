@@ -28,6 +28,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.roster.RosterManager;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+
 public class GroupRenameDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.GroupRenameDialogFragment.ARGUMENT_ACCOUNT";
@@ -81,14 +84,10 @@ public class GroupRenameDialogFragment extends DialogFragment implements DialogI
             Toast.makeText(getActivity(), getString(R.string.group_is_empty), Toast.LENGTH_LONG).show();
             return;
         }
-        try {
-            if (account == null) {
-                RosterManager.getInstance().renameGroup(group, newName);
-            } else {
-                RosterManager.getInstance().renameGroup(account, group, newName);
-            }
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
+        if (account == null) {
+            RosterManager.getInstance().renameGroup(group, newName);
+        } else {
+            RosterManager.getInstance().renameGroup(account, group, newName);
         }
     }
 }
