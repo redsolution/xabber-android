@@ -71,13 +71,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * Text with extra information.
      */
     private String hint;
+    private Listener listener;
 
-    public ChatMessageAdapter(Context context, String account, String user, Message.MessageClickListener messageClickListener) {
+    public interface Listener {
+        void onNoDownloadFilePermission();
+    }
+
+    public ChatMessageAdapter(Context context, String account, String user, Message.MessageClickListener messageClickListener, ChatMessageAdapter.Listener listener) {
         this.context = context;
         messages = Collections.emptyList();
         this.account = account;
         this.user = user;
         this.messageClickListener = messageClickListener;
+        this.listener = listener;
 
         isMUC = MUCManager.getInstance().hasRoom(account, user);
         if (isMUC) {
@@ -150,8 +156,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
-        LogManager.i(this, "setUpIncomingMessage " + messageItem.getText());
-
         setUpMessage(messageItem, incomingMessage);
 
         setUpAvatar(messageItem, incomingMessage);
@@ -202,7 +206,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (messageItem.getFile().exists()) {
             onFileExists(messageView, messageItem.getFile());
         } else {
-            if (SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
+            if (SettingsManager.connectionLoadImages()
+                    && FileManager.fileIsImage(messageItem.getFile())
+                    && FileManager.hasFileWritePermission()) {
                 LogManager.i(this, "Downloading file from message adapter");
                 downloadFile(messageView, messageItem);
             } else {
@@ -218,6 +224,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void downloadFile(final Message messageView, MessageItem messageItem) {
+        if (!FileManager.hasFileWritePermission()) {
+            listener.onNoDownloadFilePermission();
+            return;
+        }
+
         messageView.downloadButton.setVisibility(View.GONE);
         messageView.downloadProgressBar.setVisibility(View.VISIBLE);
         FileManager.getInstance().downloadFile(messageItem, new FileManager.ProgressListener() {
@@ -235,7 +246,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void onFileExists(Message message, final File file) {
-        if (FileManager.fileIsImage(file)) {
+        if (FileManager.fileIsImage(file) && FileManager.hasFileReadPermission()) {
             message.messageTextForFileName.setVisibility(View.GONE);
             message.messageImage.setVisibility(View.VISIBLE);
             FileManager.loadImageFromFile(file, message.messageImage);
