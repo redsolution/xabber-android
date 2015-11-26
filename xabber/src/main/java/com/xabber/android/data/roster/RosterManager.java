@@ -22,14 +22,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountDisabledListener;
-import com.xabber.android.data.account.OnAccountEnabledListener;
-import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
-import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
@@ -330,10 +325,6 @@ public class RosterManager {
         final RosterEntry entry = roster.getEntry(bareAddress);
 
         if (entry == null) {
-            return;
-        }
-
-        if (entry.getName().equals(name.trim())) {
             return;
         }
 
