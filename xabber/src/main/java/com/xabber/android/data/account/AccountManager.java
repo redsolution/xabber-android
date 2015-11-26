@@ -17,6 +17,7 @@ package com.xabber.android.data.account;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -374,7 +375,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
         }
         if ("".equals(resource)) {
-            resource =  application.getString(R.string.default_resource_value) + StringUtils.randomString(8);
+            resource = generateResource();
         }
 
         if (accountType.getId() == R.array.account_type_xmpp) {
@@ -395,7 +396,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             if (getAccount(userName + '@' + serverName + '/' + resource) == null) {
                 break;
             }
-            resource = application.getString(R.string.default_resource_value) + StringUtils.randomString(8);
+            resource = generateResource();
         }
 
 
@@ -422,6 +423,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             SettingsManager.enableContactsShowAccount();
         }
         return accountItem.getAccount();
+    }
+
+    @NonNull
+    private String generateResource() {
+        return application.getString(R.string.account_resource_default) + "_" + StringUtils.randomString(8);
     }
 
     /**
