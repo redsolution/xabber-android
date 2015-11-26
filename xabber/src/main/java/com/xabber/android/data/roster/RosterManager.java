@@ -131,24 +131,6 @@ public class RosterManager {
         return contact;
     }
 
-    public Collection<RosterGroup> getRosterGroups() {
-        Collection<RosterGroup> allRosterGroups = new ArrayList<>();
-        for (String account : AccountManager.getInstance().getAccounts()) {
-            final Roster roster = RosterManager.getInstance().getRoster(account);
-            if (roster == null) {
-                continue;
-            }
-
-            final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
-
-            for (org.jivesoftware.smack.roster.RosterGroup rosterGroups : groups) {
-                allRosterGroups.add(new RosterGroup(account, rosterGroups.getName()));
-            }
-        }
-
-        return Collections.unmodifiableCollection(allRosterGroups);
-    }
-
     /**
      * @param account
      * @param user
@@ -480,7 +462,7 @@ public class RosterManager {
      *
      * @param entities
      */
-    public void onContactsChanged(final Collection<BaseEntity> entities) {
+    public static void onContactsChanged(final Collection<BaseEntity> entities) {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -495,7 +477,7 @@ public class RosterManager {
     /**
      * Notifies registered {@link OnContactChangedListener}.
      */
-    public void onContactChanged(String account, String bareAddress) {
+    public static void onContactChanged(String account, String bareAddress) {
         final ArrayList<BaseEntity> entities = new ArrayList<>();
         entities.add(new BaseEntity(account, bareAddress));
         onContactsChanged(entities);
