@@ -99,6 +99,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 24;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE_TO_DOWNLOADS = 25;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 26;
+    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_EXPORT_CHAT = 27;
     boolean isInputEmpty = true;
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -416,12 +417,22 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
+    @SuppressLint("NewApi")
+    private boolean checkExportChatPermission() {
+        if (FileManager.hasFileWritePermission()) {
+            return true;
+        } else {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_EXPORT_CHAT);
+            return false;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (isPermissionGranted(grantResults)) {
                 startFileSelection();
             } else {
                 Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
@@ -429,19 +440,31 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
 
         if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE_TO_DOWNLOADS) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (isPermissionGranted(grantResults)) {
                 saveFileToDownloads();
             } else {
                 Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
             }
         }
 
-        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
-            if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_EXPORT_CHAT) {
+            if (isPermissionGranted(grantResults)) {
+                showExportChatDialog();
+            } else {
                 Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
             }
         }
 
+        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (!isPermissionGranted(grantResults)) {
+                Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    private boolean isPermissionGranted(int[] grantResults) {
+        return grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -751,7 +774,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_export_chat:
-                ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
+                onExportChatClick();
                 return true;
 
             case R.id.action_call_attention:
@@ -821,6 +844,17 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             default:
                 return false;
         }
+    }
+
+    private void onExportChatClick() {
+        if (!checkExportChatPermission()) {
+            return;
+        }
+        showExportChatDialog();
+    }
+
+    private void showExportChatDialog() {
+        ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
     }
 
     private void OnSaveFileToDownloadsClick() {
