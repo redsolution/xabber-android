@@ -5,10 +5,10 @@
   <string name="away">Assente</string>
   <string name="chat">Pronto per la chat!</string>
   <string name="dnd">Non disturbare</string>
-  <string name="edit_status">Modifica stato</string>
-  <string name="empty_status">&lt;Nessuno stato&gt;</string>
+  <string name="edit_status">Modifica lo stato</string>
+  <string name="empty_status">&lt;Nessuno stato impostato&gt;</string>
   <string name="invisible">Invisibile</string>
-  <string name="remove_status">Cancella stato</string>
+  <string name="remove_status">Cancella il messaggio di stato</string>
   <string name="status_editor">Imposta stato</string>
   <string name="status_text_hint">Inserisci messaggio di stato</string>
   <string name="unavailable">Non in linea</string>

@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Erreur de connexion</string>
   <string name="contact_add">Ajouter un contact</string>
   <string name="contact_delete">Supprimer</string>
+  <string name="contact_block">Bloquer le contact</string>
   <string name="contact_delete_confirm">Souhaitez vous vraiment supprimer le contact %1$s du compte %2$s ?</string>
   <string name="contact_list">Liste de contacts</string>
   <string name="discard_subscription">Refuser le contact</string>
@@ -47,7 +48,7 @@
   <string name="certificate_show_details">Détails...</string>
   <string name="close_chats">Fermer toutes les conversations</string>
   <string name="contact_integration_suggest">Voulez-vous que Xabber soit intégré dans le gestionnaire de contacts du système ?\nCeci peut être changé dans \"Paramètres\" → \"Comptes XMPP\" → Votre compte → \"Intégration des contacts\".\nNote : La liste des contacts peut être ralentie pendant quelques minutes.</string>
-  <string name="group_room">Conférences</string>
+  <string name="group_room">Salons</string>
   <string name="OTR_ERROR">Erreur OTR</string>
   <string name="select_contact">Appuyez pour sélectionner le contact</string>
   <string name="show_offline_always">Toujours afficher</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Chercher contacts</string>
   <string name="sender_is_you">Vous </string>
   <string name="xmpp_accounts">Comptes XMPP</string>
+  <string name="block_list">Liste de blocage</string>
+  <string name="contact_blocked_successfully">Le contact est maintenant bloqué</string>
+  <string name="error_blocking_contact">Erreur lors du blocage du contact</string>
+  <string name="unblock_contact">Débloquer le contact</string>
+  <string name="contacts_unblocked_successfully">Le contact est maintenant débloqué</string>
+  <string name="error_unblocking_contacts">Erreur lors du déblocage du contact</string>
+  <string name="block_contact_confirm">Êtes-vous sûr de vouloir bloquer le contact %1$s du compte %2$s ?</string>
+  <string name="unblock_all_contacts_confirm">Êtes-vous sûr de vouloir débloquer tous les contacts du compte %1$s ?</string>
+  <string name="unblock_all">Débloquer tous</string>
+  <string name="unblock_selected">Débloquer sélection</string>
 </resources>

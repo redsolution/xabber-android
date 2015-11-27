@@ -58,4 +58,9 @@
   <string name="take_photo">Hacer una foto</string>
   <string name="remove_avatar">Eliminar avatar</string>
   <string name="change">Cambiar</string>
+  <string name="could_not_get_room_info">No se pudo obtener información de la sala</string>
+  <string name="conference_name">Nombre</string>
+  <string name="conference_description">Descripción</string>
+  <string name="conference_subject">Asunto</string>
+  <string name="message_info_occupants_number">Miembros: %d</string>
 </resources>

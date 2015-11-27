@@ -23,9 +23,10 @@
   <string name="archive_available_request_message">Souhaitez-vous stocker l\'historique des messages sur le serveur ?\nCela permet à Xabber d\'obtenir l\'historique des messages pour l\'ensemble des appareils qui utilisent ce compte.\nCette fonction génère un peu plus de trafic et réduit légèrement la vitesse de connexion.\nATTENTION : Tout votre historique local va être supprimé.</string>
   <string name="archive_available_request_title">Activer l\'archivage des messages ?</string>
   <string name="INVALID_CERTIFICATE">Certificat non-valide</string>
-  <string name="muc_invite_message">Souhaitez-vous rejoindre la conférence ?</string>
+  <string name="muc_invite_message">Souhaitez-vous rejoindre le salon ?</string>
   <string name="otr_verification_in_progress">Appuyez ici pour annuler.</string>
   <string name="PASSWORD_REQUIRED">Mot de passe requis</string>
   <string name="pay_attention">Demande d\'attention</string>
   <string name="subscription_request_message">Demande d\'autorisation</string>
+  <string name="conference_private_chat">Conversation privée d\'un salon</string>
 </resources>

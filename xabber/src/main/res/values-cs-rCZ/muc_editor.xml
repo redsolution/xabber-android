@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">Získat seznam konferencí</string>
   <string name="muc_error_getting_conferences">Chyba při získávání seznamu konferencí</string>
   <string name="muc_type_conference_name">Zadejte název konference</string>
+  <string name="contact_is_blocked">Kontakt je zablokován!</string>
+  <string name="conference_invitation">Pozvánka na konferenci</string>
 </resources>

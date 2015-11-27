@@ -89,4 +89,5 @@
   <string name="file_saved_successfully">ファイルが正常に保存されました</string>
   <string name="received_by">%s が受信しました</string>
   <string name="could_not_get_path_to_file">ファイルのパスを取得できません</string>
+  <string name="message_open_private_chat">プライベート チャットを開く</string>
 </resources>

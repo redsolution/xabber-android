@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Bağlantı hatası</string>
   <string name="contact_add">Kişi ekle</string>
   <string name="contact_delete">Sil</string>
+  <string name="contact_block">Kişiyi engelle</string>
   <string name="contact_delete_confirm">%1$s kullanıcısını %2$s hesabından gerçekten silmek istiyor musunuz?</string>
   <string name="contact_list">Kişi listesi</string>
   <string name="discard_subscription">Bağlantıyı reddet</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Kişileri ara</string>
   <string name="sender_is_you">Siz</string>
   <string name="xmpp_accounts">XMPP hesapları</string>
+  <string name="block_list">Engelli listesi</string>
+  <string name="contact_blocked_successfully">Kişi başarıyla engellendi</string>
+  <string name="error_blocking_contact">Kişi engelenirken hata oluştu</string>
+  <string name="unblock_contact">Kişinin engelini kaldır</string>
+  <string name="contacts_unblocked_successfully">Kişinin engeli başarıyla kaldırıldı</string>
+  <string name="error_unblocking_contacts">Kişi engeli kaldırılırken hata oluştu</string>
+  <string name="block_contact_confirm">%1$s kullanıcısının %2$s hesabını gerçekten engellemek istiyor musunuz?</string>
+  <string name="unblock_all_contacts_confirm">%1$s kullanıcısının engelini gerçekten kaldırmak istiyor musunuz?</string>
+  <string name="unblock_all">Tüm engelileri kaldır</string>
+  <string name="unblock_selected">Seçili olanı kaldır</string>
 </resources>

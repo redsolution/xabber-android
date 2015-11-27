@@ -4,7 +4,7 @@
   <string name="contact_viewer">Kişi bilgisi</string>
   <string name="contact_viewer_client">İstemci</string>
   <string name="vcard_nick_name">Takma ad</string>
-  <string name="vcard_formatted_name">Ad Soyad</string>
+  <string name="vcard_formatted_name">Görüntülenecek isim</string>
   <string name="vcard_prefix_name">Önek</string>
   <string name="vcard_given_name">İlk adı</string>
   <string name="vcard_middle_name">İkinci adı</string>
@@ -58,4 +58,9 @@
   <string name="take_photo">Fotoğraf çek</string>
   <string name="remove_avatar">Resmi sil</string>
   <string name="change">Değiştir</string>
+  <string name="could_not_get_room_info">Konferans bilgileri alınamadı</string>
+  <string name="conference_name">Ad</string>
+  <string name="conference_description">Açıklama</string>
+  <string name="conference_subject">Başlık</string>
+  <string name="message_info_occupants_number">Kiracılar: %d</string>
 </resources>

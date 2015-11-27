@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Chyba spojení</string>
   <string name="contact_add">Přidat kontakt</string>
   <string name="contact_delete">Smazat</string>
+  <string name="contact_block">Blokovat kontakt</string>
   <string name="contact_delete_confirm">Opravdu chcete odstranit kontakt %1$s z účtu %2$s?</string>
   <string name="contact_list">Seznam kontaktů</string>
   <string name="discard_subscription">Odmítnout kontakt</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Prohledávat kontakty</string>
   <string name="sender_is_you">Vy</string>
   <string name="xmpp_accounts">XMPP účty</string>
+  <string name="block_list">Seznam blokovaných kontaktů</string>
+  <string name="contact_blocked_successfully">Kontakt úspěšně zablokován</string>
+  <string name="error_blocking_contact">Chyba při blokování kontaktu</string>
+  <string name="unblock_contact">Odblokovat kontakt</string>
+  <string name="contacts_unblocked_successfully">Kontakty úspěšně odblokovány</string>
+  <string name="error_unblocking_contacts">Chyba při odblokování kontaktu</string>
+  <string name="block_contact_confirm">Opravdu chcete blokovat kontakt %1$s z účtu %2$s?</string>
+  <string name="unblock_all_contacts_confirm">Opravdu chcete odblokovat všechny kontakty z účtu %1$s?</string>
+  <string name="unblock_all">Odblokovat vše</string>
+  <string name="unblock_selected">Odblokovat vybrané</string>
 </resources>

@@ -27,7 +27,6 @@
   <string name="account_compression_summary">علِّم لتفعيل ضغط البيانات</string>
   <string name="account_custom">تخصيص المضيف</string>
   <string name="account_custom_summary">استخدم إعداد مخصص للمضيف بدلاً من سجل SRV</string>
-  <string name="account_enabled_summary">علِّم لتفعيل الحساب</string>
   <string name="account_invalid_port">المنفذ يجب أن يكون رقماً (الافتراضي: 5222)</string>
   <string name="account_invalid_port_range">المنفذ يجب أن يتراوح بين 1 إلى 65535 (الافتراضي: 5222)</string>
   <string name="account_invalid_priority">قيمة الأولوية يجب أن تكون بين -128 و 128 (الافتراضي: 10)</string>

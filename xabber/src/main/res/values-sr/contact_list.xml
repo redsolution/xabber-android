@@ -4,13 +4,13 @@
   <string name="accept_subscription">Прихвати контакт</string>
   <string name="account_reconnect">Повежи се поново</string>
   <string name="application_action_disabled">Управљај налозима</string>
-  <string name="application_action_empty">Додајте налог</string>
+  <string name="application_action_empty">Додај налог</string>
   <string name="application_action_no_contacts">Додај контакт</string>
   <string name="application_action_no_online">Прикажи неповезане контакте</string>
   <string name="application_action_offline">Повежи се</string>
   <string name="application_action_waiting">Повежи се поново</string>
   <string name="application_state_connecting">Повезујем се...</string>
-  <string name="application_state_disabled">Налог је онемогућен</string>
+  <string name="application_state_disabled">Налози су искључени</string>
   <string name="application_state_empty">Немате ниједан налог</string>
   <string name="application_state_no_contacts">Немате ниједан контакт</string>
   <string name="application_state_no_online">Нема никог на вези</string>
@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Грешка при повезивању</string>
   <string name="contact_add">Додај контакт</string>
   <string name="contact_delete">Обриши</string>
+  <string name="contact_block">Блокирај контакт</string>
   <string name="contact_delete_confirm">Желите ли заиста да обришете контакт %1$s са налога %2$s?</string>
   <string name="contact_list">Списак контаката</string>
   <string name="discard_subscription">Одбиј контакт</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Тражи контакте</string>
   <string name="sender_is_you">Ви</string>
   <string name="xmpp_accounts">ИксМПП налози</string>
+  <string name="block_list">Блокирај листу</string>
+  <string name="contact_blocked_successfully">Контакт успешно блокиран</string>
+  <string name="error_blocking_contact">Грешка при блокирању контакта</string>
+  <string name="unblock_contact">Одблокирај контакт</string>
+  <string name="contacts_unblocked_successfully">Контакт успешно одблокирана</string>
+  <string name="error_unblocking_contacts">Грешка при одблокирању контакта</string>
+  <string name="block_contact_confirm">Желите ли заиста да блокирате %1$s са налога %2$s?</string>
+  <string name="unblock_all_contacts_confirm">Желите ли заиста да одблокирате све контакте са налога %1$s?</string>
+  <string name="unblock_all">Одблокирај све</string>
+  <string name="unblock_selected">Одблокирај одабране</string>
 </resources>

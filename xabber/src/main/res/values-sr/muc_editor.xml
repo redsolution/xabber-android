@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">Добави хостована групна ћаскања</string>
   <string name="muc_error_getting_conferences">Грешка при добављању групних ћаскања</string>
   <string name="muc_type_conference_name">Укуцајте назив групног ћаскања</string>
+  <string name="contact_is_blocked">Контакт је блокиран!</string>
+  <string name="conference_invitation">Позивница за групно ћаскање</string>
 </resources>

@@ -27,7 +27,6 @@
   <string name="account_compression_summary">勾選以啟用資料壓縮</string>
   <string name="account_custom">自訂伺服器</string>
   <string name="account_custom_summary">使用自訂伺服器而不是SRV記錄</string>
-  <string name="account_enabled_summary">勾選以啟用帳號</string>
   <string name="account_invalid_port">埠必須是整數（預設：5222）</string>
   <string name="account_invalid_priority">優先順序必須是-128至128間的整數（預設：10）</string>
   <string name="account_oauth">授權</string>

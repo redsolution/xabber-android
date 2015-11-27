@@ -58,4 +58,9 @@
   <string name="take_photo">Odfotiť</string>
   <string name="remove_avatar">Odstranit avatar</string>
   <string name="change">Zmenit</string>
+  <string name="could_not_get_room_info">Nepodarilo sa získať informácie o konferencii</string>
+  <string name="conference_name">Meno</string>
+  <string name="conference_description">Popis</string>
+  <string name="conference_subject">Predmet</string>
+  <string name="message_info_occupants_number">Užívatelia: %d</string>
 </resources>

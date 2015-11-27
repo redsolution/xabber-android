@@ -15,6 +15,7 @@
   <string name="contacts_show_groups">Grupları göster\nGrupları kişi listesinde göster</string>
   <string name="contacts_show_offline">Çevrimdışı kişileri göster</string>
   <string name="contacts_show_panel">Hesap panelini göster\nKişi listesinin sağ alt köşesinde avatarlar ile birlikte eylem butonlarını göster</string>
+  <string name="contacts_stay_active_chats">Etkin sohbetleri çoğaltın.\nAktif sohbetler kişi ve grup listesinin üstünde görünür</string>
   <string name="debug_log">Hata ayıklama kaydı\nMesajları hata ayıklama kaydına yaz (değişikliklerin geçerli olması için uygulamayı yeniden başlatın)</string>
   <string name="events_lightning">LED bildirimi \nBildirim için LED yansın</string>
   <string name="events_persistent">Görev çubuğu ikonu\nKalıcı bildirimi göster. Bu seçenek Android\'in hafızayı boşaltırken bu uygulamayı kapatmasını engeller</string>
@@ -47,6 +48,7 @@
   <string name="chats_show_status_change">Durum degişimlerini göster\nDurum değişimleri mesajlarını göster</string>
   <string name="chats_show_status_change_muc">Konferanslarda</string>
   <string name="chats_state_notification">Yazma bildirimini göster\nDiğer kullanıcının yazıyor olduğunu göster</string>
+  <string name="connection_adjust_priority">Önceliği belirleyin\nSeçilen durumuna göre önceliğini ayarlayın. Hesap önceliği geçersiz kılınacaktır.</string>
   <string name="connection_go_away_immediately">Ekran kilidinden hemen sonra</string>
   <string name="connection_go_xa">Bekleme durumunda \"Uzun süreli uzak\"\nEkran kilitlendiğinde \"Uzun süreli uzak\" ol</string>
   <string name="connection_priority">Öncelik ayarları</string>
@@ -74,6 +76,7 @@
   <string name="chats_attention">Dikkat\nGelen dikkat isteklerine tepki ver</string>
   <string name="chats_attention_sound">Dikkat sesi\nZil sesi seçin</string>
   <string name="connection_load_vcard">vCard yükle\nKişinin bilgileri ve avatarını yükle ve güncelle. Trafiği azaltmak için kapatın.</string>
+  <string name="connection_load_images">Görüntüleri yükle\nGörüntüleri URL den otomatik olarak yükle. İnternet kullanımını azatlmak için devre dışı bırakınız.</string>
   <string name="connection_use_carbons">Karbon-kağıdı modu\nKararsız çalışabilir! Aynı hesap için bu istemcideki hesap oturumunu paylaşır. Trafik kullanımını azaltmak için devre dışı bırakın.</string>
   <string name="events_phrases">Anahtar kelimeler\nGelen mesajların içeriğinde geçen kelimeler için özel bildirim oluşturun</string>
   <string name="security_clear_certificate_warning">Tüm yoksayılan sertifikaları kaldırmak istiyor musunuz?</string>

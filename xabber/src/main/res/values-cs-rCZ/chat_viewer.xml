@@ -17,6 +17,8 @@
   <string name="message_quote">Citovat</string>
   <string name="message_remove">Odstranit z historie</string>
   <string name="message_repeat">Znovu odeslat</string>
+  <string name="message_open_file">Otevřít</string>
+  <string name="message_save_file">Uložit</string>
   <string name="save_history">Uložit lokální historii\nUložit historii zpráv lokálně</string>
   <string name="show_history">Zobrazit historii</string>
   <string name="action_attention_called">Žádost o pozornost odeslána</string>
@@ -80,4 +82,13 @@
   <string name="chat_events_show_text_global">Použít globální nastavení</string>
   <string name="chat_events_show_text_always">Zobrazit text zprávy</string>
   <string name="chat_events_show_text_never">Skrýt text zprávy</string>
+  <string name="sending_file">Odesílání souboru %s</string>
+  <string name="error_sending_file">Chyba při odesílání souboru %s</string>
+  <string name="no_application_to_open_file">K otevření toho souboru nebyla nalezena žádná aplikace</string>
+  <string name="could_not_save_file">Soubor nelze uložit</string>
+  <string name="file_saved_successfully">Soubor byl úspěšně uložen</string>
+  <string name="received_by">Přijaté od %s</string>
+  <string name="could_not_get_path_to_file">Nelze získat cestu k souboru</string>
+  <string name="message_open_private_chat">Otevřít soukromý chat</string>
+  <string name="http_file_upload_slot_error">Soubor nelze uložit. Příliš velký?</string>
 </resources>

@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Потребна је лозинка</string>
   <string name="pay_attention">Обратите пажњу</string>
   <string name="subscription_request_message">Захтев за одобрењем</string>
+  <string name="conference_private_chat">Приватно ћаскање групе</string>
 </resources>

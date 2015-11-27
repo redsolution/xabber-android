@@ -76,7 +76,9 @@
   <string name="chats_attention">Пажња\nРеаговаће се на долазне захтеве за пажњом</string>
   <string name="chats_attention_sound">Звук за пажњу\nИзаберите звоно</string>
   <string name="connection_load_vcard">Учитај вКарту\nУчитава и освежава личне податке контакта. Искључите да смањите пренос података.</string>
+  <string name="connection_load_images">Учитај слике\nАутоматски учитава слике са УРЛ-а. Искључите да смањите пренос података.</string>
   <string name="connection_use_carbons">Индиго режим\nМоже бити нестабилан! Делиће сесије истог налога у свим програмима. Искључите да смањите пренос података.</string>
+  <string name="connection_use_plain_text_auth">Аутентификација обичним текстом\nАутентификација обичним текстом за све налоге. Није препоручљиво.</string>
   <string name="events_phrases">Кључне речи\nНаправите посебна обавештења кад примљене поруке садрже наведене речи</string>
   <string name="security_clear_certificate_warning">Желите ли заиста да уклоните све игнорисане сертификате?</string>
   <string name="debug_connection_errors_title">Приказ грешака везе\nИскачуће поруке при грешкама повезивања</string>

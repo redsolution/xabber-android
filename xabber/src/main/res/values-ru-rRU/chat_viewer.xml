@@ -17,6 +17,8 @@
   <string name="message_quote">Цитировать</string>
   <string name="message_remove">Удалить из истории</string>
   <string name="message_repeat">Повторить отправку</string>
+  <string name="message_open_file">Открыть</string>
+  <string name="message_save_file">Сохранить</string>
   <string name="save_history">Сохранять локальную историю сообщений\nХранить историю переписки на устройстве</string>
   <string name="show_history">Показать историю сообщений</string>
   <string name="action_attention_called">Сообщение для привлечения внимания было отправлено</string>
@@ -80,4 +82,15 @@
   <string name="chat_events_show_text_global">Использовать глобальные настройки</string>
   <string name="chat_events_show_text_always">Отображать текст сообщения</string>
   <string name="chat_events_show_text_never">Скрывать текст сообщения</string>
+  <string name="sending_file">Отправка файла %s</string>
+  <string name="error_sending_file">Ошибка при отправке файла %s</string>
+  <string name="no_application_to_open_file">Не удалось найти подходящее приложение для открытия файла</string>
+  <string name="could_not_save_file">Не удалось сохранить файл</string>
+  <string name="file_saved_successfully">Файл успешно сохранён</string>
+  <string name="received_by">Получен с помощью %s</string>
+  <string name="could_not_get_path_to_file">Не удалось найти путь к файлу</string>
+  <string name="message_open_private_chat">Начать личный чат</string>
+  <string name="http_file_upload_slot_error">Не удалось загрузить файл. Слишком большой?</string>
+  <string name="no_permission_to_read_files">Нет разрешения на чтение файлов</string>
+  <string name="no_permission_to_write_files">Нет разрешения на сохранение файлов</string>
 </resources>

@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Heslo je vyžadováno</string>
   <string name="pay_attention">Věnujte pozornost</string>
   <string name="subscription_request_message">Požadavek na autorizaci</string>
+  <string name="conference_private_chat">Konferenční soukromý chat</string>
 </resources>

@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">接続エラー</string>
   <string name="contact_add">連絡先を追加</string>
   <string name="contact_delete">削除</string>
+  <string name="contact_block">連絡先をブロック</string>
   <string name="contact_delete_confirm">連絡先 %1$s をアカウント %2$s から削除してもよろしいですか?</string>
   <string name="contact_list">連絡先リスト</string>
   <string name="discard_subscription">連絡先を否認</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">連絡先を検索</string>
   <string name="sender_is_you">あなた</string>
   <string name="xmpp_accounts">XMPP アカウント</string>
+  <string name="block_list">ブロック リスト</string>
+  <string name="contact_blocked_successfully">連絡先を正常にブロックしました</string>
+  <string name="error_blocking_contact">連絡先のブロック時にエラー</string>
+  <string name="unblock_contact">連絡先のブロックを解除</string>
+  <string name="contacts_unblocked_successfully">連絡先のブロックを正常に解除しました</string>
+  <string name="error_unblocking_contacts">連絡先のブロック解除時にエラー</string>
+  <string name="block_contact_confirm">連絡先 %1$s をアカウント %2$s からブロックしてもよろしいですか?</string>
+  <string name="unblock_all_contacts_confirm">アカウント %1$s から、すべての連絡先のブロックを解除しますか?</string>
+  <string name="unblock_all">すべてのブロックを解除</string>
+  <string name="unblock_selected">選択済のブロックを解除</string>
 </resources>

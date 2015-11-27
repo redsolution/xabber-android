@@ -48,15 +48,15 @@
   <string name="chats_show_status_change">Statusänderungen anzeigen\nIm Chat anzeigen, wenn sich der Status eines Chatters ändert</string>
   <string name="chats_show_status_change_muc">In Gruppenchats</string>
   <string name="chats_state_notification">Benachrichtigung bei Eingabe\nAnzeigen, dass der andere Benutzer eine Nachricht eingibt</string>
-  <string name="connection_adjust_priority">Anpassen der Priorität\nDie Priorität entsprechend dem ausgewählten Status anpassen. Die Konto-Priorität wird überschrieben werden.</string>
+  <string name="connection_adjust_priority">Anpassen der Priorität\nDie Priorität entsprechend dem ausgewählten Status anpassen. Die Kontopriorität wird überschrieben werden.</string>
   <string name="connection_go_away_immediately">Sofort nach Bildschirmabschaltung</string>
   <string name="connection_go_xa">\"Erweiterte Abwesenheitsnotiz\" bei Inaktivität\nSetze \"Erweiterte Abwesenheitsnotiz\" bei Display-Sperre</string>
   <string name="connection_priority">Prioritäteinstellungen</string>
   <string name="connection_start_at_boot">Starten nach dem Booten\nStart der Anwendung nach dem Booten von Android. Dies funktioniert nicht, wenn Xabber auf einer SD-Karte installiert ist.</string>
-  <string name="connection_wake_lock">Verhindern des Schlafmodus\nVerhindern, dass das Gerät in den Schlafmodus wechselt.Dies erhöht die Akku-Nutzung.</string>
+  <string name="connection_wake_lock">Verhindern des Schlafmodus\nVerhindern, dass das Gerät in den Schlafmodus wechselt. Dies erhöht die Akku-Nutzung.</string>
   <string name="connection_wifi_lock">WiFi aktiv lassen\nWiFi bleibt im Standbymodus aktiv. Dies erhöht die Akku-Nutzung</string>
   <string name="contacts_reset_offline">Offline-Einstellungen zurücksetzen\nIndividuelle Einstellungen für Gruppen und Konten zurücksetzen.</string>
-  <string name="contacts_reset_offline_warning">Bist du sicher, dass du alle individuellen Einstellungen für Gruppen und Konten zurücksetzen willst?</string>
+  <string name="contacts_reset_offline_warning">Sind Sie sicher, dass Sie alle individuellen Einstellungen für Gruppen und Konten zurücksetzen wollen?</string>
   <string name="events_first_only">Alarmieren bei der ersten Nachricht\nBenachrichtigung nur bei der ersten Nachricht in einem Chat</string>
   <string name="events_ignore_system_vibro">System-Vibrationseinstellungen ignorieren\nDiese Option verwenden, falls die Vibration nicht funktioniert</string>
   <string name="events_message">Benachrichtigungeinstellungen\nBenachrichtigungen für eingehenden Nachricht konfigurieren</string>
@@ -66,7 +66,7 @@
   <string name="events_show_text">Nachricht in der Statusleiste anzeigen\nNachricht in der Statusleiste anzeigen</string>
   <string name="events_visible_chat">Benachrichtigung bei offenem Chat\nBenachrichtigung bei eingehender Nachricht im offenen Chat</string>
   <string name="events_suppress_100">Statusmeldungen unterdrücken\nMeldung \'Dieser Raum ist nicht anonym\' ausschalten</string>
-  <string name="negative_priotiry_summary">%s (Du wirst aus keinem Chat Nachrichten erhalten)</string>
+  <string name="negative_priotiry_summary">%s (Sie werden aus keinem Chat Nachrichten erhalten)</string>
   <string name="preference_accounts">XMPP-Konten\nKonten verwalten</string>
   <string name="preference_security">Sicherheit\nSicherheitseinstellungen</string>
   <string name="security_check_certificate">Server Zertifikat überprüfen\nBenachrichten, wenn Zertifikatsprobleme bei verschlüsselten Verbindungen auftreten</string>
@@ -76,7 +76,8 @@
   <string name="chats_attention">Aufmerksamkeit\nAuf eingehende Aufmerksamkeitsanforderungen reagieren</string>
   <string name="chats_attention_sound">Aufmerksamkeitston\nAuswahl des Klingeltons</string>
   <string name="connection_load_vcard">Lade vCard\nLaden und Aktualisieren von Kontaktdaten und Avataren. Deaktivieren, um Netzwerkverkehr zu reduzieren.</string>
-  <string name="connection_use_carbons">carbon copy Mode\nMöglicherweise instabil! Wird Sitzungen für dasselbe Konto auf diesem Client teilen. Deaktivieren, um die Datennutzung zu reduzieren.</string>
+  <string name="connection_load_images">Bilder laden\nBilder von der Datei URL automatisch herunterladen. Deaktivieren um Netzwerkverkehr zu reduzieren.</string>
+  <string name="connection_use_carbons">Carbon copy Mode\nMöglicherweise instabil! Wird Sitzungen für dasselbe Konto auf diesem Client teilen. Deaktivieren, um die Netzwerkverkehr zu reduzieren.</string>
   <string name="events_phrases">Schlüsselbegriffe\nBenachrichtigung wenn Nachrichten voreingestellte Begriffe enthalten und auswahl des dazugehörigen Klanges</string>
   <string name="security_clear_certificate_warning">Wollen Sie wirklich alle ignorierten Zertifikate entfernen?</string>
   <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>

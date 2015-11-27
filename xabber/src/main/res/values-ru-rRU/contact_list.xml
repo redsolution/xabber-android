@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Ошибка подключения</string>
   <string name="contact_add">Добавить контакт</string>
   <string name="contact_delete">Удалить</string>
+  <string name="contact_block">Заблокировать контакт</string>
   <string name="contact_delete_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
   <string name="contact_list">Список контактов</string>
   <string name="discard_subscription">Запретить подписку</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Поиск контактов</string>
   <string name="sender_is_you">Вы</string>
   <string name="xmpp_accounts">Учётные записи XMPP</string>
+  <string name="block_list">Черный список</string>
+  <string name="contact_blocked_successfully">Контакт успешно заблокирован</string>
+  <string name="error_blocking_contact">Не удалось заблокировать контакт</string>
+  <string name="unblock_contact">Разблокировать контакт</string>
+  <string name="contacts_unblocked_successfully">Контакты успешно разблокированы</string>
+  <string name="error_unblocking_contacts">Не удалось разблокировать контакты</string>
+  <string name="block_contact_confirm">Вы действительно хотите удалить контакт %1$s из учетной записи %2$s?</string>
+  <string name="unblock_all_contacts_confirm">Вы действительно хотите разблокировать все контакты из аккаунта %1$s?</string>
+  <string name="unblock_all">Разблокировать всех</string>
+  <string name="unblock_selected">Разблокировать выбранные</string>
 </resources>

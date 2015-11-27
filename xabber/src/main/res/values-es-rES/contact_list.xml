@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Error de conexión</string>
   <string name="contact_add">Añadir contacto</string>
   <string name="contact_delete">Eliminar</string>
+  <string name="contact_block">Bloquear contacto</string>
   <string name="contact_delete_confirm">¿Estás seguro de que quieres eliminar el contacto %1$s de la cuenta %2$s?</string>
   <string name="contact_list">Lista de contactos</string>
   <string name="discard_subscription">Rechazar contacto</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Buscar contactos</string>
   <string name="sender_is_you">Tú</string>
   <string name="xmpp_accounts">Cuentas de XMPP</string>
+  <string name="block_list">Lista de contactos bloqueados</string>
+  <string name="contact_blocked_successfully">Contacto bloqueado con éxito</string>
+  <string name="error_blocking_contact">Error al bloquear contacto</string>
+  <string name="unblock_contact">Desbloquear contacto</string>
+  <string name="contacts_unblocked_successfully">Contactos desbloqueados correctamente</string>
+  <string name="error_unblocking_contacts">Error al desbloquear contactos</string>
+  <string name="block_contact_confirm">¿Estás seguro de que quieres eliminar el contacto %1$s de la cuenta %2$s?</string>
+  <string name="unblock_all_contacts_confirm">¿Quieres desbloquear todos los contactos de la cuenta %1$s?</string>
+  <string name="unblock_all">Desbloquear todos</string>
+  <string name="unblock_selected">Desbloquear seleccionados</string>
 </resources>

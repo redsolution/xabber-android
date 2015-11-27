@@ -14,4 +14,12 @@
   <string name="add_new_group">Añadir nuevo grupo&#8230;</string>
   <string name="accept_contact">Autorizar</string>
   <string name="decline_contact">Cancelar</string>
+  <string name="processing_image">Procesando imagen...</string>
+  <string name="error_during_crop">Error al ajustar la imagen</string>
+  <string name="error_during_image_processing">Error al procesar la imagen</string>
+  <string name="account_settings">Ajustes de la cuenta</string>
+  <string name="account_user_info">Información de la cuenta</string>
+  <string name="conference_private_chat_invitation">%1$s de %2$s quiere empezar una conversación privada contigo</string>
+  <string name="accept_muc_private_chat">Aceptar</string>
+  <string name="block_muc_private_chat">Bloquear</string>
 </resources>

@@ -23,7 +23,7 @@
   <string name="muc_save">Salva conferenza</string>
   <string name="muc_choose_conference">Scegli conferenza</string>
   <string name="muc_next">Successivo</string>
-  <string name="muc_get_hosted_conferences">Ottieni conferenze ospitate</string>
+  <string name="muc_get_hosted_conferences">Elenca conferenze ospitate</string>
   <string name="muc_error_getting_conferences">Errore nell\'ottenere la lista delle conferenze</string>
   <string name="muc_type_conference_name">Inserire nome conferenza</string>
 </resources>

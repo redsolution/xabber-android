@@ -17,6 +17,8 @@
   <string name="message_quote">Цитирај</string>
   <string name="message_remove">Уклони из историјата</string>
   <string name="message_repeat">Поново покушај слање</string>
+  <string name="message_open_file">Отвори</string>
+  <string name="message_save_file">Сачувај</string>
   <string name="save_history">Сачувај историјат локално\nИсторијат порука се чува локално</string>
   <string name="show_history">Прикажи историјат</string>
   <string name="action_attention_called">Позив за пажњу је послат</string>
@@ -80,4 +82,13 @@
   <string name="chat_events_show_text_global">Користи опште поставке</string>
   <string name="chat_events_show_text_always">Прикажи текст поруке</string>
   <string name="chat_events_show_text_never">Сакриј текст поруке</string>
+  <string name="sending_file">Шаљем фајл %s</string>
+  <string name="error_sending_file">Грешка при слању фајла %s</string>
+  <string name="no_application_to_open_file">Нема апликације за отварање овог фајла</string>
+  <string name="could_not_save_file">Не могу да сачувам фајл</string>
+  <string name="file_saved_successfully">Фајл успешно сачуван</string>
+  <string name="received_by">Посла %s</string>
+  <string name="could_not_get_path_to_file">Не могу да добијем путању фајла</string>
+  <string name="message_open_private_chat">Отвори приватно ћаскање</string>
+  <string name="http_file_upload_slot_error">Нисам могао да отпремим фајл. Да није превелик?</string>
 </resources>

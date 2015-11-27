@@ -27,7 +27,6 @@
   <string name="account_compression_summary">Jelöld be a tömörítés engedélyezéséhez</string>
   <string name="account_custom">Egyedi gazdagép</string>
   <string name="account_custom_summary">Egyedi gazdagépbeállítások használata az SRV rekordok helyett</string>
-  <string name="account_enabled_summary">Jelöld be a fiók engedélyezéséhez</string>
   <string name="account_invalid_port">A port egy szám (alapesetben: 5222)</string>
   <string name="account_invalid_port_range">A port egy 1 és 65535 közötti szám (alapértelmezett: 5222)</string>
   <string name="account_invalid_priority">A prioritás egy szám -128 és 128 között (alapesetben: 10)</string>

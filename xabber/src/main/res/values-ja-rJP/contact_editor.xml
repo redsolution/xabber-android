@@ -14,4 +14,9 @@
   <string name="add_new_group">新しいグループを追加&#8230;</string>
   <string name="accept_contact">承認</string>
   <string name="decline_contact">破棄</string>
+  <string name="processing_image">画像の処理中...</string>
+  <string name="error_during_crop">画像のトリミング中にエラー</string>
+  <string name="error_during_image_processing">画像の処理中にエラー</string>
+  <string name="account_settings">アカウント設定</string>
+  <string name="account_user_info">アカウント情報</string>
 </resources>

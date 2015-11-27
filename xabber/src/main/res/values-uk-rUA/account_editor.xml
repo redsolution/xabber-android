@@ -27,7 +27,6 @@
   <string name="account_compression_summary">Позначте для включення стиснення даних</string>
   <string name="account_custom">Вказати хост вручну</string>
   <string name="account_custom_summary">Вказати хост для підключення вручну, замість використання SRV запису</string>
-  <string name="account_enabled_summary">Позначте, для включення облікового запису</string>
   <string name="account_invalid_port">Порт має бути числом (типове значення: 5222)</string>
   <string name="account_invalid_port_range">Порт має бути від 1 до 65535 (за замовчуванням: 5222)</string>
   <string name="account_invalid_priority">Пріоритет має бути в діапазоні між -128 і 128 (типове значення :10)</string>

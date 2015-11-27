@@ -89,4 +89,6 @@
   <string name="file_saved_successfully">Archivo guardado con éxito</string>
   <string name="received_by">%s recibido</string>
   <string name="could_not_get_path_to_file">No se encontró la dirección del archivo</string>
+  <string name="message_open_private_chat">Abrir chat privado</string>
+  <string name="http_file_upload_slot_error">No se pudo enviar el archivo. ¿Demasiado grande?</string>
 </resources>
