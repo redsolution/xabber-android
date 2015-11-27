@@ -1,6 +1,5 @@
 package com.xabber.android.data.extension.file;
 
-import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,11 +9,9 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -138,23 +135,6 @@ public class FileManager {
         void onProgress(long bytesWritten, long totalSize);
     }
 
-    public static boolean hasFileReadPermission() {
-        return checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
-    }
-
-    public static boolean hasFileWritePermission() {
-        return checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    private static boolean checkPermission(String permission) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-
-        final int permissionCheck = ContextCompat.checkSelfPermission(Application.getInstance(), permission);
-
-        return permissionCheck == PackageManager.PERMISSION_GRANTED;
-    }
 
     public void downloadFile(final MessageItem messageItem, final ProgressListener progressListener) {
         final String downloadUrl = messageItem.getText();

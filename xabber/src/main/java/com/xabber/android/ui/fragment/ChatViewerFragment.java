@@ -1,7 +1,6 @@
 package com.xabber.android.ui.fragment;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,7 +8,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,6 +74,7 @@ import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
+import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
 import java.io.File;
@@ -96,10 +95,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
-    private static final int PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 24;
-    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE_TO_DOWNLOADS = 25;
+    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
+    private static final int PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS = 25;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 26;
-    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_EXPORT_CHAT = 27;
+    private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
     boolean isInputEmpty = true;
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -385,11 +384,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void onAttachButtonPressed() {
-        if (!checkAttachFilePermission()) {
-            return;
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
+            startFileSelection();
         }
 
-        startFileSelection();
     }
 
     private void startFileSelection() {
@@ -397,74 +395,46 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         startActivityForResult(intent, FILE_SELECT_ACTIVITY_REQUEST_CODE);
     }
 
-    @SuppressLint("NewApi")
-    private boolean checkAttachFilePermission() {
-        if (FileManager.hasFileReadPermission()) {
-            return true;
-        } else {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-            return false;
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private boolean checkSaveFileToDownloadsPermission() {
-        if (FileManager.hasFileWritePermission()) {
-            return true;
-        } else {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE_TO_DOWNLOADS);
-            return false;
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private boolean checkExportChatPermission() {
-        if (FileManager.hasFileWritePermission()) {
-            return true;
-        } else {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_EXPORT_CHAT);
-            return false;
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            if (isPermissionGranted(grantResults)) {
-                startFileSelection();
-            } else {
-                Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
-            }
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ATTACH_FILE :
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    startFileSelection();
+                } else {
+                    onNoReadPermissionError();
+                }
+                break;
+            case PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS :
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    saveFileToDownloads();
+                } else {
+                    onNoWritePermissionError();
+                }
+                break;
+            case PERMISSIONS_REQUEST_EXPORT_CHAT :
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    showExportChatDialog();
+                } else {
+                    onNoWritePermissionError();
+                }
+                break;
+            case PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE :
+                if (!PermissionsRequester.isPermissionGranted(grantResults)) {
+                    onNoWritePermissionError();
+                }
+                break;
         }
-
-        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_SAVE_TO_DOWNLOADS) {
-            if (isPermissionGranted(grantResults)) {
-                saveFileToDownloads();
-            } else {
-                Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE_EXPORT_CHAT) {
-            if (isPermissionGranted(grantResults)) {
-                showExportChatDialog();
-            } else {
-                Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
-            if (!isPermissionGranted(grantResults)) {
-                Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
-            }
-        }
-
     }
 
-    private boolean isPermissionGranted(int[] grantResults) {
-        return grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+    private void onNoWritePermissionError() {
+        Toast.makeText(getActivity(), R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
+    }
+
+    private void onNoReadPermissionError() {
+        Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -847,10 +817,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void onExportChatClick() {
-        if (!checkExportChatPermission()) {
-            return;
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_EXPORT_CHAT)) {
+            showExportChatDialog();
         }
-        showExportChatDialog();
+
     }
 
     private void showExportChatDialog() {
@@ -858,11 +828,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void OnSaveFileToDownloadsClick() {
-        if (!checkSaveFileToDownloadsPermission()) {
-            return;
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS)) {
+            saveFileToDownloads();
         }
-
-        saveFileToDownloads();
     }
 
     private void saveFileToDownloads() {
