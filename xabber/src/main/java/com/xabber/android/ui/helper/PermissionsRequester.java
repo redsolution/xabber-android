@@ -18,6 +18,10 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
+    public static boolean requestCameraPermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
+    }
+
     private static boolean checkAndRequestPermission(String permission, Fragment fragment, int requestCode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
