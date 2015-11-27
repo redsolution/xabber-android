@@ -36,6 +36,7 @@ import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
@@ -66,12 +67,14 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final String SAVE_PHOTO_FILE_URI = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_PHOTO_FILE_URI";
     public static final String SAVE_REMOVE_AVATAR_FLAG = "com.xabber.android.ui.fragment.AccountInfoEditorFragment.SAVE_REMOVE_AVATAR_FLAG";
 
-    public static final int ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST = 2;
+    public static final int REQUEST_NEED_VCARD = 2;
+    public static final int REQUEST_TAKE_PHOTO = 3;
+    private static final int REQUEST_PERMISSION_GALLERY = 4;
+
     public static final int MAX_AVATAR_SIZE_PIXELS = 192;
     public static final String TEMP_FILE_NAME = "cropped";
     public static final String ROTATE_FILE_NAME = "rotated";
     public static final int KB_SIZE_IN_BYTES = 1024;
-    public static final int TAKE_PHOTO_REQUEST_CODE = 3;
     public static final String DATE_FORMAT = "yyyy-mm-dd";
     public static final String DATE_FORMAT_INT_TO_STRING = "%d-%02d-%02d";
     public static final int MAX_IMAGE_SIZE = 512;
@@ -418,10 +421,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_choose_from_gallery:
-                        chooseFromGallery();
+                        onChooseFromGalleryClick();
                         return true;
                     case R.id.action_take_photo:
-                        takePhoto();
+                        onTakePhotoClick();
                         return true;
 
                     case R.id.action_remove_avatar:
@@ -435,6 +438,16 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             }
         });
         menu.show();
+    }
+
+    private void onTakePhotoClick() {
+        takePhoto();
+    }
+
+    private void onChooseFromGalleryClick() {
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, REQUEST_PERMISSION_GALLERY)) {
+            chooseFromGallery();
+        }
     }
 
     private void chooseFromGallery() {
@@ -455,7 +468,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                 photoFileUri = Uri.fromFile(imageFile);
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFileUri);
-                startActivityForResult(takePictureIntent, TAKE_PHOTO_REQUEST_CODE);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
     }
@@ -468,15 +481,29 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_PERMISSION_GALLERY:
+                if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                    chooseFromGallery();
+                } else {
+                    Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
         if (requestCode == Crop.REQUEST_PICK && resultCode == Activity.RESULT_OK) {
             beginCrop(result.getData());
-        } else if (requestCode == TAKE_PHOTO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             beginCrop(photoFileUri);
         } else if (requestCode == Crop.REQUEST_CROP) {
             handleCrop(resultCode, result);
         }
-
     }
 
     private void beginCrop(final Uri source) {
@@ -741,7 +768,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (isSaveSuccess) {
             Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
             isSaveSuccess = false;
-            getActivity().setResult(ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST);
+            getActivity().setResult(REQUEST_NEED_VCARD);
             getActivity().finish();
         }
     }

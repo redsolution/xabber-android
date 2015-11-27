@@ -241,7 +241,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         final ContactVcardViewerFragment contactVcardViewerFragment
                 = (ContactVcardViewerFragment) getFragmentManager().findFragmentById(R.id.scrollable_container);
 
-        if (resultCode == AccountInfoEditorFragment.ACCOUNT_INFO_EDITOR_RESULT_NEED_VCARD_REQUEST) {
+        if (resultCode == AccountInfoEditorFragment.REQUEST_NEED_VCARD) {
             contactVcardViewerFragment.requestVCard();
         }
 
