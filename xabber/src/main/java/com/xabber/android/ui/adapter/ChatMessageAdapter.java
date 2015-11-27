@@ -224,7 +224,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void downloadFile(final Message messageView, MessageItem messageItem) {
+    private void downloadFile(final Message messageView, final MessageItem messageItem) {
         if (!PermissionsRequester.hasFileWritePermission()) {
             listener.onNoDownloadFilePermission();
             return;
@@ -240,8 +240,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 if (bytesWritten <= totalSize) {
                     progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
                 }
-                messageView.messageFileInfo.setText(progress);
-                messageView.messageFileInfo.setVisibility(View.VISIBLE);
+
+                if (!progress.equals(messageView.messageFileInfo.getText())) {
+                    messageView.messageFileInfo.setText(progress);
+                }
+
+                if (messageView.messageFileInfo.getVisibility() != View.VISIBLE) {
+                    messageView.messageFileInfo.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFinish(long totalSize) {
+                MessageManager.getInstance().onChatChanged(messageItem.getChat().getAccount(), messageItem.getChat().getUser(), false);
             }
         });
     }

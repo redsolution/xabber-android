@@ -133,6 +133,7 @@ public class FileManager {
 
     public interface ProgressListener {
         void onProgress(long bytesWritten, long totalSize);
+        void onFinish(long totalSize);
     }
 
 
@@ -159,7 +160,7 @@ public class FileManager {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
                 LogManager.i(FileManager.class, "on download onSuccess: " + statusCode);
-                saveFile(responseBody, messageItem.getFile());
+                saveFile(responseBody, messageItem.getFile(), progressListener);
             }
 
             @Override
@@ -170,8 +171,6 @@ public class FileManager {
 
             @Override
             public void onProgress(long bytesWritten, long totalSize) {
-                LogManager.i(FileManager.class, "on download onProgress: " + bytesWritten + " / " + totalSize);
-
                 if (progressListener != null) {
                     progressListener.onProgress(bytesWritten, totalSize);
                 }
@@ -181,12 +180,11 @@ public class FileManager {
             public void onFinish() {
                 super.onFinish();
                 startedDownloads.remove(downloadUrl);
-                MessageManager.getInstance().onChatChanged(messageItem.getChat().getAccount(), messageItem.getChat().getUser(), false);
             }
         });
     }
 
-    private static void saveFile(final byte[] responseBody, final File file) {
+    private static void saveFile(final byte[] responseBody, final File file, final ProgressListener progressListener) {
         LogManager.i(FileManager.class, "Saving file " + file.getPath());
 
         Application.getInstance().runInBackground(new Runnable() {
@@ -202,6 +200,16 @@ public class FileManager {
                     e.printStackTrace();
                     file.delete();
                 }
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (progressListener != null) {
+                            progressListener.onFinish(responseBody.length);
+                        }
+                    }
+                });
+
             }
         });
     }
