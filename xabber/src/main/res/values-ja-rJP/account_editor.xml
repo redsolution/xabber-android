@@ -27,7 +27,7 @@
   <string name="account_compression_summary">チェックするとデータ圧縮を有効にします</string>
   <string name="account_custom">カスタム･ホスト</string>
   <string name="account_custom_summary">SRV レコードの代わりにカスタム・ホスト設定を使用します</string>
-  <string name="account_enabled_summary">チェックするとアカウントを有効にします</string>
+  <string name="account_enabled_summary">アカウントを有効にするスイッチ</string>
   <string name="account_invalid_port">ポートは数字で入力してください (デフォルト: 5222)</string>
   <string name="account_invalid_port_range">ポートは 1 から 65535 の間にする必要があります (デフォルト: 5222)</string>
   <string name="account_invalid_priority">優先度の値は -128 から 128 の間の数字で入力してください (デフォルト: 10)</string>

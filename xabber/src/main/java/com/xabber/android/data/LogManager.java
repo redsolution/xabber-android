@@ -18,7 +18,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.jivesoftware.smack.SmackConfiguration;
-import org.xbill.DNS.Options;
 
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
@@ -60,11 +59,12 @@ public class LogManager implements OnLoadListener {
             // "com.xabber.android.data.FileLogDebugger");
             System.setProperty("smack.debugEnabled", "true");
             SmackConfiguration.DEBUG = true;
-            Options.set("verbose");
-            Options.set("verbosemsg");
-            Options.set("verbosecompression");
-            Options.set("verbosesec");
-            Options.set("verbosecache");
+            // TODO: unknown Options
+//            Options.set("verbose");
+//            Options.set("verbosemsg");
+//            Options.set("verbosecompression");
+//            Options.set("verbosesec");
+//            Options.set("verbosecache");
         }
     }
 

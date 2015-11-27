@@ -18,12 +18,9 @@ import com.xabber.android.ui.helper.OrbotHelper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AccountEditorFragment extends BaseSettingsFragment
-        implements Preference.OnPreferenceClickListener {
+public class AccountEditorFragment extends BaseSettingsFragment {
 
     private AccountEditorFragmentInteractionListener mListener;
-
-    private Preference oauthPreference;
 
     @Override
     protected void onInflate(Bundle savedInstanceState) {
@@ -32,8 +29,6 @@ public class AccountEditorFragment extends BaseSettingsFragment
             addPreferencesFromResource(R.xml.account_editor_xmpp);
         } else if (protocol == AccountProtocol.gtalk) {
             addPreferencesFromResource(R.xml.account_editor_xmpp);
-        } else if (protocol == AccountProtocol.wlm) {
-            addPreferencesFromResource(R.xml.account_editor_oauth);
         } else {
             throw new IllegalStateException();
         }
@@ -41,11 +36,8 @@ public class AccountEditorFragment extends BaseSettingsFragment
             getPreferenceScreen().removePreference(findPreference(getString(R.string.account_syncable_key)));
         }
 
-        oauthPreference = findPreference(getString(R.string.account_oauth_key));
-        if (oauthPreference != null) {
-            oauthPreference.setOnPreferenceClickListener(this);
-        }
-        onOAuthChange();
+        getPreferenceScreen().removePreference(findPreference(getString(R.string.account_sasl_key)));
+
         AccountManager.getInstance().removeAuthorizationError(mListener.getAccount());
     }
 
@@ -103,6 +95,11 @@ public class AccountEditorFragment extends BaseSettingsFragment
         }
 
         if (getString(R.string.account_proxy_type_key).equals(key)) {
+            if (getString(R.string.orbot).equals(newValue) && !OrbotHelper.isOrbotInstalled()) {
+                mListener.showOrbotDialog();
+                return false;
+            }
+
             boolean enabled = !getString(R.string.account_proxy_type_none).equals(newValue)
                     && !getString(R.string.orbot).equals(newValue);
             for (int id : new Integer[]{R.string.account_proxy_host_key,
@@ -116,30 +113,10 @@ public class AccountEditorFragment extends BaseSettingsFragment
         }
 
         if (getString(R.string.account_color_key).equals(key)) {
-            mListener.onColorChange((String)newValue);
+            mListener.onColorChange((String) newValue);
         }
 
         return true;
-    }
-
-    public void onOAuthChange() {
-        if (oauthPreference == null) {
-            return;
-        }
-        if (AccountEditor.INVALIDATED_TOKEN.equals(mListener.getToken())) {
-            oauthPreference.setSummary(R.string.account_oauth_invalidated);
-        } else {
-            oauthPreference.setSummary(R.string.account_oauth_summary);
-        }
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        if (getString(R.string.account_oauth_key).equals(preference.getKey())) {
-            mListener.onOAuthClick();
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -176,11 +153,7 @@ public class AccountEditorFragment extends BaseSettingsFragment
 
     @Override
     protected Map<String, Object> getPreferences(Map<String, Object> source) {
-        Map<String, Object> result = super.getPreferences(source);
-        if (oauthPreference != null) {
-            putValue(result, R.string.account_password_key, mListener.getAccount());
-        }
-        return result;
+        return super.getPreferences(source);
     }
 
     @Override
@@ -239,8 +212,6 @@ public class AccountEditorFragment extends BaseSettingsFragment
     public interface AccountEditorFragmentInteractionListener {
         String getAccount();
         AccountItem getAccountItem();
-        String getToken();
-        void onOAuthClick();
         void showOrbotDialog();
         void onColorChange(String colorName);
     }

@@ -27,7 +27,7 @@
   <string name="account_compression_summary">Cochez pour activer la compression des données</string>
   <string name="account_custom">Hôte personnalisé</string>
   <string name="account_custom_summary">Utiliser les paramètres d\'hôte personnalisés au lieu des données SRV</string>
-  <string name="account_enabled_summary">Cochez pour activer le compte</string>
+  <string name="account_enabled_summary">Interrupteur pour activer le compte</string>
   <string name="account_invalid_port">Le port doit être un nombre (défaut : 5222)</string>
   <string name="account_invalid_port_range">Le port doit être compris entre 1 et 65535 (défaut : 5222)</string>
   <string name="account_invalid_priority">La priorité doit être un nombre compris entre -128 et 128 (défaut : 10)</string>
@@ -55,11 +55,12 @@
   <string name="account_tls_mode">Utilisation de TLS/SSL</string>
   <string name="account_tls_require">TLS requis</string>
   <string name="account_tls_require_summary">Chiffrement TLS obligatoire pour la connexion</string>
-  <string name="account_use_orbot">Discuter à travers le réseau anonymisant TOR et forcer le chiffrement TLS\nDéconseillé pour Google Talk</string>
+  <string name="account_use_orbot">Discuter via le réseau anonymisant TOR et forcer le chiffrement TLS\nDéconseillé pour Google Talk</string>
   <string name="confirm_cancellation">Êtes-vous sûr de vouloir annuler vos modifications ?</string>
   <string name="INCORRECT_USER_NAME">Identifiant incorrect. Consultez le message ci-dessous pour plus de détails.</string>
   <string name="orbot_required_message">Afin d\'utiliser TOR, Orbot doit être installé et activé pour relayer les communications. Voulez-vous l\'installer à partir de Google Play?</string>
   <string name="orbot_required_title">Installer Orbot ?</string>
+  <string name="install_orbot">Installer Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">L\'enregistrement sur le serveur a échoué.</string>
   <string name="account_color">Couleur du compte</string>
   <string name="account_color_name_green">Vert</string>
@@ -69,5 +70,5 @@
   <string name="account_color_name_indigo">Indigo</string>
   <string name="account_color_name_teal">Turquoise</string>
   <string name="account_color_name_blue_grey">Bleu-gris</string>
-  <string name="account_color_name_cyan">Bleu-vert</string>
+  <string name="account_color_name_cyan">Cyan</string>
 </resources>

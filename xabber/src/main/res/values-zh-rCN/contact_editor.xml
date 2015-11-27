@@ -14,4 +14,12 @@
   <string name="add_new_group">添加新组&#8230;</string>
   <string name="accept_contact">授权</string>
   <string name="decline_contact">忽略</string>
+  <string name="processing_image">正在处理图像...</string>
+  <string name="error_during_crop">图像裁切时出错</string>
+  <string name="error_during_image_processing">在图像处理过程中的错误</string>
+  <string name="account_settings">帐户设置</string>
+  <string name="account_user_info">帐户信息</string>
+  <string name="conference_private_chat_invitation">来自 %2$s 的 %1$s 想要与你开始私人聊天</string>
+  <string name="accept_muc_private_chat">接受</string>
+  <string name="block_muc_private_chat">阻止</string>
 </resources>

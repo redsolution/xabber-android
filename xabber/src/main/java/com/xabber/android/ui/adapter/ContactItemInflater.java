@@ -2,7 +2,9 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +16,8 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.ContactViewer;
+import com.xabber.android.ui.activity.ContactEditor;
+import com.xabber.android.ui.activity.ContactViewer;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
@@ -23,10 +25,19 @@ public class ContactItemInflater {
 
     final Context context;
     private int[] accountMainColors;
+    private final int colorGrey;
+    private final int colorMain;
 
     public ContactItemInflater(Context context) {
         this.context = context;
         accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
+        colorGrey = context.getResources().getColor(R.color.grey_600);
+
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorPrimary });
+        colorMain = a.getColor(0, 0);
+        a.recycle();
+
     }
 
     public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact contact) {
@@ -68,6 +79,23 @@ public class ContactItemInflater {
         });
 
         viewHolder.name.setText(contact.getName());
+
+        if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
+            viewHolder.name.setTextColor(colorGrey);
+        } else {
+            viewHolder.name.setTextColor(colorMain);
+        }
+
+        if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
+            viewHolder.mucIndicator.setVisibility(View.VISIBLE);
+            viewHolder.mucIndicator.setImageResource(R.drawable.ic_muc_indicator_black_16dp);
+        } else if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
+            viewHolder.mucIndicator.setVisibility(View.VISIBLE);
+            viewHolder.mucIndicator.setImageResource(R.drawable.ic_muc_private_chat_indicator_black_16dp);
+        } else {
+            viewHolder.mucIndicator.setVisibility(View.GONE);
+        }
+
         String statusText;
 
         viewHolder.outgoingMessageIndicator.setVisibility(View.GONE);

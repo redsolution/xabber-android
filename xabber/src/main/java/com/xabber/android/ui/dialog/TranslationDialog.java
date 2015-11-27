@@ -16,20 +16,18 @@ public class TranslationDialog extends DialogFragment implements DialogInterface
         return new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.translation_unavailable)
                 .setMessage(R.string.translation_unavailable_message)
-                .setNegativeButton(R.string.help_translate_xabber, this)
-                .setPositiveButton(android.R.string.no, this)
+                .setPositiveButton(R.string.help_translate_xabber, this)
+                .setNegativeButton(android.R.string.cancel, this)
                 .setCancelable(false)
                 .create();
     }
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        switch (which) {
-            case Dialog.BUTTON_NEGATIVE:
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(getString(R.string.translation_url)));
-                startActivity(i);
-                break;
+        if (which == Dialog.BUTTON_POSITIVE) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(getString(R.string.translation_url)));
+            startActivity(i);
         }
     }
 }

@@ -78,6 +78,7 @@
   <string name="connection_load_vcard">Načítať vCard\nNačítať a aktualizovať osobné informácie kontaktu a avatar. Vypnite pre zmenšenie objemu dátového prenosu</string>
   <string name="connection_load_images">Načítať obrázky\nNačítať automaticky obrazky z URL adresy. Zakázom sa zníži prenos dát.</string>
   <string name="connection_use_carbons">Režim kópie\nMôže byť nestabilný! Bude zdieľať relácie pre rovnaký účet na tomto klientovi. Vypnite pre zníženie spotreby dát.</string>
+  <string name="connection_use_plain_text_auth">Overenie obyčajným textom\nPoužiť obyčajný text pre overenie na všetkých účtoch. Neodporúčané.</string>
   <string name="events_phrases">Kľúčové frázy\nVytvorte vlastné notifikácie pre prijaté správy, ktoré obsahujú špecifické frázy</string>
   <string name="security_clear_certificate_warning">Naozaj chcete odstrániť všetky ignorované certifikáty?</string>
   <string name="debug_connection_errors_title">Zobraziť chyby pripojenia\nZobraziť pop-up o výnimkách pripojenia</string>

@@ -41,4 +41,5 @@
     <string name="PASSWORD_REQUIRED">Password required</string>
     <string name="pay_attention">Pay attention</string>
     <string name="subscription_request_message">Authorization request</string>
+    <string name="conference_private_chat">Conference private chat</string>
 </resources>

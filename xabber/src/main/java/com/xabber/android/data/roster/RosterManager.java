@@ -14,39 +14,38 @@
  */
 package com.xabber.android.data.roster;
 
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.OnAccountEnabledListener;
-import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.OnDisconnectListener;
-import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.xmpp.address.Jid;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -54,9 +53,8 @@ import java.util.Set;
  *
  * @author alexander.ivanov
  */
-public class RosterManager implements OnDisconnectListener, OnPacketListener,
-        OnAccountEnabledListener, OnAccountDisabledListener,
-        OnArchiveModificationsReceivedListener, OnAccountRemovedListener {
+public class RosterManager implements OnDisconnectListener, OnAccountEnabledListener,
+        OnAccountDisabledListener {
 
     private final static RosterManager instance;
 
@@ -65,40 +63,77 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
         Application.getInstance().addManager(instance);
     }
 
-    /**
-     * List of roster groups for its names in accounts.
-     */
-    private final NestedMap<RosterGroup> rosterGroups;
-    /**
-     * Managed contacts for bare addresses in accounts.
-     */
-    private final NestedMap<RosterContact> rosterContacts;
-    /**
-     * List of accounts for witch roster was requested.
-     */
-    private final Set<String> requestedRosters;
-    /**
-     * List of accounts for witch roster has been received.
-     */
-    private final Set<String> receivedRosters;
+    private Collection<RosterContact> allRosterContacts;
 
     private RosterManager() {
-        rosterGroups = new NestedMap<RosterGroup>();
-        rosterContacts = new NestedMap<RosterContact>();
-        receivedRosters = new HashSet<String>();
-        requestedRosters = new HashSet<String>();
+        allRosterContacts = new ArrayList<>();
     }
 
     public static RosterManager getInstance() {
         return instance;
     }
 
-    public Collection<RosterContact> getContacts() {
-        return Collections.unmodifiableCollection(rosterContacts.values());
+    public Roster getRoster(String account) {
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+
+        if (accountItem == null) {
+            return null;
+        }
+
+        final ConnectionThread connectionThread = accountItem.getConnectionThread();
+
+        if (connectionThread == null) {
+            return null;
+        }
+
+        final AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+
+        if (xmppConnection == null) {
+            return null;
+        } else {
+            return Roster.getInstanceFor(xmppConnection);
+        }
     }
 
-    public Collection<RosterGroup> getRosterGroups() {
-        return Collections.unmodifiableCollection(rosterGroups.values());
+    public Collection<RosterContact> getContacts() {
+        return Collections.unmodifiableCollection(allRosterContacts);
+    }
+
+    void updateContacts() {
+        allRosterContacts.clear();
+        for (String account : AccountManager.getInstance().getAccounts()) {
+            final Roster roster = RosterManager.getInstance().getRoster(account);
+            if (roster == null) {
+                continue;
+            }
+
+            final Set<RosterEntry> entries = roster.getEntries();
+
+            for (RosterEntry rosterEntry : entries) {
+
+                final RosterContact contact = convertRosterEntryToRosterContact(account, roster, rosterEntry);
+
+                allRosterContacts.add(contact);
+
+            }
+        }
+    }
+
+    @NonNull
+    private RosterContact convertRosterEntryToRosterContact(String account, Roster roster, RosterEntry rosterEntry) {
+        final RosterContact contact = new RosterContact(account, rosterEntry);
+
+        final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
+
+        for (org.jivesoftware.smack.roster.RosterGroup group : groups) {
+            if (group.contains(rosterEntry)) {
+                contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getName())));
+            }
+        }
+
+        final RosterPacket.ItemType type = rosterEntry.getType();
+        contact.setSubscribed(type == RosterPacket.ItemType.both || type == RosterPacket.ItemType.to);
+        return contact;
     }
 
     /**
@@ -107,7 +142,20 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      * @return <code>null</code> can be returned.
      */
     public RosterContact getRosterContact(String account, String user) {
-        return rosterContacts.get(account, user);
+
+        final Roster roster = getRoster(account);
+
+        if (roster == null) {
+            return null;
+        }
+
+        final RosterEntry entry = roster.getEntry(user);
+
+        if (entry == null) {
+            return null;
+        } else {
+            return convertRosterEntryToRosterContact(account, roster, entry);
+        }
     }
 
     /**
@@ -119,136 +167,18 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      * @return
      */
     public AbstractContact getBestContact(String account, String user) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(
-                account, user);
-        if (abstractChat != null && abstractChat instanceof RoomChat)
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        if (abstractChat != null && abstractChat instanceof RoomChat) {
             return new RoomContact((RoomChat) abstractChat);
+        }
         RosterContact rosterContact = getRosterContact(account, user);
-        if (rosterContact != null)
+        if (rosterContact != null) {
             return rosterContact;
-        if (abstractChat != null)
+        }
+        if (abstractChat != null) {
             return new ChatContact(abstractChat);
+        }
         return new ChatContact(account, user);
-    }
-
-    /**
-     * Adds new group to be managed.
-     *
-     * @param group
-     */
-    void addRosterGroup(RosterGroup group) {
-        rosterGroups.put(group.getAccount(), group.getName(), group);
-    }
-
-    /**
-     * Adds new contact to be managed.
-     *
-     * @param contact
-     */
-    void addRosterContact(RosterContact contact) {
-        rosterContacts.put(contact.getAccount(), contact.getUser(), contact);
-    }
-
-    /**
-     * Adds new contact to be managed and populates addedContacts map.
-     *
-     * @param contact
-     * @param name
-     * @param addedContacts
-     */
-    private void addContact(RosterContact contact, String name,
-                            Map<RosterContact, String> addedContacts) {
-        addRosterContact(contact);
-        addedContacts.put(contact, name);
-    }
-
-    /**
-     * Removes managed contact and populates removedContacts map.
-     *
-     * @param contact
-     * @param removedContacts
-     */
-    private void removeContact(RosterContact contact,
-                               Collection<RosterContact> removedContacts) {
-        rosterContacts.remove(contact.getAccount(), contact.getUser());
-        removedContacts.add(contact);
-    }
-
-    /**
-     * Sets name for managed contact and populates renamedContacts map.
-     *
-     * @param contact
-     * @param name
-     * @param renamedContacts
-     */
-    private void setName(RosterContact contact, String name,
-                         Map<RosterContact, String> renamedContacts) {
-        contact.setName(name);
-        renamedContacts.put(contact, name);
-    }
-
-    /**
-     * Adds group to managed contact and populate addedGroups,
-     * addedGroupReference.
-     *
-     * @param contact
-     * @param groupName
-     * @param addedGroups
-     * @param addedGroupReference
-     */
-    private void addGroup(
-            RosterContact contact,
-            String groupName,
-            Collection<RosterGroup> addedGroups,
-            Map<RosterContact, Collection<RosterGroupReference>> addedGroupReference) {
-        RosterGroup rosterGroup = rosterGroups.get(contact.getAccount(),
-                groupName);
-        if (rosterGroup == null) {
-            rosterGroup = new RosterGroup(contact.getAccount(), groupName);
-            addRosterGroup(rosterGroup);
-            addedGroups.add(rosterGroup);
-        }
-        RosterGroupReference groupReference = new RosterGroupReference(
-                rosterGroup);
-        contact.addGroupReference(groupReference);
-        Collection<RosterGroupReference> collection = addedGroupReference
-                .get(contact);
-        if (collection == null) {
-            collection = new ArrayList<RosterGroupReference>();
-            addedGroupReference.put(contact, collection);
-        }
-        collection.add(groupReference);
-    }
-
-    /**
-     * Removes group from managed contact and populates removedGroups,
-     * removedGroupReference.
-     *
-     * @param contact
-     * @param groupReference
-     * @param removedGroups
-     * @param removedGroupReference
-     */
-    private void removeGroupReference(
-            RosterContact contact,
-            RosterGroupReference groupReference,
-            Collection<RosterGroup> removedGroups,
-            Map<RosterContact, Collection<RosterGroupReference>> removedGroupReference) {
-        contact.removeGroupReference(groupReference);
-        Collection<RosterGroupReference> collection = removedGroupReference
-                .get(contact);
-        if (collection == null) {
-            collection = new ArrayList<RosterGroupReference>();
-            removedGroupReference.put(contact, collection);
-        }
-        collection.add(groupReference);
-        RosterGroup rosterGroup = groupReference.getRosterGroup();
-        for (RosterContact check : rosterContacts.values())
-            for (RosterGroupReference reference : check.getGroups())
-                if (reference.getRosterGroup() == rosterGroup)
-                    return;
-        rosterGroups.remove(rosterGroup.getAccount(), rosterGroup.getName());
-        removedGroups.add(rosterGroup);
     }
 
     /**
@@ -256,8 +186,21 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      * @return List of groups in specified account.
      */
     public Collection<String> getGroups(String account) {
-        return Collections.unmodifiableCollection(rosterGroups
-                .getNested(account).keySet());
+        final Roster roster = getRoster(account);
+
+        Collection<String> returnGroups = new ArrayList<>();
+
+        if (roster == null) {
+            return returnGroups;
+        }
+
+        final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
+
+        for (org.jivesoftware.smack.roster.RosterGroup rosterGroup : groups) {
+            returnGroups.add(rosterGroup.getName());
+        }
+
+        return returnGroups;
     }
 
     /**
@@ -294,120 +237,143 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      * @throws NetworkException
      */
     public void createContact(String account, String bareAddress, String name,
-                              Collection<String> groups) throws NetworkException {
-        RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.set);
-        RosterPacket.Item item = new RosterPacket.Item(bareAddress, name);
-        for (String group : groups)
-            if (group.trim().length() > 0)
-                item.addGroupName(group);
-        packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendStanza(account, packet);
+                              Collection<String> groups) throws SmackException.NotLoggedInException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, SmackException.NoResponseException {
+
+
+        final Roster roster = getRoster(account);
+
+        if (roster == null) {
+            return;
+        }
+
+        roster.createEntry(bareAddress, name, groups.toArray(new String[groups.size()]));
     }
 
     /**
      * Requests contact removing.
      *
-     * @param account
-     * @param bareAddress
-     * @throws NetworkException
      */
-    public void removeContact(String account, String bareAddress)
-            throws NetworkException {
-        RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.set);
-        RosterPacket.Item item = new RosterPacket.Item(bareAddress, "");
-        item.setItemType(RosterPacket.ItemType.remove);
-        packet.addRosterItem(item);
-        ConnectionManager.getInstance().sendStanza(account, packet);
-    }
+    public void removeContact(String account, String bareAddress) {
 
-    public void setGroups(String account, String bareAddress, Collection<String> groups) throws NetworkException {
-        RosterContact contact = getRosterContact(account, bareAddress);
-        if (contact == null) {
-            throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
-        }
+        final Roster roster = getRoster(account);
 
-        HashSet<String> check = new HashSet<>(contact.getGroupNames());
-        if (check.size() == groups.size()) {
-            check.removeAll(groups);
-            if (check.isEmpty())
-                return;
-        }
-
-        updateRosterContact(account, bareAddress, contact.getRealName(), groups);
-    }
-
-    public void setName(String account, String bareAddress, String name) throws NetworkException {
-        RosterContact contact = getRosterContact(account, bareAddress);
-        if (contact == null)
-            throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
-        if (contact.getRealName().equals(name)) {
+        if (roster == null) {
             return;
         }
 
-        updateRosterContact(account, bareAddress, name, contact.getGroupNames());
+        final RosterEntry entry = roster.getEntry(bareAddress);
+
+        if (entry == null) {
+            return;
+        }
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    roster.removeEntry(entry);
+                } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
+                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                } catch (SmackException.NoResponseException e) {
+                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                } catch (XMPPException.XMPPErrorException e) {
+                    Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+                }
+            }
+        });
     }
 
-    private void updateRosterContact(String account, String bareAddress, String name, Collection<String> groups) throws NetworkException {
+    public void setGroups(String account, String bareAddress, Collection<String> groups) throws NetworkException {
+        final Roster roster = getRoster(account);
+
+        if (roster == null) {
+            return;
+        }
+
+        final RosterEntry entry = roster.getEntry(bareAddress);
+
+        if (entry == null) {
+            return;
+        }
+
         RosterPacket packet = new RosterPacket();
         packet.setType(IQ.Type.set);
-        RosterPacket.Item item = new RosterPacket.Item(bareAddress, name);
+        RosterPacket.Item item = new RosterPacket.Item(bareAddress, entry.getName());
         for (String group : groups) {
             item.addGroupName(group);
         }
         packet.addRosterItem(item);
+
         ConnectionManager.getInstance().sendStanza(account, packet);
+    }
+
+    public void setName(String account, String bareAddress, final String name) {
+        final Roster roster = getRoster(account);
+
+        if (roster == null) {
+            return;
+        }
+
+        final RosterEntry entry = roster.getEntry(bareAddress);
+
+        if (entry == null) {
+            return;
+        }
+
+        try {
+            entry.setName(name.trim());
+        } catch (SmackException.NotConnectedException e) {
+            Application.getInstance().onError(R.string.NOT_CONNECTED);
+        } catch (SmackException.NoResponseException e) {
+            Application.getInstance().onError(R.string.CONNECTION_FAILED);
+        } catch (XMPPException.XMPPErrorException e) {
+            Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+        }
     }
 
     /**
      * Requests to remove group from all contacts in account.
-     *
-     * @param account
-     * @param group
-     * @throws NetworkException
      */
-    public void removeGroup(String account, String group)
+    public void removeGroup(String account, String groupName)
             throws NetworkException {
-        RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.set);
-        for (RosterContact contact : rosterContacts.getNested(account).values()) {
-            HashSet<String> groups = new HashSet<String>(
-                    contact.getGroupNames());
-            if (!groups.remove(group))
-                continue;
-            RosterPacket.Item item = new RosterPacket.Item(contact.getUser(),
-                    contact.getRealName());
-            for (String one : groups)
-                item.addGroupName(one);
-            packet.addRosterItem(item);
-        }
-        if (packet.getRosterItemCount() == 0)
+        final Roster roster = getRoster(account);
+        if (roster == null) {
             return;
-        ConnectionManager.getInstance().sendStanza(account, packet);
+        }
+
+        final org.jivesoftware.smack.roster.RosterGroup group = roster.getGroup(groupName);
+        if (group == null) {
+            return;
+        }
+
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                for (RosterEntry entry : group.getEntries()) {
+                    try {
+                        group.removeEntry(entry);
+                    } catch (SmackException.NoResponseException e) {
+                        Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                    } catch (SmackException.NotConnectedException e) {
+                        Application.getInstance().onError(R.string.NOT_CONNECTED);
+                    } catch (XMPPException.XMPPErrorException e) {
+                        Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+                    }
+                }
+
+            }
+        });
     }
 
     /**
      * Requests to remove group from all contacts in all accounts.
      *
-     * @param group
-     * @throws NetworkException
      */
     public void removeGroup(String group) throws NetworkException {
-        NetworkException networkException = null;
-        boolean success = false;
         for (String account : AccountManager.getInstance().getAccounts()) {
-            try {
-                removeGroup(account, group);
-            } catch (NetworkException e) {
-                if (networkException == null)
-                    networkException = e;
-                continue;
-            }
-            success = true;
+            removeGroup(account, group);
         }
-        if (!success && networkException != null)
-            throw networkException;
     }
 
     /**
@@ -415,56 +381,76 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      *
      * @param account
      * @param oldGroup can be <code>null</code> for "no group".
-     * @param newGroup
-     * @throws NetworkException
      */
-    public void renameGroup(String account, String oldGroup, String newGroup)
-            throws NetworkException {
-        if (newGroup.equals(oldGroup))
+    public void renameGroup(String account, String oldGroup, final String newGroup) {
+        if (newGroup.equals(oldGroup)) {
             return;
-        RosterPacket packet = new RosterPacket();
-        packet.setType(IQ.Type.set);
-        for (RosterContact contact : rosterContacts.getNested(account).values()) {
-            HashSet<String> groups = new HashSet<String>(
-                    contact.getGroupNames());
-            if (!groups.remove(oldGroup)
-                    && !(oldGroup == null && groups.isEmpty()))
-                continue;
-            groups.add(newGroup);
-            RosterPacket.Item item = new RosterPacket.Item(contact.getUser(),
-                    contact.getRealName());
-            for (String one : groups)
-                item.addGroupName(one);
-            packet.addRosterItem(item);
         }
-        if (packet.getRosterItemCount() == 0)
+
+        final Roster roster = getRoster(account);
+        if (roster == null) {
             return;
-        ConnectionManager.getInstance().sendStanza(account, packet);
+        }
+
+        if (TextUtils.isEmpty(oldGroup)) {
+            Application.getInstance().runInBackground(new Runnable() {
+                @Override
+                public void run() {
+                    createGroupForUnfiledEntries(newGroup, roster);
+                }
+            });
+            return;
+        }
+
+        final org.jivesoftware.smack.roster.RosterGroup group = roster.getGroup(oldGroup);
+        if (group == null) {
+            return;
+        }
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    group.setName(newGroup);
+                } catch (SmackException.NoResponseException e) {
+                    Application.getInstance().onError(R.string.CONNECTION_FAILED);
+                } catch (SmackException.NotConnectedException e) {
+                    Application.getInstance().onError(R.string.NOT_CONNECTED);
+                } catch (XMPPException.XMPPErrorException e) {
+                    Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+                }
+            }
+        });
+
+    }
+
+    private void createGroupForUnfiledEntries(String newGroup, Roster roster) {
+        final Set<RosterEntry> unfiledEntries = roster.getUnfiledEntries();
+
+        final org.jivesoftware.smack.roster.RosterGroup group = roster.createGroup(newGroup);
+
+        try {
+            for (RosterEntry entry : unfiledEntries) {
+                group.addEntry(entry);
+            }
+        } catch (SmackException.NoResponseException e) {
+            Application.getInstance().onError(R.string.CONNECTION_FAILED);
+        } catch (SmackException.NotConnectedException e) {
+            Application.getInstance().onError(R.string.NOT_CONNECTED);
+        } catch (XMPPException.XMPPErrorException e) {
+            Application.getInstance().onError(R.string.XMPP_EXCEPTION);
+        }
     }
 
     /**
      * Requests to rename group from all accounts.
      *
      * @param oldGroup can be <code>null</code> for "no group".
-     * @param newGroup
-     * @throws NetworkException
      */
-    public void renameGroup(String oldGroup, String newGroup)
-            throws NetworkException {
-        NetworkException networkException = null;
-        boolean success = false;
+    public void renameGroup(String oldGroup, String newGroup) {
         for (String account : AccountManager.getInstance().getAccounts()) {
-            try {
-                renameGroup(account, oldGroup, newGroup);
-            } catch (NetworkException e) {
-                if (networkException == null)
-                    networkException = e;
-                continue;
-            }
-            success = true;
+            renameGroup(account, oldGroup, newGroup);
         }
-        if (!success && networkException != null)
-            throw networkException;
     }
 
     /**
@@ -472,18 +458,20 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      * @return Whether roster for specified account has been received.
      */
     public boolean isRosterReceived(String account) {
-        return receivedRosters.contains(account);
+        final Roster roster = getRoster(account);
+        return roster != null && roster.isLoaded();
     }
 
-    /**
-     * Sets whether contacts in accounts are enabled.
-     *
-     * @param account
-     * @param enabled
-     */
-    private void setEnabled(String account, boolean enabled) {
-        for (RosterContact contact : rosterContacts.getNested(account).values())
-            contact.setEnabled(enabled);
+    @Override
+    public void onDisconnect(ConnectionItem connection) {
+        if (!(connection instanceof AccountItem))
+            return;
+        String account = ((AccountItem) connection).getAccount();
+        for (RosterContact contact : allRosterContacts) {
+            if (contact.getAccount().equals(account)) {
+                contact.setConnected(false);
+            }
+        }
     }
 
     @Override
@@ -492,126 +480,17 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     }
 
     @Override
-    public void onArchiveModificationsReceived(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        // Request roster only when server side archive modifications
-        // received.
-        String account = ((AccountItem) connection).getAccount();
-        requestedRosters.add(account);
-        try {
-            ConnectionManager.getInstance().sendStanza(account,
-                    new RosterPacket());
-        } catch (NetworkException e) {
-            LogManager.exception(this, e);
-        }
-    }
-
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        String account = ((AccountItem) connection).getAccount();
-        for (RosterContact contact : rosterContacts.getNested(account).values())
-            contact.setConnected(false);
-        requestedRosters.remove(account);
-        receivedRosters.remove(account);
-    }
-
-    @Override
     public void onAccountDisabled(AccountItem accountItem) {
         setEnabled(accountItem.getAccount(), false);
     }
 
-    @Override
-    public void onAccountRemoved(AccountItem accountItem) {
-        rosterGroups.clear(accountItem.getAccount());
-        rosterContacts.clear(accountItem.getAccount());
-    }
-
-    @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
-        if (!(connection instanceof AccountItem))
-            return;
-        String account = ((AccountItem) connection).getAccount();
-        if (!(packet instanceof RosterPacket))
-            return;
-        if (((RosterPacket) packet).getType() != IQ.Type.error) {
-            boolean rosterWasReceived = requestedRosters.remove(account);
-            ArrayList<RosterContact> remove = new ArrayList<RosterContact>();
-            if (rosterWasReceived)
-                for (RosterContact contact : rosterContacts.getNested(account)
-                        .values()) {
-                    contact.setConnected(true);
-                    remove.add(contact);
-                }
-            RosterPacket rosterPacket = (RosterPacket) packet;
-            ArrayList<BaseEntity> entities = new ArrayList<BaseEntity>();
-            Collection<RosterGroup> addedGroups = new ArrayList<RosterGroup>();
-            Map<RosterContact, String> addedContacts = new HashMap<RosterContact, String>();
-            Map<RosterContact, String> renamedContacts = new HashMap<RosterContact, String>();
-            Map<RosterContact, Collection<RosterGroupReference>> addedGroupReference = new HashMap<RosterContact, Collection<RosterGroupReference>>();
-            Map<RosterContact, Collection<RosterGroupReference>> removedGroupReference = new HashMap<RosterContact, Collection<RosterGroupReference>>();
-            Collection<RosterContact> removedContacts = new ArrayList<RosterContact>();
-            Collection<RosterGroup> removedGroups = new ArrayList<RosterGroup>();
-
-            for (RosterPacket.Item item : rosterPacket.getRosterItems()) {
-                String user = Jid.getBareAddress(item.getUser());
-                if (user == null)
-                    continue;
-                entities.add(new BaseEntity(account, user));
-                RosterContact contact = getRosterContact(account, user);
-                if (item.getItemType() == RosterPacket.ItemType.remove) {
-                    if (contact != null)
-                        removeContact(contact, removedContacts);
-                } else {
-                    String name = item.getName();
-                    if (name == null)
-                        name = "";
-                    if (contact == null) {
-                        contact = new RosterContact(account, user, name);
-                        addContact(contact, name, addedContacts);
-                    } else {
-                        remove.remove(contact);
-                        if (!contact.getRealName().equals(name))
-                            setName(contact, name, renamedContacts);
-                    }
-                    ArrayList<RosterGroupReference> removeGroupReferences = new ArrayList<RosterGroupReference>(
-                            contact.getGroups());
-                    for (String groupName : item.getGroupNames()) {
-                        RosterGroupReference rosterGroup = contact
-                                .getRosterGroupReference(groupName);
-                        if (rosterGroup == null)
-                            addGroup(contact, groupName, addedGroups,
-                                    addedGroupReference);
-                        else
-                            removeGroupReferences.remove(rosterGroup);
-                    }
-                    for (RosterGroupReference rosterGroup : removeGroupReferences)
-                        removeGroupReference(contact, rosterGroup,
-                                removedGroups, removedGroupReference);
-                    contact.setSubscribed(item.getItemType() == RosterPacket.ItemType.both
-                            || item.getItemType() == RosterPacket.ItemType.to);
-                }
-            }
-            for (RosterContact contact : remove) {
-                entities.add(new BaseEntity(account, contact.getUser()));
-                removeContact(contact, removedContacts);
-            }
-            for (OnRosterChangedListener listener : Application.getInstance()
-                    .getManagers(OnRosterChangedListener.class))
-                listener.onRosterUpdate(addedGroups, addedContacts,
-                        renamedContacts, addedGroupReference,
-                        removedGroupReference, removedContacts, removedGroups);
-            onContactsChanged(entities);
-            if (rosterWasReceived) {
-                AccountItem accountItem = (AccountItem) connection;
-                receivedRosters.add(account);
-                for (OnRosterReceivedListener listener : Application
-                        .getInstance().getManagers(
-                                OnRosterReceivedListener.class))
-                    listener.onRosterReceived(accountItem);
-                AccountManager.getInstance().onAccountChanged(account);
+    /**
+     * Sets whether contacts in accounts are enabled.
+     */
+    private void setEnabled(String account, boolean enabled) {
+        for (RosterContact contact : allRosterContacts) {
+            if (contact.getAccount().equals(account)) {
+                contact.setEnabled(enabled);
             }
         }
     }
@@ -621,7 +500,7 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
      *
      * @param entities
      */
-    public void onContactsChanged(final Collection<BaseEntity> entities) {
+    public static void onContactsChanged(final Collection<BaseEntity> entities) {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -636,10 +515,9 @@ public class RosterManager implements OnDisconnectListener, OnPacketListener,
     /**
      * Notifies registered {@link OnContactChangedListener}.
      */
-    public void onContactChanged(String account, String bareAddress) {
-        final ArrayList<BaseEntity> entities = new ArrayList<BaseEntity>();
+    public static void onContactChanged(String account, String bareAddress) {
+        final ArrayList<BaseEntity> entities = new ArrayList<>();
         entities.add(new BaseEntity(account, bareAddress));
         onContactsChanged(entities);
     }
-
 }

@@ -9,11 +9,12 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 import com.xabber.android.ui.widget.RingtonePreference;
 
 import java.util.HashMap;
@@ -166,16 +167,18 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
      * @param value
      */
     protected void setPreference(Preference preference, Object value) {
-        if (preference instanceof EditTextPreference)
+        if (preference instanceof EditTextPreference) {
             ((EditTextPreference) preference)
-                    .setText(value instanceof Integer ? String.valueOf(value)
-                            : (String) value);
-        else if (preference instanceof CheckBoxPreference)
+                    .setText(value instanceof Integer ? String.valueOf(value) : (String) value);
+        } else if (preference instanceof CheckBoxPreference) {
             ((CheckBoxPreference) preference).setChecked((Boolean) value);
-        else if (preference instanceof ListPreference)
+        } else if (preference instanceof SwitchPreference) {
+            ((SwitchPreference) preference).setChecked((Boolean) value);
+        } else if (preference instanceof ListPreference) {
             ((ListPreference) preference).setValueIndex((Integer) value);
-        else if (preference instanceof RingtonePreference)
+        } else if (preference instanceof RingtonePreference) {
             ((RingtonePreference) preference).setUri((Uri) value);
+        }
     }
 
     /**
@@ -214,13 +217,16 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
                 }
             else
                 return value;
-        } else if (preference instanceof CheckBoxPreference)
+        } else if (preference instanceof CheckBoxPreference) {
             return ((CheckBoxPreference) preference).isChecked();
-        else if (preference instanceof ListPreference)
+        } else if (preference instanceof SwitchPreference) {
+            return ((SwitchPreference) preference).isChecked();
+        } else if (preference instanceof ListPreference) {
             return ((ListPreference) preference)
                     .findIndexOfValue(((ListPreference) preference).getValue());
-        else if (preference instanceof RingtonePreference)
+        } else if (preference instanceof RingtonePreference) {
             return ((RingtonePreference) preference).getUri();
+        }
         throw new IllegalStateException();
     }
 

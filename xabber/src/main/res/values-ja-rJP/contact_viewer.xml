@@ -58,4 +58,9 @@
   <string name="take_photo">写真を撮影</string>
   <string name="remove_avatar">アバターを削除</string>
   <string name="change">変更</string>
+  <string name="could_not_get_room_info">会議の情報を取得できませんでした</string>
+  <string name="conference_name">名前</string>
+  <string name="conference_description">説明</string>
+  <string name="conference_subject">件名</string>
+  <string name="message_info_occupants_number">参加者: %d</string>
 </resources>

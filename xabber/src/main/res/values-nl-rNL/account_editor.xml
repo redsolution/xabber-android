@@ -27,7 +27,6 @@
   <string name="account_compression_summary">Kies om datacompressie in te schakelen</string>
   <string name="account_custom">Aangepaste host</string>
   <string name="account_custom_summary">Gebruik aangepaste hostinstellingen in plaats van SRV record</string>
-  <string name="account_enabled_summary">Kies om account in te schakelen</string>
   <string name="account_invalid_port">Poort moet een nummer zijn (standaard: 5222)</string>
   <string name="account_invalid_port_range">Poort moet tussen de 1 en 65535 zijn (standaard: 5222)</string>
   <string name="account_invalid_priority">Waarde prioriteit moet een nummer zijn tussen -128 en 128 (standaard: 10)</string>

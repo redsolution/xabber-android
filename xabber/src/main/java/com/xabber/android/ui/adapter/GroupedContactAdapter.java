@@ -37,7 +37,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.AccountViewer;
+import com.xabber.android.ui.activity.AccountViewer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -277,7 +277,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startActivity(AccountViewer.createIntent(activity, account));
+                activity.startActivity(AccountViewer.createAccountInfoIntent(activity, account));
             }
         });
 
@@ -337,8 +337,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             color = activeChatsColor;
             viewHolder.name.setText(name);
         } else {
-            viewHolder.name.setText(name + " (" + configuration.getOnline()
-                    + "/" + configuration.getTotal() + ")");
+            viewHolder.name.setText(String.format("%s (%d/%d)", name, configuration.getOnline(), configuration.getTotal()));
 
             color = accountSubgroupColors[level];
             viewHolder.groupOfflineIndicator.setVisibility(View.VISIBLE);

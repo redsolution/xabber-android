@@ -58,4 +58,9 @@
   <string name="take_photo">Сделать фотографию</string>
   <string name="remove_avatar">Удалить аватар</string>
   <string name="change">Изменить</string>
+  <string name="could_not_get_room_info">Не удалось получить информацию о конференции</string>
+  <string name="conference_name">Название</string>
+  <string name="conference_description">Описание</string>
+  <string name="conference_subject">Тема</string>
+  <string name="message_info_occupants_number">Участники: %d</string>
 </resources>

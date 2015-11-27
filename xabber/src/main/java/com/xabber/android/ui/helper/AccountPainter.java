@@ -18,6 +18,8 @@ public class AccountPainter {
     private int[] accountMainColors;
     private int[] accountDarkColors;
     private int[] accountDarkestColors;
+    private final int greyMain;
+    private final int greyDark;
 
     public AccountPainter(Context context) {
 
@@ -29,6 +31,9 @@ public class AccountPainter {
 
         themeMainColor = getThemeMainColor(context);
         themeDarkColor = getThemeDarkColor(context);
+
+        greyMain = context.getResources().getColor(R.color.grey_600);
+        greyDark = context.getResources().getColor(R.color.grey_700);
     }
 
     private static String getFirstAccount() {
@@ -116,5 +121,13 @@ public class AccountPainter {
             }
         }
         return null;
+    }
+
+    public int getGreyMain() {
+        return greyMain;
+    }
+
+    public int getGreyDark() {
+        return greyDark;
     }
 }

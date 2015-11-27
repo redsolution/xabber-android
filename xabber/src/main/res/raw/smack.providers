@@ -9,19 +9,6 @@
         <className>com.xabber.xmpp.avatar.VCardUpdateProvider</className>
     </extensionProvider>
 
-    <!-- Message Delivery Receipts -->
-    <extensionProvider>
-        <elementName>request</elementName>
-        <namespace>urn:xmpp:receipts</namespace>
-        <className>com.xabber.xmpp.receipt.RequestProvider</className>
-    </extensionProvider>
-
-    <extensionProvider>
-        <elementName>received</elementName>
-        <namespace>urn:xmpp:receipts</namespace>
-        <className>com.xabber.xmpp.receipt.ReceivedProvider</className>
-    </extensionProvider>
-
     <!-- Result Set Management -->
     <extensionProvider>
         <elementName>set</elementName>
@@ -108,5 +95,25 @@
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
 
+    <!-- Blocking Command -->
+    <iqProvider>
+        <elementName>blocklist</elementName>
+        <namespace>urn:xmpp:blocking</namespace>
+        <className>com.xabber.xmpp.blocking.BlockListProvider</className>
+    </iqProvider>
+
+    <!-- Blocking Command -->
+    <iqProvider>
+        <elementName>block</elementName>
+        <namespace>urn:xmpp:blocking</namespace>
+        <className>com.xabber.xmpp.blocking.BlockProvider</className>
+    </iqProvider>
+
+    <!-- Blocking Command -->
+    <iqProvider>
+        <elementName>unblock</elementName>
+        <namespace>urn:xmpp:blocking</namespace>
+        <className>com.xabber.xmpp.blocking.UnblockProvider</className>
+    </iqProvider>
 
 </smackProviders>

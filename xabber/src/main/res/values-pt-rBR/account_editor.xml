@@ -27,7 +27,6 @@
   <string name="account_compression_summary">Seleção para ativar a compactação de dados</string>
   <string name="account_custom">Host personalizado</string>
   <string name="account_custom_summary">Usar configurações de host personalizado em vez de registro SRV</string>
-  <string name="account_enabled_summary">Marque para ativar a conta</string>
   <string name="account_invalid_port">A porta deve ser um número (padrão: 5222)</string>
   <string name="account_invalid_port_range">A porta deve ser um número entre 1 e 65535 (o padrão é: 5222)</string>
   <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 128 (padrão: 10)</string>

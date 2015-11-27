@@ -14,12 +14,16 @@
  */
 package com.xabber.android.data.roster;
 
+import android.text.TextUtils;
+
+import com.xabber.android.data.account.StatusMode;
+
+import org.jivesoftware.smack.roster.RosterEntry;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.xabber.android.data.account.StatusMode;
 
 /**
  * Contact in roster.
@@ -56,51 +60,30 @@ public class RosterContact extends AbstractContact {
     protected boolean enabled;
 
     /**
-     * Raw contact id in system contact list.
-     */
-    private Long rawId;
-
-    /**
-     * Jid id in system contact list.
-     */
-    private Long jidId;
-
-    /**
-     * Nick name id in system contact list.
-     */
-    private Long nickNameId;
-
-    /**
-     * Structured name id in system contact list.
-     */
-    private Long structuredNameId;
-
-    /**
      * Data id to view contact information from system contact list.
      * <p/>
      * Warning: not implemented yet.
      */
     private Long viewId;
 
+    public RosterContact(String account, RosterEntry rosterEntry) {
+        this(account, rosterEntry.getUser(), rosterEntry.getName());
+    }
+
     public RosterContact(String account, String user, String name) {
         super(account, user);
-        this.name = name;
-        groupReferences = new HashMap<String, RosterGroupReference>();
+
+        if (name == null) {
+            this.name = null;
+        } else {
+            this.name = name.trim();
+        }
+
+        groupReferences = new HashMap<>();
         subscribed = true;
         connected = true;
         enabled = true;
-        rawId = null;
-        jidId = null;
-        nickNameId = null;
-        structuredNameId = null;
         viewId = null;
-    }
-
-    /**
-     * @return real roster name value.
-     */
-    public String getRealName() {
-        return name;
     }
 
     void setName(String name) {
@@ -116,20 +99,8 @@ public class RosterContact extends AbstractContact {
         return Collections.unmodifiableCollection(groupReferences.keySet());
     }
 
-    /**
-     * @param groupName
-     * @return <code>null</code> or group with specified name.
-     */
-    RosterGroupReference getRosterGroupReference(String groupName) {
-        return groupReferences.get(groupName);
-    }
-
     void addGroupReference(RosterGroupReference groupReference) {
         groupReferences.put(groupReference.getName(), groupReference);
-    }
-
-    void removeGroupReference(RosterGroupReference groupReference) {
-        groupReferences.remove(groupReference.getName());
     }
 
     void setSubscribed(boolean subscribed) {
@@ -151,9 +122,11 @@ public class RosterContact extends AbstractContact {
 
     @Override
     public String getName() {
-        if (!"".equals(name))
+        if (TextUtils.isEmpty(name)) {
+            return super.getName();
+        } else {
             return name;
-        return super.getName();
+        }
     }
 
     @Override
@@ -173,44 +146,8 @@ public class RosterContact extends AbstractContact {
         this.enabled = enabled;
     }
 
-    Long getRawId() {
-        return rawId;
-    }
-
-    void setRawId(Long contactId) {
-        this.rawId = contactId;
-    }
-
-    Long getJidId() {
-        return jidId;
-    }
-
-    void setJidId(Long jidId) {
-        this.jidId = jidId;
-    }
-
-    Long getNickNameId() {
-        return nickNameId;
-    }
-
-    void setNickNameId(Long nameId) {
-        this.nickNameId = nameId;
-    }
-
-    public Long getStructuredNameId() {
-        return structuredNameId;
-    }
-
-    public void setStructuredNameId(Long structuredNameId) {
-        this.structuredNameId = structuredNameId;
-    }
-
     public Long getViewId() {
         return viewId;
-    }
-
-    public void setViewId(Long viewId) {
-        this.viewId = viewId;
     }
 
 }

@@ -41,8 +41,6 @@
         <item>com.xabber.android.data.connection.NetworkManager</item>
         <item>com.xabber.android.data.account.OAuthManager</item>
         <item>com.xabber.android.data.roster.SyncManager</item>
-        <item>com.xabber.android.data.connection.DNSManager</item>
-        <item>com.xabber.android.data.connection.CertificateManager</item>
         <item>com.xabber.android.data.message.ReceiptManager</item>
         <item>com.xabber.android.data.extension.archive.MessageArchiveManager</item>
         <item>com.xabber.android.data.extension.ssn.SSNManager</item>
@@ -51,6 +49,7 @@
         <item>com.xabber.android.data.extension.attention.AttentionManager</item>
         <item>com.xabber.xmpp.carbon.CarbonManager</item>
         <item>com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager</item>
+        <item>com.xabber.android.data.extension.blocking.BlockingManager</item>
     </string-array>
 
     <string-array name="contact_managers">
@@ -357,6 +356,9 @@
     <string name="connection_use_carbons_key">connection_use_carbons</string>
     <bool name="connection_use_carbons_default">false</bool>
 
+    <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
+    <bool name="connection_use_plain_text_auth_default">false</bool>
+
 <!-- preference_debug -->
     <string name="cache_clear_key">cache_clear</string>
 
@@ -384,6 +386,7 @@
     <string name="account_port_key">account_port</string>
     <string name="account_server_key">account_server</string>
     <string name="account_resource_key">account_resource</string>
+    <string name="account_resource_default">@string/client_name</string>
     <string name="account_priority_key">account_priority</string>
     <string name="account_sasl_key">account_sasl</string>
     <string name="account_tls_mode_key">account_tls_mode</string>

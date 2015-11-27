@@ -13,12 +13,11 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
-    android:elevation="@dimen/contact_elevation"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:elevation="@dimen/contact_elevation">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,17 +54,43 @@
             android:orientation="vertical"
             android:paddingLeft="@dimen/active_chat_padding_left"
             >
-            <TextView
-                android:id="@+id/contact_list_item_name"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="marquee"
-                android:text="Contact list item name"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold"
-            />
+                android:gravity="center_vertical"
+                >
+
+
+
+
+                <TextView
+                    android:id="@+id/contact_list_item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:text="Contact list item name"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@+id/contact_list_item_muc_indicator"
+                />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_muc_indicator_black_16dp"
+                    android:id="@+id/contact_list_item_muc_indicator"
+                    android:layout_marginRight="2dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_alignBottom="@id/contact_list_item_name"
+                    android:layout_marginBottom="1dp"
+                    />
+
+
+            </RelativeLayout>
 
             <include layout="@layout/contact_list_item_second_line" />
 

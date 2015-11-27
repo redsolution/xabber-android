@@ -4,7 +4,6 @@ import android.content.Context;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
-import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 
 
@@ -18,7 +17,7 @@ public class SecurityClearCertificateDialog extends DialogPreference {
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            CertificateManager.getInstance().removeCertificates();
+            // TODO: removed certificates
             ConnectionManager.getInstance().updateConnections(true);
         }
     }

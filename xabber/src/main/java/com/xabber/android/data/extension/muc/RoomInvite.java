@@ -22,7 +22,8 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.MUCInvite;
+import com.xabber.android.ui.activity.ContactList;
+import com.xabber.xmpp.address.Jid;
 
 /**
  * Invite to join the room.
@@ -55,7 +56,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return MUCInvite.createIntent(Application.getInstance(), account, user);
+        return ContactList.createMucInviteIntent(Application.getInstance(), account, user);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
      */
     public String getConfirmation() {
         String accountName = AccountManager.getInstance().getVerboseName(account);
-        String inviterName = RosterManager.getInstance().getName(account, inviter);
+        String inviterName = RosterManager.getInstance().getBestContact(account, Jid.getBareAddress(inviter)).getName();
         if (reason == null || "".equals(reason)) {
             return Application.getInstance()
                     .getString(R.string.muc_invite_confirm, accountName,

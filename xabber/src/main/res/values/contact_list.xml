@@ -24,6 +24,7 @@
     <string name="CONNECTION_FAILED">Connection error</string>
     <string name="contact_add">Add contact</string>
     <string name="contact_delete">Delete</string>
+    <string name="contact_block">Block contact</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
     <string name="contact_list">Contact list</string>
     <string name="discard_subscription">Decline contact</string>
@@ -53,8 +54,19 @@
     <string name="show_offline_never">Never show</string>
     <string name="show_offline_normal">Use general settings</string>
     <string name="show_offline_settings">Show offline contacts</string>
+    <string name="start_at_boot">Run at startup</string>
     <string name="start_at_boot_suggest">Do you want to run Xabber at startup?\nThis can be changed in "Settings" → "Connection settings" → "Start when Android boots"</string>
     <string name="contact_search_hint">Search contacts</string>
     <string name="sender_is_you">You</string>
     <string name="xmpp_accounts">XMPP accounts</string>
+    <string name="block_list">Block list</string>
+    <string name="contact_blocked_successfully">Contact blocked successfully</string>
+    <string name="error_blocking_contact">Error blocking contact</string>
+    <string name="unblock_contact">Unblock contact</string>
+    <string name="contacts_unblocked_successfully">Contacts unblocked successfully</string>
+    <string name="error_unblocking_contacts">Error unblocking contacts</string>
+    <string name="block_contact_confirm">Do you really want to block contact %1$s from account %2$s?</string>
+    <string name="unblock_all_contacts_confirm">Do you really want to unblock all contacts from account %1$s?</string>
+    <string name="unblock_all">Unblock all</string>
+    <string name="unblock_selected">Unblock selected</string>
 </resources>

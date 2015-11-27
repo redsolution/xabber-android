@@ -23,9 +23,6 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.extension.muc.RoomChat;
-import com.xabber.xmpp.receipt.Received;
-import com.xabber.xmpp.receipt.Request;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -33,14 +30,17 @@ import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.receipts.DeliveryReceipt;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
+import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 
 /**
  * Manage message receive receipts as well as error replies.
  *
  * @author alexander.ivanov
  */
-public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
+public class ReceiptManager implements OnPacketListener, OnDisconnectListener, ReceiptReceivedListener {
 
     /**
      * Sent messages for packet ids in accounts.
@@ -53,13 +53,9 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
         instance = new ReceiptManager();
         Application.getInstance().addManager(instance);
 
-        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
-            @Override
-            public void connectionCreated(final XMPPConnection connection) {
-                ServiceDiscoveryManager.getInstanceFor(connection)
-                        .addFeature("urn:xmpp:receipts");
-            }
-        });
+        // TODO: change to ifSubscribed when isSubscribedToMyPresence will work and problem with thread element will be solved
+        DeliveryReceiptManager.setDefaultAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.disabled);
+
     }
 
     public static ReceiptManager getInstance() {
@@ -67,7 +63,16 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
     }
 
     private ReceiptManager() {
-        sent = new NestedMap<MessageItem>();
+        sent = new NestedMap<>();
+
+        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
+            @Override
+            public void connectionCreated(final XMPPConnection connection) {
+                DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this);
+                DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
+            }
+        });
+
     }
 
     /**
@@ -79,10 +84,7 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
      */
     public void updateOutgoingMessage(AbstractChat abstractChat,
                                       Message message, MessageItem messageItem) {
-        sent.put(abstractChat.getAccount(), message.getPacketID(), messageItem);
-        if (abstractChat instanceof RoomChat)
-            return;
-        message.addExtension(new Request());
+        sent.put(abstractChat.getAccount(), message.getStanzaId(), messageItem);
     }
 
     @Override
@@ -114,27 +116,15 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
                         messageItem.getChat().getUser(), false);
             }
         } else {
+            // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions())
-                if (packetExtension instanceof Received) {
-                    Received received = (Received) packetExtension;
-                    String id = received.getId();
-                    if (id == null)
-                        id = message.getPacketID();
-                    if (id == null)
-                        continue;
-                    final MessageItem messageItem = sent.remove(account, id);
-                    if (messageItem != null && !messageItem.isDelivered()) {
-                        messageItem.markAsDelivered();
-                        MessageManager.getInstance().onChatChanged(
-                                messageItem.getChat().getAccount(),
-                                messageItem.getChat().getUser(), false);
-                    }
-                } else if (packetExtension instanceof Request) {
+                if (packetExtension instanceof DeliveryReceiptRequest) {
                     String id = message.getPacketID();
                     if (id == null)
                         continue;
                     Message receipt = new Message(user);
-                    receipt.addExtension(new Received(id));
+                    receipt.addExtension(new DeliveryReceipt(id));
+                    // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
                     try {
                         ConnectionManager.getInstance().sendStanza(account,
@@ -154,4 +144,20 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener {
         sent.clear(account);
     }
 
+    @Override
+    public void onReceiptReceived(String fromJid, String toJid, String receiptId, Stanza stanza) {
+        DeliveryReceipt receipt = stanza.getExtension(DeliveryReceipt.ELEMENT, DeliveryReceipt.NAMESPACE);
+
+        if (receipt == null) {
+            return;
+        }
+
+        final MessageItem messageItem = sent.remove(toJid, receipt.getId());
+        if (messageItem != null && !messageItem.isDelivered()) {
+            messageItem.markAsDelivered();
+            MessageManager.getInstance().onChatChanged(
+                    messageItem.getChat().getAccount(),
+                    messageItem.getChat().getUser(), false);
+        }
+    }
 }

@@ -49,10 +49,22 @@ public abstract class IQ extends org.jivesoftware.smack.packet.IQ implements Con
 
     @Override
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(IQChildElementXmlStringBuilder xml) {
-        // TODO ?
-//        LogManager.i(this, "getIQChildElementBuilder");
+        String s = SerializerUtils.toXml(this);
+        LogManager.i("IQ", s);
 
-        xml.append(SerializerUtils.toXml(this));
+        String emptyElement = "<" + getElementName() + " xmlns=\"" + getNamespace() + "\" />";
+
+        if (!s.contains(emptyElement)) {
+            s = s.replace("<" + getElementName(), "");
+            s = s.replace("xmlns=\"" + getNamespace() + "\"", "");
+            s = s.replace("</" + getElementName() + ">", "");
+        } else {
+            s = s.replace(emptyElement, ">");
+        }
+
+        LogManager.i("IQ replaced", s);
+
+        xml.append(s);
         return xml;
     }
 

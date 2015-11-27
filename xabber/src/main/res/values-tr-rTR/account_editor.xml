@@ -27,7 +27,7 @@
   <string name="account_compression_summary">Veri sıkıştırma için seçin</string>
   <string name="account_custom">Özel sunucu</string>
   <string name="account_custom_summary">SRV kaydı yerine özel sunucu ayarlarını kullan</string>
-  <string name="account_enabled_summary">Hesabı aktifleştirmek için seçin</string>
+  <string name="account_enabled_summary">Hesabı aktifleştir</string>
   <string name="account_invalid_port">Port bir numara olmalı (ön tanımlı: 5222)</string>
   <string name="account_invalid_port_range">Bağlantı noktası 1 ile 65535 arasında olmalıdır (varsayılan: 5222)</string>
   <string name="account_invalid_priority">Öncelik değeri, -128 ile 128 arasında bir numara olmalı. (ön tanımlı: 10)</string>

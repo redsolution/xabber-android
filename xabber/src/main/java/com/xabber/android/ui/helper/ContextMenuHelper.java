@@ -31,6 +31,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -38,19 +39,19 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.AccountViewer;
-import com.xabber.android.ui.ChatViewer;
-import com.xabber.android.ui.ConferenceAdd;
-import com.xabber.android.ui.ContactAdd;
-import com.xabber.android.ui.ContactEditor;
-import com.xabber.android.ui.GroupEditor;
-import com.xabber.android.ui.StatusEditor;
+import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ContactAdd;
+import com.xabber.android.ui.activity.ContactEditor;
+import com.xabber.android.ui.activity.GroupEditor;
+import com.xabber.android.ui.activity.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupDeleteDialogFragment;
 import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.MUCDeleteDialogFragment;
-import com.xabber.android.ui.preferences.AccountEditor;
 
 /**
  * Helper class for context menu creation.
@@ -144,6 +145,15 @@ public class ContextMenuHelper {
 
                 });
 
+        menu.findItem(R.id.action_block_contact).setOnMenuItemClickListener(
+                new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        BlockContactDialog.newInstance(account, user).show(activity.getFragmentManager(), BlockContactDialog.class.getName());
+                        return true;
+            }
+        });
+
         menu.findItem(R.id.action_close_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
 
@@ -224,6 +234,11 @@ public class ContextMenuHelper {
             if (!MessageManager.getInstance().hasActiveChat(account, user)) {
                 menu.findItem(R.id.action_close_chat).setVisible(false);
             }
+
+            if (!BlockingManager.getInstance().isSupported(account)
+                    && !MUCManager.getInstance().isMucPrivateChat(account, user)) {
+                menu.findItem(R.id.action_block_contact).setVisible(false);
+            }
             if (abstractContact.getStatusMode() != StatusMode.unsubscribed) {
                 menu.findItem(R.id.action_request_subscription).setVisible(false);
             }
@@ -232,6 +247,7 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_contact_info).setVisible(false);
             menu.findItem(R.id.action_edit_contact_groups).setVisible(false);
             menu.findItem(R.id.action_delete_contact).setVisible(false);
+            menu.findItem(R.id.action_block_contact).setVisible(false);
             menu.findItem(R.id.action_close_chat).setVisible(false);
             menu.findItem(R.id.action_request_subscription).setVisible(false);
 
@@ -322,14 +338,14 @@ public class ContextMenuHelper {
         }
 
         menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditor.createIntent(activity, account));
-        menu.findItem(R.id.action_edit_account).setIntent(AccountEditor.createIntent(activity, account));
+        menu.findItem(R.id.action_edit_account).setIntent(AccountViewer.createAccountPreferencesIntent(activity, account));
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountViewer.createIntent(activity, account));
+                            activity.startActivity(AccountViewer.createAccountInfoIntent(activity, account));
                             return true;
                         }
                     });

@@ -92,5 +92,9 @@
     <string name="file_saved_successfully">File saved successfully</string>
     <string name="received_by">Received by %s</string>
     <string name="could_not_get_path_to_file">Could not get path to file</string>
+    <string name="message_open_private_chat">Open private chat</string>
+    <string name="http_file_upload_slot_error">Could not upload file. Too large?</string>
+    <string name="no_permission_to_read_files">No permission to read files</string>
+    <string name="no_permission_to_write_files">No permission to write files</string>
 
 </resources>

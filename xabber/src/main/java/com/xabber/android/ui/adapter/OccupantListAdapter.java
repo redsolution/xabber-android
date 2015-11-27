@@ -15,6 +15,7 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -25,7 +26,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
-import com.xabber.android.ui.OccupantList;
+import com.xabber.android.ui.activity.ContactViewer;
+import com.xabber.android.ui.activity.OccupantList;
 import com.xabber.xmpp.muc.Role;
 
 import java.util.ArrayList;
@@ -86,6 +88,16 @@ public class OccupantListAdapter extends BaseAdapter implements
         }
         final Occupant occupant = (Occupant) getItem(position);
         final ImageView avatarView = (ImageView) view.findViewById(R.id.avatar);
+        avatarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = ContactViewer.createIntent(activity, account, room + "/" + occupant.getNickname());
+                activity.startActivity(intent);
+            }
+        });
+
+
         final ImageView affilationView = (ImageView) view
                 .findViewById(R.id.affilation);
         final TextView nameView = (TextView) view.findViewById(R.id.name);

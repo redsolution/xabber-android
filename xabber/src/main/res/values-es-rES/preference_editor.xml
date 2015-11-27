@@ -78,6 +78,7 @@
   <string name="connection_load_vcard">Cargar vCard\nCargar y actualizar la información personal y el avatar del contacto. Desactivar para reducir el uso de red.</string>
   <string name="connection_load_images">Cargar imágenes\nCargar imágenes automáticamente desde el enlace del archivo. Deshabilitar para reducir el uso de tráfico de datos.</string>
   <string name="connection_use_carbons">Modo de copiado Carbon\n¡Puede ser inestable! Compartirá las sesiones de una misma cuenta con este cliente. Deshabilitar para reducir el uso de tráfico de datos.</string>
+  <string name="connection_use_plain_text_auth">Autentificación en texto plano\nUsa una autentificación de texto plano para todas las cuentas. No recomendado.</string>
   <string name="events_phrases">Frases clave\nPersonalizar sonidos de notificaciones para mensajes que contienen determinadas frases</string>
   <string name="security_clear_certificate_warning">¿Realmente quieres eliminar todos los certificados ignorados?</string>
   <string name="debug_connection_errors_title">Mostrar errores de conexión\nVer problemas de conexión con \"pop-us\"</string>

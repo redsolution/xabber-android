@@ -14,7 +14,6 @@
  */
 package com.xabber.android.ui.preferences;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -28,12 +27,10 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.activity.ManagedListActivity;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
-import com.xabber.android.ui.dialog.ConfirmDialogBuilder;
-import com.xabber.android.ui.dialog.ConfirmDialogListener;
-import com.xabber.android.ui.dialog.DialogBuilder;
+import com.xabber.android.ui.dialog.ConfirmDialog;
 import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.ui.helper.ManagedListActivity;
 
 /**
  * Provide possibility to add, edit and delete list items.
@@ -42,12 +39,11 @@ import com.xabber.android.ui.helper.ManagedListActivity;
  * @author alexander.ivanov
  */
 public abstract class BaseListEditor<T> extends ManagedListActivity implements
-        AdapterView.OnItemClickListener, ConfirmDialogListener {
+        AdapterView.OnItemClickListener, ConfirmDialog.Listener {
 
     private static final String SAVED_ACTION_WITH = "com.xabber.android.ui.BaseListActivity.SAVED_ACTION_WITH";
 
     private static final int CONTEXT_MENU_DELETE_ID = 0x10;
-    private static final int DIALOG_DELETE_ID = 0x100;
     protected BaseListEditorAdapter<T> adapter;
     private T actionWith;
     private BarPainter barPainter;
@@ -154,21 +150,10 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
         if (super.onContextItemSelected(item))
             return true;
         if (item.getItemId() == CONTEXT_MENU_DELETE_ID) {
-            showDialog(DIALOG_DELETE_ID);
+            ConfirmDialog.newInstance(getRemoveConfirmation(actionWith)).show(getFragmentManager(), ConfirmDialog.class.getName());
             return true;
         }
         return false;
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog = super.onCreateDialog(id);
-        if (dialog != null)
-            return dialog;
-        if (id == DIALOG_DELETE_ID)
-            return new ConfirmDialogBuilder(this, DIALOG_DELETE_ID, this)
-                    .setMessage(getRemoveConfirmation(actionWith)).create();
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -183,21 +168,8 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
     }
 
     @Override
-    public void onAccept(DialogBuilder dialogBuilder) {
-        switch (dialogBuilder.getDialogId()) {
-            case DIALOG_DELETE_ID:
-                removeItem(actionWith);
-                adapter.onChange();
-                break;
-        }
+    public void onConfirm() {
+        removeItem(actionWith);
+        adapter.onChange();
     }
-
-    @Override
-    public void onDecline(DialogBuilder dialogBuilder) {
-    }
-
-    @Override
-    public void onCancel(DialogBuilder dialogBuilder) {
-    }
-
 }

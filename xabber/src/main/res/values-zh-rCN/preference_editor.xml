@@ -65,6 +65,7 @@
   <string name="events_message_none">不通知</string>
   <string name="events_show_text">在通知中显示消息\n在通知区域显示消息文本</string>
   <string name="events_visible_chat">在当前聊天中通知\n对当前聊天中收到的消息通知</string>
+  <string name="events_suppress_100">抑制一些状态消息\n不要获取“这个房间不是匿名的”消息</string>
   <string name="negative_priotiry_summary">%s（你将不会收到任何消息）</string>
   <string name="preference_accounts">XMPP账户\n管理账户</string>
   <string name="preference_security">安全\n安全设置</string>
@@ -75,7 +76,9 @@
   <string name="chats_attention">注意\n响应收到的注意请求</string>
   <string name="chats_attention_sound">注意声音\n选择铃声</string>
   <string name="connection_load_vcard">加载vCard\n加载和更新联系人的个人信息和头像，禁用以减少流量</string>
+  <string name="connection_load_images">加载图像\n自动从文件URL加载图像。禁用以降低带宽使用率。</string>
   <string name="connection_use_carbons">复写模式\n可能不稳定！将为此客户端上的相同账户共享会话，禁用以减少流量使用。</string>
   <string name="events_phrases">关键短语\n通知某些包含预设短语的消息并选择声音</string>
   <string name="security_clear_certificate_warning">你确实要删除所有忽略的证书吗？</string>
+  <string name="debug_connection_errors_title">显示连接错误\n显示连接异常弹出消息</string>
 </resources>

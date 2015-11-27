@@ -58,4 +58,9 @@
   <string name="take_photo">Фотографиши</string>
   <string name="remove_avatar">Уклони аватар</string>
   <string name="change">Промени</string>
+  <string name="could_not_get_room_info">Не могу да добијем податке о конференцији</string>
+  <string name="conference_name">Назив</string>
+  <string name="conference_description">Опис</string>
+  <string name="conference_subject">Тема</string>
+  <string name="message_info_occupants_number">Присутно: %d</string>
 </resources>

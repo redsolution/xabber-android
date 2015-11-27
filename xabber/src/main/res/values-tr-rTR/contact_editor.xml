@@ -14,4 +14,9 @@
   <string name="add_new_group">Yeni grup ekle&#8230;</string>
   <string name="accept_contact">Yetkilendir</string>
   <string name="decline_contact">Vazgeç</string>
+  <string name="processing_image">Görüntü İşleniyor...</string>
+  <string name="error_during_crop">Görüntü kırpma sırasında hata oluştu</string>
+  <string name="error_during_image_processing">Görüntü işleme sırasında hata oluştu</string>
+  <string name="account_settings">Hesap ayarları</string>
+  <string name="account_user_info">Hesap bilgisi</string>
 </resources>

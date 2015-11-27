@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 public class ContactListSettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {

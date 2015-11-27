@@ -45,7 +45,7 @@
     <!-- Nav drawer -->
     <fragment
         android:id="@+id/fragment_drawer"
-        android:name="com.xabber.android.ui.ContactListDrawerFragment"
+        android:name="com.xabber.android.ui.fragment.ContactListDrawerFragment"
         android:layout_width="304dp"
         android:layout_height="match_parent"
         android:layout_gravity="left|start" />

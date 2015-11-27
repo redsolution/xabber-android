@@ -1,12 +1,13 @@
 package com.xabber.android.ui.adapter;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 
-class ContactListItemViewHolder {
+class ContactListItemViewHolder extends RecyclerView.ViewHolder {
 
     final ImageView color;
     final ImageView avatar;
@@ -19,8 +20,11 @@ class ContactListItemViewHolder {
     final View statusIconSeparator;
     final ImageView statusIcon;
     final ImageView offlineShadow;
+    final ImageView mucIndicator;
 
     public ContactListItemViewHolder(View view) {
+        super(view);
+
         color = (ImageView) view.findViewById(R.id.account_color_indicator);
         avatar = (ImageView) view.findViewById(R.id.avatar);
         name = (TextView) view.findViewById(R.id.contact_list_item_name);
@@ -32,5 +36,6 @@ class ContactListItemViewHolder {
         statusIconSeparator = view.findViewById(R.id.status_icon_separator);
         statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
+        mucIndicator = (ImageView) view.findViewById(R.id.contact_list_item_muc_indicator);
     }
 }

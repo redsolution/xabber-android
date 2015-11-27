@@ -17,6 +17,8 @@
   <string name="message_quote">引用</string>
   <string name="message_remove">从历史中移除</string>
   <string name="message_repeat">重试发送</string>
+  <string name="message_open_file">打开</string>
+  <string name="message_save_file">保存</string>
   <string name="save_history">保存本地历史\n在本地保存消息历史</string>
   <string name="show_history">显示历史</string>
   <string name="action_attention_called">已发送注意</string>
@@ -80,4 +82,13 @@
   <string name="chat_events_show_text_global">使用全局设置</string>
   <string name="chat_events_show_text_always">显示消息文本</string>
   <string name="chat_events_show_text_never">隐藏消息文本</string>
+  <string name="sending_file">正在发送文件 %s</string>
+  <string name="error_sending_file">发送文件错误 %s</string>
+  <string name="no_application_to_open_file">没有找到可打开此文件的应用程序</string>
+  <string name="could_not_save_file">无法保存文件</string>
+  <string name="file_saved_successfully">已成功保存文件</string>
+  <string name="received_by">已接收 %s</string>
+  <string name="could_not_get_path_to_file">无法获取文件路径</string>
+  <string name="message_open_private_chat">打开私人聊天</string>
+  <string name="http_file_upload_slot_error">不能上传文件。太大吗？</string>
 </resources>

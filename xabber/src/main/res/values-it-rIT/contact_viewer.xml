@@ -48,7 +48,7 @@
   <string name="please_wait">Attendere prego&#8230;</string>
   <string name="unknown">Sconosciuto</string>
   <string name="edit_alias">Modifica alias</string>
-  <string name="edit_contact_groups">Modifica gruppo</string>
+  <string name="edit_contact_groups">Modifica gruppi</string>
   <string name="remove_contact">Rimuovi contatto</string>
   <string name="edit_account_user_info">Modifica informazioni utente</string>
   <string name="account_user_info_save_success">Salvataggio delle informazioni utente dell\'account riuscito</string>
@@ -58,4 +58,9 @@
   <string name="take_photo">Scatta una foto</string>
   <string name="remove_avatar">Rimuovi avatar</string>
   <string name="change">Cambia</string>
+  <string name="could_not_get_room_info">Non è stato possibile ricevere informazioni sulla conferenza</string>
+  <string name="conference_name">Nome</string>
+  <string name="conference_description">Descrizione</string>
+  <string name="conference_subject">Oggetto</string>
+  <string name="message_info_occupants_number">Partecipanti: %d</string>
 </resources>

@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.ui.AccountAdd;
+import com.xabber.android.ui.activity.AccountAdd;
 
 /**
  * Authenticator used for contact list integration.

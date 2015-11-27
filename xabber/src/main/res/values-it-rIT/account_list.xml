@@ -7,10 +7,10 @@
   <string name="account_delete">Cancella account</string>
   <string name="account_editor">Modifica account</string>
   <string name="account_state_registration">Registrazione in corso</string>
-  <string name="account_state_authentication">Autenticazione</string>
-  <string name="account_state_connected">In linea</string>
+  <string name="account_state_authentication">Autorizzazione</string>
+  <string name="account_state_connected">Online</string>
   <string name="account_state_connecting">Connessione</string>
   <string name="account_state_disconnecting">Disconnessione</string>
-  <string name="account_state_offline">Non in linea</string>
+  <string name="account_state_offline">Offline</string>
   <string name="account_state_waiting">In attesa di riconnessione</string>
 </resources>

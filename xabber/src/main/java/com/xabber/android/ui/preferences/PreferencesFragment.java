@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.helper.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 public class PreferencesFragment extends android.preference.PreferenceFragment {
 

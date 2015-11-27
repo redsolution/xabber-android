@@ -51,11 +51,16 @@
   <string name="edit_contact_groups">Gruppen bearbeiten</string>
   <string name="remove_contact">Kontakt löschen</string>
   <string name="edit_account_user_info">Benutzer Info bearbeiten</string>
-  <string name="account_user_info_save_success">Kontobenutzerinfo erfolgreich gespeichert</string>
-  <string name="account_user_info_save_fail">Kontobenutzerinfo konnte nicht gespeichert werden</string>
+  <string name="account_user_info_save_success">Kontobenutzerinformationen erfolgreich gespeichert</string>
+  <string name="account_user_info_save_fail">Kontobenutzerinformationen konnte nicht gespeichert werden</string>
   <string name="saving">Speichert&#8230;</string>
   <string name="choose_from_gallery">Aus Galerie wählen</string>
   <string name="take_photo">Foto aufnehmen</string>
   <string name="remove_avatar">Avatar entfernen</string>
   <string name="change">Ändern</string>
+  <string name="could_not_get_room_info">Konferenzinformationen konnten nicht abgerufen werden</string>
+  <string name="conference_name">Name</string>
+  <string name="conference_description">Beschreibung</string>
+  <string name="conference_subject">Betreff</string>
+  <string name="message_info_occupants_number">Insassen: %d</string>
 </resources>

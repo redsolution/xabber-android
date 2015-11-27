@@ -9,9 +9,8 @@ import android.view.ViewGroup;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.ui.ChatViewerFragment;
-import com.xabber.android.ui.RecentChatFragment;
-import com.xabber.xmpp.address.Jid;
+import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.ui.fragment.RecentChatFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
         this.finishUpdateListener = finishUpdateListener;
 
         activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), Jid.getBareAddress(chat.getUser()));
+        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
 
         updateChats();
     }

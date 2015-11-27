@@ -27,7 +27,7 @@
   <string name="account_compression_summary">Zaškrtnite pre povolenie kompresie dát</string>
   <string name="account_custom">Vlastný hostiteľ</string>
   <string name="account_custom_summary">Použiť nastavenie vlastného hostiteľa namiesto SRV záznamu</string>
-  <string name="account_enabled_summary">Zaznačte pre povolenie účtu</string>
+  <string name="account_enabled_summary">Prepnúť pre povolenie účtu</string>
   <string name="account_invalid_port">Port musí byť číslo (predvolené: 5222)</string>
   <string name="account_invalid_port_range">Port musí byť v rozsahu medzi 1 a 65535 (predvolené: 5222)</string>
   <string name="account_invalid_priority">Hodnota priority musí byť v intervale od -128 do 128 (predvolené: 0)</string>
@@ -60,6 +60,7 @@
   <string name="INCORRECT_USER_NAME">Chybné užívateľské meno. Pozrite pomocný text dole pre detaily.</string>
   <string name="orbot_required_message">Aby ste mohli používať TOR musíte mať nainštalovaný Orbot a cez neho aktivovaný proxy prenos. Chceli by ste ho nainštalovať z Google Play?</string>
   <string name="orbot_required_title">Nainštalovať Orbot?</string>
+  <string name="install_orbot">Nainštalovať Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Nepodarilo sa zaregistrovať účet na serveri.</string>
   <string name="account_color">Farba účtu</string>
   <string name="account_color_name_green">Zelená</string>

@@ -14,8 +14,8 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ChatViewer;
-import com.xabber.android.ui.ContactList;
+import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
 
@@ -95,7 +95,7 @@ public class MessageNotificationCreator {
     }
 
     private String getContactName(MessageNotification message) {
-        return RosterManager.getInstance().getName(message.getAccount(), message.getUser());
+        return RosterManager.getInstance().getBestContact(message.getAccount(), message.getUser()).getName();
     }
 
     private CharSequence getMultiContactTitle(int messageCount) {

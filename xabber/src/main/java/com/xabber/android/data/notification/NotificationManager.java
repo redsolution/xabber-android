@@ -44,9 +44,9 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ClearNotifications;
-import com.xabber.android.ui.ContactList;
-import com.xabber.android.ui.ReconnectionActivity;
+import com.xabber.android.ui.activity.ClearNotifications;
+import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ReconnectionActivity;
 import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.StringUtils;
 

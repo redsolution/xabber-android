@@ -58,4 +58,8 @@
   <string name="take_photo">Vyfotit</string>
   <string name="remove_avatar">Odstranit avatara</string>
   <string name="change">Změnit</string>
+  <string name="could_not_get_room_info">Nelze získat informace o konferenci</string>
+  <string name="conference_name">Jméno</string>
+  <string name="conference_description">Popis</string>
+  <string name="conference_subject">Předmět</string>
 </resources>

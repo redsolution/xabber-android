@@ -5,7 +5,7 @@
   <string name="otr_is_verified">Ce contact est digne de confiance</string>
   <string name="otr_local_fingerprint">Votre empreinte :</string>
   <string name="otr_remote_fingerprint">L\'empreinte de votre interlocuteur :</string>
-  <string name="otr_scan_fingerprint">Capter le code carré de votre interlocuteur</string>
-  <string name="otr_show_fingerprint">Afficher le code carré de votre empreinte</string>
+  <string name="otr_scan_fingerprint">Scanner le code QR de votre interlocuteur</string>
+  <string name="otr_show_fingerprint">Afficher le code QR de votre empreinte</string>
   <string name="otr_copy_fingerprint">Copier votre empreinte dans le presse-papier</string>
 </resources>

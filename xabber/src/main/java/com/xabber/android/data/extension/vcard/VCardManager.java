@@ -286,8 +286,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     private void requestVCard(final String account, final String srcUser) {
         final String userBareJid = srcUser;
 
-        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
-        if (connectionThread == null) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        ConnectionThread connectionThread = accountItem.getConnectionThread();
+
+        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
             onVCardFailed(account, userBareJid);
             return;
         }

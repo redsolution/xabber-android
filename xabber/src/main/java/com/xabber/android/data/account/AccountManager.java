@@ -17,6 +17,7 @@ package com.xabber.android.data.account;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -374,7 +375,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
         }
         if ("".equals(resource)) {
-            resource = "android" + StringUtils.randomString(8);
+            resource = generateResource();
         }
 
         if (accountType.getId() == R.array.account_type_xmpp) {
@@ -395,7 +396,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             if (getAccount(userName + '@' + serverName + '/' + resource) == null) {
                 break;
             }
-            resource = "android" + StringUtils.randomString(8);
+            resource = generateResource();
         }
 
 
@@ -422,6 +423,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             SettingsManager.enableContactsShowAccount();
         }
         return accountItem.getAccount();
+    }
+
+    @NonNull
+    private String generateResource() {
+        return application.getString(R.string.account_resource_default) + "_" + StringUtils.randomString(8);
     }
 
     /**
@@ -674,6 +680,35 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 connectionSettings.getProxyPassword(),
                 accountItem.isSyncable(),
                 archiveMode,
+                accountItem.getColorIndex()
+        );
+    }
+
+    public void setEnabled(String account, boolean enabled) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
+        AccountManager.getInstance().updateAccount(
+                account,
+                connectionSettings.isCustomHostAndPort(),
+                connectionSettings.getHost(),
+                connectionSettings.getPort(),
+                connectionSettings.getServerName(),
+                connectionSettings.getUserName(),
+                accountItem.isStorePassword(),
+                connectionSettings.getPassword(),
+                connectionSettings.getResource(),
+                accountItem.getPriority(),
+                enabled,
+                connectionSettings.isSaslEnabled(),
+                connectionSettings.getTlsMode(),
+                connectionSettings.useCompression(),
+                connectionSettings.getProxyType(),
+                connectionSettings.getProxyHost(),
+                connectionSettings.getProxyPort(),
+                connectionSettings.getProxyUser(),
+                connectionSettings.getProxyPassword(),
+                accountItem.isSyncable(),
+                accountItem.getArchiveMode(),
                 accountItem.getColorIndex()
         );
     }

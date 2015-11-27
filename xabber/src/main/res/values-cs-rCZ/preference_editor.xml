@@ -76,7 +76,9 @@
   <string name="chats_attention">Upozornění\nReagovat na příchozí požadavky na upozornění</string>
   <string name="chats_attention_sound">Zvuk upozornění\nVyberte tón pro upozornění</string>
   <string name="connection_load_vcard">Načítat vizitky\nStahuje a aktualizuje informace o kontaktech včetně avatarů. Zakažte pro snížení datových přenosů.</string>
+  <string name="connection_load_images">Načítání obrázku\nAutomaticky načítat obrázky z URL. Zakázat pro snížení přenášených dat.</string>
   <string name="connection_use_carbons">Carbon-copied mód\nMůže způsobovat problémy! Umožňuje přijímat zprávy ve více klientech současně. Musí být podpora i na serveru.</string>
+  <string name="connection_use_plain_text_auth">Autentizace prostým textem\nAutentizovat prostým textem pro všechny účty. Nedoporučuje se.</string>
   <string name="events_phrases">Notifikace dle klíčového slova\nVytvoří Vaši vlastní notifikaci, na základě specifické fráze v příchozí zprávě</string>
   <string name="security_clear_certificate_warning">Opravdu chcete odstranit všechny ignorované certifikáty?</string>
   <string name="debug_connection_errors_title">Ukázat chyby připojení\nZobrazovat výjimky připojení ve vyskakovacích oknech</string>

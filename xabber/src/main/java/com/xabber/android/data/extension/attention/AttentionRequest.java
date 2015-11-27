@@ -21,7 +21,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.ChatViewer;
+import com.xabber.android.ui.activity.ChatViewer;
 
 public class AttentionRequest extends BaseEntity implements
         EntityNotificationItem {

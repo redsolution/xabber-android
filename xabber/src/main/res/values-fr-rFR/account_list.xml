@@ -6,7 +6,7 @@
   <string name="account_register">Créer un nouveau compte</string>
   <string name="account_delete">Supprimer le compte</string>
   <string name="account_editor">Modifier le compte</string>
-  <string name="account_state_registration">En cours de création</string>
+  <string name="account_state_registration">Création en cours</string>
   <string name="account_state_authentication">Autorisation en cours</string>
   <string name="account_state_connected">En ligne</string>
   <string name="account_state_connecting">Connexion en cours</string>

@@ -28,7 +28,6 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_compression_summary">Markera för att aktivera datakomprimering</string>
   <string name="account_custom">Anpassat värdnamn</string>
   <string name="account_custom_summary">Ange anpassat värdnamn istället för SRV-poster</string>
-  <string name="account_enabled_summary">Markera för att aktivera kontot</string>
   <string name="account_invalid_port">Port måste anges som en siffra (default: 5222)</string>
   <string name="account_invalid_port_range">Port måste vara mellan 1 och 65535 (standard: 5222)</string>
   <string name="account_invalid_priority">Prioritet måste anges som en siffra mellan -128 och 128 (default: 10)</string>

@@ -26,7 +26,7 @@
     <string name="account_compression_summary">Check to enable data compression</string>
     <string name="account_custom">Custom host</string>
     <string name="account_custom_summary">Use custom host settings instead of SRV record</string>
-    <string name="account_enabled_summary">Check to enable account</string>
+    <string name="account_enabled_summary">Switch to enable account</string>
     <string name="account_invalid_port">Port must be a number (default: 5222)</string>
     <string name="account_invalid_port_range">Port must be between 1 and 65535 (default: 5222)</string>
     <string name="account_invalid_priority">Priority value must be a number between -128 and 128 (default: 0)</string>
@@ -59,6 +59,7 @@
     <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
+    <string name="install_orbot">Install Orbot</string>
     <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
 
     <string name="account_color">Account color</string>

@@ -26,7 +26,9 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.capability.ClientSoftware;
+import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.xmpp.address.Jid;
 
 /**
  * Basic contact representation.
@@ -46,8 +48,22 @@ public class AbstractContact extends BaseEntity {
      */
     public String getName() {
         String vCardName = VCardManager.getInstance().getName(user);
+
+        if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
+            String name;
+
+            if (!"".equals(vCardName)) {
+                name = vCardName;
+            } else {
+                name = Jid.getResource(user);
+            }
+
+            return String.format("%s (%s)", name, Jid.getBareAddress(user));
+        }
+
         if (!"".equals(vCardName))
             return vCardName;
+
         return user;
     }
 

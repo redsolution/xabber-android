@@ -23,4 +23,9 @@
         android:visible="false"
         />
 
+    <item android:id="@+id/action_message_open_muc_private_chat"
+        android:title="@string/message_open_private_chat"
+        android:visible="false"
+        />
+
 </menu>

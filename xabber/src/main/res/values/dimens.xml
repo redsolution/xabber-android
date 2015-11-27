@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="toolbar_height">138dp</dimen>
+    <dimen name="collapsing_toolbar_height">192dp</dimen>
     <dimen name="contact_title_padding_left">10dp</dimen>
-    <dimen name="contact_title_padding_right">10dp</dimen>
+    <dimen name="contact_title_padding_right">16dp</dimen>
+    <dimen name="contact_title_padding_bottom">10dp</dimen>
 
-    <dimen name="contact_title_padding_bottom_small">2dp</dimen>
-    <dimen name="contact_title_padding_bottom_big">10dp</dimen>
     <dimen name="avatar_large_size">72dp</dimen>
     <dimen name="avatar_normal_size">48dp</dimen>
     <dimen name="avatar_radius">56dp</dimen>

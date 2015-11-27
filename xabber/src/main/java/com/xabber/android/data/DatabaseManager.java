@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+
 /**
  * Helps to open, create, and upgrade the database file.
  * <p/>
@@ -38,7 +41,9 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         OnLoadListener, OnClearListener {
 
     private static final String DATABASE_NAME = "xabber.db";
+    private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 68;
+    private static final int REALM_DATABASE_VERSION = 1;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -54,6 +59,16 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<DatabaseTable>();
+
+        configureRealm();
+    }
+
+    private void configureRealm() {
+        RealmConfiguration config = new RealmConfiguration.Builder(Application.getInstance())
+                .name(REALM_DATABASE_NAME)
+                .schemaVersion(REALM_DATABASE_VERSION)
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 
     public static DatabaseManager getInstance() {

@@ -27,7 +27,6 @@
   <string name="account_compression_summary">Пазначце, каб уключыць сцісканьне дадзеных</string>
   <string name="account_custom">Увесь хост уручную</string>
   <string name="account_custom_summary">Выкарыстоўваць наладкі адмысловага хаста замест SRV запісу</string>
-  <string name="account_enabled_summary">Пазначце, каб актываваць рахунак</string>
   <string name="account_invalid_port">Порт мусіць быць лічбай (па-змоўчаньні: 5222)</string>
   <string name="account_invalid_port_range">Порт мусіць быць лічбай паміж 1 ды 65535 (значэньне па-змоўчаньні: 5222)</string>
   <string name="account_invalid_priority">Прыярытэт мусіць быць лічбай дыяпазону паміж -128 і 128 (па-змоўчаньні: 10)</string>

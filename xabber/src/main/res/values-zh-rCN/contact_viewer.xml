@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">生日</string>
   <string name="vcard_url">网址</string>
   <string name="vcard_organization">机构</string>
+  <string name="vcard_organization_unit">组织单位</string>
   <string name="vcard_title">职衔</string>
   <string name="vcard_role">角色</string>
   <string name="vcard_other">其他信息</string>
@@ -49,4 +50,17 @@
   <string name="edit_alias">编辑别名</string>
   <string name="edit_contact_groups">编辑分组</string>
   <string name="remove_contact">删除联系人</string>
+  <string name="edit_account_user_info">编辑用户信息</string>
+  <string name="account_user_info_save_success">已成功保存的帐户用户信息</string>
+  <string name="account_user_info_save_fail">不能保存帐户用户信息</string>
+  <string name="saving">正在保存&#8230;</string>
+  <string name="choose_from_gallery">从图库中选择</string>
+  <string name="take_photo">拍照</string>
+  <string name="remove_avatar">删除头像</string>
+  <string name="change">更改</string>
+  <string name="could_not_get_room_info">无法获取会议信息</string>
+  <string name="conference_name">名称</string>
+  <string name="conference_description">描述</string>
+  <string name="conference_subject">主题</string>
+  <string name="message_info_occupants_number">参与者: %d</string>
 </resources>

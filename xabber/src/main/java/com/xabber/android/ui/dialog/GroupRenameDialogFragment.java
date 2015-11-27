@@ -15,8 +15,10 @@
 package com.xabber.android.ui.dialog;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,56 +28,66 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.roster.RosterManager;
 
-public class GroupRenameDialogFragment extends ConfirmDialogFragment {
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 
-    private static final String ACCOUNT = "ACCOUNT";
-    private static final String GROUP = "GROUP";
-    private String group;
+public class GroupRenameDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.GroupRenameDialogFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_GROUP = "com.xabber.android.ui.dialog.GroupRenameDialogFragment.ARGUMENT_GROUP";
+
     private String account;
+    private String group;
+
     private EditText nameView;
 
     /**
      * @param account can be <code>null</code> to be used for all accounts.
      * @param group   can be <code>null</code> to be used for "no group".
-     * @return
      */
     public static DialogFragment newInstance(String account, String group) {
-        return new GroupRenameDialogFragment().putAgrument(ACCOUNT, account)
-                .putAgrument(GROUP, group);
+        GroupRenameDialogFragment fragment = new GroupRenameDialogFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_GROUP, group);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
-    protected Builder getBuilder() {
-        group = getArguments().getString(GROUP);
-        account = getArguments().getString(ACCOUNT);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.group_rename);
-        View layout = getActivity().getLayoutInflater().inflate(
-                R.layout.group_name, null);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        account = args.getString(ARGUMENT_ACCOUNT, null);
+        group = args.getString(ARGUMENT_GROUP, null);
+
+        View layout = getActivity().getLayoutInflater().inflate(R.layout.group_name, null);
         nameView = (EditText) layout.findViewById(R.id.group_name);
         nameView.setText(group == null ? "" : group);
-        builder.setView(layout);
-        return builder;
+
+        return new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.group_rename)
+                .setView(layout)
+                .setPositiveButton(R.string.group_rename, this)
+                .setNegativeButton(android.R.string.cancel, this)
+                .create();
     }
 
     @Override
-    protected boolean onPositiveClick() {
+    public void onClick(DialogInterface dialog, int which) {
+        if (which != Dialog.BUTTON_POSITIVE) {
+            return;
+        }
+
         String newName = nameView.getText().toString();
         if ("".equals(newName)) {
-            Toast.makeText(getActivity(), getString(R.string.group_is_empty),
-                    Toast.LENGTH_LONG).show();
-            return false;
+            Toast.makeText(getActivity(), getString(R.string.group_is_empty), Toast.LENGTH_LONG).show();
+            return;
         }
-        try {
-            if (account == null)
-                RosterManager.getInstance().renameGroup(group, newName);
-            else
-                RosterManager.getInstance()
-                        .renameGroup(account, group, newName);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
+        if (account == null) {
+            RosterManager.getInstance().renameGroup(group, newName);
+        } else {
+            RosterManager.getInstance().renameGroup(account, group, newName);
         }
-        return true;
     }
-
 }

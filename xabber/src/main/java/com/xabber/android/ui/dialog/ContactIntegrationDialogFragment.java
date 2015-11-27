@@ -1,36 +1,38 @@
 package com.xabber.android.ui.dialog;
 
-import android.app.AlertDialog.Builder;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 
-public class ContactIntegrationDialogFragment extends ConfirmDialogFragment {
+public class ContactIntegrationDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     public static DialogFragment newInstance() {
         return new ContactIntegrationDialogFragment();
     }
 
     @Override
-    protected Builder getBuilder() {
-        return new Builder(getActivity())
-                .setMessage(R.string.contact_integration_suggest);
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.contact_integration_suggest)
+                .setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.cancel, this)
+                .setCancelable(false)
+                .create();
     }
 
     @Override
-    protected boolean onPositiveClick() {
+    public void onClick(DialogInterface dialog, int which) {
         SettingsManager.setContactIntegrationSuggested();
-        for (String account : AccountManager.getInstance().getAllAccounts())
-            AccountManager.getInstance().setSyncable(account, true);
-        return true;
-    }
-
-    @Override
-    protected boolean onNegativeClicked() {
-        SettingsManager.setContactIntegrationSuggested();
-        return true;
+        if (which == Dialog.BUTTON_POSITIVE) {
+            for (String account : AccountManager.getInstance().getAllAccounts())
+                AccountManager.getInstance().setSyncable(account, true);
+        }
     }
 
 }

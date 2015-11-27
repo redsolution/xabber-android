@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Требуется ввести пароль</string>
   <string name="pay_attention">Вас окликнули</string>
   <string name="subscription_request_message">Запрос авторизации</string>
+  <string name="conference_private_chat">Личный чат конференции</string>
 </resources>

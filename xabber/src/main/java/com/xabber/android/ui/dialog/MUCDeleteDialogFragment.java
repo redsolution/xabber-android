@@ -1,7 +1,10 @@
 package com.xabber.android.ui.dialog;
 
-import android.app.AlertDialog.Builder;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -10,40 +13,46 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 
-public class MUCDeleteDialogFragment extends ConfirmDialogFragment {
+public class MUCDeleteDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private static final String ACCOUNT = "ACCOUNT";
-    private static final String USER = "USER";
-    private String user;
+    public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.MUCDeleteDialogFragment.ARGUMENT_ACCOUNT";
+    public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.MUCDeleteDialogFragment.ARGUMENT_USER";
+
     private String account;
+    private String user;
 
-    /**
-     * @param account
-     * @param user
-     * @return
-     */
-    public static DialogFragment newInstance(String account, String user) {
-        return new MUCDeleteDialogFragment().putAgrument(ACCOUNT, account)
-                .putAgrument(USER, user);
+    public static MUCDeleteDialogFragment newInstance(String account, String user) {
+        MUCDeleteDialogFragment fragment = new MUCDeleteDialogFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putString(ARGUMENT_USER, user);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
-    protected Builder getBuilder() {
-        user = getArguments().getString(USER);
-        account = getArguments().getString(ACCOUNT);
-        return new Builder(getActivity()).setMessage(getString(
-                R.string.muc_delete_confirm, RosterManager.getInstance()
-                        .getName(account, user), AccountManager.getInstance()
-                        .getVerboseName(account)));
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        account = args.getString(ARGUMENT_ACCOUNT, null);
+        user = args.getString(ARGUMENT_USER, null);
+
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(String.format(getActivity().getString(R.string.muc_delete_confirm),
+                        RosterManager.getInstance().getName(account, user),
+                        AccountManager.getInstance().getVerboseName(account)))
+                .setPositiveButton(R.string.muc_delete, this)
+                .setNegativeButton(android.R.string.cancel, this).create();
     }
 
     @Override
-    protected boolean onPositiveClick() {
+    public void onClick(DialogInterface dialog, int which) {
+        if (which != Dialog.BUTTON_POSITIVE) {
+            return;
+        }
+
         MUCManager.getInstance().removeRoom(account, user);
         MessageManager.getInstance().closeChat(account, user);
-        NotificationManager.getInstance().removeMessageNotification(account,
-                user);
-        return true;
+        NotificationManager.getInstance().removeMessageNotification(account, user);
     }
-
 }

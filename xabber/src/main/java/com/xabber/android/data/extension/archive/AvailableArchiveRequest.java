@@ -21,7 +21,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
-import com.xabber.android.ui.ArchiveRequest;
+import com.xabber.android.ui.activity.ArchiveRequest;
 
 public class AvailableArchiveRequest extends AccountRelated implements
         AccountNotificationItem {

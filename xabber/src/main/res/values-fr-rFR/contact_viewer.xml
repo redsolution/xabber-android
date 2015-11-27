@@ -51,11 +51,16 @@
   <string name="edit_contact_groups">Éditer les groupes</string>
   <string name="remove_contact">Supprimer le contact</string>
   <string name="edit_account_user_info">Éditer mes détails</string>
-  <string name="account_user_info_save_success">Infos de l\'utilisateur sauvegardées avec succès</string>
-  <string name="account_user_info_save_fail">Échec de la sauvegarde des infos de l\'utilisateur</string>
+  <string name="account_user_info_save_success">Détails de l\'utilisateur sauvegardés avec succès</string>
+  <string name="account_user_info_save_fail">Échec de la sauvegarde des détails de l\'utilisateur</string>
   <string name="saving">Sauvegarde en cours&#8230;</string>
   <string name="choose_from_gallery">Choisir dans la galerie</string>
   <string name="take_photo">Prendre une photo</string>
   <string name="remove_avatar">Retirer l\'avatar</string>
   <string name="change">Changer</string>
+  <string name="could_not_get_room_info">Impossible de récupérer les détails du salon</string>
+  <string name="conference_name">Nom</string>
+  <string name="conference_description">Description</string>
+  <string name="conference_subject">Sujet</string>
+  <string name="message_info_occupants_number">Participants : %d</string>
 </resources>

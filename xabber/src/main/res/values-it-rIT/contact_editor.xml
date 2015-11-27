@@ -14,4 +14,9 @@
   <string name="add_new_group">Aggiungi nuovo gruppo&#8230;</string>
   <string name="accept_contact">Autorizza</string>
   <string name="decline_contact">Rifiuta</string>
+  <string name="processing_image">Elaborazione immagine...</string>
+  <string name="error_during_crop">Errore durante il ritaglio dell\'immagine</string>
+  <string name="error_during_image_processing">Errore durante l\'elaborazione dell\'immagine</string>
+  <string name="account_settings">Impostazioni account</string>
+  <string name="account_user_info">Informazioni account</string>
 </resources>
