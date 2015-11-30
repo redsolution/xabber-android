@@ -14,20 +14,40 @@
 -->
 <resources>
 
-    <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
+
+
+        <item name="input_layout_background">@color/white</item>
+        <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="contact_list_active_chat_background">@color/grey_50</item>
+        <item name="contact_list_contact_background">@color/grey_300</item>
+        <item name="contact_list_background">@color/grey_400</item>
+
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
 
+    <style name="Base.ThemeDark" parent="Theme.AppCompat">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
-    <style name="Base.ThemeDark" parent="Theme.AppCompat.NoActionBar">
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
+
+        <!-- for hardware button menu -->
+        <item name="panelBackground">?attr/colorPrimary</item>
+
+        <item name="input_layout_background">@color/black</item>
+        <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
+        <item name="contact_list_active_chat_background">@color/grey_700</item>
+        <item name="contact_list_contact_background">@android:color/transparent</item>
+        <item name="contact_list_background">@android:color/transparent</item>
+
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ContactList">
+        <attr name="input_layout_background" format="reference" />
+        <attr name="toolbar_popup_theme" format="reference" />
+        <attr name="contact_list_active_chat_background" format="reference" />
+        <attr name="contact_list_contact_background" format="reference" />
+        <attr name="contact_list_background" format="reference" />
+    </declare-styleable>
+</resources>

@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/new_status"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?android:attr/textColorPrimary"
                 android:paddingLeft="8dp"
                 android:textStyle="bold" />
 

@@ -29,7 +29,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="8dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:popupTheme="?attr/toolbar_popup_theme"
         >
 
         <include
@@ -58,7 +58,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
+        android:background="?attr/input_layout_background"
         android:elevation="8dp"
         android:orientation="horizontal"
         >

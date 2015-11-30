@@ -34,7 +34,7 @@ public class ContactItemInflater {
         colorGrey = context.getResources().getColor(R.color.grey_600);
 
         TypedValue typedValue = new TypedValue();
-        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorPrimary });
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { android.R.attr.textColorPrimary });
         colorMain = a.getColor(0, 0);
         a.recycle();
 
@@ -113,7 +113,7 @@ public class ContactItemInflater {
 
             statusText = chat.getLastText().trim();
 
-            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_active_chat_background));
+            setBackgroundColor(view, R.attr.contact_list_active_chat_background);
 
             if (!statusText.isEmpty()) {
 
@@ -135,7 +135,7 @@ public class ContactItemInflater {
             }
         } else {
             statusText = contact.getStatusText().trim();
-            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_contact_background));
+            setBackgroundColor(view, R.attr.contact_list_contact_background);
             viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
@@ -149,6 +149,13 @@ public class ContactItemInflater {
 
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
         return view;
+    }
+
+    private void setBackgroundColor(View view, int colorAttribute) {
+        TypedArray a = context.obtainStyledAttributes(new int[] {colorAttribute});
+        int attributeResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        view.setBackgroundColor(context.getResources().getColor(attributeResourceId));
     }
 
     private void onAvatarClick(AbstractContact contact) {
