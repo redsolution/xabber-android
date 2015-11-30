@@ -17,8 +17,10 @@ package com.xabber.android.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,15 +108,27 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         Resources resources = activity.getResources();
 
 
-        accountGroupColors = resources.getIntArray(R.array.account_200);
-        accountSubgroupColors = resources.getIntArray(R.array.account_50);
-        activeChatsColor = resources.getColor(R.color.contact_list_active_chats_group_background);
+        accountGroupColors = resources.getIntArray(getThemeResource(R.attr.contact_list_account_group_background));
+        accountSubgroupColors = resources.getIntArray(getThemeResource(R.attr.contact_list_subgroup_background));
+
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = activity.obtainStyledAttributes(typedValue.data, new int[] { R.attr.contact_list_active_chat_background });
+        activeChatsColor = a.getColor(0, 0);
+        a.recycle();
 
         contactItemInflater = new ContactItemInflater(activity);
 
         accountElevation = activity.getResources().getDimensionPixelSize(R.dimen.account_group_elevation);
 
         this.onClickListener = onClickListener;
+    }
+
+    private int getThemeResource(int themeResourceId) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = activity.obtainStyledAttributes(typedValue.data, new int[] {themeResourceId});
+        final int accountGroupColorsResourceId = a.getResourceId(0, 0);
+        a.recycle();
+        return accountGroupColorsResourceId;
     }
 
     @Override

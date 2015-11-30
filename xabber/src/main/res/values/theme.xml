@@ -28,6 +28,8 @@
         <item name="contact_list_contact_background">@color/grey_300</item>
         <item name="contact_list_background">@color/grey_400</item>
         <item name="recent_chats_background">@color/grey_300</item>
+        <item name="contact_list_account_group_background">@array/account_200</item>
+        <item name="contact_list_subgroup_background">@array/account_50</item>
 
     </style>
 
@@ -49,6 +51,8 @@
         <item name="contact_list_contact_background">@color/grey_600</item>
         <item name="contact_list_background">@color/grey_700</item>
         <item name="recent_chats_background">@color/grey_700</item>
+        <item name="contact_list_account_group_background">@array/account_status_bar</item>
+        <item name="contact_list_subgroup_background">@array/account_action_bar</item>
 
     </style>
 
