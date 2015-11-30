@@ -6,5 +6,6 @@
         <attr name="contact_list_active_chat_background" format="reference" />
         <attr name="contact_list_contact_background" format="reference" />
         <attr name="contact_list_background" format="reference" />
+        <attr name="recent_chats_background" format="reference" />
     </declare-styleable>
 </resources>
