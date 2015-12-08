@@ -30,7 +30,7 @@ public class ContactItemInflater {
 
     public ContactItemInflater(Context context) {
         this.context = context;
-        accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
+        accountMainColors = context.getResources().getIntArray(R.array.account_500);
         colorGrey = context.getResources().getColor(R.color.grey_600);
 
         TypedValue typedValue = new TypedValue();

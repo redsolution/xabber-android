@@ -23,8 +23,8 @@ public class AccountPainter {
 
     public AccountPainter(Context context) {
 
-        accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
-        accountDarkColors = context.getResources().getIntArray(R.array.account_status_bar);
+        accountMainColors = context.getResources().getIntArray(R.array.account_500);
+        accountDarkColors = context.getResources().getIntArray(R.array.account_700);
         accountDarkestColors = context.getResources().getIntArray(R.array.account_900);
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);

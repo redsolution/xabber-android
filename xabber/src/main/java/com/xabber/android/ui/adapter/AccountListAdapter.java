@@ -46,7 +46,7 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
     public AccountListAdapter(Activity activity) {
         super(activity);
 
-        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
+        accountColors = activity.getResources().getIntArray(R.array.account_500);
     }
 
     @Override

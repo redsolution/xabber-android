@@ -9,5 +9,7 @@
         <attr name="recent_chats_background" format="reference" />
         <attr name="contact_list_account_group_background" format="reference" />
         <attr name="contact_list_subgroup_background" format="reference" />
+        <attr name="chat_incoming_balloon" format="reference" />
+        <attr name="chat_incoming_balloon_pressed" format="reference" />
     </declare-styleable>
 </resources>

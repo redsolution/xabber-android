@@ -111,7 +111,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars_icons, R.array.default_avatars_colors);
         roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars, R.array.default_avatars_colors);
 
-        accountColors = application.getResources().getIntArray(R.array.account_action_bar);
+        accountColors = application.getResources().getIntArray(R.array.account_500);
 
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();

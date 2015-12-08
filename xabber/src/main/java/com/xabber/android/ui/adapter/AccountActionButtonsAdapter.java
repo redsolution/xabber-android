@@ -50,9 +50,9 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
         Resources resources = activity.getResources();
 
-        accountActionBarColors = resources.getIntArray(R.array.account_action_bar);
-        accountStatusBarColors = resources.getIntArray(R.array.account_status_bar);
-        accountBackgroundColors = resources.getIntArray(R.array.account_background);
+        accountActionBarColors = resources.getIntArray(R.array.account_500);
+        accountStatusBarColors = resources.getIntArray(R.array.account_700);
+        accountBackgroundColors = resources.getIntArray(R.array.account_100);
     }
 
     /**

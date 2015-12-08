@@ -659,6 +659,9 @@ public class SettingsManager implements OnInitializedListener,
         } else if (key.equals(Application.getInstance().getString(
                 R.string.security_otr_mode_key))) {
             OTRManager.getInstance().onSettingsChanged();
+        } else if (key.equals(Application.getInstance().getString(
+                R.string.interface_theme_key))) {
+            ColorManager.getInstance().onSettingsChanged();
         }
     }
 
