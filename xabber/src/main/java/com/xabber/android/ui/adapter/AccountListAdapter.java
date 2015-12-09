@@ -16,11 +16,11 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -67,7 +67,7 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
         ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
-        Switch accountSwitch = (Switch) view.findViewById(R.id.account_switch);
+        SwitchCompat accountSwitch = (SwitchCompat) view.findViewById(R.id.account_switch);
 
         final AccountItem accountItem = accountManager.getAccount(account);
 
