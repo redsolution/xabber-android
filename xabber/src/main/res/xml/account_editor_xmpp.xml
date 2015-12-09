@@ -14,7 +14,8 @@
 -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
+    <CheckBoxPreference
+        android:widgetLayout="@layout/preference_switch_layout"
         android:title="@string/account_enabled"
         android:summary="@string/account_enabled_summary"
         android:key="@string/account_enabled_key"
