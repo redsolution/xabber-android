@@ -25,14 +25,27 @@
         <item name="input_layout_background">@color/white</item>
         <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
 
-        <item name="contact_list_active_chat_background">@color/grey_50</item>
-        <item name="contact_list_contact_background">@color/grey_300</item>
-        <item name="contact_list_background">@color/grey_400</item>
-        <item name="contact_list_account_group_background">@array/account_200</item>
-        <item name="contact_list_subgroup_background">@array/account_50</item>
-
         <item name="chat_incoming_balloon">@array/account_50</item>
         <item name="chat_incoming_balloon_pressed">@array/account_100</item>
+
+        <item name="contact_list_background">@color/grey_400</item>
+
+        <item name="contact_list_account_group_background">@array/account_200</item>
+        <item name="contact_list_account_group_separator">@color/grey_400</item>
+
+        <item name="contact_list_subgroup_background">@array/account_50</item>
+        <item name="contact_list_subgroup_separator">@color/grey_400</item>
+
+        <item name="contact_list_contact_background">@color/grey_300</item>
+        <item name="contact_list_contact_separator">@color/grey_500</item>
+        <item name="contact_list_contact_name_text_color">@color/black</item>
+        <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
+        <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
+
+        <item name="contact_list_active_chat_background">@color/grey_50</item>
+
+        <item name="account_main_color">@array/account_500</item>
+        <item name="account_status_bar_color">@array/account_700</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -51,14 +64,28 @@
         <item name="input_layout_background">@color/black</item>
         <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
 
-        <item name="contact_list_active_chat_background">@color/grey_700</item>
-        <item name="contact_list_contact_background">@color/grey_600</item>
-        <item name="contact_list_background">@color/grey_700</item>
-        <item name="contact_list_account_group_background">@array/account_700</item>
-        <item name="contact_list_subgroup_background">@array/account_500</item>
-
         <item name="chat_incoming_balloon">@array/account_900</item>
         <item name="chat_incoming_balloon_pressed">@array/account_800</item>
+
+        <item name="contact_list_background">@color/grey_900</item>
+
+        <item name="contact_list_account_group_background">@array/account_800</item>
+        <item name="contact_list_account_group_separator">@color/grey_900</item>
+
+        <item name="contact_list_subgroup_background">@array/account_900</item>
+        <item name="contact_list_subgroup_separator">@color/grey_800</item>
+
+        <item name="contact_list_contact_background">@color/black</item>
+        <item name="contact_list_contact_separator">@color/grey_900</item>
+        <item name="contact_list_contact_name_text_color">@color/grey_500</item>
+        <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
+        <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
+
+        <item name="contact_list_active_chat_background">@color/grey_800</item>
+
+        <item name="account_main_color">@array/account_700</item>
+        <item name="account_status_bar_color">@array/account_900</item>
+
 
     </style>
 

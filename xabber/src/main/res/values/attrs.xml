@@ -3,13 +3,29 @@
     <declare-styleable name="ContactList">
         <attr name="input_layout_background" format="reference" />
         <attr name="toolbar_popup_theme" format="reference" />
-        <attr name="contact_list_active_chat_background" format="reference" />
-        <attr name="contact_list_contact_background" format="reference" />
-        <attr name="contact_list_background" format="reference" />
         <attr name="recent_chats_background" format="reference" />
-        <attr name="contact_list_account_group_background" format="reference" />
-        <attr name="contact_list_subgroup_background" format="reference" />
         <attr name="chat_incoming_balloon" format="reference" />
         <attr name="chat_incoming_balloon_pressed" format="reference" />
+
+        <attr name="contact_list_background" format="reference" />
+
+        <attr name="contact_list_account_group_background" format="reference" />
+        <attr name="contact_list_account_group_separator" format="reference" />
+
+        <attr name="contact_list_subgroup_background" format="reference" />
+        <attr name="contact_list_subgroup_separator" format="reference" />
+
+        <attr name="contact_list_contact_background" format="reference" />
+        <attr name="contact_list_contact_separator" format="reference" />
+        <attr name="contact_list_contact_name_text_color" format="reference" />
+        <attr name="contact_list_contact_muc_private_chat_name_text_color" format="reference" />
+        <attr name="contact_list_contact_second_line_text_color" format="reference" />
+
+        <attr name="contact_list_active_chat_background" format="reference" />
+
+
+        <attr name="account_main_color" format="reference" />
+        <attr name="account_status_bar_color" format="reference" />
+
     </declare-styleable>
 </resources>

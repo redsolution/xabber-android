@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,19 +26,21 @@ public class ContactItemInflater {
 
     final Context context;
     private int[] accountMainColors;
-    private final int colorGrey;
+    private final int colorMucPrivateChatText;
     private final int colorMain;
 
     public ContactItemInflater(Context context) {
         this.context = context;
         accountMainColors = context.getResources().getIntArray(R.array.account_500);
-        colorGrey = context.getResources().getColor(R.color.grey_600);
+        colorMucPrivateChatText = getThemeColor(context, R.attr.contact_list_contact_muc_private_chat_name_text_color);
+        colorMain = getThemeColor(context, R.attr.contact_list_contact_name_text_color);
+    }
 
+    @NonNull
+    private int getThemeColor(Context context, int attr) {
         TypedValue typedValue = new TypedValue();
-        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { android.R.attr.textColorPrimary });
-        colorMain = a.getColor(0, 0);
-        a.recycle();
-
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { attr });
+        return a.getColor(0, 0);
     }
 
     public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact contact) {
@@ -81,7 +84,7 @@ public class ContactItemInflater {
         viewHolder.name.setText(contact.getName());
 
         if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
-            viewHolder.name.setTextColor(colorGrey);
+            viewHolder.name.setTextColor(colorMucPrivateChatText);
         } else {
             viewHolder.name.setTextColor(colorMain);
         }

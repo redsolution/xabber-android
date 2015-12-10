@@ -71,7 +71,7 @@
                     android:singleLine="true"
                     android:ellipsize="marquee"
                     android:text="Contact list item name"
-                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColor="?attr/contact_list_contact_name_text_color"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textStyle="bold"
                     android:layout_toRightOf="@+id/contact_list_item_muc_indicator"
@@ -119,7 +119,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/grey_500"
+        android:background="?attr/contact_list_contact_separator"
         android:layout_alignParentBottom="true"
         />
 

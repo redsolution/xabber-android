@@ -23,8 +23,8 @@ public class AccountPainter {
 
     public AccountPainter(Context context) {
 
-        accountMainColors = context.getResources().getIntArray(R.array.account_500);
-        accountDarkColors = context.getResources().getIntArray(R.array.account_700);
+        accountMainColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_main_color));
+        accountDarkColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_status_bar_color));
         accountDarkestColors = context.getResources().getIntArray(R.array.account_900);
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
@@ -61,17 +61,18 @@ public class AccountPainter {
     }
 
     private int getThemeMainColor(Context context) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{R.attr.colorPrimary});
+        return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimary));
+    }
+
+    private int getThemeAttribute(Context context, int attr) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{attr});
         int attributeResourceId = a.getResourceId(0, 0);
         a.recycle();
-        return context.getResources().getColor(attributeResourceId);
+        return attributeResourceId;
     }
 
     private int getThemeDarkColor(Context context) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{R.attr.colorPrimaryDark});
-        int attributeResourceId = a.getResourceId(0, 0);
-        a.recycle();
-        return context.getResources().getColor(attributeResourceId);
+        return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimaryDark));
     }
 
     public int getAccountMainColor(String account) {
