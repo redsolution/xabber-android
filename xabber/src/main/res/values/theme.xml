@@ -42,7 +42,7 @@
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
         <item name="contact_list_contact_client_large_icon_color">@color/grey_400</item>
-        <item name="contact_list_contact_small_right_icon_color">@color/grey_400</item>
+        <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_light</item>
 
         <item name="contact_list_active_chat_background">@color/grey_50</item>
 
@@ -83,7 +83,7 @@
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
         <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
-        <item name="contact_list_contact_small_right_icon_color">@color/grey_700</item>
+        <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_dark</item>
 
 
         <item name="contact_list_active_chat_background">@color/grey_800</item>
