@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_show_offline_small"
-        android:alpha="0.2"
+        android:tint="?attr/contact_list_contact_small_right_icon_color"
         android:layout_toLeftOf="@+id/small_right_text"
         android:layout_alignBottom="@+id/second_line_message"
         android:layout_marginBottom="2dp" />
