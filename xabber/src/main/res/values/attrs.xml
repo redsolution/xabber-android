@@ -22,6 +22,7 @@
         <attr name="contact_list_contact_second_line_text_color" format="reference" />
         <attr name="contact_list_contact_client_large_icon_color" format="reference" />
         <attr name="contact_list_contact_small_right_icon_alpha" format="reference" />
+        <attr name="contact_list_muc_indicator_color" format="reference" />
 
         <attr name="contact_list_active_chat_background" format="reference" />
 

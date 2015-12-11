@@ -81,6 +81,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_muc_indicator_black_16dp"
+                    android:tint="?attr/contact_list_muc_indicator_color"
                     android:id="@+id/contact_list_item_muc_indicator"
                     android:layout_marginRight="2dp"
                     android:visibility="gone"
