@@ -19,6 +19,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:elevation="@dimen/contact_elevation">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_client_large"
+        android:tint="?attr/contact_list_contact_client_large_icon_color"
+        android:paddingRight="56dp"
+        android:paddingBottom="4dp"
+        android:id="@+id/client_icon_large"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -122,19 +134,6 @@
         android:layout_height="1px"
         android:background="?attr/contact_list_contact_separator"
         android:layout_alignParentBottom="true"
-        />
-
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_client_large"
-        android:tint="?attr/contact_list_contact_client_large_icon_color"
-        android:paddingRight="56dp"
-        android:paddingBottom="4dp"
-        android:id="@+id/client_icon_large"
         />
 
     <include layout="@layout/offline_shadow" />
