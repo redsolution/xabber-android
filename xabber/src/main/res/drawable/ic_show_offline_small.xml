@@ -14,7 +14,7 @@
 -->
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@drawable/ic_show_offline_always_10dp"
+        android:drawable="@drawable/ic_show_offline_always_12dp"
         android:minLevel="0"
         android:maxLevel="0" />
 
@@ -24,7 +24,7 @@
         android:maxLevel="1" />
 
     <item
-        android:drawable="@drawable/ic_show_offline_never_10dp"
+        android:drawable="@drawable/ic_show_offline_never_12dp"
         android:minLevel="2"
         android:maxLevel="2" />
 </level-list>
