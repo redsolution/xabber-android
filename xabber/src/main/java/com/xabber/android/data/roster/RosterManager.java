@@ -100,7 +100,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     void updateContacts() {
-        allRosterContacts.clear();
+        Collection<RosterContact> newRosterContacts = new ArrayList<>();
         for (String account : AccountManager.getInstance().getAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);
             if (roster == null) {
@@ -113,10 +113,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
                 final RosterContact contact = convertRosterEntryToRosterContact(account, roster, rosterEntry);
 
-                allRosterContacts.add(contact);
+                newRosterContacts.add(contact);
 
             }
         }
+        allRosterContacts = newRosterContacts;
     }
 
     @NonNull
