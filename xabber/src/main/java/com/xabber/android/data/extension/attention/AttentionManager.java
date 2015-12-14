@@ -37,8 +37,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.data.roster.ResourceItem;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.attention.Attention;
 
@@ -178,11 +177,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
         String to = chat.getTo();
         if (Jid.getResource(to) == null || "".equals(Jid.getResource(to))) {
-            ResourceItem resourceItem = PresenceManager.getInstance()
-                    .getResourceItem(account, user);
-            if (resourceItem == null)
-                throw new NetworkException(R.string.NOT_CONNECTED);
-            to = resourceItem.getUser(user);
+            to = RosterManager.getInstance().getRoster(account).getPresence(user).getFrom();
         }
         ClientInfo clientInfo = CapabilitiesManager.getInstance()
                 .getClientInfo(account, to);

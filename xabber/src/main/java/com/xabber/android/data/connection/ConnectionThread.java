@@ -189,7 +189,6 @@ public class ConnectionThread implements
     private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
         builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
-        builder.setSendPresence(false);
 
         try {
             if (SettingsManager.securityCheckCertificate()) {

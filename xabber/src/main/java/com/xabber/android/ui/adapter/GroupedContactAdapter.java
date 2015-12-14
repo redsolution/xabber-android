@@ -112,7 +112,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         accountSubgroupColors = resources.getIntArray(getThemeResource(R.attr.contact_list_subgroup_background));
 
         TypedValue typedValue = new TypedValue();
-        TypedArray a = activity.obtainStyledAttributes(typedValue.data, new int[] { R.attr.contact_list_active_chat_background });
+        TypedArray a = activity.obtainStyledAttributes(typedValue.data, new int[] { R.attr.contact_list_active_chat_subgroup_background });
         activeChatsColor = a.getColor(0, 0);
         a.recycle();
 
