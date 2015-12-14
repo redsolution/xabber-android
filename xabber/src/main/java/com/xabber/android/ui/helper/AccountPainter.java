@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 
 import java.util.ArrayList;
@@ -65,7 +66,15 @@ public class AccountPainter {
     }
 
     private int getThemeAttribute(Context context, int attr) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{attr});
+        final SettingsManager.InterfaceTheme interfaceTheme = SettingsManager.interfaceTheme();
+        final int theme;
+        if (interfaceTheme == SettingsManager.InterfaceTheme.light) {
+            theme = R.style.Theme;
+        } else {
+            theme = R.style.ThemeDark;
+        }
+
+        TypedArray a = context.getTheme().obtainStyledAttributes(theme, new int[]{attr});
         int attributeResourceId = a.getResourceId(0, 0);
         a.recycle();
         return attributeResourceId;

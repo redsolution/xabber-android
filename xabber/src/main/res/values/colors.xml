@@ -122,6 +122,54 @@
         <item>@color/teal_900</item>
     </array>
 
+    <array name="account_main_dark">
+        <item>@color/green_700</item>
+        <item>@color/orange_700</item>
+        <item>@color/red_700</item>
+        <item>#1A237E</item>
+        <item>@color/indigo_700</item>
+        <item>@color/blue_grey_700</item>
+        <item>@color/cyan_700</item>
+        <item>@color/teal_700</item>
+    </array>
+
+    <array name="account_darker_dark">
+        <item>@color/green_900</item>
+        <item>@color/orange_900</item>
+        <item>@color/red_900</item>
+        <item>#1A237E</item>
+        <item>@color/indigo_900</item>
+        <item>@color/blue_grey_900</item>
+        <item>@color/cyan_900</item>
+        <item>@color/teal_900</item>
+    </array>
+
+
+    <array name="account_contact_list_account_group_dark">
+        <item>@color/green_800</item>
+        <item>#591F00</item>
+        <item>@color/red_800</item>
+        <item>#051C3D</item>
+        <item>@color/indigo_800</item>
+        <item>@color/blue_grey_800</item>
+        <item>@color/cyan_800</item>
+        <item>@color/teal_800</item>
+    </array>
+
+    <array name="account_contact_list_subgroup_background_dark">
+        <item>@color/green_900</item>
+        <item>#23120A</item>
+        <item>@color/red_900</item>
+        <item>#1C2024</item>
+        <item>@color/indigo_900</item>
+        <item>@color/blue_grey_900</item>
+        <item>@color/cyan_900</item>
+        <item>@color/teal_900</item>
+    </array>
+
+    <color name="contact_list_active_chat_background_dark">#242424</color>
+
+
     <color name="persistent_notification_color">@color/red_500</color>
 
     <color name="color_primary_light">@color/grey_200</color>
@@ -129,6 +177,8 @@
     <color name="account_disabled">@color/black_dividers</color>
 
     <color name="recent_chats_background">@color/grey_300</color>
+
+    <color name="contact_list_separator_dark">#11FFFFFF</color>
 
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>

@@ -24,6 +24,7 @@
         <attr name="contact_list_contact_small_right_icon_alpha" format="reference" />
         <attr name="contact_list_muc_indicator_color" format="reference" />
 
+        <attr name="contact_list_active_chat_subgroup_background" format="reference" />
         <attr name="contact_list_active_chat_background" format="reference" />
 
 
