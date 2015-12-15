@@ -100,7 +100,7 @@
         <item name="contact_list_active_chat_separator">@color/grey_500</item>
 
         <item name="account_main_color">@array/account_main_dark</item>
-        <item name="account_status_bar_color">@array/account_darker_dark</item>
+        <item name="account_status_bar_color">@array/account_contact_list_account_group_dark</item>
 
 
     </style>
