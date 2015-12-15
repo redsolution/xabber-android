@@ -87,7 +87,7 @@ public abstract class BaseContactDialog extends DialogFragment
     private View setUpDialogTitle() {
         View dialogTitleView = getActivity().getLayoutInflater().inflate(R.layout.dialog_title, null);
         final TextView dialogTitle = (TextView) dialogTitleView.findViewById(R.id.dialog_title_text_view);
-        dialogTitle.setTextColor(accountPainter.getAccountMainColor(account));
+        dialogTitle.setTextColor(accountPainter.getAccountTextColor(account));
         dialogTitle.setText(getDialogTitleTextResource());
         return dialogTitleView;
     }
@@ -102,7 +102,7 @@ public abstract class BaseContactDialog extends DialogFragment
 
     @Override
     public void onShow(DialogInterface dialog) {
-        this.dialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(accountPainter.getAccountMainColor(account));
+        this.dialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(accountPainter.getAccountTextColor(account));
         this.dialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(accountPainter.getGreyMain());
         this.dialog.getButton(Dialog.BUTTON_NEUTRAL).setTextColor(accountPainter.getGreyMain());
     }

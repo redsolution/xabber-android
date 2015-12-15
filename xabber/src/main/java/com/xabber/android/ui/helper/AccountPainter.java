@@ -14,6 +14,7 @@ import java.util.List;
 public class AccountPainter {
     private final int themeMainColor;
     private final int themeDarkColor;
+    private final int themeTextColor;
     private final String[] accountColorNames;
 
     private int[] accountMainColors;
@@ -32,6 +33,7 @@ public class AccountPainter {
 
         themeMainColor = getThemeMainColor(context);
         themeDarkColor = getThemeDarkColor(context);
+        themeTextColor = getThemeTextColor(context);
 
         greyMain = context.getResources().getColor(R.color.grey_600);
         greyDark = context.getResources().getColor(R.color.grey_700);
@@ -84,6 +86,10 @@ public class AccountPainter {
         return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimaryDark));
     }
 
+    private int getThemeTextColor(Context context) {
+        return context.getResources().getColor(getThemeAttribute(context, android.R.attr.textColorPrimary));
+    }
+
     public int getAccountMainColor(String account) {
         return accountMainColors[getAccountColorLevel(account)];
     }
@@ -91,7 +97,7 @@ public class AccountPainter {
     public int getDefaultMainColor() {
         String firstAccount = getFirstAccount();
         if (firstAccount == null) {
-            return themeMainColor;
+            return themeTextColor;
         } else {
             return getAccountMainColor(firstAccount);
         }
@@ -105,6 +111,14 @@ public class AccountPainter {
         return accountTextColors[getAccountColorLevel(account)];
     }
 
+    public int getDefaultTextColor() {
+        String firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return themeDarkColor;
+        } else {
+            return getAccountTextColor(firstAccount);
+        }
+    }
 
     public int getDefaultDarkColor() {
         String firstAccount = getFirstAccount();
