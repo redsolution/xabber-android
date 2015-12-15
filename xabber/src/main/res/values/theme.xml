@@ -69,7 +69,7 @@
         <!-- for hardware button menu -->
         <item name="panelBackground">?attr/colorPrimary</item>
 
-        <item name="recent_chats_background">@color/grey_700</item>
+        <item name="recent_chats_background">@color/black</item>
 
         <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
 
@@ -80,7 +80,7 @@
 
         <item name="contact_list_background">@color/grey_900</item>
 
-        <item name="contact_list_account_group_background">@array/account_contact_list_account_group_dark</item>
+        <item name="contact_list_account_group_background">@array/account_900</item>
         <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
 
         <item name="contact_list_subgroup_background">@array/account_contact_list_subgroup_background_dark</item>
@@ -88,7 +88,7 @@
 
         <item name="contact_list_contact_background">@color/black</item>
         <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
-        <item name="contact_list_contact_name_text_color">@color/grey_500</item>
+        <item name="contact_list_contact_name_text_color">@color/grey_300</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
         <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
@@ -96,13 +96,13 @@
         <item name="contact_list_muc_indicator_color">@color/grey_600</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
-        <item name="contact_list_active_chat_background">@color/grey_400</item>
+        <item name="contact_list_active_chat_background">@color/grey_200</item>
         <item name="contact_list_active_chat_text_color">@color/black</item>
         <item name="contact_list_active_chat_separator">@color/grey_500</item>
 
-        <item name="account_main_color">@array/account_main_dark</item>
-        <item name="account_status_bar_color">@array/account_contact_list_account_group_dark</item>
-        <item name="account_text_color">@array/account_500</item>
+        <item name="account_main_color">@array/account_800</item>
+        <item name="account_status_bar_color">@array/account_900</item>
+        <item name="account_text_color">@array/account_400</item>
 
 
     </style>
