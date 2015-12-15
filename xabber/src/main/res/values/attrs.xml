@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ContactList">
-        <attr name="input_layout_background" format="reference" />
         <attr name="toolbar_popup_theme" format="reference" />
         <attr name="recent_chats_background" format="reference" />
+        <attr name="chat_background" format="reference" />
+        <attr name="chat_input_background" format="reference" />
         <attr name="chat_incoming_balloon" format="reference" />
         <attr name="chat_incoming_balloon_pressed" format="reference" />
 

@@ -22,9 +22,10 @@
         <item name="windowActionModeOverlay">true</item>
 
         <item name="recent_chats_background">@color/grey_300</item>
-        <item name="input_layout_background">@color/white</item>
+        <item name="chat_input_background">@color/white</item>
         <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
 
+        <item name="chat_background">?android:attr/windowBackground</item>
         <item name="chat_incoming_balloon">@array/account_50</item>
         <item name="chat_incoming_balloon_pressed">@array/account_100</item>
 
@@ -65,11 +66,12 @@
         <item name="panelBackground">?attr/colorPrimary</item>
 
         <item name="recent_chats_background">@color/grey_700</item>
-        <item name="input_layout_background">@color/black</item>
+        <item name="chat_input_background">@color/grey_900</item>
         <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
 
-        <item name="chat_incoming_balloon">@array/account_900</item>
-        <item name="chat_incoming_balloon_pressed">@array/account_800</item>
+        <item name="chat_background">@color/black</item>
+        <item name="chat_incoming_balloon">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="chat_incoming_balloon_pressed">@array/account_contact_list_account_group_dark</item>
 
         <item name="contact_list_background">@color/grey_900</item>
 
