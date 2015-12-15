@@ -33,6 +33,7 @@
 
         <attr name="account_main_color" format="reference" />
         <attr name="account_status_bar_color" format="reference" />
+        <attr name="account_text_color" format="reference" />
 
     </declare-styleable>
 </resources>

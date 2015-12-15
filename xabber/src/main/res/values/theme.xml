@@ -54,6 +54,7 @@
 
         <item name="account_main_color">@array/account_500</item>
         <item name="account_status_bar_color">@array/account_700</item>
+        <item name="account_text_color">@array/account_900</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -101,6 +102,7 @@
 
         <item name="account_main_color">@array/account_main_dark</item>
         <item name="account_status_bar_color">@array/account_contact_list_account_group_dark</item>
+        <item name="account_text_color">@array/account_500</item>
 
 
     </style>

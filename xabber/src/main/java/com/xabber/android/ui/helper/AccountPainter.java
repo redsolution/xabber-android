@@ -18,7 +18,7 @@ public class AccountPainter {
 
     private int[] accountMainColors;
     private int[] accountDarkColors;
-    private int[] accountDarkestColors;
+    private int[] accountTextColors;
     private final int greyMain;
     private final int greyDark;
 
@@ -26,7 +26,7 @@ public class AccountPainter {
 
         accountMainColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_main_color));
         accountDarkColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_status_bar_color));
-        accountDarkestColors = context.getResources().getIntArray(R.array.account_900);
+        accountTextColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_text_color));
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
@@ -101,8 +101,8 @@ public class AccountPainter {
         return accountDarkColors[getAccountColorLevel(account)];
     }
 
-    public int getAccountDarkestColor(String account) {
-        return accountDarkestColors[getAccountColorLevel(account)];
+    public int getAccountTextColor(String account) {
+        return accountTextColors[getAccountColorLevel(account)];
     }
 
 
