@@ -71,7 +71,7 @@ public class AbstractContact extends BaseEntity {
     }
 
     public StatusMode getStatusMode() {
-        return StatusMode.createStatusMode(RosterManager.getInstance().getRoster(account).getPresence(user));
+        return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
     }
 
     public String getStatusText() {
@@ -84,9 +84,9 @@ public class AbstractContact extends BaseEntity {
     }
 
     public ClientSoftware getClientSoftware() {
-        final Presence presence = RosterManager.getInstance().getRoster(account).getPresence(user);
+        final Presence presence = RosterManager.getInstance().getPresence(account, user);
 
-        if (!presence.isAvailable()) {
+        if (presence == null || !presence.isAvailable()) {
             return ClientSoftware.unknown;
         }
 

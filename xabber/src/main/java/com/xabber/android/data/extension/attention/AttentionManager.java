@@ -46,6 +46,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
@@ -169,18 +170,26 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         }
     }
 
-    public void sendAttention(String account, String user)
-            throws NetworkException {
-        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(
-                account, user);
-        if (!(chat instanceof RegularChat))
+    public void sendAttention(String account, String user) throws NetworkException {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
+        if (!(chat instanceof RegularChat)) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
+        }
         String to = chat.getTo();
         if (Jid.getResource(to) == null || "".equals(Jid.getResource(to))) {
-            to = RosterManager.getInstance().getRoster(account).getPresence(user).getFrom();
+            final Presence presence = RosterManager.getInstance().getPresence(account, user);
+            if (presence == null) {
+                to = null;
+            } else {
+                to = presence.getFrom();
+            }
         }
-        ClientInfo clientInfo = CapabilitiesManager.getInstance()
-                .getClientInfo(account, to);
+
+        if (to == null) {
+            throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
+        }
+
+        ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, to);
         if (clientInfo == null)
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
         if (!clientInfo.getFeatures().contains(Attention.NAMESPACE))

@@ -82,6 +82,10 @@ public enum StatusMode {
      * @return
      */
     static public StatusMode createStatusMode(Presence presence) {
+        if (presence == null) {
+            return StatusMode.unavailable;
+        }
+
         switch (presence.getType()) {
             case available:
                 final Mode mode = presence.getMode();

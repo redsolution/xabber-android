@@ -264,12 +264,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     private void fillResourceList(String account, String bareAddress, List<View> resourcesList) {
-        final Roster roster = RosterManager.getInstance().getRoster(account);
-        if (roster == null) {
-            return;
-        }
-
-        final List<Presence> allPresences = roster.getAvailablePresences(bareAddress);
+        final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
 
         for (Presence presence : allPresences) {
             String user = presence.getFrom();

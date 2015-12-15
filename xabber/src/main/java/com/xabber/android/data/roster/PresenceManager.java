@@ -172,8 +172,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             return occupant.getStatusMode();
         }
 
-        return StatusMode.createStatusMode(RosterManager.getInstance().getRoster(account).getPresence(Jid.getBareAddress(bareAddress)));
-
+        return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, bareAddress));
     }
 
     /**
@@ -198,7 +197,12 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             return occupant.getStatusText();
         }
 
-        return RosterManager.getInstance().getRoster(account).getPresence(bareAddress).getStatus();
+        final Presence presence = RosterManager.getInstance().getPresence(account, bareAddress);
+        if (presence == null) {
+            return null;
+        } else {
+            return presence.getStatus();
+        }
     }
 
     public void onPresenceChanged(String account, Presence presence) {
