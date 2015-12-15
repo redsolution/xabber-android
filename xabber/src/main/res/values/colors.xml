@@ -199,6 +199,27 @@
         <item>@color/teal_900</item>
     </array>
 
+    <array name="account_chat_incoming_balloon">
+        <!--green-->
+        <item>#2C3E28</item>
+        <!--orange-->
+        <item>#351F0D</item>
+        <!--red-->
+        <item>#452525</item>
+        <!--blue-->
+        <item>#414B56</item>
+        <!--indigo-->
+        <item>#1F263F</item>
+        <!--blue grey-->
+        <item>@color/blue_grey_800</item>
+        <!--cyan-->
+        <item>#284442</item>
+        <!--teal-->
+        <item>#142E23</item>
+    </array>
+
+
+
     <color name="contact_list_active_chat_background_dark">#242424</color>
 
     <color name="persistent_notification_color">@color/red_500</color>

@@ -130,6 +130,7 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/contact_list_item_separator"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="?attr/contact_list_contact_separator"

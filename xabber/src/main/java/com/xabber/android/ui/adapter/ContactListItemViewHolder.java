@@ -21,6 +21,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder {
     final ImageView statusIcon;
     final ImageView offlineShadow;
     final ImageView mucIndicator;
+    final View separator;
 
     public ContactListItemViewHolder(View view) {
         super(view);
@@ -37,5 +38,6 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder {
         statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         mucIndicator = (ImageView) view.findViewById(R.id.contact_list_item_muc_indicator);
+        separator = view.findViewById(R.id.contact_list_item_separator);
     }
 }
