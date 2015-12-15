@@ -121,7 +121,7 @@ public class ActivityManager implements OnUnloadListener {
     private void applyTheme(Activity activity) {
         activity.setTheme(R.style.Theme);
         SettingsManager.InterfaceTheme theme = SettingsManager.interfaceTheme();
-        if(theme.equals(SettingsManager.InterfaceTheme.dark)) {
+        if (theme.equals(SettingsManager.InterfaceTheme.dark)) {
             activity.setTheme(R.style.ThemeDark);
         } else {
             activity.setTheme(R.style.Theme);

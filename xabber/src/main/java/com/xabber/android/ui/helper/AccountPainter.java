@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class AccountPainter {
-    private final int themeMainColor;
     private final int themeDarkColor;
     private final int themeTextColor;
     private final String[] accountColorNames;
@@ -31,7 +30,6 @@ public class AccountPainter {
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
-        themeMainColor = getThemeMainColor(context);
         themeDarkColor = getThemeDarkColor(context);
         themeTextColor = getThemeTextColor(context);
 
@@ -63,17 +61,13 @@ public class AccountPainter {
         }
     }
 
-    private int getThemeMainColor(Context context) {
-        return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimary));
-    }
-
     private int getThemeAttribute(Context context, int attr) {
         final SettingsManager.InterfaceTheme interfaceTheme = SettingsManager.interfaceTheme();
         final int theme;
-        if (interfaceTheme == SettingsManager.InterfaceTheme.light) {
-            theme = R.style.Theme;
-        } else {
+        if (interfaceTheme == SettingsManager.InterfaceTheme.dark) {
             theme = R.style.ThemeDark;
+        } else {
+            theme = R.style.Theme;
         }
 
         TypedArray a = context.getTheme().obtainStyledAttributes(theme, new int[]{attr});
