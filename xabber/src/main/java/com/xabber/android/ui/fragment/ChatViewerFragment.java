@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.ColorManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -206,6 +207,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        // to avoid strange bug on some 4.x androids
+        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getThemeColor(getActivity(), R.attr.chat_input_background));
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
