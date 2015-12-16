@@ -288,7 +288,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void onDismiss() {
-                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_emoticon_grey600_24dp);
+                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_mood_black_24dp);
             }
         });
 
@@ -351,7 +351,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     //If keyboard is visible, simply show the emoji popup
                     if(popup.isKeyBoardOpen()){
                         popup.showAtBottom();
-                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_variant_grey600_24dp);
+                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                     }
 
                     //else, open the text keyboard first and immediately after that show the emoji popup
@@ -361,7 +361,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                         popup.showAtBottomPending();
                         final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);
-                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_variant_grey600_24dp);
+                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                     }
                 }
 
