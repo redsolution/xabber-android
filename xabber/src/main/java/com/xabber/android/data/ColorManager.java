@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.util.TypedValue;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -25,6 +26,14 @@ public class ColorManager {
         loadResources();
 
 
+    }
+
+    public static int getThemeColor(Context context, int attr) {
+        TypedValue typedValue = new TypedValue();
+        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { attr });
+        final int color = a.getColor(0, 0);
+        a.recycle();
+        return color;
     }
 
     private void loadResources() {

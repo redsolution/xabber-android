@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.ColorManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -38,21 +39,13 @@ public class ContactItemInflater {
         this.context = context;
         accountPainter = new AccountPainter(context);
 
-        colorMucPrivateChatText = getThemeColor(context, R.attr.contact_list_contact_muc_private_chat_name_text_color);
-        colorMain = getThemeColor(context, R.attr.contact_list_contact_name_text_color);
-        activeChatTextColor = getThemeColor(context, R.attr.contact_list_active_chat_text_color);
-        activeChatBackgroundColor = getThemeColor(context, R.attr.contact_list_active_chat_background);
-        contactBackground = getThemeColor(context, R.attr.contact_list_contact_background);
-        contactSeparatorColor = getThemeColor(context, R.attr.contact_list_contact_separator);
-        activeChatSeparatorColor = getThemeColor(context, R.attr.contact_list_active_chat_separator);
-    }
-
-    private int getThemeColor(Context context, int attr) {
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { attr });
-        final int color = a.getColor(0, 0);
-        a.recycle();
-        return color;
+        colorMucPrivateChatText = ColorManager.getThemeColor(context, R.attr.contact_list_contact_muc_private_chat_name_text_color);
+        colorMain = ColorManager.getThemeColor(context, R.attr.contact_list_contact_name_text_color);
+        activeChatTextColor = ColorManager.getThemeColor(context, R.attr.contact_list_active_chat_text_color);
+        activeChatBackgroundColor = ColorManager.getThemeColor(context, R.attr.contact_list_active_chat_background);
+        contactBackground = ColorManager.getThemeColor(context, R.attr.contact_list_contact_background);
+        contactSeparatorColor = ColorManager.getThemeColor(context, R.attr.contact_list_contact_separator);
+        activeChatSeparatorColor = ColorManager.getThemeColor(context, R.attr.contact_list_active_chat_separator);
     }
 
     public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact contact) {
