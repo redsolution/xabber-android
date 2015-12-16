@@ -95,9 +95,9 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
         if (xmppConnection == null) {
             return null;
-        } else {
-            return Roster.getInstanceFor(xmppConnection);
         }
+
+        return Roster.getInstanceFor(xmppConnection);
     }
 
     @Nullable
@@ -120,7 +120,22 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public Collection<RosterContact> getContacts() {
+        requestRosterReloadIfNeeded();
+
         return Collections.unmodifiableCollection(allRosterContacts);
+    }
+
+    private void requestRosterReloadIfNeeded() {
+        for (String account : AccountManager.getInstance().getAccounts()) {
+            final Roster roster = RosterManager.getInstance().getRoster(account);
+            if (roster != null && !roster.isLoaded()) {
+                try {
+                    roster.reload();
+                } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     void updateContacts() {
