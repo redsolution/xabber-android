@@ -20,14 +20,107 @@
 
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
+
+        <item name="recent_chats_background">@color/grey_300</item>
+
+        <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+
+        <item name="chat_background">?android:attr/windowBackground</item>
+        <item name="chat_input_background">@color/white</item>
+        <item name="chat_input_button_color">@color/grey_600</item>
+        <item name="chat_incoming_balloon">@array/account_50</item>
+        <item name="chat_incoming_balloon_pressed">@array/account_100</item>
+
+        <item name="contact_list_background">@color/grey_400</item>
+
+        <item name="contact_list_account_group_background">@array/account_200</item>
+        <item name="contact_list_account_group_separator">@color/grey_400</item>
+        <item name="contact_list_account_group_second_line_text_color">@color/grey_700</item>
+        <item name="contact_list_account_group_small_right_icon_color">@color/black</item>
+        <item name="contact_list_account_group_small_right_text_color">@color/black</item>
+        <item name="contact_list_account_group_status_icon_separator_color">@color/black</item>
+
+        <item name="contact_list_subgroup_background">@array/account_50</item>
+        <item name="contact_list_subgroup_separator">@color/grey_400</item>
+        <item name="contact_list_subgroup_offline_indicator_color">@color/black</item>
+        <item name="contact_list_subgroup_expander_color">@color/black</item>
+
+        <item name="contact_list_contact_background">@color/grey_300</item>
+        <item name="contact_list_contact_separator">@color/grey_500</item>
+        <item name="contact_list_contact_name_text_color">@color/black</item>
+        <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
+        <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
+        <item name="contact_list_contact_client_large_icon_color">@color/grey_400</item>
+        <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_light</item>
+        <item name="contact_list_muc_indicator_color">@color/black</item>
+
+        <item name="contact_list_active_chat_subgroup_background">@color/grey_100</item>
+        <item name="contact_list_active_chat_background">@color/grey_50</item>
+        <item name="contact_list_active_chat_text_color">?android:attr/textColorPrimary</item>
+        <item name="contact_list_active_chat_separator">@color/grey_500</item>
+
+        <item name="account_main_color">@array/account_500</item>
+        <item name="account_status_bar_color">@array/account_700</item>
+        <item name="account_text_color">@array/account_900</item>
+
+        <item name="navigation_drawer_background">?android:attr/windowBackground</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
 
+    <style name="Base.ThemeDark" parent="Theme.AppCompat">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
-    <style name="Base.ThemeDark" parent="Theme.AppCompat.NoActionBar">
         <!--for text selection toolbar to be above usual toolbar -->
         <item name="windowActionModeOverlay">true</item>
+
+        <!-- for hardware button menu -->
+        <item name="panelBackground">?attr/colorPrimary</item>
+
+        <item name="recent_chats_background">@color/black</item>
+
+        <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
+
+        <item name="chat_background">@color/black</item>
+        <item name="chat_input_background">@color/grey_900</item>
+        <item name="chat_input_button_color">@color/grey_500</item>
+        <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
+        <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
+
+        <item name="contact_list_background">@color/grey_900</item>
+
+        <item name="contact_list_account_group_background">@array/account_900</item>
+        <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
+        <item name="contact_list_account_group_second_line_text_color">@color/grey_400</item>
+        <item name="contact_list_account_group_small_right_icon_color">@color/white</item>
+        <item name="contact_list_account_group_small_right_text_color">@color/white</item>
+        <item name="contact_list_account_group_status_icon_separator_color">@color/white</item>
+
+        <item name="contact_list_subgroup_background">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="contact_list_subgroup_separator">@color/contact_list_separator_dark</item>
+        <item name="contact_list_subgroup_offline_indicator_color">@color/white</item>
+        <item name="contact_list_subgroup_expander_color">@color/white</item>
+
+        <item name="contact_list_contact_background">@color/black</item>
+        <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
+        <item name="contact_list_contact_name_text_color">@color/grey_300</item>
+        <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
+        <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
+        <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
+        <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_dark</item>
+        <item name="contact_list_muc_indicator_color">@color/grey_600</item>
+
+        <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
+        <item name="contact_list_active_chat_background">@color/grey_200</item>
+        <item name="contact_list_active_chat_text_color">@color/black</item>
+        <item name="contact_list_active_chat_separator">@color/grey_500</item>
+
+        <item name="account_main_color">@array/account_800</item>
+        <item name="account_status_bar_color">@array/account_900</item>
+        <item name="account_text_color">@array/account_400</item>
+
+        <item name="navigation_drawer_background">@color/grey_900</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">

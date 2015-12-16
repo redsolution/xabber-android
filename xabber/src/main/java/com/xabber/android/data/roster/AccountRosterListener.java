@@ -1,9 +1,11 @@
 package com.xabber.android.data.roster;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
@@ -43,6 +45,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
     @Override
     public void presenceChanged(Presence presence) {
+        PresenceManager.getInstance().onPresenceChanged(account, presence);
     }
 
     private void update(Collection<String> addresses) {
@@ -54,11 +57,13 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
             entities.add(new BaseEntity(account, address));
         }
 
-        RosterManager.getInstance().onContactsChanged(entities);
+        RosterManager.onContactsChanged(entities);
     }
 
     @Override
     public void onRosterLoaded(Roster roster) {
+        LogManager.i(this, "onRosterLoaded " + account);
+
         RosterManager.getInstance().updateContacts();
 
         final AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);

@@ -44,7 +44,7 @@ public class AccountChooseAdapter extends BaseAdapter {
         accounts = new ArrayList<>(AccountManager.getInstance().getAccounts());
         Collections.sort(accounts);
 
-        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
+        accountColors = activity.getResources().getIntArray(R.array.account_500);
     }
 
     @Override

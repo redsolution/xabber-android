@@ -15,10 +15,12 @@
 package com.xabber.android.data.roster;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -39,6 +41,7 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
@@ -46,6 +49,7 @@ import org.jivesoftware.smack.roster.packet.RosterPacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -73,7 +77,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return instance;
     }
 
-    public Roster getRoster(String account) {
+    @Nullable
+    private Roster getRoster(String account) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
 
         if (accountItem == null) {
@@ -90,17 +95,51 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
         if (xmppConnection == null) {
             return null;
+        }
+
+        return Roster.getInstanceFor(xmppConnection);
+    }
+
+    @Nullable
+    public Presence getPresence(String account, String user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return null;
         } else {
-            return Roster.getInstanceFor(xmppConnection);
+            return roster.getPresence(user);
+        }
+    }
+
+    public List<Presence> getPresences(String account, String user) {
+        final Roster roster = getRoster(account);
+        if (roster == null) {
+            return new ArrayList<>();
+        } else {
+            return roster.getAvailablePresences(user);
         }
     }
 
     public Collection<RosterContact> getContacts() {
+        requestRosterReloadIfNeeded();
+
         return Collections.unmodifiableCollection(allRosterContacts);
     }
 
+    private void requestRosterReloadIfNeeded() {
+        for (String account : AccountManager.getInstance().getAccounts()) {
+            final Roster roster = RosterManager.getInstance().getRoster(account);
+            if (roster != null && !roster.isLoaded()) {
+                try {
+                    roster.reload();
+                } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     void updateContacts() {
-        allRosterContacts.clear();
+        Collection<RosterContact> newRosterContacts = new ArrayList<>();
         for (String account : AccountManager.getInstance().getAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);
             if (roster == null) {
@@ -113,10 +152,13 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
                 final RosterContact contact = convertRosterEntryToRosterContact(account, roster, rosterEntry);
 
-                allRosterContacts.add(contact);
+                newRosterContacts.add(contact);
 
             }
         }
+        allRosterContacts = newRosterContacts;
+
+        LogManager.i(this, "updateContacts: " + allRosterContacts.size());
     }
 
     @NonNull

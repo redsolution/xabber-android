@@ -16,6 +16,7 @@
         android:singleLine="true"
         android:ellipsize="marquee"
         android:text="second line message long text"
+        android:textColor="?attr/contact_list_contact_second_line_text_color"
         android:layout_toLeftOf="@id/outgoing_message_indicator"
         />
 
@@ -36,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_show_offline_small"
-        android:alpha="0.2"
+        android:tint="?attr/contact_list_contact_small_right_icon_alpha"
         android:layout_toLeftOf="@id/small_right_text"
         android:layout_alignBottom="@id/second_line_message"
         android:layout_marginBottom="2dp" />

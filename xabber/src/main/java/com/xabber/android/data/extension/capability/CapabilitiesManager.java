@@ -17,6 +17,7 @@ package com.xabber.android.data.extension.capability;
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -420,42 +421,47 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         }
     }
 
+    public void onPresenceChanged(final String account, final Presence presence) {
+        final String user = Jid.getStringPrep(presence.getFrom());
+        if (user == null)
+            return;
+        if (presence.getType() == Presence.Type.error)
+            return;
+        if (presence.getType() == Presence.Type.unavailable) {
+            userCapabilities.remove(account, user);
+            return;
+        }
+
+        LogManager.i(this, "onPresenceChanged " + user);
+
+        for (ExtensionElement packetExtension : presence.getExtensions()) {
+            if (packetExtension instanceof CapsExtension) {
+                CapsExtension capsExtension = (CapsExtension) packetExtension;
+                if (capsExtension.getNode() == null || capsExtension.getVer() == null) {
+                    continue;
+                }
+                Capability capability = new Capability(account, user,
+                        capsExtension.getHash(), capsExtension.getNode(),
+                        capsExtension.getVer());
+                if (capability.equals(userCapabilities.get(account, user))) {
+                    continue;
+                }
+                userCapabilities.put(account, user, capability);
+                ClientInfo clientInfo = clientInformations.get(capability);
+                if (clientInfo == null || clientInfo == INVALID_CLIENT_INFO) {
+                    request(account, presence.getFrom(), capability);
+                }
+            }
+        }
+    }
+
     @Override
     public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String account = ((AccountItem) connection).getAccount();
         final String user = Jid.getStringPrep(packet.getFrom());
-        if (packet instanceof Presence) {
-            if (user == null)
-                return;
-            final Presence presence = (Presence) packet;
-            if (presence.getType() == Presence.Type.error)
-                return;
-            if (presence.getType() == Presence.Type.unavailable) {
-                userCapabilities.remove(account, user);
-                return;
-            }
-            for (ExtensionElement packetExtension : presence.getExtensions()) {
-                if (packetExtension instanceof CapsExtension) {
-                    CapsExtension capsExtension = (CapsExtension) packetExtension;
-                    if (capsExtension.getNode() == null || capsExtension.getVer() == null) {
-                        continue;
-                    }
-                    Capability capability = new Capability(account, user,
-                            capsExtension.getHash(), capsExtension.getNode(),
-                            capsExtension.getVer());
-                    if (capability.equals(userCapabilities.get(account, user))) {
-                        continue;
-                    }
-                    userCapabilities.put(account, user, capability);
-                    ClientInfo clientInfo = clientInformations.get(capability);
-                    if (clientInfo == null || clientInfo == INVALID_CLIENT_INFO) {
-                        request(account, packet.getFrom(), capability);
-                    }
-                }
-            }
-        } else if (packet instanceof IQ) {
+        if (packet instanceof IQ) {
             IQ iq = (IQ) packet;
             if (iq.getType() != Type.error
                     && !(packet instanceof DiscoverInfo && iq.getType() == Type.result))

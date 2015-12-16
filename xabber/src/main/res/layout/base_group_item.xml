@@ -24,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_expander_indicator"
+        android:tint="?attr/contact_list_subgroup_expander_color"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -35,6 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_show_offline"
+        android:tint="?attr/contact_list_subgroup_offline_indicator_color"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
@@ -61,7 +63,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/grey_400"
+        android:background="?attr/contact_list_subgroup_separator"
         android:layout_alignParentBottom="true"
         />
 

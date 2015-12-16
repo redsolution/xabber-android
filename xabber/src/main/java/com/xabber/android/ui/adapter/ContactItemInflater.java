@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
+import com.xabber.android.data.ColorManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -18,26 +19,33 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ContactEditor;
 import com.xabber.android.ui.activity.ContactViewer;
+import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
 public class ContactItemInflater {
 
     final Context context;
-    private int[] accountMainColors;
-    private final int colorGrey;
+    private final int colorMucPrivateChatText;
     private final int colorMain;
+    private final int activeChatTextColor;
+    private final int activeChatBackgroundColor;
+    private final int contactBackground;
+    private final int contactSeparatorColor;
+    private final int activeChatSeparatorColor;
+    private final AccountPainter accountPainter;
 
     public ContactItemInflater(Context context) {
         this.context = context;
-        accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
-        colorGrey = context.getResources().getColor(R.color.grey_600);
+        accountPainter = new AccountPainter(context);
 
-        TypedValue typedValue = new TypedValue();
-        TypedArray a = context.obtainStyledAttributes(typedValue.data, new int[] { R.attr.colorPrimary });
-        colorMain = a.getColor(0, 0);
-        a.recycle();
-
+        colorMucPrivateChatText = ColorManager.getThemeColor(context, R.attr.contact_list_contact_muc_private_chat_name_text_color);
+        colorMain = ColorManager.getThemeColor(context, R.attr.contact_list_contact_name_text_color);
+        activeChatTextColor = ColorManager.getThemeColor(context, R.attr.contact_list_active_chat_text_color);
+        activeChatBackgroundColor = ColorManager.getThemeColor(context, R.attr.contact_list_active_chat_background);
+        contactBackground = ColorManager.getThemeColor(context, R.attr.contact_list_contact_background);
+        contactSeparatorColor = ColorManager.getThemeColor(context, R.attr.contact_list_contact_separator);
+        activeChatSeparatorColor = ColorManager.getThemeColor(context, R.attr.contact_list_active_chat_separator);
     }
 
     public View setUpContactView(View convertView, ViewGroup parent, final AbstractContact contact) {
@@ -46,8 +54,6 @@ public class ContactItemInflater {
         if (convertView == null) {
             view = LayoutInflater.from(context).inflate(R.layout.contact_list_item, parent, false);
             viewHolder = new ContactListItemViewHolder(view);
-            viewHolder.statusIconSeparator.setVisibility(View.INVISIBLE);
-
             view.setTag(viewHolder);
         } else {
             view = convertView;
@@ -60,8 +66,7 @@ public class ContactItemInflater {
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
         }
 
-        int colorLevel = contact.getColorLevel();
-        viewHolder.color.setImageDrawable(new ColorDrawable(accountMainColors[colorLevel]));
+        viewHolder.color.setImageDrawable(new ColorDrawable(accountPainter.getAccountMainColor(contact.getAccount())));
         viewHolder.color.setVisibility(View.VISIBLE);
 
         if (SettingsManager.contactsShowAvatars()) {
@@ -80,8 +85,11 @@ public class ContactItemInflater {
 
         viewHolder.name.setText(contact.getName());
 
+        MessageManager messageManager = MessageManager.getInstance();
         if (MUCManager.getInstance().isMucPrivateChat(contact.getAccount(), contact.getUser())) {
-            viewHolder.name.setTextColor(colorGrey);
+            viewHolder.name.setTextColor(colorMucPrivateChatText);
+        } else if (messageManager.hasActiveChat(contact.getAccount(), contact.getUser())) {
+            viewHolder.name.setTextColor(activeChatTextColor);
         } else {
             viewHolder.name.setTextColor(colorMain);
         }
@@ -100,12 +108,19 @@ public class ContactItemInflater {
 
         viewHolder.outgoingMessageIndicator.setVisibility(View.GONE);
 
-        ClientSoftware clientSoftware = contact.getClientSoftware();
 
-        MessageManager messageManager = MessageManager.getInstance();
 
         viewHolder.smallRightText.setVisibility(View.GONE);
         viewHolder.smallRightIcon.setVisibility(View.GONE);
+
+        ClientSoftware clientSoftware = contact.getClientSoftware();
+        if (clientSoftware == ClientSoftware.unknown) {
+            viewHolder.largeClientIcon.setVisibility(View.GONE);
+        } else {
+            viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
+            viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
+        }
+
 
         if (messageManager.hasActiveChat(contact.getAccount(), contact.getUser())) {
 
@@ -113,7 +128,8 @@ public class ContactItemInflater {
 
             statusText = chat.getLastText().trim();
 
-            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_active_chat_background));
+            view.setBackgroundColor(activeChatBackgroundColor);
+            viewHolder.separator.setBackgroundColor(activeChatSeparatorColor);
 
             if (!statusText.isEmpty()) {
 
@@ -123,21 +139,17 @@ public class ContactItemInflater {
                 if (!chat.isLastMessageIncoming()) {
                     viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
                     viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
-                    viewHolder.outgoingMessageIndicator.setTextColor(accountMainColors[colorLevel]);
+                    viewHolder.outgoingMessageIndicator.setTextColor(accountPainter.getAccountMainColor(contact.getAccount()));
                 }
                 viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
                 viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
                 viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
                 viewHolder.largeClientIcon.setVisibility(View.GONE);
-            } else {
-                viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
-                viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
             }
         } else {
             statusText = contact.getStatusText().trim();
-            view.setBackgroundColor(context.getResources().getColor(R.color.contact_list_contact_background));
-            viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
-            viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
+            view.setBackgroundColor(contactBackground);
+            viewHolder.separator.setBackgroundColor(contactSeparatorColor);
         }
 
         if (statusText.isEmpty()) {
@@ -150,6 +162,7 @@ public class ContactItemInflater {
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
         return view;
     }
+
 
     private void onAvatarClick(AbstractContact contact) {
         Intent intent;

@@ -46,7 +46,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
         TextView accountName = (TextView) view.findViewById(R.id.name);
 
         accountName.setText(RosterManager.getInstance().getBestContact(account, accountManager.getVerboseName(account)).getName());
-        accountName.setTextColor(accountPainter.getAccountDarkestColor(account));
+        accountName.setTextColor(accountPainter.getAccountTextColor(account));
 
         ((TextView) view.findViewById(R.id.account_jid)).setText(accountManager.getVerboseName(account));
 

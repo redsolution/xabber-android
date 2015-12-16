@@ -17,6 +17,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="?attr/chat_background"
     android:id="@+id/root_view"
     >
 
@@ -29,7 +30,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="8dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:popupTheme="?attr/toolbar_popup_theme"
         >
 
         <include
@@ -58,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
+        android:background="?attr/chat_input_background"
         android:elevation="8dp"
         android:orientation="horizontal"
         >
@@ -68,10 +69,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@drawable/ripple_background"
+            android:background="?android:selectableItemBackground"
             android:padding="8dp"
-            android:src="@drawable/ic_emoticon_grey600_24dp"
-            android:alpha="0.5"
+            android:src="@drawable/ic_mood_black_24dp"
+            android:tint="?attr/chat_input_button_color"
             />
 
         <github.ankushsachdeva.emojicon.EmojiconEditText
@@ -95,10 +96,11 @@
             android:id="@+id/button_attach"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ripple_background"
+            android:background="?android:selectableItemBackground"
             android:padding="8dp"
-            android:src="@drawable/ic_paperclip_grey600_24dp"
-            android:alpha="0.5"
+            android:src="@drawable/ic_attach_file_black_24dp"
+            android:tint="?attr/chat_input_button_color"
+            android:layout_gravity="bottom"
             />
 
 
@@ -106,11 +108,12 @@
             android:id="@+id/button_security"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ripple_background"
+            android:background="?android:selectableItemBackground"
             android:contentDescription="@string/otr_encryption"
             android:padding="8dp"
             android:src="@drawable/ic_security_grey_24dp"
-            android:alpha="0.5"
+            android:tint="?attr/chat_input_button_color"
+            android:layout_gravity="bottom"
             />
 
         <ImageButton
@@ -118,10 +121,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@drawable/ripple_background"
+            android:background="?android:selectableItemBackground"
             android:contentDescription="@string/chat_send"
             android:padding="8dp"
-            android:src="@drawable/ic_button_send"
+            android:src="@drawable/ic_send_black_24dp"
+            android:tint="?attr/chat_input_button_color"
             />
     </LinearLayout>
 

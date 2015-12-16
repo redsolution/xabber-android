@@ -5,7 +5,6 @@
     android:layout_height="8dp"
     android:clickable="true"
     android:elevation="1dp"
-    android:background="@color/grey_300"
     android:id="@+id/bottom_layer"
     >
     <RelativeLayout
@@ -14,14 +13,13 @@
         android:layout_height="4dp"
         android:clickable="true"
         android:elevation="2dp"
-        android:background="@color/grey_300"
         android:id="@+id/top_layer"
         >
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="@color/grey_400"
+            android:background="?attr/contact_list_account_group_separator"
             android:layout_alignParentBottom="true"
             />
 
@@ -34,7 +32,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="@color/grey_400"
+        android:background="?attr/contact_list_account_group_separator"
         android:layout_alignParentBottom="true"
         />
 

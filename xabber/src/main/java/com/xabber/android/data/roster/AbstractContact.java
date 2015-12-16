@@ -14,12 +14,8 @@
  */
 package com.xabber.android.data.roster;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import android.graphics.drawable.Drawable;
 
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -30,12 +26,19 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.xmpp.address.Jid;
 
+import org.jivesoftware.smack.packet.Presence;
+
+import java.util.Collection;
+import java.util.Collections;
+
+
 /**
  * Basic contact representation.
  *
  * @author alexander.ivanov
  */
 public class AbstractContact extends BaseEntity {
+
 
     public AbstractContact(String account, String user) {
         super(account, user);
@@ -68,22 +71,31 @@ public class AbstractContact extends BaseEntity {
     }
 
     public StatusMode getStatusMode() {
-        return PresenceManager.getInstance().getStatusMode(account, user);
+        return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
     }
 
     public String getStatusText() {
-        return PresenceManager.getInstance().getStatusText(account, user);
+        final String statusText = PresenceManager.getInstance().getStatusText(account, user);
+        if (statusText == null) {
+            return "";
+        } else {
+            return statusText;
+        }
     }
 
     public ClientSoftware getClientSoftware() {
-        ResourceItem resourceItem = PresenceManager.getInstance()
-                .getResourceItem(account, user);
-        if (resourceItem == null)
+        final Presence presence = RosterManager.getInstance().getPresence(account, user);
+
+        if (presence == null || !presence.isAvailable()) {
             return ClientSoftware.unknown;
-        ClientInfo clientInfo = CapabilitiesManager.getInstance()
-                .getClientInfo(account, resourceItem.getUser(user));
-        if (clientInfo == null)
+        }
+
+        final String fullJid = presence.getFrom();
+        ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, fullJid);
+        if (clientInfo == null) {
+
             return ClientSoftware.unknown;
+        }
         return clientInfo.getClientSoftware();
     }
 
@@ -101,13 +113,6 @@ public class AbstractContact extends BaseEntity {
      */
     public Drawable getAvatarForContactList() {
         return AvatarManager.getInstance().getUserAvatarForContactList(user);
-    }
-
-    /**
-     * @return Account's color level.
-     */
-    public int getColorLevel() {
-        return AccountManager.getInstance().getColorLevel(account);
     }
 
     /**

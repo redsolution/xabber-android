@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 
 import java.util.ArrayList;
@@ -11,26 +12,26 @@ import java.util.Collections;
 import java.util.List;
 
 public class AccountPainter {
-    private final int themeMainColor;
     private final int themeDarkColor;
+    private final int themeTextColor;
     private final String[] accountColorNames;
 
     private int[] accountMainColors;
     private int[] accountDarkColors;
-    private int[] accountDarkestColors;
+    private int[] accountTextColors;
     private final int greyMain;
     private final int greyDark;
 
     public AccountPainter(Context context) {
 
-        accountMainColors = context.getResources().getIntArray(R.array.account_action_bar);
-        accountDarkColors = context.getResources().getIntArray(R.array.account_status_bar);
-        accountDarkestColors = context.getResources().getIntArray(R.array.account_900);
+        accountMainColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_main_color));
+        accountDarkColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_status_bar_color));
+        accountTextColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_text_color));
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
-        themeMainColor = getThemeMainColor(context);
         themeDarkColor = getThemeDarkColor(context);
+        themeTextColor = getThemeTextColor(context);
 
         greyMain = context.getResources().getColor(R.color.grey_600);
         greyDark = context.getResources().getColor(R.color.grey_700);
@@ -60,18 +61,27 @@ public class AccountPainter {
         }
     }
 
-    private int getThemeMainColor(Context context) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{R.attr.colorPrimary});
+    private int getThemeAttribute(Context context, int attr) {
+        final SettingsManager.InterfaceTheme interfaceTheme = SettingsManager.interfaceTheme();
+        final int theme;
+        if (interfaceTheme == SettingsManager.InterfaceTheme.dark) {
+            theme = R.style.ThemeDark;
+        } else {
+            theme = R.style.Theme;
+        }
+
+        TypedArray a = context.getTheme().obtainStyledAttributes(theme, new int[]{attr});
         int attributeResourceId = a.getResourceId(0, 0);
         a.recycle();
-        return context.getResources().getColor(attributeResourceId);
+        return attributeResourceId;
     }
 
     private int getThemeDarkColor(Context context) {
-        TypedArray a = context.getTheme().obtainStyledAttributes(R.style.Theme, new int[]{R.attr.colorPrimaryDark});
-        int attributeResourceId = a.getResourceId(0, 0);
-        a.recycle();
-        return context.getResources().getColor(attributeResourceId);
+        return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimaryDark));
+    }
+
+    private int getThemeTextColor(Context context) {
+        return context.getResources().getColor(getThemeAttribute(context, android.R.attr.textColorPrimary));
     }
 
     public int getAccountMainColor(String account) {
@@ -81,7 +91,7 @@ public class AccountPainter {
     public int getDefaultMainColor() {
         String firstAccount = getFirstAccount();
         if (firstAccount == null) {
-            return themeMainColor;
+            return themeTextColor;
         } else {
             return getAccountMainColor(firstAccount);
         }
@@ -91,10 +101,18 @@ public class AccountPainter {
         return accountDarkColors[getAccountColorLevel(account)];
     }
 
-    public int getAccountDarkestColor(String account) {
-        return accountDarkestColors[getAccountColorLevel(account)];
+    public int getAccountTextColor(String account) {
+        return accountTextColors[getAccountColorLevel(account)];
     }
 
+    public int getDefaultTextColor() {
+        String firstAccount = getFirstAccount();
+        if (firstAccount == null) {
+            return themeDarkColor;
+        } else {
+            return getAccountTextColor(firstAccount);
+        }
+    }
 
     public int getDefaultDarkColor() {
         String firstAccount = getFirstAccount();

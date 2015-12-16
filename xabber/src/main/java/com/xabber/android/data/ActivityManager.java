@@ -120,6 +120,12 @@ public class ActivityManager implements OnUnloadListener {
      */
     private void applyTheme(Activity activity) {
         activity.setTheme(R.style.Theme);
+        SettingsManager.InterfaceTheme theme = SettingsManager.interfaceTheme();
+        if (theme.equals(SettingsManager.InterfaceTheme.dark)) {
+            activity.setTheme(R.style.ThemeDark);
+        } else {
+            activity.setTheme(R.style.Theme);
+        }
     }
 
     /**
@@ -130,8 +136,12 @@ public class ActivityManager implements OnUnloadListener {
      * @param activity
      */
     public void onCreate(Activity activity) {
-        if (LOG)
+        if (LOG) {
             LogManager.i(activity, "onCreate: " + activity.getIntent());
+        }
+        if (!activity.getClass().getSimpleName().equals("AboutViewer")) {
+            applyTheme(activity);
+        }
         if (application.isClosing() && !(activity instanceof LoadActivity)) {
             activity.startActivity(LoadActivity.createIntent(activity));
             activity.finish();

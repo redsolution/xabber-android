@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:text="Lorem Ipsum"
-        android:textColor="?attr/colorPrimaryDark"
+        android:textColor="?android:attr/textColorPrimary"
         android:layout_marginLeft="8dp"
         android:layout_toRightOf="@id/avatar"
         android:textAppearance="?android:attr/textAppearanceMedium"

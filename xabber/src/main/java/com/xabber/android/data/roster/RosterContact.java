@@ -109,15 +109,7 @@ public class RosterContact extends AbstractContact {
 
     @Override
     public StatusMode getStatusMode() {
-        ResourceItem resourceItem = PresenceManager.getInstance()
-                .getResourceItem(account, user);
-        if (resourceItem == null) {
-            if (subscribed)
-                return StatusMode.unavailable;
-            else
-                return StatusMode.unsubscribed;
-        }
-        return resourceItem.getStatusMode();
+        return PresenceManager.getInstance().getStatusMode(account, user);
     }
 
     @Override

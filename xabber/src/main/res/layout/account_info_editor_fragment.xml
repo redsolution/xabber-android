@@ -248,7 +248,7 @@
                         android:id="@+id/vcard_birth_date"
                         android:singleLine="true"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:inputType="date"
+                        android:textColor="?android:attr/textColorPrimary"
                         android:paddingLeft="4dp"
                         android:paddingRight="8dp"
                         android:paddingTop="8dp"

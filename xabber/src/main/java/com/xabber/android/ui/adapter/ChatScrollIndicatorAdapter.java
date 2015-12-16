@@ -2,13 +2,13 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.helper.AccountPainter;
 
@@ -58,9 +58,9 @@ public class ChatScrollIndicatorAdapter {
             final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
 
             if (i > 0) {
-                int colorLevel = AccountManager.getInstance().getColorLevel(activeChats.get(i - 1).getAccount());
-                accountViewHolder.body.setImageLevel(colorLevel);
-                accountViewHolder.selection.setImageLevel(colorLevel);
+                final String account = activeChats.get(i - 1).getAccount();
+                ((GradientDrawable)accountViewHolder.body.getDrawable()).setColor(accountPainter.getAccountMainColor(account));
+                ((GradientDrawable)accountViewHolder.selection.getDrawable()).setColor(accountPainter.getAccountMainColor(account));
             } else {
                 accountViewHolder.body.setImageDrawable(new ColorDrawable(accountPainter.getDefaultMainColor()));
                 accountViewHolder.selection.setImageDrawable(new ColorDrawable(accountPainter.getDefaultMainColor()));

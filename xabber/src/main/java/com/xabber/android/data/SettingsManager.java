@@ -465,19 +465,16 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static InterfaceTheme interfaceTheme() {
-        String value = getString(R.string.interface_theme_key,
-                R.string.interface_theme_default);
-        if (Application.getInstance()
-                .getString(R.string.interface_theme_dark_value).equals(value))
+        String value = getString(R.string.interface_theme_key, R.string.interface_theme_default);
+        if (Application.getInstance().getString(R.string.interface_theme_dark_value).equals(value)) {
             return InterfaceTheme.dark;
-        else if (Application.getInstance()
-                .getString(R.string.interface_theme_light_value).equals(value))
+        } else if (Application.getInstance().getString(R.string.interface_theme_light_value).equals(value)) {
             return InterfaceTheme.light;
-        else if (Application.getInstance()
-                .getString(R.string.interface_theme_normal_value).equals(value))
-            return InterfaceTheme.normal;
-        else
+        } else if (Application.getInstance().getString(R.string.interface_theme_normal_value).equals(value)) {
+            return InterfaceTheme.light;
+        } else {
             throw new IllegalStateException();
+        }
     }
 
     public static Map<Pattern, Integer> interfaceSmiles() {
@@ -659,6 +656,9 @@ public class SettingsManager implements OnInitializedListener,
         } else if (key.equals(Application.getInstance().getString(
                 R.string.security_otr_mode_key))) {
             OTRManager.getInstance().onSettingsChanged();
+        } else if (key.equals(Application.getInstance().getString(
+                R.string.interface_theme_key))) {
+            ColorManager.getInstance().onSettingsChanged();
         }
     }
 

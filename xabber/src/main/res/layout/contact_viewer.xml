@@ -56,7 +56,7 @@
                 android:elevation="8dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="?attr/toolbar_popup_theme" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

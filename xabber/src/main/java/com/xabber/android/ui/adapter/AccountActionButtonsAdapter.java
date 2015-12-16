@@ -11,6 +11,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.ui.helper.AccountPainter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,9 +37,8 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
      * List of accounts.
      */
     private final ArrayList<String> accounts;
-    private int[] accountActionBarColors;
-    private int[] accountStatusBarColors;
     private int[] accountBackgroundColors;
+    private final AccountPainter accountPainter;
 
     public AccountActionButtonsAdapter(Activity activity,
                                        View.OnClickListener onClickListener, LinearLayout linearLayout) {
@@ -50,9 +50,9 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
         Resources resources = activity.getResources();
 
-        accountActionBarColors = resources.getIntArray(R.array.account_action_bar);
-        accountStatusBarColors = resources.getIntArray(R.array.account_status_bar);
-        accountBackgroundColors = resources.getIntArray(R.array.account_background);
+        accountPainter = new AccountPainter(activity);
+
+        accountBackgroundColors = resources.getIntArray(R.array.account_100);
     }
 
     /**
@@ -92,8 +92,9 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
 
             FloatingActionButton backgroundActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
             int colorLevel = AccountManager.getInstance().getColorLevel(account);
-            backgroundActionButton.setColorNormal(accountActionBarColors[colorLevel]);
-            backgroundActionButton.setColorPressed(accountStatusBarColors[colorLevel]);
+
+            backgroundActionButton.setColorNormal(accountPainter.getAccountMainColor(account));
+            backgroundActionButton.setColorPressed(accountPainter.getAccountDarkColor(account));
             backgroundActionButton.setColorRipple(accountBackgroundColors[colorLevel]);
 
             String selectedAccount = AccountManager.getInstance().getSelectedAccount();

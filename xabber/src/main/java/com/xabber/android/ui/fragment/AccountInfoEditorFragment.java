@@ -792,7 +792,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     public void setBirthDate(String date) {
         birthDate.setText(date);
-        birthDate.setTextColor(getResources().getColor(android.R.color.primary_text_light));
         if (date == null) {
             birthDateRemoveButton.setVisibility(View.INVISIBLE);
         } else {

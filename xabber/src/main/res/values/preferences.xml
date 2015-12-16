@@ -95,16 +95,14 @@
     <string name="interface_theme_dark_value">dark</string>
     <string name="interface_theme_light_value">light</string>
     <string-array name="interface_theme_entries">
-        <item>@string/interface_theme_normal</item>
         <item>@string/interface_theme_dark</item>
         <item>@string/interface_theme_light</item>
     </string-array>
     <string-array name="interface_theme_entryvalues">
-        <item>@string/interface_theme_normal_value</item>
         <item>@string/interface_theme_dark_value</item>
         <item>@string/interface_theme_light_value</item>
     </string-array>
-    <string name="interface_theme_default">@string/interface_theme_normal_value</string>
+    <string name="interface_theme_default">@string/interface_theme_light_value</string>
 
     <string name="interface_smiles_key">interface_smiles</string>
     <string name="interface_smiles_android_value">android</string>

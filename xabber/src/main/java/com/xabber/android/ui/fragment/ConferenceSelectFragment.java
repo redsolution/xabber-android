@@ -113,7 +113,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         accountPainter = new AccountPainter(getActivity());
 
         nextButton = (Button) view.findViewById(R.id.muc_next);
-        nextButton.setTextColor(accountPainter.getDefaultDarkColor());
+        nextButton.setTextColor(accountPainter.getDefaultTextColor());
         nextButton.setOnClickListener(this);
 
         return view;
@@ -165,7 +165,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         account = newAccount;
         listener.onAccountSelected(account);
 
-        nextButton.setTextColor(accountPainter.getAccountDarkColor(account));
+        nextButton.setTextColor(accountPainter.getAccountTextColor(account));
 
 
     }
