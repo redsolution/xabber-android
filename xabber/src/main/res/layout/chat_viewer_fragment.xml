@@ -72,7 +72,7 @@
             android:background="?android:selectableItemBackground"
             android:padding="8dp"
             android:src="@drawable/ic_mood_black_24dp"
-            android:tint="@color/grey_600"
+            android:tint="?attr/chat_input_button_color"
             />
 
         <github.ankushsachdeva.emojicon.EmojiconEditText
@@ -99,7 +99,7 @@
             android:background="?android:selectableItemBackground"
             android:padding="8dp"
             android:src="@drawable/ic_attach_file_black_24dp"
-            android:tint="@color/grey_600"
+            android:tint="?attr/chat_input_button_color"
             />
 
 
@@ -111,7 +111,7 @@
             android:contentDescription="@string/otr_encryption"
             android:padding="8dp"
             android:src="@drawable/ic_security_grey_24dp"
-            android:tint="@color/grey_600"
+            android:tint="?attr/chat_input_button_color"
             />
 
         <ImageButton
@@ -122,7 +122,8 @@
             android:background="?android:selectableItemBackground"
             android:contentDescription="@string/chat_send"
             android:padding="8dp"
-            android:src="@drawable/ic_button_send"
+            android:src="@drawable/ic_send_black_24dp"
+            android:tint="?attr/chat_input_button_color"
             />
     </LinearLayout>
 

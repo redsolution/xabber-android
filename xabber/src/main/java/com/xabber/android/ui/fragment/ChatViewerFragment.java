@@ -181,7 +181,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         accountPainter = new AccountPainter(getActivity());
 
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
-        sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+        sendButton.setColorFilter(accountPainter.getGreyMain());
 
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
@@ -517,7 +517,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
 
         if (isInputEmpty) {
-            sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+            sendButton.setColorFilter(accountPainter.getGreyMain());
+            sendButton.setEnabled(false);
             securityButton.setVisibility(View.VISIBLE);
             if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
                 attachButton.setVisibility(View.VISIBLE);
@@ -525,8 +526,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 attachButton.setVisibility(View.GONE);
             }
         } else {
-            sendButton.setImageResource(R.drawable.ic_button_send);
-            sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+            sendButton.setEnabled(true);
+            sendButton.setColorFilter(accountPainter.getAccountMainColor(account));
             securityButton.setVisibility(View.GONE);
             attachButton.setVisibility(View.GONE);
         }
