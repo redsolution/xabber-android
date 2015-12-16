@@ -28,6 +28,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnDisconnectListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
@@ -39,6 +40,7 @@ import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Stanza;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +53,7 @@ import java.util.HashSet;
  * @author alexander.ivanov
  */
 public class PresenceManager implements OnArchiveModificationsReceivedListener,
-        OnLoadListener, OnAccountDisabledListener, OnDisconnectListener {
+        OnLoadListener, OnAccountDisabledListener, OnDisconnectListener, OnPacketListener {
 
     private final static PresenceManager instance;
 
@@ -208,24 +210,6 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     public void onPresenceChanged(String account, Presence presence) {
         final String bareAddress = Jid.getBareAddress(presence.getFrom());
 
-
-        LogManager.i(this, "onPresenceChanged " + bareAddress + " type: " + presence.getType());
-
-        if (presence.getType() == Presence.Type.subscribe) {
-            // Subscription request
-            HashSet<String> set = requestedSubscriptions.get(account);
-            if (set != null && set.contains(bareAddress)) {
-                try {
-                    acceptSubscription(account, bareAddress);
-                } catch (NetworkException e) {
-                }
-                subscriptionRequestProvider.remove(account, bareAddress);
-            } else {
-                subscriptionRequestProvider.add(new SubscriptionRequest(account, bareAddress), null);
-            }
-            return;
-        }
-
         CapabilitiesManager.getInstance().onPresenceChanged(account, presence);
         for (OnStatusChangeListener listener
                 : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
@@ -283,4 +267,32 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
         ConnectionManager.getInstance().sendStanza(account, presence);
     }
 
+    @Override
+    public void onPacket(ConnectionItem connection, String bareAddress, Stanza stanza) {
+        if (!(connection instanceof AccountItem)) {
+            return;
+        }
+
+        if (!(stanza instanceof Presence)) {
+            return;
+        }
+
+        Presence presence = (Presence) stanza;
+
+        if (presence.getType() == Presence.Type.subscribe) {
+            String account = ((AccountItem) connection).getAccount();
+
+            // Subscription request
+            HashSet<String> set = requestedSubscriptions.get(account);
+            if (set != null && set.contains(bareAddress)) {
+                try {
+                    acceptSubscription(account, bareAddress);
+                } catch (NetworkException e) {
+                }
+                subscriptionRequestProvider.remove(account, bareAddress);
+            } else {
+                subscriptionRequestProvider.add(new SubscriptionRequest(account, bareAddress), null);
+            }
+        }
+    }
 }

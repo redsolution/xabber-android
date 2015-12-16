@@ -214,8 +214,10 @@ public class ConnectionThread implements
 
 
         AccountRosterListener rosterListener = new AccountRosterListener(((AccountItem)connectionItem).getAccount());
-        Roster.getInstanceFor(xmppConnection).addRosterListener(rosterListener);
-        Roster.getInstanceFor(xmppConnection).addRosterLoadedListener(rosterListener);
+        final Roster roster = Roster.getInstanceFor(xmppConnection);
+        roster.addRosterListener(rosterListener);
+        roster.addRosterLoadedListener(rosterListener);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
 
         org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
 
