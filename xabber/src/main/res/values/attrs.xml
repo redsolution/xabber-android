@@ -5,6 +5,7 @@
         <attr name="recent_chats_background" format="reference" />
         <attr name="chat_background" format="reference" />
         <attr name="chat_input_background" format="reference" />
+        <attr name="chat_input_button_color" format="reference" />
         <attr name="chat_incoming_balloon" format="reference" />
         <attr name="chat_incoming_balloon_pressed" format="reference" />
 

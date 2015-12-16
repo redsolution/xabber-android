@@ -27,6 +27,7 @@
 
         <item name="chat_background">?android:attr/windowBackground</item>
         <item name="chat_input_background">@color/white</item>
+        <item name="chat_input_button_color">@color/grey_600</item>
         <item name="chat_incoming_balloon">@array/account_50</item>
         <item name="chat_incoming_balloon_pressed">@array/account_100</item>
 
@@ -83,6 +84,7 @@
 
         <item name="chat_background">@color/black</item>
         <item name="chat_input_background">@color/grey_900</item>
+        <item name="chat_input_button_color">@color/grey_500</item>
         <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
         <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
 
