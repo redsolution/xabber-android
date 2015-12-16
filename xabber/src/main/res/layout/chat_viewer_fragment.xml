@@ -100,6 +100,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_attach_file_black_24dp"
             android:tint="?attr/chat_input_button_color"
+            android:layout_gravity="bottom"
             />
 
 
@@ -112,6 +113,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_security_grey_24dp"
             android:tint="?attr/chat_input_button_color"
+            android:layout_gravity="bottom"
             />
 
         <ImageButton
