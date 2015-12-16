@@ -12,9 +12,15 @@
 
         <attr name="contact_list_account_group_background" format="reference" />
         <attr name="contact_list_account_group_separator" format="reference" />
+        <attr name="contact_list_account_group_second_line_text_color" format="reference" />
+        <attr name="contact_list_account_group_small_right_icon_color" format="reference" />
+        <attr name="contact_list_account_group_small_right_text_color" format="reference" />
+        <attr name="contact_list_account_group_status_icon_separator_color" format="reference" />
 
         <attr name="contact_list_subgroup_background" format="reference" />
         <attr name="contact_list_subgroup_separator" format="reference" />
+        <attr name="contact_list_subgroup_offline_indicator_color" format="reference" />
+        <attr name="contact_list_subgroup_expander_color" format="reference" />
 
         <attr name="contact_list_contact_background" format="reference" />
         <attr name="contact_list_contact_separator" format="reference" />

@@ -109,16 +109,6 @@
 
         </LinearLayout>
 
-        <View
-            android:layout_width="1px"
-            android:layout_height="26dp"
-            android:background="@color/black"
-            android:alpha="0.1"
-            android:layout_gravity="center_vertical"
-            android:id="@+id/status_icon_separator"
-
-            />
-
         <ImageView
             android:id="@+id/contact_list_item_status_icon"
             android:layout_width="wrap_content"

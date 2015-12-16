@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -235,16 +236,35 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         return view;
     }
 
+    static class ContactListAccountItemViewHolder extends RecyclerView.ViewHolder {
+
+        final ImageView avatar;
+        final TextView name;
+        final TextView secondLineMessage;
+        final TextView smallRightText;
+        final ImageView smallRightIcon;
+        final ImageView statusIcon;
+        final ImageView offlineShadow;
+
+        public ContactListAccountItemViewHolder(View view) {
+            super(view);
+
+            avatar = (ImageView) view.findViewById(R.id.avatar);
+            name = (TextView) view.findViewById(R.id.contact_list_item_name);
+            secondLineMessage = (TextView) view.findViewById(R.id.second_line_message);
+            smallRightIcon = (ImageView) view.findViewById(R.id.small_right_icon);
+            smallRightText = (TextView) view.findViewById(R.id.small_right_text);
+            statusIcon = (ImageView) view.findViewById(R.id.contact_list_item_status_icon);
+            offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
+        }
+    }
+
     private View getAccountView(int position, View convertView, ViewGroup parent) {
         final View view;
-        final ContactListItemViewHolder viewHolder;
+        final ContactListAccountItemViewHolder viewHolder;
         if (convertView == null) {
-            view = layoutInflater.inflate(R.layout.contact_list_item, parent, false);
-
-            viewHolder = new ContactListItemViewHolder(view);
-            viewHolder.outgoingMessageIndicator.setVisibility(View.GONE);
-            viewHolder.color.setVisibility(View.INVISIBLE);
-            viewHolder.largeClientIcon.setVisibility(View.GONE);
+            view = layoutInflater.inflate(R.layout.contact_list_account_group_item, parent, false);
+            viewHolder = new ContactListAccountItemViewHolder(view);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.setElevation(accountElevation);
@@ -252,7 +272,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
             view.setTag(viewHolder);
         } else {
             view = convertView;
-            viewHolder = (ContactListItemViewHolder) view.getTag();
+            viewHolder = (ContactListAccountItemViewHolder) view.getTag();
         }
 
         final AccountConfiguration configuration = (AccountConfiguration) getItem(position);

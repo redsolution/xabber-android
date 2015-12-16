@@ -61,8 +61,6 @@ public class ContactItemInflater {
         if (convertView == null) {
             view = LayoutInflater.from(context).inflate(R.layout.contact_list_item, parent, false);
             viewHolder = new ContactListItemViewHolder(view);
-            viewHolder.statusIconSeparator.setVisibility(View.INVISIBLE);
-
             view.setTag(viewHolder);
         } else {
             view = convertView;
