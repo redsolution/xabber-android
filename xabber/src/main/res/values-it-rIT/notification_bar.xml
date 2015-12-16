@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Password richiesta</string>
   <string name="pay_attention">Presta attenzione</string>
   <string name="subscription_request_message">Richiesta di autorizzazione</string>
+  <string name="conference_private_chat">Chat di gruppo privata</string>
 </resources>

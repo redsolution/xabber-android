@@ -27,6 +27,7 @@
   <string name="account_compression_summary">Zaškrtnutím povolíte kompresi dat</string>
   <string name="account_custom">Vlastní hostitel</string>
   <string name="account_custom_summary">Použít nastavení vlastní hostitele namísto SRV záznam</string>
+  <string name="account_enabled_summary">Přepnout pro povolení účtu</string>
   <string name="account_invalid_port">Port musí být číslo (výchozí: 5222)</string>
   <string name="account_invalid_port_range">Port musí být mezi 1 a 65535 (výchozí: 5222)</string>
   <string name="account_invalid_priority">Hodnota priority musí být číslo od -128 do 128 (výchozí: 0)</string>

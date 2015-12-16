@@ -90,4 +90,7 @@
   <string name="received_by">%s が受信しました</string>
   <string name="could_not_get_path_to_file">ファイルのパスを取得できません</string>
   <string name="message_open_private_chat">プライベート チャットを開く</string>
+  <string name="http_file_upload_slot_error">ファイルをアップロードできませんでした。大きすぎませんか?</string>
+  <string name="no_permission_to_read_files">ファイルを読み取る権限がありません</string>
+  <string name="no_permission_to_write_files">ファイルの書き込み権限がありません</string>
 </resources>

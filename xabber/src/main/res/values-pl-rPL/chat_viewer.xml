@@ -17,6 +17,8 @@
   <string name="message_quote">Cytuj</string>
   <string name="message_remove">Usuń z archiwum</string>
   <string name="message_repeat">Ponów wysyłanie</string>
+  <string name="message_open_file">Otwórz</string>
+  <string name="message_save_file">Zapisz</string>
   <string name="save_history">Zachowaj historię rozmowy</string>
   <string name="show_history">Pokaż archiwum</string>
   <string name="action_attention_called">Prośba o uwagę wysłana</string>
@@ -80,4 +82,15 @@
   <string name="chat_events_show_text_global">Użyj ustawień globalnych</string>
   <string name="chat_events_show_text_always">Pokaż tekst wiadomości</string>
   <string name="chat_events_show_text_never">Ukryj tekst wiadomości</string>
+  <string name="sending_file">Wysyłanie pliku %s</string>
+  <string name="error_sending_file">Błąd wysyłania pliku %s</string>
+  <string name="no_application_to_open_file">Nie znaleziono aplikacji dla tego typu pliku</string>
+  <string name="could_not_save_file">Nie udało się zapisać pliku</string>
+  <string name="file_saved_successfully">Plik zapisany pomyślnie</string>
+  <string name="received_by">Odebrano przez %s</string>
+  <string name="could_not_get_path_to_file">Nie udało się odnaleźć ścieżki do pliku</string>
+  <string name="message_open_private_chat">Otwórz prywatny czat</string>
+  <string name="http_file_upload_slot_error">Nie można było załadować pliku. Za duży?</string>
+  <string name="no_permission_to_read_files">Brak uprawnień do odczytu</string>
+  <string name="no_permission_to_write_files">Brak uprawnień do zapisu</string>
 </resources>

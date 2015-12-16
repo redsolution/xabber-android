@@ -27,6 +27,7 @@
   <string name="account_compression_summary">Zaznacz, aby włączyć kompresję danych</string>
   <string name="account_custom">Użyj niestandardowego adresu hosta</string>
   <string name="account_custom_summary">Użyj niestandardowego adresu hosta i portu zamiast rekordu SRV</string>
+  <string name="account_enabled_summary">Włącz konto</string>
   <string name="account_invalid_port">Numer portu musi być liczbą (domyślnie: 5222)</string>
   <string name="account_invalid_port_range">Port musi być od 1 do 65535 (domyślnie: 5222)</string>
   <string name="account_invalid_priority">Priorytet musi być liczbą pomiędzy -128 i 128 (domyślnie: 10)</string>
@@ -59,6 +60,7 @@
   <string name="INCORRECT_USER_NAME">Błędna nazwa użytkownika. Przeczytaj informację poniżej.</string>
   <string name="orbot_required_message">Aby korzystać z TORa musisz mieć zainstalowanego Orbota i tunelować przez niego ruch sieciowy. Czy chcesz go zainstalować z Google Play?</string>
   <string name="orbot_required_title">Zainstalować Orbota?</string>
+  <string name="install_orbot">Zainstaluj Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Nie można zarejestrować konta na serwerze.</string>
   <string name="account_color">Kolor konta</string>
   <string name="account_color_name_green">Zielony</string>

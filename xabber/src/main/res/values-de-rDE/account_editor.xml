@@ -56,12 +56,12 @@
   <string name="account_tls_require">TLS benötigt</string>
   <string name="account_tls_require_summary">TLS-Verschlüsselung für Verbindung zum Server verlangen</string>
   <string name="account_use_orbot">Chatten über das anonyme Netzwerk TOR und erzwingen einer TLS Verschlüsselung\nFür Google Talk nicht empfohlen</string>
-  <string name="confirm_cancellation">Willst du wirklich alle Änderungen verwerfen?</string>
-  <string name="INCORRECT_USER_NAME">Überprüfe den Benutzernamen. Details findest du unten im Hilfetext.</string>
+  <string name="confirm_cancellation">Wollen Sie wirklich alle Änderungen verwerfen?</string>
+  <string name="INCORRECT_USER_NAME">Überprüfen Sie den Benutzernamen. Details finden Sie unten im Hilfetext.</string>
   <string name="orbot_required_message">Für die Nutzung von TOR muss Orbot installiert sein und die Proxy-Verbindung darüber laufen. Möchten Sie die App von Google Play herunterladen?</string>
   <string name="orbot_required_title">Soll Orbot installiert werden?</string>
   <string name="install_orbot">Orbot installieren</string>
-  <string name="ACCOUNT_REGISTER_FAILED">Das Konto konnte nicht auf dem Server angelegt werden.</string>
+  <string name="ACCOUNT_REGISTER_FAILED">Das Benutzerkonto konnte nicht auf dem Server angelegt werden.</string>
   <string name="account_color">Kontofarbe</string>
   <string name="account_color_name_green">Grün</string>
   <string name="account_color_name_orange">Orange</string>

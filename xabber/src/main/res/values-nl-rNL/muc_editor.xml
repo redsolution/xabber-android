@@ -21,4 +21,6 @@
   <string name="muc_invite_confirm_reason">%2$s inviteert je om lid te worden van conferentie %3$s: %4$s.  Lid worden vanop account %1$s?</string>
   <string name="muc_leave">Verlaat conferentie</string>
   <string name="muc_save">Sla conferentie op</string>
+  <string name="muc_next">Volgende</string>
+  <string name="contact_is_blocked">Contact is geblokkeerd!</string>
 </resources>

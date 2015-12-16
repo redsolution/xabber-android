@@ -3,7 +3,7 @@
 <resources>
   <string name="account_compression">Použiť kompresiu</string>
   <string name="account_enabled">Povolený</string>
-  <string name="account_host">Hostiteľ</string>
+  <string name="account_host">Server</string>
   <string name="account_password">Heslo</string>
   <string name="confirm_password">Potvrďte heslo</string>
   <string name="account_port">Port</string>
@@ -26,7 +26,7 @@
   <string name="account_archive_mode_unread">Lokálne iba neodoslané a neprečítané</string>
   <string name="account_compression_summary">Zaškrtnite pre povolenie kompresie dát</string>
   <string name="account_custom">Vlastný hostiteľ</string>
-  <string name="account_custom_summary">Použiť nastavenie vlastného hostiteľa namiesto SRV záznamu</string>
+  <string name="account_custom_summary">Použiť vlastné nastavenie servera namiesto SRV záznamu</string>
   <string name="account_enabled_summary">Prepnúť pre povolenie účtu</string>
   <string name="account_invalid_port">Port musí byť číslo (predvolené: 5222)</string>
   <string name="account_invalid_port_range">Port musí byť v rozsahu medzi 1 a 65535 (predvolené: 5222)</string>

@@ -17,6 +17,8 @@
   <string name="message_quote">Citeer</string>
   <string name="message_remove">Verwijder uit geschiedenis</string>
   <string name="message_repeat">Probeer opnieuw te verzenden</string>
+  <string name="message_open_file">Openen</string>
+  <string name="message_save_file">Opslaan</string>
   <string name="save_history">Bewaar lokale geschiedenis\nBewaar berichtengeschiedenis lokaal</string>
   <string name="show_history">Toon geschiedenis</string>
   <string name="action_attention_called">Vraag om aandacht is verzonden</string>
@@ -80,4 +82,14 @@
   <string name="chat_events_show_text_global">Gebruik globale instellingen</string>
   <string name="chat_events_show_text_always">Toon berichttekst</string>
   <string name="chat_events_show_text_never">Verberg tekst van bericht</string>
+  <string name="sending_file">Verzenden van bestand %s</string>
+  <string name="error_sending_file">Fout tijdens verzenden bestand %s</string>
+  <string name="no_application_to_open_file">Geen toepassing gevonden om dit bestand te openen</string>
+  <string name="could_not_save_file">Kan bestand niet opslaan</string>
+  <string name="file_saved_successfully">Bestand succesvol opgeslagen</string>
+  <string name="received_by">Ontvangen door %s</string>
+  <string name="message_open_private_chat">Privé chat openen</string>
+  <string name="http_file_upload_slot_error">Kan het bestand niet uploaden. Te groot?</string>
+  <string name="no_permission_to_read_files">Geen toestemming om bestanden te lezen</string>
+  <string name="no_permission_to_write_files">Geen toestemming om bestanden te schrijven</string>
 </resources>

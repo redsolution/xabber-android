@@ -91,4 +91,6 @@
   <string name="could_not_get_path_to_file">Impossible de trouver le chemin du fichier</string>
   <string name="message_open_private_chat">Ouvrir une conversation privée</string>
   <string name="http_file_upload_slot_error">L\'upload du fichier a échoué. Est-il trop gros?</string>
+  <string name="no_permission_to_read_files">Permission de lire les fichiers refusée</string>
+  <string name="no_permission_to_write_files">Permission d\'écrire les fichiers refusée</string>
 </resources>

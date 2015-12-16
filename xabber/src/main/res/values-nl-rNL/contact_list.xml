@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Verbindingsfout</string>
   <string name="contact_add">Voeg contact toe</string>
   <string name="contact_delete">Verwijder</string>
+  <string name="contact_block">Blokkeer contact</string>
   <string name="contact_delete_confirm">Wil je contact %1$s verwijderen uit account %2$s?</string>
   <string name="contact_list">Contactenlijst</string>
   <string name="discard_subscription">Weiger contact</string>
@@ -58,4 +59,14 @@
   <string name="contact_search_hint">Contacten zoeken</string>
   <string name="sender_is_you">Jij</string>
   <string name="xmpp_accounts">XMPP accounts</string>
+  <string name="block_list">Blokkeerlijst</string>
+  <string name="contact_blocked_successfully">Contact blokkeren geslaagd</string>
+  <string name="error_blocking_contact">Contact blokkeren mislukt</string>
+  <string name="unblock_contact">Contact deblokkeren</string>
+  <string name="contacts_unblocked_successfully">Deblokkeren contacten geslaagd</string>
+  <string name="error_unblocking_contacts">Deblokkeren contact mislukt</string>
+  <string name="block_contact_confirm">Weet u zeker dat u contact %1$s van account %2$s wilt blokkeren?</string>
+  <string name="unblock_all_contacts_confirm">Weet u zeker dat u alle contacten van account %1$s wilt deblokkeren?</string>
+  <string name="unblock_all">Alle deblokkeren</string>
+  <string name="unblock_selected">Deblokkeer geselecteerde(n)</string>
 </resources>

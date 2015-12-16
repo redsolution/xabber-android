@@ -62,4 +62,5 @@
   <string name="conference_name">Jméno</string>
   <string name="conference_description">Popis</string>
   <string name="conference_subject">Předmět</string>
+  <string name="message_info_occupants_number">Uživatelé: %d</string>
 </resources>

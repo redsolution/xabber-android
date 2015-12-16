@@ -76,7 +76,10 @@
   <string name="chats_attention">Waarschuwing\nReageer op inkomende aandacht verzoeken</string>
   <string name="chats_attention_sound">Attentie geluid\nSelecteer ringtone</string>
   <string name="connection_load_vcard">Laad vCard\nLaad en update persoonlijke informatie en avatar van contact. Zet uit om dataverkeer te besparen.</string>
+  <string name="connection_load_images">Laadt afbeeldingen\nLaat afbeeldingen van bestands-URL automatisch. Uitschakelen om dataverkeer te reduceren.</string>
   <string name="connection_use_carbons">Carbon-copied modus\nKan instabiel zijn! Sessies voor dezelfde account op deze client delen. Uitschakelen om data verbruik te verminderen.</string>
+  <string name="connection_use_plain_text_auth">Platte tekst authenticatie\nGebruik platte tekst authenticatie voor alle accounts. Niet aanbevolen.</string>
   <string name="events_phrases">Belangrijke zin\nCreëer aangepaste meldingen voor ontvangen berichten die specifieke zinnen bevatten</string>
   <string name="security_clear_certificate_warning">Wilt u echt alle genegeerde certificaten verwijderen?</string>
+  <string name="debug_connection_errors_title">Toon verbindingsfouten\nToon pop-ups van verbindingsfouten</string>
 </resources>

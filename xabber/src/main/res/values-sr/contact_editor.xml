@@ -22,4 +22,5 @@
   <string name="conference_private_chat_invitation">%1$s са %2$s жели да почне приватно ћаскање са вама</string>
   <string name="accept_muc_private_chat">Прихвати</string>
   <string name="block_muc_private_chat">Блокирај</string>
+  <string name="no_permission_camera">Немам дозволу за приступ камери</string>
 </resources>

@@ -78,6 +78,7 @@
   <string name="connection_load_vcard">Lade vCard\nLaden und Aktualisieren von Kontaktdaten und Avataren. Deaktivieren, um Netzwerkverkehr zu reduzieren.</string>
   <string name="connection_load_images">Bilder laden\nBilder von der Datei URL automatisch herunterladen. Deaktivieren um Netzwerkverkehr zu reduzieren.</string>
   <string name="connection_use_carbons">Carbon copy Mode\nMöglicherweise instabil! Wird Sitzungen für dasselbe Konto auf diesem Client teilen. Deaktivieren, um die Netzwerkverkehr zu reduzieren.</string>
+  <string name="connection_use_plain_text_auth">Klartext Authentifizierung. Nur-Text-Authentifizierung für alle Konten. Nicht zu empfehlen.</string>
   <string name="events_phrases">Schlüsselbegriffe\nBenachrichtigung wenn Nachrichten voreingestellte Begriffe enthalten und auswahl des dazugehörigen Klanges</string>
   <string name="security_clear_certificate_warning">Wollen Sie wirklich alle ignorierten Zertifikate entfernen?</string>
   <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>

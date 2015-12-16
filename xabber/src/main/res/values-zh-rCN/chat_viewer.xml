@@ -91,4 +91,6 @@
   <string name="could_not_get_path_to_file">无法获取文件路径</string>
   <string name="message_open_private_chat">打开私人聊天</string>
   <string name="http_file_upload_slot_error">不能上传文件。太大吗？</string>
+  <string name="no_permission_to_read_files">没有读取文件的权限</string>
+  <string name="no_permission_to_write_files">没有写入文件的权限</string>
 </resources>

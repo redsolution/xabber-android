@@ -3,7 +3,7 @@
 <resources>
   <string name="action_status_text">%1$s промени стање: %2$s</string>
   <string name="action_status_text_none">%1$s очисти поруку стања</string>
-  <string name="action_join">%1$s се придружи конференцији</string>
+  <string name="action_join">%1$s се придружи групном ћаскању</string>
   <string name="action_kick">корисник %1$s је избачен</string>
   <string name="account_is_offline">Тренутно сте ван везе. Поруке које пошаљете биће испоручене када се повежете следећи пут.</string>
   <string name="chat_delay">послато у %s</string>
@@ -91,4 +91,6 @@
   <string name="could_not_get_path_to_file">Не могу да добијем путању фајла</string>
   <string name="message_open_private_chat">Отвори приватно ћаскање</string>
   <string name="http_file_upload_slot_error">Нисам могао да отпремим фајл. Да није превелик?</string>
+  <string name="no_permission_to_read_files">Немам дозволу за читање фајлова</string>
+  <string name="no_permission_to_write_files">Немам дозволу за упис фајлова</string>
 </resources>

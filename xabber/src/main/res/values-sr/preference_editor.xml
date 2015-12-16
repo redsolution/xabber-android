@@ -61,7 +61,7 @@
   <string name="events_ignore_system_vibro">Занемари системске поставке вибрације\nКористите ову опцију ако вам вибрација не ради</string>
   <string name="events_message">Поставке обавештења\nПоставке обавештења за долазне поруке</string>
   <string name="events_message_chat">само ћаскања</string>
-  <string name="events_message_chat_and_muc">ћаскања и конференције</string>
+  <string name="events_message_chat_and_muc">и за групна ћаскања</string>
   <string name="events_message_none">не обавештавај</string>
   <string name="events_show_text">Прикажи поруку као обавештење\nПриказ текста поруке у траци обавештења</string>
   <string name="events_visible_chat">Обавештење у текућем ћаскању\nОбавештава о долазним порукама текућег ћаскања</string>

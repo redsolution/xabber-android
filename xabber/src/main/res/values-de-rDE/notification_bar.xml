@@ -27,7 +27,7 @@
   <string name="connection_state_waiting_2">%1$d von %2$d %3$s warten auf Verbindung...</string>
   <string name="connection_state_waiting_5">-</string>
   <string name="connection_state_offline">%1$d %2$s abwesend</string>
-  <string name="archive_available_request_message">Möchtest du deine Nachrichten auf dem Server speichern?\nDies ermöglicht Xabber deinen Verlauf auf jedem Gerät zu laden, welches diesen Account nutzt.\nDieses Feature wird zusätzliches Datenvolumen erzeugen und die Verbindungsgeschwindigkeit leicht reduzieren.\nWARNUNG: Alle lokalen Verläufe werden gelöscht.</string>
+  <string name="archive_available_request_message">Möchten Sie ihre Nachrichten auf dem Server speichern?\nDies ermöglicht Xabber ihren Verlauf auf jedem Gerät zu laden, welches diesen Account nutzt.\nDieses Feature wird zusätzlichen Netzwerkverkehr erzeugen und die Verbindungsgeschwindigkeit leicht reduzieren.\nWARNUNG: Alle lokalen Verläufe werden gelöscht.</string>
   <string name="archive_available_request_title">Nachrichtenarchiv aktivieren?</string>
   <string name="INVALID_CERTIFICATE">Ungültiges Zertifikat</string>
   <string name="muc_invite_message">Möchtest du der Konferenz beitreten?</string>
