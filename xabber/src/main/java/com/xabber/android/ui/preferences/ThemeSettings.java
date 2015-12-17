@@ -3,12 +3,12 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.R;
+import com.xabber.android.data.ActivityManager;
 import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.PreferenceSummaryHelper;
-import com.xabber.android.ui.helper.BarPainter;
-import com.xabber.android.data.ActivityManager;
-import com.xabber.android.R;
+import com.xabber.android.ui.color.BarPainter;
 
 public class ThemeSettings extends ManagedActivity
         implements ThemeSettingsFragment.OnThemeSettingsFragmentInteractionListener {

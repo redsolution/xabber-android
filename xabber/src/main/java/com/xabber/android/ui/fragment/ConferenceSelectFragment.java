@@ -24,7 +24,7 @@ import com.xabber.android.ui.activity.ConferenceAdd;
 import com.xabber.android.ui.activity.ConferenceFilterActivity;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.muc.HostedRoom;
 
@@ -43,7 +43,6 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     private String account;
 
     Listener listener;
-    private AccountPainter accountPainter;
     private Button nextButton;
 
     public ConferenceSelectFragment() {
@@ -110,10 +109,8 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             accountView.setSelection(0);
         }
 
-        accountPainter = new AccountPainter(getActivity());
-
         nextButton = (Button) view.findViewById(R.id.muc_next);
-        nextButton.setTextColor(accountPainter.getDefaultTextColor());
+        nextButton.setTextColor(ColorManager.getInstance().getAccountPainter().getDefaultTextColor());
         nextButton.setOnClickListener(this);
 
         return view;
@@ -165,7 +162,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         account = newAccount;
         listener.onAccountSelected(account);
 
-        nextButton.setTextColor(accountPainter.getAccountTextColor(account));
+        nextButton.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
 
 
     }

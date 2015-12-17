@@ -36,11 +36,9 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.ColorManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
@@ -71,9 +69,9 @@ import com.xabber.android.ui.activity.FingerprintViewer;
 import com.xabber.android.ui.activity.OccupantList;
 import com.xabber.android.ui.activity.QuestionViewer;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
-import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
@@ -117,7 +115,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
     private MessageItem clickedMessageItem;
-    private AccountPainter accountPainter;
 
     private Timer stopTypingTimer = new Timer();
     private final long STOP_TYPING_DELAY = 4000; // in ms
@@ -179,10 +176,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         setHasOptionsMenu(true);
 
-        accountPainter = new AccountPainter(getActivity());
-
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
-        sendButton.setColorFilter(accountPainter.getGreyMain());
+        sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
@@ -209,7 +204,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         recyclerView.setLayoutManager(layoutManager);
 
         // to avoid strange bug on some 4.x androids
-        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getThemeColor(getActivity(), R.attr.chat_input_background));
+        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
@@ -521,7 +516,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
 
         if (isInputEmpty) {
-            sendButton.setColorFilter(accountPainter.getGreyMain());
+            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
             sendButton.setEnabled(false);
             securityButton.setVisibility(View.VISIBLE);
             if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
@@ -531,7 +526,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             }
         } else {
             sendButton.setEnabled(true);
-            sendButton.setColorFilter(accountPainter.getAccountMainColor(account));
+            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
             securityButton.setVisibility(View.GONE);
             attachButton.setVisibility(View.GONE);
         }
@@ -643,7 +638,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
-        toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
         chatMessageAdapter.onChange();
         scrollChat(itemCountBeforeUpdate);

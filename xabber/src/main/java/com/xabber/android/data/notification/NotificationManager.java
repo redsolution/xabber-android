@@ -47,7 +47,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ClearNotifications;
 import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.activity.ReconnectionActivity;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -101,7 +101,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
      * List of
      */
     private final List<MessageNotification> messageNotifications;
-    private final AccountPainter accountPainter;
     private NotificationCompat.Builder persistentNotificationBuilder;
     private MessageNotificationCreator messageNotificationCreator;
     private int persistentNotificationColor;
@@ -149,7 +148,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         messageNotificationCreator = new MessageNotificationCreator();
 
-        accountPainter = new AccountPainter(application);
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
@@ -291,7 +289,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         notificationBuilder.setDeleteIntent(clearNotifications);
 
-        notificationBuilder.setColor(accountPainter.getDefaultMainColor());
+        notificationBuilder.setColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
         notify(id, notificationBuilder.build());
     }

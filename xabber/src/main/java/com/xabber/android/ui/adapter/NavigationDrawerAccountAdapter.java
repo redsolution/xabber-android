@@ -13,7 +13,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,11 +22,9 @@ import java.util.List;
 
 
 public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String> {
-    private final AccountPainter accountPainter;
 
     public NavigationDrawerAccountAdapter(Activity activity) {
         super(activity);
-        accountPainter = new AccountPainter(activity);
     }
 
     @Override
@@ -40,13 +38,13 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
         }
         String account = getItem(position);
 
-        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable((accountPainter.getAccountMainColor(account))));
+        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable((ColorManager.getInstance().getAccountPainter().getAccountMainColor(account))));
         ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
         TextView accountName = (TextView) view.findViewById(R.id.name);
 
         accountName.setText(RosterManager.getInstance().getBestContact(account, accountManager.getVerboseName(account)).getName());
-        accountName.setTextColor(accountPainter.getAccountTextColor(account));
+        accountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
 
         ((TextView) view.findViewById(R.id.account_jid)).setText(accountManager.getVerboseName(account));
 

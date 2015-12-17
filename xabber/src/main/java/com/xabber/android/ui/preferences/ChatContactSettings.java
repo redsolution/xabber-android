@@ -24,8 +24,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.ui.helper.BarPainter;
 import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.color.BarPainter;
 
 public class ChatContactSettings extends ManagedActivity
         implements ChatContactSettingsFragment.ChatEditorFragmentInteractionListener {

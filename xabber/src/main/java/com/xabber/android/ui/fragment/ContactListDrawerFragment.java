@@ -3,7 +3,6 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,7 +19,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.ui.adapter.NavigationDrawerAccountAdapter;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
 
 import java.util.Collection;
 

@@ -28,7 +28,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.preferences.AccountList;
 
 import java.util.ArrayList;
@@ -43,12 +43,8 @@ import java.util.List;
  */
 public class AccountListAdapter extends BaseListEditorAdapter<String> {
 
-    private final AccountPainter accountPainter;
-
     public AccountListAdapter(Activity activity) {
         super(activity);
-
-        accountPainter = new AccountPainter(activity);
     }
 
     @Override
@@ -62,7 +58,8 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
         }
         final String account = getItem(position);
 
-        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable(accountPainter.getAccountMainColor(account)));
+        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(
+                new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)));
         ((ImageView) view.findViewById(R.id.avatar))
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 

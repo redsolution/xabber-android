@@ -42,7 +42,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
-import com.xabber.android.ui.helper.BarPainter;
+import com.xabber.android.ui.color.BarPainter;
 
 public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
 

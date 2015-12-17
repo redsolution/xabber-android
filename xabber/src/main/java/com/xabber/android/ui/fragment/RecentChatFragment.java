@@ -16,7 +16,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.ui.activity.ChatViewer;
 import com.xabber.android.ui.adapter.ChatListAdapter;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +81,7 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         toolbar.inflateMenu(R.menu.recent_chats);
         toolbar.setOnMenuItemClickListener(this);
 
-        AccountPainter accountPainter = new AccountPainter(getActivity());
-        toolbar.setBackgroundColor(accountPainter.getDefaultMainColor());
+        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
 
         return rootView;
     }

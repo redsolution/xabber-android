@@ -1,4 +1,4 @@
-package com.xabber.android.ui.helper;
+package com.xabber.android.ui.color;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -20,14 +20,17 @@ public class AccountPainter {
     private int[] accountMainColors;
     private int[] accountDarkColors;
     private int[] accountTextColors;
+    private final int[] accountRippleColors;
+
     private final int greyMain;
     private final int greyDark;
 
-    public AccountPainter(Context context) {
+    AccountPainter(Context context) {
 
         accountMainColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_main_color));
         accountDarkColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_status_bar_color));
         accountTextColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_text_color));
+        accountRippleColors = context.getResources().getIntArray(R.array.account_100);
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
@@ -110,6 +113,10 @@ public class AccountPainter {
 
     public int getAccountTextColor(String account) {
         return accountTextColors[getAccountColorLevel(account)];
+    }
+
+    public int getAccountRippleColor(String account) {
+        return accountRippleColors[getAccountColorLevel(account)];
     }
 
     public int getDefaultTextColor() {

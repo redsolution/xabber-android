@@ -19,8 +19,8 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
-import com.xabber.android.ui.helper.BarPainter;
 
 import java.util.ArrayList;
 

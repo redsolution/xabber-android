@@ -39,11 +39,11 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
-import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
-import com.xabber.android.ui.helper.StatusBarPainter;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
@@ -149,19 +149,19 @@ public class ContactViewer extends ManagedActivity implements
         StatusBarPainter statusBarPainter = new StatusBarPainter(this);
         statusBarPainter.updateWithAccountName(account);
 
-        AccountPainter accountPainter = new AccountPainter(this);
+        final int accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
         findViewById(R.id.status_icon).setVisibility(View.GONE);
-        contactTitleView.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        contactTitleView.setBackgroundColor(accountMainColor);
         TextView contactNameView = (TextView) findViewById(R.id.name);
         contactNameView.setVisibility(View.INVISIBLE);
 
         collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(bestContact.getName());
 
-        collapsingToolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
-        collapsingToolbar.setContentScrimColor(accountPainter.getAccountMainColor(account));
+        collapsingToolbar.setBackgroundColor(accountMainColor);
+        collapsingToolbar.setContentScrimColor(accountMainColor);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.xabber.android.ui.helper;
+package com.xabber.android.ui.color;
 
 import android.os.Build;
 import android.support.v4.app.FragmentActivity;

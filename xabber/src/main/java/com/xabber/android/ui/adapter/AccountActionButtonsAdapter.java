@@ -1,7 +1,6 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -11,7 +10,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +37,6 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
      * List of accounts.
      */
     private final ArrayList<String> accounts;
-    private int[] accountBackgroundColors;
-    private final AccountPainter accountPainter;
 
     public AccountActionButtonsAdapter(Activity activity,
                                        View.OnClickListener onClickListener, LinearLayout linearLayout) {
@@ -47,12 +45,6 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
         this.onClickListener = onClickListener;
         this.linearLayout = linearLayout;
         accounts = new ArrayList<>();
-
-        Resources resources = activity.getResources();
-
-        accountPainter = new AccountPainter(activity);
-
-        accountBackgroundColors = resources.getIntArray(R.array.account_100);
     }
 
     /**
@@ -91,11 +83,11 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
             circleImageView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
             FloatingActionButton backgroundActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
-            int colorLevel = AccountManager.getInstance().getColorLevel(account);
 
+            final AccountPainter accountPainter = ColorManager.getInstance().getAccountPainter();
             backgroundActionButton.setColorNormal(accountPainter.getAccountMainColor(account));
             backgroundActionButton.setColorPressed(accountPainter.getAccountDarkColor(account));
-            backgroundActionButton.setColorRipple(accountBackgroundColors[colorLevel]);
+            backgroundActionButton.setColorRipple(accountPainter.getAccountRippleColor(account));
 
             String selectedAccount = AccountManager.getInstance().getSelectedAccount();
 

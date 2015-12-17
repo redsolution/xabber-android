@@ -35,6 +35,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.xmpp.carbon.CarbonManager;
 

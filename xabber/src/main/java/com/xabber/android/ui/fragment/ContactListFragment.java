@@ -25,7 +25,6 @@ import android.widget.TextView;
 import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.ColorManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
@@ -46,7 +45,8 @@ import com.xabber.android.ui.adapter.ContactListState;
 import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.adapter.GroupedContactAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
 
@@ -109,7 +109,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         View view = inflater.inflate(R.layout.contact_list_fragment, container, false);
 
         // to avoid strange bug on some 4.x androids
-        view.setBackgroundColor(ColorManager.getThemeColor(getActivity(), R.attr.contact_list_background));
+        view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());
 
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
@@ -136,7 +136,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
         scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
 
-        accountPainter = new AccountPainter(getActivity());
+        accountPainter = ColorManager.getInstance().getAccountPainter();
         scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
         scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
 

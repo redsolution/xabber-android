@@ -10,7 +10,8 @@ import android.widget.LinearLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
 
@@ -18,12 +19,10 @@ public class ChatScrollIndicatorAdapter {
 
     private final Activity activity;
     private final LinearLayout linearLayout;
-    private final AccountPainter accountPainter;
 
     public ChatScrollIndicatorAdapter(Activity activity, LinearLayout linearLayout) {
         this.activity = activity;
         this.linearLayout = linearLayout;
-        accountPainter = new AccountPainter(activity);
     }
 
     public void select(int selectedPosition) {
@@ -56,6 +55,8 @@ public class ChatScrollIndicatorAdapter {
 
             linearLayout.addView(view);
             final AccountViewHolder accountViewHolder = new AccountViewHolder(view);
+
+            final AccountPainter accountPainter = ColorManager.getInstance().getAccountPainter();
 
             if (i > 0) {
                 final String account = activeChats.get(i - 1).getAccount();

@@ -35,7 +35,7 @@ import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.avatar.VCardUpdate;
 
@@ -104,14 +104,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * Rooms' default avatar set.
      */
     private final BaseAvatarSet roomAvatarSet;
-    private final AccountPainter accountPainter;
 
     private AvatarManager() {
         this.application = Application.getInstance();
         userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars_icons, R.array.default_avatars_colors);
         roomAvatarSet = new BaseAvatarSet(application, R.array.muc_avatars, R.array.default_avatars_colors);
-
-        accountPainter = new AccountPainter(application);
 
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
@@ -301,7 +298,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     @NonNull
     public Drawable getDefaultAccountAvatar(String account) {
         Drawable[] layers = new Drawable[2];
-        layers[0] = new ColorDrawable(accountPainter.getAccountMainColor(account));
+        layers[0] = new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
         return new LayerDrawable(layers);
     }

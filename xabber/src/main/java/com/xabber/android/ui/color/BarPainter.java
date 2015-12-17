@@ -1,4 +1,4 @@
-package com.xabber.android.ui.helper;
+package com.xabber.android.ui.color;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;

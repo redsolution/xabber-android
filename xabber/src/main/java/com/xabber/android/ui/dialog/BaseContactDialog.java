@@ -14,7 +14,8 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 public abstract class BaseContactDialog extends DialogFragment
         implements DialogInterface.OnClickListener, DialogInterface.OnShowListener {
@@ -65,7 +66,7 @@ public abstract class BaseContactDialog extends DialogFragment
         account = args.getString(ARGUMENT_ACCOUNT, null);
         contact = args.getString(ARGUMENT_CONTACT, null);
 
-        accountPainter = new AccountPainter(getActivity());
+        accountPainter = ColorManager.getInstance().getAccountPainter();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setCustomTitle(setUpDialogTitle())

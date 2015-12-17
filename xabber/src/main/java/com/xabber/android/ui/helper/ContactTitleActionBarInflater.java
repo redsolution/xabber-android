@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.ui.color.BarPainter;
 
 public class ContactTitleActionBarInflater {
 
