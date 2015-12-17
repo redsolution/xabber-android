@@ -20,6 +20,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.ui.adapter.NavigationDrawerAccountAdapter;
 import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 import java.util.Collection;
 
@@ -42,6 +43,9 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_list_drawer, container, false);
+
+        // to avoid strange bug on some 4.x androids
+        view.setBackgroundColor(ColorManager.getInstance().getNavigationDrawerBackgroundColor());
 
         try {
             ((TextView)view.findViewById(R.id.version))

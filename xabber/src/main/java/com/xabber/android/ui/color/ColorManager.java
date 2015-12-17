@@ -29,6 +29,7 @@ public class ColorManager {
 
     private int chatBackgroundColor;
     private int chatInputBackgroundColor;
+    private int navigationDrawerBackgroundColor;
 
     public static ColorManager getInstance() {
         if (instance == null) {
@@ -91,6 +92,8 @@ public class ColorManager {
 
         chatBackgroundColor = getThemeColor(context, R.attr.chat_background);
         chatInputBackgroundColor = getThemeColor(context, R.attr.chat_input_background);
+
+        navigationDrawerBackgroundColor = getThemeColor(context, R.attr.navigation_drawer_background);
     }
 
     private int getThemeResource(Context context, int themeResourceId) {
@@ -158,5 +161,9 @@ public class ColorManager {
 
     public int getContactListBackgroundColor() {
         return contactListBackgroundColor;
+    }
+
+    public int getNavigationDrawerBackgroundColor() {
+        return navigationDrawerBackgroundColor;
     }
 }
