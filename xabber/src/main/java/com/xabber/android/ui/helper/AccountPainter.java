@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AccountPainter {
+    private final int themeMainColor;
     private final int themeDarkColor;
     private final int themeTextColor;
     private final String[] accountColorNames;
@@ -30,6 +31,7 @@ public class AccountPainter {
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
+        themeMainColor = getThemeMainColor(context);
         themeDarkColor = getThemeDarkColor(context);
         themeTextColor = getThemeTextColor(context);
 
@@ -76,6 +78,11 @@ public class AccountPainter {
         return attributeResourceId;
     }
 
+
+    private int getThemeMainColor(Context context) {
+        return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimary));
+    }
+
     private int getThemeDarkColor(Context context) {
         return context.getResources().getColor(getThemeAttribute(context, R.attr.colorPrimaryDark));
     }
@@ -91,7 +98,7 @@ public class AccountPainter {
     public int getDefaultMainColor() {
         String firstAccount = getFirstAccount();
         if (firstAccount == null) {
-            return themeTextColor;
+            return themeMainColor;
         } else {
             return getAccountMainColor(firstAccount);
         }
@@ -108,7 +115,7 @@ public class AccountPainter {
     public int getDefaultTextColor() {
         String firstAccount = getFirstAccount();
         if (firstAccount == null) {
-            return themeDarkColor;
+            return themeTextColor;
         } else {
             return getAccountTextColor(firstAccount);
         }
