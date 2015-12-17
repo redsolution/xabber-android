@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.ColorManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
@@ -205,7 +206,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager.setOnPageChangeListener(this);
 
         if (SettingsManager.chatsShowBackground()) {
-            viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
+            } else {
+                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            }
+        } else {
+            viewPager.setBackgroundColor(ColorManager.getThemeColor(this, R.attr.chat_background));
         }
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
