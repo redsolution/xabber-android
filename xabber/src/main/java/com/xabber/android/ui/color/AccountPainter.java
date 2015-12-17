@@ -17,10 +17,11 @@ public class AccountPainter {
     private final int themeTextColor;
     private final String[] accountColorNames;
 
-    private int[] accountMainColors;
-    private int[] accountDarkColors;
-    private int[] accountTextColors;
+    private final int[] accountMainColors;
+    private final int[] accountDarkColors;
+    private final int[] accountTextColors;
     private final int[] accountRippleColors;
+    private final int[] accountSendButtonColors;
 
     private final int greyMain;
     private final int greyDark;
@@ -31,6 +32,7 @@ public class AccountPainter {
         accountDarkColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_status_bar_color));
         accountTextColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.account_text_color));
         accountRippleColors = context.getResources().getIntArray(R.array.account_100);
+        accountSendButtonColors = context.getResources().getIntArray(getThemeAttribute(context, R.attr.chat_send_button_color));
 
         accountColorNames = context.getResources().getStringArray(R.array.account_color_names);
 
@@ -117,6 +119,10 @@ public class AccountPainter {
 
     public int getAccountRippleColor(String account) {
         return accountRippleColors[getAccountColorLevel(account)];
+    }
+
+    public int getAccountSendButtonColor(String account) {
+        return accountSendButtonColors[getAccountColorLevel(account)];
     }
 
     public int getDefaultTextColor() {

@@ -526,7 +526,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             }
         } else {
             sendButton.setEnabled(true);
-            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
             securityButton.setVisibility(View.GONE);
             attachButton.setVisibility(View.GONE);
         }
