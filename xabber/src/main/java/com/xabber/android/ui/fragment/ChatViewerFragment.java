@@ -39,7 +39,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
@@ -70,9 +69,9 @@ import com.xabber.android.ui.activity.FingerprintViewer;
 import com.xabber.android.ui.activity.OccupantList;
 import com.xabber.android.ui.activity.QuestionViewer;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
-import com.xabber.android.ui.helper.AccountPainter;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
@@ -116,7 +115,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
     private MessageItem clickedMessageItem;
-    private AccountPainter accountPainter;
 
     private Timer stopTypingTimer = new Timer();
     private final long STOP_TYPING_DELAY = 4000; // in ms
@@ -178,10 +176,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         setHasOptionsMenu(true);
 
-        accountPainter = new AccountPainter(getActivity());
-
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
-        sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+        sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
@@ -206,6 +202,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        // to avoid strange bug on some 4.x androids
+        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
 
         inputView = (EditText) view.findViewById(R.id.chat_input);
 
@@ -288,7 +287,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void onDismiss() {
-                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_emoticon_grey600_24dp);
+                changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_mood_black_24dp);
             }
         });
 
@@ -351,7 +350,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     //If keyboard is visible, simply show the emoji popup
                     if(popup.isKeyBoardOpen()){
                         popup.showAtBottom();
-                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_variant_grey600_24dp);
+                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                     }
 
                     //else, open the text keyboard first and immediately after that show the emoji popup
@@ -361,7 +360,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                         popup.showAtBottomPending();
                         final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputMethodManager.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);
-                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_variant_grey600_24dp);
+                        changeEmojiKeyboardIcon(emojiButton, R.drawable.ic_keyboard_black_24dp);
                     }
                 }
 
@@ -517,7 +516,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
 
         if (isInputEmpty) {
-            sendButton.setImageResource(R.drawable.ic_button_send_inactive_24dp);
+            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
+            sendButton.setEnabled(false);
             securityButton.setVisibility(View.VISIBLE);
             if (HttpFileUploadManager.getInstance().isFileUploadSupported(account)) {
                 attachButton.setVisibility(View.VISIBLE);
@@ -525,8 +525,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 attachButton.setVisibility(View.GONE);
             }
         } else {
-            sendButton.setImageResource(R.drawable.ic_button_send);
-            sendButton.setImageLevel(AccountManager.getInstance().getColorLevel(account));
+            sendButton.setEnabled(true);
+            sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
             securityButton.setVisibility(View.GONE);
             attachButton.setVisibility(View.GONE);
         }
@@ -638,7 +638,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public void updateChat() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
-        toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
+        toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
         chatMessageAdapter.onChange();
         scrollChat(itemCountBeforeUpdate);

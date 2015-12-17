@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">需要密码</string>
   <string name="pay_attention">注意</string>
   <string name="subscription_request_message">授权请求</string>
+  <string name="conference_private_chat">会议私人聊天</string>
 </resources>

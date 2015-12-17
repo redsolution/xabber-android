@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">Pobierz konferencje</string>
   <string name="muc_error_getting_conferences">Błąd pobierania konferencji</string>
   <string name="muc_type_conference_name">Wpisz nazwę konferencji</string>
+  <string name="contact_is_blocked">Kontakt jest zablokowany!</string>
+  <string name="conference_invitation">Zaproszenie do konferencji</string>
 </resources>

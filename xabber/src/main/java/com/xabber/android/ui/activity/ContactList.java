@@ -58,18 +58,19 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
-import com.xabber.android.ui.dialog.MucInviteDialog;
-import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
-import com.xabber.android.ui.fragment.ContactListDrawerFragment;
-import com.xabber.android.ui.fragment.ContactListFragment;
-import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
+import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
+import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
+import com.xabber.android.ui.dialog.MucInviteDialog;
+import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
 import com.xabber.android.ui.dialog.TranslationDialog;
-import com.xabber.android.ui.helper.BarPainter;
+import com.xabber.android.ui.fragment.ContactListDrawerFragment;
+import com.xabber.android.ui.fragment.ContactListFragment;
+import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.address.Jid;
@@ -369,6 +370,16 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                     && !SettingsManager.startAtBootSuggested()) {
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
             }
+
+            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
+                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 0) {
+                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
+                    SettingsManager.setDarkThemeSuggested();
+                }
+            } else {
+                SettingsManager.setDarkThemeSuggested();
+            }
+
             if (!SettingsManager.contactIntegrationSuggested()
                     && Application.getInstance().isContactsSupported()) {
                 if (AccountManager.getInstance().getAllAccounts().isEmpty()) {

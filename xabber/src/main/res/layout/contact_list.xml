@@ -32,7 +32,7 @@
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:popupTheme="?attr/toolbar_popup_theme"
             app:titleTextAppearance="@style/ToolbarTitle" />
 
         <!-- Main layout -->

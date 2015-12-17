@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +19,14 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.data.roster.ResourceItem;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
@@ -34,6 +35,8 @@ import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -255,10 +258,16 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         List<View> resourcesList = new ArrayList<>();
 
-        for (ResourceItem resourceItem
-                : PresenceManager.getInstance().getResourceItems(account, bareAddress)) {
+        fillResourceList(account, bareAddress, resourcesList);
 
-            String user = resourceItem.getUser(bareAddress);
+        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
+    }
+
+    private void fillResourceList(String account, String bareAddress, List<View> resourcesList) {
+        final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
+
+        for (Presence presence : allPresences) {
+            String user = presence.getFrom();
             ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
 
             String client = "";
@@ -282,21 +291,28 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
                     }
                 }
             }
-
-            String priority = getString(R.string.account_priority) + ": " + resourceItem.getPriority();
+            int priorityValue = presence.getPriority();
+            String priorityString;
+            if (priorityValue == Integer.MIN_VALUE) {
+                priorityString = getString(R.string.account_priority) + ": " + getString(R.string.unknown);
+            } else {
+                priorityString = getString(R.string.account_priority) + ": " + priorityValue;
+            }
 
             String label = "";
             if (!client.isEmpty()) {
                 label = getString(R.string.contact_viewer_client) + ": " + client + ", ";
             }
 
-            label += priority;
+            label += priorityString;
 
-            String resource = getString(R.string.account_resource) + ": " + resourceItem.getVerbose();
+            String resource = getString(R.string.account_resource) + ": " + Jid.getResource(user);
 
-            String status = resourceItem.getStatusText().trim();
-            if (status.isEmpty()) {
-                status = getString(resourceItem.getStatusMode().getStringID());
+            final StatusMode statusMode = StatusMode.createStatusMode(presence);
+
+            String status = presence.getStatus();
+            if (TextUtils.isEmpty(status)) {
+                status = getString(statusMode.getStringID());
             }
 
             LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -313,12 +329,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             statusIcon.setVisibility(View.VISIBLE);
 
             statusIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_status));
-            statusIcon.setImageLevel(resourceItem.getStatusMode().getStatusLevel());
+            statusIcon.setImageLevel(statusMode.getStatusLevel());
 
             resourcesList.add(resourceView);
         }
-
-        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
     }
 
     public void updateVCard() {

@@ -91,4 +91,6 @@
   <string name="could_not_get_path_to_file">Nelze získat cestu k souboru</string>
   <string name="message_open_private_chat">Otevřít soukromý chat</string>
   <string name="http_file_upload_slot_error">Soubor nelze uložit. Příliš velký?</string>
+  <string name="no_permission_to_read_files">Nemáte povolení pro čtení souborů</string>
+  <string name="no_permission_to_write_files">Nemáte povolení pro zápis souborů</string>
 </resources>

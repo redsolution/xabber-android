@@ -91,4 +91,6 @@
   <string name="could_not_get_path_to_file">No se encontró la dirección del archivo</string>
   <string name="message_open_private_chat">Abrir chat privado</string>
   <string name="http_file_upload_slot_error">No se pudo enviar el archivo. ¿Demasiado grande?</string>
+  <string name="no_permission_to_read_files">Sin permisos para leer archivos</string>
+  <string name="no_permission_to_write_files">Sin permiso para editar archivos</string>
 </resources>

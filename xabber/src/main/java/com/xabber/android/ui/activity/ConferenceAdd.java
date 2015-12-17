@@ -25,8 +25,8 @@ import android.view.WindowManager;
 import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ConferenceAddFragment;
-import com.xabber.android.ui.helper.BarPainter;
 
 public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 

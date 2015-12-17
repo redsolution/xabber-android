@@ -29,8 +29,8 @@ import android.widget.ListView;
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.ManagedListActivity;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.ConfirmDialog;
-import com.xabber.android.ui.helper.BarPainter;
 
 /**
  * Provide possibility to add, edit and delete list items.

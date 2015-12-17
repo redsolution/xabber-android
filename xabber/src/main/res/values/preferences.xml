@@ -95,16 +95,14 @@
     <string name="interface_theme_dark_value">dark</string>
     <string name="interface_theme_light_value">light</string>
     <string-array name="interface_theme_entries">
-        <item>@string/interface_theme_normal</item>
         <item>@string/interface_theme_dark</item>
         <item>@string/interface_theme_light</item>
     </string-array>
     <string-array name="interface_theme_entryvalues">
-        <item>@string/interface_theme_normal_value</item>
         <item>@string/interface_theme_dark_value</item>
         <item>@string/interface_theme_light_value</item>
     </string-array>
-    <string name="interface_theme_default">@string/interface_theme_normal_value</string>
+    <string name="interface_theme_default">@string/interface_theme_light_value</string>
 
     <string name="interface_smiles_key">interface_smiles</string>
     <string name="interface_smiles_android_value">android</string>
@@ -518,6 +516,7 @@
     <string name="start_at_boot_suggested_key">start_at_boot_suggested</string>
     <string name="contact_integration_suggested_key">contact_integration_suggested</string>
     <string name="translation_suggested_key">translation_suggested</string>
+    <string name="dark_theme_suggested_key">dark_theme_suggested</string>
     <string name="sync_account_type">@string/application_package</string>
     <string name="contact_viewer_mime_type">vnd.android.cursor.item/vnd.com.xabber.view</string>
 </resources>

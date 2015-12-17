@@ -14,7 +14,8 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 
 public abstract class BaseContactDialog extends DialogFragment
         implements DialogInterface.OnClickListener, DialogInterface.OnShowListener {
@@ -65,7 +66,7 @@ public abstract class BaseContactDialog extends DialogFragment
         account = args.getString(ARGUMENT_ACCOUNT, null);
         contact = args.getString(ARGUMENT_CONTACT, null);
 
-        accountPainter = new AccountPainter(getActivity());
+        accountPainter = ColorManager.getInstance().getAccountPainter();
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setCustomTitle(setUpDialogTitle())
@@ -87,7 +88,7 @@ public abstract class BaseContactDialog extends DialogFragment
     private View setUpDialogTitle() {
         View dialogTitleView = getActivity().getLayoutInflater().inflate(R.layout.dialog_title, null);
         final TextView dialogTitle = (TextView) dialogTitleView.findViewById(R.id.dialog_title_text_view);
-        dialogTitle.setTextColor(accountPainter.getAccountMainColor(account));
+        dialogTitle.setTextColor(accountPainter.getAccountTextColor(account));
         dialogTitle.setText(getDialogTitleTextResource());
         return dialogTitleView;
     }
@@ -102,7 +103,7 @@ public abstract class BaseContactDialog extends DialogFragment
 
     @Override
     public void onShow(DialogInterface dialog) {
-        this.dialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(accountPainter.getAccountMainColor(account));
+        this.dialog.getButton(Dialog.BUTTON_POSITIVE).setTextColor(accountPainter.getAccountTextColor(account));
         this.dialog.getButton(Dialog.BUTTON_NEGATIVE).setTextColor(accountPainter.getGreyMain());
         this.dialog.getButton(Dialog.BUTTON_NEUTRAL).setTextColor(accountPainter.getGreyMain());
     }

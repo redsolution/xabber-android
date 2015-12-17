@@ -78,6 +78,7 @@
   <string name="connection_load_vcard">Carica vCard\nCarica ed aggiorna le informazioni personali di contatto e l\'avatar. Disabilita per ridurre l\'utilizzo del traffico.</string>
   <string name="connection_load_images">Carica immagini\nCarica automaticamente le immagini dall\'URL del file. Disabilitare per ridurre l\'utilizzo del traffico dati.</string>
   <string name="connection_use_carbons">modalità copia-carbone\nPotrebbe essere instabile! Condividi la medesima sessione per ogni account con ogni dispositivo connesso. Disabilitare per ridurre l\'utilizzo del traffico.</string>
+  <string name="connection_use_plain_text_auth">Autenticazione in chiaro\nUsa l\'autenticazione in chiaro per tutti gli account. Sconsigliato.</string>
   <string name="events_phrases">frasi chiave\nCrea notifiche personalizzate per messaggi ricevuti contenenti una specifica frase</string>
   <string name="security_clear_certificate_warning">Vuoi davvero rimuovere tutti i certificati ignorati?</string>
   <string name="debug_connection_errors_title">Mostra errori di connessione\nMostra problemi di connessione in pop-up</string>

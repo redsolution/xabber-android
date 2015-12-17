@@ -33,7 +33,7 @@
   <string name="group_active_chat">Aktive Gespräche</string>
   <string name="group_none">Keine Gruppen</string>
   <string name="group_remove">Gruppe löschen</string>
-  <string name="group_remove_confirm">Willst du die Gruppe %s wirklich löschen? Benutzer dieser Gruppe bleiben in der Kontaktliste.</string>
+  <string name="group_remove_confirm">Wollen Sie die Gruppe %s wirklich löschen? Benutzer dieser Gruppe bleiben in der Kontaktliste.</string>
   <string name="group_rename">Gruppe umbenennen</string>
   <string name="NO_SUCH_ACCOUNT">Konto nicht gefunden</string>
   <string name="NOT_CONNECTED">Verbindung nicht hergestellt</string>

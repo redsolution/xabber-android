@@ -60,6 +60,7 @@
   <string name="INCORRECT_USER_NAME">ユーザー名が正しくありません. 詳細は下部のヘルプテキストを確認してください.</string>
   <string name="orbot_required_message">TOR を使用して処理するには Orbot をインストールし proxy のトラフィックを有効にする必要があります. Google Play からインストールしますか?</string>
   <string name="orbot_required_title">Orbot をインストールしますか?</string>
+  <string name="install_orbot">Orbot をインストール</string>
   <string name="ACCOUNT_REGISTER_FAILED">サーバーにアカウントを登録できませんでした。</string>
   <string name="account_color">アカウントの色</string>
   <string name="account_color_name_green">グリーン</string>

@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">ホストされている会議を取得</string>
   <string name="muc_error_getting_conferences">会議の取得エラー</string>
   <string name="muc_type_conference_name">会議の種類名</string>
+  <string name="contact_is_blocked">連絡先をブロックしました!</string>
+  <string name="conference_invitation">会議の招待状</string>
 </resources>

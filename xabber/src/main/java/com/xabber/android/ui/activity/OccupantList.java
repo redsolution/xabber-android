@@ -36,7 +36,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
-import com.xabber.android.ui.helper.BarPainter;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;

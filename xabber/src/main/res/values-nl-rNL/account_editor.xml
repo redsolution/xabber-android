@@ -27,6 +27,7 @@
   <string name="account_compression_summary">Kies om datacompressie in te schakelen</string>
   <string name="account_custom">Aangepaste host</string>
   <string name="account_custom_summary">Gebruik aangepaste hostinstellingen in plaats van SRV record</string>
+  <string name="account_enabled_summary">Schakel account aan of uit</string>
   <string name="account_invalid_port">Poort moet een nummer zijn (standaard: 5222)</string>
   <string name="account_invalid_port_range">Poort moet tussen de 1 en 65535 zijn (standaard: 5222)</string>
   <string name="account_invalid_priority">Waarde prioriteit moet een nummer zijn tussen -128 en 128 (standaard: 10)</string>
@@ -59,6 +60,7 @@
   <string name="INCORRECT_USER_NAME">Gebruikersnaam niet correct. Raadpleeg help voor details.</string>
   <string name="orbot_required_message">Om TOR te kunnen gebruiken moet Orbot geïnstalleerd zijn, en moet het verkeer hier doorheen lopen. Wil je Orbot installeren vanaf Google Play?</string>
   <string name="orbot_required_title">Installeer Orbot?</string>
+  <string name="install_orbot">Installeer Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Registratie van de account op de server is mislukt.</string>
   <string name="account_color">Account kleur</string>
   <string name="account_color_name_green">Groen</string>

@@ -22,4 +22,5 @@
   <string name="conference_private_chat_invitation">%1$s aus %2$s will mit Ihnen privat chatten</string>
   <string name="accept_muc_private_chat">Zustimmen</string>
   <string name="block_muc_private_chat">Blockieren</string>
+  <string name="no_permission_camera">Keine Berechtigung zum Zugriff für Kamera</string>
 </resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ContactList">
+        <attr name="toolbar_popup_theme" format="reference" />
+        <attr name="recent_chats_background" format="reference" />
+        <attr name="chat_background" format="reference" />
+        <attr name="chat_input_background" format="reference" />
+        <attr name="chat_input_button_color" format="reference" />
+        <attr name="chat_send_button_color" format="reference" />
+        <attr name="chat_incoming_balloon" format="reference" />
+        <attr name="chat_incoming_balloon_pressed" format="reference" />
+
+        <attr name="contact_list_background" format="reference" />
+
+        <attr name="contact_list_account_group_background" format="reference" />
+        <attr name="contact_list_account_group_separator" format="reference" />
+        <attr name="contact_list_account_group_second_line_text_color" format="reference" />
+        <attr name="contact_list_account_group_small_right_icon_color" format="reference" />
+        <attr name="contact_list_account_group_small_right_text_color" format="reference" />
+        <attr name="contact_list_account_group_status_icon_separator_color" format="reference" />
+
+        <attr name="contact_list_subgroup_background" format="reference" />
+        <attr name="contact_list_subgroup_separator" format="reference" />
+        <attr name="contact_list_subgroup_offline_indicator_color" format="reference" />
+        <attr name="contact_list_subgroup_expander_color" format="reference" />
+
+        <attr name="contact_list_contact_background" format="reference" />
+        <attr name="contact_list_contact_separator" format="reference" />
+        <attr name="contact_list_contact_name_text_color" format="reference" />
+        <attr name="contact_list_contact_muc_private_chat_name_text_color" format="reference" />
+        <attr name="contact_list_contact_second_line_text_color" format="reference" />
+        <attr name="contact_list_contact_client_large_icon_color" format="reference" />
+        <attr name="contact_list_contact_small_right_icon_alpha" format="reference" />
+        <attr name="contact_list_muc_indicator_color" format="reference" />
+
+        <attr name="contact_list_active_chat_subgroup_background" format="reference" />
+        <attr name="contact_list_active_chat_background" format="reference" />
+        <attr name="contact_list_active_chat_text_color" format="reference" />
+        <attr name="contact_list_active_chat_separator" format="reference" />
+        <attr name="contact_list_active_chat_client_large_icon_color" format="reference" />
+
+        <attr name="account_main_color" format="reference" />
+        <attr name="account_status_bar_color" format="reference" />
+        <attr name="account_text_color" format="reference" />
+
+        <attr name="navigation_drawer_background" format="reference" />
+
+        <attr name="conference_filter_input_background" format="reference" />
+
+    </declare-styleable>
+</resources>

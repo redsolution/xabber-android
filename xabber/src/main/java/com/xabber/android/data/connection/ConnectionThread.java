@@ -189,7 +189,6 @@ public class ConnectionThread implements
     private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
         builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
-        builder.setSendPresence(false);
 
         try {
             if (SettingsManager.securityCheckCertificate()) {
@@ -215,8 +214,10 @@ public class ConnectionThread implements
 
 
         AccountRosterListener rosterListener = new AccountRosterListener(((AccountItem)connectionItem).getAccount());
-        Roster.getInstanceFor(xmppConnection).addRosterListener(rosterListener);
-        Roster.getInstanceFor(xmppConnection).addRosterLoadedListener(rosterListener);
+        final Roster roster = Roster.getInstanceFor(xmppConnection);
+        roster.addRosterListener(rosterListener);
+        roster.addRosterLoadedListener(rosterListener);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
 
         org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
 

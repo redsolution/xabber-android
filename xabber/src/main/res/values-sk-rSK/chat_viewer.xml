@@ -91,4 +91,6 @@
   <string name="could_not_get_path_to_file">Nepodarilo sa nájsť cestu k súboru</string>
   <string name="message_open_private_chat">Otvoriť súkromný rozhovor</string>
   <string name="http_file_upload_slot_error">Nepodarilo sa odovzdať súbor. Nie je príliš veľký?</string>
+  <string name="no_permission_to_read_files">Nemáte povolenie pre čítanie súborov</string>
+  <string name="no_permission_to_write_files">Nemáte povolenie pre zápis súborov</string>
 </resources>

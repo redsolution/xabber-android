@@ -41,11 +41,12 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.OnChatChangedListener;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.ui.fragment.ChatViewerFragment;
-import com.xabber.android.ui.fragment.RecentChatFragment;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
-import com.xabber.android.ui.helper.StatusBarPainter;
+import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.color.StatusBarPainter;
+import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.ui.fragment.RecentChatFragment;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -205,7 +206,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager.setOnPageChangeListener(this);
 
         if (SettingsManager.chatsShowBackground()) {
-            viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat_dark));
+            } else {
+                viewPager.setBackgroundDrawable(getResources().getDrawable(R.drawable.chat_background_repeat));
+            }
+        } else {
+            viewPager.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
         }
 
         chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,

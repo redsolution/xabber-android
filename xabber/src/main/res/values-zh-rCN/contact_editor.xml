@@ -22,4 +22,5 @@
   <string name="conference_private_chat_invitation">来自 %2$s 的 %1$s 想要与你开始私人聊天</string>
   <string name="accept_muc_private_chat">接受</string>
   <string name="block_muc_private_chat">阻止</string>
+  <string name="no_permission_camera">没有访问相机的权限</string>
 </resources>

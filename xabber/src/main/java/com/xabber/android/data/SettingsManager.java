@@ -35,6 +35,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.xmpp.carbon.CarbonManager;
 
@@ -465,19 +466,16 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static InterfaceTheme interfaceTheme() {
-        String value = getString(R.string.interface_theme_key,
-                R.string.interface_theme_default);
-        if (Application.getInstance()
-                .getString(R.string.interface_theme_dark_value).equals(value))
+        String value = getString(R.string.interface_theme_key, R.string.interface_theme_default);
+        if (Application.getInstance().getString(R.string.interface_theme_dark_value).equals(value)) {
             return InterfaceTheme.dark;
-        else if (Application.getInstance()
-                .getString(R.string.interface_theme_light_value).equals(value))
+        } else if (Application.getInstance().getString(R.string.interface_theme_light_value).equals(value)) {
             return InterfaceTheme.light;
-        else if (Application.getInstance()
-                .getString(R.string.interface_theme_normal_value).equals(value))
-            return InterfaceTheme.normal;
-        else
+        } else if (Application.getInstance().getString(R.string.interface_theme_normal_value).equals(value)) {
+            return InterfaceTheme.light;
+        } else {
             throw new IllegalStateException();
+        }
     }
 
     public static Map<Pattern, Integer> interfaceSmiles() {
@@ -559,6 +557,19 @@ public class SettingsManager implements OnInitializedListener,
 
     public static void setTranslationSuggested() {
         setBoolean(R.string.translation_suggested_key, true);
+    }
+
+    public static boolean isDarkThemeSuggested() {
+        return getBoolean(R.string.dark_theme_suggested_key, false);
+    }
+
+    public static void setDarkThemeSuggested() {
+        setBoolean(R.string.dark_theme_suggested_key, true);
+    }
+
+    public static void setDarkTheme() {
+        setString(R.string.interface_theme_key, Application.getInstance().getString(
+                R.string.interface_theme_dark_value));
     }
 
     /**
@@ -659,6 +670,12 @@ public class SettingsManager implements OnInitializedListener,
         } else if (key.equals(Application.getInstance().getString(
                 R.string.security_otr_mode_key))) {
             OTRManager.getInstance().onSettingsChanged();
+        } else if (key.equals(Application.getInstance().getString(
+                R.string.interface_theme_key))) {
+            ColorManager.getInstance().onSettingsChanged();
+            if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
+                SettingsManager.setDarkThemeSuggested();
+            }
         }
     }
 

@@ -76,7 +76,10 @@
   <string name="chats_attention">Uwaga\nReaguj na prośby o uwagę</string>
   <string name="chats_attention_sound">Dźwięk uwagi\nWybierz dźwięk</string>
   <string name="connection_load_vcard">Wczytaj vCard\nWczytaj i uaktualnij dane personalne kontaktu i avatar. Wyłącz by zredukować zużycie danych.</string>
+  <string name="connection_load_images">Załaduj obrazy\nZaładuj obrazy z URL automatycznie. Wyłącz żeby zmniejszyć zużycie danych.</string>
   <string name="connection_use_carbons">Tryb kopiowania\nNiestabilny! Udostępnianie sesji tego konta dla klienta. Może zwiększyć zużycie danych.</string>
+  <string name="connection_use_plain_text_auth">Uwierzytelnienie czystym tekstem\nUżyj czystego tekstu uwierzytelnienie dla wszytkich kont. Nie zalecane.</string>
   <string name="events_phrases">Słowa kluczowe\nUtwórz niestandardowe powiadomienia dla odebranych wiadomości zawierających słowa kluczowe</string>
   <string name="security_clear_certificate_warning">Czy na pewno chcesz usunąć wszystkie ignorowane certyfikaty?</string>
+  <string name="debug_connection_errors_title">Pokaż błędy połączeń\nPokaż powiadomienia o błędach połączeń</string>
 </resources>

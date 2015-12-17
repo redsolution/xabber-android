@@ -58,4 +58,9 @@
   <string name="take_photo">Zrób zdjęcie</string>
   <string name="remove_avatar">Usuń obraz</string>
   <string name="change">Zmień</string>
+  <string name="could_not_get_room_info">Nie udało się pobrać informacji o konferencji</string>
+  <string name="conference_name">Imię</string>
+  <string name="conference_description">Opis</string>
+  <string name="conference_subject">Temat</string>
+  <string name="message_info_occupants_number">Uczestnicy: %d</string>
 </resources>

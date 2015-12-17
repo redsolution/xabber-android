@@ -45,7 +45,8 @@ import com.xabber.android.ui.adapter.ContactListState;
 import com.xabber.android.ui.adapter.GroupConfiguration;
 import com.xabber.android.ui.adapter.GroupedContactAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
-import com.xabber.android.ui.helper.AccountPainter;
+import com.xabber.android.ui.color.AccountPainter;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
 
@@ -106,6 +107,10 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.contact_list_fragment, container, false);
+
+        // to avoid strange bug on some 4.x androids
+        view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());
+
         listView = (ListView) view.findViewById(android.R.id.list);
         listView.setOnItemClickListener(this);
         listView.setItemsCanFocus(true);
@@ -131,7 +136,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
         scrollToChatsActionButton = (FloatingActionButton) view.findViewById(R.id.fab_up);
 
-        accountPainter = new AccountPainter(getActivity());
+        accountPainter = ColorManager.getInstance().getAccountPainter();
         scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
         scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
 

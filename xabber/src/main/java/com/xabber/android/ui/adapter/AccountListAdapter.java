@@ -16,11 +16,11 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -28,6 +28,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.preferences.AccountList;
 
 import java.util.ArrayList;
@@ -41,12 +42,9 @@ import java.util.List;
  * @author alexander.ivanov
  */
 public class AccountListAdapter extends BaseListEditorAdapter<String> {
-    private final int[] accountColors;
 
     public AccountListAdapter(Activity activity) {
         super(activity);
-
-        accountColors = activity.getResources().getIntArray(R.array.account_action_bar);
     }
 
     @Override
@@ -60,14 +58,13 @@ public class AccountListAdapter extends BaseListEditorAdapter<String> {
         }
         final String account = getItem(position);
 
-        int accountColor = accountColors[accountManager.getColorLevel(account)];
-
-        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable(accountColor));
+        ((ImageView) view.findViewById(R.id.color)).setImageDrawable(
+                new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)));
         ((ImageView) view.findViewById(R.id.avatar))
                 .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
         ((TextView) view.findViewById(R.id.name)).setText(accountManager.getVerboseName(account));
-        Switch accountSwitch = (Switch) view.findViewById(R.id.account_switch);
+        SwitchCompat accountSwitch = (SwitchCompat) view.findViewById(R.id.account_switch);
 
         final AccountItem accountItem = accountManager.getAccount(account);
 

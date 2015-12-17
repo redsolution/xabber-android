@@ -15,6 +15,10 @@
 package com.xabber.android.ui.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.view.LayoutInflater;
@@ -31,14 +35,15 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
@@ -148,16 +153,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 setUpIncomingMessage((IncomingMessage) holder, messageItem);
                 break;
             case VIEW_TYPE_OUTGOING_MESSAGE:
-                setUpMessage(messageItem, (Message) holder);
-                setStatusIcon(messageItem, (OutgoingMessage) holder);
-                setUpFileMessage((Message) holder, messageItem);
+                setUpOutgoingMessage((Message) holder, messageItem);
                 break;
         }
 
     }
 
+    private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
+        setUpMessage(messageItem, holder);
+        setStatusIcon(messageItem, (OutgoingMessage) holder);
+        setUpFileMessage(holder, messageItem);
+
+        setUpMessageBalloonBackground(holder.messageBalloon,
+                context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
+    }
+
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
         setUpMessage(messageItem, incomingMessage);
+
+        setUpMessageBalloonBackground(incomingMessage.messageBalloon,
+                ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
 
         setUpAvatar(messageItem, incomingMessage);
         setUpFileMessage(incomingMessage, messageItem);
@@ -172,6 +187,43 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             incomingMessage.messageTime.setVisibility(View.VISIBLE);
         }
     }
+
+    private void setUpMessageBalloonBackground(View messageBalloon, ColorStateList darkColorStateList, int lightBackgroundId) {
+
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+            final Drawable originalBackgroundDrawable = messageBalloon.getBackground();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                originalBackgroundDrawable.setTintList(darkColorStateList);
+            } else {
+                Drawable wrapDrawable = DrawableCompat.wrap(originalBackgroundDrawable);
+                DrawableCompat.setTintList(wrapDrawable, darkColorStateList);
+
+                int pL = messageBalloon.getPaddingLeft();
+                int pT = messageBalloon.getPaddingTop();
+                int pR = messageBalloon.getPaddingRight();
+                int pB = messageBalloon.getPaddingBottom();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    messageBalloon.setBackground(wrapDrawable);
+                } else {
+                    messageBalloon.setBackgroundDrawable(wrapDrawable);
+                }
+
+                messageBalloon.setPadding(pL, pT, pR, pB);
+            }
+        } else {
+            int pL = messageBalloon.getPaddingLeft();
+            int pT = messageBalloon.getPaddingTop();
+            int pR = messageBalloon.getPaddingRight();
+            int pB = messageBalloon.getPaddingBottom();
+
+            messageBalloon.setBackgroundResource(lightBackgroundId);
+            messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
+            messageBalloon.setPadding(pL, pT, pR, pB);
+        }
+    }
+
 
     private void setUpFileMessage(final Message messageView, final MessageItem messageItem) {
         messageView.downloadProgressBar.setVisibility(View.GONE);
@@ -345,8 +397,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
         message.messageText.setVisibility(View.VISIBLE);
-
-        message.messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
 
         String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
 

@@ -316,6 +316,16 @@
             android:noHistory="true"
             android:stateNotNeeded="true"
             android:taskAffinity="" />
+
+        <activity
+            android:name="com.xabber.android.ui.preferences.ThemeSettings"
+            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
+        </activity>
+
         <activity
             android:name=".ui.preferences.ContactListSettings"
             android:parentActivityName=".ui.preferences.PreferenceEditor">

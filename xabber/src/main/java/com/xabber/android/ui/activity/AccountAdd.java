@@ -24,8 +24,8 @@ import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountAddFragment;
-import com.xabber.android.ui.helper.BarPainter;
 
 public class AccountAdd extends ManagedActivity {
 

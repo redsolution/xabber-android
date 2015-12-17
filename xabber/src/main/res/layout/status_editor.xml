@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/new_status"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?android:attr/textColorPrimary"
                 android:paddingLeft="8dp"
                 android:textStyle="bold" />
 
@@ -80,7 +80,7 @@
                 android:text="@string/saved_statuses"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:id="@+id/saved_statuses_textview"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="?android:attr/textColorPrimary"
                 android:paddingLeft="8dp"
                 android:layout_marginTop="16dp"
                 android:textStyle="bold" />

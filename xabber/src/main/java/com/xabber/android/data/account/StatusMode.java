@@ -82,19 +82,35 @@ public enum StatusMode {
      * @return
      */
     static public StatusMode createStatusMode(Presence presence) {
-        if (presence.getType() == Presence.Type.unavailable)
+        if (presence == null) {
             return StatusMode.unavailable;
-        final Mode mode = presence.getMode();
-        if (mode == Mode.away)
-            return StatusMode.away;
-        else if (mode == Mode.chat)
-            return StatusMode.chat;
-        else if (mode == Mode.dnd)
-            return StatusMode.dnd;
-        else if (mode == Mode.xa)
-            return StatusMode.xa;
-        else
-            return StatusMode.available;
+        }
+
+        switch (presence.getType()) {
+            case available:
+                final Mode mode = presence.getMode();
+                if (mode == Mode.away)
+                    return StatusMode.away;
+                else if (mode == Mode.chat)
+                    return StatusMode.chat;
+                else if (mode == Mode.dnd)
+                    return StatusMode.dnd;
+                else if (mode == Mode.xa)
+                    return StatusMode.xa;
+                else
+                    return StatusMode.available;
+
+            case error:
+            case unsubscribed:
+                return StatusMode.unsubscribed;
+            case unavailable:
+            case subscribe:
+            case subscribed:
+            case unsubscribe:
+            case probe:
+                return StatusMode.unavailable;
+        }
+        return StatusMode.unavailable;
     }
 
     /**
