@@ -69,4 +69,8 @@
     <string name="unblock_all_contacts_confirm">Do you really want to unblock all contacts from account %1$s?</string>
     <string name="unblock_all">Unblock all</string>
     <string name="unblock_selected">Unblock selected</string>
+    <string name="dark_theme_suggest_dialog_title">Choose your destiny</string>
+    <string name="dark_theme_suggest_dialog_message">New dark theme is now available for Xabber. Can you resist the temptation to use it?</string>
+    <string name="dark_theme_suggest_dialog_join_dark_side">Join the Dark Side</string>
+    <string name="dark_theme_suggest_dialog_stay_on_light_side">"Stay on the Light Side"</string>
 </resources>

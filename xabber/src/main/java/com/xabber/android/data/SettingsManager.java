@@ -559,6 +559,19 @@ public class SettingsManager implements OnInitializedListener,
         setBoolean(R.string.translation_suggested_key, true);
     }
 
+    public static boolean isDarkThemeSuggested() {
+        return getBoolean(R.string.dark_theme_suggested_key, false);
+    }
+
+    public static void setDarkThemeSuggested() {
+        setBoolean(R.string.dark_theme_suggested_key, true);
+    }
+
+    public static void setDarkTheme() {
+        setString(R.string.interface_theme_key, Application.getInstance().getString(
+                R.string.interface_theme_dark_value));
+    }
+
     /**
      * @return Common status mode for all accounts or
      * {@link StatusMode#available} if mode was not set.
@@ -660,6 +673,9 @@ public class SettingsManager implements OnInitializedListener,
         } else if (key.equals(Application.getInstance().getString(
                 R.string.interface_theme_key))) {
             ColorManager.getInstance().onSettingsChanged();
+            if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
+                SettingsManager.setDarkThemeSuggested();
+            }
         }
     }
 

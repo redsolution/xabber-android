@@ -63,6 +63,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
 import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
+import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
 import com.xabber.android.ui.dialog.StartAtBootDialogFragment;
@@ -369,6 +370,16 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                     && !SettingsManager.startAtBootSuggested()) {
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
             }
+
+            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
+                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 0) {
+                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
+                    SettingsManager.setDarkThemeSuggested();
+                }
+            } else {
+                SettingsManager.setDarkThemeSuggested();
+            }
+
             if (!SettingsManager.contactIntegrationSuggested()
                     && Application.getInstance().isContactsSupported()) {
                 if (AccountManager.getInstance().getAllAccounts().isEmpty()) {
