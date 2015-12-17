@@ -64,6 +64,8 @@
         <item name="account_text_color">@array/account_900</item>
 
         <item name="navigation_drawer_background">?android:attr/windowBackground</item>
+
+        <item name="conference_filter_input_background">@color/white</item>
     </style>
 
     <style name="ThemeDark" parent="Base.ThemeDark"></style>
@@ -121,6 +123,8 @@
         <item name="account_text_color">@array/account_400</item>
 
         <item name="navigation_drawer_background">@color/grey_900</item>
+
+        <item name="conference_filter_input_background">@color/black</item>
     </style>
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">

@@ -11,7 +11,7 @@
         android:orientation="horizontal"
         android:layout_alignParentTop="true"
         android:elevation="8dp"
-        android:background="@color/white"
+        android:background="?attr/conference_filter_input_background"
         android:id="@+id/linearLayout">
 
         <EditText

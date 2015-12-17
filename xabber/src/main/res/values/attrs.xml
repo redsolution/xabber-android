@@ -43,5 +43,7 @@
 
         <attr name="navigation_drawer_background" format="reference" />
 
+        <attr name="conference_filter_input_background" format="reference" />
+
     </declare-styleable>
 </resources>
