@@ -110,6 +110,7 @@ public class ContactItemInflater {
 
             view.setBackgroundColor(ColorManager.getInstance().getActiveChatBackgroundColor());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getActiveChatSeparatorColor());
+            viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getActiveChatLargeClientIconColor());
 
             if (!statusText.isEmpty()) {
 
@@ -130,6 +131,7 @@ public class ContactItemInflater {
             statusText = contact.getStatusText().trim();
             view.setBackgroundColor(ColorManager.getInstance().getContactBackground());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getContactSeparatorColor());
+            viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getContactLargeClientIconColor());
         }
 
         if (statusText.isEmpty()) {

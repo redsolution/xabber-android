@@ -37,6 +37,7 @@
         <attr name="contact_list_active_chat_background" format="reference" />
         <attr name="contact_list_active_chat_text_color" format="reference" />
         <attr name="contact_list_active_chat_separator" format="reference" />
+        <attr name="contact_list_active_chat_client_large_icon_color" format="reference" />
 
         <attr name="account_main_color" format="reference" />
         <attr name="account_status_bar_color" format="reference" />

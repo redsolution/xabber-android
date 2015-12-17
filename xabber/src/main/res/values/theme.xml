@@ -59,6 +59,7 @@
         <item name="contact_list_active_chat_background">@color/grey_50</item>
         <item name="contact_list_active_chat_text_color">@color/black</item>
         <item name="contact_list_active_chat_separator">@color/grey_500</item>
+        <item name="contact_list_active_chat_client_large_icon_color">@color/grey_300</item>
 
         <item name="account_main_color">@array/account_500</item>
         <item name="account_status_bar_color">@array/account_700</item>
@@ -119,6 +120,7 @@
         <item name="contact_list_active_chat_background">@color/grey_200</item>
         <item name="contact_list_active_chat_text_color">@color/black</item>
         <item name="contact_list_active_chat_separator">@color/grey_500</item>
+        <item name="contact_list_active_chat_client_large_icon_color">@color/grey_400</item>
 
         <item name="account_main_color">@array/account_800</item>
         <item name="account_status_bar_color">@array/account_900</item>

@@ -24,6 +24,8 @@ public class ColorManager {
     private int contactBackground;
     private int contactSeparatorColor;
     private int activeChatSeparatorColor;
+    private int contactLargeClientIconColor;
+    private int activeChatLargeClientIconColor;
 
     private int contactListBackgroundColor;
 
@@ -87,6 +89,8 @@ public class ColorManager {
         contactBackground = getThemeColor(context, R.attr.contact_list_contact_background);
         contactSeparatorColor = getThemeColor(context, R.attr.contact_list_contact_separator);
         activeChatSeparatorColor = getThemeColor(context, R.attr.contact_list_active_chat_separator);
+        contactLargeClientIconColor = getThemeColor(context, R.attr.contact_list_contact_client_large_icon_color);
+        activeChatLargeClientIconColor = getThemeColor(context, R.attr.contact_list_active_chat_client_large_icon_color);
 
         contactListBackgroundColor = getThemeColor(context, R.attr.contact_list_background);
 
@@ -149,6 +153,14 @@ public class ColorManager {
 
     public int getActiveChatSeparatorColor() {
         return activeChatSeparatorColor;
+    }
+
+    public int getContactLargeClientIconColor() {
+        return contactLargeClientIconColor;
+    }
+
+    public int getActiveChatLargeClientIconColor() {
+        return activeChatLargeClientIconColor;
     }
 
     public int getChatBackgroundColor() {
