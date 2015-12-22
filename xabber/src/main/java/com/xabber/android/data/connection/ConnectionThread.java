@@ -38,7 +38,6 @@ import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.roster.Roster;
-import org.jivesoftware.smack.roster.RosterLoadedListener;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -189,6 +188,7 @@ public class ConnectionThread implements
     private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
         builder.setSecurityMode(tlsMode.getSecurityMode());
         builder.setCompressionEnabled(compression);
+        builder.setSendPresence(false);
 
         try {
             if (SettingsManager.securityCheckCertificate()) {
