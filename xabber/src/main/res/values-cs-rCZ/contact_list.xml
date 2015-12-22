@@ -55,6 +55,7 @@
   <string name="show_offline_never">Nikdy nezobrazovat</string>
   <string name="show_offline_normal">Obecné nastavení</string>
   <string name="show_offline_settings">Zobrazovat odpojené kontakty</string>
+  <string name="start_at_boot">Spustit při startu</string>
   <string name="start_at_boot_suggest">Přejete si spustit při startu Xabber? \nLze změnit v \"Nastavení\" → \"Nastavení připojení\" → \"Start při spouštění Android\"</string>
   <string name="contact_search_hint">Prohledávat kontakty</string>
   <string name="sender_is_you">Vy</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Opravdu chcete odblokovat všechny kontakty z účtu %1$s?</string>
   <string name="unblock_all">Odblokovat vše</string>
   <string name="unblock_selected">Odblokovat vybrané</string>
+  <string name="dark_theme_suggest_dialog_title">Vyber si svůj úděl</string>
+  <string name="dark_theme_suggest_dialog_message">Nové tmavé téma je nyní k dispozici pro Xabber. Dokážete odolat pokušení ji používat?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Připojte se k Temné straně</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Zůstat na Světlé straně"</string>
 </resources>

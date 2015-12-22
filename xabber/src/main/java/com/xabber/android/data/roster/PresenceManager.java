@@ -27,6 +27,7 @@ import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
@@ -53,7 +54,7 @@ import java.util.HashSet;
  * @author alexander.ivanov
  */
 public class PresenceManager implements OnArchiveModificationsReceivedListener,
-        OnLoadListener, OnAccountDisabledListener, OnDisconnectListener, OnPacketListener {
+        OnLoadListener, OnAccountDisabledListener, OnDisconnectListener, OnPacketListener, OnAuthorizedListener {
 
     private final static PresenceManager instance;
 
@@ -257,8 +258,6 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     }
 
     public void sendVCardUpdatePresence(String account, String hash) throws NetworkException {
-        if (!readyAccounts.contains(account))
-            throw new NetworkException(R.string.NOT_CONNECTED);
         final Presence presence = AccountManager.getInstance().getAccount(account).getPresence();
 
         final VCardUpdate vCardUpdate = new VCardUpdate();
@@ -293,6 +292,19 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             } else {
                 subscriptionRequestProvider.add(new SubscriptionRequest(account, bareAddress), null);
             }
+        }
+    }
+
+    @Override
+    public void onAuthorized(ConnectionItem connection) {
+        if (!(connection instanceof AccountItem)) {
+            return;
+        }
+
+        try {
+            resendPresence(((AccountItem) connection).getAccount());
+        } catch (NetworkException e) {
+            e.printStackTrace();
         }
     }
 }

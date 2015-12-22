@@ -55,6 +55,7 @@
   <string name="show_offline_never">表示しない</string>
   <string name="show_offline_normal">全般設定を使用</string>
   <string name="show_offline_settings">オフラインの連絡先を表示</string>
+  <string name="start_at_boot">起動時に実行</string>
   <string name="start_at_boot_suggest">起動時に Xabber を実行しますか?\nこれは \"設定\" → \"接続設定\" → \"起動時に実行\" で変更することができます</string>
   <string name="contact_search_hint">連絡先を検索</string>
   <string name="sender_is_you">あなた</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">アカウント %1$s から、すべての連絡先のブロックを解除しますか?</string>
   <string name="unblock_all">すべてのブロックを解除</string>
   <string name="unblock_selected">選択済のブロックを解除</string>
+  <string name="dark_theme_suggest_dialog_title">運命の選択</string>
+  <string name="dark_theme_suggest_dialog_message">Xabber の新しいダークテーマが利用可能です。利用する誘惑に勝てますか?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">ダークサイドに参加</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"ライトサイドに留まる"</string>
 </resources>
