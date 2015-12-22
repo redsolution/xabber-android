@@ -55,6 +55,7 @@
   <string name="show_offline_never">Ocultar contactos</string>
   <string name="show_offline_normal">Usar la configuración general</string>
   <string name="show_offline_settings">Mostrar contactos desconectados</string>
+  <string name="start_at_boot">Ejecutar al inicio</string>
   <string name="start_at_boot_suggest">¿Desea que Xabber se ejecute al iniciar el dispositivo?\nEsto se puede cambiar en \"Ajustes\" → \"Ajustes de conexión\" → \"Iniciar al encender Android\"</string>
   <string name="contact_search_hint">Buscar contactos</string>
   <string name="sender_is_you">Tú</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">¿Quieres desbloquear todos los contactos de la cuenta %1$s?</string>
   <string name="unblock_all">Desbloquear todos</string>
   <string name="unblock_selected">Desbloquear seleccionados</string>
+  <string name="dark_theme_suggest_dialog_title">Elige tu destino</string>
+  <string name="dark_theme_suggest_dialog_message">Un nuevo tema oscuro está disponible ahora para Xabber. ¿Puedes resistir la tentación de usarlo?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Únete al lado oscuro</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Seguir en el lado de la luz"</string>
 </resources>

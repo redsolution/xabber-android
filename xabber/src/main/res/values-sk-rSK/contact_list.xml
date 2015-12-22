@@ -55,6 +55,7 @@
   <string name="show_offline_never">Nikdy nezobrazuj</string>
   <string name="show_offline_normal">Použiť všeobecné nastavenia</string>
   <string name="show_offline_settings">Zobraziť odpojené kontakty</string>
+  <string name="start_at_boot">Spustiť pri štarte</string>
   <string name="start_at_boot_suggest">Chcete spúšťať Xabber pri štarte?\nMôžete to zmeniť v \"Nastavenia\" → \"Nastavenia pripojenia\" → \"Spustiť pri štarte\"</string>
   <string name="contact_search_hint">Vyhľadávanie kontaktov</string>
   <string name="sender_is_you">Vy</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Naozaj chcete odblokovať všetky kontakty z účtu %1$s?</string>
   <string name="unblock_all">Odblokovať všetkých</string>
   <string name="unblock_selected">Odblokovať vybraných</string>
+  <string name="dark_theme_suggest_dialog_title">Zvoľte si váš osud</string>
+  <string name="dark_theme_suggest_dialog_message">Nová temná téma je teraz dostupná pre Xabber. Dokážete odolať pokušeniu použiť ju?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Pridajte sa k temnej strane</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Ostať na svetlej strane"</string>
 </resources>

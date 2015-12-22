@@ -55,6 +55,7 @@
   <string name="show_offline_never">Niemals anzeigen</string>
   <string name="show_offline_normal">Globale Einstellungen benutzen</string>
   <string name="show_offline_settings">Offline Kontakte anzeigen</string>
+  <string name="start_at_boot">Beim Start ausführen</string>
   <string name="start_at_boot_suggest">Xabber beim Start von Android starten?\nDies kann unter \"Einstellungen\" → \"Verbindungseinstellungen\" → \"Mit Android starten\" geändert werden.</string>
   <string name="contact_search_hint">Kontakte suchen</string>
   <string name="sender_is_you">Ich</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Wollen Sie wirklich alle Kontakte von %1$s Konto entsperren?</string>
   <string name="unblock_all">Alle entsperren</string>
   <string name="unblock_selected">Ausgewählte entsperren</string>
+  <string name="dark_theme_suggest_dialog_title">Wählen Sie Ihr Schicksal</string>
+  <string name="dark_theme_suggest_dialog_message">Das neue Dark-Theme ist jetzt verfügbar für Jabber. Können Sie der Versuchung widerstehen es zu benutzen?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Der dunklen Seite anschließen</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Auf der hellen Seite bleiben"</string>
 </resources>
