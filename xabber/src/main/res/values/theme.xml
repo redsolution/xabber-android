@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<resources>
+
+    <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!--for text selection toolbar to be above usual toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+
+        <item name="recent_chats_background">@color/grey_300</item>
+
+        <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat.Light</item>
+
+        <item name="chat_background">@color/grey_100</item>
+        <item name="chat_input_background">@color/white</item>
+        <item name="chat_input_button_color">@color/grey_600</item>
+        <item name="chat_send_button_color">@array/account_500</item>
+        <item name="chat_incoming_balloon">@array/account_50</item>
+        <item name="chat_incoming_balloon_pressed">@array/account_100</item>
+
+        <item name="contact_list_background">@color/grey_400</item>
+
+        <item name="contact_list_account_group_background">@array/account_200</item>
+        <item name="contact_list_account_group_separator">@color/grey_400</item>
+        <item name="contact_list_account_group_second_line_text_color">@color/grey_700</item>
+        <item name="contact_list_account_group_small_right_icon_color">@color/black</item>
+        <item name="contact_list_account_group_small_right_text_color">@color/black</item>
+        <item name="contact_list_account_group_status_icon_separator_color">@color/black</item>
+
+        <item name="contact_list_subgroup_background">@array/account_50</item>
+        <item name="contact_list_subgroup_separator">@color/grey_400</item>
+        <item name="contact_list_subgroup_offline_indicator_color">@color/black</item>
+        <item name="contact_list_subgroup_expander_color">@color/black</item>
+
+        <item name="contact_list_contact_background">@color/grey_300</item>
+        <item name="contact_list_contact_separator">@color/grey_500</item>
+        <item name="contact_list_contact_name_text_color">@color/black</item>
+        <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
+        <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
+        <item name="contact_list_contact_client_large_icon_color">@color/grey_400</item>
+        <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_light</item>
+        <item name="contact_list_muc_indicator_color">@color/black</item>
+
+        <item name="contact_list_active_chat_subgroup_background">@color/grey_100</item>
+        <item name="contact_list_active_chat_background">@color/grey_50</item>
+        <item name="contact_list_active_chat_text_color">@color/black</item>
+        <item name="contact_list_active_chat_separator">@color/grey_500</item>
+        <item name="contact_list_active_chat_client_large_icon_color">@color/grey_300</item>
+
+        <item name="account_main_color">@array/account_500</item>
+        <item name="account_status_bar_color">@array/account_700</item>
+        <item name="account_text_color">@array/account_900</item>
+
+        <item name="navigation_drawer_background">@color/grey_100</item>
+
+        <item name="conference_filter_input_background">@color/white</item>
+    </style>
+
+    <style name="ThemeDark" parent="Base.ThemeDark"></style>
+
+    <style name="Base.ThemeDark" parent="Theme.AppCompat">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!--for text selection toolbar to be above usual toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+
+        <!-- for hardware button menu -->
+        <item name="panelBackground">?attr/colorPrimary</item>
+
+        <item name="recent_chats_background">@color/black</item>
+
+        <item name="toolbar_popup_theme">@style/ThemeOverlay.AppCompat</item>
+
+        <item name="chat_background">@color/black</item>
+        <item name="chat_input_background">@color/grey_900</item>
+        <item name="chat_input_button_color">@color/grey_500</item>
+        <item name="chat_send_button_color">@array/account_400</item>
+        <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
+        <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
+
+        <item name="contact_list_background">@color/grey_900</item>
+
+        <item name="contact_list_account_group_background">@array/account_900</item>
+        <item name="contact_list_account_group_separator">@color/contact_list_separator_dark</item>
+        <item name="contact_list_account_group_second_line_text_color">@color/grey_400</item>
+        <item name="contact_list_account_group_small_right_icon_color">@color/white</item>
+        <item name="contact_list_account_group_small_right_text_color">@color/white</item>
+        <item name="contact_list_account_group_status_icon_separator_color">@color/white</item>
+
+        <item name="contact_list_subgroup_background">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="contact_list_subgroup_separator">@color/contact_list_separator_dark</item>
+        <item name="contact_list_subgroup_offline_indicator_color">@color/white</item>
+        <item name="contact_list_subgroup_expander_color">@color/white</item>
+
+        <item name="contact_list_contact_background">@color/black</item>
+        <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
+        <item name="contact_list_contact_name_text_color">@color/grey_300</item>
+        <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
+        <item name="contact_list_contact_second_line_text_color">@color/grey_700</item>
+        <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
+        <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_dark</item>
+        <item name="contact_list_muc_indicator_color">@color/grey_600</item>
+
+        <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
+        <item name="contact_list_active_chat_background">@color/grey_200</item>
+        <item name="contact_list_active_chat_text_color">@color/black</item>
+        <item name="contact_list_active_chat_separator">@color/grey_500</item>
+        <item name="contact_list_active_chat_client_large_icon_color">@color/grey_400</item>
+
+        <item name="account_main_color">@array/account_800</item>
+        <item name="account_status_bar_color">@array/account_900</item>
+        <item name="account_text_color">@array/account_400</item>
+
+        <item name="navigation_drawer_background">@color/grey_900</item>
+
+        <item name="conference_filter_input_background">@color/black</item>
+    </style>
+
+    <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="AboutViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">32sp</item>
+        <item name="android:shadowColor">@color/grey_700</item>
+        <item name="android:shadowDx">10</item>
+        <item name="android:shadowDy">10</item>
+        <item name="android:shadowRadius">20</item>
+        <item name="android:textColor">@color/grey_50</item>
+    </style>
+
+    <style name="ContactViewCollapsingToolbar" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+</resources>

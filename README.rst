@@ -41,6 +41,7 @@ Supported protocols
 * XEP-0136: Message Archiving
 * XEP-0224: Attention
 * XEP-0077: In-Band Registration
+* XEP-0352: Client State Indication
 
 Translations
 ============

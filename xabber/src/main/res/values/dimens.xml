@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="collapsing_toolbar_height">192dp</dimen>
+    <dimen name="contact_title_padding_left">10dp</dimen>
+    <dimen name="contact_title_padding_right">16dp</dimen>
+    <dimen name="contact_title_padding_bottom">10dp</dimen>
+
+    <dimen name="avatar_large_size">72dp</dimen>
+    <dimen name="avatar_normal_size">48dp</dimen>
+    <dimen name="avatar_radius">56dp</dimen>
+
+    <dimen name="account_group_elevation">2.5dp</dimen>
+    <dimen name="contact_elevation">1dp</dimen>
+
+    <dimen name="status_icon_width">24dip</dimen>
+    <dimen name="avatar_size_toolbar">48dip</dimen>
+
+    <dimen name="contact_list_item_padding_top">2dip</dimen>
+    <dimen name="contact_list_item_padding_bottom">2dip</dimen>
+    <dimen name="contact_list_item_height">52dip</dimen>
+
+    <dimen name="active_chat_padding_left">10dip</dimen>
+    <dimen name="active_chat_padding_right">16dip</dimen>
+
+    <dimen name="contact_name_height_show_status">24dip</dimen>
+
+    <dimen name="expander_height">38dip</dimen>
+
+    <dimen name="min_chat_image_size">48dp</dimen>
+    <dimen name="max_chat_image_size">288dp</dimen>
+
+</resources>

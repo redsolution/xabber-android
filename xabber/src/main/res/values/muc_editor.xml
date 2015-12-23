@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="EMPTY_NICK_NAME">Nickname not specified</string>
+    <string name="EMPTY_ROOM_NAME">Conference not specified</string>
+    <string name="muc_join">Join conference</string>
+    <string name="muc_nick">Nick</string>
+    <string name="muc_nick_hint">Your nick in conference</string>
+    <string name="muc_password">Password</string>
+    <string name="muc_password_hint">password is not required</string>
+    <string name="muc_room">Conference</string>
+    <string name="muc_server">Multi User Chat server</string>
+    <string name="NICK_ALREADY_USED">Nick already used</string>
+    <string name="ALREADY_IN_PROGRESS">Already in progress</string>
+    <string name="ALREADY_JOINED">Already joined</string>
+    <string name="muc_add">Add conference</string>
+    <string name="muc_delete">Remove conference</string>
+    <string name="muc_delete_confirm">Do you really want to remove conference %1$s from account %2$s?</string>
+    <string name="muc_edit">Authorization settings</string>
+    <string name="muc_invite_confirm">%2$s invites you to join conference %3$s. Join from account %1$s?</string>
+    <string name="muc_invite_confirm_reason">%2$s invites you to join conference %3$s: %4$s. Join from account %1$s?</string>
+    <string name="muc_leave">Leave conference</string>
+    <string name="muc_save">Save conference</string>
+
+    <string name="muc_choose_conference">Choose conference</string>
+    <string name="muc_next">Next</string>
+    <string name="muc_get_hosted_conferences">Get hosted conferences</string>
+    <string name="muc_error_getting_conferences">Error getting conferences</string>
+    <string name="muc_type_conference_name">Type conference name</string>
+    <string name="contact_is_blocked">Contact is blocked!</string>
+    <string name="conference_invitation">Conference invitation</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_quantity_1">account</string>
+    <string name="account_quantity_2">accounts</string>
+    <!-- Used for plural form in russian.-->
+    <string name="account_quantity_5">-</string>
+    <string name="account_quantity_offline_1">account</string>
+    <string name="account_quantity_offline_2">accounts</string>
+    <!-- Used for plural form in russian. -->
+    <string name="account_quantity_offline_5">-</string>
+    <string name="AUTHENTICATION_FAILED">Authorization error</string>
+    <string name="chat_contact_quantity_1">contact</string>
+    <string name="chat_contact_quantity_2">contacts</string>
+    <!-- Used for plural form in russian. -->
+    <string name="chat_contact_quantity_5">-</string>
+    <string name="chat_message_quantity_1">message</string>
+    <string name="chat_message_quantity_2">messages</string>
+    <!-- Used for plural form in russian. -->
+    <string name="chat_message_quantity_5">-</string>
+    <string name="chat_status">%1$d %2$s from %3$d %4$s</string>
+    <string name="chat_messages_from_contact">%1$d %2$s from %3$s</string>
+    <string name="chat_contact_and_message">%1$s: %2$s</string>
+    <string name="connection_state_connected_1">%1$d of %2$d %3$s online</string>
+    <string name="connection_state_connected_2">%1$d of %2$d %3$s online</string>
+    <!-- Used for plural form in russian. -->
+    <string name="connection_state_connected_5">-</string>
+    <string name="connection_state_connecting_1">%1$d of %2$d %3$s connecting</string>
+    <string name="connection_state_connecting_2">%1$d of %2$d %3$s connecting</string>
+    <!-- Used for plural form in russian. -->
+    <string name="connection_state_connecting_5">-</string>
+    <string name="connection_state_waiting_1">%1$d of %2$d %3$s waiting to connect</string>
+    <string name="connection_state_waiting_2">%1$d of %2$d %3$s waiting to connect</string>
+    <!-- Used for plural form in russian. -->
+    <string name="connection_state_waiting_5">-</string>
+    <string name="connection_state_offline">%1$d %2$s offline</string>
+    <string name="archive_available_request_message">Do you want to store message history on server?\nIt allows Xabber to load message history from all the devices using this account.\nThis feature will take some additional traffic and will slightly reduce connection speed.\nWARNING: All your local history will be removed.</string>
+    <string name="archive_available_request_title">Enable message archive?</string>
+    <string name="INVALID_CERTIFICATE">Invalid certificate</string>
+    <string name="muc_invite_message">Do you want to enter conference?</string>
+    <string name="otr_verification_in_progress">Click here to abort it.</string>
+    <string name="PASSWORD_REQUIRED">Password required</string>
+    <string name="pay_attention">Pay attention</string>
+    <string name="subscription_request_message">Authorization request</string>
+    <string name="conference_private_chat">Conference private chat</string>
+</resources>

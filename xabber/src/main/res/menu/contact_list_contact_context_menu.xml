@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_chat"
+        android:title="@string/chat_viewer" />
+
+    <item android:id="@+id/action_edit_conference"
+        android:title="@string/muc_edit" />
+
+    <item android:id="@+id/action_delete_conference"
+        android:title="@string/muc_delete" />
+
+    <item android:id="@+id/action_join_conference"
+        android:title="@string/muc_join" />
+
+    <item android:id="@+id/action_leave_conference"
+        android:title="@string/muc_leave" />
+
+    <item android:id="@+id/action_contact_info"
+        android:title="@string/contact_viewer" />
+
+    <item android:id="@+id/action_edit_contact_groups"
+        android:title="@string/edit_contact_groups" />
+
+    <item android:id="@+id/action_delete_contact"
+        android:title="@string/contact_delete" />
+
+    <item android:id="@+id/action_block_contact"
+        android:title="@string/contact_block" />
+
+    <item android:id="@+id/action_close_chat"
+        android:title="@string/close_chat" />
+
+    <item android:id="@+id/action_request_subscription"
+        android:title="@string/request_subscription" />
+
+    <item android:id="@+id/action_accept_subscription"
+        android:title="@string/accept_subscription" />
+
+    <item android:id="@+id/action_discard_subscription"
+        android:title="@string/discard_subscription" />
+</menu>

@@ -1,0 +1,119 @@
+<?xml version="1.0"?> 
+<!-- Providers file for default Smack extensions -->
+<smackProviders> 
+
+    <!-- vCardUpdate -->
+    <extensionProvider>
+        <elementName>x</elementName>
+        <namespace>vcard-temp:x:update</namespace>
+        <className>com.xabber.xmpp.avatar.VCardUpdateProvider</className>
+    </extensionProvider>
+
+    <!-- Result Set Management -->
+    <extensionProvider>
+        <elementName>set</elementName>
+        <namespace>http://jabber.org/protocol/rsm</namespace>
+        <className>com.xabber.xmpp.rsm.SetProvider</className>
+    </extensionProvider>
+
+    <!-- Stanza Session Negotiation -->
+    <extensionProvider>
+        <elementName>feature</elementName>
+        <namespace>http://jabber.org/protocol/feature-neg</namespace>
+        <className>com.xabber.xmpp.ssn.FeatureProvider</className>
+    </extensionProvider>
+
+    <!-- Message archive -->
+    <iqProvider>
+        <elementName>pref</elementName>
+        <namespace>urn:xmpp:archive</namespace>
+        <className>com.xabber.xmpp.archive.PrefProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>chat</elementName>
+        <namespace>urn:xmpp:archive</namespace>
+        <className>com.xabber.xmpp.archive.ChatProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>list</elementName>
+        <namespace>urn:xmpp:archive</namespace>
+        <className>com.xabber.xmpp.archive.ListProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>modified</elementName>
+        <namespace>urn:xmpp:archive</namespace>
+        <className>com.xabber.xmpp.archive.ModifiedProvider</className>
+    </iqProvider>
+
+    <!-- Entity Time -->
+    <iqProvider>
+        <elementName>time</elementName>
+        <namespace>urn:xmpp:time</namespace>
+        <className>com.xabber.xmpp.time.TimeProvider</className>
+    </iqProvider>
+
+    <!-- Attention -->
+    <extensionProvider>
+        <elementName>attention</elementName>
+        <namespace>urn:xmpp:attention:0</namespace>
+        <className>com.xabber.xmpp.attention.AttentionProvider</className>
+    </extensionProvider>
+
+	<!-- Message Carbons -->
+    <extensionProvider>
+        <elementName>sent</elementName>
+        <namespace>urn:xmpp:carbons:2</namespace>
+        <className>com.xabber.xmpp.carbon.SentProvider</className>
+    </extensionProvider>
+
+    <extensionProvider>
+        <elementName>received</elementName>
+        <namespace>urn:xmpp:carbons:2</namespace>
+        <className>com.xabber.xmpp.carbon.ReceivedProvider</className>
+    </extensionProvider>
+    
+    <extensionProvider>
+        <elementName>private</elementName>
+        <namespace>urn:xmpp:carbons:2</namespace>
+        <className>com.xabber.xmpp.carbon.PrivateProvider</className>
+    </extensionProvider>
+    
+    <!-- Message Forwarding -->
+    <extensionProvider>
+        <elementName>forwarded</elementName>
+        <namespace>urn:xmpp:forward:0</namespace>
+        <className>com.xabber.xmpp.carbon.ForwardedProvider</className>
+    </extensionProvider>
+
+    <!-- HTTP File Upload -->
+    <iqProvider>
+        <elementName>slot</elementName>
+        <namespace>urn:xmpp:http:upload</namespace>
+        <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
+    </iqProvider>
+
+    <!-- Blocking Command -->
+    <iqProvider>
+        <elementName>blocklist</elementName>
+        <namespace>urn:xmpp:blocking</namespace>
+        <className>com.xabber.xmpp.blocking.BlockListProvider</className>
+    </iqProvider>
+
+    <!-- Blocking Command -->
+    <iqProvider>
+        <elementName>block</elementName>
+        <namespace>urn:xmpp:blocking</namespace>
+        <className>com.xabber.xmpp.blocking.BlockProvider</className>
+    </iqProvider>
+
+    <!-- Blocking Command -->
+    <iqProvider>
+        <elementName>unblock</elementName>
+        <namespace>urn:xmpp:blocking</namespace>
+        <className>com.xabber.xmpp.blocking.UnblockProvider</className>
+    </iqProvider>
+
+</smackProviders>

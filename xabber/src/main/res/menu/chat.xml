@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_join_conference"
+        android:icon="@drawable/ic_group_add_white_24dp"
+        android:orderInCategory="80"
+        android:title="@string/muc_join"
+        android:visible="false"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_invite_to_chat"
+        android:orderInCategory="90"
+        android:title="@string/muc_invite"
+        android:visible="false"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_view_contact"
+        android:orderInCategory="100"
+        android:title="@string/contact_viewer"
+        android:visible="false"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_chat_list"
+        android:icon="@drawable/ic_list_white_24dp"
+        android:orderInCategory="110"
+        android:title="@string/chat_list"
+        android:visible="false"
+        app:showAsAction="ifRoom"
+        />
+
+    <item android:id="@+id/action_chat_settings"
+        android:orderInCategory="120"
+        android:title="@string/chat_settings"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_show_history"
+        android:orderInCategory="130"
+        android:title="@string/show_history"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_authorization_settings"
+        android:orderInCategory="133"
+        android:title="@string/muc_edit"
+        android:visible="false"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_leave_conference"
+        android:orderInCategory="136"
+        android:title="@string/muc_leave"
+        android:visible="false"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_clear_history"
+        android:icon="@drawable/ic_clear_all_white_24dp"
+        android:orderInCategory="160"
+        android:title="@string/clear_history"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_export_chat"
+        android:orderInCategory="170"
+        android:title="@string/export_chat"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_call_attention"
+        android:orderInCategory="180"
+        android:title="@string/call_attention"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/action_list_of_occupants"
+        android:orderInCategory="200"
+        android:title="@string/occupant_list"
+        android:visible="false"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_account_multiple_white_24dp"
+        />
+
+    <item
+        android:id="@+id/action_block_contact"
+        android:orderInCategory="205"
+        android:title="@string/contact_block"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_close_chat"
+        android:icon="@drawable/ic_clear_white_24dp"
+        android:orderInCategory="210"
+        android:title="@string/close_chat"
+        android:visible="false"
+        app:showAsAction="never" />
+
+</menu>

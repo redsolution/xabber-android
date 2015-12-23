@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/contact_list_item_height"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:elevation="@dimen/contact_elevation">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_client_large"
+        android:tint="?attr/contact_list_contact_client_large_icon_color"
+        android:paddingRight="56dp"
+        android:paddingBottom="4dp"
+        android:id="@+id/client_icon_large"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        >
+
+        <ImageView
+            android:id="@+id/account_color_indicator"
+
+            android:layout_width="4dp"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
+
+            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
+            android:src="@color/red_500"
+            />
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size_toolbar"
+            android:layout_height="@dimen/avatar_size_toolbar"
+            android:src="@drawable/ic_avatar_1"
+            />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/active_chat_padding_left"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                >
+
+
+
+
+                <TextView
+                    android:id="@+id/contact_list_item_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:text="Contact list item name"
+                    android:textColor="?attr/contact_list_contact_name_text_color"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@+id/contact_list_item_muc_indicator"
+                />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_muc_indicator_black_16dp"
+                    android:tint="?attr/contact_list_muc_indicator_color"
+                    android:id="@+id/contact_list_item_muc_indicator"
+                    android:layout_marginRight="2dp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_alignBottom="@id/contact_list_item_name"
+                    android:layout_marginBottom="1dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <include layout="@layout/contact_list_item_second_line" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/contact_list_item_status_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_status"
+            android:padding="16dp"
+            />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/contact_list_item_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="?attr/contact_list_contact_separator"
+        android:layout_alignParentBottom="true"
+        />
+
+    <include layout="@layout/offline_shadow" />
+
+</RelativeLayout>

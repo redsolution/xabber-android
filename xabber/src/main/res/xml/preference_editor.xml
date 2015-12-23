@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="@string/preference_accounts_key"
+        android:title="@string/preference_accounts">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.AccountList"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+
+    <Preference
+        android:title="@string/preference_interface"
+        android:key="@string/preference_interface">
+        <intent
+            android:targetPackage="@string/application_package"
+            android:targetClass="com.xabber.android.ui.preferences.ThemeSettings"/>
+    </Preference>
+
+    <Preference
+        android:key="@string/preference_contacts"
+        android:title="@string/preference_contacts">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.ContactListSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_chats"
+        android:title="@string/preference_chats">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.ChatGlobalSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_events"
+        android:title="@string/preference_events">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.NotificationsSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_connection"
+        android:title="@string/preference_connection">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.ConnectionSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_security"
+        android:title="@string/preference_security">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.SecuritySettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_debug"
+        android:title="@string/preference_debug">
+        <intent
+            android:targetClass="com.xabber.android.ui.preferences.DebugSettings"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+    <Preference
+        android:key="@string/preference_about_key"
+        android:title="@string/preference_about">
+        <intent
+            android:targetClass="com.xabber.android.ui.activity.AboutViewer"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+</PreferenceScreen>

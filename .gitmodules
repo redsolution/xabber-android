@@ -1,6 +1,6 @@
-[submodule "app/otr4j"]
-	path = app/otr4j
+[submodule "xabber/otr4j"]
+	path = xabber/otr4j
 	url = https://github.com/otr4j/otr4j.git
-[submodule "app/MemorizingTrustManager"]
-	path = app/MemorizingTrustManager
-	url = https://github.com/ge0rg/MemorizingTrustManager.git
+[submodule "xabber/MemorizingTrustManager"]
+	path = xabber/MemorizingTrustManager
+	url = https://github.com/redsolution/MemorizingTrustManager.git

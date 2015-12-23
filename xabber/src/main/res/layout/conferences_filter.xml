@@ -1,0 +1,53 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.ConferenceFilterActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:elevation="8dp"
+        android:background="?attr/conference_filter_input_background"
+        android:id="@+id/linearLayout">
+
+        <EditText
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="@string/muc_type_conference_name"
+            android:paddingLeft="16dp"
+            android:id="@+id/room_name_edit_text"
+            android:imeOptions="flagNoExtractUi|actionDone"
+            android:singleLine="true"
+        />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            android:src="@drawable/ic_close_circle_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:layout_gravity="center_vertical"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+            android:id="@+id/room_clear_button"
+            />
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/hosted_rooms_list_view"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignLeft="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>

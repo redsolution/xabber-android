@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/actionBarSize"
+    android:orientation="horizontal"
+    android:paddingTop="16dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    >
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_toolbar"
+        android:layout_height="@dimen/avatar_size_toolbar"
+        android:src="@drawable/ic_avatar_1"
+        />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="Lorem Ipsum"
+        android:textColor="?android:attr/textColorPrimary"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@id/avatar"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        />
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="Lorem ipsum dolor sit amet"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@id/avatar"
+        android:layout_below="@id/name"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        android:id="@+id/dialog_message"
+        android:layout_below="@id/avatar"
+        android:layout_marginTop="16dp"
+     />
+
+</RelativeLayout>

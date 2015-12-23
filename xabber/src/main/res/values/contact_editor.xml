@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_account">Account</string>
+    <string name="contact_group">Select groups</string>
+    <string name="contact_name">Alias (optional)</string>
+    <string name="contact_subscribe_confirm">Share your %1$s account status with contact?</string>
+    <string name="contact_user">Contact username</string>
+    <string name="ENTRY_IS_NOT_FOUND">Contact not found</string>
+    <string name="group_is_empty">Set group name</string>
+    <string name="group_name">Group name</string>
+    <string name="choose_account">Choose an account</string>
+    <string name="EMPTY_ACCOUNT">Please select an account</string>
+    <string name="add_new_group">Add new group…</string>
+    <string name="accept_contact">Authorize</string>
+    <string name="decline_contact">Discard</string>
+    <string name="processing_image">Processing image...</string>
+    <string name="error_during_crop">Error during image crop</string>
+    <string name="error_during_image_processing">Error during image processing</string>
+    <string name="account_settings">Account settings</string>
+    <string name="account_user_info">Account info</string>
+    <string name="conference_private_chat_invitation">%1$s from %2$s wants to start private chat with you</string>
+    <string name="accept_muc_private_chat">Accept</string>
+    <string name="block_muc_private_chat">Block</string>
+    <string name="no_permission_camera">No permission to access camera</string>
+</resources>

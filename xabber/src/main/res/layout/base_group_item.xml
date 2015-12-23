@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/expander_height"
+    android:elevation="2dp"
+    >
+
+    <ImageView
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_expander_indicator"
+        android:tint="?attr/contact_list_subgroup_expander_color"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:alpha="0.2"
+        />
+
+    <ImageView
+        android:id="@+id/group_offline_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_show_offline"
+        android:tint="?attr/contact_list_subgroup_offline_indicator_color"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:alpha="0.2"
+        android:paddingRight="@dimen/active_chat_padding_right"
+        android:paddingEnd="@dimen/active_chat_padding_right"
+
+        />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/expander_height"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:text="name (0/0)"
+        android:layout_toRightOf="@id/indicator"
+        android:layout_toEndOf="@id/indicator"
+        android:layout_toLeftOf="@id/group_offline_indicator"
+        android:layout_toStartOf="@id/group_offline_indicator"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="?attr/contact_list_subgroup_separator"
+        android:layout_alignParentBottom="true"
+        />
+
+    <include layout="@layout/offline_shadow" />
+
+</RelativeLayout>

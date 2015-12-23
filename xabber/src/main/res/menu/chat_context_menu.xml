@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_message_repeat"
+        android:visible="false"
+        android:title="@string/message_repeat" />
+
+    <item android:id="@+id/action_message_quote"
+        android:title="@string/message_quote" />
+
+    <item android:id="@+id/action_message_copy"
+        android:title="@string/message_copy" />
+
+    <item android:id="@+id/action_message_remove"
+        android:title="@string/message_remove" />
+
+    <item android:id="@+id/action_message_open_file"
+        android:title="@string/message_open_file"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_message_save_file"
+        android:title="@string/message_save_file"
+        android:visible="false"
+        />
+
+    <item android:id="@+id/action_message_open_muc_private_chat"
+        android:title="@string/message_open_private_chat"
+        android:visible="false"
+        />
+
+</menu>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_block_list"
+        android:title="@string/block_list"
+        app:showAsAction="always"
+        android:orderInCategory="90"
+        android:icon="@drawable/ic_account_remove_white_24dp"
+        />
+
+    <item android:id="@+id/action_edit_account_user_info"
+        android:title="@string/edit_account_user_info"
+        app:showAsAction="always"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_edit_white_24dp"
+        />
+
+    <item android:id="@+id/action_account_settings"
+        android:title="@string/account_settings"
+        app:showAsAction="always"
+        android:orderInCategory="110"
+        android:icon="@drawable/ic_settings_white_24dp"
+        />
+
+    <item android:id="@+id/action_account_user_info"
+        android:title="@string/account_user_info"
+        app:showAsAction="always"
+        android:orderInCategory="120"
+        android:icon="@drawable/ic_account_box_outline_white_24dp"
+        />
+
+</menu>

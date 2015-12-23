@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+
+        android:layout_alignTop="@+id/message_text"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="3dp"
+
+        android:src="@drawable/ic_avatar_1"
+        />
+
+    <LinearLayout
+        android:id="@+id/message_balloon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginEnd="48dp"
+        android:layout_marginLeft="6dp"
+
+        android:layout_marginRight="48dp"
+
+        android:layout_marginStart="6dp"
+        android:layout_toEndOf="@id/avatar"
+        android:layout_toRightOf="@id/avatar"
+
+        android:autoLink="all"
+        android:background="@drawable/message_incoming"
+
+        android:minWidth="142dp"
+
+        android:paddingBottom="8dp"
+        android:paddingEnd="6dp"
+
+        android:paddingLeft="16dp"
+        android:paddingRight="10dp"
+
+        android:paddingTop="8dp">
+
+        <ImageButton
+            android:id="@+id/message_download_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_download_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ImageButton
+            android:id="@+id/message_attachment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_attachment_grey600_24dp"
+            android:background="@drawable/ripple_background"
+            android:padding="12dp"
+            android:layout_gravity="bottom"
+            />
+
+        <ProgressBar
+            android:id="@+id/message_download_progress_bar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="12dp"
+            android:layout_gravity="bottom" />
+
+
+        <include layout="@layout/chat_viewer_message"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/message_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/message_balloon"
+        android:layout_toEndOf="@+id/avatar"
+        android:layout_toRightOf="@+id/avatar"
+
+        android:paddingLeft="16dp"
+
+        android:text="Feb 19, 2015 4:39 PM"
+
+        android:textSize="10sp"
+        />
+
+    <TextView
+        android:id="@+id/message_file_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@+id/message_balloon"
+        android:layout_toEndOf="@+id/message_time"
+        android:layout_toRightOf="@+id/message_time"
+
+        android:paddingLeft="8dp"
+
+        android:text="231KB"
+
+        android:textSize="10sp"
+        />
+
+</RelativeLayout>
