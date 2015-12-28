@@ -3,6 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -20,11 +21,17 @@ import java.util.Map;
 
 public class AccountEditorFragment extends BaseSettingsFragment {
 
+    @Nullable
     private AccountEditorFragmentInteractionListener mListener;
 
     @Override
     protected void onInflate(Bundle savedInstanceState) {
-        AccountProtocol protocol = mListener.getAccountItem().getConnectionSettings().getProtocol();
+        AccountProtocol protocol;
+        if (mListener == null) {
+            return;
+        }
+
+        protocol = mListener.getAccountItem().getConnectionSettings().getProtocol();
         if (protocol == AccountProtocol.xmpp) {
             addPreferencesFromResource(R.xml.account_editor_xmpp);
         } else if (protocol == AccountProtocol.gtalk) {
