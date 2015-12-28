@@ -502,6 +502,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         AccountItem result;
         AccountItem accountItem = getAccount(account);
 
+        if (accountItem == null) {
+            return;
+        }
+
         if (accountItem.getConnectionSettings().getServerName().equals(serverName)
                 && accountItem.getConnectionSettings().getUserName().equals(userName)
                 && accountItem.getConnectionSettings().getResource().equals(resource)) {

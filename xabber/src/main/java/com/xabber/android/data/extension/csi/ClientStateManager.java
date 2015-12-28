@@ -4,6 +4,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.PlainStreamElement;
@@ -31,16 +32,22 @@ public class ClientStateManager {
         AccountManager accountManager = AccountManager.getInstance();
         for (String accountName : accountManager.getAccounts()) {
             AccountItem account = accountManager.getAccount(accountName);
-            if (account == null)
+            if (account == null) {
                 continue;
+            }
             ConnectionThread connectionThread = account.getConnectionThread();
-            if (connectionThread == null)
+            if (connectionThread == null) {
                 continue;
+            }
 
-            XMPPConnection stream = connectionThread.getXMPPConnection();
-            if (stream.hasFeature("csi", ClientStateIndication.NAMESPACE))
+            AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+            if (xmppConnection == null) {
+                continue;
+            }
+
+            if (xmppConnection.hasFeature("csi", ClientStateIndication.NAMESPACE))
                 try {
-                    stream.send(element);
+                    xmppConnection.send(element);
                 } catch (SmackException.NotConnectedException e) {
                     // not connected
                 }
