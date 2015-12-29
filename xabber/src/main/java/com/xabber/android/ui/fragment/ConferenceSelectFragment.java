@@ -269,9 +269,10 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         }
 
         ChatViewer.hideKeyboard(getActivity());
-        MUCManager.requestHostedRooms(account, server, this);
+
         hostedConferencesAdapter.clear();
         roomsProgressBar.setVisibility(View.VISIBLE);
+        MUCManager.requestHostedRooms(account, server, this);
     }
 
     @Override

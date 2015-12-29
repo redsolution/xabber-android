@@ -470,7 +470,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public static void requestHostedRooms(final String account, final String serviceName, final HostedRoomsListener listener) {
-        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
+        if (connectionThread == null) {
+            listener.onHostedRoomsReceived(null);
+            return;
+        }
+        final XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
 
         final Thread thread = new Thread("Get hosted rooms on server " + serviceName + " for account " + account) {
             @Override
@@ -501,7 +506,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public static void requestRoomInfo(final String account, final String roomJid, final RoomInfoListener listener) {
-        final XMPPConnection xmppConnection = AccountManager.getInstance().getAccount(account).getConnectionThread().getXMPPConnection();
+        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
+        if (connectionThread == null) {
+            listener.onRoomInfoReceived(null);
+            return;
+        }
+        final XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
 
         final Thread thread = new Thread("Get room " + roomJid + " info for account " + account) {
             @Override

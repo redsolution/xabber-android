@@ -127,8 +127,8 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
             progressBar.setVisibility(View.GONE);
 
 
-            MUCManager.requestRoomInfo(account, room, this);
             progressBar.setVisibility(View.VISIBLE);
+            MUCManager.requestRoomInfo(account, room, this);
         }
 
     }
@@ -142,6 +142,8 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
 
     @Override
     public void onRoomInfoReceived(RoomInfo roomInfo) {
+        progressBar.setVisibility(View.GONE);
+
         if (roomInfo == null) {
             Toast.makeText(getActivity(), getString(R.string.could_not_get_room_info), Toast.LENGTH_SHORT).show();
             return;
@@ -149,7 +151,6 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
 
         isInfoLoaded = true;
 
-        progressBar.setVisibility(View.GONE);
 
         if (!"".equals(roomInfo.getRoom())) {
             jidView.setVisibility(View.VISIBLE);
