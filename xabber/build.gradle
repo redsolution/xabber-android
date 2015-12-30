@@ -19,6 +19,7 @@ android {
     lintOptions {
         // problems with generated "applicationId" string resource
         disable 'MissingTranslation'
+        disable 'InvalidPackage'
     }
 
     dexOptions {
