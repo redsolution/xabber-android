@@ -277,6 +277,10 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public void onHostedRoomsReceived(Collection<HostedRoom> hostedRooms) {
+        if (!isAdded()) {
+            return;
+        }
+
         roomsProgressBar.setVisibility(View.GONE);
 
         if (hostedRooms == null) {

@@ -142,6 +142,10 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
 
     @Override
     public void onRoomInfoReceived(RoomInfo roomInfo) {
+        if (!isAdded()) {
+            return;
+        }
+
         progressBar.setVisibility(View.GONE);
 
         if (roomInfo == null) {
