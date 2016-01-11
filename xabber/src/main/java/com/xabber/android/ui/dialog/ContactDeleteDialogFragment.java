@@ -7,9 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.activity.ContactViewer;
@@ -49,6 +48,7 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
+            MessageManager.getInstance().closeChat(account, user);
             RosterManager.getInstance().removeContact(account, user);
 
             if (getActivity() instanceof ContactViewer) {

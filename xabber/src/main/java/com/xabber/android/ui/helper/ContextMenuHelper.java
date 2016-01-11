@@ -38,6 +38,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountViewer;
 import com.xabber.android.ui.activity.ChatViewer;
@@ -230,6 +231,10 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_delete_conference).setVisible(false);
             menu.findItem(R.id.action_leave_conference).setVisible(false);
             menu.findItem(R.id.action_join_conference).setVisible(false);
+
+            if (RosterManager.getInstance().getRosterContact(account, user) == null) {
+                menu.findItem(R.id.action_delete_contact).setVisible(false);
+            }
 
             if (!MessageManager.getInstance().hasActiveChat(account, user)) {
                 menu.findItem(R.id.action_close_chat).setVisible(false);
