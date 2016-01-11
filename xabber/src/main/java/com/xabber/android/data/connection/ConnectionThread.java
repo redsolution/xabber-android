@@ -86,7 +86,7 @@ public class ConnectionThread implements
     /**
      * SMACK connection.
      */
-    private AbstractXMPPConnection xmppConnection;
+    private XMPPTCPConnection xmppConnection;
 
     /**
      * Thread holder for this connection.
@@ -212,6 +212,10 @@ public class ConnectionThread implements
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
         xmppConnection.addConnectionListener(this);
+
+        // enable Stream Management support. SMACK will only enable SM if supported by the server,
+        // so no additional checks are required.
+        xmppConnection.setUseStreamManagement(true);
 
         // by default Smack disconnects in case of parsing errors
         xmppConnection.setParsingExceptionCallback(new ExceptionLoggingCallback());
