@@ -329,14 +329,16 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SAVED_IS_RECENT_CHATS_SELECTED, isRecentChatsSelected);
-        if (!isRecentChatsSelected) {
+        if (!isRecentChatsSelected && selectedChat != null) {
             outState.putString(SAVED_SELECTED_ACCOUNT, selectedChat.getAccount());
             outState.putString(SAVED_SELECTED_USER, selectedChat.getUser());
         }
         outState.putBoolean(SAVED_EXIT_ON_SEND, exitOnSend);
 
-        outState.putString(SAVED_INITIAL_ACCOUNT, initialChat.getAccount());
-        outState.putString(SAVED_INITIAL_USER, initialChat.getUser());
+        if (initialChat != null) {
+            outState.putString(SAVED_INITIAL_ACCOUNT, initialChat.getAccount());
+            outState.putString(SAVED_INITIAL_USER, initialChat.getUser());
+        }
     }
 
     @Override
