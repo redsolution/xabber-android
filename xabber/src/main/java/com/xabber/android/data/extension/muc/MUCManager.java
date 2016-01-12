@@ -476,6 +476,10 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             return;
         }
         final XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+        if (!xmppConnection.isAuthenticated()) {
+            listener.onHostedRoomsReceived(null);
+            return;
+        }
 
         final Thread thread = new Thread("Get hosted rooms on server " + serviceName + " for account " + account) {
             @Override
@@ -512,6 +516,10 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             return;
         }
         final XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+        if (!xmppConnection.isAuthenticated()) {
+            listener.onRoomInfoReceived(null);
+            return;
+        }
 
         final Thread thread = new Thread("Get room " + roomJid + " info for account " + account) {
             @Override
