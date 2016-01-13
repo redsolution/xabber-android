@@ -78,9 +78,6 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
         roomClearButton.setOnClickListener(this);
         conferenceNameEditText = (EditText)findViewById(R.id.room_name_edit_text);
 
-        conferenceNameEditText.addTextChangedListener(this);
-        conferenceNameEditText.setOnEditorActionListener(this);
-
         setRoomClearButtonVisibility();
 
         Intent intent = getIntent();
@@ -104,6 +101,8 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
             conferenceNameEditText.setSelection(room.length());
         }
 
+        conferenceNameEditText.addTextChangedListener(this);
+        conferenceNameEditText.setOnEditorActionListener(this);
     }
 
     public static List<HostedRoom> restoreConferenceList(Bundle bundleExtra) {

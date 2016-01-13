@@ -80,24 +80,6 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             }
         });
 
-
-        roomView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                hostedConferencesAdapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         roomsProgressBar = view.findViewById(R.id.muc_rooms_progress_bar);
 
         view.findViewById(R.id.muc_get_hosted_rooms).setOnClickListener(this);
@@ -132,6 +114,22 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             hostedConferencesAdapter.addAll(ConferenceFilterActivity.restoreConferenceList(savedInstanceState));
         }
 
+        roomView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hostedConferencesAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
     }
 

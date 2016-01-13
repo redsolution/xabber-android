@@ -9,7 +9,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jxmpp.util.XmppStringUtils;
 
@@ -22,11 +21,12 @@ public class HostedConferencesAdapter extends BaseAdapter implements Filterable 
     private List<HostedRoom> originalData = null;
     private List<HostedRoom> filteredData = null;
     private LayoutInflater inflater;
-    private HostedRoomsFilter filter = new HostedRoomsFilter();
+    private HostedRoomsFilter filter;
 
     public HostedConferencesAdapter(Context context) {
-        this.filteredData = new ArrayList<>();
-        this.originalData = new ArrayList<>();
+        filteredData = new ArrayList<>();
+        originalData = new ArrayList<>();
+        filter = new HostedRoomsFilter();
         inflater = LayoutInflater.from(context);
     }
 
