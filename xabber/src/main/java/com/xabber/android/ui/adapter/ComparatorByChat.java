@@ -23,28 +23,31 @@ public class ComparatorByChat extends ComparatorByName {
     public static final ComparatorByChat COMPARATOR_BY_CHAT = new ComparatorByChat();
 
     @Override
-    public int compare(AbstractContact object1, AbstractContact object2) {
+    public int compare(AbstractContact contact1, AbstractContact contact2) {
         final MessageManager messageManager = MessageManager.getInstance();
-        final AbstractChat abstractChat1 = messageManager.getChat(
-                object1.getAccount(), object1.getUser());
-        final AbstractChat abstractChat2 = messageManager.getChat(
-                object2.getAccount(), object2.getUser());
-        final boolean hasActiveChat1 = abstractChat1 != null
-                && abstractChat1.isActive();
-        final boolean hasActiveChat2 = abstractChat2 != null
-                && abstractChat2.isActive();
-        if (hasActiveChat1 && !hasActiveChat2)
+        final AbstractChat abstractChat1 = messageManager.getChat(contact1.getAccount(), contact1.getUser());
+        final AbstractChat abstractChat2 = messageManager.getChat(contact2.getAccount(), contact2.getUser());
+
+        final boolean hasActiveChat1 = abstractChat1 != null && abstractChat1.isActive();
+        final boolean hasActiveChat2 = abstractChat2 != null && abstractChat2.isActive();
+
+        if (hasActiveChat1 && !hasActiveChat2) {
             return -1;
-        if (!hasActiveChat1 && hasActiveChat2)
+        }
+
+        if (!hasActiveChat1 && hasActiveChat2) {
             return 1;
+        }
+
         if (hasActiveChat1) {
             int result;
-            result = ChatComparator.CHAT_COMPARATOR.compare(abstractChat1,
-                    abstractChat2);
-            if (result != 0)
+            result = ChatComparator.CHAT_COMPARATOR.compare(abstractChat1, abstractChat2);
+            if (result != 0) {
                 return result;
+            }
         }
-        return super.compare(object1, object2);
+
+        return super.compare(contact1, contact2);
     }
 
 }
