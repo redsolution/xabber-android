@@ -1,13 +1,12 @@
 /**
- *
  * Copyright © 2015 Florian Schmaus
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,10 +49,10 @@ import org.jxmpp.util.XmppDateTime;
 
 /**
  * Implements MAM - Message Archive Management.
- * 
- * 
+ *
+ *
  * @see <a href="http://xmpp.org/extensions/xep-0313.html">XEP-0313: Message Archive Management</a>
- * 
+ *
  * The implementation is now according to version 0.3.
  *
  */
@@ -84,17 +83,17 @@ public class MamManager extends Manager {
         ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(connection);
         sdm.addFeature(MamPacket.NAMESPACE);
     }
-    
+
     /**
      * Query the Object, identified by domain, using the following optional predefined filters:
-     * 
+     *
      * <ul>
      * <li>start - Filtering by time received</li>
      * <li>end - Filtering by time received</li>
      * <li>with - Filtering by JID</li>
      * <li>max - limit to the number of results transmitted at a time.</li>
      * </ul>
-     * 
+     *
      * @param domain a jid specifying a user or room or an other entity.  When null the users own JID will be used.
      * @param max limit to the number of results transmitted at a time. Can be null.
      * @param start used to filter out messages before a certain date/time. Can be null.
@@ -107,20 +106,20 @@ public class MamManager extends Manager {
      * @throws InterruptedException
      */
     public MamQueryResult queryArchive(String domain, Integer max, Date start, Date end, String withJid) throws NoResponseException,
-    XMPPErrorException, NotConnectedException, InterruptedException {
-      return queryArchive(domain, null, max, start, end, withJid);
+            XMPPErrorException, NotConnectedException, InterruptedException {
+        return queryArchive(domain, null, max, start, end, withJid);
     }
 
     /**
      * Query the Object, identified by domain and node, using the following optional predefined filters:
-     * 
+     *
      * <ul>
      * <li>start - Filtering by time received</li>
      * <li>end - Filtering by time received</li>
      * <li>with - Filtering by JID</li>
      * <li>max - limit to the number of results transmitted at a time.</li>
      * </ul>
-     * 
+     *
      * @param domain a jid specifying a user or room or an other entity.  When null the users own JID will be used.
      * @param node
      * @param max limit to the number of results transmitted at a time. Can be null.
@@ -134,7 +133,7 @@ public class MamManager extends Manager {
      * @throws InterruptedException
      */
     public MamQueryResult queryArchive(String domain, String node, Integer max, Date start, Date end, String withJid) throws NoResponseException,
-                    XMPPErrorException, NotConnectedException, InterruptedException {
+            XMPPErrorException, NotConnectedException, InterruptedException {
         DataForm dataForm = null;
         String queryId = UUID.randomUUID().toString();
         if (start != null || end != null || withJid != null) {
@@ -167,7 +166,7 @@ public class MamManager extends Manager {
 
     /**
      * Query the Object, identified by domain, using the the filters as specified in the answerform.
-     * 
+     *
      * @param domain a jid specifying a user or room or an other entity.  When null the users own JID will be used.
      * @param max limit to the number of results transmitted at a time. Can be null.
      * @return a result set with a list of results
@@ -177,13 +176,13 @@ public class MamManager extends Manager {
      * @throws InterruptedException
      */
     public MamQueryResult queryArchive(String objectJID, Form answerForm, Integer max) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-      return queryArchive(objectJID, null, answerForm, max);
+        return queryArchive(objectJID, null, answerForm, max);
     }
 
-    
+
     /**
      * Query the Object, identified by domain and node, using the the filters as specified in the answerform.
-     * 
+     *
      * @param domain a jid specifying a user or room or an other entity.  When null the users own JID will be used.
      * @param node
      * @param max limit to the number of results transmitted at a time. Can be null.
@@ -194,21 +193,21 @@ public class MamManager extends Manager {
      * @throws InterruptedException
      */
     public MamQueryResult queryArchive(String objectJID, String node, Form answerForm, Integer max) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-      
-      String queryId = UUID.randomUUID().toString();
-      MamQueryIQ mamQueryIQ = new MamQueryIQ(queryId, node, answerForm.getDataFormToSend());
-      mamQueryIQ.setType(IQ.Type.set);
-      mamQueryIQ.setTo(objectJID);
-      if (max != null) {
-          RSMSet rsmSet = new RSMSet(max);
-          mamQueryIQ.addExtension(rsmSet);
-      }
-      return queryArchive(mamQueryIQ, 0);
+
+        String queryId = UUID.randomUUID().toString();
+        MamQueryIQ mamQueryIQ = new MamQueryIQ(queryId, node, answerForm.getDataFormToSend());
+        mamQueryIQ.setType(IQ.Type.set);
+        mamQueryIQ.setTo(objectJID);
+        if (max != null) {
+            RSMSet rsmSet = new RSMSet(max);
+            mamQueryIQ.addExtension(rsmSet);
+        }
+        return queryArchive(mamQueryIQ, 0);
     }
 
     /**
      * Query for the next result set, following on the result set as described by mamQueryResult.
-     * 
+     *
      * @param mamQueryResult
      * @param count limit to the number of results in the result set.
      * @return a result set with a list of results
@@ -218,7 +217,7 @@ public class MamManager extends Manager {
      * @throws InterruptedException
      */
     public MamQueryResult pageNext(MamQueryResult mamQueryResult, int count) throws NoResponseException,
-                    XMPPErrorException, NotConnectedException, InterruptedException {
+            XMPPErrorException, NotConnectedException, InterruptedException {
         RSMSet previousResultRsmSet = mamQueryResult.mamFin.getRSMSet();
         RSMSet requestRsmSet = new RSMSet(count, previousResultRsmSet.getLast(), RSMSet.PageDirection.after);
         return page(mamQueryResult, requestRsmSet);
@@ -226,7 +225,7 @@ public class MamManager extends Manager {
 
     /**
      * Query for a result set, based on the query defined by the result set as described by mamQueryResult, but constrained by the Result Set in rsmSet.
-     * 
+     *
      * @param mamQueryResult the query
      * @param rsmSet a Result set constrain.
      * @return a result set with a list of results
@@ -236,7 +235,7 @@ public class MamManager extends Manager {
      * @throws InterruptedException
      */
     public MamQueryResult page(MamQueryResult mamQueryResult, RSMSet rsmSet) throws NoResponseException,
-                    XMPPErrorException, NotConnectedException, InterruptedException {
+            XMPPErrorException, NotConnectedException, InterruptedException {
         MamQueryIQ mamQueryIQ = new MamQueryIQ(UUID.randomUUID().toString(), mamQueryResult.form);
         mamQueryIQ.setType(IQ.Type.set);
         mamQueryIQ.addExtension(rsmSet);
@@ -244,31 +243,30 @@ public class MamManager extends Manager {
     }
 
     private MamQueryResult queryArchive(MamQueryIQ mamQueryIq, long extraTimeout) throws NoResponseException,
-                    XMPPErrorException, NotConnectedException, InterruptedException {
+            XMPPErrorException, NotConnectedException, InterruptedException {
         if (extraTimeout < 0) {
             throw new IllegalArgumentException("extra timeout must be zero or positive");
         }
         final XMPPConnection connection = connection();
         MamFinExtension mamFinExtension;
         PacketCollector finMessageCollector = connection.createPacketCollector(new MamMessageFinFilter(
-                        mamQueryIq));
+                mamQueryIq));
         PacketCollector.Configuration resultCollectorConfiguration = PacketCollector.newConfiguration().setStanzaFilter(
-                        new MamMessageResultFilter(mamQueryIq)).setCollectorToReset(
-                        finMessageCollector);
+                new MamMessageResultFilter(mamQueryIq)).setCollectorToReset(
+                finMessageCollector);
         PacketCollector resultCollector = connection.createPacketCollector(resultCollectorConfiguration);
 
         try {
             connection.createPacketCollectorAndSend(mamQueryIq).nextResultOrThrow();
             Message mamFinMessage = finMessageCollector.nextResultOrThrow(connection.getPacketReplyTimeout()
-                            + extraTimeout);
+                    + extraTimeout);
             mamFinExtension = MamFinExtension.from(mamFinMessage);
-        }
-        finally {
+        } finally {
             resultCollector.cancel();
             finMessageCollector.cancel();
         }
         List<Forwarded> messages = new ArrayList<>(resultCollector.getCollectedCount());
-        for (Message resultMessage = resultCollector.pollResult(); resultMessage != null;resultMessage = resultCollector.pollResult()) {
+        for (Message resultMessage = resultCollector.pollResult(); resultMessage != null; resultMessage = resultCollector.pollResult()) {
             // XEP-313 § 4.2
             MamResultExtension mamResultExtension = MamResultExtension.from(resultMessage);
             messages.add(mamResultExtension.getForwarded());
@@ -290,12 +288,12 @@ public class MamManager extends Manager {
 
     /**
      * Returns true if Message Archive Management is supported by the server.
-     * 
+     *
      * @return true if Message Archive Management is supported by the server.
      * @throws NotConnectedException
      * @throws XMPPErrorException
      * @throws NoResponseException
-     * @throws InterruptedException 
+     * @throws InterruptedException
      */
     public boolean isSupportedByServer() throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
         return ServiceDiscoveryManager.getInstanceFor(connection()).serverSupportsFeature(MamPacket.NAMESPACE);
@@ -312,37 +310,37 @@ public class MamManager extends Manager {
 
     /**
      * Find out about additional filters the server might support. Filters are specified in a <a href="http://xmpp.org/extensions/xep-0004.html">Data Forms (XEP-0004)</a>.
-     * 
+     *
      * @param objectJID
      * @return
-     * @throws NotConnectedException 
-     * @throws XMPPErrorException 
-     * @throws NoResponseException 
-     * @throws InterruptedException 
+     * @throws NotConnectedException
+     * @throws XMPPErrorException
+     * @throws NoResponseException
+     * @throws InterruptedException
      */
     public Form getSearchForm(String objectJID) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-      return getSearchForm(objectJID, null);
+        return getSearchForm(objectJID, null);
     }
 
     /**
      * Find out about additional filters the server might support. Filters are specified in a <a href="http://xmpp.org/extensions/xep-0004.html">Data Forms (XEP-0004)</a>.
-     * 
+     *
      * @param domain
      * @param node
      * @return
-     * @throws NotConnectedException 
-     * @throws XMPPErrorException 
-     * @throws NoResponseException 
-     * @throws InterruptedException 
+     * @throws NotConnectedException
+     * @throws XMPPErrorException
+     * @throws NoResponseException
+     * @throws InterruptedException
      */
-    public Form getSearchForm(String domain, String node ) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
-      MamQueryIQ search = new MamQueryIQ();
-      search.setType(IQ.Type.get);
-      search.setTo(domain);
-      search.setNode(node);
+    public Form getSearchForm(String domain, String node) throws NoResponseException, XMPPErrorException, NotConnectedException, InterruptedException {
+        MamQueryIQ search = new MamQueryIQ();
+        search.setType(IQ.Type.get);
+        search.setTo(domain);
+        search.setNode(node);
 
-      IQ response = (IQ) connection().createPacketCollectorAndSend(search).nextResultOrThrow();
-      return Form.getFormFrom(response);
+        IQ response = (IQ) connection().createPacketCollectorAndSend(search).nextResultOrThrow();
+        return Form.getFormFrom(response);
     }
 
 }

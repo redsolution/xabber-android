@@ -1,13 +1,12 @@
 /**
- *
- * Copyright © 2015 Florian Schmaus
- *
+ * Copyright ï¿½ 2015 Florian Schmaus
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +24,7 @@ import org.jivesoftware.smackx.rsm.packet.RSMSet;
 
 
 /**
- * 
+ *
  * @see <a href="http://xmpp.org/extensions/xep-0313.html">XEP-0313: Message Archive Management</a>
  *
  */
@@ -43,7 +42,7 @@ public class MamPacket {
         public final String getQueryId() {
             return queryId;
         }
-        
+
 
         @Override
         public final String getNamespace() {
@@ -96,8 +95,8 @@ public class MamPacket {
             XmlStringBuilder xml = new XmlStringBuilder();
             xml.halfOpenElement(this);
             xml.optAttribute("queryid", queryId);
-            if (complete != null )
-              xml.optBooleanAttribute("complete", complete);
+            if (complete != null)
+                xml.optBooleanAttribute("complete", complete);
             xml.optBooleanAttribute("stable", stable);
             if (rsmSet == null) {
                 xml.closeEmptyElement();
@@ -110,12 +109,12 @@ public class MamPacket {
         }
 
         public static MamFinExtension from(Message message) {
-          MamFinExtension fin = message.getExtension(ELEMENT, NAMESPACE);
-          if (message.hasExtension(RSMSet.ELEMENT, RSMSet.NAMESPACE) && fin.rsmSet == null) {
-            fin.rsmSet = message.getExtension(RSMSet.ELEMENT, RSMSet.NAMESPACE);
-          }
-          
-          return fin;
+            MamFinExtension fin = message.getExtension(ELEMENT, NAMESPACE);
+            if (message.hasExtension(RSMSet.ELEMENT, RSMSet.NAMESPACE) && fin.rsmSet == null) {
+                fin.rsmSet = message.getExtension(RSMSet.ELEMENT, RSMSet.NAMESPACE);
+            }
+
+            return fin;
         }
     }
 
@@ -153,18 +152,18 @@ public class MamPacket {
 
         @Override
         public CharSequence toXML() {
-          XmlStringBuilder xml = new XmlStringBuilder();
-          xml.halfOpenElement(this);
-          xml.optAttribute("queryid", queryId);
-          xml.optAttribute("id", id);
-          if (forwarded == null) {
-              xml.closeEmptyElement();
-          } else {
-              xml.rightAngleBracket();
-              xml.element(forwarded);
-              xml.closeElement(this);
-          }
-          return xml;
+            XmlStringBuilder xml = new XmlStringBuilder();
+            xml.halfOpenElement(this);
+            xml.optAttribute("queryid", queryId);
+            xml.optAttribute("id", id);
+            if (forwarded == null) {
+                xml.closeEmptyElement();
+            } else {
+                xml.rightAngleBracket();
+                xml.element(forwarded);
+                xml.closeElement(this);
+            }
+            return xml;
         }
 
         public static MamResultExtension from(Message message) {
