@@ -30,7 +30,7 @@ import org.jivesoftware.smackx.rsm.packet.RSMSet;
  */
 public class MamPacket {
 
-    public static final String NAMESPACE = "urn:xmpp:mam:0";
+    public static final String NAMESPACE = "urn:xmpp:mam:1";
 
     public static abstract class AbstractMamExtension implements ExtensionElement {
         public final String queryId;
