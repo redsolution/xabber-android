@@ -19,7 +19,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.forward.provider.ForwardedProvider;
-import org.jivesoftware.smackx.mam.packet.MamPacket.MamResultExtension;
+import org.jivesoftware.smackx.mam.packet.MamResultExtension;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

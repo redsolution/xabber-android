@@ -15,13 +15,6 @@
  */
 package org.jivesoftware.smackx.mam;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
-
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.PacketCollector;
@@ -34,17 +27,23 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
-import org.jivesoftware.smackx.mam.filter.MamMessageFinFilter;
 import org.jivesoftware.smackx.mam.filter.MamMessageResultFilter;
+import org.jivesoftware.smackx.mam.packet.MamFinExtension;
 import org.jivesoftware.smackx.mam.packet.MamPacket;
-import org.jivesoftware.smackx.mam.packet.MamPacket.MamFinExtension;
-import org.jivesoftware.smackx.mam.packet.MamPacket.MamResultExtension;
 import org.jivesoftware.smackx.mam.packet.MamQueryIQ;
+import org.jivesoftware.smackx.mam.packet.MamResultExtension;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.util.XmppDateTime;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
 
 /**
@@ -248,30 +247,23 @@ public class MamManager extends Manager {
             throw new IllegalArgumentException("extra timeout must be zero or positive");
         }
         final XMPPConnection connection = connection();
-        MamFinExtension mamFinExtension;
-        PacketCollector finMessageCollector = connection.createPacketCollector(new MamMessageFinFilter(
-                mamQueryIq));
+
         PacketCollector.Configuration resultCollectorConfiguration = PacketCollector.newConfiguration().setStanzaFilter(
-                new MamMessageResultFilter(mamQueryIq)).setCollectorToReset(
-                finMessageCollector);
+                new MamMessageResultFilter(mamQueryIq));
         PacketCollector resultCollector = connection.createPacketCollector(resultCollectorConfiguration);
 
         try {
             connection.createPacketCollectorAndSend(mamQueryIq).nextResultOrThrow();
-            Message mamFinMessage = finMessageCollector.nextResultOrThrow(connection.getPacketReplyTimeout()
-                    + extraTimeout);
-            mamFinExtension = MamFinExtension.from(mamFinMessage);
         } finally {
             resultCollector.cancel();
-            finMessageCollector.cancel();
         }
         List<Forwarded> messages = new ArrayList<>(resultCollector.getCollectedCount());
         for (Message resultMessage = resultCollector.pollResult(); resultMessage != null; resultMessage = resultCollector.pollResult()) {
-            // XEP-313 § 4.2
+//            // XEP-313 § 4.2
             MamResultExtension mamResultExtension = MamResultExtension.from(resultMessage);
             messages.add(mamResultExtension.getForwarded());
         }
-        return new MamQueryResult(messages, mamFinExtension, DataForm.from(mamQueryIq));
+        return new MamQueryResult(messages, null, DataForm.from(mamQueryIq));
     }
 
     public static class MamQueryResult {

@@ -16,8 +16,8 @@
 package org.jivesoftware.smackx.mam.filter;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.mam.packet.MamPacket.AbstractMamExtension;
-import org.jivesoftware.smackx.mam.packet.MamPacket.MamResultExtension;
+import org.jivesoftware.smackx.mam.packet.AbstractMamExtension;
+import org.jivesoftware.smackx.mam.packet.MamResultExtension;
 import org.jivesoftware.smackx.mam.packet.MamQueryIQ;
 
 public class MamMessageResultFilter extends AbstractMamMessageExtensionFilter {

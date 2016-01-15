@@ -17,7 +17,7 @@ package org.jivesoftware.smackx.mam.filter;
 
 import org.jivesoftware.smack.filter.FlexibleStanzaTypeFilter;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.mam.packet.MamPacket.AbstractMamExtension;
+import org.jivesoftware.smackx.mam.packet.AbstractMamExtension;
 import org.jivesoftware.smackx.mam.packet.MamQueryIQ;
 
 public abstract class AbstractMamMessageExtensionFilter extends
