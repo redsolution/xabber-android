@@ -272,6 +272,13 @@ public abstract class AbstractChat extends BaseEntity {
         return Math.max(0, messages.size() - previous);
     }
 
+    public void onMessageDownloaded(Collection<MessageItem> items) {
+        messages.clear();
+        messages.addAll(items);
+        sort();
+        MessageManager.getInstance().onChatChanged(account, user, false);
+    }
+
     public boolean isActive() {
         if (isPrivateMucChat && !isPrivateMucChatAccepted) {
             return false;

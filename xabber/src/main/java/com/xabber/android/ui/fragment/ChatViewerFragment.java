@@ -47,6 +47,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
+import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
@@ -149,6 +150,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         Bundle args = getArguments();
         account = args.getString(ARGUMENT_ACCOUNT, null);
         user = args.getString(ARGUMENT_USER, null);
+
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        MamManager.getInstance().request(abstractChat);
     }
 
     @Override
