@@ -106,7 +106,12 @@ public class MamManager extends Manager {
      */
     public MamQueryResult queryArchive(String domain, Integer max, Date start, Date end, String withJid) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
-        return queryArchive(domain, null, max, start, end, withJid);
+        return queryArchive(domain, null, max, start, end, withJid, false);
+    }
+
+    public MamQueryResult queryArchiveLast(Integer max, String withJid) throws NoResponseException,
+            XMPPErrorException, NotConnectedException, InterruptedException {
+        return queryArchive(null, null, max, null, null, withJid, true);
     }
 
     /**
@@ -131,7 +136,7 @@ public class MamManager extends Manager {
      * @throws NotConnectedException
      * @throws InterruptedException
      */
-    public MamQueryResult queryArchive(String domain, String node, Integer max, Date start, Date end, String withJid) throws NoResponseException,
+    public MamQueryResult queryArchive(String domain, String node, Integer max, Date start, Date end, String withJid, boolean last) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
         DataForm dataForm = null;
         String queryId = UUID.randomUUID().toString();
@@ -157,7 +162,13 @@ public class MamManager extends Manager {
         mamQueryIQ.setType(IQ.Type.set);
         mamQueryIQ.setTo(domain);
         if (max != null) {
-            RSMSet rsmSet = new RSMSet(max);
+            RSMSet rsmSet;
+            if (last) {
+                rsmSet = new RSMSet(null, "", -1, -1, null, max, null, -1);
+            } else {
+                rsmSet = new RSMSet(max);
+            }
+
             mamQueryIQ.addExtension(rsmSet);
         }
         return queryArchive(mamQueryIQ, 0);
