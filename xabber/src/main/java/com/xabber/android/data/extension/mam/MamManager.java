@@ -72,10 +72,7 @@ public class MamManager {
                 }
 
 
-                LogManager.i("MAM", "queryArchive finished");
-                LogManager.i("MAM", "mamQueryResult " + mamQueryResult.messages.size());
-
-
+                LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
                 List<MessageItem> messageItems = new ArrayList<>();
 

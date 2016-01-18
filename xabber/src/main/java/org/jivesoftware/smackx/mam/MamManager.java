@@ -28,7 +28,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.filter.MamMessageResultFilter;
-import org.jivesoftware.smackx.mam.packet.MamFinExtension;
+import org.jivesoftware.smackx.mam.packet.MamFinIQ;
 import org.jivesoftware.smackx.mam.packet.MamPacket;
 import org.jivesoftware.smackx.mam.packet.MamQueryIQ;
 import org.jivesoftware.smackx.mam.packet.MamResultExtension;
@@ -217,7 +217,7 @@ public class MamManager extends Manager {
      */
     public MamQueryResult pageNext(MamQueryResult mamQueryResult, int count) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
-        RSMSet previousResultRsmSet = mamQueryResult.mamFin.getRSMSet();
+        RSMSet previousResultRsmSet = mamQueryResult.mamFin.getRsmSet();
         RSMSet requestRsmSet = new RSMSet(count, previousResultRsmSet.getLast(), RSMSet.PageDirection.after);
         return page(mamQueryResult, requestRsmSet);
     }
@@ -252,8 +252,9 @@ public class MamManager extends Manager {
                 new MamMessageResultFilter(mamQueryIq));
         PacketCollector resultCollector = connection.createPacketCollector(resultCollectorConfiguration);
 
+        MamFinIQ mamFinIQ;
         try {
-            connection.createPacketCollectorAndSend(mamQueryIq).nextResultOrThrow();
+            mamFinIQ = connection.createPacketCollectorAndSend(mamQueryIq).nextResultOrThrow();
         } finally {
             resultCollector.cancel();
         }
@@ -263,15 +264,15 @@ public class MamManager extends Manager {
             MamResultExtension mamResultExtension = MamResultExtension.from(resultMessage);
             messages.add(mamResultExtension.getForwarded());
         }
-        return new MamQueryResult(messages, null, DataForm.from(mamQueryIq));
+        return new MamQueryResult(messages, mamFinIQ, DataForm.from(mamQueryIq));
     }
 
     public static class MamQueryResult {
         public final List<Forwarded> messages;
-        public final MamFinExtension mamFin;
+        public final MamFinIQ mamFin;
         private final DataForm form;
 
-        private MamQueryResult(List<Forwarded> messages, MamFinExtension mamFin, DataForm form) {
+        private MamQueryResult(List<Forwarded> messages, MamFinIQ mamFin, DataForm form) {
             this.messages = messages;
             this.mamFin = mamFin;
             this.form = form;
