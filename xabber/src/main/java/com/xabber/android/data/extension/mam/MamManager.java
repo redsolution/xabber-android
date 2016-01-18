@@ -44,8 +44,6 @@ public class MamManager {
             return;
         }
 
-        final AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-
         final Thread thread = new Thread("Request MAM chat " + chat) {
             @Override
             public void run() {
@@ -61,14 +59,11 @@ public class MamManager {
                 }
 
                 org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
-                xmppConnection.setPacketReplyTimeout(120000);
                 try {
-                    mamQueryResult = mamManager.queryArchive(null, null, null, null, chat.getUser());
+                    mamQueryResult = mamManager.queryArchiveLast(20, chat.getUser());
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
                     return;
-                } finally {
-                    xmppConnection.setPacketReplyTimeout(ConnectionManager.PACKET_REPLY_TIMEOUT);
                 }
 
 
