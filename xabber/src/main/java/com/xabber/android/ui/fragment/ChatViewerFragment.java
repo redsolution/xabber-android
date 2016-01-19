@@ -152,6 +152,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         user = args.getString(ARGUMENT_USER, null);
 
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
         MamManager.getInstance().request(abstractChat);
     }
 
