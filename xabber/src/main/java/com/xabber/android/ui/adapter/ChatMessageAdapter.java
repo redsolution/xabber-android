@@ -339,14 +339,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public MessageItem getMessageItem(int position) {
+        if (position == RecyclerView.NO_POSITION) {
+            return null;
+        }
+
         if (position < messages.size()) {
             return messages.get(position);
         } else {
             return null;
         }
-
-
-
     }
 
     @Override
@@ -462,6 +463,18 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyDataSetChanged();
     }
 
+    public int findMessagePosition(MessageItem messageItem) {
+        for (int i = 0; i < messages.size(); i++) {
+            MessageItem adapterMessageItem = messages.get(i);
+            if (adapterMessageItem.getTimestamp().equals(messageItem.getTimestamp())
+                    && adapterMessageItem.getText().equals(messageItem.getText())) {
+                return i;
+            }
+        }
+
+        return RecyclerView.NO_POSITION;
+    }
+
     /**
      * @return New hint.
      */
@@ -479,7 +492,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (abstractContact instanceof RoomContact) {
                 return context.getString(R.string.muc_is_unavailable);
             } else {
-                return context.getString(R.string.contact_is_offline, abstractContact.getName());
+                return context.getString(R.string.contact_is_offline);
             }
         }
         return null;

@@ -66,7 +66,7 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Number of messages from history to be shown for context purpose.
      */
-    private static final int PRELOADED_MESSAGES = 3;
+    public static final int PRELOADED_MESSAGES = 50;
     /**
      * Ids of messages not loaded in to the memory.
      * <p/>
@@ -274,6 +274,10 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     public void onMessageDownloaded(Collection<MessageItem> items) {
+
+        if (items == null) {
+            return;
+        }
 
         Collection<MessageItem> newMessages = new ArrayList<>(items);
 

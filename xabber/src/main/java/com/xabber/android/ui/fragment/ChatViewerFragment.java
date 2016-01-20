@@ -152,8 +152,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         user = args.getString(ARGUMENT_USER, null);
 
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
-        MamManager.getInstance().request(abstractChat);
+        MamManager.getInstance().requestLastPage(abstractChat);
     }
 
     @Override
@@ -476,7 +475,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onResume() {
         super.onResume();
         listener.registerChat(this);
-        updateChat();
+        updateContact();
+        updateMessages();
         restoreInputState();
     }
 
@@ -590,7 +590,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
-        updateChat();
+        updateMessages();
     }
 
     /**
@@ -641,20 +641,35 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    public void updateChat() {
+    public void updateContact() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
-        chatMessageAdapter.onChange();
-        scrollChat(itemCountBeforeUpdate);
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
     }
 
-    private void scrollChat(int itemCountBeforeUpdate) {
+    // update messages and keep scrolled state
+    public void updateMessages() {
+        int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
+
         int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(lastVisibleItemPosition);
+
+        View view = layoutManager.findViewByPosition(lastVisibleItemPosition);
+        float offset;
+        if (view == null) {
+            offset = 0;
+        } else {
+            offset = view.getTop();
+        }
+
+        chatMessageAdapter.onChange();
+
+        // if chat is scrolled to bottom we need to show new message
         if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (itemCountBeforeUpdate - 1)) {
             scrollDown();
+        } else {
+            layoutManager.scrollToPositionWithOffset(chatMessageAdapter.findMessagePosition(messageItem), (int) offset);
         }
     }
 
@@ -799,7 +814,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             case R.id.action_message_remove:
                 MessageManager.getInstance().removeMessage(clickedMessageItem);
-                updateChat();
+                updateMessages();
                 return true;
 
             case R.id.action_message_open_file:

@@ -373,7 +373,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         } else {
             for (ChatViewerFragment chat : registeredChats) {
                 if (chat.isEqual(selectedChat)) {
-                    chat.updateChat();
+                    chat.updateMessages();
                     if (incoming) {
                         chat.playIncomingAnimation();
                     }
@@ -389,7 +389,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         for (BaseEntity contact : entities) {
             for (ChatViewerFragment chat : registeredChats) {
                 if (chat.isEqual(contact)) {
-                    chat.updateChat();
+                    chat.updateContact();
                 }
             }
         }
@@ -444,7 +444,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private void updateRegisteredChats() {
         for (ChatViewerFragment chat : registeredChats) {
-            chat.updateChat();
+            chat.updateContact();
         }
     }
 

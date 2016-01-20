@@ -233,6 +233,13 @@ public class MamManager extends Manager {
         return page(mamQueryResult, requestRsmSet);
     }
 
+    public MamQueryResult pageBefore(MamQueryResult mamQueryResult, int count) throws NoResponseException,
+            XMPPErrorException, NotConnectedException, InterruptedException {
+        RSMSet previousResultRsmSet = mamQueryResult.mamFin.getRsmSet();
+        RSMSet requestRsmSet = new RSMSet(count, previousResultRsmSet.getFirst(), RSMSet.PageDirection.before);
+        return page(mamQueryResult, requestRsmSet);
+    }
+
     /**
      * Query for a result set, based on the query defined by the result set as described by mamQueryResult, but constrained by the Result Set in rsmSet.
      *
