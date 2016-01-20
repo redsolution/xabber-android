@@ -7,6 +7,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.xmpp.address.Jid;
@@ -22,12 +23,19 @@ import org.jivesoftware.smackx.forward.packet.Forwarded;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class MamManager {
     private final static MamManager instance;
+    public static final int SYNC_INTERVAL_MINUTES = 15;
 
     public static int PAGE_SIZE = AbstractChat.PRELOADED_MESSAGES;
+
+    private Map<BaseEntity, Date> lastSyncedByChat;
 
     static {
         instance = new MamManager();
@@ -36,6 +44,10 @@ public class MamManager {
 
     public static MamManager getInstance() {
         return instance;
+    }
+
+    public MamManager() {
+        this.lastSyncedByChat = new ConcurrentHashMap<>();
     }
 
     public void requestAll(final AbstractChat chat) {
@@ -102,6 +114,11 @@ public class MamManager {
     }
 
     public void requestLastPage(final AbstractChat chat) {
+        Date lastSyncedTime = lastSyncedByChat.get(chat);
+        if (lastSyncedTime != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - lastSyncedTime.getTime()) < SYNC_INTERVAL_MINUTES) {
+            return;
+        }
+
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
         ConnectionThread connectionThread = accountItem.getConnectionThread();
 
@@ -137,6 +154,8 @@ public class MamManager {
 
                 chat.onMessageDownloaded(messageItems);
 
+
+                lastSyncedByChat.put(chat, new Date(System.currentTimeMillis()));
             }
         };
         thread.start();
