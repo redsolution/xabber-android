@@ -271,12 +271,21 @@ public abstract class AbstractChat extends BaseEntity {
 
                 MessageItem newMessage = newMessageIterator.next();
 
+                if (oldMessage.getStanzaId() != null && newMessage.getStanzaId() != null
+                        && oldMessage.getStanzaId().equals(newMessage.getStanzaId())) {
+                    LogManager.i(this, "found messages with same Stanza ID. removing. Text " + oldMessage.getText() + " stanza id " + oldMessage.getStanzaId());
+
+                    newMessageIterator.remove();
+                    break;
+                }
+
                 if (Math.abs(oldMessage.getTimestamp().getTime() - newMessage.getTimestamp().getTime()) < 1000 * 60
                     && oldMessage.getText().equals(newMessage.getText())) {
 
                     LogManager.i(this, "found messages with same text and similar time. removing. Text " + oldMessage.getText() + ", time old " + oldMessage.getTimestamp() + " new " + newMessage.getTimestamp());
 
                     newMessageIterator.remove();
+                    break;
                 }
             }
         }
@@ -630,6 +639,16 @@ public abstract class AbstractChat extends BaseEntity {
             } else {
                 Message message = createMessagePacket(text);
                 messageItem.setStanzaId(message.getStanzaId());
+                Application.getInstance().runInBackground(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (messageItem.getId() != null) {
+                            MessageTable.getInstance().setStanzaId(messageItem);
+                        }
+
+                    }
+                });
+
                 ChatStateManager.getInstance().updateOutgoingMessage(this,
                         message);
                 ReceiptManager.getInstance().updateOutgoingMessage(this,
