@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteStatement;
 
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.entity.AbstractEntityTable;
+import com.xabber.xmpp.address.Jid;
 
 /**
  * Storage with messages.
@@ -93,13 +94,23 @@ class MessageTable extends AbstractEntityTable {
          */
         public static final String ERROR = "error";
 
+        /**
+         * usual message stanza (packet) id
+         */
+        public static final String STANZA_ID = "stanza_id";
+
+        /**
+         * Unique and Stable Stanza ID (XEP-0359)
+         */
+        public static final String UNIQUE_STANZA_ID = "unique_stanza_id";
+
     }
 
     private static final String NAME = "messages";
     private static final String[] PROJECTION = new String[]{Fields._ID,
             Fields.ACCOUNT, Fields.USER, Fields.RESOURCE, Fields.TEXT,
             Fields.ACTION, Fields.TIMESTAMP, Fields.DELAY_TIMESTAMP,
-            Fields.INCOMING, Fields.READ, Fields.SENT, Fields.ERROR, Fields.TAG};
+            Fields.INCOMING, Fields.READ, Fields.SENT, Fields.ERROR, Fields.TAG, Fields.STANZA_ID, Fields.UNIQUE_STANZA_ID};
 
     private final DatabaseManager databaseManager;
     private SQLiteStatement insertNewMessageStatement;
@@ -132,7 +143,7 @@ class MessageTable extends AbstractEntityTable {
                 + Fields.TIMESTAMP + " INTEGER," + Fields.DELAY_TIMESTAMP
                 + " INTEGER," + Fields.INCOMING + " BOOLEAN," + Fields.READ
                 + " BOOLEAN," + Fields.SENT + " BOOLEAN," + Fields.ERROR
-                + " BOOLEAN," + Fields.TAG + " TEXT);";
+                + " BOOLEAN," + Fields.TAG + " TEXT, " + Fields.STANZA_ID + " TEXT, " + Fields.UNIQUE_STANZA_ID + " TEXT" +  ");";
         DatabaseManager.execSQL(db, sql);
         sql = "CREATE INDEX " + NAME + "_list ON " + NAME + " ("
                 + Fields.ACCOUNT + ", " + Fields.USER + ", " + Fields.TIMESTAMP
@@ -256,25 +267,25 @@ class MessageTable extends AbstractEntityTable {
                 sql = "CREATE INDEX messages_list ON messages (account, user, timestamp ASC);";
                 DatabaseManager.execSQL(db, sql);
                 break;
+            case 69:
+                sql = "ALTER TABLE " + NAME + " ADD COLUMN " + Fields.STANZA_ID + " TEXT;";
+                DatabaseManager.execSQL(db, sql);
+                sql = "ALTER TABLE " + NAME + " ADD COLUMN " + Fields.UNIQUE_STANZA_ID + " TEXT;";
+                DatabaseManager.execSQL(db, sql);
+                break;
             default:
                 break;
         }
     }
 
-    /**
-     * Save new message to the database.
-     *
-     * @return Assigned id.
-     */
-    long add(String account, String bareAddress, String tag, String resource,
-             String text, ChatAction action, Date timeStamp,
-             Date delayTimeStamp, boolean incoming, boolean read, boolean sent,
-             boolean error) {
+    long add(MessageItem messageItem) {
         final String actionString;
-        if (action == null)
+        if (messageItem.getAction() == null) {
             actionString = "";
-        else
-            actionString = action.name();
+        } else {
+            actionString = messageItem.getAction().name();
+        }
+
         synchronized (insertNewMessageLock) {
             if (insertNewMessageStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -284,29 +295,61 @@ class MessageTable extends AbstractEntityTable {
                         + Fields.ACTION + ", " + Fields.TIMESTAMP + ", "
                         + Fields.DELAY_TIMESTAMP + ", " + Fields.INCOMING
                         + ", " + Fields.READ + ", " + Fields.SENT + ", "
-                        + Fields.ERROR + ", " + Fields.TAG + ") VALUES "
-                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                        + Fields.ERROR + ", " + Fields.TAG +  ", "
+                        + Fields.STANZA_ID + ", " + Fields.UNIQUE_STANZA_ID + ") VALUES "
+                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
             }
-            insertNewMessageStatement.bindString(1, account);
-            insertNewMessageStatement.bindString(2, bareAddress);
-            insertNewMessageStatement.bindString(3, resource);
-            insertNewMessageStatement.bindString(4, text);
+            insertNewMessageStatement.bindString(1, messageItem.getChat().getAccount());
+            insertNewMessageStatement.bindString(2, Jid.getBareAddress(messageItem.getChat().getUser()));
+            insertNewMessageStatement.bindString(3, messageItem.getResource());
+            insertNewMessageStatement.bindString(4, messageItem.getText());
             insertNewMessageStatement.bindString(5, actionString);
-            insertNewMessageStatement.bindLong(6, timeStamp.getTime());
-            if (delayTimeStamp == null)
+            insertNewMessageStatement.bindLong(6, messageItem.getTimestamp().getTime());
+            if (messageItem.getDelayTimestamp() == null) {
                 insertNewMessageStatement.bindNull(7);
-            else
-                insertNewMessageStatement.bindLong(7, delayTimeStamp.getTime());
-            insertNewMessageStatement.bindLong(8, incoming ? 1 : 0);
-            insertNewMessageStatement.bindLong(9, read ? 1 : 0);
-            insertNewMessageStatement.bindLong(10, sent ? 1 : 0);
-            insertNewMessageStatement.bindLong(11, error ? 1 : 0);
-            if (tag == null)
+            } else {
+                insertNewMessageStatement.bindLong(7, messageItem.getDelayTimestamp().getTime());
+            }
+            insertNewMessageStatement.bindLong(8, messageItem.isIncoming() ? 1 : 0);
+            insertNewMessageStatement.bindLong(9, messageItem.isRead() ? 1 : 0);
+            insertNewMessageStatement.bindLong(10, messageItem.isSent() ? 1 : 0);
+            insertNewMessageStatement.bindLong(11, messageItem.isError() ? 1 : 0);
+            if (messageItem.getTag() == null) {
                 insertNewMessageStatement.bindNull(12);
-            else
-                insertNewMessageStatement.bindString(12, tag);
+            } else {
+                insertNewMessageStatement.bindString(12, messageItem.getTag());
+            }
+
+            if (messageItem.getStanzaId() == null) {
+                insertNewMessageStatement.bindNull(13);
+            } else {
+                insertNewMessageStatement.bindString(13, messageItem.getStanzaId());
+            }
+
+            if (messageItem.getUniqueStanzaId() == null) {
+                insertNewMessageStatement.bindNull(14);
+            } else {
+                insertNewMessageStatement.bindString(14, messageItem.getUniqueStanzaId());
+            }
+
             return insertNewMessageStatement.executeInsert();
         }
+
+    }
+
+    public static MessageItem createMessageItem(Cursor cursor, AbstractChat chat) {
+        MessageItem messageItem = new MessageItem(chat,
+                getTag(cursor), getResource(cursor),
+                getText(cursor), getAction(cursor),
+                getTimeStamp(cursor),
+                getDelayTimeStamp(cursor),
+                isIncoming(cursor), isRead(cursor),
+                isSent(cursor), hasError(cursor),
+                true, false, false);
+        messageItem.setId(getId(cursor));
+        messageItem.setStanzaId(getStanzaId(cursor));
+        messageItem.setUniqueStanzaId(getUniqueStanzaId(cursor));
+        return messageItem;
     }
 
     void markAsRead(Collection<Long> ids) {
@@ -333,6 +376,14 @@ class MessageTable extends AbstractEntityTable {
         values.put(Fields.ERROR, 1);
         db.update(NAME, values, Fields._ID + " = ?",
                 new String[]{String.valueOf(id)});
+    }
+
+    void setStanzaId(MessageItem messageItem) {
+        SQLiteDatabase db = databaseManager.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Fields.STANZA_ID, messageItem.getStanzaId());
+        db.update(NAME, values, Fields._ID + " = ?",
+                new String[]{String.valueOf(messageItem.getId().longValue())});
     }
 
     /**
@@ -443,5 +494,21 @@ class MessageTable extends AbstractEntityTable {
             return null;
         return new Date(cursor.getLong(cursor
                 .getColumnIndex(Fields.DELAY_TIMESTAMP)));
+    }
+
+    static String getStanzaId(Cursor cursor) {
+        if (cursor.isNull(cursor.getColumnIndex(Fields.STANZA_ID))) {
+            return null;
+        } else {
+            return cursor.getString(cursor.getColumnIndex(Fields.STANZA_ID));
+        }
+    }
+
+    static String getUniqueStanzaId(Cursor cursor) {
+        if (cursor.isNull(cursor.getColumnIndex(Fields.UNIQUE_STANZA_ID))) {
+            return null;
+        } else {
+            return cursor.getString(cursor.getColumnIndex(Fields.UNIQUE_STANZA_ID));
+        }
     }
 }

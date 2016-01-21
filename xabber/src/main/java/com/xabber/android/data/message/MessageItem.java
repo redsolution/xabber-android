@@ -85,9 +85,14 @@ public class MessageItem implements Comparable<MessageItem> {
      */
     private boolean read;
     /**
-     * Outgoing packet id.
+     * Outgoing packet id - usual message stanza (packet) id
      */
-    private String packetID;
+    private String stanzaId;
+
+    /**
+     * Unique and stable stanza ID (XEP-0359)
+     */
+    private String uniqueStanzaId;
 
     /**
      * Outgoing file message
@@ -117,7 +122,7 @@ public class MessageItem implements Comparable<MessageItem> {
         this.unencypted = unencypted;
         this.offline = offline;
         this.id = null;
-        this.packetID = null;
+        this.stanzaId = null;
         this.isUploadFileMessage = false;
     }
 
@@ -204,12 +209,20 @@ public class MessageItem implements Comparable<MessageItem> {
         this.id = id;
     }
 
-    public String getPacketID() {
-        return packetID;
+    public String getStanzaId() {
+        return stanzaId;
     }
 
-    public void setPacketID(String packetID) {
-        this.packetID = packetID;
+    public void setStanzaId(String stanzaId) {
+        this.stanzaId = stanzaId;
+    }
+
+    public String getUniqueStanzaId() {
+        return uniqueStanzaId;
+    }
+
+    public void setUniqueStanzaId(String uniqueStanzaId) {
+        this.uniqueStanzaId = uniqueStanzaId;
     }
 
     void markAsError() {

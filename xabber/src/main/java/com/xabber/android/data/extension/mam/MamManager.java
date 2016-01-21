@@ -193,7 +193,7 @@ public class MamManager {
                     Jid.getResource(chat.getUser()), body, null,
                     delayInformation.getStamp(), null, incoming, true,
                     true, false, true, false, false);
-            messageItem.setPacketID(message.getStanzaId());
+            messageItem.setStanzaId(message.getStanzaId());
 
             messageItems.add(messageItem);
         }

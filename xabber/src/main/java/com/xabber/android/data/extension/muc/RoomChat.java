@@ -233,7 +233,7 @@ public class RoomChat extends AbstractChat {
                 }
                 for (MessageItem messageItem : messages) {
                     // Search for duplicates
-                    if (packetID != null && packetID.equals(messageItem.getPacketID())) {
+                    if (packetID != null && packetID.equals(messageItem.getStanzaId())) {
                         // Server send our own message back
                         messageItem.markAsDelivered();
                         RosterManager.getInstance().onContactChanged(account, user);
@@ -255,7 +255,7 @@ public class RoomChat extends AbstractChat {
                 updateThreadId(message.getThread());
                 MessageItem messageItem = newMessage(resource, text, null,
                         delay, true, notify, false, false, true);
-                messageItem.setPacketID(packetID);
+                messageItem.setStanzaId(packetID);
             }
         } else if (packet instanceof Presence) {
             String stringPrep = Jid.getStringPrep(resource);
