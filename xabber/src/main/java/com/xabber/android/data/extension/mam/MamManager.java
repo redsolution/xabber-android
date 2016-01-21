@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.mam;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
@@ -7,7 +8,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
-import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.xmpp.address.Jid;
@@ -25,17 +26,45 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class MamManager {
     private final static MamManager instance;
-    public static final int SYNC_INTERVAL_MINUTES = 15;
+    public static final int SYNC_INTERVAL_MINUTES = 5;
 
     public static int PAGE_SIZE = AbstractChat.PRELOADED_MESSAGES;
 
-    private Map<BaseEntity, Date> lastSyncedByChat;
+    private NestedMap<SyncInfo> syncInfoByChat;
+
+    private static class SyncInfo {
+        private Date dateLastSynced;
+        private String firstMessageId;
+        private String lastMessageId;
+
+        public Date getDateLastSynced() {
+            return dateLastSynced;
+        }
+
+        public void setDateLastSynced(Date dateLastSynced) {
+            this.dateLastSynced = dateLastSynced;
+        }
+
+        public String getFirstMessageId() {
+            return firstMessageId;
+        }
+
+        public void setFirstMessageId(String firstMessageId) {
+            this.firstMessageId = firstMessageId;
+        }
+
+        public String getLastMessageId() {
+            return lastMessageId;
+        }
+
+        public void setLastMessageId(String lastMessageId) {
+            this.lastMessageId = lastMessageId;
+        }
+    }
 
     static {
         instance = new MamManager();
@@ -47,7 +76,7 @@ public class MamManager {
     }
 
     public MamManager() {
-        this.lastSyncedByChat = new ConcurrentHashMap<>();
+        this.syncInfoByChat = new NestedMap<>();
     }
 
     public void requestAll(final AbstractChat chat) {
@@ -113,9 +142,10 @@ public class MamManager {
         thread.start();
     }
 
-    public void requestLastPage(final AbstractChat chat) {
-        Date lastSyncedTime = lastSyncedByChat.get(chat);
-        if (lastSyncedTime != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - lastSyncedTime.getTime()) < SYNC_INTERVAL_MINUTES) {
+    public void requestLastHistory(final AbstractChat chat) {
+        final SyncInfo syncInfo = getSyncInfo(chat);
+
+        if (syncInfo.getDateLastSynced() != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncInfo.getDateLastSynced().getTime()) < SYNC_INTERVAL_MINUTES) {
             return;
         }
 
@@ -142,7 +172,14 @@ public class MamManager {
 
                 org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
-                    mamQueryResult = mamManager.queryArchiveLast(PAGE_SIZE, chat.getUser());
+
+                    if (syncInfo.getLastMessageId() == null) {
+                        mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, "");
+                    } else {
+                        mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, syncInfo.getLastMessageId(), null);
+                    }
+
+
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
                     return;
@@ -154,11 +191,28 @@ public class MamManager {
 
                 chat.onMessageDownloaded(messageItems);
 
-
-                lastSyncedByChat.put(chat, new Date(System.currentTimeMillis()));
+                syncInfo.setDateLastSynced(new Date(System.currentTimeMillis()));
+                if (mamQueryResult.mamFin.getRsmSet() != null) {
+                    if (syncInfo.getFirstMessageId() == null) {
+                        syncInfo.setFirstMessageId(mamQueryResult.mamFin.getRsmSet().getFirst());
+                    }
+                    if (mamQueryResult.mamFin.getRsmSet().getLast() != null) {
+                        syncInfo.setLastMessageId(mamQueryResult.mamFin.getRsmSet().getLast());
+                    }
+                }
             }
         };
         thread.start();
+    }
+
+    @NonNull
+    private SyncInfo getSyncInfo(AbstractChat chat) {
+        SyncInfo syncInfo = syncInfoByChat.get(chat.getAccount(), chat.getUser());
+        if (syncInfo == null) {
+            syncInfo = new SyncInfo();
+            syncInfoByChat.put(chat.getAccount(), chat.getUser(), syncInfo);
+        }
+        return syncInfo;
     }
 
     @Nullable

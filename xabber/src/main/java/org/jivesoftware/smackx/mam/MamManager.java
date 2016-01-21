@@ -15,6 +15,8 @@
  */
 package org.jivesoftware.smackx.mam;
 
+import android.support.annotation.Nullable;
+
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.Manager;
 import org.jivesoftware.smack.PacketCollector;
@@ -138,8 +140,38 @@ public class MamManager extends Manager {
      */
     public MamQueryResult queryArchive(String domain, String node, Integer max, Date start, Date end, String withJid, boolean last) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
-        DataForm dataForm = null;
+        DataForm dataForm = createDataForm(start, end, withJid);
+
         String queryId = UUID.randomUUID().toString();
+
+        MamQueryIQ mamQueryIQ = new MamQueryIQ(queryId, node, dataForm);
+        mamQueryIQ.setType(IQ.Type.set);
+        mamQueryIQ.setTo(domain);
+        if (max != null) {
+            RSMSet rsmSet;
+            if (last) {
+                rsmSet = new RSMSet(null, "", -1, -1, null, max, null, -1);
+            } else {
+                rsmSet = new RSMSet(max);
+            }
+
+            mamQueryIQ.addExtension(rsmSet);
+        }
+        return queryArchive(mamQueryIQ, 0);
+    }
+
+    public MamQueryResult queryPage(String withJid, int max, String after, String before) throws XMPPErrorException, NotConnectedException, InterruptedException, NoResponseException {
+        DataForm dataForm = createDataForm(null, null, withJid);
+        String queryId = UUID.randomUUID().toString();
+        MamQueryIQ mamQueryIQ = new MamQueryIQ(queryId, null, dataForm);
+        mamQueryIQ.setType(IQ.Type.set);
+        mamQueryIQ.addExtension(new RSMSet(after, before, -1, -1, null, max, null, -1));
+        return queryArchive(mamQueryIQ, 0);
+    }
+
+    @Nullable
+    private DataForm createDataForm(Date start, Date end, String withJid) {
+        DataForm dataForm = null;
         if (start != null || end != null || withJid != null) {
             dataForm = getNewMamForm();
             if (start != null) {
@@ -158,20 +190,7 @@ public class MamManager extends Manager {
                 dataForm.addField(formField);
             }
         }
-        MamQueryIQ mamQueryIQ = new MamQueryIQ(queryId, node, dataForm);
-        mamQueryIQ.setType(IQ.Type.set);
-        mamQueryIQ.setTo(domain);
-        if (max != null) {
-            RSMSet rsmSet;
-            if (last) {
-                rsmSet = new RSMSet(null, "", -1, -1, null, max, null, -1);
-            } else {
-                rsmSet = new RSMSet(max);
-            }
-
-            mamQueryIQ.addExtension(rsmSet);
-        }
-        return queryArchive(mamQueryIQ, 0);
+        return dataForm;
     }
 
     /**
