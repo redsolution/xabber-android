@@ -114,7 +114,7 @@ public class RegularChat extends AbstractChat {
                 false,
                 false,
                 MessageArchiveManager.getInstance().getSaveMode(account, user,
-                        getThreadId()) != SaveMode.fls);
+                        getThreadId()) != SaveMode.fls, null);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class RegularChat extends AbstractChat {
                     unencrypted,
                     Delay.isOfflineMessage(Jid.getServer(account), packet),
                     MessageArchiveManager.getInstance().getSaveMode(account,
-                            user, getThreadId()) != SaveMode.fls);
+                            user, getThreadId()) != SaveMode.fls, packet.getStanzaId());
         }
         return true;
     }

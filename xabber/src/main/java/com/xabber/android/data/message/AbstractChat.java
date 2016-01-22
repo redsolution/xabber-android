@@ -378,7 +378,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param action
      */
     public void newAction(String resource, String text, ChatAction action) {
-        newMessage(resource, text, action, null, true, false, false, false, true);
+        newMessage(resource, text, action, null, true, false, false, false, true, null);
     }
 
     /**
@@ -399,7 +399,7 @@ public abstract class AbstractChat extends BaseEntity {
      */
     protected MessageItem newMessage(String resource, String text,
                                      ChatAction action, Date delayTimestamp, boolean incoming,
-                                     boolean notify, boolean unencrypted, boolean offline, boolean record) {
+                                     boolean notify, boolean unencrypted, boolean offline, boolean record, String stanzaId) {
         boolean save;
         boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
@@ -451,6 +451,8 @@ public abstract class AbstractChat extends BaseEntity {
                 : NO_RECORD_TAG, resource, text, action, timestamp,
                 delayTimestamp, incoming, read, send, false, incoming,
                 unencrypted, offline);
+        messageItem.setStanzaId(stanzaId);
+
         FileManager.processFileMessage(messageItem, true);
 
         messages.add(messageItem);

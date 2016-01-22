@@ -167,7 +167,7 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected MessageItem newMessage(String text) {
-        return newMessage(nickname, text, null, null, false, false, false, false, true);
+        return newMessage(nickname, text, null, null, false, false, false, false, true, null);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class RoomChat extends AbstractChat {
 
                 updateThreadId(message.getThread());
                 MessageItem messageItem = newMessage(resource, text, null,
-                        delay, true, notify, false, false, true);
+                        delay, true, notify, false, false, true, message.getStanzaId());
                 messageItem.setStanzaId(packetID);
             }
         } else if (packet instanceof Presence) {
@@ -345,7 +345,7 @@ public class RoomChat extends AbstractChat {
                 if (showStatusChange()) {
                     newMessage(resource, Application.getInstance().getString(
                                     R.string.action_join_complete_to, user),
-                            ChatAction.complete, null, true, true, false, false, true);
+                            ChatAction.complete, null, true, true, false, false, true, null);
                 }
                 active = true;
                 setRequested(false);
