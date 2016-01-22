@@ -145,6 +145,10 @@ public class MamManager {
     }
 
     public void requestLastHistory(final AbstractChat chat) {
+        if (chat == null) {
+            return;
+        }
+
         final SyncInfo syncInfo = getSyncInfo(chat);
 
         if (syncInfo.getDateLastSynced() != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncInfo.getDateLastSynced().getTime()) < SYNC_INTERVAL_MINUTES) {
