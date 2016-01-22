@@ -47,6 +47,8 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
+import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
+import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -82,6 +84,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.greenrobot.event.EventBus;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
@@ -120,6 +123,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private Timer stopTypingTimer = new Timer();
     private final long STOP_TYPING_DELAY = 4000; // in ms
     private ImageButton attachButton;
+    private View lastHistoryProgressBar;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -150,9 +154,21 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         Bundle args = getArguments();
         account = args.getString(ARGUMENT_ACCOUNT, null);
         user = args.getString(ARGUMENT_USER, null);
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
         MamManager.getInstance().requestLastHistory(abstractChat);
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -383,7 +399,22 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             }
         });
 
+
+        lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
+
         return view;
+    }
+
+    public void onEventMainThread(LastHistoryLoadStartedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            lastHistoryProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onEventMainThread(LastHistoryLoadFinishedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            lastHistoryProgressBar.setVisibility(View.GONE);
+        }
     }
 
     private void onAttachButtonPressed() {

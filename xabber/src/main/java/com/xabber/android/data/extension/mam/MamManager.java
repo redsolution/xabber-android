@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import de.greenrobot.event.EventBus;
+
 public class MamManager {
     private final static MamManager instance;
     public static final int SYNC_INTERVAL_MINUTES = 5;
@@ -173,6 +175,7 @@ public class MamManager {
                 org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
 
+                    EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat.getAccount(), chat.getUser()));
                     if (syncInfo.getLastMessageId() == null) {
                         mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, "");
                     } else {
@@ -183,6 +186,8 @@ public class MamManager {
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
                     return;
+                } finally {
+                    EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat.getAccount(), chat.getUser()));
                 }
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
