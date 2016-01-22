@@ -38,12 +38,6 @@
         app:showAsAction="never"
         />
 
-    <item android:id="@+id/action_show_history"
-        android:orderInCategory="130"
-        android:title="@string/show_history"
-        app:showAsAction="never"
-        />
-
     <item android:id="@+id/action_authorization_settings"
         android:orderInCategory="133"
         android:title="@string/muc_edit"

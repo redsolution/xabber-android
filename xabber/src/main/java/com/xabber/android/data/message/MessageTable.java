@@ -386,17 +386,20 @@ class MessageTable extends AbstractEntityTable {
                 new String[]{String.valueOf(messageItem.getId().longValue())});
     }
 
-    /**
-     * @param account
-     * @param bareAddress
-     * @return Result set with messages for the chat.
-     */
-    Cursor list(String account, String bareAddress) {
+    Cursor getLastMessages(String account, String bareAddress, int count) {
         SQLiteDatabase db = databaseManager.getReadableDatabase();
         return db.query(NAME, PROJECTION, Fields.ACCOUNT + " = ? AND "
                         + Fields.USER + " = ?", new String[]{account, bareAddress},
-                null, null, Fields.TIMESTAMP);
+                null, null, Fields.TIMESTAMP + " DESC", String.valueOf(count));
     }
+
+    Cursor getLastMessagesBefore(String account, String bareAddress, long timestamp, int count) {
+        SQLiteDatabase db = databaseManager.getReadableDatabase();
+        return db.query(NAME, PROJECTION, Fields.ACCOUNT + " = ? AND "
+                        + Fields.USER + " = ? AND " + Fields.TIMESTAMP + " < ?", new String[]{account, bareAddress, String.valueOf(timestamp)},
+                null, null, Fields.TIMESTAMP + " DESC", String.valueOf(count));
+    }
+
 
     /**
      * @return Messages to be sent.

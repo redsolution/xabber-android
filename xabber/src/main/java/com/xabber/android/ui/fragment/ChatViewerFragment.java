@@ -778,10 +778,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 startActivity(ChatContactSettings.createIntent(getActivity(), account, user));
                 return true;
 
-            case R.id.action_show_history:
-                showHistory(account, user);
-                return true;
-
             case R.id.action_authorization_settings:
                 startActivity(ConferenceAdd.createIntent(getActivity(), account, user));
                 return true;
@@ -907,11 +903,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 }
             }
         });
-    }
-
-    private void showHistory(String account, String user) {
-        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
-        MessageArchiveManager.getInstance().requestHistory(account, user, MINIMUM_MESSAGES_TO_LOAD, 0);
     }
 
     private void stopEncryption(String account, String user) {

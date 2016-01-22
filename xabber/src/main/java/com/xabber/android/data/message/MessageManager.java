@@ -372,14 +372,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.closeChat();
     }
 
-    public void requestToLoadLocalHistory(String account, String user) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            chat = createChat(account, user);
-        }
-        chat.requestToLoadLocalHistory();
-    }
-
     /**
      * @param account
      * @param user

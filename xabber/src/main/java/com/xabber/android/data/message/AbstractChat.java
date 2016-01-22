@@ -141,35 +141,14 @@ public abstract class AbstractChat extends BaseEntity {
      * CALL THIS METHOD FROM BACKGROUND THREAD ONLY.
      */
     private void loadMessages() {
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
-        LinkedList<MessageItem> linkedList = new LinkedList<MessageItem>();
-        boolean started = false;
-        Cursor cursor = MessageTable.getInstance().list(account, user);
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    MessageItem messageItem = MessageTable.createMessageItem(cursor, this);
-                    if (started) {
-                        messageItems.add(messageItem);
-                        continue;
-                    }
-                    linkedList.addLast(messageItem);
-                    if (messageItem.isRead() && messageItem.isSent()) {
-                        if (linkedList.size() <= PRELOADED_MESSAGES)
-                            continue;
-                        messageItem = linkedList.removeFirst();
-                        historyIds.add(messageItem.getId());
-                        continue;
-                    }
-                    started = true;
-                    messageItems.addAll(linkedList);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
+        final ArrayList<MessageItem> messageItems = new ArrayList<>();
+        Cursor cursor = MessageTable.getInstance().getLastMessages(account, user, PRELOADED_MESSAGES);
+        while (cursor.moveToNext()) {
+            MessageItem messageItem = MessageTable.createMessageItem(cursor, this);
+            messageItems.add(messageItem);
         }
-        if (!started)
-            messageItems.addAll(linkedList);
+        cursor.close();
+
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -194,36 +173,6 @@ public abstract class AbstractChat extends BaseEntity {
         messages.addAll(messageItems);
         sort();
         MessageManager.getInstance().onChatChanged(account, user, false);
-    }
-
-    /**
-     * Load all message from local history.
-     * <p/>
-     * CALL THIS METHOD FROM BACKGROUND THREAD ONLY.
-     */
-    private void loadHistory() {
-        if (historyIds.isEmpty())
-            return;
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
-        Cursor cursor = MessageTable.getInstance().list(account, user);
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    MessageItem messageItem = MessageTable.createMessageItem(cursor, this);
-                    if (historyIds.contains(messageItem.getId()))
-                        messageItems.add(messageItem);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        historyIds.clear();
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                addMessages(messageItems);
-            }
-        });
     }
 
     /**
@@ -342,15 +291,6 @@ public abstract class AbstractChat extends BaseEntity {
         boolean result = firstNotification;
         firstNotification = false;
         return result;
-    }
-
-    void requestToLoadLocalHistory() {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                loadHistory();
-            }
-        });
     }
 
     Collection<MessageItem> getMessages() {
