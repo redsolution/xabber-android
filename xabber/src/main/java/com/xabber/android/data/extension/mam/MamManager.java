@@ -253,6 +253,7 @@ public class MamManager {
                     delayInformation.getStamp(), null, incoming, true,
                     true, false, true, false, false);
             messageItem.setStanzaId(message.getStanzaId());
+            messageItem.setReceivedFromMessageArchive(true);
 
             messageItems.add(messageItem);
         }

@@ -102,7 +102,8 @@
         android:layout_alignBottom="@+id/message_time"
         android:layout_toLeftOf="@+id/message_time"
 
-        android:src="@drawable/ic_message_delivered_18dp"
+        android:src="@drawable/ic_message_delivered_14dp"
+        android:layout_marginRight="4dp"
         />
 
     <ProgressBar

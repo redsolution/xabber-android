@@ -95,6 +95,11 @@ public class MessageItem implements Comparable<MessageItem> {
     private String uniqueStanzaId;
 
     /**
+     * If message was received from server message archive (XEP-0313)
+     */
+    private boolean isReceivedFromMessageArchive;
+
+    /**
      * Outgoing file message
      */
     private boolean isUploadFileMessage;
@@ -223,6 +228,14 @@ public class MessageItem implements Comparable<MessageItem> {
 
     public void setUniqueStanzaId(String uniqueStanzaId) {
         this.uniqueStanzaId = uniqueStanzaId;
+    }
+
+    public boolean isReceivedFromMessageArchive() {
+        return isReceivedFromMessageArchive;
+    }
+
+    public void setReceivedFromMessageArchive(boolean receivedFromMessageArchive) {
+        isReceivedFromMessageArchive = receivedFromMessageArchive;
     }
 
     void markAsError() {

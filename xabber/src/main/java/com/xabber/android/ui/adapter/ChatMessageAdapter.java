@@ -171,6 +171,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
         setUpMessage(messageItem, incomingMessage);
 
+        if (messageItem.isReceivedFromMessageArchive()) {
+            incomingMessage.statusIcon.setVisibility(View.VISIBLE);
+        } else {
+            incomingMessage.statusIcon.setVisibility(View.GONE);
+        }
+
         setUpMessageBalloonBackground(incomingMessage.messageBalloon,
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
 
@@ -419,11 +425,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.progressBar.setVisibility(View.VISIBLE);
         }
 
-        int messageIcon = R.drawable.ic_message_delivered_18dp;
-        if (messageItem.isError()) {
-            messageIcon = R.drawable.ic_message_has_error_18dp;
+        int messageIcon = R.drawable.ic_message_delivered_14dp;
+        if (messageItem.isReceivedFromMessageArchive()) {
+            messageIcon = R.drawable.ic_message_synced_14dp;
+        } else if (messageItem.isError()) {
+            messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (!messageItem.isUploadFileMessage() && !messageItem.isSent()) {
-            messageIcon = R.drawable.ic_message_not_sent_18dp;
+            messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
             message.statusIcon.setVisibility(View.GONE);
         }
@@ -525,6 +533,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView messageFileInfo;
         public TextView messageTextForFileName;
 
+        public ImageView statusIcon;
+
 
         public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
@@ -542,6 +552,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
             messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
             messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
+
+            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
 
             itemView.setOnClickListener(this);
         }
@@ -569,12 +581,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public static class OutgoingMessage extends Message {
 
-        public ImageView statusIcon;
+
         public ProgressBar progressBar;
 
         public OutgoingMessage(View itemView, MessageClickListener listener) {
             super(itemView, listener);
-            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
             progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
         }
     }
