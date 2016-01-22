@@ -40,7 +40,6 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
@@ -91,12 +90,12 @@ import github.ankushsachdeva.emojicon.emoji.Emojicon;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
-        ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener, ChatMessageAdapter.Listener {
+        ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
+        ChatMessageAdapter.Listener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
-    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
     private static final int PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS = 25;
@@ -222,6 +221,29 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private boolean isLoadRequested = false;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy < 0) {
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!isLoadRequested && pastVisiblesItems / visibleItemCount <= 2) {
+                        LogManager.i("CHAT", "request to load");
+
+                        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
+                        isLoadRequested = true;
+                        abstractChat.loadNext();
+                    }
+                }
+            }
+        });
 
         // to avoid strange bug on some 4.x androids
         view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());

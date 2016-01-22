@@ -160,6 +160,37 @@ public abstract class AbstractChat extends BaseEntity {
         });
     }
 
+    public void loadNext() {
+        if (messages.isEmpty()) {
+            return;
+        }
+
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                final ArrayList<MessageItem> messageItems = new ArrayList<>();
+                Cursor cursor = MessageTable.getInstance().getLastMessagesBefore(account, user, messages.get(0).getTimestamp().getTime(), PRELOADED_MESSAGES);
+                while (cursor.moveToNext()) {
+                    MessageItem messageItem = MessageTable.createMessageItem(cursor, AbstractChat.this);
+                    messageItems.add(messageItem);
+                }
+                cursor.close();
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (MessageItem messageItem : messageItems) {
+                            updateSendQuery(messageItem);
+                        }
+                        addMessages(messageItems);
+                    }
+                });
+            }
+        });
+    }
+
+
     /**
      * Update existing message list with loaded.
      *
