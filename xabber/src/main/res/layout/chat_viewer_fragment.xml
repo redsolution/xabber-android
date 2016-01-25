@@ -139,4 +139,18 @@
             />
     </LinearLayout>
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar_toolbar"
+        android:layout_below="@+id/toolbar_default"
+        android:indeterminate="true"
+        android:elevation="8dp"
+        android:layout_marginBottom="-8dp"
+        android:layout_marginTop="-8dp"
+        android:visibility="gone"
+        />
+
+
 </RelativeLayout>

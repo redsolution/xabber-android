@@ -42,6 +42,7 @@ public class MamManager {
         private Date dateLastSynced;
         private String firstMessageId;
         private String lastMessageId;
+        private boolean isRemoteHistoryCompletelyLoaded = false;
 
         public Date getDateLastSynced() {
             return dateLastSynced;
@@ -65,6 +66,14 @@ public class MamManager {
 
         public void setLastMessageId(String lastMessageId) {
             this.lastMessageId = lastMessageId;
+        }
+
+        public boolean isRemoteHistoryCompletelyLoaded() {
+            return isRemoteHistoryCompletelyLoaded;
+        }
+
+        public void setRemoteHistoryCompletelyLoaded(boolean remoteHistoryCompletelyLoaded) {
+            isRemoteHistoryCompletelyLoaded = remoteHistoryCompletelyLoaded;
         }
     }
 
@@ -214,6 +223,69 @@ public class MamManager {
         thread.start();
     }
 
+
+    public void requestPreviousHistory(final AbstractChat chat) {
+        if (chat == null) {
+            return;
+        }
+
+        final SyncInfo syncInfo = getSyncInfo(chat);
+
+        if (syncInfo.getFirstMessageId() == null || syncInfo.isRemoteHistoryCompletelyLoaded()) {
+            return;
+        }
+
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        ConnectionThread connectionThread = accountItem.getConnectionThread();
+
+        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
+            return;
+        }
+
+        final Thread thread = new Thread("Request MAM chat " + chat) {
+            @Override
+            public void run() {
+                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+                try {
+                    if (!mamManager.isSupportedByServer()) {
+                        return;
+                    }
+
+                } catch (SmackException.NoResponseException | InterruptedException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
+                try {
+                    EventBus.getDefault().post(new PreviousHistoryLoadStartedEvent(chat));
+                    LogManager.i("MAM", "Loading previous history");
+                    mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, syncInfo.getFirstMessageId());
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                    EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                    return;
+                }
+
+                LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
+
+                List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
+
+                if (messageItems != null && messageItems.size() < PAGE_SIZE) {
+                    syncInfo.setRemoteHistoryCompletelyLoaded(true);
+                }
+
+                chat.onMessageDownloaded(messageItems);
+
+                syncInfo.setFirstMessageId(mamQueryResult.mamFin.getRsmSet().getFirst());
+
+
+                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+            }
+        };
+        thread.start();
+    }
+
     @NonNull
     private SyncInfo getSyncInfo(AbstractChat chat) {
         SyncInfo syncInfo = syncInfoByChat.get(chat.getAccount(), chat.getUser());
@@ -224,7 +296,6 @@ public class MamManager {
         return syncInfo;
     }
 
-    @Nullable
     private List<MessageItem> getMessageItems(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, AbstractChat chat) {
         List<MessageItem> messageItems = new ArrayList<>();
 

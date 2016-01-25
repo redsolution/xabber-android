@@ -49,6 +49,8 @@ import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
+import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
@@ -123,7 +125,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private final long STOP_TYPING_DELAY = 4000; // in ms
     private ImageButton attachButton;
     private View lastHistoryProgressBar;
+    private View previousHistoryProgressBar;
+
     private boolean isLocalHistoryLoadRequested = false;
+    private boolean isRemotePreviousHistoryRequested = false;
+
     private AbstractChat chat;
 
     public static ChatViewerFragment newInstance(String account, String user) {
@@ -231,19 +237,29 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (chat.isLocalHistoryLoadedCompletely()) {
-                    return;
-                }
+//                if (chat.isLocalHistoryLoadedCompletely()) {
+//                    return;
+//                }
 
-                if (dy < 0 && !isLocalHistoryLoadRequested) {
+                if (dy < 0) {
                     int visibleItemCount = layoutManager.getChildCount();
                     int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
                     if (pastVisibleItems / visibleItemCount <= 2) {
-                        LogManager.i("CHAT", "request to load");
 
-                        isLocalHistoryLoadRequested = true;
-                        chat.loadNext();
+
+                        if (!isLocalHistoryLoadRequested) {
+                            isLocalHistoryLoadRequested = true;
+                            LogManager.i("CHAT", "local history requested");
+                            chat.loadNext();
+                        }
+
+                        if (!isRemotePreviousHistoryRequested) {
+                            isRemotePreviousHistoryRequested = true;
+                            LogManager.i("CHAT", "remote history requested");
+                            MamManager.getInstance().requestPreviousHistory(chat);
+                        }
+
                     }
                 }
             }
@@ -427,6 +443,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
 
         lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
+        previousHistoryProgressBar = view.findViewById(R.id.progress_bar_toolbar);
 
         return view;
     }
@@ -440,6 +457,21 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onEventMainThread(LastHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    public void onEventMainThread(PreviousHistoryLoadStartedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            LogManager.i(this, "PreviousHistoryLoadStartedEvent");
+            previousHistoryProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onEventMainThread(PreviousHistoryLoadFinishedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
+            isRemotePreviousHistoryRequested = false;
+            previousHistoryProgressBar.setVisibility(View.GONE);
         }
     }
 
