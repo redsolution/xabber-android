@@ -1,19 +1,18 @@
 package com.xabber.android.data.extension.mam;
 
-public class LastHistoryLoadStartedEvent {
-    private String account;
-    private String user;
+import com.xabber.android.data.BaseChatEvent;
+import com.xabber.android.data.entity.BaseEntity;
 
-    public LastHistoryLoadStartedEvent(String account, String user) {
-        this.account = account;
-        this.user = user;
+public class LastHistoryLoadStartedEvent extends BaseChatEvent {
+    public LastHistoryLoadStartedEvent(BaseEntity entity) {
+        super(entity);
     }
 
     public String getAccount() {
-        return account;
+        return getEntity().getAccount();
     }
 
     public String getUser() {
-        return user;
+        return getEntity().getUser();
     }
 }

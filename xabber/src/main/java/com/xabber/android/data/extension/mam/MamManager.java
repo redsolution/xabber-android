@@ -179,7 +179,7 @@ public class MamManager {
                 org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
 
-                    EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat.getAccount(), chat.getUser()));
+                    EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
                     if (syncInfo.getLastMessageId() == null) {
                         mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, "");
                     } else {
@@ -191,7 +191,7 @@ public class MamManager {
                     e.printStackTrace();
                     return;
                 } finally {
-                    EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat.getAccount(), chat.getUser()));
+                    EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
                 }
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());

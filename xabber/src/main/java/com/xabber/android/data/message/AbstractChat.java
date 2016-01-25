@@ -48,7 +48,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -111,6 +110,8 @@ public abstract class AbstractChat extends BaseEntity {
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
 
+    private boolean isLocalHistoryLoadedCompletely = false;
+
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -149,6 +150,10 @@ public abstract class AbstractChat extends BaseEntity {
         }
         cursor.close();
 
+        if (messageItems.size() < PRELOADED_MESSAGES) {
+            isLocalHistoryLoadedCompletely = true;
+        }
+
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -161,6 +166,10 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     public void loadNext() {
+        if (isLocalHistoryLoadedCompletely) {
+            return;
+        }
+
         if (messages.isEmpty()) {
             return;
         }
@@ -192,6 +201,12 @@ public abstract class AbstractChat extends BaseEntity {
                 }
                 cursor.close();
 
+                if (messageItems.size() < PRELOADED_MESSAGES) {
+                    isLocalHistoryLoadedCompletely = true;
+                }
+
+                LogManager.i(this, "Loaded " + messageItems.size() + " messages from local DB");
+
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -205,6 +220,9 @@ public abstract class AbstractChat extends BaseEntity {
         });
     }
 
+    public boolean isLocalHistoryLoadedCompletely() {
+        return isLocalHistoryLoadedCompletely;
+    }
 
     /**
      * Update existing message list with loaded.

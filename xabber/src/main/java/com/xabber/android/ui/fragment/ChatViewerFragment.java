@@ -123,6 +123,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private final long STOP_TYPING_DELAY = 4000; // in ms
     private ImageButton attachButton;
     private View lastHistoryProgressBar;
+    private boolean isLocalHistoryLoadRequested = false;
+    private AbstractChat chat;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -153,6 +155,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         Bundle args = getArguments();
         account = args.getString(ARGUMENT_ACCOUNT, null);
         user = args.getString(ARGUMENT_USER, null);
+
+        chat = MessageManager.getInstance().getChat(account, user);
     }
 
     @Override
@@ -223,23 +227,23 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         recyclerView.setLayoutManager(layoutManager);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private boolean isLoadRequested = false;
-
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (dy < 0) {
+                if (chat.isLocalHistoryLoadedCompletely()) {
+                    return;
+                }
+
+                if (dy < 0 && !isLocalHistoryLoadRequested) {
                     int visibleItemCount = layoutManager.getChildCount();
                     int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (!isLoadRequested && pastVisibleItems / visibleItemCount <= 2) {
+                    if (pastVisibleItems / visibleItemCount <= 2) {
                         LogManager.i("CHAT", "request to load");
 
-                        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-
-                        isLoadRequested = true;
-                        abstractChat.loadNext();
+                        isLocalHistoryLoadRequested = true;
+                        chat.loadNext();
                     }
                 }
             }
@@ -724,6 +728,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         } else {
             layoutManager.scrollToPositionWithOffset(chatMessageAdapter.findMessagePosition(messageItem), (int) offset);
         }
+
+        isLocalHistoryLoadRequested = false;
     }
 
     private void scrollDown() {
