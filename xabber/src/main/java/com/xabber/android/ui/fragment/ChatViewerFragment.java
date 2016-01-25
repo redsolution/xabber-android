@@ -231,9 +231,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
                 if (dy < 0) {
                     int visibleItemCount = layoutManager.getChildCount();
-                    int pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+                    int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (!isLoadRequested && pastVisiblesItems / visibleItemCount <= 2) {
+                    if (!isLoadRequested && pastVisibleItems / visibleItemCount <= 2) {
                         LogManager.i("CHAT", "request to load");
 
                         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);

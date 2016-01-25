@@ -169,8 +169,23 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
+
+                Date firstTimeStamp = null;
+                for (MessageItem messageItem : messages) {
+
+                    if (!messageItem.isReceivedFromMessageArchive()) {
+                        firstTimeStamp = messageItem.getTimestamp();
+                        break;
+                    }
+
+                }
+
+                if (firstTimeStamp == null) {
+                    return;
+                }
+
                 final ArrayList<MessageItem> messageItems = new ArrayList<>();
-                Cursor cursor = MessageTable.getInstance().getLastMessagesBefore(account, user, messages.get(0).getTimestamp().getTime(), PRELOADED_MESSAGES);
+                Cursor cursor = MessageTable.getInstance().getLastMessagesBefore(account, user, firstTimeStamp.getTime(), PRELOADED_MESSAGES);
                 while (cursor.moveToNext()) {
                     MessageItem messageItem = MessageTable.createMessageItem(cursor, AbstractChat.this);
                     messageItems.add(messageItem);
