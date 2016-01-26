@@ -434,7 +434,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         int visibleItemCount = layoutManager.getChildCount();
         int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-        if (visibleItemCount == 0 || pastVisibleItems == 0) {
+        if (visibleItemCount == 0) {
             return;
         }
 
