@@ -443,6 +443,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
 
         if (pastVisibleItems / visibleItemCount <= 2) {
+            LogManager.i(this, "pastVisibleItems / visibleItemCount <= 2");
             requestLocalHistoryLoad();
             requestRemoteHistoryLoad();
         } else {
@@ -479,7 +480,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void requestRemoteHistoryLoad() {
         if (!isRemotePreviousHistoryRequested) {
-            isRemotePreviousHistoryRequested = true;
             LogManager.i("CHAT", "remote history requested");
             MamManager.getInstance().requestPreviousHistory(chat);
         }
@@ -509,6 +509,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadStartedEvent");
             previousHistoryProgressBar.setVisibility(View.VISIBLE);
+            isRemotePreviousHistoryRequested = true;
         }
     }
 
