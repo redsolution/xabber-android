@@ -450,10 +450,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 Integer firstLocalMessagePosition = chat.getFirstLocalMessagePosition();
                 Integer firstRemotelySyncedMessagePosition = chat.getFirstRemotelySyncedMessagePosition();
 
-                if (firstLocalMessagePosition != null && firstLocalMessagePosition != 0
-                        && firstRemotelySyncedMessagePosition != null && firstRemotelySyncedMessagePosition != 0) {
+                LogManager.i(this, "firstLocalMessagePosition: " + firstLocalMessagePosition + " firstRemotelySyncedMessagePosition: " + firstRemotelySyncedMessagePosition);
 
 
+                if (firstLocalMessagePosition != null && firstRemotelySyncedMessagePosition != null) {
 
                     int abs = Math.abs(firstLocalMessagePosition - firstRemotelySyncedMessagePosition);
 
