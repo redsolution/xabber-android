@@ -758,7 +758,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (itemCountBeforeUpdate - 1)) {
             scrollDown();
         } else {
-            layoutManager.scrollToPositionWithOffset(chatMessageAdapter.findMessagePosition(messageItem), (int) offset);
+            if (messageItem != null) {
+                layoutManager.scrollToPositionWithOffset(chatMessageAdapter.findMessagePosition(messageItem), (int) offset);
+            }
         }
 
         isLocalHistoryLoadRequested = false;
