@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.SettingsManager;
@@ -79,7 +80,13 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
     public void onClose() {
         alarmManager.cancel(goAwayPendingIntent);
         alarmManager.cancel(goXaPendingIntent);
-        Application.getInstance().unregisterReceiver(screenReceiver);
+        try {
+            Application.getInstance().unregisterReceiver(screenReceiver);
+        } catch (IllegalArgumentException e) {
+            // happens sometimes.
+            LogManager.e(this, "Error unregistering screen receiver " + e.getMessage());
+        }
+
     }
 
     private long getTime(int milliSeconds) {
