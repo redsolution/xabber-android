@@ -158,7 +158,7 @@ public class MamManager {
 
                 List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
 
-                chat.onMessageDownloaded(messageItems);
+
 
 
                 if (messageItems != null && messageItems.size() < PAGE_SIZE) {
@@ -169,11 +169,17 @@ public class MamManager {
                 if (mamQueryResult.mamFin.getRsmSet() != null) {
                     if (syncInfo.getFirstMessageMamId() == null) {
                         syncInfo.setFirstMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
+                        if (messageItems != null && !messageItems.isEmpty()) {
+                            syncInfo.setFirstMessageStanzaId(messageItems.get(0).getStanzaId());
+                        }
                     }
                     if (mamQueryResult.mamFin.getRsmSet().getLast() != null) {
                         syncInfo.setLastMessageMamId(mamQueryResult.mamFin.getRsmSet().getLast());
                     }
                 }
+
+
+                chat.onMessageDownloaded(messageItems);
             }
         };
         thread.start();
@@ -223,6 +229,8 @@ public class MamManager {
                     return;
                 }
 
+                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
                 List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
@@ -231,12 +239,12 @@ public class MamManager {
                     syncInfo.setRemoteHistoryCompletelyLoaded(true);
                 }
 
-                chat.onMessageDownloaded(messageItems);
-
                 syncInfo.setFirstMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
+                if (messageItems != null && !messageItems.isEmpty()) {
+                    syncInfo.setFirstMessageStanzaId(messageItems.get(0).getStanzaId());
+                }
 
-
-                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                chat.onMessageDownloaded(messageItems);
             }
         };
         thread.start();

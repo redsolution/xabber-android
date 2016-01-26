@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -800,5 +801,29 @@ public abstract class AbstractChat extends BaseEntity {
 
     public SyncInfo getSyncInfo() {
         return syncInfo;
+    }
+
+    @Nullable
+    public Integer getFirstRemotelySyncedMessagePosition() {
+        if (syncInfo.getFirstMessageStanzaId() == null) {
+            return null;
+        }
+        for (int i = 0; i < messages.size(); i++) {
+            if (messages.get(i).getStanzaId().equals(syncInfo.getFirstMessageStanzaId())) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public Integer getFirstLocalMessagePosition() {
+        for (int i = 0; i < messages.size(); i++) {
+            if (!messages.get(i).isReceivedFromMessageArchive()) {
+                return i;
+            }
+        }
+
+        return null;
     }
 }

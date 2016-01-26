@@ -4,7 +4,10 @@ import java.util.Date;
 
 public class SyncInfo {
     private Date lastSyncedTime;
+
     private String firstMessageMamId;
+    private String firstMessageStanzaId;
+
     private String lastMessageMamId;
     private boolean isRemoteHistoryCompletelyLoaded = false;
 
@@ -38,5 +41,13 @@ public class SyncInfo {
 
     public void setRemoteHistoryCompletelyLoaded(boolean remoteHistoryCompletelyLoaded) {
         isRemoteHistoryCompletelyLoaded = remoteHistoryCompletelyLoaded;
+    }
+
+    public String getFirstMessageStanzaId() {
+        return firstMessageStanzaId;
+    }
+
+    public void setFirstMessageStanzaId(String firstMessageStanzaId) {
+        this.firstMessageStanzaId = firstMessageStanzaId;
     }
 }
