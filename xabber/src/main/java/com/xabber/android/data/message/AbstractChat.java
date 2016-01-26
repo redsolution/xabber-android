@@ -28,6 +28,7 @@ import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.mam.SyncInfo;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -112,6 +113,11 @@ public abstract class AbstractChat extends BaseEntity {
 
     private boolean isLocalHistoryLoadedCompletely = false;
 
+    /**
+     * for Message Archive Management (XEP-313)
+     */
+    private SyncInfo syncInfo;
+
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -127,6 +133,8 @@ public abstract class AbstractChat extends BaseEntity {
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
         updateCreationTime();
+
+        syncInfo = new SyncInfo();
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -781,5 +789,9 @@ public abstract class AbstractChat extends BaseEntity {
 
     public boolean isPrivateMucChatAccepted() {
         return isPrivateMucChatAccepted;
+    }
+
+    public SyncInfo getSyncInfo() {
+        return syncInfo;
     }
 }

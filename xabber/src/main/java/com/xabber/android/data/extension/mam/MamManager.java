@@ -1,14 +1,10 @@
 package com.xabber.android.data.extension.mam;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
-import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.xmpp.address.Jid;
@@ -36,47 +32,6 @@ public class MamManager {
 
     public static int PAGE_SIZE = AbstractChat.PRELOADED_MESSAGES;
 
-    private NestedMap<SyncInfo> syncInfoByChat;
-
-    private static class SyncInfo {
-        private Date dateLastSynced;
-        private String firstMessageId;
-        private String lastMessageId;
-        private boolean isRemoteHistoryCompletelyLoaded = false;
-
-        public Date getDateLastSynced() {
-            return dateLastSynced;
-        }
-
-        public void setDateLastSynced(Date dateLastSynced) {
-            this.dateLastSynced = dateLastSynced;
-        }
-
-        public String getFirstMessageId() {
-            return firstMessageId;
-        }
-
-        public void setFirstMessageId(String firstMessageId) {
-            this.firstMessageId = firstMessageId;
-        }
-
-        public String getLastMessageId() {
-            return lastMessageId;
-        }
-
-        public void setLastMessageId(String lastMessageId) {
-            this.lastMessageId = lastMessageId;
-        }
-
-        public boolean isRemoteHistoryCompletelyLoaded() {
-            return isRemoteHistoryCompletelyLoaded;
-        }
-
-        public void setRemoteHistoryCompletelyLoaded(boolean remoteHistoryCompletelyLoaded) {
-            isRemoteHistoryCompletelyLoaded = remoteHistoryCompletelyLoaded;
-        }
-    }
-
     static {
         instance = new MamManager();
         Application.getInstance().addManager(instance);
@@ -84,10 +39,6 @@ public class MamManager {
 
     public static MamManager getInstance() {
         return instance;
-    }
-
-    public MamManager() {
-        this.syncInfoByChat = new NestedMap<>();
     }
 
     public void requestAll(final AbstractChat chat) {
@@ -158,7 +109,7 @@ public class MamManager {
             return;
         }
 
-        final SyncInfo syncInfo = getSyncInfo(chat);
+        final SyncInfo syncInfo = chat.getSyncInfo();
 
         if (syncInfo.getDateLastSynced() != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncInfo.getDateLastSynced().getTime()) < SYNC_INTERVAL_MINUTES) {
             return;
@@ -209,6 +160,11 @@ public class MamManager {
 
                 chat.onMessageDownloaded(messageItems);
 
+
+                if (messageItems != null && messageItems.size() < PAGE_SIZE) {
+                    syncInfo.setRemoteHistoryCompletelyLoaded(true);
+                }
+
                 syncInfo.setDateLastSynced(new Date(System.currentTimeMillis()));
                 if (mamQueryResult.mamFin.getRsmSet() != null) {
                     if (syncInfo.getFirstMessageId() == null) {
@@ -229,7 +185,7 @@ public class MamManager {
             return;
         }
 
-        final SyncInfo syncInfo = getSyncInfo(chat);
+        final SyncInfo syncInfo = chat.getSyncInfo();
 
         if (syncInfo.getFirstMessageId() == null || syncInfo.isRemoteHistoryCompletelyLoaded()) {
             return;
@@ -284,16 +240,6 @@ public class MamManager {
             }
         };
         thread.start();
-    }
-
-    @NonNull
-    private SyncInfo getSyncInfo(AbstractChat chat) {
-        SyncInfo syncInfo = syncInfoByChat.get(chat.getAccount(), chat.getUser());
-        if (syncInfo == null) {
-            syncInfo = new SyncInfo();
-            syncInfoByChat.put(chat.getAccount(), chat.getUser(), syncInfo);
-        }
-        return syncInfo;
     }
 
     private List<MessageItem> getMessageItems(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, AbstractChat chat) {
