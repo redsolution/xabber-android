@@ -3,33 +3,33 @@ package com.xabber.android.data.extension.mam;
 import java.util.Date;
 
 public class SyncInfo {
-    private Date dateLastSynced;
-    private String firstMessageId;
-    private String lastMessageId;
+    private Date lastSyncedTime;
+    private String firstMessageMamId;
+    private String lastMessageMamId;
     private boolean isRemoteHistoryCompletelyLoaded = false;
 
-    public Date getDateLastSynced() {
-        return dateLastSynced;
+    public Date getLastSyncedTime() {
+        return lastSyncedTime;
     }
 
-    public void setDateLastSynced(Date dateLastSynced) {
-        this.dateLastSynced = dateLastSynced;
+    public void setLastSyncedTime(Date lastSyncedTime) {
+        this.lastSyncedTime = lastSyncedTime;
     }
 
-    public String getFirstMessageId() {
-        return firstMessageId;
+    public String getFirstMessageMamId() {
+        return firstMessageMamId;
     }
 
-    public void setFirstMessageId(String firstMessageId) {
-        this.firstMessageId = firstMessageId;
+    public void setFirstMessageMamId(String firstMessageMamId) {
+        this.firstMessageMamId = firstMessageMamId;
     }
 
-    public String getLastMessageId() {
-        return lastMessageId;
+    public String getLastMessageMamId() {
+        return lastMessageMamId;
     }
 
-    public void setLastMessageId(String lastMessageId) {
-        this.lastMessageId = lastMessageId;
+    public void setLastMessageMamId(String lastMessageMamId) {
+        this.lastMessageMamId = lastMessageMamId;
     }
 
     public boolean isRemoteHistoryCompletelyLoaded() {
