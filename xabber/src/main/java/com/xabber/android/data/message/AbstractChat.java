@@ -305,6 +305,9 @@ public abstract class AbstractChat extends BaseEntity {
 
                     LogManager.i(this, "found messages with same text and similar time. removing. Text " + oldMessage.getText() + ", time old " + oldMessage.getTimestamp() + " new " + newMessage.getTimestamp());
 
+                    oldMessage.setStanzaId(newMessage.getStanzaId());
+                    writeStanzaIdToDataBase(oldMessage);
+
                     newMessageIterator.remove();
                     break;
                 }
@@ -653,15 +656,7 @@ public abstract class AbstractChat extends BaseEntity {
             } else {
                 Message message = createMessagePacket(text);
                 messageItem.setStanzaId(message.getStanzaId());
-                Application.getInstance().runInBackground(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (messageItem.getId() != null) {
-                            MessageTable.getInstance().setStanzaId(messageItem);
-                        }
-
-                    }
-                });
+                writeStanzaIdToDataBase(messageItem);
 
                 ChatStateManager.getInstance().updateOutgoingMessage(this,
                         message);
@@ -706,6 +701,18 @@ public abstract class AbstractChat extends BaseEntity {
                         removeMessages, true);
                 MessageTable.getInstance().markAsSent(sentIds);
                 MessageTable.getInstance().removeMessages(removeIds);
+            }
+        });
+    }
+
+    private void writeStanzaIdToDataBase(final MessageItem messageItem) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (messageItem.getId() != null) {
+                    MessageTable.getInstance().setStanzaId(messageItem);
+                }
+
             }
         });
     }
