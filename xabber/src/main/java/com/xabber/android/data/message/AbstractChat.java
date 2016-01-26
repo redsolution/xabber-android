@@ -809,7 +809,9 @@ public abstract class AbstractChat extends BaseEntity {
             return null;
         }
         for (int i = 0; i < messages.size(); i++) {
-            if (messages.get(i).getStanzaId().equals(syncInfo.getFirstMessageStanzaId())) {
+            MessageItem messageItem = messages.get(i);
+            if (messageItem.getStanzaId() != null
+                    && messageItem.getStanzaId().equals(syncInfo.getFirstMessageStanzaId())) {
                 return i;
             }
         }
