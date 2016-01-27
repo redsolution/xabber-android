@@ -33,7 +33,6 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
 import com.xabber.android.data.entity.NestedNestedMaps;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -42,7 +41,6 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.archive.OtrMode;
-import com.xabber.xmpp.archive.SaveMode;
 
 import net.java.otr4j.OtrEngineHost;
 import net.java.otr4j.OtrEngineListener;
@@ -197,7 +195,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        MessageArchiveManager.getInstance().setSaveMode(account, user, abstractChat.getThreadId(), SaveMode.body);
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.concede);
         LogManager.i(this, "Ended session for " + user);
     }
@@ -227,11 +224,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private void injectMessage(String account, String user, String msg) throws OtrException {
         LogManager.i(this, "injectMessage. user: " + user + " message: " + msg);
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        try {
-            MessageArchiveManager.getInstance().setSaveMode(account, user, abstractChat.getThreadId(), SaveMode.fls);
-        } catch (NetworkException e) {
-            throw new OtrException(e);
-        }
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
         try {
             ConnectionManager.getInstance()

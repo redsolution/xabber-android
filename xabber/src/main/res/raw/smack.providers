@@ -23,31 +23,6 @@
         <className>com.xabber.xmpp.ssn.FeatureProvider</className>
     </extensionProvider>
 
-    <!-- Message archive -->
-    <iqProvider>
-        <elementName>pref</elementName>
-        <namespace>urn:xmpp:archive</namespace>
-        <className>com.xabber.xmpp.archive.PrefProvider</className>
-    </iqProvider>
-
-    <iqProvider>
-        <elementName>chat</elementName>
-        <namespace>urn:xmpp:archive</namespace>
-        <className>com.xabber.xmpp.archive.ChatProvider</className>
-    </iqProvider>
-
-    <iqProvider>
-        <elementName>list</elementName>
-        <namespace>urn:xmpp:archive</namespace>
-        <className>com.xabber.xmpp.archive.ListProvider</className>
-    </iqProvider>
-
-    <iqProvider>
-        <elementName>modified</elementName>
-        <namespace>urn:xmpp:archive</namespace>
-        <className>com.xabber.xmpp.archive.ModifiedProvider</className>
-    </iqProvider>
-
     <!-- Entity Time -->
     <iqProvider>
         <elementName>time</elementName>

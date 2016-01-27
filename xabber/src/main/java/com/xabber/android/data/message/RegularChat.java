@@ -18,13 +18,11 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.delay.Delay;
 import com.xabber.xmpp.muc.MUC;
 
@@ -113,8 +111,7 @@ public class RegularChat extends AbstractChat {
                 false,
                 false,
                 false,
-                MessageArchiveManager.getInstance().getSaveMode(account, user,
-                        getThreadId()) != SaveMode.fls, null);
+                true, null);
     }
 
     @Override
@@ -175,8 +172,7 @@ public class RegularChat extends AbstractChat {
                     true,
                     unencrypted,
                     Delay.isOfflineMessage(Jid.getServer(account), packet),
-                    MessageArchiveManager.getInstance().getSaveMode(account,
-                            user, getThreadId()) != SaveMode.fls, packet.getStanzaId());
+                    true, packet.getStanzaId());
         }
         return true;
     }

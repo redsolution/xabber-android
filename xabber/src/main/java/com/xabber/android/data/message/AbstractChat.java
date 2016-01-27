@@ -25,7 +25,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
@@ -35,7 +34,6 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.carbon.CarbonManager;
 
 import org.jivesoftware.smack.packet.Message;
@@ -685,9 +683,6 @@ public abstract class AbstractChat extends BaseEntity {
                 } catch (NetworkException e) {
                     break;
                 }
-            }
-            if (MessageArchiveManager.getInstance().getSaveMode(account, user, threadId) == SaveMode.fls) {
-                messageItem.setTag(NO_RECORD_TAG);
             }
             if (messageItem != intent) {
                 messageItem.setSentTimeStamp(new Date());

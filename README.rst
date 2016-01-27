@@ -32,7 +32,6 @@ Supported protocols
 * XEP-0091: Legacy Delayed Delivery
 * XEP-0115: Entity Capabilities
 * XEP-0128: Service Discovery Extensions
-* XEP-0136: Message Archiving
 * XEP-0138: Stream Compression
 * XEP-0147: XMPP URI Scheme Query Components
 * XEP-0153: vCard-Based Avatars

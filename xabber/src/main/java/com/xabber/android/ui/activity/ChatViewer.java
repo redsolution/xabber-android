@@ -30,7 +30,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
@@ -424,9 +423,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             if (isVisible) {
                 MessageManager.getInstance().setVisibleChat(selectedChat);
             }
-
-            MessageArchiveManager.getInstance().requestHistory(selectedChat.getAccount(), selectedChat.getUser(), 0,
-                    MessageManager.getInstance().getChat(selectedChat.getAccount(), selectedChat.getUser()).getRequiredMessageCount());
 
             NotificationManager.getInstance().removeMessageNotification(selectedChat.getAccount(), selectedChat.getUser());
         }

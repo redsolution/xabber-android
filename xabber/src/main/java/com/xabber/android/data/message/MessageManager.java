@@ -35,7 +35,6 @@ import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.file.FileManager;
@@ -559,13 +558,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (bareAddress == null) {
             return;
         }
-        if (packet instanceof Message
-                && MessageArchiveManager.getInstance().isModificationsSucceed(account)
-                && Delay.isOfflineMessage(Jid.getServer(account), packet)) {
-            // Ignore offline message if modification from server side message
-            // archive have been received.
-            return;
-        }
 
         String contact = bareAddress;
 
@@ -632,12 +624,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (!(connection instanceof AccountItem))
             return;
         String account = ((AccountItem) connection).getAccount();
-        if (MessageArchiveManager.getInstance().isModificationsSucceed(account)
-                && Delay.isOfflineMessage(Jid.getServer(account), message)) {
-            // Ignore offline message if modification from server side message
-            // archive have been received.
-            return;
-        }
 
         if (direction == Direction.sent) {
             String companion = Jid.getBareAddress(message.getTo());

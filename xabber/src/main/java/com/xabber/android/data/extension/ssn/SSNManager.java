@@ -24,9 +24,7 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.xmpp.archive.OtrMode;
-import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.form.DataFormType;
 import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
@@ -168,15 +166,6 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         if (securityValue != null)
             Feature.addSecurityField(dataForm, null, securityValue);
         if (loggingValue != null) {
-            try {
-                if (loggingValue == LoggingValue.mustnot)
-                    MessageArchiveManager.getInstance().setSaveMode(account,
-                            from, session, SaveMode.fls);
-                else
-                    MessageArchiveManager.getInstance().setSaveMode(account,
-                            from, session, SaveMode.body);
-            } catch (NetworkException e) {
-            }
             Feature.addLoggingField(dataForm, null, loggingValue);
         }
         sessionStates.put(account, session, SessionState.active);
@@ -226,8 +215,6 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         OtrMode otrMode = sessionOtrs.get(account, session);
         if (otrMode != null)
             return otrMode;
-        otrMode = MessageArchiveManager.getInstance().getOtrMode(account,
-                bareAddress);
         if (otrMode != null)
             return otrMode;
         return OtrMode.concede;
