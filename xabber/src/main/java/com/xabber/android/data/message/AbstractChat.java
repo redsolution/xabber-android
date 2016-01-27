@@ -238,14 +238,27 @@ public abstract class AbstractChat extends BaseEntity {
      *
      * @param messageItems
      */
-    private void addMessages(Collection<MessageItem> messageItems) {
-        for (MessageItem messageItem : messageItems) {
-            FileManager.processFileMessage(messageItem, false);
-        }
+    private void addMessages(final Collection<MessageItem> messageItems) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                for (MessageItem messageItem : messageItems) {
+                    FileManager.processFileMessage(messageItem, false);
+                }
 
-        messages.addAll(messageItems);
-        sort();
-        MessageManager.getInstance().onChatChanged(account, user, false);
+                synchronized (messages) {
+                    messages.addAll(messageItems);
+                    sort();
+                }
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MessageManager.getInstance().onChatChanged(account, user, false);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -272,9 +285,7 @@ public abstract class AbstractChat extends BaseEntity {
                     .equals(messageItem.getTag())))
                 iterator.remove();
         }
-        messages.addAll(items);
-        sort();
-        MessageManager.getInstance().onChatChanged(account, user, false);
+        addMessages(items);
         return Math.max(0, messages.size() - previous);
     }
 
@@ -318,9 +329,7 @@ public abstract class AbstractChat extends BaseEntity {
 
         LogManager.i(this, "Was " + items.size() + " new messages, " + newMessages.size() + " left");
 
-        messages.addAll(newMessages);
-        sort();
-        MessageManager.getInstance().onChatChanged(account, user, false);
+        addMessages(newMessages);
     }
 
     public boolean isActive() {
