@@ -128,9 +128,9 @@ public abstract class AbstractChat extends BaseEntity {
         firstNotification = true;
         lastText = "";
         lastTime = null;
-        historyIds = new ArrayList<Long>();
-        messages = new ArrayList<MessageItem>();
-        sendQuery = new ArrayList<MessageItem>();
+        historyIds = new ArrayList<>();
+        messages = new ArrayList<>();
+        sendQuery = new ArrayList<>();
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
         updateCreationTime();
@@ -420,41 +420,47 @@ public abstract class AbstractChat extends BaseEntity {
         boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
-        if (action == null && text == null)
+        if (action == null && text == null) {
             throw new IllegalArgumentException();
-        if (resource == null)
+        }
+        if (resource == null) {
             resource = "";
-        if (text == null)
+        }
+        if (text == null) {
             text = "";
+        }
         if (action != null) {
             read = true;
             send = true;
             save = false;
         } else {
-            ArchiveMode archiveMode = AccountManager.getInstance()
-                    .getArchiveMode(account);
-            if (archiveMode == ArchiveMode.dontStore)
+            ArchiveMode archiveMode = AccountManager.getInstance().getArchiveMode(account);
+            if (archiveMode == ArchiveMode.dontStore) {
                 save = false;
-            else
+            } else {
                 save = archiveMode.saveLocally() || !send
                         || (!read && archiveMode == ArchiveMode.unreadOnly);
-            if (save)
+            }
+            if (save) {
                 save = ChatManager.getInstance().isSaveMessages(account, user);
+            }
         }
-        if (save
-                && (unencrypted || (!SettingsManager.securityOtrHistory() && OTRManager
-                .getInstance().getSecurityLevel(account, user) != SecurityLevel.plain)))
+        if (save && (unencrypted || (!SettingsManager.securityOtrHistory()
+                && OTRManager.getInstance().getSecurityLevel(account, user) != SecurityLevel.plain))) {
             save = false;
+        }
         Date timestamp = new Date();
 
         if (text.trim().isEmpty()) {
             notify = false;
         }
 
-        if (notify || !incoming)
+        if (notify || !incoming) {
             openChat();
-        if (!incoming)
+        }
+        if (!incoming) {
             notify = false;
+        }
 
         if (isPrivateMucChat) {
             if (!isPrivateMucChatAccepted
@@ -463,9 +469,8 @@ public abstract class AbstractChat extends BaseEntity {
             }
         }
 
-        MessageItem messageItem = new MessageItem(this, record ? null
-                : NO_RECORD_TAG, resource, text, action, timestamp,
-                delayTimestamp, incoming, read, send, false, incoming,
+        MessageItem messageItem = new MessageItem(this, record ? null : NO_RECORD_TAG, resource,
+                text, action, timestamp, delayTimestamp, incoming, read, send, false, incoming,
                 unencrypted, offline);
         messageItem.setStanzaId(stanzaId);
 
@@ -474,8 +479,9 @@ public abstract class AbstractChat extends BaseEntity {
         messages.add(messageItem);
         updateSendQuery(messageItem);
         sort();
-        if (save && !isPrivateMucChat)
+        if (save && !isPrivateMucChat) {
             requestToWriteMessage(messageItem);
+        }
 
         if (notify && notifyAboutMessage()) {
             if (visible) {
@@ -495,8 +501,7 @@ public abstract class AbstractChat extends BaseEntity {
         Date timestamp = new Date();
 
         MessageItem messageItem = new MessageItem(this, NO_RECORD_TAG, "", text, null, timestamp,
-                null, false, true, false, false, false,
-                false, false);
+                null, false, true, false, false, false, false, false);
 
         messageItem.setIsUploadFileMessage(true);
         if (isError) {
@@ -522,8 +527,9 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     private void updateSendQuery(MessageItem messageItem) {
-        if (!messageItem.isSent())
+        if (!messageItem.isSent()) {
             sendQuery.add(messageItem);
+        }
     }
 
     /**
@@ -545,7 +551,7 @@ public abstract class AbstractChat extends BaseEntity {
     void removeMessage(MessageItem messageItem) {
         messages.remove(messageItem);
         sendQuery.remove(messageItem);
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
+        final ArrayList<MessageItem> messageItems = new ArrayList<>();
         messageItems.add(messageItem);
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -556,8 +562,7 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     void removeAllMessages() {
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>(
-                messages);
+        final ArrayList<MessageItem> messageItems = new ArrayList<>(messages);
         lastText = "";
         messages.clear();
         sendQuery.clear();
@@ -638,10 +643,11 @@ public abstract class AbstractChat extends BaseEntity {
      * @param intent can be <code>null</code>.
      */
     protected void sendQueue(MessageItem intent) {
-        if (!canSendMessage())
+        if (!canSendMessage()) {
             return;
-        final ArrayList<MessageItem> sentMessages = new ArrayList<MessageItem>();
-        final ArrayList<MessageItem> removeMessages = new ArrayList<MessageItem>();
+        }
+        final ArrayList<MessageItem> sentMessages = new ArrayList<>();
+        final ArrayList<MessageItem> removeMessages = new ArrayList<>();
         for (final MessageItem messageItem : sendQuery) {
             String text = prepareText(messageItem.getText());
             if (text == null) {
@@ -649,9 +655,9 @@ public abstract class AbstractChat extends BaseEntity {
                 Application.getInstance().runInBackground(new Runnable() {
                     @Override
                     public void run() {
-                        if (messageItem.getId() != null)
-                            MessageTable.getInstance().markAsError(
-                                    messageItem.getId());
+                        if (messageItem.getId() != null) {
+                            MessageTable.getInstance().markAsError(messageItem.getId());
+                        }
                     }
                 });
             } else {
@@ -659,36 +665,31 @@ public abstract class AbstractChat extends BaseEntity {
                 messageItem.setStanzaId(message.getStanzaId());
                 writeStanzaIdToDataBase(messageItem);
 
-                ChatStateManager.getInstance().updateOutgoingMessage(this,
-                        message);
-                ReceiptManager.getInstance().updateOutgoingMessage(this,
-                        message, messageItem);
-                CarbonManager.getInstance().updateOutgoingMessage(this,
-                        message, messageItem);
-                if (messageItem != intent)
-                    message.addExtension(new DelayInformation(messageItem
-                            .getTimestamp()));
+                ChatStateManager.getInstance().updateOutgoingMessage(this, message);
+                ReceiptManager.getInstance().updateOutgoingMessage(this, message, messageItem);
+                CarbonManager.getInstance().updateOutgoingMessage(this, message, messageItem);
+                if (messageItem != intent) {
+                    message.addExtension(new DelayInformation(messageItem.getTimestamp()));
+                }
                 try {
-                    ConnectionManager.getInstance()
-                            .sendStanza(account, message);
+                    ConnectionManager.getInstance().sendStanza(account, message);
                 } catch (NetworkException e) {
                     break;
                 }
             }
-            if (MessageArchiveManager.getInstance().getSaveMode(account, user,
-                    threadId) == SaveMode.fls)
+            if (MessageArchiveManager.getInstance().getSaveMode(account, user, threadId) == SaveMode.fls) {
                 messageItem.setTag(NO_RECORD_TAG);
+            }
             if (messageItem != intent) {
                 messageItem.setSentTimeStamp(new Date());
                 Collections.sort(messages);
             }
             messageItem.markAsSent();
-            if (AccountManager.getInstance()
-                    .getArchiveMode(messageItem.getChat().getAccount())
-                    .saveLocally())
+            if (AccountManager.getInstance().getArchiveMode(messageItem.getChat().getAccount()).saveLocally()) {
                 sentMessages.add(messageItem);
-            else
+            } else {
                 removeMessages.add(messageItem);
+            }
         }
         sendQuery.removeAll(sentMessages);
         sendQuery.removeAll(removeMessages);
@@ -696,10 +697,8 @@ public abstract class AbstractChat extends BaseEntity {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Collection<Long> sentIds = MessageManager.getMessageIds(
-                        sentMessages, false);
-                Collection<Long> removeIds = MessageManager.getMessageIds(
-                        removeMessages, true);
+                Collection<Long> sentIds = MessageManager.getMessageIds(sentMessages, false);
+                Collection<Long> removeIds = MessageManager.getMessageIds(removeMessages, true);
                 MessageTable.getInstance().markAsSent(sentIds);
                 MessageTable.getInstance().removeMessages(removeIds);
             }
@@ -728,8 +727,9 @@ public abstract class AbstractChat extends BaseEntity {
      * @param threadId <code>null</code> if current value shouldn't be changed.
      */
     protected void updateThreadId(String threadId) {
-        if (threadId == null)
+        if (threadId == null) {
             return;
+        }
         this.threadId = threadId;
     }
 
@@ -741,14 +741,15 @@ public abstract class AbstractChat extends BaseEntity {
      */
     public int getRequiredMessageCount() {
         int count = PRELOADED_MESSAGES
-                + NotificationManager.getInstance()
-                .getNotificationMessageCount(account, user);
-        for (MessageItem message : messages)
+                + NotificationManager.getInstance().getNotificationMessageCount(account, user);
+        for (MessageItem message : messages) {
             if (message.isIncoming()) {
                 count -= 1;
-                if (count <= 0)
+                if (count <= 0) {
                     return 0;
+                }
             }
+        }
         return count;
     }
 
