@@ -231,7 +231,7 @@ public class RoomChat extends AbstractChat {
                 if (delay != null) {
                     notify = false;
                 }
-                for (MessageItem messageItem : messages) {
+                for (MessageItem messageItem : getMessages()) {
                     // Search for duplicates
                     if (packetID != null && packetID.equals(messageItem.getStanzaId())) {
                         // Server send our own message back

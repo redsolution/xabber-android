@@ -77,7 +77,7 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Sorted list of messages in this chat.
      */
-    protected final List<MessageItem> messages;
+    private final List<MessageItem> messages;
     /**
      * List of messages to be sent.
      */
@@ -369,7 +369,7 @@ public abstract class AbstractChat extends BaseEntity {
         return result;
     }
 
-    Collection<MessageItem> getMessages() {
+    public Collection<MessageItem> getMessages() {
         return Collections.unmodifiableCollection(messages);
     }
 
