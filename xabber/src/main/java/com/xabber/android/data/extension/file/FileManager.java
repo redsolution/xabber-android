@@ -71,7 +71,7 @@ public class FileManager {
         this.startedDownloads = new ConcurrentSkipListSet<>();
     }
 
-    public static void processFileMessage (final MessageItem messageItem, boolean download) {
+    public static void processFileMessage (final MessageItem messageItem, final boolean download) {
         if (!treatAsDownloadable(messageItem.getText())) {
             return;
         }
@@ -94,11 +94,16 @@ public class FileManager {
         }
 
         if (!file.exists()) {
-            if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
-                FileManager.getInstance().downloadFile(messageItem, null);
-            } else {
-                getFileUrlSize(messageItem);
-            }
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
+                        FileManager.getInstance().downloadFile(messageItem, null);
+                    } else {
+                        getFileUrlSize(messageItem);
+                    }
+                }
+            });
         }
     }
 
