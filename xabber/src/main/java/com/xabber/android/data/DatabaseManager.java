@@ -42,7 +42,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
-    private static final int DATABASE_VERSION = 69;
+    private static final int DATABASE_VERSION = 70;
     private static final int REALM_DATABASE_VERSION = 1;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(

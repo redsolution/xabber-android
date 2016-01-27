@@ -104,13 +104,18 @@ class MessageTable extends AbstractEntityTable {
          */
         public static final String UNIQUE_STANZA_ID = "unique_stanza_id";
 
+        /**
+         * If message was received from server message archive (XEP-0313)
+         */
+        public static final String IS_RECEIVED_FROM_MESSAGE_ARCHIVE = "is_received_from_message_archive";
     }
 
     private static final String NAME = "messages";
     private static final String[] PROJECTION = new String[]{Fields._ID,
             Fields.ACCOUNT, Fields.USER, Fields.RESOURCE, Fields.TEXT,
             Fields.ACTION, Fields.TIMESTAMP, Fields.DELAY_TIMESTAMP,
-            Fields.INCOMING, Fields.READ, Fields.SENT, Fields.ERROR, Fields.TAG, Fields.STANZA_ID, Fields.UNIQUE_STANZA_ID};
+            Fields.INCOMING, Fields.READ, Fields.SENT, Fields.ERROR, Fields.TAG, Fields.STANZA_ID,
+            Fields.UNIQUE_STANZA_ID, Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE};
 
     private final DatabaseManager databaseManager;
     private SQLiteStatement insertNewMessageStatement;
@@ -143,7 +148,8 @@ class MessageTable extends AbstractEntityTable {
                 + Fields.TIMESTAMP + " INTEGER," + Fields.DELAY_TIMESTAMP
                 + " INTEGER," + Fields.INCOMING + " BOOLEAN," + Fields.READ
                 + " BOOLEAN," + Fields.SENT + " BOOLEAN," + Fields.ERROR
-                + " BOOLEAN," + Fields.TAG + " TEXT, " + Fields.STANZA_ID + " TEXT, " + Fields.UNIQUE_STANZA_ID + " TEXT" +  ");";
+                + " BOOLEAN," + Fields.TAG + " TEXT, " + Fields.STANZA_ID + " TEXT, "
+                + Fields.UNIQUE_STANZA_ID + " TEXT," + Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE + " BOOLEAN" + ");";
         DatabaseManager.execSQL(db, sql);
         sql = "CREATE INDEX " + NAME + "_list ON " + NAME + " ("
                 + Fields.ACCOUNT + ", " + Fields.USER + ", " + Fields.TIMESTAMP
@@ -273,6 +279,10 @@ class MessageTable extends AbstractEntityTable {
                 sql = "ALTER TABLE " + NAME + " ADD COLUMN " + Fields.UNIQUE_STANZA_ID + " TEXT;";
                 DatabaseManager.execSQL(db, sql);
                 break;
+            case 70:
+                sql = "ALTER TABLE " + NAME + " ADD COLUMN " + Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE + " BOOLEAN;";
+                DatabaseManager.execSQL(db, sql);
+                break;
             default:
                 break;
         }
@@ -296,8 +306,9 @@ class MessageTable extends AbstractEntityTable {
                         + Fields.DELAY_TIMESTAMP + ", " + Fields.INCOMING
                         + ", " + Fields.READ + ", " + Fields.SENT + ", "
                         + Fields.ERROR + ", " + Fields.TAG +  ", "
-                        + Fields.STANZA_ID + ", " + Fields.UNIQUE_STANZA_ID + ") VALUES "
-                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+                        + Fields.STANZA_ID + ", " + Fields.UNIQUE_STANZA_ID + ", "
+                        + Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE + ") VALUES "
+                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
             }
             insertNewMessageStatement.bindString(1, messageItem.getChat().getAccount());
             insertNewMessageStatement.bindString(2, Jid.getBareAddress(messageItem.getChat().getUser()));
@@ -332,6 +343,8 @@ class MessageTable extends AbstractEntityTable {
                 insertNewMessageStatement.bindString(14, messageItem.getUniqueStanzaId());
             }
 
+            insertNewMessageStatement.bindLong(15, messageItem.isReceivedFromMessageArchive() ? 1 : 0);
+
             return insertNewMessageStatement.executeInsert();
         }
 
@@ -349,6 +362,7 @@ class MessageTable extends AbstractEntityTable {
         messageItem.setId(getId(cursor));
         messageItem.setStanzaId(getStanzaId(cursor));
         messageItem.setUniqueStanzaId(getUniqueStanzaId(cursor));
+        messageItem.setReceivedFromMessageArchive(getReceivedFromMessageArchive(cursor));
         return messageItem;
     }
 
@@ -513,5 +527,9 @@ class MessageTable extends AbstractEntityTable {
         } else {
             return cursor.getString(cursor.getColumnIndex(Fields.UNIQUE_STANZA_ID));
         }
+    }
+
+    static boolean getReceivedFromMessageArchive(Cursor cursor) {
+        return cursor.getInt(cursor.getColumnIndex(Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE)) != 0;
     }
 }
