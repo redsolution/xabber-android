@@ -259,34 +259,6 @@ public abstract class AbstractChat extends BaseEntity {
         });
     }
 
-    /**
-     * Updates chat with messages received from server side message archive.
-     * Replaces local copies with the same tag and offline messages.
-     *
-     * @param tag
-     * @param items
-     * @param replication Whether all message without tag (not received from server
-     *                    side) should be removed.
-     * @return Number of new messages.
-     */
-    public int onMessageDownloaded(String tag, Collection<MessageItem> items,
-                                   boolean replication) {
-        int previous = messages.size();
-        Iterator<MessageItem> iterator = messages.iterator();
-        while (iterator.hasNext()) {
-            MessageItem messageItem = iterator.next();
-            if (messageItem.getAction() == null
-                    && !messageItem.isError()
-                    && messageItem.isSent()
-                    && ((replication && messageItem.getTag() == null)
-                    || messageItem.isOffline() || tag
-                    .equals(messageItem.getTag())))
-                iterator.remove();
-        }
-        addMessages(items);
-        return Math.max(0, messages.size() - previous);
-    }
-
     public void onMessageDownloaded(Collection<MessageItem> items) {
 
         if (items == null) {
@@ -735,26 +707,6 @@ public abstract class AbstractChat extends BaseEntity {
             return;
         }
         this.threadId = threadId;
-    }
-
-    /**
-     * Returns number of messages to be loaded from server side archive to be
-     * displayed. Should be called before notification messages will be removed.
-     *
-     * @return
-     */
-    public int getRequiredMessageCount() {
-        int count = PRELOADED_MESSAGES
-                + NotificationManager.getInstance().getNotificationMessageCount(account, user);
-        for (MessageItem message : messages) {
-            if (message.isIncoming()) {
-                count -= 1;
-                if (count <= 0) {
-                    return 0;
-                }
-            }
-        }
-        return count;
     }
 
     /**
