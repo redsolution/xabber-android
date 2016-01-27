@@ -493,18 +493,21 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
+    @SuppressWarnings("unused")
     public void onEventMainThread(LastHistoryLoadStartedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.VISIBLE);
         }
     }
 
+    @SuppressWarnings("unused")
     public void onEventMainThread(LastHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.GONE);
         }
     }
 
+    @SuppressWarnings("unused")
     public void onEventMainThread(PreviousHistoryLoadStartedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadStartedEvent");
@@ -513,6 +516,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
+    @SuppressWarnings("unused")
     public void onEventMainThread(PreviousHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
