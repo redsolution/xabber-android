@@ -310,6 +310,9 @@ public abstract class AbstractChat extends BaseEntity {
             LogManager.i(this, "Was " + items.size() + " new messages, " + newMessages.size() + " left");
 
             addMessageItems(newMessages);
+            for (MessageItem messageItem : newMessages) {
+                requestToWriteMessage(messageItem);
+            }
         }
     }
 
@@ -524,6 +527,7 @@ public abstract class AbstractChat extends BaseEntity {
      */
     private void sort() {
         Collections.sort(messages);
+        updateSyncInfo();
         for (int index = messages.size() - 1; index >= 0; index--) {
             MessageItem messageItem = messages.get(index);
             if (messageItem.getAction() == null) {
@@ -533,11 +537,12 @@ public abstract class AbstractChat extends BaseEntity {
                 return;
             }
         }
-
-        updateSyncInfo();
     }
 
     private void updateSyncInfo() {
+        LogManager.i(this, "updateSyncInfo messages size " + messages.size());
+        LogManager.i(this, "getFirstMamMessageMamId " + syncInfo.getFirstMamMessageMamId() + " getLastMessageMamId " + syncInfo.getLastMessageMamId() + " getLastSyncedTime " + syncInfo.getLastSyncedTime());
+
         Integer firstLocalMessagePosition = null;
         Integer firstMamMessagePosition = null;
         Date firstLocalMessageTimestamp = null;
@@ -547,15 +552,18 @@ public abstract class AbstractChat extends BaseEntity {
             MessageItem messageItem = messages.get(i);
             String stanzaId = messageItem.getStanzaId();
 
-            if (!messageItem.isReceivedFromMessageArchive()) {
+            if (firstLocalMessagePosition == null && messageItem.getId() != null) {
                 firstLocalMessagePosition = i;
                 firstLocalMessageTimestamp = messageItem.getTimestamp();
+                LogManager.i(this, "firstLocalMessagePosition " + firstLocalMessagePosition + " firstLocalMessageTimestamp " + firstLocalMessageTimestamp);
             }
 
 
-            if (firstMamMessageStanzaId != null && stanzaId != null
+            if (firstMamMessagePosition == null && firstMamMessageStanzaId != null && stanzaId != null
                     && firstMamMessageStanzaId.equals(stanzaId)) {
                 firstMamMessagePosition = i;
+
+                LogManager.i(this, "firstMamMessagePosition " + i);
             }
 
 
