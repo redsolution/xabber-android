@@ -15,7 +15,6 @@
 package com.xabber.android.data.message;
 
 import android.database.Cursor;
-import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -186,22 +185,13 @@ public abstract class AbstractChat extends BaseEntity {
             @Override
             public void run() {
 
-                Date firstTimeStamp = null;
-                for (MessageItem messageItem : messages) {
-
-                    if (!messageItem.isReceivedFromMessageArchive()) {
-                        firstTimeStamp = messageItem.getTimestamp();
-                        break;
-                    }
-
-                }
-
-                if (firstTimeStamp == null) {
+                if (syncInfo.getFirstLocalMessageTimeStamp() == null) {
                     return;
                 }
 
                 final ArrayList<MessageItem> messageItems = new ArrayList<>();
-                Cursor cursor = MessageTable.getInstance().getLastMessagesBefore(account, user, firstTimeStamp.getTime(), PRELOADED_MESSAGES);
+                Cursor cursor = MessageTable.getInstance().getLastMessagesBefore(account, user,
+                        syncInfo.getFirstLocalMessageTimeStamp().getTime(), PRELOADED_MESSAGES);
                 while (cursor.moveToNext()) {
                     MessageItem messageItem = MessageTable.createMessageItem(cursor, AbstractChat.this);
                     messageItems.add(messageItem);
@@ -286,39 +276,41 @@ public abstract class AbstractChat extends BaseEntity {
 
         Collection<MessageItem> newMessages = new ArrayList<>(items);
 
-        for (MessageItem oldMessage : messages) {
-            Iterator<MessageItem> newMessageIterator = newMessages.iterator();
+        synchronized (messages) {
 
-            while (newMessageIterator.hasNext()) {
+            for (MessageItem oldMessage : messages) {
+                Iterator<MessageItem> newMessageIterator = newMessages.iterator();
 
-                MessageItem newMessage = newMessageIterator.next();
+                while (newMessageIterator.hasNext()) {
 
-                if (oldMessage.getStanzaId() != null && newMessage.getStanzaId() != null
-                        && oldMessage.getStanzaId().equals(newMessage.getStanzaId())) {
-                    LogManager.i(this, "found messages with same Stanza ID. removing. Text " + oldMessage.getText() + " stanza id " + oldMessage.getStanzaId());
+                    MessageItem newMessage = newMessageIterator.next();
 
-                    newMessageIterator.remove();
-                    break;
-                }
+                    if (oldMessage.getStanzaId() != null && newMessage.getStanzaId() != null
+                            && oldMessage.getStanzaId().equals(newMessage.getStanzaId())) {
+                        LogManager.i(this, "found messages with same Stanza ID. removing. Text " + oldMessage.getText() + " stanza id " + oldMessage.getStanzaId());
 
-                if (Math.abs(oldMessage.getTimestamp().getTime() - newMessage.getTimestamp().getTime()) < 1000 * 60
-                    && oldMessage.getText().equals(newMessage.getText())) {
+                        newMessageIterator.remove();
+                        break;
+                    }
 
-                    LogManager.i(this, "found messages with same text and similar time. removing. Text " + oldMessage.getText() + ", time old " + oldMessage.getTimestamp() + " new " + newMessage.getTimestamp());
+                    if (Math.abs(oldMessage.getTimestamp().getTime() - newMessage.getTimestamp().getTime()) < 1000 * 60
+                            && oldMessage.getText().equals(newMessage.getText())) {
 
-                    oldMessage.setStanzaId(newMessage.getStanzaId());
-                    writeStanzaIdToDataBase(oldMessage);
+                        LogManager.i(this, "found messages with same text and similar time. removing. Text " + oldMessage.getText() + ", time old " + oldMessage.getTimestamp() + " new " + newMessage.getTimestamp());
 
-                    newMessageIterator.remove();
-                    break;
+                        oldMessage.setStanzaId(newMessage.getStanzaId());
+                        writeStanzaIdToDataBase(oldMessage);
+
+                        newMessageIterator.remove();
+                        break;
+                    }
                 }
             }
+
+            LogManager.i(this, "Was " + items.size() + " new messages, " + newMessages.size() + " left");
+
+            addMessageItems(newMessages);
         }
-
-
-        LogManager.i(this, "Was " + items.size() + " new messages, " + newMessages.size() + " left");
-
-        addMessageItems(newMessages);
     }
 
     public boolean isActive() {
@@ -541,10 +533,53 @@ public abstract class AbstractChat extends BaseEntity {
                 return;
             }
         }
+
+        updateSyncInfo();
+    }
+
+    private void updateSyncInfo() {
+        Integer firstLocalMessagePosition = null;
+        Integer firstMamMessagePosition = null;
+        Date firstLocalMessageTimestamp = null;
+        String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
+
+        for (int i = 0; i < messages.size(); i++) {
+            MessageItem messageItem = messages.get(i);
+            String stanzaId = messageItem.getStanzaId();
+
+            if (!messageItem.isReceivedFromMessageArchive()) {
+                firstLocalMessagePosition = i;
+                firstLocalMessageTimestamp = messageItem.getTimestamp();
+            }
+
+
+            if (firstMamMessageStanzaId != null && stanzaId != null
+                    && firstMamMessageStanzaId.equals(stanzaId)) {
+                firstMamMessagePosition = i;
+            }
+
+
+            if (firstLocalMessagePosition != null) {
+                if (firstMamMessagePosition != null) {
+                    break;
+                }
+                if (firstMamMessageStanzaId == null) {
+                    break;
+                }
+            }
+
+        }
+
+        syncInfo.setFirstLocalMessagePosition(firstLocalMessagePosition);
+        syncInfo.setFirstLocalMessageTimeStamp(firstLocalMessageTimestamp);
+        syncInfo.setFirstMamMessagePosition(firstMamMessagePosition);
     }
 
     void removeMessage(MessageItem messageItem) {
-        messages.remove(messageItem);
+        synchronized (messages) {
+            messages.remove(messageItem);
+            updateSyncInfo();
+        }
         sendQuery.remove(messageItem);
         final ArrayList<MessageItem> messageItems = new ArrayList<>();
         messageItems.add(messageItem);
@@ -557,9 +592,13 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     void removeAllMessages() {
-        final ArrayList<MessageItem> messageItems = new ArrayList<>(messages);
+        final ArrayList<MessageItem> messageItems;
+        synchronized (messages) {
+            messageItems = new ArrayList<>(messages);
+            messages.clear();
+            updateSyncInfo();
+        }
         lastText = "";
-        messages.clear();
         sendQuery.clear();
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -674,7 +713,9 @@ public abstract class AbstractChat extends BaseEntity {
             }
             if (messageItem != intent) {
                 messageItem.setSentTimeStamp(new Date());
-                Collections.sort(messages);
+                synchronized (messages) {
+                    sort();
+                }
             }
             messageItem.markAsSent();
             if (AccountManager.getInstance().getArchiveMode(messageItem.getChat().getAccount()).saveLocally()) {
@@ -774,31 +815,5 @@ public abstract class AbstractChat extends BaseEntity {
 
     public SyncInfo getSyncInfo() {
         return syncInfo;
-    }
-
-    @Nullable
-    public Integer getFirstRemotelySyncedMessagePosition() {
-        if (syncInfo.getFirstMessageStanzaId() == null) {
-            return null;
-        }
-        for (int i = 0; i < messages.size(); i++) {
-            MessageItem messageItem = messages.get(i);
-            if (messageItem.getStanzaId() != null
-                    && messageItem.getStanzaId().equals(syncInfo.getFirstMessageStanzaId())) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    public Integer getFirstLocalMessagePosition() {
-        for (int i = 0; i < messages.size(); i++) {
-            if (!messages.get(i).isReceivedFromMessageArchive()) {
-                return i;
-            }
-        }
-
-        return null;
     }
 }

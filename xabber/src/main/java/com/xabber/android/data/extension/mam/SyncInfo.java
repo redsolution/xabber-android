@@ -5,8 +5,12 @@ import java.util.Date;
 public class SyncInfo {
     private Date lastSyncedTime;
 
-    private String firstMessageMamId;
-    private String firstMessageStanzaId;
+    private String firstMamMessageMamId;
+    private String firstMamMessageStanzaId;
+
+    private Integer firstLocalMessagePosition;
+    private Date firstLocalMessageTimeStamp;
+    private Integer firstMamMessagePosition;
 
     private String lastMessageMamId;
     private boolean isRemoteHistoryCompletelyLoaded = false;
@@ -19,12 +23,36 @@ public class SyncInfo {
         this.lastSyncedTime = lastSyncedTime;
     }
 
-    public String getFirstMessageMamId() {
-        return firstMessageMamId;
+    public String getFirstMamMessageMamId() {
+        return firstMamMessageMamId;
     }
 
-    public void setFirstMessageMamId(String firstMessageMamId) {
-        this.firstMessageMamId = firstMessageMamId;
+    public void setFirstMamMessageMamId(String firstMamMessageMamId) {
+        this.firstMamMessageMamId = firstMamMessageMamId;
+    }
+
+    public Integer getFirstLocalMessagePosition() {
+        return firstLocalMessagePosition;
+    }
+
+    public void setFirstLocalMessagePosition(Integer firstLocalMessagePosition) {
+        this.firstLocalMessagePosition = firstLocalMessagePosition;
+    }
+
+    public Date getFirstLocalMessageTimeStamp() {
+        return firstLocalMessageTimeStamp;
+    }
+
+    public void setFirstLocalMessageTimeStamp(Date firstLocalMessageTimeStamp) {
+        this.firstLocalMessageTimeStamp = firstLocalMessageTimeStamp;
+    }
+
+    public Integer getFirstMamMessagePosition() {
+        return firstMamMessagePosition;
+    }
+
+    public void setFirstMamMessagePosition(Integer firstMamMessagePosition) {
+        this.firstMamMessagePosition = firstMamMessagePosition;
     }
 
     public String getLastMessageMamId() {
@@ -43,11 +71,11 @@ public class SyncInfo {
         isRemoteHistoryCompletelyLoaded = remoteHistoryCompletelyLoaded;
     }
 
-    public String getFirstMessageStanzaId() {
-        return firstMessageStanzaId;
+    public String getFirstMamMessageStanzaId() {
+        return firstMamMessageStanzaId;
     }
 
-    public void setFirstMessageStanzaId(String firstMessageStanzaId) {
-        this.firstMessageStanzaId = firstMessageStanzaId;
+    public void setFirstMamMessageStanzaId(String firstMamMessageStanzaId) {
+        this.firstMamMessageStanzaId = firstMamMessageStanzaId;
     }
 }
