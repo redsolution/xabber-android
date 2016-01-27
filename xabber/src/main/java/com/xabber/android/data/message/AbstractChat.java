@@ -167,7 +167,7 @@ public abstract class AbstractChat extends BaseEntity {
                 for (MessageItem messageItem : messageItems) {
                     updateSendQuery(messageItem);
                 }
-                addMessages(messageItems);
+                addMessageItems(messageItems);
             }
         });
     }
@@ -220,7 +220,7 @@ public abstract class AbstractChat extends BaseEntity {
                         for (MessageItem messageItem : messageItems) {
                             updateSendQuery(messageItem);
                         }
-                        addMessages(messageItems);
+                        addMessageItems(messageItems);
                     }
                 });
             }
@@ -236,7 +236,7 @@ public abstract class AbstractChat extends BaseEntity {
      *
      * @param messageItems
      */
-    private void addMessages(final Collection<MessageItem> messageItems) {
+    private void addMessageItems(final Collection<MessageItem> messageItems) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -246,6 +246,25 @@ public abstract class AbstractChat extends BaseEntity {
 
                 synchronized (messages) {
                     messages.addAll(messageItems);
+                    sort();
+                }
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MessageManager.getInstance().onChatChanged(account, user, false);
+                    }
+                });
+            }
+        });
+    }
+
+    private void addMessageItem(final MessageItem messageItem, boolean incoming) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (messages) {
+                    messages.add(messageItem);
                     sort();
                 }
 
@@ -299,7 +318,7 @@ public abstract class AbstractChat extends BaseEntity {
 
         LogManager.i(this, "Was " + items.size() + " new messages, " + newMessages.size() + " left");
 
-        addMessages(newMessages);
+        addMessageItems(newMessages);
     }
 
     public boolean isActive() {
@@ -455,9 +474,9 @@ public abstract class AbstractChat extends BaseEntity {
 
         FileManager.processFileMessage(messageItem, true);
 
-        messages.add(messageItem);
         updateSendQuery(messageItem);
-        sort();
+        addMessageItem(messageItem, incoming);
+
         if (save && !isPrivateMucChat) {
             requestToWriteMessage(messageItem);
         }
@@ -472,7 +491,7 @@ public abstract class AbstractChat extends BaseEntity {
             }
         }
 
-        MessageManager.getInstance().onChatChanged(account, user, incoming);
+
         return messageItem;
     }
 
@@ -488,10 +507,7 @@ public abstract class AbstractChat extends BaseEntity {
         }
         messageItem.setFile(file);
 
-        messages.add(messageItem);
-        sort();
-
-        MessageManager.getInstance().onChatChanged(account, user, false);
+        addMessageItem(messageItem, false);
         return messageItem;
     }
 
