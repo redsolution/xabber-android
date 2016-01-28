@@ -16,13 +16,6 @@
         <className>com.xabber.xmpp.ssn.FeatureProvider</className>
     </extensionProvider>
 
-    <!-- Attention -->
-    <extensionProvider>
-        <elementName>attention</elementName>
-        <namespace>urn:xmpp:attention:0</namespace>
-        <className>com.xabber.xmpp.attention.AttentionProvider</className>
-    </extensionProvider>
-
 	<!-- Message Carbons -->
     <extensionProvider>
         <elementName>sent</elementName>
