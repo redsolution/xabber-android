@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -130,8 +131,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private boolean isLocalHistoryLoadRequested = false;
     private boolean isRemotePreviousHistoryRequested = false;
 
-    private AbstractChat chat;
-
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
 
@@ -162,7 +161,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         account = args.getString(ARGUMENT_ACCOUNT, null);
         user = args.getString(ARGUMENT_USER, null);
 
-        chat = MessageManager.getInstance().getChat(account, user);
     }
 
     @Override
@@ -447,7 +445,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             requestLocalHistoryLoad();
             requestRemoteHistoryLoad();
         } else {
-            if (!chat.getSyncInfo().isRemoteHistoryCompletelyLoaded()) {
+            AbstractChat chat = getChat();
+            if (chat != null && !chat.getSyncInfo().isRemoteHistoryCompletelyLoaded()) {
                 Integer firstLocalMessagePosition = chat.getSyncInfo().getFirstLocalMessagePosition();
                 Integer firstRemotelySyncedMessagePosition = chat.getSyncInfo().getFirstMamMessagePosition();
 
@@ -481,7 +480,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private void requestRemoteHistoryLoad() {
         if (!isRemotePreviousHistoryRequested) {
             LogManager.i("CHAT", "remote history requested");
-            MamManager.getInstance().requestPreviousHistory(chat);
+            AbstractChat chat = getChat();
+            if (chat != null) {
+                MamManager.getInstance().requestPreviousHistory(chat);
+            }
+
         }
     }
 
@@ -489,8 +492,17 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (!isLocalHistoryLoadRequested) {
             isLocalHistoryLoadRequested = true;
             LogManager.i("CHAT", "local history requested");
-            chat.loadNext();
+            AbstractChat chat = getChat();
+            if (chat != null) {
+                chat.loadNext();
+            }
         }
+    }
+
+
+    @Nullable
+    private AbstractChat getChat() {
+        return MessageManager.getInstance().getChat(account, user);
     }
 
     @SuppressWarnings("unused")
