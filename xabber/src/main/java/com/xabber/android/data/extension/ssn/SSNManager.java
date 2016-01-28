@@ -25,7 +25,6 @@ import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.xmpp.archive.OtrMode;
-import com.xabber.xmpp.form.DataFormType;
 import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
 import com.xabber.xmpp.ssn.LoggingValue;
@@ -97,13 +96,13 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
                 Feature feature = (Feature) packetExtension;
                 if (!feature.isValid())
                     continue;
-                DataFormType type = feature.getDataFormType();
-                if (type == DataFormType.form)
+                DataForm.Type dataFormType = feature.getDataFormType();
+                if (dataFormType == DataForm.Type.form)
                     onFormReceived(account, from, bareAddress, session, feature);
-                else if (type == DataFormType.submit)
+                else if (dataFormType == DataForm.Type.submit)
                     onSubmitReceived(account, from, bareAddress, session,
                             feature);
-                else if (type == DataFormType.result)
+                else if (dataFormType == DataForm.Type.result)
                     onResultReceived(account, from, bareAddress, session,
                             feature);
             }
@@ -145,7 +144,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         }
 
         if (cancel) {
-            DataForm dataForm = Feature.createDataForm(DataFormType.submit);
+            DataForm dataForm = Feature.createDataForm(DataForm.Type.submit);
             if (feature.getAcceptValue() != null) {
                 Feature.addAcceptField(dataForm, false);
                 sessionStates.remove(account, session);
@@ -156,7 +155,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
             return;
         }
 
-        DataForm dataForm = Feature.createDataForm(DataFormType.submit);
+        DataForm dataForm = Feature.createDataForm(DataForm.Type.submit);
         if (feature.getAcceptValue() != null)
             Feature.addAcceptField(dataForm, true);
         else
@@ -183,7 +182,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         OtrMode otrMode = getOtrMode(account, bareAddress, session);
         LoggingValue loggingValue = feature.getLoggingValue();
         if (loggingValue == null || otrMode.acceptLoggingValue(loggingValue)) {
-            DataForm dataForm = Feature.createDataForm(DataFormType.result);
+            DataForm dataForm = Feature.createDataForm(DataForm.Type.result);
             if (feature.getAcceptValue() != null)
                 Feature.addAcceptField(dataForm, true);
             else
@@ -191,7 +190,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
             sendFeature(account, from, session, new Feature(dataForm));
             sessionStates.put(account, session, SessionState.active);
         } else {
-            DataForm dataForm = Feature.createDataForm(DataFormType.result);
+            DataForm dataForm = Feature.createDataForm(DataForm.Type.result);
             if (feature.getAcceptValue() != null) {
                 Feature.addAcceptField(dataForm, false);
                 sessionStates.remove(account, session);
@@ -205,7 +204,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         if (sessionStates.get(account, session) == null)
             return;
         sessionStates.remove(account, session);
-        DataForm dataForm = Feature.createDataForm(DataFormType.result);
+        DataForm dataForm = Feature.createDataForm(DataForm.Type.result);
         Feature.addTerminateField(dataForm);
         sendFeature(account, from, session, new Feature(dataForm));
     }
@@ -256,7 +255,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
             return;
         sessionOtrs.put(account, session, otrMode);
         SessionState state = sessionStates.get(account, session);
-        DataForm dataForm = Feature.createDataForm(DataFormType.form);
+        DataForm dataForm = Feature.createDataForm(DataForm.Type.form);
         Feature.addLoggingField(dataForm, otrMode.getLoggingValues(),
                 otrMode.getLoggingValues()[0]);
         Feature.addDisclosureField(dataForm, DisclosureValue.values(),
