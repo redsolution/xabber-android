@@ -44,7 +44,6 @@
         <item>com.xabber.android.data.message.ReceiptManager</item>
         <item>com.xabber.android.data.extension.ssn.SSNManager</item>
         <item>com.xabber.android.data.extension.capability.ServerInfoManager</item>
-        <item>com.xabber.android.data.extension.time.TimeManager</item>
         <item>com.xabber.android.data.extension.attention.AttentionManager</item>
         <item>com.xabber.xmpp.carbon.CarbonManager</item>
         <item>com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager</item>
