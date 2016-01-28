@@ -1,9 +1,9 @@
 package com.xabber.xmpp.httpfileupload;
 
-import com.xabber.xmpp.AbstractIQProvider;
 import com.xabber.xmpp.ProviderUtils;
 
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -12,28 +12,29 @@ import java.io.IOException;
 /**
  * http://xmpp.org/extensions/xep-0363.html
  */
-public class SlotProvider  extends AbstractIQProvider<Slot> {
+public class SlotProvider  extends IQProvider<Slot> {
     public SlotProvider() {
     }
 
     @Override
-    protected Slot createInstance(XmlPullParser parser) {
-        return new Slot();
-    }
+    public Slot parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
+        Slot slot = new Slot();
 
-    @Override
-    protected boolean parseInner(XmlPullParser parser, Slot instance) throws XmlPullParserException, IOException, SmackException {
-        if (super.parseInner(parser, instance)) {
-            return true;
+        boolean done = false;
+        while (!done) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG) {
+                if (parser.getName().equals(Slot.GET)) {
+                    slot.setGetUrl(ProviderUtils.parseText(parser));
+                }
+                if (parser.getName().equals(Slot.PUT)) {
+                    slot.setPutUrl(ProviderUtils.parseText(parser));
+                }
+            } else if (eventType == XmlPullParser.END_TAG && parser.getName().equals(Slot.ELEMENT_NAME)) {
+                done = true;
+            }
         }
 
-        if (parser.getName().equalsIgnoreCase(Slot.GET)) {
-            instance.setGetUrl(ProviderUtils.parseText(parser));
-        }
-        if (parser.getName().equalsIgnoreCase(Slot.PUT)) {
-            instance.setPutUrl(ProviderUtils.parseText(parser));
-        }
-
-        return true;
+        return slot;
     }
 }
