@@ -20,6 +20,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.xabber.android.data.entity.AbstractAccountTable;
+import com.xabber.android.data.extension.mam.SyncInfo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,8 +28,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import io.realm.DynamicRealm;
+import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmMigration;
+import io.realm.RealmSchema;
 
 /**
  * Helps to open, create, and upgrade the database file.
@@ -43,7 +48,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 70;
-    private static final int REALM_DATABASE_VERSION = 1;
+    private static final int REALM_DATABASE_VERSION = 2;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -67,6 +72,24 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         RealmConfiguration config = new RealmConfiguration.Builder(Application.getInstance())
                 .name(REALM_DATABASE_NAME)
                 .schemaVersion(REALM_DATABASE_VERSION)
+                .migration(new RealmMigration() {
+                    @Override
+                    public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
+                        RealmSchema schema = realm.getSchema();
+
+                        if (oldVersion == 1) {
+                            schema.create(SyncInfo.class.getSimpleName())
+                                    .addField(SyncInfo.FIELD_ACCOUNT, String.class, FieldAttribute.INDEXED)
+                                    .addField(SyncInfo.FIELD_USER, String.class, FieldAttribute.INDEXED)
+                                    .addField(SyncInfo.FIELD_FIRST_MAM_MESSAGE_MAM_ID, String.class)
+                                    .addField(SyncInfo.FIELD_FIRST_MAM_MESSAGE_STANZA_ID, String.class)
+                                    .addField(SyncInfo.FIELD_LAST_MESSAGE_MAM_ID, String.class)
+                                    .addField(SyncInfo.FIELD_REMOTE_HISTORY_COMPLETELY_LOADED, boolean.class);
+
+                            oldVersion++;
+                        }
+                    }
+                })
                 .build();
         Realm.setDefaultConfiguration(config);
     }

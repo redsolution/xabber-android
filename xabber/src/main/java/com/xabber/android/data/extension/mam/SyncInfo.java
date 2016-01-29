@@ -1,26 +1,42 @@
 package com.xabber.android.data.extension.mam;
 
-import java.util.Date;
+import io.realm.RealmObject;
+import io.realm.annotations.Index;
 
-public class SyncInfo {
-    private Date lastSyncedTime;
+public class SyncInfo extends RealmObject {
+
+    public static final String FIELD_ACCOUNT = "account";
+    public static final String FIELD_USER = "user";
+    public static final String FIELD_FIRST_MAM_MESSAGE_MAM_ID = "firstMamMessageMamId";
+    public static final String FIELD_FIRST_MAM_MESSAGE_STANZA_ID = "firstMamMessageStanzaId";
+    public static final String FIELD_LAST_MESSAGE_MAM_ID = "lastMessageMamId";
+    public static final String FIELD_REMOTE_HISTORY_COMPLETELY_LOADED = "isRemoteHistoryCompletelyLoaded";
+
+    @Index
+    private String account;
+    @Index
+    private String user;
 
     private String firstMamMessageMamId;
     private String firstMamMessageStanzaId;
-
-    private Integer firstLocalMessagePosition;
-    private Date firstLocalMessageTimeStamp;
-    private Integer firstMamMessagePosition;
-
     private String lastMessageMamId;
     private boolean isRemoteHistoryCompletelyLoaded = false;
 
-    public Date getLastSyncedTime() {
-        return lastSyncedTime;
+
+    public String getAccount() {
+        return account;
     }
 
-    public void setLastSyncedTime(Date lastSyncedTime) {
-        this.lastSyncedTime = lastSyncedTime;
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getFirstMamMessageMamId() {
@@ -29,30 +45,6 @@ public class SyncInfo {
 
     public void setFirstMamMessageMamId(String firstMamMessageMamId) {
         this.firstMamMessageMamId = firstMamMessageMamId;
-    }
-
-    public Integer getFirstLocalMessagePosition() {
-        return firstLocalMessagePosition;
-    }
-
-    public void setFirstLocalMessagePosition(Integer firstLocalMessagePosition) {
-        this.firstLocalMessagePosition = firstLocalMessagePosition;
-    }
-
-    public Date getFirstLocalMessageTimeStamp() {
-        return firstLocalMessageTimeStamp;
-    }
-
-    public void setFirstLocalMessageTimeStamp(Date firstLocalMessageTimeStamp) {
-        this.firstLocalMessageTimeStamp = firstLocalMessageTimeStamp;
-    }
-
-    public Integer getFirstMamMessagePosition() {
-        return firstMamMessagePosition;
-    }
-
-    public void setFirstMamMessagePosition(Integer firstMamMessagePosition) {
-        this.firstMamMessagePosition = firstMamMessagePosition;
     }
 
     public String getLastMessageMamId() {

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.event.EventBus;
+import io.realm.Realm;
 
 public class MamManager {
     private final static MamManager instance;
@@ -47,8 +48,9 @@ public class MamManager {
         }
 
         final SyncInfo syncInfo = chat.getSyncInfo();
+        final SyncCache syncCache = chat.getSyncCache();
 
-        if (syncInfo.getLastSyncedTime() != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncInfo.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
+        if (syncCache.getLastSyncedTime() != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncCache.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
             return;
         }
 
@@ -58,6 +60,8 @@ public class MamManager {
         if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
             return;
         }
+
+        final String lastMessageMamId = syncInfo.getLastMessageMamId();
 
         final Thread thread = new Thread("Request MAM chat " + chat) {
             @Override
@@ -73,14 +77,14 @@ public class MamManager {
                     return;
                 }
 
-                org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
+                final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
 
                     EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
-                    if (syncInfo.getLastMessageMamId() == null) {
+                    if (lastMessageMamId == null) {
                         mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, "");
                     } else {
-                        mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, syncInfo.getLastMessageMamId(), null);
+                        mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, lastMessageMamId, null);
                     }
 
 
@@ -93,44 +97,75 @@ public class MamManager {
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
-                List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
-
-
-
-
-                if (messageItems != null && messageItems.size() < PAGE_SIZE) {
-                    syncInfo.setRemoteHistoryCompletelyLoaded(true);
-                }
-
-                syncInfo.setLastSyncedTime(new Date(System.currentTimeMillis()));
-                if (mamQueryResult.mamFin.getRsmSet() != null) {
-                    if (syncInfo.getFirstMamMessageMamId() == null) {
-                        syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
-                        if (messageItems != null && !messageItems.isEmpty()) {
-                            syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
-                        }
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        syncCache.setLastSyncedTime(new Date(System.currentTimeMillis()));
+                        updateSyncInfo(mamQueryResult, syncInfo);
                     }
-                    if (mamQueryResult.mamFin.getRsmSet().getLast() != null) {
-                        syncInfo.setLastMessageMamId(mamQueryResult.mamFin.getRsmSet().getLast());
-                    }
-                }
+                });
 
-
-                chat.onMessageDownloaded(messageItems);
+                chat.onMessageDownloaded(getMessageItems(mamQueryResult, chat));
             }
         };
         thread.start();
     }
 
+    private void updateSyncInfo(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, SyncInfo syncInfo) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        if (mamQueryResult.messages.size() < PAGE_SIZE) {
+            syncInfo.setRemoteHistoryCompletelyLoaded(true);
+        }
+
+
+        if (mamQueryResult.mamFin.getRsmSet() != null) {
+
+            if (syncInfo.getFirstMamMessageMamId() == null) {
+                syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
+                if (!mamQueryResult.messages.isEmpty()) {
+                    syncInfo.setFirstMamMessageStanzaId(mamQueryResult.mamFin.getRsmSet().getFirst());
+                }
+            }
+            if (mamQueryResult.mamFin.getRsmSet().getLast() != null) {
+                syncInfo.setLastMessageMamId(mamQueryResult.mamFin.getRsmSet().getLast());
+            }
+
+        }
+
+        realm.commitTransaction();
+    }
+
+    private void updateSyncInfo(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, SyncInfo syncInfo, List<MessageItem> messageItems) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        if (mamQueryResult.messages.size() < PAGE_SIZE) {
+            syncInfo.setRemoteHistoryCompletelyLoaded(true);
+        }
+
+        syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
+        if (messageItems != null && !messageItems.isEmpty()) {
+            syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
+        }
+        realm.commitTransaction();
+    }
+
+
 
     public void requestPreviousHistory(final AbstractChat chat) {
         if (chat == null) {
+            LogManager.i(this, "requestPreviousHistory chat == null");
             return;
         }
 
         final SyncInfo syncInfo = chat.getSyncInfo();
+        final String firstMamMessageMamId = syncInfo.getFirstMamMessageMamId();
 
-        if (syncInfo.getFirstMamMessageMamId() == null || syncInfo.isRemoteHistoryCompletelyLoaded()) {
+        LogManager.i(this, "requestPreviousHistory firstMamMessageMamId: " + firstMamMessageMamId
+                + " syncInfo.isRemoteHistoryCompletelyLoaded() " + syncInfo.isRemoteHistoryCompletelyLoaded());
+
+        if (firstMamMessageMamId == null || syncInfo.isRemoteHistoryCompletelyLoaded()) {
             return;
         }
 
@@ -155,11 +190,11 @@ public class MamManager {
                     return;
                 }
 
-                org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
+                final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
                     EventBus.getDefault().post(new PreviousHistoryLoadStartedEvent(chat));
                     LogManager.i("MAM", "Loading previous history");
-                    mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, syncInfo.getFirstMamMessageMamId());
+                    mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, firstMamMessageMamId);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
                     EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
@@ -170,16 +205,16 @@ public class MamManager {
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
-                List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
+                final List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
 
-                if (messageItems != null && messageItems.size() < PAGE_SIZE) {
-                    syncInfo.setRemoteHistoryCompletelyLoaded(true);
-                }
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateSyncInfo(mamQueryResult, syncInfo, messageItems);
 
-                syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
-                if (messageItems != null && !messageItems.isEmpty()) {
-                    syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
-                }
+
+                    }
+                });
 
                 chat.onMessageDownloaded(messageItems);
             }

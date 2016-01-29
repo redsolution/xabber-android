@@ -27,6 +27,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.mam.SyncCache;
 import com.xabber.android.data.extension.mam.SyncInfo;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
@@ -48,6 +49,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * Chat instance.
@@ -116,6 +119,8 @@ public abstract class AbstractChat extends BaseEntity {
      */
     private SyncInfo syncInfo;
 
+    private SyncCache syncCache;
+
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -132,7 +137,9 @@ public abstract class AbstractChat extends BaseEntity {
         isPrivateMucChatAccepted = false;
         updateCreationTime();
 
-        syncInfo = new SyncInfo();
+        syncCache = new SyncCache();
+
+        getSyncInfo(account, user);
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -140,6 +147,20 @@ public abstract class AbstractChat extends BaseEntity {
                 loadMessages();
             }
         });
+    }
+
+    private void getSyncInfo(String account, String user) {
+        Realm realm = Realm.getDefaultInstance();
+        syncInfo = realm.where(SyncInfo.class).equalTo(SyncInfo.FIELD_ACCOUNT, account).equalTo(SyncInfo.FIELD_USER, user).findFirst();
+
+        if (syncInfo == null) {
+            realm.beginTransaction();
+
+            syncInfo = realm.createObject(SyncInfo.class);
+            syncInfo.setAccount(account);
+            syncInfo.setUser(user);
+            realm.commitTransaction();
+        }
     }
 
     /**
@@ -180,18 +201,18 @@ public abstract class AbstractChat extends BaseEntity {
             return;
         }
 
+        final Date firstLocalMessageTimeStamp = syncCache.getFirstLocalMessageTimeStamp();
+        if (firstLocalMessageTimeStamp == null) {
+            return;
+        }
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
 
-                if (syncInfo.getFirstLocalMessageTimeStamp() == null) {
-                    return;
-                }
-
                 final ArrayList<MessageItem> messageItems = new ArrayList<>();
                 Cursor cursor = MessageTable.getInstance().getLastMessagesBefore(account, user,
-                        syncInfo.getFirstLocalMessageTimeStamp().getTime(), PRELOADED_MESSAGES);
+                        firstLocalMessageTimeStamp.getTime(), PRELOADED_MESSAGES);
                 while (cursor.moveToNext()) {
                     MessageItem messageItem = MessageTable.createMessageItem(cursor, AbstractChat.this);
                     messageItems.add(messageItem);
@@ -227,45 +248,24 @@ public abstract class AbstractChat extends BaseEntity {
      * @param messageItems
      */
     private void addMessageItems(final Collection<MessageItem> messageItems) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                for (MessageItem messageItem : messageItems) {
-                    FileManager.processFileMessage(messageItem, false);
-                }
+        for (MessageItem messageItem : messageItems) {
+            FileManager.processFileMessage(messageItem, false);
+        }
 
-                synchronized (messages) {
-                    messages.addAll(messageItems);
-                    sort();
-                }
+        synchronized (messages) {
+            messages.addAll(messageItems);
+            sort();
+        }
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MessageManager.getInstance().onChatChanged(account, user, false);
-                    }
-                });
-            }
-        });
+        MessageManager.getInstance().onChatChanged(account, user, false);
     }
 
     private void addMessageItem(final MessageItem messageItem, boolean incoming) {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (messages) {
-                    messages.add(messageItem);
-                    sort();
-                }
-
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MessageManager.getInstance().onChatChanged(account, user, false);
-                    }
-                });
-            }
-        });
+        synchronized (messages) {
+            messages.add(messageItem);
+            sort();
+        }
+        MessageManager.getInstance().onChatChanged(account, user, false);
     }
 
     public void onMessageDownloaded(Collection<MessageItem> items) {
@@ -274,7 +274,7 @@ public abstract class AbstractChat extends BaseEntity {
             return;
         }
 
-        Collection<MessageItem> newMessages = new ArrayList<>(items);
+        final Collection<MessageItem> newMessages = new ArrayList<>(items);
 
         synchronized (messages) {
 
@@ -309,10 +309,18 @@ public abstract class AbstractChat extends BaseEntity {
 
             LogManager.i(this, "Was " + items.size() + " new messages, " + newMessages.size() + " left");
 
-            addMessageItems(newMessages);
             for (MessageItem messageItem : newMessages) {
-                requestToWriteMessage(messageItem);
+                long id = MessageTable.getInstance().add(messageItem);
+                messageItem.setId(id);
             }
+
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addMessageItems(newMessages);
+                }
+            });
+
         }
     }
 
@@ -541,12 +549,12 @@ public abstract class AbstractChat extends BaseEntity {
 
     private void updateSyncInfo() {
         LogManager.i(this, "updateSyncInfo messages size " + messages.size());
-        LogManager.i(this, "getFirstMamMessageMamId " + syncInfo.getFirstMamMessageMamId() + " getLastMessageMamId " + syncInfo.getLastMessageMamId() + " getLastSyncedTime " + syncInfo.getLastSyncedTime());
+
+        final String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
 
         Integer firstLocalMessagePosition = null;
         Integer firstMamMessagePosition = null;
         Date firstLocalMessageTimestamp = null;
-        String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
 
         for (int i = 0; i < messages.size(); i++) {
             MessageItem messageItem = messages.get(i);
@@ -578,9 +586,10 @@ public abstract class AbstractChat extends BaseEntity {
 
         }
 
-        syncInfo.setFirstLocalMessagePosition(firstLocalMessagePosition);
-        syncInfo.setFirstLocalMessageTimeStamp(firstLocalMessageTimestamp);
-        syncInfo.setFirstMamMessagePosition(firstMamMessagePosition);
+        syncCache.setFirstLocalMessagePosition(firstLocalMessagePosition);
+        syncCache.setFirstLocalMessageTimeStamp(firstLocalMessageTimestamp);
+        syncCache.setFirstMamMessagePosition(firstMamMessagePosition);
+
     }
 
     void removeMessage(MessageItem messageItem) {
@@ -823,5 +832,9 @@ public abstract class AbstractChat extends BaseEntity {
 
     public SyncInfo getSyncInfo() {
         return syncInfo;
+    }
+
+    public SyncCache getSyncCache() {
+        return syncCache;
     }
 }

@@ -447,8 +447,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         } else {
             AbstractChat chat = getChat();
             if (chat != null && !chat.getSyncInfo().isRemoteHistoryCompletelyLoaded()) {
-                Integer firstLocalMessagePosition = chat.getSyncInfo().getFirstLocalMessagePosition();
-                Integer firstRemotelySyncedMessagePosition = chat.getSyncInfo().getFirstMamMessagePosition();
+                Integer firstLocalMessagePosition = chat.getSyncCache().getFirstLocalMessagePosition();
+                Integer firstRemotelySyncedMessagePosition = chat.getSyncCache().getFirstMamMessagePosition();
 
                 LogManager.i(this, "firstLocalMessagePosition: " + firstLocalMessagePosition + " firstRemotelySyncedMessagePosition: " + firstRemotelySyncedMessagePosition);
 
