@@ -159,11 +159,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         if (messageItem == null) {
             return;
         }
-        if (messageItem.getChat().getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
-            Uri sound = PhraseManager.getInstance().getSound(messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser(), messageItem.getText());
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser());
+        if (MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
+            Uri sound = PhraseManager.getInstance().getSound(messageItem.getAccount(),
+                    messageItem.getUser(), messageItem.getText());
+            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getAccount(),
+                    messageItem.getUser());
 
             NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
                     makeVibration, sound, AudioManager.STREAM_NOTIFICATION);
@@ -462,14 +462,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public void onMessageNotification(MessageItem messageItem) {
         MessageNotification messageNotification = getMessageNotification(
-                messageItem.getChat().getAccount(), messageItem.getChat().getUser());
+                messageItem.getAccount(), messageItem.getUser());
         if (messageNotification == null) {
             messageNotification = new MessageNotification(
-                    messageItem.getChat().getAccount(), messageItem.getChat().getUser(), null, null, 0);
+                    messageItem.getAccount(), messageItem.getUser(), null, null, 0);
         } else {
             messageNotifications.remove(messageNotification);
         }
-        messageNotification.addMessage(messageItem.getDisplayText());
+        messageNotification.addMessage(MessageItem.getDisplayText(messageItem));
         messageNotifications.add(messageNotification);
 
         final String account = messageNotification.getAccount();

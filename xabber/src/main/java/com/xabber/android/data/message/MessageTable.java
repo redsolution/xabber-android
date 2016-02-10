@@ -14,24 +14,20 @@
  */
 package com.xabber.android.data.message;
 
-import java.util.Collection;
-import java.util.Date;
-
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.entity.AbstractEntityTable;
-import com.xabber.xmpp.address.Jid;
+
+import java.util.Date;
 
 /**
  * Storage with messages.
  *
  * @author alexander.ivanov
  */
-class MessageTable extends AbstractEntityTable {
+public class MessageTable extends AbstractEntityTable {
 
     private static final class Fields implements AbstractEntityTable.Fields {
 
@@ -118,8 +114,6 @@ class MessageTable extends AbstractEntityTable {
             Fields.UNIQUE_STANZA_ID, Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE};
 
     private final DatabaseManager databaseManager;
-    private SQLiteStatement insertNewMessageStatement;
-    private final Object insertNewMessageLock;
 
     private final static MessageTable instance;
 
@@ -134,8 +128,6 @@ class MessageTable extends AbstractEntityTable {
 
     private MessageTable(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        insertNewMessageStatement = null;
-        insertNewMessageLock = new Object();
     }
 
     @Override
@@ -288,141 +280,37 @@ class MessageTable extends AbstractEntityTable {
         }
     }
 
-    long add(MessageItem messageItem) {
-        final String actionString;
-        if (messageItem.getAction() == null) {
-            actionString = "";
-        } else {
-            actionString = messageItem.getAction().name();
+    public static MessageItem createMessageItem(Cursor cursor) {
+        MessageItem messageItem = new MessageItem();
+        messageItem.setAccount(getAccount(cursor));
+        messageItem.setUser(getUser(cursor));
+        messageItem.setResource(getResource(cursor));
+        messageItem.setText(getText(cursor));
+
+        ChatAction action = getAction(cursor);
+        if (action != null) {
+            messageItem.setAction(action.name());
         }
-
-        synchronized (insertNewMessageLock) {
-            if (insertNewMessageStatement == null) {
-                SQLiteDatabase db = databaseManager.getWritableDatabase();
-                insertNewMessageStatement = db.compileStatement("INSERT INTO "
-                        + NAME + " (" + Fields.ACCOUNT + ", " + Fields.USER
-                        + ", " + Fields.RESOURCE + ", " + Fields.TEXT + ", "
-                        + Fields.ACTION + ", " + Fields.TIMESTAMP + ", "
-                        + Fields.DELAY_TIMESTAMP + ", " + Fields.INCOMING
-                        + ", " + Fields.READ + ", " + Fields.SENT + ", "
-                        + Fields.ERROR + ", " + Fields.TAG +  ", "
-                        + Fields.STANZA_ID + ", " + Fields.UNIQUE_STANZA_ID + ", "
-                        + Fields.IS_RECEIVED_FROM_MESSAGE_ARCHIVE + ") VALUES "
-                        + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-            }
-            insertNewMessageStatement.bindString(1, messageItem.getChat().getAccount());
-            insertNewMessageStatement.bindString(2, Jid.getBareAddress(messageItem.getChat().getUser()));
-            insertNewMessageStatement.bindString(3, messageItem.getResource());
-            insertNewMessageStatement.bindString(4, messageItem.getText());
-            insertNewMessageStatement.bindString(5, actionString);
-            insertNewMessageStatement.bindLong(6, messageItem.getTimestamp().getTime());
-            if (messageItem.getDelayTimestamp() == null) {
-                insertNewMessageStatement.bindNull(7);
-            } else {
-                insertNewMessageStatement.bindLong(7, messageItem.getDelayTimestamp().getTime());
-            }
-            insertNewMessageStatement.bindLong(8, messageItem.isIncoming() ? 1 : 0);
-            insertNewMessageStatement.bindLong(9, messageItem.isRead() ? 1 : 0);
-            insertNewMessageStatement.bindLong(10, messageItem.isSent() ? 1 : 0);
-            insertNewMessageStatement.bindLong(11, messageItem.isError() ? 1 : 0);
-            if (messageItem.getTag() == null) {
-                insertNewMessageStatement.bindNull(12);
-            } else {
-                insertNewMessageStatement.bindString(12, messageItem.getTag());
-            }
-
-            if (messageItem.getStanzaId() == null) {
-                insertNewMessageStatement.bindNull(13);
-            } else {
-                insertNewMessageStatement.bindString(13, messageItem.getStanzaId());
-            }
-
-            if (messageItem.getUniqueStanzaId() == null) {
-                insertNewMessageStatement.bindNull(14);
-            } else {
-                insertNewMessageStatement.bindString(14, messageItem.getUniqueStanzaId());
-            }
-
-            insertNewMessageStatement.bindLong(15, messageItem.isReceivedFromMessageArchive() ? 1 : 0);
-
-            return insertNewMessageStatement.executeInsert();
-        }
-
-    }
-
-    public static MessageItem createMessageItem(Cursor cursor, AbstractChat chat) {
-        MessageItem messageItem = new MessageItem(chat,
-                getTag(cursor), getResource(cursor),
-                getText(cursor), getAction(cursor),
-                getTimeStamp(cursor),
-                getDelayTimeStamp(cursor),
-                isIncoming(cursor), isRead(cursor),
-                isSent(cursor), hasError(cursor),
-                true, false, false);
-        messageItem.setId(getId(cursor));
+        messageItem.setTimestamp(getTimeStamp(cursor));
+        messageItem.setDelayTimestamp(getDelayTimeStamp(cursor));
+        messageItem.setIncoming(isIncoming(cursor));
+        messageItem.setRead(isRead(cursor));
+        messageItem.setSent(isSent(cursor));
+        messageItem.setError(hasError(cursor));
         messageItem.setStanzaId(getStanzaId(cursor));
-        messageItem.setUniqueStanzaId(getUniqueStanzaId(cursor));
         messageItem.setReceivedFromMessageArchive(getReceivedFromMessageArchive(cursor));
+
         return messageItem;
     }
 
-    void markAsRead(Collection<Long> ids) {
-        if (ids.isEmpty())
-            return;
-        SQLiteDatabase db = databaseManager.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Fields.READ, 1);
-        db.update(NAME, values, DatabaseManager.in(Fields._ID, ids), null);
-    }
-
-    void markAsSent(Collection<Long> ids) {
-        if (ids.isEmpty())
-            return;
-        SQLiteDatabase db = databaseManager.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Fields.SENT, 1);
-        db.update(NAME, values, DatabaseManager.in(Fields._ID, ids), null);
-    }
-
-    void markAsError(long id) {
-        SQLiteDatabase db = databaseManager.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Fields.ERROR, 1);
-        db.update(NAME, values, Fields._ID + " = ?",
-                new String[]{String.valueOf(id)});
-    }
-
-    void setStanzaId(MessageItem messageItem) {
-        SQLiteDatabase db = databaseManager.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Fields.STANZA_ID, messageItem.getStanzaId());
-        db.update(NAME, values, Fields._ID + " = ?",
-                new String[]{String.valueOf(messageItem.getId().longValue())});
-    }
-
-    Cursor getLastMessages(String account, String bareAddress, int count) {
+    public Cursor getAllMessages() {
         SQLiteDatabase db = databaseManager.getReadableDatabase();
-        return db.query(NAME, PROJECTION, Fields.ACCOUNT + " = ? AND "
-                        + Fields.USER + " = ?", new String[]{account, bareAddress},
-                null, null, Fields.TIMESTAMP + " DESC", String.valueOf(count));
+        return db.query(NAME, PROJECTION, null, null, null, null, null);
     }
 
-    Cursor getLastMessagesBefore(String account, String bareAddress, long timestamp, int count) {
-        SQLiteDatabase db = databaseManager.getReadableDatabase();
-        return db.query(NAME, PROJECTION, Fields.ACCOUNT + " = ? AND "
-                        + Fields.USER + " = ? AND " + Fields.TIMESTAMP + " < ?", new String[]{account, bareAddress, String.valueOf(timestamp)},
-                null, null, Fields.TIMESTAMP + " DESC", String.valueOf(count));
-    }
-
-
-    /**
-     * @return Messages to be sent.
-     */
-    Cursor messagesToSend() {
-        SQLiteDatabase db = databaseManager.getReadableDatabase();
-        return db.query(NAME, PROJECTION, Fields.INCOMING + " = ? AND "
-                        + Fields.SENT + " = ?", new String[]{"0", "0"}, null, null,
-                Fields.TIMESTAMP);
+    public int removeAllMessages() {
+        SQLiteDatabase db = databaseManager.getWritableDatabase();
+        return db.delete(NAME, null, null);
     }
 
     /**
@@ -448,12 +336,7 @@ class MessageTable extends AbstractEntityTable {
                 new String[]{account, "1",});
     }
 
-    void removeMessages(Collection<Long> ids) {
-        if (ids.isEmpty())
-            return;
-        SQLiteDatabase db = databaseManager.getWritableDatabase();
-        db.delete(NAME, DatabaseManager.in(Fields._ID, ids), null);
-    }
+
 
     @Override
     protected String getTableName() {
@@ -463,14 +346,6 @@ class MessageTable extends AbstractEntityTable {
     @Override
     protected String[] getProjection() {
         return PROJECTION;
-    }
-
-    static long getId(Cursor cursor) {
-        return cursor.getLong(cursor.getColumnIndex(Fields._ID));
-    }
-
-    static String getTag(Cursor cursor) {
-        return cursor.getString(cursor.getColumnIndex(Fields.TAG));
     }
 
     static String getResource(Cursor cursor) {
@@ -502,15 +377,15 @@ class MessageTable extends AbstractEntityTable {
         return cursor.getInt(cursor.getColumnIndex(Fields.ERROR)) != 0;
     }
 
-    static Date getTimeStamp(Cursor cursor) {
-        return new Date(cursor.getLong(cursor.getColumnIndex(Fields.TIMESTAMP)));
+    static Long getTimeStamp(Cursor cursor) {
+        return cursor.getLong(cursor.getColumnIndex(Fields.TIMESTAMP));
     }
 
-    static Date getDelayTimeStamp(Cursor cursor) {
-        if (cursor.isNull(cursor.getColumnIndex(Fields.DELAY_TIMESTAMP)))
+    static Long getDelayTimeStamp(Cursor cursor) {
+        if (cursor.isNull(cursor.getColumnIndex(Fields.DELAY_TIMESTAMP))) {
             return null;
-        return new Date(cursor.getLong(cursor
-                .getColumnIndex(Fields.DELAY_TIMESTAMP)));
+        }
+        return cursor.getLong(cursor.getColumnIndex(Fields.DELAY_TIMESTAMP));
     }
 
     static String getStanzaId(Cursor cursor) {
@@ -518,14 +393,6 @@ class MessageTable extends AbstractEntityTable {
             return null;
         } else {
             return cursor.getString(cursor.getColumnIndex(Fields.STANZA_ID));
-        }
-    }
-
-    static String getUniqueStanzaId(Cursor cursor) {
-        if (cursor.isNull(cursor.getColumnIndex(Fields.UNIQUE_STANZA_ID))) {
-            return null;
-        } else {
-            return cursor.getString(cursor.getColumnIndex(Fields.UNIQUE_STANZA_ID));
         }
     }
 

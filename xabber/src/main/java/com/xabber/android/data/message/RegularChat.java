@@ -101,8 +101,8 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem newMessage(String text) {
-        return newMessage(
+    protected void newMessage(String text) {
+        newMessage(
                 null,
                 text,
                 null,

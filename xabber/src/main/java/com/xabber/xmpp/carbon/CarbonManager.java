@@ -12,7 +12,6 @@ import com.xabber.android.data.extension.capability.ServerInfoManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
@@ -251,7 +250,7 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
      * @param message      the <tt>Message</tt> to be sent
      * @param messageItem
      */
-    public void updateOutgoingMessage(AbstractChat abstractChat, Message message, MessageItem messageItem) {
+    public void updateOutgoingMessage(AbstractChat abstractChat, Message message) {
 
         if (!SettingsManager.connectionUseCarbons()) {
             return;

@@ -18,56 +18,82 @@ import android.text.Spannable;
 import android.text.SpannableString;
 
 import java.io.File;
-import java.util.Date;
+import java.util.UUID;
 
-/**
- * Message item.
- *
- * @author alexander.ivanov
- */
-public class MessageItem implements Comparable<MessageItem> {
+import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
-    private final AbstractChat chat;
+public class MessageItem extends RealmObject {
+
+    public static class Fields {
+        public static final String UNIQUE_ID = "uniqueId";
+        public static final String ACCOUNT = "account";
+        public static final String USER = "user";
+        public static final String RESOURCE = "resource";
+        public static final String TEXT = "text";
+        public static final String ACTION = "action";
+        public static final String INCOMING = "incoming";
+        public static final String UNENCRYPTED = "unencrypted";
+        public static final String OFFLINE = "offline";
+        public static final String TIMESTAMP = "timestamp";
+        public static final String DELAY_TIMESTAMP = "delayTimestamp";
+        public static final String ERROR = "error";
+        public static final String DELIVERED = "delivered";
+        public static final String SENT = "sent";
+        public static final String READ = "read";
+        public static final String STANZA_ID = "stanzaId";
+        public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
+        public static final String FILE_PATH = "filePath";
+        public static final String FILE_SIZE = "fileSize";
+
+    }
+
+    /**
+     * UUID
+     */
+
+    @PrimaryKey
+    private String uniqueId;
+
+    @Index
+    private String account;
+    @Index
+    private String user;
+
     /**
      * Contact's resource.
      */
-    private final String resource;
+    private String resource;
     /**
      * Text representation.
      */
-    private final String text;
+    private String text;
     /**
      * Optional action. If set message represent not an actual message but some
      * action in the chat.
      */
-    private final ChatAction action;
-    private final boolean incoming;
-    private final boolean unencypted;
+    private String action;
+
+    private boolean incoming;
+
+    private boolean unencrypted;
     /**
      * Message was received from server side offline storage.
      */
-    private final boolean offline;
-    /**
-     * Tag used to identify collection in server side message archive. Equals to
-     * collection's start attribute.
-     */
-    private String tag;
-    /**
-     * Cached text populated with smiles and link.
-     */
-    private Spannable spannable;
+    private boolean offline;
+
     /**
      * Time when message was received or sent by Xabber.
+     * Realm truncated Date type to seconds, using long for accuracy
      */
-    private Date timestamp;
+    @Index
+    private Long timestamp;
     /**
      * Time when message was created.
+     * Realm truncated Date type to seconds, using long for accuracy
      */
-    private Date delayTimestamp;
-    /**
-     * ID in database.
-     */
-    private Long id;
+    private Long delayTimestamp;
     /**
      * Error response received on send request.
      */
@@ -90,128 +116,141 @@ public class MessageItem implements Comparable<MessageItem> {
     private String stanzaId;
 
     /**
-     * Unique and stable stanza ID (XEP-0359)
-     */
-    private String uniqueStanzaId;
-
-    /**
      * If message was received from server message archive (XEP-0313)
      */
     private boolean isReceivedFromMessageArchive;
 
-    /**
-     * Outgoing file message
-     */
-    private boolean isUploadFileMessage;
-    private File file;
+    private String filePath;
+
     private Long fileSize;
 
 
-    public MessageItem(AbstractChat chat, String tag, String resource,
-                       String text, ChatAction action, Date timestamp,
-                       Date delayTimestamp, boolean incoming, boolean read, boolean sent,
-                       boolean error, boolean delivered, boolean unencypted,
-                       boolean offline) {
-        this.chat = chat;
-        this.tag = tag;
-        this.resource = resource;
-        this.text = text;
-        this.action = action;
-        this.timestamp = timestamp;
-        this.delayTimestamp = delayTimestamp;
-        this.incoming = incoming;
-        this.read = read;
-        this.sent = sent;
-        this.error = error;
-        this.delivered = delivered;
-        this.unencypted = unencypted;
-        this.offline = offline;
-        this.id = null;
-        this.stanzaId = null;
-        this.isUploadFileMessage = false;
+    public MessageItem(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 
-    public AbstractChat getChat() {
-        return chat;
+    public MessageItem() {
+        this.uniqueId = UUID.randomUUID().toString();
     }
 
-    public String getTag() {
-        return tag;
+    public String getUniqueId() {
+        return uniqueId;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getResource() {
         return resource;
     }
 
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
     public String getText() {
         return text;
     }
 
-    public String getDisplayText() {
-        if (file != null) {
-            return file.getName();
-        } else {
-            return text;
-        }
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public Spannable getSpannable() {
-        if (spannable == null) {
-            spannable = new SpannableString(text);
-        }
-        return spannable;
-    }
-
-    public ChatAction getAction() {
+    public String getAction() {
         return action;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public Date getDelayTimestamp() {
-        return delayTimestamp;
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public boolean isIncoming() {
         return incoming;
     }
 
-    public boolean isError() {
-        return error;
+    public void setIncoming(boolean incoming) {
+        this.incoming = incoming;
     }
 
-    public boolean isDelivered() {
-        return delivered;
+    public boolean isUnencrypted() {
+        return unencrypted;
     }
 
-    public boolean isUnencypted() {
-        return unencypted;
+    public void setUnencrypted(boolean unencrypted) {
+        this.unencrypted = unencrypted;
     }
 
     public boolean isOffline() {
         return offline;
     }
 
+    public void setOffline(boolean offline) {
+        this.offline = offline;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Long getDelayTimestamp() {
+        return delayTimestamp;
+    }
+
+    public void setDelayTimestamp(Long delayTimestamp) {
+        this.delayTimestamp = delayTimestamp;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+
+    public void setError(boolean error) {
+        this.error = error;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
+    }
+
     public boolean isSent() {
         return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 
     public boolean isRead() {
         return read;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    void setId(Long id) {
-        this.id = id;
+    public void setRead(boolean read) {
+        this.read = read;
     }
 
     public String getStanzaId() {
@@ -222,14 +261,6 @@ public class MessageItem implements Comparable<MessageItem> {
         this.stanzaId = stanzaId;
     }
 
-    public String getUniqueStanzaId() {
-        return uniqueStanzaId;
-    }
-
-    public void setUniqueStanzaId(String uniqueStanzaId) {
-        this.uniqueStanzaId = uniqueStanzaId;
-    }
-
     public boolean isReceivedFromMessageArchive() {
         return isReceivedFromMessageArchive;
     }
@@ -238,53 +269,41 @@ public class MessageItem implements Comparable<MessageItem> {
         isReceivedFromMessageArchive = receivedFromMessageArchive;
     }
 
-    void markAsError() {
-        error = true;
+    public String getFilePath() {
+        return filePath;
     }
 
-    void markAsSent() {
-        sent = true;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
-    void setSentTimeStamp(Date timestamp) {
-        this.delayTimestamp = this.timestamp;
-        this.timestamp = timestamp;
-    }
-
-    void markAsRead() {
-        read = true;
-    }
-
-    public void markAsDelivered() {
-        delivered = true;
-    }
-
-    @Override
-    public int compareTo(MessageItem another) {
-        return timestamp.compareTo(another.timestamp);
-    }
-
-    public boolean isUploadFileMessage() {
-        return isUploadFileMessage;
-    }
-
-    public void setIsUploadFileMessage(boolean isFileMessage) {
-        this.isUploadFileMessage = isFileMessage;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
+    public Long getFileSize() {
+        return fileSize;
     }
 
     public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 
-    public Long getFileSize() {
-        return fileSize;
+    public static String getDisplayText(MessageItem messageItem) {
+        String filePath = messageItem.getFilePath();
+
+        if (filePath != null) {
+            return new File(filePath).getName();
+        } else {
+        return messageItem.getText();
+        }
+    }
+
+    public static ChatAction getChatAction(MessageItem messageItem) {
+        return ChatAction.valueOf(messageItem.getAction());
+    }
+
+    public static Spannable getSpannable(MessageItem messageItem) {
+        return new SpannableString(messageItem.getText());
+    }
+
+    public static boolean isUploadFileMessage(MessageItem messageItem) {
+        return messageItem.getFilePath() != null && !messageItem.isIncoming() && !messageItem.isSent();
     }
 }

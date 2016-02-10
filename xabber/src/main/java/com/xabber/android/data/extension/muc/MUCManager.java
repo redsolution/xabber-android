@@ -82,27 +82,28 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     @Override
     public void onLoad() {
-        final Collection<RoomChat> roomChats = new ArrayList<>();
-        final Collection<RoomChat> needJoins = new ArrayList<>();
-        Cursor cursor = RoomTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    RoomChat roomChat = new RoomChat(
-                            RoomTable.getAccount(cursor), RoomTable.getRoom(cursor),
-                            RoomTable.getNickname(cursor), RoomTable.getPassword(cursor));
-                    if (RoomTable.needJoin(cursor)) {
-                        needJoins.add(roomChat);
-                    }
-                    roomChats.add(roomChat);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                final Collection<RoomChat> roomChats = new ArrayList<>();
+                final Collection<RoomChat> needJoins = new ArrayList<>();
+                Cursor cursor = RoomTable.getInstance().list();
+                try {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            RoomChat roomChat = new RoomChat(
+                                    RoomTable.getAccount(cursor), RoomTable.getRoom(cursor),
+                                    RoomTable.getNickname(cursor), RoomTable.getPassword(cursor));
+                            if (RoomTable.needJoin(cursor)) {
+                                needJoins.add(roomChat);
+                            }
+                            roomChats.add(roomChat);
+                        } while (cursor.moveToNext());
+                    }
+                } finally {
+                    cursor.close();
+                }
                 onLoaded(roomChats, needJoins);
             }
         });

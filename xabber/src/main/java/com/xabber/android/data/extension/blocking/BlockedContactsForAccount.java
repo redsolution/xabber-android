@@ -4,6 +4,11 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 
 public class BlockedContactsForAccount extends RealmObject {
+
+    public static class Fields {
+        public static final String ACCOUNT = "account";
+    }
+
     private String account;
     private RealmList<BlockedContact> blockedContacts;
 

@@ -5,6 +5,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.xmpp.address.Jid;
@@ -100,12 +101,11 @@ public class MamManager {
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        chat.onMessageDownloaded(getMessageItems(mamQueryResult, chat));
                         syncCache.setLastSyncedTime(new Date(System.currentTimeMillis()));
                         updateSyncInfo(mamQueryResult, syncInfo);
                     }
                 });
-
-                chat.onMessageDownloaded(getMessageItems(mamQueryResult, chat));
             }
         };
         thread.start();
@@ -210,13 +210,11 @@ public class MamManager {
                 Application.getInstance().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        chat.onMessageDownloaded(messageItems);
                         updateSyncInfo(mamQueryResult, syncInfo, messageItems);
-
-
                     }
                 });
 
-                chat.onMessageDownloaded(messageItems);
             }
         };
         thread.start();
@@ -234,6 +232,8 @@ public class MamManager {
 
             DelayInformation delayInformation = forwarded.getDelayInformation();
 
+            DelayInformation messageDelay = DelayInformation.from(message);
+
             String body = message.getBody();
             net.java.otr4j.io.messages.AbstractMessage otrMessage;
             try {
@@ -249,12 +249,23 @@ public class MamManager {
 
             boolean incoming = Jid.getBareAddress(message.getFrom()).equalsIgnoreCase(Jid.getBareAddress(chat.getUser()));
 
-            MessageItem messageItem = new MessageItem(chat, null,
-                    Jid.getResource(chat.getUser()), body, null,
-                    delayInformation.getStamp(), null, incoming, true,
-                    true, false, true, false, false);
+            MessageItem messageItem = new MessageItem();
+
+            messageItem.setAccount(chat.getAccount());
+            messageItem.setUser(chat.getUser());
+            messageItem.setResource(Jid.getResource(chat.getUser()));
+            messageItem.setText(body);
+            messageItem.setTimestamp(delayInformation.getStamp().getTime());
+            if (messageDelay != null) {
+                messageItem.setDelayTimestamp(messageDelay.getStamp().getTime());
+            }
+            messageItem.setIncoming(incoming);
             messageItem.setStanzaId(message.getStanzaId());
             messageItem.setReceivedFromMessageArchive(true);
+            messageItem.setRead(true);
+            messageItem.setSent(true);
+
+            FileManager.processFileMessage(messageItem, false);
 
             messageItems.add(messageItem);
         }

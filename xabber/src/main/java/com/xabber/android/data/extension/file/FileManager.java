@@ -26,6 +26,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -44,6 +45,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpHeaders;
+import de.greenrobot.event.EventBus;
 
 public class FileManager {
 
@@ -76,8 +78,6 @@ public class FileManager {
             return;
         }
 
-        LogManager.i(FileManager.class, "Processing file message " + messageItem.getText());
-
         final URL url;
         try {
             url = new URL(messageItem.getText());
@@ -86,18 +86,19 @@ public class FileManager {
             return;
         }
 
-        File file = messageItem.getFile();
-
-        if (file == null) {
+        final File file;
+        if (messageItem.getFilePath() == null) {
             file = new File(getCachePath(url));
-            messageItem.setFile(file);
+            messageItem.setFilePath(file.getPath());
+        } else {
+            file = new File(messageItem.getFilePath());
         }
 
         if (!file.exists()) {
             Application.getInstance().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
+                    if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(file)) {
                         FileManager.getInstance().downloadFile(messageItem, null);
                     } else {
                         getFileUrlSize(messageItem);
@@ -122,7 +123,7 @@ public class FileManager {
                 for (Header header : headers) {
                     if (header.getName().equals(HttpHeaders.CONTENT_LENGTH)) {
                         messageItem.setFileSize(Long.parseLong(header.getValue()));
-                        MessageManager.getInstance().onChatChanged(messageItem.getChat().getAccount(), messageItem.getChat().getUser(), false);
+                        MessageManager.getInstance().onChatChanged(messageItem.getAccount(), messageItem.getUser(), false);
                         break;
                     }
                 }
@@ -139,6 +140,7 @@ public class FileManager {
     public interface ProgressListener {
         void onProgress(long bytesWritten, long totalSize);
         void onFinish(long totalSize);
+        void onError();
     }
 
 
@@ -165,13 +167,15 @@ public class FileManager {
             @Override
             public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
                 LogManager.i(FileManager.class, "on download onSuccess: " + statusCode);
-                saveFile(responseBody, messageItem.getFile(), progressListener);
+                saveFile(responseBody, new File(messageItem.getFilePath()), progressListener);
+                EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 LogManager.i(FileManager.class, "on download onFailure: " + statusCode);
-
+                progressListener.onError();
+                EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
             }
 
             @Override
@@ -253,8 +257,6 @@ public class FileManager {
     }
 
     public static void loadImageFromFile(File file, ImageView imageView) {
-        LogManager.i(FileManager.class, "Loading image from file " + file.getPath());
-
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 

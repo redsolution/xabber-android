@@ -19,6 +19,7 @@ import android.os.Environment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -37,7 +38,6 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
-import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.message.chat.MucPrivateChatNotification;
@@ -49,7 +49,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.carbon.CarbonManager.Direction;
-import com.xabber.xmpp.delay.Delay;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -68,6 +67,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Manage chats and its messages.
@@ -112,46 +114,28 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return instance;
     }
 
-    /**
-     * @param messageItems
-     * @param clearId      Whether message id must be set to the <code>null</code>.
-     * @return Collection with ids for specified messages.
-     */
-    static Collection<Long> getMessageIds(Collection<MessageItem> messageItems, boolean clearId) {
-        ArrayList<Long> ids = new ArrayList<>();
-        for (MessageItem messageItem : messageItems) {
-            Long id = messageItem.getId();
-            if (id == null) {
-                continue;
-            }
-            ids.add(id);
-            if (clearId) {
-                messageItem.setId(null);
-            }
-        }
-        return ids;
-    }
 
     @Override
     public void onLoad() {
-        final Set<BaseEntity> loadChats = new HashSet<BaseEntity>();
-        Cursor cursor;
-        cursor = MessageTable.getInstance().messagesToSend();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    loadChats.add(new BaseEntity(MessageTable.getAccount(cursor), MessageTable.getUser(cursor)));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(loadChats);
-            }
-        });
+        // TODO!
+//        final Set<BaseEntity> loadChats = new HashSet<BaseEntity>();
+//        Cursor cursor;
+//        cursor = MessageTable.getInstance().messagesToSend();
+//        try {
+//            if (cursor.moveToFirst()) {
+//                do {
+//                    loadChats.add(new BaseEntity(MessageTable.getAccount(cursor), MessageTable.getUser(cursor)));
+//                } while (cursor.moveToNext());
+//            }
+//        } finally {
+//            cursor.close();
+//        }
+//        Application.getInstance().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                onLoaded(loadChats);
+//            }
+//        });
     }
 
     private void onLoaded(Set<BaseEntity> loadChats) {
@@ -254,8 +238,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void sendMessage(String text, AbstractChat chat) {
-        MessageItem messageItem = chat.newMessage(text);
-        chat.sendQueue(messageItem);
+        chat.newMessage(text);
     }
 
     public MessageItem createFileMessage(String account, String user, File file) {
@@ -265,19 +248,23 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         chat.openChat();
-        return chat.newFileMessage(FileManager.getFileName(file.getPath()), file, false);
+        return chat.newFileMessage(file.getName(), file.getPath(), false);
     }
 
-    public void replaceMessage(String account, String user, MessageItem srcFileMessage, String text) {
+    public void replaceMessage(String account, String user, final MessageItem srcFileMessage, final String text) {
         AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
         }
 
-        chat.removeMessage(srcFileMessage);
-        MessageItem messageItem = chat.newMessage(text);
-        messageItem.setFile(srcFileMessage.getFile());
-        chat.sendQueue(messageItem);
+        chat.getRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                srcFileMessage.setText(text);
+            }
+        });
+
+        chat.sendMessages();
     }
 
     public void updateMessageWithError(String account, String user, MessageItem srcFileMessage, String text) {
@@ -287,7 +274,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
 
         chat.removeMessage(srcFileMessage);
-        chat.newFileMessage(String.format(Application.getInstance().getString(R.string.error_sending_file), text), srcFileMessage.getFile(), true);
+        chat.newFileMessage(String.format(Application.getInstance().getString(R.string.error_sending_file), text),
+                srcFileMessage.getFilePath(), true);
     }
 
     /**
@@ -407,25 +395,22 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (chat == null) {
             chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
         } else {
+            Realm realm = DatabaseManager.getInstance().getRealm();
+            realm.beginTransaction();
             // Mark messages as read and them delete from db if necessary.
-            final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
-            for (MessageItem messageItem : chat.getMessages()) {
-                if (!messageItem.isRead()) {
-                    messageItem.markAsRead();
-                    messageItems.add(messageItem);
-                }
+
+            // to avoid ConcurrentModificationException (no editing during iterating in Realm)
+            List<MessageItem> unreadMessages
+                    = new ArrayList<>(chat.getMessages().where().equalTo(MessageItem.Fields.READ, false).findAll());
+
+            for (MessageItem messageItem : unreadMessages) {
+                messageItem.setRead(true);
             }
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    Collection<Long> ids = getMessageIds(messageItems, remove);
-                    if (remove) {
-                        MessageTable.getInstance().removeMessages(ids);
-                    } else {
-                        MessageTable.getInstance().markAsRead(ids);
-                    }
-                }
-            });
+
+            if (remove) {
+                unreadMessages.clear();
+            }
+            realm.commitTransaction();
         }
         this.visibleChat = chat;
     }
@@ -466,9 +451,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param messageItem
      */
     public void removeMessage(MessageItem messageItem) {
-        AbstractChat chat = messageItem.getChat();
+        AbstractChat chat = getChat(messageItem.getAccount(), messageItem.getUser());
+        if (chat == null) {
+            return;
+        }
+        onChatChanged(messageItem.getAccount(), messageItem.getUser(), false);
         chat.removeMessage(messageItem);
-        onChatChanged(chat.getAccount(), chat.getUser(), false);
     }
 
     /**
@@ -496,7 +484,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 // Remove actions with status change.
                 ArrayList<MessageItem> remove = new ArrayList<>();
                 for (MessageItem messageItem : chat.getMessages()) {
-                    if (messageItem.getAction() != null && messageItem.getAction().isStatusChage()) {
+                    if (messageItem.getAction() != null && ChatAction.valueOf(messageItem.getAction()).isStatusChage()) {
                         remove.add(messageItem);
                     }
                 }
@@ -519,33 +507,23 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
         final String account = accountItem.getAccount();
-        final ArrayList<MessageItem> removeMessageItems = new ArrayList<MessageItem>();
+        Realm realm = DatabaseManager.getInstance().getRealm();
+        realm.beginTransaction();
         for (AbstractChat chat : chats.getNested(account).values()) {
             for (MessageItem messageItem : chat.getMessages()) {
                 if (archiveMode == ArchiveMode.dontStore || ((messageItem.isRead()
                         || archiveMode != ArchiveMode.unreadOnly) && messageItem.isSent())) {
-                    removeMessageItems.add(messageItem);
+                    messageItem.removeFromRealm();
                 }
             }
         }
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                // If message was read or received after removeMessageItems
-                // was created then it's ID will be not null. DB actions with
-                // such message will have no effect as if it was removed.
-                // History ids becomes invalid and will be cleared on next
-                // history load.
-                MessageTable.getInstance().removeMessages(getMessageIds(removeMessageItems, true));
-                if (archiveMode == ArchiveMode.dontStore) {
-                    MessageTable.getInstance().removeAccount(account);
-                } else if (archiveMode == ArchiveMode.unreadOnly) {
-                    MessageTable.getInstance().removeReadAndSent(account);
-                } else {
-                    MessageTable.getInstance().removeSent(account);
-                }
-            }
-        });
+        realm.commitTransaction();
+        // If message was read or received after removeMessageItems
+        // was created then it's ID will be not null. DB actions with
+        // such message will have no effect as if it was removed.
+        // History ids becomes invalid and will be cleared on next
+        // history load.
+
         AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
     }
 
@@ -713,7 +691,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final boolean isMUC = abstractChat instanceof RoomChat;
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
-                for (MessageItem messageItem : abstractChat.getMessages()) {
+                RealmResults<MessageItem> messageItems = Realm.getDefaultInstance().where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.ACCOUNT, account)
+                        .equalTo(MessageItem.Fields.USER, user)
+                        .findAllSorted(MessageItem.Fields.TIMESTAMP);
+
+                for (MessageItem messageItem : messageItems) {
                     if (messageItem.getAction() != null) {
                         continue;
                     }
@@ -730,7 +713,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     out.write("<b>");
                     out.write(StringUtils.escapeHtml(name));
                     out.write("</b>&nbsp;(");
-                    out.write(StringUtils.getDateTimeText(messageItem.getTimestamp()));
+                    out.write(StringUtils.getDateTimeText(new Date(messageItem.getTimestamp())));
                     out.write(")<br />\n<p>");
                     out.write(StringUtils.escapeHtml(messageItem.getText()));
                     out.write("</p><hr />\n");

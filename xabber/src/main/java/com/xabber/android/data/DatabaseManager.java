@@ -14,13 +14,17 @@
  */
 package com.xabber.android.data;
 
+import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.xabber.android.data.entity.AbstractAccountTable;
+import com.xabber.android.data.extension.blocking.BlockedContactsForAccount;
 import com.xabber.android.data.extension.mam.SyncInfo;
+import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.message.MessageTable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,7 +52,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 70;
-    private static final int REALM_DATABASE_VERSION = 2;
+    private static final int REALM_DATABASE_VERSION = 3;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -60,11 +64,11 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     }
 
     private final ArrayList<DatabaseTable> registeredTables;
+    private Realm realm;
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
-        registeredTables = new ArrayList<DatabaseTable>();
-
+        registeredTables = new ArrayList<>();
         configureRealm();
     }
 
@@ -88,14 +92,87 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
                             oldVersion++;
                         }
+
+                        if (oldVersion == 2) {
+                            schema.create(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.UNIQUE_ID, String.class, FieldAttribute.PRIMARY_KEY)
+                                    .addField(MessageItem.Fields.ACCOUNT, String.class, FieldAttribute.INDEXED)
+                                    .addField(MessageItem.Fields.USER, String.class, FieldAttribute.INDEXED)
+                                    .addField(MessageItem.Fields.RESOURCE, String.class)
+                                    .addField(MessageItem.Fields.ACTION, String.class)
+                                    .addField(MessageItem.Fields.TEXT, String.class)
+                                    .addField(MessageItem.Fields.TIMESTAMP, Long.class, FieldAttribute.INDEXED)
+                                    .addField(MessageItem.Fields.DELAY_TIMESTAMP, Long.class)
+                                    .addField(MessageItem.Fields.STANZA_ID, String.class)
+                                    .addField(MessageItem.Fields.INCOMING, boolean.class)
+                                    .addField(MessageItem.Fields.UNENCRYPTED, boolean.class)
+                                    .addField(MessageItem.Fields.SENT, boolean.class)
+                                    .addField(MessageItem.Fields.READ, boolean.class)
+                                    .addField(MessageItem.Fields.DELIVERED, boolean.class)
+                                    .addField(MessageItem.Fields.OFFLINE, boolean.class)
+                                    .addField(MessageItem.Fields.ERROR, boolean.class)
+                                    .addField(MessageItem.Fields.IS_RECEIVED_FROM_MAM, boolean.class)
+                                    .addField(MessageItem.Fields.FILE_PATH, String.class)
+                                    .addField(MessageItem.Fields.FILE_SIZE, Long.class);
+
+                            oldVersion++;
+                        }
                     }
                 })
                 .build();
         Realm.setDefaultConfiguration(config);
+
+        realm = Realm.getDefaultInstance();
+    }
+
+    private void copyDataFromSqliteToRealm() {
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        LogManager.i("DatabaseManager", "copying from sqlite to Reaml");
+                        long counter = 0;
+                        Cursor cursor = MessageTable.getInstance().getAllMessages();
+                        while (cursor.moveToNext()) {
+                            MessageItem messageItem = MessageTable.createMessageItem(cursor);
+                            realm.copyToRealm(messageItem);
+                            counter++;
+                        }
+                        cursor.close();
+                        LogManager.i("DatabaseManager", counter + " messages copied to Realm");
+                    }
+                }, new Realm.Transaction.Callback() {
+
+                    @Override
+                    public void onSuccess() {
+                        super.onSuccess();
+                        LogManager.i("DatabaseManager", "onSuccess. removing messages from sqlite:");
+                        int removedMessages = MessageTable.getInstance().removeAllMessages();
+                        LogManager.i("DatabaseManager", removedMessages + " messages removed from sqlite");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        super.onError(e);
+                        e.printStackTrace();
+                        LogManager.i("DatabaseManager", "onError " + e.getMessage());
+                    }
+                });
+
+            }
+        });
+
+
     }
 
     public static DatabaseManager getInstance() {
         return instance;
+    }
+
+    public Realm getRealm() {
+        return realm;
     }
 
     /**
@@ -188,6 +265,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     public void onLoad() {
         try {
             getWritableDatabase(); // Force onCreate or onUpgrade
+            copyDataFromSqliteToRealm();
         } catch (SQLiteException e) {
             if (e == DOWNGRAD_EXCEPTION) {
                 // Downgrade occured
@@ -249,15 +327,31 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     @Override
     public void onClear() {
-        for (DatabaseTable table : registeredTables)
+        for (DatabaseTable table : registeredTables) {
             table.clear();
+        }
+
+        if (!realm.isClosed()) {
+            realm.close();
+        }
+        Realm.deleteRealm(realm.getConfiguration());
     }
 
-    public void removeAccount(String account) {
+    public void removeAccount(final String account) {
         // TODO: replace with constraint.
-        for (DatabaseTable table : registeredTables)
-            if (table instanceof AbstractAccountTable)
+        for (DatabaseTable table : registeredTables) {
+            if (table instanceof AbstractAccountTable) {
                 ((AbstractAccountTable) table).removeAccount(account);
+            }
+        }
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(MessageItem.class).equalTo(MessageItem.Fields.ACCOUNT, account).findAll().clear();
+                realm.where(BlockedContactsForAccount.class).equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account).findAll().clear();
+            }
+        }, null);
     }
 
 }

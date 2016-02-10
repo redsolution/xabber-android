@@ -46,6 +46,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import io.realm.Realm;
+
 /**
  * Chat room.
  * <p/>
@@ -166,8 +168,8 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem newMessage(String text) {
-        return newMessage(nickname, text, null, null, false, false, false, false, true, null);
+    protected void newMessage(String text) {
+        newMessage(nickname, text, null, null, false, false, false, false, true, null);
     }
 
     @Override
@@ -196,7 +198,7 @@ public class RoomChat extends AbstractChat {
         if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error) {
-                String invite = invites.remove(message.getPacketID());
+                String invite = invites.remove(message.getStanzaId());
                 if (invite != null) {
                     newAction(nickname, invite, ChatAction.invite_error);
                 }
@@ -222,23 +224,31 @@ public class RoomChat extends AbstractChat {
                     return true;
                 }
                 this.subject = subject;
-                RosterManager.getInstance().onContactChanged(account, bareAddress);
+                RosterManager.onContactChanged(account, bareAddress);
                 newAction(resource, subject, ChatAction.subject);
             } else {
                 boolean notify = true;
-                String packetID = message.getPacketID();
+                String stanzaId = message.getStanzaId();
                 Date delay = Delay.getDelay(message);
                 if (delay != null) {
                     notify = false;
                 }
+
+                final MessageItem sameMessage = getMessages().where().equalTo(MessageItem.Fields.STANZA_ID, stanzaId).findFirst();
+                // Server send our own message back
+                if (sameMessage != null) {
+                    getRealm().executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            sameMessage.setDelivered(true);
+                        }
+                    });
+                    RosterManager.onContactChanged(account, user);
+                    return true;
+                }
+
                 for (MessageItem messageItem : getMessages()) {
                     // Search for duplicates
-                    if (packetID != null && packetID.equals(messageItem.getStanzaId())) {
-                        // Server send our own message back
-                        messageItem.markAsDelivered();
-                        RosterManager.getInstance().onContactChanged(account, user);
-                        return true;
-                    }
                     if (delay != null) {
                         if (delay.equals(messageItem.getDelayTimestamp())
                                 && resource.equals(messageItem.getResource())
@@ -253,9 +263,7 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                MessageItem messageItem = newMessage(resource, text, null,
-                        delay, true, notify, false, false, true, message.getStanzaId());
-                messageItem.setStanzaId(packetID);
+                newMessage(resource, text, null, delay, true, notify, false, false, true, message.getStanzaId());
             }
         } else if (packet instanceof Presence) {
             String stringPrep = Jid.getStringPrep(resource);
@@ -266,7 +274,7 @@ public class RoomChat extends AbstractChat {
                 occupants.put(stringPrep, newOccupant);
                 if (oldOccupant == null) {
                     onAvailable(resource);
-                    RosterManager.getInstance().onContactChanged(account, user);
+                    RosterManager.onContactChanged(account, user);
                 } else {
                     boolean changed = false;
                     if (oldOccupant.getAffiliation() != newOccupant.getAffiliation()) {
@@ -283,7 +291,7 @@ public class RoomChat extends AbstractChat {
                         onStatusChanged(resource, newOccupant.getStatusMode(), newOccupant.getStatusText());
                     }
                     if (changed) {
-                        RosterManager.getInstance().onContactChanged(account, user);
+                        RosterManager.onContactChanged(account, user);
                     }
                 }
             } else if (presence.getType() == Presence.Type.unavailable && state == RoomState.available) {
@@ -308,7 +316,7 @@ public class RoomChat extends AbstractChat {
                 } else {
                     onLeave(resource);
                 }
-                RosterManager.getInstance().onContactChanged(account, user);
+                RosterManager.onContactChanged(account, user);
             }
         }
         return true;
@@ -421,7 +429,7 @@ public class RoomChat extends AbstractChat {
         }
         if (isSelf(resource)) {
             setState(RoomState.waiting);
-            RosterManager.getInstance().onContactChanged(account, user);
+            RosterManager.onContactChanged(account, user);
         }
     }
 
