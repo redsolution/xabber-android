@@ -843,7 +843,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void scrollDown() {
         LogManager.i(this, "scrollDown");
-        realmRecyclerView.smoothScrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        realmRecyclerView.getRecyclerView().scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
     private void updateSecurityButton() {
