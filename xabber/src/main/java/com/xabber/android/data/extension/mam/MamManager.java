@@ -56,9 +56,12 @@ public class MamManager {
         }
 
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
+            return;
+        }
         ConnectionThread connectionThread = accountItem.getConnectionThread();
 
-        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
+        if (connectionThread == null) {
             return;
         }
 
