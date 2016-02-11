@@ -502,29 +502,30 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     @Override
     public void onAccountArchiveModeChanged(AccountItem accountItem) {
-        final ArchiveMode archiveMode = AccountManager.getInstance().getArchiveMode(accountItem.getAccount());
-        if (archiveMode.saveLocally()) {
-            return;
-        }
-        final String account = accountItem.getAccount();
-        Realm realm = DatabaseManager.getInstance().getRealm();
-        realm.beginTransaction();
-        for (AbstractChat chat : chats.getNested(account).values()) {
-            for (MessageItem messageItem : chat.getMessages()) {
-                if (archiveMode == ArchiveMode.dontStore || ((messageItem.isRead()
-                        || archiveMode != ArchiveMode.unreadOnly) && messageItem.isSent())) {
-                    messageItem.removeFromRealm();
-                }
-            }
-        }
-        realm.commitTransaction();
-        // If message was read or received after removeMessageItems
-        // was created then it's ID will be not null. DB actions with
-        // such message will have no effect as if it was removed.
-        // History ids becomes invalid and will be cleared on next
-        // history load.
-
-        AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
+        // TODO:
+//        final ArchiveMode archiveMode = AccountManager.getInstance().getArchiveMode(accountItem.getAccount());
+//        if (archiveMode.saveLocally()) {
+//            return;
+//        }
+//        final String account = accountItem.getAccount();
+//        Realm realm = DatabaseManager.getInstance().getRealm();
+//        realm.beginTransaction();
+//        for (AbstractChat chat : chats.getNested(account).values()) {
+//            for (MessageItem messageItem : chat.getMessages()) {
+//                if (archiveMode == ArchiveMode.dontStore || ((messageItem.isRead()
+//                        || archiveMode != ArchiveMode.unreadOnly) && messageItem.isSent())) {
+//                    messageItem.removeFromRealm();
+//                }
+//            }
+//        }
+//        realm.commitTransaction();
+//        // If message was read or received after removeMessageItems
+//        // was created then it's ID will be not null. DB actions with
+//        // such message will have no effect as if it was removed.
+//        // History ids becomes invalid and will be cleared on next
+//        // history load.
+//
+//        AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
     }
 
     @Override
