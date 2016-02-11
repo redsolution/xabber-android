@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.message;
 
+import android.os.Looper;
+
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -117,11 +119,11 @@ public abstract class AbstractChat extends BaseEntity {
         messages = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account)
                 .equalTo(MessageItem.Fields.USER, user)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         messagesToSend = messages.where()
                 .equalTo(MessageItem.Fields.SENT, false)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
 
         sendMessages();
     }
@@ -431,7 +433,7 @@ public abstract class AbstractChat extends BaseEntity {
                 @Override
                 public void onSuccess() {
                     super.onSuccess();
-
+                    LogManager.i("AbstractChat", "On new message transaction success");
                     sendMessages();
                 }
             });
@@ -588,13 +590,12 @@ public abstract class AbstractChat extends BaseEntity {
             return;
         }
 
-        List<MessageItem> messageItemList = new ArrayList<>(realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, user)
-                .equalTo(MessageItem.Fields.SENT, false)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING));
+        boolean isUiThread = Looper.getMainLooper().getThread() == Thread.currentThread();
 
-        LogManager.i("Chat", "sendMessages " + messageItemList.size());
+
+        List<MessageItem> messageItemList = new ArrayList<>(messagesToSend);
+
+        LogManager.i("Chat", "sendMessages " + messageItemList.size() + " ui thread: " + isUiThread);
 
         for (final MessageItem messageItem : messageItemList) {
             String text = prepareText(messageItem.getText());
@@ -609,13 +610,12 @@ public abstract class AbstractChat extends BaseEntity {
                 }
             }
 
-            realm.beginTransaction();
-            if (text == null) {
-                messageItem.setError(true);
-            } else {
-                Message message = createMessagePacket(text);
-                messageItem.setStanzaId(message.getStanzaId());
+            Message message = null;
+            if (text != null) {
+                message = createMessagePacket(text);
+            }
 
+            if (message != null) {
                 ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
                 CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
                 if (delayTimestamp != null) {
@@ -629,6 +629,13 @@ public abstract class AbstractChat extends BaseEntity {
                 }
             }
 
+            realm.beginTransaction();
+            if (message == null) {
+                messageItem.setError(true);
+            } else {
+                messageItem.setStanzaId(message.getStanzaId());
+            }
+
             if (delayTimestamp != null) {
                 messageItem.setDelayTimestamp(delayTimestamp.getTime());
             }
@@ -637,10 +644,8 @@ public abstract class AbstractChat extends BaseEntity {
             }
             messageItem.setSent(true);
             realm.commitTransaction();
-            realm.refresh();
             EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
         }
-
     }
 
     public String getThreadId() {
