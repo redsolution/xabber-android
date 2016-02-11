@@ -150,7 +150,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                 MessageItem first = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
                 if (first != null) {
-                    LogManager.i(this, "Found message! setting as delivered");
+                    LogManager.i(this, "Found message! setting as delivered " + first.getText());
                     realm.beginTransaction();
                     first.setDelivered(true);
                     realm.commitTransaction();

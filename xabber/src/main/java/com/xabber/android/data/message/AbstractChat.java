@@ -51,6 +51,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -125,8 +126,12 @@ public abstract class AbstractChat extends BaseEntity {
         messagesToSend = messages.where()
                 .equalTo(MessageItem.Fields.SENT, false)
                 .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-
-        sendMessages();
+        messagesToSend.addChangeListener(new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                sendMessages();
+            }
+        });
     }
 
     private void getSyncInfo(String account, String user) {
@@ -430,14 +435,7 @@ public abstract class AbstractChat extends BaseEntity {
 
 
                 }
-            }, new Realm.Transaction.Callback() {
-                @Override
-                public void onSuccess() {
-                    super.onSuccess();
-                    LogManager.i("AbstractChat", "On new message transaction success");
-                    sendMessages();
-                }
-            });
+            }, null);
 
         }
     }

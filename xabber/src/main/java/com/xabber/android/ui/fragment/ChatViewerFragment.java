@@ -543,10 +543,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             return;
         }
 
-        int messagePosition = chatMessageAdapter.findMessagePosition(event.getUniqueId());
-        if (messagePosition != RecyclerView.NO_POSITION) {
-            chatMessageAdapter.notifyItemChanged(messagePosition);
-        }
+        LogManager.i(this, "on MessageUpdateEvent " + event.getUniqueId());
+        chatMessageAdapter.notifyDataSetChanged();
     }
 
     private void onAttachButtonPressed() {
