@@ -122,13 +122,22 @@ public abstract class AbstractChat extends BaseEntity {
                 .equalTo(MessageItem.Fields.ACCOUNT, account)
                 .equalTo(MessageItem.Fields.USER, user)
                 .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        messages.addChangeListener(new RealmChangeListener() {
+            @Override
+            public void onChange() {
+                LogManager.i("AbstractChat", "messages changed size: " + messages.size() + " user: " + user);
+            }
+        });
 
-        messagesToSend = messages.where()
+        messagesToSend = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.USER, user)
                 .equalTo(MessageItem.Fields.SENT, false)
                 .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
         messagesToSend.addChangeListener(new RealmChangeListener() {
             @Override
             public void onChange() {
+                LogManager.i("AbstractChat", "messagesToSend changed user: " + user);
                 sendMessages();
             }
         });
@@ -269,6 +278,9 @@ public abstract class AbstractChat extends BaseEntity {
     void closeChat() {
         active = false;
         firstNotification = true;
+
+        messagesToSend.removeChangeListeners();
+        messages.removeChangeListeners();
     }
 
     boolean isStatusTrackingEnabled() {
@@ -585,8 +597,7 @@ public abstract class AbstractChat extends BaseEntity {
 
 
     public void sendMessages() {
-        boolean isUiThread = Looper.getMainLooper().getThread() == Thread.currentThread();
-        LogManager.i("Chat", "sendMessages " + isUiThread);
+        LogManager.i(this, "sendMessages. user: " + user);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -597,7 +608,7 @@ public abstract class AbstractChat extends BaseEntity {
 
                 List<MessageItem> messageItemList = new ArrayList<>(messagesToSend);
 
-                LogManager.i("Chat", "sendMessages " + messageItemList.size());
+                LogManager.i(AbstractChat.this, "sendMessages " + messageItemList.size());
 
                 for (final MessageItem messageItem : messageItemList) {
                     String text = prepareText(messageItem.getText());
@@ -614,6 +625,8 @@ public abstract class AbstractChat extends BaseEntity {
 
                     Message message = null;
                     if (text != null) {
+
+                        LogManager.i(AbstractChat.this, "Sending message user: " + messageItem.getUser() + " text: " + messageItem.getText());
                         message = createMessagePacket(text);
                     }
 

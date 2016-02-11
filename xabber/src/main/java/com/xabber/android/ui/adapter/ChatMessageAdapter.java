@@ -39,6 +39,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.roster.AbstractContact;
@@ -52,7 +53,6 @@ import java.io.File;
 import java.util.Date;
 
 import io.realm.RealmBasedRecyclerViewAdapter;
-import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
 
 
@@ -89,12 +89,13 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
         void onChangeFinished();
     }
 
-    public ChatMessageAdapter(Context context, RealmResults<MessageItem> realmResults,
-                              Message.MessageClickListener messageClickListener, String account, String user, Listener listener) {
-        super(context, realmResults, true, true);
+    public ChatMessageAdapter(Context context, AbstractChat chat, Message.MessageClickListener messageClickListener, Listener listener) {
+        super(context, chat.getMessages(), true, true);
         this.context = context;
         this.messageClickListener = messageClickListener;
 
+        account = chat.getAccount();
+        user = chat.getUser();
 
         isMUC = MUCManager.getInstance().hasRoom(account, user);
         if (isMUC) {
@@ -103,8 +104,6 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
 
-        this.account = account;
-        this.user = user;
         this.listener = listener;
 
     }

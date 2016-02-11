@@ -230,7 +230,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
 
 
-        chatMessageAdapter = new ChatMessageAdapter(getActivity(), getChat().getMessages(), this, account, user, this);
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), getChat(), this, this);
 
         realmRecyclerView = (RealmRecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
         realmRecyclerView.setAdapter(chatMessageAdapter);
