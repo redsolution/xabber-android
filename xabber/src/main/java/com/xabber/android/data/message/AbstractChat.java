@@ -16,6 +16,7 @@ package com.xabber.android.data.message;
 
 import android.os.Looper;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.DatabaseManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -586,66 +587,73 @@ public abstract class AbstractChat extends BaseEntity {
 
 
     public void sendMessages() {
-        if (messagesToSend.isEmpty()) {
-            return;
-        }
-
         boolean isUiThread = Looper.getMainLooper().getThread() == Thread.currentThread();
+        LogManager.i("Chat", "sendMessages " + isUiThread);
 
-
-        List<MessageItem> messageItemList = new ArrayList<>(messagesToSend);
-
-        LogManager.i("Chat", "sendMessages " + messageItemList.size() + " ui thread: " + isUiThread);
-
-        for (final MessageItem messageItem : messageItemList) {
-            String text = prepareText(messageItem.getText());
-            Long timestamp = messageItem.getTimestamp();
-
-            Date currentTime = new Date(System.currentTimeMillis());
-            Date delayTimestamp = null;
-
-            if (timestamp != null) {
-                if (currentTime.getTime() - timestamp > 60000) {
-                    delayTimestamp = currentTime;
-                }
-            }
-
-            Message message = null;
-            if (text != null) {
-                message = createMessagePacket(text);
-            }
-
-            if (message != null) {
-                ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
-                CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
-                if (delayTimestamp != null) {
-                    message.addExtension(new DelayInformation(delayTimestamp));
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (messagesToSend.isEmpty()) {
+                    return;
                 }
 
-                try {
-                    ConnectionManager.getInstance().sendStanza(account, message);
-                } catch (NetworkException e) {
-                    break;
+                List<MessageItem> messageItemList = new ArrayList<>(messagesToSend);
+
+                LogManager.i("Chat", "sendMessages " + messageItemList.size());
+
+                for (final MessageItem messageItem : messageItemList) {
+                    String text = prepareText(messageItem.getText());
+                    Long timestamp = messageItem.getTimestamp();
+
+                    Date currentTime = new Date(System.currentTimeMillis());
+                    Date delayTimestamp = null;
+
+                    if (timestamp != null) {
+                        if (currentTime.getTime() - timestamp > 60000) {
+                            delayTimestamp = currentTime;
+                        }
+                    }
+
+                    Message message = null;
+                    if (text != null) {
+                        message = createMessagePacket(text);
+                    }
+
+                    if (message != null) {
+                        ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+                        CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+                        if (delayTimestamp != null) {
+                            message.addExtension(new DelayInformation(delayTimestamp));
+                        }
+
+                        try {
+                            ConnectionManager.getInstance().sendStanza(account, message);
+                        } catch (NetworkException e) {
+                            break;
+                        }
+                    }
+
+                    realm.beginTransaction();
+                    if (message == null) {
+                        messageItem.setError(true);
+                    } else {
+                        messageItem.setStanzaId(message.getStanzaId());
+                    }
+
+                    if (delayTimestamp != null) {
+                        messageItem.setDelayTimestamp(delayTimestamp.getTime());
+                    }
+                    if (messageItem.getTimestamp() == null) {
+                        messageItem.setTimestamp(currentTime.getTime());
+                    }
+                    messageItem.setSent(true);
+                    realm.commitTransaction();
+                    EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
                 }
-            }
 
-            realm.beginTransaction();
-            if (message == null) {
-                messageItem.setError(true);
-            } else {
-                messageItem.setStanzaId(message.getStanzaId());
             }
+        });
 
-            if (delayTimestamp != null) {
-                messageItem.setDelayTimestamp(delayTimestamp.getTime());
-            }
-            if (messageItem.getTimestamp() == null) {
-                messageItem.setTimestamp(currentTime.getTime());
-            }
-            messageItem.setSent(true);
-            realm.commitTransaction();
-            EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
-        }
     }
 
     public String getThreadId() {
