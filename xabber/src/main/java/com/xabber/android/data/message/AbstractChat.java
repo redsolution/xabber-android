@@ -540,25 +540,23 @@ public abstract class AbstractChat extends BaseEntity {
         return !messagesToSend.isEmpty();
     }
 
-    /**
-     * @return Last incoming message's text. Empty string if last message is
-     * outgoing.
-     */
     public String getLastText() {
-        MessageItem last = messages.last();
-        if (last.isIncoming()) {
-            return last.getText();
+        if (!messages.isEmpty()) {
+            return messages.last().getText();
         } else {
             return "";
         }
-
     }
 
     /**
      * @return Time of last message in chat. Can be <code>null</code>.
      */
     public Date getLastTime() {
-        return new Date(messages.last().getTimestamp());
+        if (!messages.isEmpty()) {
+            return new Date(messages.last().getTimestamp());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -673,7 +671,7 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     /**
-     * Connection complete.
+     * Connection complete.f
      */
     protected void onComplete() {
     }
@@ -693,7 +691,11 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     public boolean isLastMessageIncoming() {
-        return messages.last().isIncoming();
+        if (!messages.isEmpty()) {
+            return messages.last().isIncoming();
+        } else {
+            return false;
+        }
     }
 
     public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
