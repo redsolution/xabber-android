@@ -14,7 +14,7 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnResponseListener;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Request;
 import com.xabber.xmpp.httpfileupload.Slot;

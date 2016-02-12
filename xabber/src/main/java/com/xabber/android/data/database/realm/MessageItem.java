@@ -12,10 +12,12 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message;
+package com.xabber.android.data.database.realm;
 
 import android.text.Spannable;
 import android.text.SpannableString;
+
+import com.xabber.android.data.message.ChatAction;
 
 import java.io.File;
 import java.util.UUID;

@@ -12,15 +12,14 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.extension.vcard;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 
-import com.xabber.android.data.AbstractTable;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.roster.StructuredName;
 
 /**
@@ -28,7 +27,7 @@ import com.xabber.android.data.roster.StructuredName;
  *
  * @author alexander.ivanov
  */
-class VCardTable extends AbstractTable {
+public class VCardTable extends AbstractTable {
 
     private static final class Fields implements BaseColumns {
 
@@ -109,7 +108,7 @@ class VCardTable extends AbstractTable {
         }
     }
 
-    void write(String bareAddress, StructuredName name) {
+    public void write(String bareAddress, StructuredName name) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -139,27 +138,27 @@ class VCardTable extends AbstractTable {
         return PROJECTION;
     }
 
-    static String getUser(Cursor cursor) {
+    public static String getUser(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.USER));
     }
 
-    static String getNickName(Cursor cursor) {
+    public static String getNickName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.NICK_NAME));
     }
 
-    static String getFormattedName(Cursor cursor) {
+    public static String getFormattedName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.FORMATTED_NAME));
     }
 
-    static String getFirstName(Cursor cursor) {
+    public static String getFirstName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.FIRST_NAME));
     }
 
-    static String getMiddleName(Cursor cursor) {
+    public static String getMiddleName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.MIDDLE_NAME));
     }
 
-    static String getLastName(Cursor cursor) {
+    public static String getLastName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.LAST_NAME));
     }
 

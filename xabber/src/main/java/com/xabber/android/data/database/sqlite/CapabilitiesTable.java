@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.extension.capability;
+package com.xabber.android.data.database.sqlite;
 
 import java.util.Collection;
 
@@ -21,15 +21,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 
-import com.xabber.android.data.AbstractTable;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with hashed entity capabilities.
  *
  * @author alexander.ivanov
  */
-class CapabilitiesTable extends AbstractTable {
+public class CapabilitiesTable extends AbstractTable {
     private static final class Fields implements BaseColumns {
         private Fields() {
         }
@@ -128,7 +127,7 @@ class CapabilitiesTable extends AbstractTable {
         }
     }
 
-    void write(String hash, String node, String version, String type,
+    public void write(String hash, String node, String version, String type,
                String name, Collection<String> features) {
         synchronized (writeLock) {
             if (writeStatement == null) {
@@ -169,27 +168,27 @@ class CapabilitiesTable extends AbstractTable {
         return PROJECTION;
     }
 
-    static String getHash(Cursor cursor) {
+    public static String getHash(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.HASH));
     }
 
-    static String getNode(Cursor cursor) {
+    public static String getNode(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.NODE));
     }
 
-    static String getVersion(Cursor cursor) {
+    public static String getVersion(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.VERSION));
     }
 
-    static String getType(Cursor cursor) {
+    public static String getType(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.TYPE));
     }
 
-    static String getName(Cursor cursor) {
+    public static String getName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.NAME));
     }
 
-    static Collection<String> getFeatures(Cursor cursor) {
+    public static Collection<String> getFeatures(Cursor cursor) {
         return DatabaseManager.collectionFromCommaSeparated(cursor
                 .getString(cursor.getColumnIndex(Fields.FEATURES)));
     }

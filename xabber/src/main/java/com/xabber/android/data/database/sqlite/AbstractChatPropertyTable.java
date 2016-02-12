@@ -12,13 +12,13 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message.chat;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractEntityTable;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.sqlite.AbstractEntityTable;
 
 /**
  * Table with custom values associated with chat.
@@ -97,7 +97,7 @@ abstract class AbstractChatPropertyTable<T> extends AbstractEntityTable {
         DatabaseManager.execSQL(db, sql);
     }
 
-    void write(String account, String user, T value) {
+    public void write(String account, String user, T value) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();

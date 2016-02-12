@@ -29,6 +29,8 @@ import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.database.sqlite.AccountTable;
+import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.notification.BaseAccountNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;

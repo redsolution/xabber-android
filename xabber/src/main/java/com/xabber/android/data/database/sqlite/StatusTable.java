@@ -12,22 +12,22 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.account;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 
-import com.xabber.android.data.AbstractTable;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with preset statuses.
  *
  * @author alexander.ivanov
  */
-class StatusTable extends AbstractTable {
+public class StatusTable extends AbstractTable {
 
     private static final class Fields implements BaseColumns {
         private Fields() {
@@ -117,7 +117,7 @@ class StatusTable extends AbstractTable {
         }
     }
 
-    void write(StatusMode statusMode, String statusText) {
+    public void write(StatusMode statusMode, String statusText) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -131,7 +131,7 @@ class StatusTable extends AbstractTable {
         }
     }
 
-    void remove(StatusMode statusMode, String statusText) {
+    public void remove(StatusMode statusMode, String statusText) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields.STATUS_MODE + " = ? AND " + Fields.STATUS_TEXT
                 + " = ?", new String[]{String.valueOf(statusMode.ordinal()),
@@ -148,12 +148,12 @@ class StatusTable extends AbstractTable {
         return PROJECTION;
     }
 
-    static StatusMode getStatusMode(Cursor cursor) {
+    public static StatusMode getStatusMode(Cursor cursor) {
         return StatusMode.values()[cursor.getInt(cursor
                 .getColumnIndex(Fields.STATUS_MODE))];
     }
 
-    static String getStatusText(Cursor cursor) {
+    public static String getStatusText(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.STATUS_TEXT));
     }
 

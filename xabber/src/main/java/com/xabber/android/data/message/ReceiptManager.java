@@ -15,13 +15,14 @@
 package com.xabber.android.data.message;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.database.realm.MessageItem;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;

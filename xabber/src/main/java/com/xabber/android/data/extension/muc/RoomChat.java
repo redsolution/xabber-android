@@ -21,7 +21,7 @@ import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;

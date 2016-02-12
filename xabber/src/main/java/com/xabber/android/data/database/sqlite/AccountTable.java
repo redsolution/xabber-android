@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.account;
+package com.xabber.android.data.database.sqlite;
 
 import android.content.ContentValues;
 import android.content.SharedPreferences.Editor;
@@ -22,9 +22,12 @@ import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.xabber.android.R;
-import com.xabber.android.data.AbstractTable;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountProtocol;
+import com.xabber.android.data.account.ArchiveMode;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
@@ -44,7 +47,7 @@ import java.util.Date;
  *
  * @author alexander.ivanov
  */
-class AccountTable extends AbstractTable {
+public class AccountTable extends AbstractTable {
 
     private static final String NAME = "accounts";
     private static final String[] PROJECTION = new String[]{Fields._ID,
@@ -74,67 +77,67 @@ class AccountTable extends AbstractTable {
         return instance;
     }
 
-    static long getId(Cursor cursor) {
+    public static long getId(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields._ID));
     }
 
-    static AccountProtocol getProtocol(Cursor cursor) {
+    public static AccountProtocol getProtocol(Cursor cursor) {
         return AccountProtocol.valueOf(cursor.getString(cursor.getColumnIndex(Fields.PROTOCOL)));
     }
 
-    static String getHost(Cursor cursor) {
+    public static String getHost(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.HOST));
     }
 
-    static boolean isCustom(Cursor cursor) {
+    public static boolean isCustom(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.CUSTOM)) != 0;
     }
 
-    static int getPort(Cursor cursor) {
+    public static int getPort(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.PORT));
     }
 
-    static String getServerName(Cursor cursor) {
+    public static String getServerName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.SERVER_NAME));
     }
 
-    static String getUserName(Cursor cursor) {
+    public static String getUserName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.USER_NAME));
     }
 
-    static String getPassword(Cursor cursor) {
+    public static String getPassword(Cursor cursor) {
         if (!isStorePassword(cursor)) {
             return AccountItem.UNDEFINED_PASSWORD;
         }
         return cursor.getString(cursor.getColumnIndex(Fields.PASSWORD));
     }
 
-    static String getResource(Cursor cursor) {
+    public static String getResource(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.RESOURCE));
     }
 
-    static int getColorIndex(Cursor cursor) {
+    public static int getColorIndex(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.COLOR_INDEX));
     }
 
-    static int getPriority(Cursor cursor) {
+    public static int getPriority(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.PRIORITY));
     }
 
-    static StatusMode getStatusMode(Cursor cursor) {
+    public static StatusMode getStatusMode(Cursor cursor) {
         int statusModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.STATUS_MODE));
         return StatusMode.values()[statusModeIndex];
     }
 
-    static String getStatusText(Cursor cursor) {
+    public static String getStatusText(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.STATUS_TEXT));
     }
 
-    static boolean isEnabled(Cursor cursor) {
+    public static boolean isEnabled(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.ENABLED)) != 0;
     }
 
-    static boolean isSaslEnabled(Cursor cursor) {
+    public static boolean isSaslEnabled(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.SASL_ENABLED)) != 0;
     }
 
@@ -143,19 +146,19 @@ class AccountTable extends AbstractTable {
         return TLSMode.values()[tlsModeIndex];
     }
 
-    static boolean isCompression(Cursor cursor) {
+    public static boolean isCompression(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.COMPRESSION)) != 0;
     }
 
-    static boolean isSyncable(Cursor cursor) {
+    public static boolean isSyncable(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.SYNCABLE)) != 0;
     }
 
-    static boolean isStorePassword(Cursor cursor) {
+    public static boolean isStorePassword(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.STORE_PASSWORD)) != 0;
     }
 
-    static Date getLastSync(Cursor cursor) {
+    public static Date getLastSync(Cursor cursor) {
         if (cursor.isNull(cursor.getColumnIndex(Fields.LAST_SYNC))) {
             return null;
         } else {
@@ -163,33 +166,33 @@ class AccountTable extends AbstractTable {
         }
     }
 
-    static ArchiveMode getArchiveMode(Cursor cursor) {
+    public static ArchiveMode getArchiveMode(Cursor cursor) {
         int index = cursor.getInt(cursor.getColumnIndex(Fields.ARCHIVE_MODE));
         return ArchiveMode.values()[index];
     }
 
-    static ProxyType getProxyType(Cursor cursor) {
+    public static ProxyType getProxyType(Cursor cursor) {
         int index = cursor.getInt(cursor.getColumnIndex(Fields.PROXY_TYPE));
         return ProxyType.values()[index];
     }
 
-    static String getProxyHost(Cursor cursor) {
+    public static String getProxyHost(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PROXY_HOST));
     }
 
-    static int getProxyPort(Cursor cursor) {
+    public static int getProxyPort(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.PROXY_PORT));
     }
 
-    static String getProxyUser(Cursor cursor) {
+    public static String getProxyUser(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PROXY_USER));
     }
 
-    static String getProxyPassword(Cursor cursor) {
+    public static String getProxyPassword(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PROXY_PASSWORD));
     }
 
-    static KeyPair getKeyPair(Cursor cursor) {
+    public static KeyPair getKeyPair(Cursor cursor) {
         byte[] publicKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PUBLIC_KEY));
         byte[] privateKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PRIVATE_KEY));
         if (privateKeyBytes == null || publicKeyBytes == null) {
@@ -472,7 +475,7 @@ class AccountTable extends AbstractTable {
      * @param accountItem
      * @return <b>True</b> if record was removed.
      */
-    void remove(String account, long id) {
+    public void remove(String account, long id) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields._ID + " = ?", new String[]{ String.valueOf(id) });
         databaseManager.removeAccount(account);
@@ -483,7 +486,7 @@ class AccountTable extends AbstractTable {
         // Don't remove accounts on clear request.
     }
 
-    void wipe() {
+    public void wipe() {
         super.clear();
     }
 

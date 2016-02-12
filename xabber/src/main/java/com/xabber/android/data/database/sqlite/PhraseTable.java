@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message.phrase;
+package com.xabber.android.data.database.sqlite;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -20,15 +20,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.xabber.android.data.AbstractTable;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with phrase notification settings.
  *
  * @author alexander.ivanov
  */
-class PhraseTable extends AbstractTable {
+public class PhraseTable extends AbstractTable {
 
     private static final class Fields implements BaseColumns {
 
@@ -119,7 +118,7 @@ class PhraseTable extends AbstractTable {
         }
     }
 
-    long write(Long id, String value, String user, String group,
+    public long write(Long id, String value, String user, String group,
                boolean regexp, Uri sound) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -156,27 +155,27 @@ class PhraseTable extends AbstractTable {
         return Fields._ID;
     }
 
-    static long getId(Cursor cursor) {
+    public static long getId(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields._ID));
     }
 
-    static String getValue(Cursor cursor) {
+    public static String getValue(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.VALUE));
     }
 
-    static String getUser(Cursor cursor) {
+    public static String getUser(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.USER));
     }
 
-    static String getGroup(Cursor cursor) {
+    public static String getGroup(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.GROUP));
     }
 
-    static boolean isRegexp(Cursor cursor) {
+    public static boolean isRegexp(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields.REGEXP)) != 0;
     }
 
-    static Uri getSound(Cursor cursor) {
+    public static Uri getSound(Cursor cursor) {
         return Uri.parse(cursor.getString(cursor.getColumnIndex(Fields.SOUND)));
     }
 

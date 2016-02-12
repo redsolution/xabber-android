@@ -1,15 +1,15 @@
-package com.xabber.android.data.message.chat;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with suppress100 settings for each chat.
  * @author <a href="mailto:jaro.fietz@uniscon.de">Jaro Fietz</a>.
  */
-class Suppress100Table extends AbstractChatPropertyTable<Boolean> {
+public class Suppress100Table extends AbstractChatPropertyTable<Boolean> {
 
     static final String NAME = "chat_suppress_100";
 
@@ -55,7 +55,7 @@ class Suppress100Table extends AbstractChatPropertyTable<Boolean> {
         }
     }
 
-    static boolean getValue(Cursor cursor) {
+    public static boolean getValue(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields.VALUE)) != 0;
     }
 

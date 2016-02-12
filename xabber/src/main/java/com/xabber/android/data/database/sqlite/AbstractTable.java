@@ -12,10 +12,12 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Abstract database table.

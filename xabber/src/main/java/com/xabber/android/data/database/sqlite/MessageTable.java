@@ -12,15 +12,14 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractEntityTable;
-
-import java.util.Date;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.message.ChatAction;
 
 /**
  * Storage with messages.

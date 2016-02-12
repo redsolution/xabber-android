@@ -12,22 +12,21 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.extension.avatar;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.provider.BaseColumns;
 
-import com.xabber.android.data.AbstractTable;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with avatar hashes for the users.
  *
  * @author alexander.ivanov
  */
-class AvatarTable extends AbstractTable {
+public class AvatarTable extends AbstractTable {
 
     private static final class Fields implements BaseColumns {
         private Fields() {
@@ -89,7 +88,7 @@ class AvatarTable extends AbstractTable {
      * @param bareAddress
      * @param hash
      */
-    void write(String bareAddress, String hash) {
+    public void write(String bareAddress, String hash) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -116,11 +115,11 @@ class AvatarTable extends AbstractTable {
         return PROJECTION;
     }
 
-    static String getUser(Cursor cursor) {
+    public static String getUser(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.USER));
     }
 
-    static String getHash(Cursor cursor) {
+    public static String getHash(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.HASH));
     }
 

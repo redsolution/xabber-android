@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.entity;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 

@@ -14,19 +14,17 @@
  */
 package com.xabber.android.data.message;
 
-import android.database.Cursor;
 import android.os.Environment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.OnAccountArchiveModeChangedListener;
 import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.OnAccountRemovedListener;
@@ -34,6 +32,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -63,7 +62,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

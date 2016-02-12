@@ -12,20 +12,20 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message.chat;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with settings to notify about messages in visible chat.
  *
  * @author alexander.ivanov
  */
-class NotifyVisibleTable extends AbstractChatPropertyTable<Boolean> {
+public class NotifyVisibleTable extends AbstractChatPropertyTable<Boolean> {
 
     static final String NAME = "chat_notify_visible";
 
@@ -71,7 +71,7 @@ class NotifyVisibleTable extends AbstractChatPropertyTable<Boolean> {
         }
     }
 
-    static boolean getValue(Cursor cursor) {
+    public static boolean getValue(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields.VALUE)) != 0;
     }
 

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data;
+package com.xabber.android.data.database;
 
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -20,11 +20,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.xabber.android.data.entity.AbstractAccountTable;
-import com.xabber.android.data.extension.blocking.BlockedContactsForAccount;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
+import com.xabber.android.data.OnClearListener;
+import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.OnMigrationListener;
+import com.xabber.android.data.database.realm.BlockedContactsForAccount;
+import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.sqlite.AbstractAccountTable;
+import com.xabber.android.data.database.sqlite.DatabaseTable;
+import com.xabber.android.data.database.sqlite.MessageTable;
 import com.xabber.android.data.extension.mam.SyncInfo;
-import com.xabber.android.data.message.MessageItem;
-import com.xabber.android.data.message.MessageTable;
 
 import java.io.File;
 import java.util.ArrayList;

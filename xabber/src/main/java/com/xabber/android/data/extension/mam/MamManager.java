@@ -7,7 +7,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.xmpp.address.Jid;
 
 import net.java.otr4j.io.SerializationUtils;

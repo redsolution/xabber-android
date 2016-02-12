@@ -12,21 +12,22 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message.chat;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
 /**
  * Storage with settings to show text in notification for each chat.
  *
  * @author alexander.ivanov
  */
-class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNotification> {
+public class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNotification> {
 
     static final String NAME = "chat_show_text";
 
@@ -45,7 +46,7 @@ class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNotificat
         return instance;
     }
 
-    static ShowMessageTextInNotification getValue(Cursor cursor) {
+    public static ShowMessageTextInNotification getValue(Cursor cursor) {
         return ShowMessageTextInNotification.fromInteger((int) cursor.getLong(cursor.getColumnIndex(Fields.VALUE)));
     }
 

@@ -12,21 +12,20 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.extension.muc;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractAccountTable;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with settings for the chat rooms.
  *
  * @author alexander.ivanov
  */
-class RoomTable extends AbstractAccountTable {
+public class RoomTable extends AbstractAccountTable {
 
     private static final class Fields implements AbstractAccountTable.Fields {
 
@@ -123,7 +122,7 @@ class RoomTable extends AbstractAccountTable {
     /**
      * Adds or updates room.
      */
-    void write(String account, String room, String nickname, String password, boolean join) {
+    public void write(String account, String room, String nickname, String password, boolean join) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -145,7 +144,7 @@ class RoomTable extends AbstractAccountTable {
     /**
      * Removes room.
      */
-    void remove(String account, String room) {
+    public void remove(String account, String room) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields.ACCOUNT + " = ? AND " + Fields.ROOM + " = ?", new String[]{account, room});
     }
@@ -165,23 +164,23 @@ class RoomTable extends AbstractAccountTable {
         return Fields.NEED_JOIN;
     }
 
-    static long getId(Cursor cursor) {
+    public static long getId(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields._ID));
     }
 
-    static String getRoom(Cursor cursor) {
+    public static String getRoom(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.ROOM));
     }
 
-    static String getNickname(Cursor cursor) {
+    public static String getNickname(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.NICKNAME));
     }
 
-    static String getPassword(Cursor cursor) {
+    public static String getPassword(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PASSWORD));
     }
 
-    static boolean needJoin(Cursor cursor) {
+    public static boolean needJoin(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields.NEED_JOIN)) != 0;
     }
 

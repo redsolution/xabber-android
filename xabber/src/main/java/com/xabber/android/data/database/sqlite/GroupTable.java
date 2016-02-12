@@ -12,21 +12,21 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.roster;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractAccountTable;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.roster.ShowOfflineMode;
 
 /**
  * Storage with contact list group settings.
  *
  * @author alexander.ivanov
  */
-class GroupTable extends AbstractAccountTable {
+public class GroupTable extends AbstractAccountTable {
 
     private static final class Fields implements AbstractAccountTable.Fields {
 
@@ -133,7 +133,7 @@ class GroupTable extends AbstractAccountTable {
         }
     }
 
-    void write(String account, String group, boolean expanded,
+    public void write(String account, String group, boolean expanded,
                ShowOfflineMode showOfflineMode) {
         if (account == null || group == null)
             throw new IllegalArgumentException();
@@ -170,15 +170,15 @@ class GroupTable extends AbstractAccountTable {
         return PROJECTION;
     }
 
-    static String getGroup(Cursor cursor) {
+    public static String getGroup(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.GROUP_NAME));
     }
 
-    static boolean isExpanded(Cursor cursor) {
+    public static boolean isExpanded(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.EXPANDED)) != 0;
     }
 
-    static ShowOfflineMode getShowOfflineMode(Cursor cursor) {
+    public static ShowOfflineMode getShowOfflineMode(Cursor cursor) {
         int value = cursor.getInt(cursor.getColumnIndex(Fields.OFFLINE));
         if (value == -1)
             return ShowOfflineMode.never;

@@ -30,6 +30,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountAddedListener;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.database.sqlite.OTRTable;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
 import com.xabber.android.data.entity.NestedNestedMaps;

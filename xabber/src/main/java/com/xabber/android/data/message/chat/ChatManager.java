@@ -22,6 +22,12 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
+import com.xabber.android.data.database.sqlite.PrivateChatTable;
+import com.xabber.android.data.database.sqlite.ShowTextTable;
+import com.xabber.android.data.database.sqlite.SoundTable;
+import com.xabber.android.data.database.sqlite.Suppress100Table;
+import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 

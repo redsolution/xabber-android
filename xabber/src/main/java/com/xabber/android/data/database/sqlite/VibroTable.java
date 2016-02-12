@@ -12,36 +12,35 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message.chat;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import android.net.Uri;
 
-import com.xabber.android.data.DatabaseManager;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
- * Storage with sound associated with chat.
+ * Storage with vibro settings for each chat.
  *
  * @author alexander.ivanov
  */
-class SoundTable extends AbstractChatPropertyTable<Uri> {
+public class VibroTable extends AbstractChatPropertyTable<Boolean> {
 
-    static final String NAME = "chat_sound";
+    static final String NAME = "chat_vibro";
 
-    private final static SoundTable instance;
+    private final static VibroTable instance;
 
     static {
-        instance = new SoundTable(DatabaseManager.getInstance());
+        instance = new VibroTable(DatabaseManager.getInstance());
         DatabaseManager.getInstance().addTable(instance);
     }
 
-    public static SoundTable getInstance() {
+    public static VibroTable getInstance() {
         return instance;
     }
 
-    private SoundTable(DatabaseManager databaseManager) {
+    private VibroTable(DatabaseManager databaseManager) {
         super(databaseManager);
     }
 
@@ -52,28 +51,28 @@ class SoundTable extends AbstractChatPropertyTable<Uri> {
 
     @Override
     String getValueType() {
-        return "TEXT";
+        return "INTEGER";
     }
 
     @Override
-    void bindValue(SQLiteStatement writeStatement, Uri value) {
-        writeStatement.bindString(3, value.toString());
+    void bindValue(SQLiteStatement writeStatement, Boolean value) {
+        writeStatement.bindLong(3, value ? 1 : 0);
     }
 
     @Override
     public void migrate(SQLiteDatabase db, int toVersion) {
         super.migrate(db, toVersion);
         switch (toVersion) {
-            case 52:
-                initialMigrate(db, "chat_sound", "TEXT");
+            case 57:
+                initialMigrate(db, "chat_vibro", "INTEGER");
                 break;
             default:
                 break;
         }
     }
 
-    static Uri getValue(Cursor cursor) {
-        return Uri.parse(cursor.getString(cursor.getColumnIndex(Fields.VALUE)));
+    public static boolean getValue(Cursor cursor) {
+        return cursor.getLong(cursor.getColumnIndex(Fields.VALUE)) != 0;
     }
 
 }

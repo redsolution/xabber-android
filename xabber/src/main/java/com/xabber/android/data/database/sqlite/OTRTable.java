@@ -12,21 +12,20 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.extension.otr;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractEntityTable;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with OTR finger prints and trusted level.
  *
  * @author alexander.ivanov
  */
-class OTRTable extends AbstractEntityTable {
+public class OTRTable extends AbstractEntityTable {
 
     private static final class Fields implements AbstractEntityTable.Fields {
 
@@ -99,7 +98,7 @@ class OTRTable extends AbstractEntityTable {
         }
     }
 
-    void write(String account, String user, String fingerprint, boolean verified) {
+    public void write(String account, String user, String fingerprint, boolean verified) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -132,11 +131,11 @@ class OTRTable extends AbstractEntityTable {
         return PROJECTION;
     }
 
-    static String getFingerprint(Cursor cursor) {
+    public static String getFingerprint(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.FINGERPRINT));
     }
 
-    static boolean isVerified(Cursor cursor) {
+    public static boolean isVerified(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields.VERIFIED)) != 0;
     }
 

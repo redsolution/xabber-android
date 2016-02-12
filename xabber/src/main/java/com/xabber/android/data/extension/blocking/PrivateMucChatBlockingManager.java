@@ -1,6 +1,8 @@
 package com.xabber.android.data.extension.blocking;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.realm.BlockedContact;
+import com.xabber.android.data.database.realm.BlockedContactsForAccount;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;

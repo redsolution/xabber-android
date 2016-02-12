@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.blocking;
+package com.xabber.android.data.database.realm;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;

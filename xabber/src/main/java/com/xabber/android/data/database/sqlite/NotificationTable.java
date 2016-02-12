@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.notification;
+package com.xabber.android.data.database.sqlite;
 
 import java.util.Date;
 
@@ -20,15 +20,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractEntityTable;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage with notifications.
  *
  * @author alexander.ivanov
  */
-class NotificationTable extends AbstractEntityTable {
+public class NotificationTable extends AbstractEntityTable {
 
     private static final class Fields implements AbstractEntityTable.Fields {
 
@@ -107,7 +106,7 @@ class NotificationTable extends AbstractEntityTable {
         }
     }
 
-    void write(String account, String user, String text, Date timeStamp,
+    public void write(String account, String user, String text, Date timeStamp,
                int count) {
         synchronized (writeLock) {
             if (writeStatement == null) {
@@ -147,15 +146,15 @@ class NotificationTable extends AbstractEntityTable {
         return Fields.TIMESTAMP;
     }
 
-    static String getText(Cursor cursor) {
+    public static String getText(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.TEXT));
     }
 
-    static Date getTimeStamp(Cursor cursor) {
+    public static Date getTimeStamp(Cursor cursor) {
         return new Date(cursor.getLong(cursor.getColumnIndex(Fields.TIMESTAMP)));
     }
 
-    static int getCount(Cursor cursor) {
+    public static int getCount(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.COUNT));
     }
 

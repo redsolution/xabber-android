@@ -12,20 +12,19 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.message.chat;
+package com.xabber.android.data.database.sqlite;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
-import com.xabber.android.data.DatabaseManager;
-import com.xabber.android.data.entity.AbstractEntityTable;
+import com.xabber.android.data.database.DatabaseManager;
 
 /**
  * Storage for chats with disabled history.
  *
  * @author alexander.ivanov
  */
-class PrivateChatTable extends AbstractEntityTable {
+public class PrivateChatTable extends AbstractEntityTable {
 
     static final class Fields implements AbstractEntityTable.Fields {
 
@@ -121,7 +120,7 @@ class PrivateChatTable extends AbstractEntityTable {
     /**
      * Sets that messages for specified chat must not to be saved.
      */
-    void write(String account, String user) {
+    public void write(String account, String user) {
         synchronized (writeLock) {
             if (writeStatement == null) {
                 SQLiteDatabase db = databaseManager.getWritableDatabase();
@@ -138,7 +137,7 @@ class PrivateChatTable extends AbstractEntityTable {
     /**
      * Sets that messages for specified chat can be saved.
      */
-    void remove(String account, String user) {
+    public void remove(String account, String user) {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields.ACCOUNT + " = ? AND " + Fields.USER + " = ?",
                 new String[]{account, user});
