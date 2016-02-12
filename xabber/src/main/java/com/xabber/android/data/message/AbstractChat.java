@@ -103,6 +103,7 @@ public abstract class AbstractChat extends BaseEntity {
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
+        LogManager.i("AbstractChat", "AbstractChat user: " + user);
         threadId = StringUtils.randomString(12);
         active = false;
         trackStatus = false;
@@ -115,11 +116,11 @@ public abstract class AbstractChat extends BaseEntity {
 
         realm = DatabaseManager.getInstance().getRealm();
 
-        getSyncInfo(account, user);
+        getSyncInfo(account, this.user);
 
         messages = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, user)
+                .equalTo(MessageItem.Fields.USER, this.user)
                 .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
         messages.addChangeListener(new RealmChangeListener() {
             @Override
@@ -130,7 +131,7 @@ public abstract class AbstractChat extends BaseEntity {
 
         messagesToSend = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, user)
+                .equalTo(MessageItem.Fields.USER, this.user)
                 .equalTo(MessageItem.Fields.SENT, false)
                 .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
         messagesToSend.addChangeListener(new RealmChangeListener() {
