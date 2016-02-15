@@ -71,29 +71,28 @@ public class RegularChat extends AbstractChat {
         return Type.chat;
     }
 
-    @Override
-    protected boolean canSendMessage() {
-        if (super.canSendMessage()) {
-            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
-                return true;
-            SecurityLevel securityLevel = OTRManager.getInstance()
-                    .getSecurityLevel(account, user);
-            if (securityLevel != SecurityLevel.plain)
-                return true;
-            try {
-                OTRManager.getInstance().startSession(account, user);
-            } catch (NetworkException e) {
-            }
-        }
-        return false;
-    }
+//    @Override
+//    protected boolean canSendMessage() {
+//        if (super.canSendMessage()) {
+//            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
+//                return true;
+//            SecurityLevel securityLevel = OTRManager.getInstance()
+//                    .getSecurityLevel(account, user);
+//            if (securityLevel != SecurityLevel.plain)
+//                return true;
+//            try {
+//                OTRManager.getInstance().startSession(account, user);
+//            } catch (NetworkException e) {
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     protected String prepareText(String text) {
         text = super.prepareText(text);
         try {
-            return OTRManager.getInstance().transformSending(account, user,
-                    text);
+            return OTRManager.getInstance().transformSending(account, user, text);
         } catch (OtrException e) {
             LogManager.exception(this, e);
             return null;

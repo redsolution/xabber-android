@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -28,7 +26,6 @@ import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.mam.SyncCache;
-import com.xabber.android.data.extension.mam.SyncInfo;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -50,7 +47,6 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -90,15 +86,7 @@ public abstract class AbstractChat extends BaseEntity {
 
     private boolean isLocalHistoryLoadedCompletely = false;
 
-    /**
-     * for Message Archive Management (XEP-313)
-     */
-    private SyncInfo syncInfo;
-
     private SyncCache syncCache;
-    private final Realm realm;
-    private final RealmResults<MessageItem> messages;
-    private final RealmResults<MessageItem> messagesToSend;
 
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
@@ -114,53 +102,7 @@ public abstract class AbstractChat extends BaseEntity {
 
         syncCache = new SyncCache();
 
-        realm = DatabaseManager.getInstance().getRealm();
-
-        getSyncInfo(account, this.user);
-
-        messages = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, this.user)
-                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-        messages.addChangeListener(new RealmChangeListener() {
-            @Override
-            public void onChange() {
-                LogManager.i("AbstractChat", "messages changed size: " + messages.size() + " user: " + user);
-            }
-        });
-
-        messagesToSend = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, this.user)
-                .equalTo(MessageItem.Fields.SENT, false)
-                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-        messagesToSend.addChangeListener(new RealmChangeListener() {
-            @Override
-            public void onChange() {
-                LogManager.i("AbstractChat", "messagesToSend changed user: " + user);
-                sendMessages();
-            }
-        });
     }
-
-    private void getSyncInfo(String account, String user) {
-        syncInfo = realm.where(SyncInfo.class).equalTo(SyncInfo.FIELD_ACCOUNT, account).equalTo(SyncInfo.FIELD_USER, user).findFirst();
-
-        if (syncInfo == null) {
-            realm.beginTransaction();
-
-            syncInfo = realm.createObject(SyncInfo.class);
-            syncInfo.setAccount(account);
-            syncInfo.setUser(user);
-            realm.commitTransaction();
-        }
-    }
-
-    public RealmResults<MessageItem> getMessages() {
-        return messages;
-    }
-
-
 
     public boolean isLocalHistoryLoadedCompletely() {
         return isLocalHistoryLoadedCompletely;
@@ -176,8 +118,8 @@ public abstract class AbstractChat extends BaseEntity {
 
 
         LogManager.i(this, "Adding new messages from MAM: " + messagesFromServer.size());
-
-        realm.executeTransaction(new Realm.Transaction() {
+        Realm realm = Realm.getDefaultInstance();
+        Realm.getDefaultInstance().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 RealmResults<MessageItem> localMessages = realm.where(MessageItem.class)
@@ -236,6 +178,7 @@ public abstract class AbstractChat extends BaseEntity {
                 realm.copyToRealm(messagesFromServer);
             }
         }, null);
+        realm.close();
     }
 
     private boolean isTimeStampSimilar(RealmResults<MessageItem> sameTextMessages, long remoteMessageTimestamp) {
@@ -278,9 +221,6 @@ public abstract class AbstractChat extends BaseEntity {
     void closeChat() {
         active = false;
         firstNotification = true;
-
-        messagesToSend.removeChangeListeners();
-        messages.removeChangeListeners();
     }
 
     boolean isStatusTrackingEnabled() {
@@ -409,6 +349,7 @@ public abstract class AbstractChat extends BaseEntity {
             final String finalResource = resource;
             final String finalText = text;
             final boolean finalNotify = notify;
+            Realm realm = Realm.getDefaultInstance();
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -448,6 +389,7 @@ public abstract class AbstractChat extends BaseEntity {
 
                 }
             }, null);
+            realm.close();
 
         }
     }
@@ -466,75 +408,80 @@ public abstract class AbstractChat extends BaseEntity {
         }
         messageItem.setFilePath(filePath);
 
-        realm.beginTransaction();
-        messageItem = realm.copyToRealm(messageItem);
-        realm.commitTransaction();
+        // TODO
+//        realm.beginTransaction();
+//        messageItem = realm.copyToRealm(messageItem);
+//        realm.commitTransaction();
 
         return messageItem;
     }
 
     private void updateSyncInfo() {
-        LogManager.i(this, "updateSyncInfo messages size");
-
-        final String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
-
-        Integer firstLocalMessagePosition = null;
-        Integer firstMamMessagePosition = null;
-        Date firstLocalMessageTimestamp = null;
-
-        for (int i = 0; i < messages.size(); i++) {
-            MessageItem messageItem = messages.get(i);
-            String stanzaId = messageItem.getStanzaId();
+//        LogManager.i(this, "updateSyncInfo messages size");
+//
+//        final String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
+//
+//        Integer firstLocalMessagePosition = null;
+//        Integer firstMamMessagePosition = null;
+//        Date firstLocalMessageTimestamp = null;
+//
+//        for (int i = 0; i < messages.size(); i++) {
+//            MessageItem messageItem = messages.get(i);
+//            String stanzaId = messageItem.getStanzaId();
 //
 //            if (firstLocalMessagePosition == null && messageItem.getId() != null) {
 //                firstLocalMessagePosition = i;
 //                firstLocalMessageTimestamp = messageItem.getTimestamp();
 //                LogManager.i(this, "firstLocalMessagePosition " + firstLocalMessagePosition + " firstLocalMessageTimestamp " + firstLocalMessageTimestamp);
 //            }
-
-
-            if (firstMamMessagePosition == null && firstMamMessageStanzaId != null && stanzaId != null
-                    && firstMamMessageStanzaId.equals(stanzaId)) {
-                firstMamMessagePosition = i;
-
-                LogManager.i(this, "firstMamMessagePosition " + i);
-            }
-
-
-            if (firstLocalMessagePosition != null) {
-                if (firstMamMessagePosition != null) {
-                    break;
-                }
-                if (firstMamMessageStanzaId == null) {
-                    break;
-                }
-            }
-
-        }
-
-        syncCache.setFirstLocalMessagePosition(firstLocalMessagePosition);
-        syncCache.setFirstLocalMessageTimeStamp(firstLocalMessageTimestamp);
-        syncCache.setFirstMamMessagePosition(firstMamMessagePosition);
+//
+//
+//            if (firstMamMessagePosition == null && firstMamMessageStanzaId != null && stanzaId != null
+//                    && firstMamMessageStanzaId.equals(stanzaId)) {
+//                firstMamMessagePosition = i;
+//
+//                LogManager.i(this, "firstMamMessagePosition " + i);
+//            }
+//
+//
+//            if (firstLocalMessagePosition != null) {
+//                if (firstMamMessagePosition != null) {
+//                    break;
+//                }
+//                if (firstMamMessageStanzaId == null) {
+//                    break;
+//                }
+//            }
+//
+//        }
+//
+//        syncCache.setFirstLocalMessagePosition(firstLocalMessagePosition);
+//        syncCache.setFirstLocalMessageTimeStamp(firstLocalMessageTimestamp);
+//        syncCache.setFirstMamMessagePosition(firstMamMessagePosition);
 
     }
 
     void removeMessage(final MessageItem messageItem) {
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                messageItem.removeFromRealm();
-            }
-        }, null);
+//        realm.executeTransaction(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                messageItem.removeFromRealm();
+//            }
+//        }, null);
     }
 
     void removeAllMessages() {
+        Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                messages.clear();
+               realm.where(MessageItem.class)
+                       .equalTo(MessageItem.Fields.ACCOUNT, account)
+                       .equalTo(MessageItem.Fields.USER, user)
+                       .findAll().clear();
             }
         }, null);
-
+        realm.close();
     }
 
     /**
@@ -546,18 +493,18 @@ public abstract class AbstractChat extends BaseEntity {
         return this.user.equals(bareAddress);
     }
 
-    /**
-     * @return Whether chat can send messages.
-     */
-    protected boolean canSendMessage() {
-        return !messagesToSend.isEmpty();
-    }
+    public MessageItem getLastMessage() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<MessageItem> allSorted = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.USER, user)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        realm.close();
 
-    public String getLastText() {
-        if (!messages.isEmpty()) {
-            return messages.last().getText();
+        if (allSorted.isEmpty()) {
+            return null;
         } else {
-            return "";
+            return allSorted.last();
         }
     }
 
@@ -565,8 +512,15 @@ public abstract class AbstractChat extends BaseEntity {
      * @return Time of last message in chat. Can be <code>null</code>.
      */
     public Date getLastTime() {
-        if (!messages.isEmpty()) {
-            return new Date(messages.last().getTimestamp());
+        Realm realm = Realm.getDefaultInstance();
+        Number max = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.USER, user)
+                .max(MessageItem.Fields.TIMESTAMP);
+        realm.close();
+
+        if (max != null) {
+            return new Date(max.longValue());
         } else {
             return null;
         }
@@ -599,9 +553,16 @@ public abstract class AbstractChat extends BaseEntity {
     public void sendMessages() {
         LogManager.i(this, "sendMessages. user: " + user);
 
-        Application.getInstance().runOnUiThread(new Runnable() {
+        final Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
-            public void run() {
+            public void execute(Realm realm) {
+                RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.ACCOUNT, account)
+                        .equalTo(MessageItem.Fields.USER, user)
+                        .equalTo(MessageItem.Fields.SENT, false)
+                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
                 if (messagesToSend.isEmpty()) {
                     return;
                 }
@@ -644,7 +605,6 @@ public abstract class AbstractChat extends BaseEntity {
                         }
                     }
 
-                    realm.beginTransaction();
                     if (message == null) {
                         messageItem.setError(true);
                     } else {
@@ -658,13 +618,16 @@ public abstract class AbstractChat extends BaseEntity {
                         messageItem.setTimestamp(currentTime.getTime());
                     }
                     messageItem.setSent(true);
-                    realm.commitTransaction();
-                    EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
                 }
-
+            }
+        }, new Realm.Transaction.Callback() {
+            @Override
+            public void onSuccess() {
+                super.onSuccess();
+                EventBus.getDefault().post(new MessageUpdateEvent(account, user));
             }
         });
-
+        realm.close();
     }
 
     public String getThreadId() {
@@ -714,14 +677,6 @@ public abstract class AbstractChat extends BaseEntity {
         creationTime.setTime(System.currentTimeMillis());
     }
 
-    public boolean isLastMessageIncoming() {
-        if (!messages.isEmpty()) {
-            return messages.last().isIncoming();
-        } else {
-            return false;
-        }
-    }
-
     public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
         this.isPrivateMucChatAccepted = isPrivateMucChatAccepted;
     }
@@ -734,15 +689,7 @@ public abstract class AbstractChat extends BaseEntity {
         return isPrivateMucChatAccepted;
     }
 
-    public SyncInfo getSyncInfo() {
-        return syncInfo;
-    }
-
     public SyncCache getSyncCache() {
         return syncCache;
-    }
-
-    protected Realm getRealm() {
-        return realm;
     }
 }

@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.Spannable;
@@ -92,6 +93,10 @@ import de.greenrobot.event.EventBus;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
@@ -118,7 +123,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private ChatViewerFragmentListener listener;
     private Animation shakeAnimation = null;
-    private RealmRecyclerView realmRecyclerView;
+    private RecyclerView realmRecyclerView;
     private View contactTitleView;
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
@@ -174,6 +179,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         super.onStart();
         EventBus.getDefault().register(this);
         AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
         MamManager.getInstance().requestLastHistory(abstractChat);
 
     }
@@ -182,6 +188,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -227,26 +238,28 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             securityButton.setVisibility(View.GONE);
         }
 
+        realmRecyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
 
-
-        chatMessageAdapter = new ChatMessageAdapter(getActivity(), getChat(), this, this);
-
-        realmRecyclerView = (RealmRecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
-        realmRecyclerView.setAdapter(chatMessageAdapter);
-
-
-
-//        realmRecyclerView.getRecyclerView().getAdapter().notifyItemChanged();
-
-
-
-        layoutManager = (LinearLayoutManager) realmRecyclerView.getLayoutManager();
+        layoutManager = new LinearLayoutManager(getActivity());
+        realmRecyclerView.setLayoutManager(layoutManager);
 
         layoutManager.setStackFromEnd(true);
-        realmRecyclerView.setRefreshing(true);
-        realmRecyclerView.setOnLoadMoreListener(this);
-        realmRecyclerView.setOnRefreshListener(this);
-        realmRecyclerView.enableShowLoadMore();
+
+        final RealmResults<MessageItem> messageItems = ((ChatViewer)getActivity()).getRealm().where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.USER, this.user)
+                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
+        realmRecyclerView.setAdapter(chatMessageAdapter);
+
+//        messageItems.addChangeListener(new RealmChangeListener() {
+//            @Override
+//            public void onChange() {
+//                chatMessageAdapter.onChange();
+//                messageItems.removeChangeListeners();
+//            }
+//        });
 
 
         // to avoid strange bug on some 4.x androids
@@ -433,51 +446,51 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void loadHistoryIfNeeded() {
-        int visibleItemCount = layoutManager.getChildCount();
-        int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-
-        if (visibleItemCount == 0) {
-            return;
-        }
-
-        if (isLocalHistoryLoadRequested && isRemotePreviousHistoryRequested) {
-            return;
-        }
-
-        if (pastVisibleItems / visibleItemCount <= 2) {
-            LogManager.i(this, "pastVisibleItems / visibleItemCount <= 2");
-            requestLocalHistoryLoad();
-            requestRemoteHistoryLoad();
-        } else {
-            AbstractChat chat = getChat();
-            if (chat != null && !chat.getSyncInfo().isRemoteHistoryCompletelyLoaded()) {
-                Integer firstLocalMessagePosition = chat.getSyncCache().getFirstLocalMessagePosition();
-                Integer firstRemotelySyncedMessagePosition = chat.getSyncCache().getFirstMamMessagePosition();
-
-                LogManager.i(this, "firstLocalMessagePosition: " + firstLocalMessagePosition + " firstRemotelySyncedMessagePosition: " + firstRemotelySyncedMessagePosition);
-
-
-                if (firstLocalMessagePosition != null && firstRemotelySyncedMessagePosition != null) {
-
-                    int abs = Math.abs(firstLocalMessagePosition - firstRemotelySyncedMessagePosition);
-
-                    if (abs >= MamManager.PAGE_SIZE) {
-                        LogManager.i(this, "Large difference between local and removed history loaded!");
-                        if (firstLocalMessagePosition < firstRemotelySyncedMessagePosition) {
-                            requestRemoteHistoryLoad();
-                        } else {
-                            requestLocalHistoryLoad();
-
-                        }
-                    }
-
-
-                }
-
-
-            }
-        }
-
+//        int visibleItemCount = layoutManager.getChildCount();
+//        int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+//
+//        if (visibleItemCount == 0) {
+//            return;
+//        }
+//
+//        if (isLocalHistoryLoadRequested && isRemotePreviousHistoryRequested) {
+//            return;
+//        }
+//
+//        if (pastVisibleItems / visibleItemCount <= 2) {
+//            LogManager.i(this, "pastVisibleItems / visibleItemCount <= 2");
+//            requestLocalHistoryLoad();
+//            requestRemoteHistoryLoad();
+//        } else {
+//            AbstractChat chat = getChat();
+//            if (chat != null && !chat.getSyncInfo().isRemoteHistoryCompletelyLoaded()) {
+//                Integer firstLocalMessagePosition = chat.getSyncCache().getFirstLocalMessagePosition();
+//                Integer firstRemotelySyncedMessagePosition = chat.getSyncCache().getFirstMamMessagePosition();
+//
+//                LogManager.i(this, "firstLocalMessagePosition: " + firstLocalMessagePosition + " firstRemotelySyncedMessagePosition: " + firstRemotelySyncedMessagePosition);
+//
+//
+//                if (firstLocalMessagePosition != null && firstRemotelySyncedMessagePosition != null) {
+//
+//                    int abs = Math.abs(firstLocalMessagePosition - firstRemotelySyncedMessagePosition);
+//
+//                    if (abs >= MamManager.PAGE_SIZE) {
+//                        LogManager.i(this, "Large difference between local and removed history loaded!");
+//                        if (firstLocalMessagePosition < firstRemotelySyncedMessagePosition) {
+//                            requestRemoteHistoryLoad();
+//                        } else {
+//                            requestLocalHistoryLoad();
+//
+//                        }
+//                    }
+//
+//
+//                }
+//
+//
+//            }
+//        }
+//
 
     }
 
@@ -538,12 +551,16 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     public void onEventMainThread(MessageUpdateEvent event) {
-        if (!event.getAccount().equals(account) || !event.getUser().equals(user)) {
-            return;
-        }
-
-        LogManager.i(this, "on MessageUpdateEvent " + event.getUniqueId());
-        chatMessageAdapter.notifyDataSetChanged();
+//        if (event.getAccount() != null && !event.getAccount().equals(account)) {
+//            return;
+//        }
+//
+//        if (event.getUser() != null && !event.getUser().equals(user)) {
+//            return;
+//        }
+//
+//        LogManager.i(this, "on MessageUpdateEvent " + event.getUniqueId());
+//        chatMessageAdapter.onChange();
     }
 
     private void onAttachButtonPressed() {
@@ -840,7 +857,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void scrollDown() {
         LogManager.i(this, "scrollDown");
-        realmRecyclerView.getRecyclerView().scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
     private void updateSecurityButton() {
@@ -1163,15 +1180,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     @Override
-    public void onChangeStarted() {
-        itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
-        lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-    }
-
-    @Override
-    public void onChangeFinished() {
-//        // if chat is scrolled to bottom we need to show new message
-        if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (itemCountBeforeUpdate - 2)) {
+    public void onChange(int prevItemCount) {
+        int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+        if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
             scrollDown();
         }
     }

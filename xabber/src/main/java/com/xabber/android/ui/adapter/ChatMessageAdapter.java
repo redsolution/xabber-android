@@ -35,16 +35,17 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.ChatViewerFragment;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
@@ -52,11 +53,11 @@ import com.xabber.android.utils.StringUtils;
 import java.io.File;
 import java.util.Date;
 
-import io.realm.RealmBasedRecyclerViewAdapter;
-import io.realm.RealmViewHolder;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 
-public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageItem, ChatMessageAdapter.BasicMessage> {
+public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, ChatMessageAdapter.BasicMessage> {
 
     public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
@@ -76,23 +77,17 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
      * Text with extra information.
      */
     private String hint;
-    @Nullable
     private Listener listener;
 
     private String account;
     private String user;
     private int prevItemCount;
 
-    public interface Listener {
-        void onNoDownloadFilePermission();
-        void onChangeStarted();
-        void onChangeFinished();
-    }
+    public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatViewerFragment chatViewerFragment) {
+        super(context, messageItems, true);
 
-    public ChatMessageAdapter(Context context, AbstractChat chat, Message.MessageClickListener messageClickListener, Listener listener) {
-        super(context, chat.getMessages(), true, true);
         this.context = context;
-        this.messageClickListener = messageClickListener;
+        this.messageClickListener = chatViewerFragment;
 
         account = chat.getAccount();
         user = chat.getUser();
@@ -104,66 +99,13 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
         hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
 
-        this.listener = listener;
+        this.listener = chatViewerFragment;
 
     }
 
-    @Override
-    public BasicMessage onCreateRealmViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_HINT:
-                return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_info, parent, false));
-
-            case VIEW_TYPE_ACTION_MESSAGE:
-                return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_action_message, parent, false));
-
-            case VIEW_TYPE_INCOMING_MESSAGE:
-                return new IncomingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_incoming_message, parent, false), messageClickListener);
-
-            case VIEW_TYPE_OUTGOING_MESSAGE:
-                return new OutgoingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false), messageClickListener);
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public void onBindRealmViewHolder(BasicMessage holder, int position) {
-        final int viewType = getItemViewType(position);
-
-        MessageItem messageItem = getMessageItem(position);
-
-        switch (viewType) {
-            case VIEW_TYPE_HINT:
-                holder.messageText.setText(hint);
-                break;
-
-            case VIEW_TYPE_ACTION_MESSAGE:
-                ChatAction action = MessageItem.getChatAction(messageItem);
-                String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
-
-                String name;
-                if (isMUC) {
-                    name = messageItem.getResource();
-                } else {
-                    name = RosterManager.getInstance().getBestContact(account, messageItem.getUser()).getName();
-                }
-                holder.messageText.setText(time + ": "
-                        + action.getText(context, name, MessageItem.getSpannable(messageItem).toString()));
-
-                break;
-
-            case VIEW_TYPE_INCOMING_MESSAGE:
-                setUpIncomingMessage((IncomingMessage) holder, messageItem);
-                break;
-            case VIEW_TYPE_OUTGOING_MESSAGE:
-                setUpOutgoingMessage((Message) holder, messageItem);
-                break;
-        }
+    public interface Listener {
+        void onNoDownloadFilePermission();
+        void onChange(int prevItemCount);
     }
 
     private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
@@ -374,10 +316,63 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
         }
     }
 
-//    @Override
-//    public long getItemId(int position) {
-//        return position;
-//    }
+    @Override
+    public BasicMessage onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_HINT:
+                return new BasicMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_info, parent, false));
+
+            case VIEW_TYPE_ACTION_MESSAGE:
+                return new BasicMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_action_message, parent, false));
+
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                return new IncomingMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_incoming_message, parent, false), messageClickListener);
+
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                return new OutgoingMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false), messageClickListener);
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(BasicMessage holder, int position) {
+        final int viewType = getItemViewType(position);
+
+        MessageItem messageItem = getMessageItem(position);
+
+        switch (viewType) {
+            case VIEW_TYPE_HINT:
+                holder.messageText.setText(hint);
+                break;
+
+            case VIEW_TYPE_ACTION_MESSAGE:
+                ChatAction action = MessageItem.getChatAction(messageItem);
+                String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
+
+                String name;
+                if (isMUC) {
+                    name = messageItem.getResource();
+                } else {
+                    name = RosterManager.getInstance().getBestContact(account, messageItem.getUser()).getName();
+                }
+                holder.messageText.setText(time + ": "
+                        + action.getText(context, name, MessageItem.getSpannable(messageItem).toString()));
+
+                break;
+
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                setUpIncomingMessage((IncomingMessage) holder, messageItem);
+                break;
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                setUpOutgoingMessage((Message) holder, messageItem);
+                break;
+        }
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -401,21 +396,17 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
     }
 
     @Override
-    protected void onChangeStarted() {
-        LogManager.i(this, "onChangeStarted");
-        if (listener != null) {
-            listener.onChangeStarted();
+    public void onChange() {
+        hint = getHint();
+
+        notifyDataSetChanged();
+        int itemCount = getItemCount();
+        LogManager.i(this, "onChange itemCount: " + itemCount + " prev " + prevItemCount);
+        if (prevItemCount != itemCount) {
+            listener.onChange(prevItemCount);
+            prevItemCount = itemCount;
         }
     }
-
-    @Override
-    protected void onChangeFinished() {
-        LogManager.i(this, "onChangeFinished");
-        if (listener != null) {
-            listener.onChangeFinished();
-        }
-    }
-
 
     private void setUpMessage(MessageItem messageItem, Message message) {
         if (isMUC) {
@@ -540,7 +531,7 @@ public class ChatMessageAdapter extends RealmBasedRecyclerViewAdapter<MessageIte
         return null;
     }
 
-    public static class BasicMessage extends RealmViewHolder {
+    public static class BasicMessage extends RecyclerView.ViewHolder {
 
         public TextView messageText;
 

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -19,6 +20,8 @@ import com.xabber.android.ui.activity.ContactViewer;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
+
+import java.util.Date;
 
 public class ContactItemInflater {
 
@@ -106,7 +109,9 @@ public class ContactItemInflater {
 
             AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
 
-            statusText = chat.getLastText().trim();
+            MessageItem lastMessage = chat.getLastMessage();
+
+            statusText = lastMessage.getText().trim();
 
             view.setBackgroundColor(ColorManager.getInstance().getActiveChatBackgroundColor());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getActiveChatSeparatorColor());
@@ -114,10 +119,10 @@ public class ContactItemInflater {
 
             if (!statusText.isEmpty()) {
 
-                viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
+                viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, new Date(lastMessage.getTimestamp())));
                 viewHolder.smallRightText.setVisibility(View.VISIBLE);
 
-                if (!chat.isLastMessageIncoming()) {
+                if (!lastMessage.isIncoming()) {
                     viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
                     viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
                     viewHolder.outgoingMessageIndicator.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));

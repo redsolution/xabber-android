@@ -50,6 +50,8 @@ import com.xabber.android.ui.fragment.RecentChatFragment;
 import java.util.Collection;
 import java.util.HashSet;
 
+import io.realm.Realm;
+
 /**
  * Chat activity.
  * <p/>
@@ -92,6 +94,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     private boolean isRecentChatsSelected;
 
     private boolean isVisible;
+
+    Realm realm;
 
     public static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
@@ -179,6 +183,8 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
             return;
         }
 
+        realm = Realm.getDefaultInstance();
+
         setContentView(R.layout.chat_viewer);
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -191,6 +197,16 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         }
 
         initChats();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
+
+    public Realm getRealm() {
+        return realm;
     }
 
     private void initChats() {

@@ -107,6 +107,7 @@ public class MessageItem extends RealmObject {
     /**
      * Message was sent.
      */
+    @Index
     private boolean sent;
     /**
      * Message was shown to the user.

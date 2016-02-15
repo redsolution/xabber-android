@@ -58,7 +58,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 70;
-    private static final int REALM_DATABASE_VERSION = 3;
+    private static final int REALM_DATABASE_VERSION = 4;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -70,7 +70,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     }
 
     private final ArrayList<DatabaseTable> registeredTables;
-    private Realm realm;
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
@@ -123,18 +122,22 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
                             oldVersion++;
                         }
+
+                        if (oldVersion == 3) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addIndex(MessageItem.Fields.SENT);
+                        }
                     }
                 })
                 .build();
         Realm.setDefaultConfiguration(config);
-
-        realm = Realm.getDefaultInstance();
     }
 
     private void copyDataFromSqliteToRealm() {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Realm realm = Realm.getDefaultInstance();
                 realm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -166,6 +169,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                         LogManager.i("DatabaseManager", "onError " + e.getMessage());
                     }
                 });
+                realm.close();
 
             }
         });
@@ -175,10 +179,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     public static DatabaseManager getInstance() {
         return instance;
-    }
-
-    public Realm getRealm() {
-        return realm;
     }
 
     /**
@@ -337,10 +337,9 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             table.clear();
         }
 
-        if (!realm.isClosed()) {
-            realm.close();
-        }
+        Realm realm = Realm.getDefaultInstance();
         Realm.deleteRealm(realm.getConfiguration());
+        realm.close();
     }
 
     public void removeAccount(final String account) {
@@ -351,6 +350,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             }
         }
 
+        Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -358,6 +358,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                 realm.where(BlockedContactsForAccount.class).equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account).findAll().clear();
             }
         }, null);
+        realm.close();
     }
 
 }

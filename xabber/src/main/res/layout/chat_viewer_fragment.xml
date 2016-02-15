@@ -39,7 +39,7 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,8 +51,6 @@
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
         tools:listitem="@layout/chat_viewer_outgoing_message"
-        app:rrvIsRefreshable="true"
-        app:rrvLayoutType="LinearLayout"
         />
 
     <ProgressBar

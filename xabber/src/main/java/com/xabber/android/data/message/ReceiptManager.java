@@ -110,27 +110,21 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsError(final String account, final Message message) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = DatabaseManager.getInstance().getRealm();
-                MessageItem first = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ACCOUNT, account)
-                        .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId()).findFirst();
-                if (first != null) {
-                    realm.beginTransaction();
-                    first.setError(true);
-                    realm.commitTransaction();
-                    EventBus.getDefault().post(new MessageUpdateEvent(first.getAccount(), first.getUser(), first.getUniqueId()));
-                }
-            }
-        });
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        MessageItem first = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId()).findFirst();
+        if (first != null) {
+            first.setError(true);
+        }
+        realm.commitTransaction();
+        realm.close();
+        EventBus.getDefault().post(new MessageUpdateEvent(account));
     }
 
     @Override
     public void onReceiptReceived(String fromJid, final String toJid, final String receiptId, Stanza stanza) {
-        LogManager.i(this, "onReceiptReceived fromJid: " + fromJid + " toJid: " + toJid + " receiptId: " + receiptId);
-
         DeliveryReceipt receipt = DeliveryReceipt.from((Message) stanza);
 
         if (receipt == null) {
@@ -141,23 +135,15 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsDelivered(final String toJid, final String receiptId) {
-        LogManager.i(this, "markAsDelivered toJid: " + toJid + " receiptId: " + receiptId);
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = DatabaseManager.getInstance().getRealm();
-
-                MessageItem first = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
-                if (first != null) {
-                    LogManager.i(this, "Found message! setting as delivered " + first.getText());
-                    realm.beginTransaction();
-                    first.setDelivered(true);
-                    realm.commitTransaction();
-                    EventBus.getDefault().post(new MessageUpdateEvent(first.getAccount(), first.getUser(), first.getUniqueId()));
-                }
-            }
-        });
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        MessageItem first = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
+        if (first != null) {
+            first.setDelivered(true);
+        }
+        realm.commitTransaction();
+        realm.close();
+        EventBus.getDefault().post(new MessageUpdateEvent());
     }
 }
