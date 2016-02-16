@@ -256,15 +256,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
-//        messageItems.addChangeListener(new RealmChangeListener() {
-//            @Override
-//            public void onChange() {
-//                chatMessageAdapter.onChange();
-//                messageItems.removeChangeListeners();
-//            }
-//        });
-
-
         // to avoid strange bug on some 4.x androids
         view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
 

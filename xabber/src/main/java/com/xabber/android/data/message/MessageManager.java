@@ -673,7 +673,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final boolean isMUC = abstractChat instanceof RoomChat;
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
-                RealmResults<MessageItem> messageItems = Realm.getDefaultInstance().where(MessageItem.class)
+
+                Realm realm = Realm.getDefaultInstance();
+                RealmResults<MessageItem> messageItems = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.ACCOUNT, account)
                         .equalTo(MessageItem.Fields.USER, user)
                         .findAllSorted(MessageItem.Fields.TIMESTAMP);
@@ -700,6 +702,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     out.write(StringUtils.escapeHtml(messageItem.getText()));
                     out.write("</p><hr />\n");
                 }
+                realm.close();
             }
             out.write("</body></html>");
             out.close();

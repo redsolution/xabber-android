@@ -121,7 +121,7 @@ public abstract class AbstractChat extends BaseEntity {
 
         LogManager.i(this, "Adding new messages from MAM: " + messagesFromServer.size());
         Realm realm = Realm.getDefaultInstance();
-        Realm.getDefaultInstance().executeTransaction(new Realm.Transaction() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 RealmResults<MessageItem> localMessages = realm.where(MessageItem.class)

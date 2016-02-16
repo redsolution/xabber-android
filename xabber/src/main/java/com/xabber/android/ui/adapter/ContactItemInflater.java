@@ -109,14 +109,18 @@ public class ContactItemInflater {
 
             AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
 
-            MessageItem lastMessage = chat.getLastMessage();
 
-            statusText = lastMessage.getText().trim();
 
             view.setBackgroundColor(ColorManager.getInstance().getActiveChatBackgroundColor());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getActiveChatSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getActiveChatLargeClientIconColor());
 
+            MessageItem lastMessage = chat.getLastMessage();
+            if (lastMessage == null) {
+                statusText = "";
+            } else {
+                statusText = lastMessage.getText().trim();
+            }
             if (!statusText.isEmpty()) {
 
                 viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, new Date(lastMessage.getTimestamp())));

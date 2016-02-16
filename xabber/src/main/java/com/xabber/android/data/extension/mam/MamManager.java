@@ -155,6 +155,7 @@ public class MamManager {
         }
 
         realm.commitTransaction();
+        realm.close();
     }
 
     private void updateSyncInfo(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, SyncInfo syncInfo, List<MessageItem> messageItems) {
@@ -169,6 +170,7 @@ public class MamManager {
             syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
         }
         realm.commitTransaction();
+        realm.close();
     }
 
 
