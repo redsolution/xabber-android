@@ -628,13 +628,7 @@ public abstract class AbstractChat extends BaseEntity {
                     messageItem.setSent(true);
                 }
             }
-        }, new Realm.Transaction.Callback() {
-            @Override
-            public void onSuccess() {
-                super.onSuccess();
-                EventBus.getDefault().post(new MessageUpdateEvent(account, user));
-            }
-        });
+        }, null);
         realm.close();
     }
 
