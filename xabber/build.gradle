@@ -82,5 +82,4 @@ dependencies {
     compile project('otr4j')
     compile project('MemorizingTrustManager')
     compile project('emojicon')
-    compile project(path: ':realm-recyclerview')
 }

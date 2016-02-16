@@ -1,5 +1,4 @@
-include ':xabber', ':realm-recyclerview'
+include ':xabber'
 include ':xabber:otr4j'
 include ':xabber:MemorizingTrustManager'
 include ':xabber:emojicon'
-project(':realm-recyclerview').projectDir = new File('xabber/realm-recyclerview/library')
