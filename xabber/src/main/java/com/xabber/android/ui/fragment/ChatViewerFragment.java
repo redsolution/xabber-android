@@ -41,6 +41,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
@@ -59,7 +60,6 @@ import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.RegularChat;
@@ -92,19 +92,16 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
-        ChatMessageAdapter.Listener, RealmRecyclerView.OnLoadMoreListener, RealmRecyclerView.OnRefreshListener {
+        ChatMessageAdapter.Listener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -1181,18 +1178,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
             scrollDown();
         }
-    }
-
-    @Override
-    public void onLoadMore(Object o) {
-        LogManager.i(this, "onLoadMore " + o);
-        MamManager.getInstance().requestPreviousHistory(getChat());
-
-    }
-
-    @Override
-    public void onRefresh() {
-        LogManager.i(this, "onRefresh");
     }
 
     public interface ChatViewerFragmentListener {
