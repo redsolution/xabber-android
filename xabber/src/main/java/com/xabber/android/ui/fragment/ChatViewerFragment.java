@@ -83,13 +83,16 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
-import de.greenrobot.event.EventBus;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
@@ -518,22 +521,23 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         return MessageManager.getInstance().getChat(account, user);
     }
 
-    @SuppressWarnings("unused")
-    public void onEventMainThread(LastHistoryLoadStartedEvent event) {
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LastHistoryLoadStartedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.VISIBLE);
         }
     }
 
-    @SuppressWarnings("unused")
-    public void onEventMainThread(LastHistoryLoadFinishedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LastHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             lastHistoryProgressBar.setVisibility(View.GONE);
         }
     }
 
-    @SuppressWarnings("unused")
-    public void onEventMainThread(PreviousHistoryLoadStartedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(PreviousHistoryLoadStartedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadStartedEvent");
             previousHistoryProgressBar.setVisibility(View.VISIBLE);
@@ -541,8 +545,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    @SuppressWarnings("unused")
-    public void onEventMainThread(PreviousHistoryLoadFinishedEvent event) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(PreviousHistoryLoadFinishedEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
             isRemotePreviousHistoryRequested = false;
@@ -550,6 +554,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(MessageUpdateEvent event) {
 //        if (event.getAccount() != null && !event.getAccount().equals(account)) {
 //            return;

@@ -13,6 +13,7 @@ import com.xabber.xmpp.address.Jid;
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.PlainTextMessage;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -25,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import de.greenrobot.event.EventBus;
 import io.realm.Realm;
 
 public class MamManager {

@@ -33,6 +33,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.carbon.CarbonManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -45,7 +46,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;

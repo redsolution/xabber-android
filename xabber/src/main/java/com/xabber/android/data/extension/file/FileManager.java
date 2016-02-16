@@ -28,6 +28,8 @@ import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,7 +47,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpHeaders;
-import de.greenrobot.event.EventBus;
 
 public class FileManager {
 

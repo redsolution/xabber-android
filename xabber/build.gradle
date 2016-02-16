@@ -74,7 +74,7 @@ dependencies {
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'io.realm:realm-android:0.87.4'
-    compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
 
     compile "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
     compile "org.igniterealtime.smack:smack-experimental:$smackVersion"

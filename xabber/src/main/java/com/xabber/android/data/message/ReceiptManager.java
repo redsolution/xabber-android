@@ -24,6 +24,7 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.realm.MessageItem;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
@@ -35,7 +36,6 @@ import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 
-import de.greenrobot.event.EventBus;
 import io.realm.Realm;
 
 /**
