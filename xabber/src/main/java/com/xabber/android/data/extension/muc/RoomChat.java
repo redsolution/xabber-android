@@ -172,11 +172,6 @@ public class RoomChat extends AbstractChat {
         newMessage(nickname, text, null, null, false, false, false, false, true, null);
     }
 
-//    @Override
-//    protected boolean canSendMessage() {
-//        return super.canSendMessage() && state == RoomState.available;
-//    }
-
     @Override
     protected boolean notifyAboutMessage() {
         return SettingsManager.eventsMessage() == SettingsManager.EventsMessage.chatAndMuc;
@@ -184,143 +179,136 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected boolean onPacket(String bareAddress, Stanza packet) {
-        return false;
-//        if (!super.onPacket(bareAddress, packet)) {
-//            return false;
-//        }
-//
-//        MUCUser mucUserExtension = MUC.getMUCUserExtension(packet);
-//        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
-//            return false;
-//        }
-//
-//        final String from = packet.getFrom();
-//        final String resource = XmppStringUtils.parseResource(from);
-//        if (packet instanceof Message) {
-//            final Message message = (Message) packet;
-//            if (message.getType() == Message.Type.error) {
-//                String invite = invites.remove(message.getStanzaId());
-//                if (invite != null) {
-//                    newAction(nickname, invite, ChatAction.invite_error);
-//                }
-//                return true;
-//            }
-//            MUCUser mucUser = MUC.getMUCUserExtension(packet);
-//            if (mucUser != null && mucUser.getDecline() != null) {
-//                onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
-//                return true;
-//            }
-//            if (mucUser != null && mucUser.getStatus() != null && mucUser.getStatus().contains(MUCUser.Status.create("100"))
-//                    && ChatManager.getInstance().isSuppress100(account, user)) {
-//                    // 'This room is not anonymous'
-//                    return true;
-//            }
-//            final String text = message.getBody();
-//            final String subject = message.getSubject();
-//            if (text == null && subject == null) {
-//                return true;
-//            }
-//            if (subject != null) {
-//                if (this.subject.equals(subject)) {
-//                    return true;
-//                }
-//                this.subject = subject;
-//                RosterManager.onContactChanged(account, bareAddress);
-//                newAction(resource, subject, ChatAction.subject);
-//            } else {
-//                boolean notify = true;
-//                String stanzaId = message.getStanzaId();
-//                Date delay = Delay.getDelay(message);
-//                if (delay != null) {
-//                    notify = false;
-//                }
-//
-//                final MessageItem sameMessage = getMessages().where().equalTo(MessageItem.Fields.STANZA_ID, stanzaId).findFirst();
-//                // Server send our own message back
-//                if (sameMessage != null) {
-//                    getRealm().executeTransaction(new Realm.Transaction() {
-//                        @Override
-//                        public void execute(Realm realm) {
-//                            sameMessage.setDelivered(true);
-//                        }
-//                    });
-//                    RosterManager.onContactChanged(account, user);
-//                    return true;
-//                }
-//
-//                for (MessageItem messageItem : getMessages()) {
-//                    // Search for duplicates
-//                    if (delay != null) {
-//                        if (delay.equals(messageItem.getDelayTimestamp())
-//                                && resource.equals(messageItem.getResource())
-//                                && text.equals(messageItem.getText())) {
-//                            return true;
-//                        }
-//                    }
-//                }
-//
-//                if (isSelf(resource)) { // Own message from other client
-//                    notify = false;
-//                }
-//
-//                updateThreadId(message.getThread());
-//                newMessage(resource, text, null, delay, true, notify, false, false, true, message.getStanzaId());
-//            }
-//        } else if (packet instanceof Presence) {
-//            String stringPrep = Jid.getStringPrep(resource);
-//            Presence presence = (Presence) packet;
-//            if (presence.getType() == Presence.Type.available) {
-//                Occupant oldOccupant = occupants.get(stringPrep);
-//                Occupant newOccupant = createOccupant(resource, presence);
-//                occupants.put(stringPrep, newOccupant);
-//                if (oldOccupant == null) {
-//                    onAvailable(resource);
-//                    RosterManager.onContactChanged(account, user);
-//                } else {
-//                    boolean changed = false;
-//                    if (oldOccupant.getAffiliation() != newOccupant.getAffiliation()) {
-//                        changed = true;
-//                        onAffiliationChanged(resource, newOccupant.getAffiliation());
-//                    }
-//                    if (oldOccupant.getRole() != newOccupant.getRole()) {
-//                        changed = true;
-//                        onRoleChanged(resource, newOccupant.getRole());
-//                    }
-//                    if (oldOccupant.getStatusMode() != newOccupant.getStatusMode()
-//                            || !oldOccupant.getStatusText().equals(newOccupant.getStatusText())) {
-//                        changed = true;
-//                        onStatusChanged(resource, newOccupant.getStatusMode(), newOccupant.getStatusText());
-//                    }
-//                    if (changed) {
-//                        RosterManager.onContactChanged(account, user);
-//                    }
-//                }
-//            } else if (presence.getType() == Presence.Type.unavailable && state == RoomState.available) {
-//                occupants.remove(stringPrep);
-//                MUCUser mucUser = MUC.getMUCUserExtension(presence);
-//                if (mucUser != null && mucUser.getStatus() != null) {
-//                    if (mucUser.getStatus().contains(MUCUser.Status.KICKED_307)) {
-//                        onKick(resource, mucUser.getItem().getActor());
-//                    } else if (mucUser.getStatus().contains(MUCUser.Status.BANNED_301)){
-//                        onBan(resource, mucUser.getItem().getActor());
-//                    } else if (mucUser.getStatus().contains(MUCUser.Status.NEW_NICKNAME_303)) {
-//                        String newNick = mucUser.getItem().getNick();
-//                        if (newNick == null) {
-//                            return true;
-//                        }
-//                        onRename(resource, newNick);
-//                        Occupant occupant = createOccupant(newNick, presence);
-//                        occupants.put(Jid.getStringPrep(newNick), occupant);
-//                    } else if (mucUser.getStatus().contains(MUCUser.Status.REMOVED_AFFIL_CHANGE_321)) {
-//                        onRevoke(resource, mucUser.getItem().getActor());
-//                    }
-//                } else {
-//                    onLeave(resource);
-//                }
-//                RosterManager.onContactChanged(account, user);
-//            }
-//        }
-//        return true;
+        if (!super.onPacket(bareAddress, packet)) {
+            return false;
+        }
+
+        MUCUser mucUserExtension = MUC.getMUCUserExtension(packet);
+        if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
+            return false;
+        }
+
+        final String from = packet.getFrom();
+        final String resource = XmppStringUtils.parseResource(from);
+        if (packet instanceof Message) {
+            final Message message = (Message) packet;
+            if (message.getType() == Message.Type.error) {
+                String invite = invites.remove(message.getStanzaId());
+                if (invite != null) {
+                    newAction(nickname, invite, ChatAction.invite_error);
+                }
+                return true;
+            }
+            MUCUser mucUser = MUC.getMUCUserExtension(packet);
+            if (mucUser != null && mucUser.getDecline() != null) {
+                onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
+                return true;
+            }
+            if (mucUser != null && mucUser.getStatus() != null && mucUser.getStatus().contains(MUCUser.Status.create("100"))
+                    && ChatManager.getInstance().isSuppress100(account, user)) {
+                    // 'This room is not anonymous'
+                    return true;
+            }
+            final String text = message.getBody();
+            final String subject = message.getSubject();
+            if (text == null && subject == null) {
+                return true;
+            }
+            if (subject != null) {
+                if (this.subject.equals(subject)) {
+                    return true;
+                }
+                this.subject = subject;
+                RosterManager.onContactChanged(account, bareAddress);
+                newAction(resource, subject, ChatAction.subject);
+            } else {
+                boolean notify = true;
+                String stanzaId = message.getStanzaId();
+                Date delay = Delay.getDelay(message);
+                if (delay != null) {
+                    notify = false;
+                }
+
+                Realm realm = Realm.getDefaultInstance();
+                final MessageItem sameMessage = realm
+                        .where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
+                        .findFirst();
+
+                try {
+                    // Server send our own message back
+                    if (sameMessage != null) {
+                        realm.beginTransaction();
+                        sameMessage.setDelivered(true);
+                        realm.commitTransaction();
+                        return true;
+                    }
+                } finally {
+                    realm.close();
+                }
+
+                if (isSelf(resource)) { // Own message from other client
+                    notify = false;
+                }
+
+                updateThreadId(message.getThread());
+                newMessage(resource, text, null, delay, true, notify, false, false, true, message.getStanzaId());
+            }
+        } else if (packet instanceof Presence) {
+            String stringPrep = Jid.getStringPrep(resource);
+            Presence presence = (Presence) packet;
+            if (presence.getType() == Presence.Type.available) {
+                Occupant oldOccupant = occupants.get(stringPrep);
+                Occupant newOccupant = createOccupant(resource, presence);
+                occupants.put(stringPrep, newOccupant);
+                if (oldOccupant == null) {
+                    onAvailable(resource);
+                    RosterManager.onContactChanged(account, user);
+                } else {
+                    boolean changed = false;
+                    if (oldOccupant.getAffiliation() != newOccupant.getAffiliation()) {
+                        changed = true;
+                        onAffiliationChanged(resource, newOccupant.getAffiliation());
+                    }
+                    if (oldOccupant.getRole() != newOccupant.getRole()) {
+                        changed = true;
+                        onRoleChanged(resource, newOccupant.getRole());
+                    }
+                    if (oldOccupant.getStatusMode() != newOccupant.getStatusMode()
+                            || !oldOccupant.getStatusText().equals(newOccupant.getStatusText())) {
+                        changed = true;
+                        onStatusChanged(resource, newOccupant.getStatusMode(), newOccupant.getStatusText());
+                    }
+                    if (changed) {
+                        RosterManager.onContactChanged(account, user);
+                    }
+                }
+            } else if (presence.getType() == Presence.Type.unavailable && state == RoomState.available) {
+                occupants.remove(stringPrep);
+                MUCUser mucUser = MUC.getMUCUserExtension(presence);
+                if (mucUser != null && mucUser.getStatus() != null) {
+                    if (mucUser.getStatus().contains(MUCUser.Status.KICKED_307)) {
+                        onKick(resource, mucUser.getItem().getActor());
+                    } else if (mucUser.getStatus().contains(MUCUser.Status.BANNED_301)){
+                        onBan(resource, mucUser.getItem().getActor());
+                    } else if (mucUser.getStatus().contains(MUCUser.Status.NEW_NICKNAME_303)) {
+                        String newNick = mucUser.getItem().getNick();
+                        if (newNick == null) {
+                            return true;
+                        }
+                        onRename(resource, newNick);
+                        Occupant occupant = createOccupant(newNick, presence);
+                        occupants.put(Jid.getStringPrep(newNick), occupant);
+                    } else if (mucUser.getStatus().contains(MUCUser.Status.REMOVED_AFFIL_CHANGE_321)) {
+                        onRevoke(resource, mucUser.getItem().getActor());
+                    }
+                } else {
+                    onLeave(resource);
+                }
+                RosterManager.onContactChanged(account, user);
+            }
+        }
+        return true;
     }
 
     /**
