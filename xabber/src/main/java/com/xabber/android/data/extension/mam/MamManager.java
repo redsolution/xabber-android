@@ -7,6 +7,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.database.realm.MessageItem;
@@ -87,10 +88,12 @@ public class MamManager {
                     return;
                 }
 
-                Realm realm = Realm.getDefaultInstance();
-                SyncInfo syncInfo = getSyncInfo(realm, account, user);
-
-                final String lastMessageMamId = syncInfo.getLastMessageMamId();
+                String lastMessageMamId;
+                {
+                    Realm realm = Realm.getDefaultInstance();
+                    lastMessageMamId = getSyncInfo(realm, account, user).getLastMessageMamId();
+                    realm.close();
+                }
 
                 final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
@@ -102,7 +105,6 @@ public class MamManager {
                     }
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
-                    realm.close();
                     return;
                 } finally {
                     EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
@@ -110,10 +112,12 @@ public class MamManager {
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
-                updateSyncInfo(mamQueryResult, syncInfo);
+
 
                 syncCache.setLastSyncedTime(new Date(System.currentTimeMillis()));
 
+                Realm realm = Realm.getDefaultInstance();
+                updateLastHistorySyncInfo(realm, chat, mamQueryResult);
                 syncMessages(realm, chat, getMessageItems(mamQueryResult, chat));
                 realm.close();
             }
@@ -222,14 +226,10 @@ public class MamManager {
         return syncInfo;
     }
 
-    private void updateSyncInfo(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, SyncInfo syncInfo) {
-        Realm realm = Realm.getDefaultInstance();
+    private void updateLastHistorySyncInfo(Realm realm, BaseEntity chat, org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult) {
+        SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
+
         realm.beginTransaction();
-
-        if (mamQueryResult.messages.size() < PAGE_SIZE) {
-            syncInfo.setRemoteHistoryCompletelyLoaded(true);
-        }
-
 
         if (mamQueryResult.mamFin.getRsmSet() != null) {
 
@@ -246,11 +246,11 @@ public class MamManager {
         }
 
         realm.commitTransaction();
-        realm.close();
     }
 
-    private void updateSyncInfo(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, SyncInfo syncInfo, List<MessageItem> messageItems) {
-        Realm realm = Realm.getDefaultInstance();
+    private void updatePreviousHistorySyncInfo(Realm realm, BaseEntity chat, org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, List<MessageItem> messageItems) {
+        SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
+
         realm.beginTransaction();
         if (mamQueryResult.messages.size() < PAGE_SIZE) {
             syncInfo.setRemoteHistoryCompletelyLoaded(true);
@@ -261,76 +261,78 @@ public class MamManager {
             syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
         }
         realm.commitTransaction();
-        realm.close();
     }
 
 
 
     public void requestPreviousHistory(final AbstractChat chat) {
-//        if (chat == null) {
-//            LogManager.i(this, "requestPreviousHistory chat == null");
-//            return;
-//        }
-//
-//        final SyncInfo syncInfo = chat.getSyncInfo();
-//        final String firstMamMessageMamId = syncInfo.getFirstMamMessageMamId();
-//
-//        LogManager.i(this, "requestPreviousHistory firstMamMessageMamId: " + firstMamMessageMamId
-//                + " syncInfo.isRemoteHistoryCompletelyLoaded() " + syncInfo.isRemoteHistoryCompletelyLoaded());
-//
-//        if (firstMamMessageMamId == null || syncInfo.isRemoteHistoryCompletelyLoaded()) {
-//            return;
-//        }
-//
-//        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
-//        ConnectionThread connectionThread = accountItem.getConnectionThread();
-//
-//        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
-//            return;
-//        }
-//
-//        final Thread thread = new Thread("Request MAM chat " + chat) {
-//            @Override
-//            public void run() {
-//                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
-//                try {
-//                    if (!mamManager.isSupportedByServer()) {
-//                        return;
-//                    }
-//
-//                } catch (SmackException.NoResponseException | InterruptedException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-//                    e.printStackTrace();
-//                    return;
-//                }
-//
-//                final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
-//                try {
-//                    EventBus.getDefault().post(new PreviousHistoryLoadStartedEvent(chat));
-//                    LogManager.i("MAM", "Loading previous history");
-//                    mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, firstMamMessageMamId);
-//                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-//                    e.printStackTrace();
-//                    EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
-//                    return;
-//                }
-//
-//                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
-//
-//                LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
-//
-//                final List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
-//
-//                Application.getInstance().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        chat.syncMessages(messageItems);
-//                        updateSyncInfo(mamQueryResult, syncInfo, messageItems);
-//                    }
-//                });
-//
-//            }
-//        };
-//        thread.start();
+        if (chat == null) {
+            LogManager.i(this, "requestPreviousHistory chat == null");
+            return;
+        }
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+                ConnectionThread connectionThread = accountItem.getConnectionThread();
+
+                if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
+                    return;
+                }
+
+                String firstMamMessageMamId;
+                boolean remoteHistoryCompletelyLoaded;
+                {
+                    Realm realm = Realm.getDefaultInstance();
+                    SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
+                    firstMamMessageMamId = syncInfo.getFirstMamMessageMamId();
+                    remoteHistoryCompletelyLoaded = syncInfo.isRemoteHistoryCompletelyLoaded();
+                    realm.close();
+                }
+
+                LogManager.i(this, "requestPreviousHistory firstMamMessageMamId: " + firstMamMessageMamId
+                        + " syncInfo.isRemoteHistoryCompletelyLoaded() " + remoteHistoryCompletelyLoaded);
+
+                if (firstMamMessageMamId == null || remoteHistoryCompletelyLoaded) {
+                    return;
+                }
+
+                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+                try {
+                    if (!mamManager.isSupportedByServer()) {
+                        return;
+                    }
+
+                } catch (SmackException.NoResponseException | InterruptedException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
+                try {
+                    EventBus.getDefault().post(new PreviousHistoryLoadStartedEvent(chat));
+                    LogManager.i("MAM", "Loading previous history");
+                    mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, firstMamMessageMamId);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                    EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+                    return;
+                }
+
+                EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
+
+                LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
+
+                Realm realm = Realm.getDefaultInstance();
+                List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
+                syncMessages(realm, chat, messageItems);
+                updatePreviousHistorySyncInfo(realm, chat, mamQueryResult, messageItems);
+                realm.close();
+            }
+
+        });
+
     }
 
     private List<MessageItem> getMessageItems(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, AbstractChat chat) {

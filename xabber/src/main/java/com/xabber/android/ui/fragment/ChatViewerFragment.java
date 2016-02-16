@@ -135,7 +135,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
 
-    private boolean isLocalHistoryLoadRequested = false;
     private boolean isRemotePreviousHistoryRequested = false;
     private float offset;
     private MessageItem messageItem;
@@ -252,6 +251,21 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
+
+        realmRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+//                if (chat.isLocalHistoryLoadedCompletely()) {
+//                    return;
+//                }
+
+                if (dy < 0) {
+                    loadHistoryIfNeeded();
+                }
+            }
+        });
 
         // to avoid strange bug on some 4.x androids
         view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
@@ -437,52 +451,22 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void loadHistoryIfNeeded() {
-//        int visibleItemCount = layoutManager.getChildCount();
-//        int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-//
-//        if (visibleItemCount == 0) {
-//            return;
-//        }
-//
-//        if (isLocalHistoryLoadRequested && isRemotePreviousHistoryRequested) {
-//            return;
-//        }
-//
-//        if (pastVisibleItems / visibleItemCount <= 2) {
-//            LogManager.i(this, "pastVisibleItems / visibleItemCount <= 2");
-//            requestLocalHistoryLoad();
-//            requestRemoteHistoryLoad();
-//        } else {
-//            AbstractChat chat = getChat();
-//            if (chat != null && !chat.getSyncInfo().isRemoteHistoryCompletelyLoaded()) {
-//                Integer firstLocalMessagePosition = chat.getSyncCache().getFirstLocalMessagePosition();
-//                Integer firstRemotelySyncedMessagePosition = chat.getSyncCache().getFirstMamMessagePosition();
-//
-//                LogManager.i(this, "firstLocalMessagePosition: " + firstLocalMessagePosition + " firstRemotelySyncedMessagePosition: " + firstRemotelySyncedMessagePosition);
-//
-//
-//                if (firstLocalMessagePosition != null && firstRemotelySyncedMessagePosition != null) {
-//
-//                    int abs = Math.abs(firstLocalMessagePosition - firstRemotelySyncedMessagePosition);
-//
-//                    if (abs >= MamManager.PAGE_SIZE) {
-//                        LogManager.i(this, "Large difference between local and removed history loaded!");
-//                        if (firstLocalMessagePosition < firstRemotelySyncedMessagePosition) {
-//                            requestRemoteHistoryLoad();
-//                        } else {
-//                            requestLocalHistoryLoad();
-//
-//                        }
-//                    }
-//
-//
-//                }
-//
-//
-//            }
-//        }
-//
+        int visibleItemCount = layoutManager.getChildCount();
 
+        if (visibleItemCount == 0) {
+            return;
+        }
+
+        if (isRemotePreviousHistoryRequested) {
+            return;
+        }
+
+        int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+
+        if (pastVisibleItems / visibleItemCount <= 2) {
+            LogManager.i(this, "pastVisibleItems / visibleItemCount <= 2");
+            requestRemoteHistoryLoad();
+        }
     }
 
     private void requestRemoteHistoryLoad() {
@@ -495,14 +479,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         }
     }
-
-    private void requestLocalHistoryLoad() {
-        if (!isLocalHistoryLoadRequested) {
-            isLocalHistoryLoadRequested = true;
-            LogManager.i("CHAT", "local history requested");
-        }
-    }
-
 
     @Nullable
     private AbstractChat getChat() {
@@ -540,20 +516,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             isRemotePreviousHistoryRequested = false;
             previousHistoryProgressBar.setVisibility(View.GONE);
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventMainThread(MessageUpdateEvent event) {
-//        if (event.getAccount() != null && !event.getAccount().equals(account)) {
-//            return;
-//        }
-//
-//        if (event.getUser() != null && !event.getUser().equals(user)) {
-//            return;
-//        }
-//
-//        LogManager.i(this, "on MessageUpdateEvent " + event.getUniqueId());
-//        chatMessageAdapter.onChange();
     }
 
     private void onAttachButtonPressed() {
