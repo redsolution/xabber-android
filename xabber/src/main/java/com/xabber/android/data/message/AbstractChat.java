@@ -40,11 +40,13 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -394,26 +396,32 @@ public abstract class AbstractChat extends BaseEntity {
         }
     }
 
-    protected MessageItem newFileMessage(String text, String filePath, boolean isError) {
-        Date timestamp = new Date();
+    protected String newFileMessage(final File file) {
+        Realm realm = Realm.getDefaultInstance();
 
-        MessageItem messageItem = new MessageItem();
-        messageItem.setAccount(account);
-        messageItem.setUser(user);
-        messageItem.setText(text);
-        messageItem.setTimestamp(timestamp.getTime());
-        messageItem.setRead(true);
-        if (isError) {
-            messageItem.setError(true);
-        }
-        messageItem.setFilePath(filePath);
+        final String messageId = UUID.randomUUID().toString();
 
-        // TODO
-//        realm.beginTransaction();
-//        messageItem = realm.copyToRealm(messageItem);
-//        realm.commitTransaction();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = new MessageItem(messageId);
+                messageItem.setAccount(account);
+                messageItem.setUser(user);
+                messageItem.setText(file.getName());
+                messageItem.setFilePath(file.getPath());
+                messageItem.setTimestamp(System.currentTimeMillis());
+                messageItem.setRead(true);
+                messageItem.setSent(true);
+                messageItem.setError(false);
+                messageItem.setIncoming(false);
+                realm.copyToRealm(messageItem);
+            }
+        }, null);
 
-        return messageItem;
+
+        realm.close();
+
+        return messageId;
     }
 
     private void updateSyncInfo() {

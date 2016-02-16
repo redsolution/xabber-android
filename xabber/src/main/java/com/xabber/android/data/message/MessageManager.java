@@ -240,41 +240,72 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.sendMessages();
     }
 
-    public MessageItem createFileMessage(String account, String user, File file) {
+    public String createFileMessage(String account, String user, File file) {
         AbstractChat chat = getChat(account, user);
         if (chat == null) {
             chat = createChat(account, user);
         }
 
         chat.openChat();
-        return chat.newFileMessage(file.getName(), file.getPath(), false);
+        return chat.newFileMessage(file);
     }
 
-    public void replaceMessage(String account, String user, final MessageItem srcFileMessage, final String text) {
-//        AbstractChat chat = getChat(account, user);
-//        if (chat == null) {
-//            return;
-//        }
+    public void updateFileMessage(String account, String user, final String messageId, final String text) {
+        final AbstractChat chat = getChat(account, user);
+        if (chat == null) {
+            return;
+        }
+
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                        .findFirst();
+
+                if (messageItem != null) {
+                    messageItem.setText(text);
+                    messageItem.setSent(false);
+                }
+            }
+        }, new Realm.Transaction.Callback() {
+            @Override
+            public void onSuccess() {
+                chat.sendMessages();
+            }
+        });
+
+        realm.close();
 //
 //        chat.getRealm().executeTransaction(new Realm.Transaction() {
 //            @Override
 //            public void execute(Realm realm) {
-//                srcFileMessage.setText(text);
+//                messageId.setText(text);
 //            }
 //        });
 //
 //        chat.sendMessages();
     }
 
-    public void updateMessageWithError(String account, String user, MessageItem srcFileMessage, String text) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            return;
-        }
+    public void updateMessageWithError(final String messageId) {
+        Realm realm = Realm.getDefaultInstance();
 
-        chat.removeMessage(srcFileMessage);
-        chat.newFileMessage(String.format(Application.getInstance().getString(R.string.error_sending_file), text),
-                srcFileMessage.getFilePath(), true);
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem messageItem = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                        .findFirst();
+
+                if (messageItem != null) {
+                    messageItem.setError(true);
+                }
+            }
+        }, null);
+
+        realm.close();
     }
 
     /**
