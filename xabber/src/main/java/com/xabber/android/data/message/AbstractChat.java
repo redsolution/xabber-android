@@ -33,7 +33,6 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.carbon.CarbonManager;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -42,9 +41,7 @@ import org.jivesoftware.smackx.delay.packet.DelayInformation;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -108,99 +105,6 @@ public abstract class AbstractChat extends BaseEntity {
 
     public boolean isLocalHistoryLoadedCompletely() {
         return isLocalHistoryLoadedCompletely;
-    }
-
-    public void onMessageDownloaded(final Collection<MessageItem> messagesFromServer) {
-
-        if (messagesFromServer == null || messagesFromServer.isEmpty()) {
-            return;
-        }
-
-        LogManager.i(this, "onMessageDownloaded: " + messagesFromServer.size());
-
-
-        LogManager.i(this, "Adding new messages from MAM: " + messagesFromServer.size());
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                RealmResults<MessageItem> localMessages = realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ACCOUNT, account)
-                        .equalTo(MessageItem.Fields.USER, user)
-                        .findAll();
-
-                Iterator<MessageItem> iterator = messagesFromServer.iterator();
-                while (iterator.hasNext()) {
-                    MessageItem remoteMessage = iterator.next();
-
-                    if (localMessages.where()
-                            .equalTo(MessageItem.Fields.STANZA_ID, remoteMessage.getStanzaId())
-                            .count() > 0) {
-                        LogManager.i(this, "Sync. Found messages with same Stanza ID. removing. Remote message:"
-                                + " Text: " + remoteMessage.getText()
-                                + " Timestamp: " + remoteMessage.getTimestamp()
-                                + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
-                                + " StanzaId: " + remoteMessage.getStanzaId());
-                        iterator.remove();
-                        continue;
-                    }
-
-                    if (remoteMessage.getText() == null || remoteMessage.getTimestamp() == null) {
-                        continue;
-                    }
-
-                    Long remoteMessageDelayTimestamp = remoteMessage.getDelayTimestamp();
-                    Long remoteMessageTimestamp = remoteMessage.getTimestamp();
-
-                    RealmResults<MessageItem> sameTextMessages = localMessages.where()
-                            .equalTo(MessageItem.Fields.TEXT, remoteMessage.getText()).findAll();
-
-                    if (isTimeStampSimilar(sameTextMessages, remoteMessageTimestamp)) {
-                        LogManager.i(this, "Sync. Found messages with similar remote timestamp. Removing. Remote message:"
-                                + " Text: " + remoteMessage.getText()
-                                + " Timestamp: " + remoteMessage.getTimestamp()
-                                + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
-                                + " StanzaId: " + remoteMessage.getStanzaId());
-                        iterator.remove();
-                        continue;
-                    }
-
-                    if (remoteMessageDelayTimestamp != null
-                            && isTimeStampSimilar(sameTextMessages, remoteMessageDelayTimestamp)) {
-                        LogManager.i(this, "Sync. Found messages with similar remote delay timestamp. Removing. Remote message:"
-                                + " Text: " + remoteMessage.getText()
-                                + " Timestamp: " + remoteMessage.getTimestamp()
-                                + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
-                                + " StanzaId: " + remoteMessage.getStanzaId());
-                        iterator.remove();
-                        continue;
-                    }
-                }
-
-                realm.copyToRealm(messagesFromServer);
-            }
-        }, null);
-        realm.close();
-    }
-
-    private boolean isTimeStampSimilar(RealmResults<MessageItem> sameTextMessages, long remoteMessageTimestamp) {
-        long start = remoteMessageTimestamp - (1000 * 5);
-        long end = remoteMessageTimestamp + (1000 * 5);
-
-        if (sameTextMessages.where()
-                .between(MessageItem.Fields.TIMESTAMP, start, end)
-                .count() > 0) {
-            LogManager.i(this, "Sync. Found messages with similar local timestamp");
-            return true;
-        }
-
-        if (sameTextMessages.where()
-                .between(MessageItem.Fields.DELAY_TIMESTAMP, start, end)
-                .count() > 0) {
-            LogManager.i(this, "Sync. Found messages with similar local delay timestamp.");
-            return true;
-        }
-        return false;
     }
 
     public boolean isActive() {

@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.mam;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
@@ -22,11 +24,14 @@ import org.jivesoftware.smackx.forward.packet.Forwarded;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class MamManager {
     private final static MamManager instance;
@@ -50,7 +55,8 @@ public class MamManager {
 
         final SyncCache syncCache = chat.getSyncCache();
 
-        if (syncCache.getLastSyncedTime() != null && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncCache.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
+        if (syncCache.getLastSyncedTime() != null
+                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncCache.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
             return;
         }
 
@@ -66,49 +72,37 @@ public class MamManager {
             return;
         }
 
-        final Thread thread = new Thread("Request MAM chat " + chat) {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Realm realm = Realm.getDefaultInstance();
-                SyncInfo syncInfo = realm.where(SyncInfo.class)
-                        .equalTo(SyncInfo.FIELD_ACCOUNT, account)
-                        .equalTo(SyncInfo.FIELD_USER, user).findFirst();
-
-                if (syncInfo == null) {
-                    realm.beginTransaction();
-                    syncInfo = realm.createObject(SyncInfo.class);
-                    syncInfo.setAccount(account);
-                    syncInfo.setUser(user);
-                    realm.commitTransaction();
-                }
-
-                final String lastMessageMamId = syncInfo.getLastMessageMamId();
-
-
-                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+                org.jivesoftware.smackx.mam.MamManager mamManager
+                        = org.jivesoftware.smackx.mam.MamManager
+                        .getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
                 try {
                     if (!mamManager.isSupportedByServer()) {
                         return;
                     }
-
                 } catch (SmackException.NoResponseException | InterruptedException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
                     return;
                 }
 
+                Realm realm = Realm.getDefaultInstance();
+                SyncInfo syncInfo = getSyncInfo(realm, account, user);
+
+                final String lastMessageMamId = syncInfo.getLastMessageMamId();
+
                 final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
-
                     EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
                     if (lastMessageMamId == null) {
                         mamQueryResult = mamManager.queryPage(user, PAGE_SIZE, null, "");
                     } else {
                         mamQueryResult = mamManager.queryPage(user, PAGE_SIZE, lastMessageMamId, null);
                     }
-
-
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                     e.printStackTrace();
+                    realm.close();
                     return;
                 } finally {
                     EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
@@ -117,18 +111,115 @@ public class MamManager {
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
                 updateSyncInfo(mamQueryResult, syncInfo);
-                realm.close();
+
                 syncCache.setLastSyncedTime(new Date(System.currentTimeMillis()));
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        chat.onMessageDownloaded(getMessageItems(mamQueryResult, chat));
-                    }
-                });
+                syncMessages(realm, chat, getMessageItems(mamQueryResult, chat));
+                realm.close();
             }
-        };
-        thread.start();
+        });
+    }
+
+    public void syncMessages(Realm realm, AbstractChat chat, final Collection<MessageItem> messagesFromServer) {
+
+        if (messagesFromServer == null || messagesFromServer.isEmpty()) {
+            return;
+        }
+
+        LogManager.i(this, "syncMessages: " + messagesFromServer.size());
+
+        RealmResults<MessageItem> localMessages = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, chat.getAccount())
+                .equalTo(MessageItem.Fields.USER, chat.getUser())
+                .findAll();
+
+        Iterator<MessageItem> iterator = messagesFromServer.iterator();
+        while (iterator.hasNext()) {
+            MessageItem remoteMessage = iterator.next();
+
+            if (localMessages.where()
+                    .equalTo(MessageItem.Fields.STANZA_ID, remoteMessage.getStanzaId())
+                    .count() > 0) {
+                LogManager.i(this, "Sync. Found messages with same Stanza ID. removing. Remote message:"
+                        + " Text: " + remoteMessage.getText()
+                        + " Timestamp: " + remoteMessage.getTimestamp()
+                        + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
+                        + " StanzaId: " + remoteMessage.getStanzaId());
+                iterator.remove();
+                continue;
+            }
+
+            if (remoteMessage.getText() == null || remoteMessage.getTimestamp() == null) {
+                continue;
+            }
+
+            Long remoteMessageDelayTimestamp = remoteMessage.getDelayTimestamp();
+            Long remoteMessageTimestamp = remoteMessage.getTimestamp();
+
+            RealmResults<MessageItem> sameTextMessages = localMessages.where()
+                    .equalTo(MessageItem.Fields.TEXT, remoteMessage.getText()).findAll();
+
+            if (isTimeStampSimilar(sameTextMessages, remoteMessageTimestamp)) {
+                LogManager.i(this, "Sync. Found messages with similar remote timestamp. Removing. Remote message:"
+                        + " Text: " + remoteMessage.getText()
+                        + " Timestamp: " + remoteMessage.getTimestamp()
+                        + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
+                        + " StanzaId: " + remoteMessage.getStanzaId());
+                iterator.remove();
+                continue;
+            }
+
+            if (remoteMessageDelayTimestamp != null
+                    && isTimeStampSimilar(sameTextMessages, remoteMessageDelayTimestamp)) {
+                LogManager.i(this, "Sync. Found messages with similar remote delay timestamp. Removing. Remote message:"
+                        + " Text: " + remoteMessage.getText()
+                        + " Timestamp: " + remoteMessage.getTimestamp()
+                        + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
+                        + " StanzaId: " + remoteMessage.getStanzaId());
+                iterator.remove();
+                continue;
+            }
+        }
+
+        realm.beginTransaction();
+        realm.copyToRealm(messagesFromServer);
+        realm.commitTransaction();
+    }
+
+    private static boolean isTimeStampSimilar(RealmResults<MessageItem> sameTextMessages, long remoteMessageTimestamp) {
+        long start = remoteMessageTimestamp - (1000 * 5);
+        long end = remoteMessageTimestamp + (1000 * 5);
+
+        if (sameTextMessages.where()
+                .between(MessageItem.Fields.TIMESTAMP, start, end)
+                .count() > 0) {
+            LogManager.i(MamManager.class.getSimpleName(), "Sync. Found messages with similar local timestamp");
+            return true;
+        }
+
+        if (sameTextMessages.where()
+                .between(MessageItem.Fields.DELAY_TIMESTAMP, start, end)
+                .count() > 0) {
+            LogManager.i(MamManager.class.getSimpleName(), "Sync. Found messages with similar local delay timestamp.");
+            return true;
+        }
+        return false;
+    }
+
+    @NonNull
+    private SyncInfo getSyncInfo(Realm realm, String account, String user) {
+        SyncInfo syncInfo = realm.where(SyncInfo.class)
+                .equalTo(SyncInfo.FIELD_ACCOUNT, account)
+                .equalTo(SyncInfo.FIELD_USER, user).findFirst();
+
+        if (syncInfo == null) {
+            realm.beginTransaction();
+            syncInfo = realm.createObject(SyncInfo.class);
+            syncInfo.setAccount(account);
+            syncInfo.setUser(user);
+            realm.commitTransaction();
+        }
+        return syncInfo;
     }
 
     private void updateSyncInfo(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, SyncInfo syncInfo) {
@@ -232,7 +323,7 @@ public class MamManager {
 //                Application.getInstance().runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        chat.onMessageDownloaded(messageItems);
+//                        chat.syncMessages(messageItems);
 //                        updateSyncInfo(mamQueryResult, syncInfo, messageItems);
 //                    }
 //                });
