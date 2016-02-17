@@ -442,27 +442,38 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param account
      * @param user
      */
-    public void clearHistory(String account, String user) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            return;
-        }
-        chat.removeAllMessages();
-        onChatChanged(chat.getAccount(), chat.getUser(), false);
+    public void clearHistory(final String account, final String user) {
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.ACCOUNT, account)
+                        .equalTo(MessageItem.Fields.USER, user)
+                        .findAll().clear();
+            }
+        }, null);
+        realm.close();
     }
 
     /**
      * Removes message from history.
      *
-     * @param messageItem
      */
-    public void removeMessage(MessageItem messageItem) {
-        AbstractChat chat = getChat(messageItem.getAccount(), messageItem.getUser());
-        if (chat == null) {
-            return;
-        }
-        onChatChanged(messageItem.getAccount(), messageItem.getUser(), false);
-        chat.removeMessage(messageItem);
+    public void removeMessage(final String messageItemId) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                MessageItem first = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.UNIQUE_ID, messageItemId).findFirst();
+                first.removeFromRealm();
+            }
+        });
+
+        realm.close();
     }
 
 

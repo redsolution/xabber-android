@@ -365,29 +365,6 @@ public abstract class AbstractChat extends BaseEntity {
 
     }
 
-    void removeMessage(final MessageItem messageItem) {
-//        realm.executeTransaction(new Realm.Transaction() {
-//            @Override
-//            public void execute(Realm realm) {
-//                messageItem.removeFromRealm();
-//            }
-//        }, null);
-    }
-
-    void removeAllMessages() {
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-               realm.where(MessageItem.class)
-                       .equalTo(MessageItem.Fields.ACCOUNT, account)
-                       .equalTo(MessageItem.Fields.USER, user)
-                       .findAll().clear();
-            }
-        }, null);
-        realm.close();
-    }
-
     /**
      * @param bareAddress bareAddress of the user.
      * @param user        full jid.

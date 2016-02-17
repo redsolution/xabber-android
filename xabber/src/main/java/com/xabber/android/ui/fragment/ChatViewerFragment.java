@@ -918,7 +918,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_message_remove:
-                MessageManager.getInstance().removeMessage(clickedMessageItem);
+                MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
                 return true;
 
             case R.id.action_message_open_file:
