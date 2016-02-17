@@ -226,7 +226,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void sendMessage(String text, AbstractChat chat) {
-        chat.newMessage(text);
+        chat.createAndSaveNewMessage(text);
         chat.sendMessages();
     }
 
@@ -598,7 +598,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (body == null) {
                 return;
             }
-            chat.newMessage(body);
+            chat.createAndSaveNewMessage(body);
             return;
         }
 

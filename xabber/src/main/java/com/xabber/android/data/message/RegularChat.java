@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
@@ -96,8 +97,8 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected void newMessage(String text) {
-        newMessage(
+    protected MessageItem createNewMessageItem(String text) {
+        return createMessageItem(
                 null,
                 text,
                 null,
@@ -158,7 +159,7 @@ public class RegularChat extends AbstractChat {
                 return true;
             if (!"".equals(resource))
                 this.resource = resource;
-            newMessage(
+            createAndSaveNewMessage(
                     resource,
                     text,
                     null,

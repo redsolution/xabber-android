@@ -164,7 +164,12 @@ public abstract class AbstractChat extends BaseEntity {
      * @param text
      * @return New message instance.
      */
-    abstract protected void newMessage(String text);
+    protected void createAndSaveNewMessage(String text) {
+        MessageItem newMessageItem = createNewMessageItem(text);
+        saveMessageItem(newMessageItem);
+    }
+
+    abstract protected MessageItem createNewMessageItem(String text);
 
     /**
      * Creates new action.
@@ -174,7 +179,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param action
      */
     public void newAction(String resource, String text, ChatAction action) {
-        newMessage(resource, text, action, null, true, false, false, false, null);
+        createAndSaveNewMessage(resource, text, action, null, true, false, false, false, null);
     }
 
     /**
@@ -192,9 +197,9 @@ public abstract class AbstractChat extends BaseEntity {
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
-    protected void newMessage(String resource, String text,
-                              final ChatAction action, final Date delayTimestamp, final boolean incoming,
-                              boolean notify, final boolean unencrypted, final boolean offline, final String stanzaId) {
+    protected void createAndSaveNewMessage(String resource, String text,
+                                           final ChatAction action, final Date delayTimestamp, final boolean incoming,
+                                           boolean notify, final boolean unencrypted, final boolean offline, final String stanzaId) {
         final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
                 incoming, notify, unencrypted, offline, stanzaId);
         saveMessageItem(messageItem);
@@ -213,7 +218,7 @@ public abstract class AbstractChat extends BaseEntity {
         realm.close();
     }
 
-    private MessageItem createMessageItem(String resource, String text, ChatAction action,
+    protected MessageItem createMessageItem(String resource, String text, ChatAction action,
                                           Date delayTimestamp, boolean incoming, boolean notify,
                                           boolean unencrypted, boolean offline, String stanzaId) {
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
