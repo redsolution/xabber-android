@@ -27,7 +27,7 @@ import com.xabber.android.data.extension.mam.SyncCache;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.carbon.CarbonManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
@@ -205,7 +205,7 @@ public abstract class AbstractChat extends BaseEntity {
         saveMessageItem(messageItem);
     }
 
-    private void saveMessageItem(final MessageItem messageItem) {
+    public void saveMessageItem(final MessageItem messageItem) {
         Realm realm = Realm.getDefaultInstance();
 
         realm.executeTransaction(new Realm.Transaction() {

@@ -46,11 +46,11 @@ import com.xabber.android.data.roster.OnStatusChangeListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.carbon.CarbonManager.Direction;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 
 import java.io.BufferedWriter;
@@ -603,13 +603,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
-    public void displayForwardedMessage(ConnectionItem connection, Message message, Direction direction) {
+    public void displayForwardedMessage(ConnectionItem connection, final Message message, CarbonExtension.Direction direction) {
 
-        if (!(connection instanceof AccountItem))
+        if (!(connection instanceof AccountItem)) {
             return;
+        }
         String account = ((AccountItem) connection).getAccount();
 
-        if (direction == Direction.sent) {
+        if (direction == CarbonExtension.Direction.sent) {
             String companion = Jid.getBareAddress(message.getTo());
             if (companion == null) {
                 return;
@@ -618,11 +619,23 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             if (chat == null) {
                 chat = createChat(account, companion);
             }
-            String body = message.getBody();
+            final String body = message.getBody();
             if (body == null) {
                 return;
             }
-            chat.createAndSaveNewMessage(body);
+
+            Realm realm = Realm.getDefaultInstance();
+            final AbstractChat finalChat = chat;
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    MessageItem newMessageItem = finalChat.createNewMessageItem(body);
+                    newMessageItem.setStanzaId(message.getStanzaId());
+                    newMessageItem.setSent(true);
+                    realm.copyToRealm(newMessageItem);
+                }
+            }, null);
+            realm.close();
             return;
         }
 
