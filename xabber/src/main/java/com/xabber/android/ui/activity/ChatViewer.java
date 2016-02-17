@@ -388,7 +388,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         } else {
             for (ChatViewerFragment chat : registeredChats) {
                 if (chat.isEqual(selectedChat)) {
-                    chat.updateMessages();
                     if (incoming) {
                         chat.playIncomingAnimation();
                     }

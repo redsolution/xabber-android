@@ -76,7 +76,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     /**
      * Text with extra information.
      */
-    private String hint;
     private Listener listener;
 
     private String account;
@@ -96,7 +95,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         if (isMUC) {
             mucNickname = MUCManager.getInstance().getNickname(account, user);
         }
-        hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
 
         this.listener = chatViewerFragment;
@@ -297,11 +295,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     @Override
     public int getItemCount() {
-        if (hint == null) {
-            return realmResults.size();
-        } else {
-            return realmResults.size() + 1;
-        }
+        return realmResults.size();
     }
 
     public MessageItem getMessageItem(int position) {
@@ -313,6 +307,15 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             return realmResults.get(position);
         } else {
             return null;
+        }
+    }
+
+    public String getMessageItemId(int position) {
+        MessageItem messageItem = getMessageItem(position);
+        if (messageItem == null) {
+            return null;
+        } else {
+            return messageItem.getUniqueId();
         }
     }
 
@@ -347,7 +350,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
-                holder.messageText.setText(hint);
+//                holder.messageText.setText(hint);
                 break;
 
             case VIEW_TYPE_ACTION_MESSAGE:
@@ -397,11 +400,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     @Override
     public void onChange() {
-        hint = getHint();
-
         notifyDataSetChanged();
         int itemCount = getItemCount();
-        LogManager.i(this, "onChange itemCount: " + itemCount + " prev " + prevItemCount);
         if (prevItemCount != itemCount) {
             listener.onChange(prevItemCount);
             prevItemCount = itemCount;
@@ -490,13 +490,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             message.avatar.setVisibility(View.GONE);
         }
     }
-
-//    @Override
-//    public void onChange() {
-//        messages = new ArrayList<>(MessageManager.getInstance().getMessages(account, user));
-//        hint = getHint();
-//        notifyDataSetChanged();
-//    }
 
     public int findMessagePosition(String uniqueId) {
         for (int i = 0; i < realmResults.size(); i++) {
