@@ -169,7 +169,7 @@ public class RoomChat extends AbstractChat {
 
     @Override
     protected void newMessage(String text) {
-        newMessage(nickname, text, null, null, false, false, false, false, true, null);
+        newMessage(nickname, text, null, null, false, false, false, false, null);
     }
 
     @Override
@@ -252,7 +252,7 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                newMessage(resource, text, null, delay, true, notify, false, false, true, message.getStanzaId());
+                newMessage(resource, text, null, delay, true, notify, false, false, message.getStanzaId());
             }
         } else if (packet instanceof Presence) {
             String stringPrep = Jid.getStringPrep(resource);
@@ -342,7 +342,7 @@ public class RoomChat extends AbstractChat {
                 if (showStatusChange()) {
                     newMessage(resource, Application.getInstance().getString(
                                     R.string.action_join_complete_to, user),
-                            ChatAction.complete, null, true, true, false, false, true, null);
+                            ChatAction.complete, null, true, true, false, false, null);
                 }
                 active = true;
                 setRequested(false);

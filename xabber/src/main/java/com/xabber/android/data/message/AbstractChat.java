@@ -17,8 +17,6 @@ package com.xabber.android.data.message;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
@@ -26,8 +24,6 @@ import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.mam.SyncCache;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
@@ -178,7 +174,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param action
      */
     public void newAction(String resource, String text, ChatAction action) {
-        newMessage(resource, text, action, null, true, false, false, false, true, null);
+        newMessage(resource, text, action, null, true, false, false, false, null);
     }
 
     /**
@@ -194,13 +190,32 @@ public abstract class AbstractChat extends BaseEntity {
      * @param notify         Notify user about this message when appropriated.
      * @param unencrypted    Whether not encrypted message in OTR chat was received.
      * @param offline        Whether message was received from server side offline storage.
-     * @param record         Whether record server side is enabled.
      * @return
      */
     protected void newMessage(String resource, String text,
-                                     final ChatAction action, final Date delayTimestamp, final boolean incoming,
-                                     boolean notify, final boolean unencrypted, final boolean offline, boolean record, final String stanzaId) {
-        boolean save;
+                              final ChatAction action, final Date delayTimestamp, final boolean incoming,
+                              boolean notify, final boolean unencrypted, final boolean offline, final String stanzaId) {
+        final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
+                incoming, notify, unencrypted, offline, stanzaId);
+        saveMessageItem(messageItem);
+    }
+
+    private void saveMessageItem(final MessageItem messageItem) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealm(messageItem);
+            }
+        }, null);
+
+        realm.close();
+    }
+
+    private MessageItem createMessageItem(String resource, String text, ChatAction action,
+                                          Date delayTimestamp, boolean incoming, boolean notify,
+                                          boolean unencrypted, boolean offline, String stanzaId) {
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
@@ -216,23 +231,8 @@ public abstract class AbstractChat extends BaseEntity {
         if (action != null) {
             read = true;
             send = true;
-            save = false;
-        } else {
-            ArchiveMode archiveMode = AccountManager.getInstance().getArchiveMode(account);
-            if (archiveMode == ArchiveMode.dontStore) {
-                save = false;
-            } else {
-                save = archiveMode.saveLocally() || !send
-                        || (!read && archiveMode == ArchiveMode.unreadOnly);
-            }
-            if (save) {
-                save = ChatManager.getInstance().isSaveMessages(account, user);
-            }
         }
-        if (save && (unencrypted || (!SettingsManager.securityOtrHistory()
-                && OTRManager.getInstance().getSecurityLevel(account, user) != SecurityLevel.plain))) {
-            save = false;
-        }
+
         final Date timestamp = new Date();
 
         if (text.trim().isEmpty()) {
@@ -253,55 +253,38 @@ public abstract class AbstractChat extends BaseEntity {
             }
         }
 
-        if (save && !isPrivateMucChat) {
-            final boolean finalRead = read;
-            final boolean finalSend = send;
-            final String finalResource = resource;
-            final String finalText = text;
-            final boolean finalNotify = notify;
-            Realm realm = Realm.getDefaultInstance();
-            realm.executeTransaction(new Realm.Transaction() {
-                @Override
-                public void execute(Realm realm) {
-                    MessageItem messageItem = new MessageItem();
+        MessageItem messageItem = new MessageItem();
 
-                    messageItem.setAccount(account);
-                    messageItem.setUser(user);
-                    messageItem.setResource(finalResource);
-                    if (action != null) {
-                        messageItem.setAction(action.toString());
-                    }
-                    messageItem.setText(finalText);
-                    messageItem.setTimestamp(timestamp.getTime());
-                    if (delayTimestamp != null) {
-                        messageItem.setDelayTimestamp(delayTimestamp.getTime());
-                    }
-                    messageItem.setIncoming(incoming);
-                    messageItem.setRead(finalRead);
-                    messageItem.setSent(finalSend);
-                    messageItem.setUnencrypted(unencrypted);
-                    messageItem.setOffline(offline);
-                    messageItem.setStanzaId(stanzaId);
-                    FileManager.processFileMessage(messageItem, true);
-
-                    messageItem = realm.copyToRealm(messageItem);
-
-                    if (finalNotify && notifyAboutMessage()) {
-                        if (visible) {
-                            if (ChatManager.getInstance().isNotifyVisible(account, user)) {
-                                NotificationManager.getInstance().onCurrentChatMessageNotification(messageItem);
-                            }
-                        } else {
-                            NotificationManager.getInstance().onMessageNotification(messageItem);
-                        }
-                    }
-
-
-                }
-            }, null);
-            realm.close();
-
+        messageItem.setAccount(account);
+        messageItem.setUser(user);
+        messageItem.setResource(resource);
+        if (action != null) {
+            messageItem.setAction(action.toString());
         }
+        messageItem.setText(text);
+        messageItem.setTimestamp(timestamp.getTime());
+        if (delayTimestamp != null) {
+            messageItem.setDelayTimestamp(delayTimestamp.getTime());
+        }
+        messageItem.setIncoming(incoming);
+        messageItem.setRead(read);
+        messageItem.setSent(send);
+        messageItem.setUnencrypted(unencrypted);
+        messageItem.setOffline(offline);
+        messageItem.setStanzaId(stanzaId);
+        FileManager.processFileMessage(messageItem, true);
+
+        if (notify && notifyAboutMessage()) {
+            if (visible) {
+                if (ChatManager.getInstance().isNotifyVisible(account, user)) {
+                    NotificationManager.getInstance().onCurrentChatMessageNotification(messageItem);
+                }
+            } else {
+                NotificationManager.getInstance().onMessageNotification(messageItem);
+            }
+        }
+
+        return messageItem;
     }
 
     protected String newFileMessage(final File file) {
