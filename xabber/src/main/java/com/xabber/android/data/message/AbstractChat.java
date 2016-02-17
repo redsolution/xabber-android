@@ -476,56 +476,63 @@ public abstract class AbstractChat extends BaseEntity {
                 LogManager.i(AbstractChat.this, "sendMessages " + messageItemList.size());
 
                 for (final MessageItem messageItem : messageItemList) {
-                    String text = prepareText(messageItem.getText());
-                    Long timestamp = messageItem.getTimestamp();
-
-                    Date currentTime = new Date(System.currentTimeMillis());
-                    Date delayTimestamp = null;
-
-                    if (timestamp != null) {
-                        if (currentTime.getTime() - timestamp > 60000) {
-                            delayTimestamp = currentTime;
-                        }
+                    if (!sendMessage(messageItem)) {
+                        break;
                     }
-
-                    Message message = null;
-                    if (text != null) {
-
-                        LogManager.i(AbstractChat.this, "Sending message user: " + messageItem.getUser() + " text: " + messageItem.getText());
-                        message = createMessagePacket(text);
-                    }
-
-                    if (message != null) {
-                        ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
-                        CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
-                        if (delayTimestamp != null) {
-                            message.addExtension(new DelayInformation(delayTimestamp));
-                        }
-
-                        try {
-                            ConnectionManager.getInstance().sendStanza(account, message);
-                        } catch (NetworkException e) {
-                            break;
-                        }
-                    }
-
-                    if (message == null) {
-                        messageItem.setError(true);
-                    } else {
-                        messageItem.setStanzaId(message.getStanzaId());
-                    }
-
-                    if (delayTimestamp != null) {
-                        messageItem.setDelayTimestamp(delayTimestamp.getTime());
-                    }
-                    if (messageItem.getTimestamp() == null) {
-                        messageItem.setTimestamp(currentTime.getTime());
-                    }
-                    messageItem.setSent(true);
                 }
             }
         }, null);
         realm.close();
+    }
+
+    public boolean sendMessage(MessageItem messageItem) {
+        String text = prepareText(messageItem.getText());
+        Long timestamp = messageItem.getTimestamp();
+
+        Date currentTime = new Date(System.currentTimeMillis());
+        Date delayTimestamp = null;
+
+        if (timestamp != null) {
+            if (currentTime.getTime() - timestamp > 60000) {
+                delayTimestamp = currentTime;
+            }
+        }
+
+        Message message = null;
+        if (text != null) {
+
+            LogManager.i(AbstractChat.this, "Sending message user: " + messageItem.getUser() + " text: " + messageItem.getText());
+            message = createMessagePacket(text);
+        }
+
+        if (message != null) {
+            ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            if (delayTimestamp != null) {
+                message.addExtension(new DelayInformation(delayTimestamp));
+            }
+
+            try {
+                ConnectionManager.getInstance().sendStanza(account, message);
+            } catch (NetworkException e) {
+                return false;
+            }
+        }
+
+        if (message == null) {
+            messageItem.setError(true);
+        } else {
+            messageItem.setStanzaId(message.getStanzaId());
+        }
+
+        if (delayTimestamp != null) {
+            messageItem.setDelayTimestamp(delayTimestamp.getTime());
+        }
+        if (messageItem.getTimestamp() == null) {
+            messageItem.setTimestamp(currentTime.getTime());
+        }
+        messageItem.setSent(true);
+        return true;
     }
 
     public String getThreadId() {
