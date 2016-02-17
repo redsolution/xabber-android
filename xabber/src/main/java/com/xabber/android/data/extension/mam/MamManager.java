@@ -266,8 +266,7 @@ public class MamManager {
 
 
     public void requestPreviousHistory(final AbstractChat chat) {
-        if (chat == null) {
-            LogManager.i(this, "requestPreviousHistory chat == null");
+        if (chat == null || chat.isRemotePreviousHistoryCompletelyLoaded()) {
             return;
         }
 
@@ -291,8 +290,9 @@ public class MamManager {
                     realm.close();
                 }
 
-                LogManager.i(this, "requestPreviousHistory firstMamMessageMamId: " + firstMamMessageMamId
-                        + " syncInfo.isRemoteHistoryCompletelyLoaded() " + remoteHistoryCompletelyLoaded);
+                if (remoteHistoryCompletelyLoaded) {
+                    chat.setRemotePreviousHistoryCompletelyLoaded(true);
+                }
 
                 if (firstMamMessageMamId == null || remoteHistoryCompletelyLoaded) {
                     return;

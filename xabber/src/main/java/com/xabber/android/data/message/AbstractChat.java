@@ -83,7 +83,7 @@ public abstract class AbstractChat extends BaseEntity {
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
 
-    private boolean isLocalHistoryLoadedCompletely = false;
+    private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
     private SyncCache syncCache;
 
@@ -103,8 +103,12 @@ public abstract class AbstractChat extends BaseEntity {
 
     }
 
-    public boolean isLocalHistoryLoadedCompletely() {
-        return isLocalHistoryLoadedCompletely;
+    public boolean isRemotePreviousHistoryCompletelyLoaded() {
+        return isRemotePreviousHistoryCompletelyLoaded;
+    }
+
+    public void setRemotePreviousHistoryCompletelyLoaded(boolean remotePreviousHistoryCompletelyLoaded) {
+        isRemotePreviousHistoryCompletelyLoaded = remotePreviousHistoryCompletelyLoaded;
     }
 
     public boolean isActive() {
