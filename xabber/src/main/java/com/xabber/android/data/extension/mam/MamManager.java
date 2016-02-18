@@ -24,6 +24,8 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
+import org.jivesoftware.smackx.mam.Behaviour;
+import org.jivesoftware.smackx.mam.packet.MamPrefIQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -161,7 +163,16 @@ public class MamManager implements OnAuthorizedListener {
         boolean isSupported;
         try {
             isSupported = mamManager.isSupportedByServer();
+
+            if (isSupported) {
+                MamPrefIQ archivingPreferences = mamManager.getArchivingPreferences();
+                LogManager.i(this, "archivingPreferences default behaviour " + archivingPreferences.getBehaviour());
+                boolean success = mamManager.updateArchivingPreferences(Behaviour.always);
+                LogManager.i(this, "updateArchivingPreferences success " + success);
+            }
+
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+            e.printStackTrace();
             return false;
         }
 

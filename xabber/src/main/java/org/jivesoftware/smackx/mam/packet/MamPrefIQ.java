@@ -16,18 +16,20 @@
 package org.jivesoftware.smackx.mam.packet;
 
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smackx.mam.Behaviour;
 
 
 /**
- *
- * @see <a href="http://xmpp.org/extensions/xep-0313.html">XEP-0313: Message Archive Management</a>
- *
+ * http://xmpp.org/extensions/xep-0313.html#prefs
  */
 public class MamPrefIQ extends IQ {
-
-
     public static final String ELEMENT = "prefs";
     public static final String NAMESPACE = MamPacket.NAMESPACE;
+    public static final String ATTR_DEFAULT_BEHAVIOUR = "default";
+    public static final String ELEM_ALWAYS = "always";
+    public static final String ELEM_NEVER = "never";
+
+    private Behaviour behaviour;
 
     public MamPrefIQ() {
         super(ELEMENT, NAMESPACE);
@@ -36,7 +38,22 @@ public class MamPrefIQ extends IQ {
     @Override
     protected IQChildElementXmlStringBuilder getIQChildElementBuilder(
             IQChildElementXmlStringBuilder xml) {
-        // TODO Auto-generated method stub
-        return null;
+        xml.optAttribute(ATTR_DEFAULT_BEHAVIOUR, behaviour);
+        xml.rightAngleBracket();
+
+        if (getType() == Type.set) {
+            xml.emptyElement(ELEM_ALWAYS);
+            xml.emptyElement(ELEM_NEVER);
+        }
+
+        return xml;
+    }
+
+    public Behaviour getBehaviour() {
+        return behaviour;
+    }
+
+    public void setBehaviour(Behaviour behaviour) {
+        this.behaviour = behaviour;
     }
 }

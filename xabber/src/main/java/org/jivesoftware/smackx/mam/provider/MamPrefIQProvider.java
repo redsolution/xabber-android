@@ -15,13 +15,14 @@
  */
 package org.jivesoftware.smackx.mam.provider;
 
-import java.io.IOException;
-
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.IQProvider;
+import org.jivesoftware.smackx.mam.Behaviour;
 import org.jivesoftware.smackx.mam.packet.MamPrefIQ;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 
 /**
  *
@@ -37,15 +38,17 @@ public class MamPrefIQProvider extends IQProvider<MamPrefIQ> {
     public MamPrefIQ parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
         boolean done = false;
 
-        MamPrefIQ stanza = new MamPrefIQ();
+        MamPrefIQ mamPrefIQ = new MamPrefIQ();
+
+        mamPrefIQ.setBehaviour(Behaviour.fromString(parser.getAttributeValue("", MamPrefIQ.ATTR_DEFAULT_BEHAVIOUR)));
 
         while (!done) {
             int eventType = parser.next();
             if (eventType == XmlPullParser.START_TAG) {
-                if (parser.getName().equals("always")) {
+                if (parser.getName().equals(MamPrefIQ.ELEM_ALWAYS)) {
                     // TODO getAlways add JID
                 }
-                if (parser.getName().equals("never")) {
+                if (parser.getName().equals(MamPrefIQ.ELEM_NEVER)) {
                     // TODO getNever add JID
                 }
             } else {
@@ -55,7 +58,7 @@ public class MamPrefIQProvider extends IQProvider<MamPrefIQ> {
             }
         }
 
-        return stanza;
+        return mamPrefIQ;
     }
 
 

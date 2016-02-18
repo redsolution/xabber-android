@@ -27,11 +27,13 @@ import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.filter.MamMessageResultFilter;
 import org.jivesoftware.smackx.mam.packet.MamFinIQ;
 import org.jivesoftware.smackx.mam.packet.MamPacket;
+import org.jivesoftware.smackx.mam.packet.MamPrefIQ;
 import org.jivesoftware.smackx.mam.packet.MamQueryIQ;
 import org.jivesoftware.smackx.mam.packet.MamResultExtension;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
@@ -83,6 +85,30 @@ public class MamManager extends Manager {
         super(connection);
         ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(connection);
         sdm.addFeature(MamPacket.NAMESPACE);
+    }
+
+    public MamPrefIQ getArchivingPreferences() throws NotConnectedException {
+        MamPrefIQ prefIQ = new MamPrefIQ();
+        prefIQ.setType(IQ.Type.get);
+
+        final XMPPConnection connection = connection();
+        Stanza stanza = connection.createPacketCollectorAndSend(prefIQ).nextResult();
+
+        if (stanza instanceof MamPrefIQ) {
+            return (MamPrefIQ) stanza;
+        } else {
+            return null;
+        }
+    }
+
+    public boolean updateArchivingPreferences(Behaviour defaultBehaviour) throws NotConnectedException {
+        MamPrefIQ request = new MamPrefIQ();
+        request.setType(IQ.Type.set);
+        request.setBehaviour(defaultBehaviour);
+
+        final XMPPConnection connection = connection();
+        IQ result = connection.createPacketCollectorAndSend(request).nextResult();
+        return result.getType() == IQ.Type.result;
     }
 
     /**
