@@ -81,6 +81,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private String account;
     private String user;
     private int prevItemCount;
+    private long lastUpdateTimeMillis;
 
     public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatViewerFragment chatViewerFragment) {
         super(context, messageItems, true);
@@ -400,6 +401,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     @Override
     public void onChange() {
+        lastUpdateTimeMillis = System.currentTimeMillis();
         notifyDataSetChanged();
         int itemCount = getItemCount();
         if (prevItemCount != itemCount) {
@@ -460,10 +462,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (!isFileUploadInProgress && !messageItem.isSent()
-                && System.currentTimeMillis() - messageItem.getTimestamp() > 1000) {
+                && lastUpdateTimeMillis - messageItem.getTimestamp() > 1000) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
-            message.statusIcon.setVisibility(View.GONE);
+            message.statusIcon.setVisibility(View.INVISIBLE);
         }
 
         message.statusIcon.setImageResource(messageIcon);
