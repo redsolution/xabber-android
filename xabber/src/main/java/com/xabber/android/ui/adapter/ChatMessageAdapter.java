@@ -459,7 +459,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             messageIcon = R.drawable.ic_message_synced_14dp;
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
-        } else if (!isFileUploadInProgress && !messageItem.isSent()) {
+        } else if (!isFileUploadInProgress && !messageItem.isSent()
+                && System.currentTimeMillis() - messageItem.getTimestamp() > 1000) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
             message.statusIcon.setVisibility(View.GONE);
