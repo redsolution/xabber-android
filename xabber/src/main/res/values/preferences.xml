@@ -48,6 +48,7 @@
         <item>com.xabber.android.data.extension.carbons.CarbonManager</item>
         <item>com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager</item>
         <item>com.xabber.android.data.extension.blocking.BlockingManager</item>
+        <item>com.xabber.android.data.extension.mam.MamManager</item>
     </string-array>
 
     <string-array name="contact_managers">

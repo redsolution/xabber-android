@@ -6,11 +6,13 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.connection.OnAuthorizedListener;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.xmpp.address.Jid;
 
 import net.java.otr4j.io.SerializationUtils;
@@ -29,16 +31,20 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MamManager {
+public class MamManager implements OnAuthorizedListener {
     private final static MamManager instance;
     public static final int SYNC_INTERVAL_MINUTES = 5;
 
     public static int PAGE_SIZE = AbstractChat.PRELOADED_MESSAGES;
+
+    private Map<String, Boolean> supportedByAccount;
 
     static {
         instance = new MamManager();
@@ -47,6 +53,26 @@ public class MamManager {
 
     public static MamManager getInstance() {
         return instance;
+    }
+
+    public MamManager() {
+        supportedByAccount = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public void onAuthorized(ConnectionItem connection) {
+        if (!(connection instanceof AccountItem)) {
+            return;
+        }
+        final AccountItem accountItem = (AccountItem) connection;
+        supportedByAccount.remove(accountItem.getAccount());
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                updateIsSupported(accountItem);
+            }
+        });
     }
 
     public void requestLastHistory(final AbstractChat chat) {
@@ -76,15 +102,7 @@ public class MamManager {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                org.jivesoftware.smackx.mam.MamManager mamManager
-                        = org.jivesoftware.smackx.mam.MamManager
-                        .getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
-                try {
-                    if (!mamManager.isSupportedByServer()) {
-                        return;
-                    }
-                } catch (SmackException.NoResponseException | InterruptedException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                if (!checkSupport(accountItem)) {
                     return;
                 }
 
@@ -95,6 +113,8 @@ public class MamManager {
                     realm.close();
                 }
 
+                org.jivesoftware.smackx.mam.MamManager mamManager
+                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
                 final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
                     EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
@@ -112,8 +132,6 @@ public class MamManager {
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
 
-
-
                 syncCache.setLastSyncedTime(new Date(System.currentTimeMillis()));
 
                 Realm realm = Realm.getDefaultInstance();
@@ -122,6 +140,34 @@ public class MamManager {
                 realm.close();
             }
         });
+    }
+
+    private boolean checkSupport(AccountItem accountItem) {
+        String account = accountItem.getAccount();
+
+        Boolean isSupported = supportedByAccount.get(account);
+
+        if (isSupported != null) {
+            return isSupported;
+        }
+
+        return updateIsSupported(accountItem);
+    }
+
+    private boolean updateIsSupported(AccountItem accountItem) {
+        org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager
+                .getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+
+        boolean isSupported;
+        try {
+            isSupported = mamManager.isSupportedByServer();
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+            return false;
+        }
+
+        LogManager.i(this, "MAM support for account " + accountItem.getAccount() + " " + isSupported);
+        supportedByAccount.put(accountItem.getAccount(), isSupported);
+        return isSupported;
     }
 
     public void syncMessages(Realm realm, AbstractChat chat, final Collection<MessageItem> messagesFromServer) {
@@ -270,15 +316,16 @@ public class MamManager {
             return;
         }
 
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        ConnectionThread connectionThread = accountItem.getConnectionThread();
+
+        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
+            return;
+        }
+
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
-                ConnectionThread connectionThread = accountItem.getConnectionThread();
-
-                if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
-                    return;
-                }
 
                 String firstMamMessageMamId;
                 boolean remoteHistoryCompletelyLoaded;
@@ -298,16 +345,11 @@ public class MamManager {
                     return;
                 }
 
-                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
-                try {
-                    if (!mamManager.isSupportedByServer()) {
-                        return;
-                    }
-
-                } catch (SmackException.NoResponseException | InterruptedException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                if (!checkSupport(accountItem)) {
                     return;
                 }
+
+                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
 
                 final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {
