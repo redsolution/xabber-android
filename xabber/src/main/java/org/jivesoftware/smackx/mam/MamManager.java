@@ -54,7 +54,7 @@ import java.util.WeakHashMap;
  *
  * @see <a href="http://xmpp.org/extensions/xep-0313.html">XEP-0313: Message Archive Management</a>
  *
- * The implementation is now according to version 0.3.
+ * The implementation is now according to version 0.5
  *
  */
 public class MamManager extends Manager {
