@@ -632,6 +632,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     MessageItem newMessageItem = finalChat.createNewMessageItem(body);
                     newMessageItem.setStanzaId(message.getStanzaId());
                     newMessageItem.setSent(true);
+                    newMessageItem.setForwarded(true);
                     realm.copyToRealm(newMessageItem);
                 }
             }, null);

@@ -453,7 +453,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         int messageIcon = R.drawable.ic_message_delivered_14dp;
-        if (messageItem.isReceivedFromMessageArchive()) {
+        if (messageItem.isForwarded()) {
+            messageIcon = R.drawable.ic_message_forwarded_14dp;
+        } else if (messageItem.isReceivedFromMessageArchive()) {
             messageIcon = R.drawable.ic_message_synced_14dp;
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;

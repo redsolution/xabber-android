@@ -46,6 +46,7 @@ public class MessageItem extends RealmObject {
         public static final String READ = "read";
         public static final String STANZA_ID = "stanzaId";
         public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
+        public static final String FORWARDED = "forwarded";
         public static final String FILE_PATH = "filePath";
         public static final String FILE_SIZE = "fileSize";
 
@@ -122,6 +123,11 @@ public class MessageItem extends RealmObject {
      * If message was received from server message archive (XEP-0313)
      */
     private boolean isReceivedFromMessageArchive;
+
+    /**
+     * If message was forwarded (e.g. message carbons (XEP-0280))
+     */
+    private boolean forwarded;
 
     private String filePath;
 
@@ -270,6 +276,14 @@ public class MessageItem extends RealmObject {
 
     public void setReceivedFromMessageArchive(boolean receivedFromMessageArchive) {
         isReceivedFromMessageArchive = receivedFromMessageArchive;
+    }
+
+    public boolean isForwarded() {
+        return forwarded;
+    }
+
+    public void setForwarded(boolean forwarded) {
+        this.forwarded = forwarded;
     }
 
     public String getFilePath() {
