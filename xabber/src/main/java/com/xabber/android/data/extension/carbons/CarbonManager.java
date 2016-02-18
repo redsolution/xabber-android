@@ -1,25 +1,26 @@
 package com.xabber.android.data.extension.carbons;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.extension.capability.OnServerInfoReceivedListener;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 
-import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
+
+import java.util.Collection;
 
 
 /**
@@ -32,43 +33,49 @@ import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
  *
  * @author Georg Lukas, Semyon Baranov
  */
-public class CarbonManager implements OnServerInfoReceivedListener, OnPacketListener {
+public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
     private final static CarbonManager instance;
 
     static {
         instance = new CarbonManager();
         Application.getInstance().addManager(instance);
-
-        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
-            @Override
-            public void connectionCreated(final XMPPConnection connection) {
-
-                if (connection == null) {
-                    return;
-                }
-
-                instance.connection = connection;
-            }
-        });
     }
-
-    private XMPPConnection connection;
-    private volatile boolean enabled_state = false;
 
     private CarbonManager() {
     }
 
     public static CarbonManager getInstance() {
-
         return instance;
     }
 
-    /**
-     * Check if carbons are enabled on this connection.
-     */
-    public boolean getCarbonsEnabled() {
 
-        return enabled_state;
+    @Override
+    public void onAuthorized(final ConnectionItem connection) {
+        if (!(connection instanceof AccountItem)) {
+            return;
+        }
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                updateIsSupported(connection);
+            }
+        });
+    }
+
+    private void updateIsSupported(ConnectionItem connectionItem) {
+        org.jivesoftware.smackx.carbons.CarbonManager carbonManager
+                = org.jivesoftware.smackx.carbons.CarbonManager
+                .getInstanceFor(connectionItem.getConnectionThread().getXMPPConnection());
+
+        try {
+            if (carbonManager.isSupportedByServer()) {
+                carbonManager.setCarbonsEnabled(SettingsManager.connectionUseCarbons());
+            }
+
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -77,9 +84,15 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         if (!(connection instanceof AccountItem)) {
             return;
         }
+
         if (!SettingsManager.connectionUseCarbons()) {
             return;
         }
+
+        if (!isCarbonsEnabledForConnection(connection)) {
+            return;
+        }
+
         final String user = packet.getFrom();
         if (user == null) {
             return;
@@ -89,9 +102,6 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         }
 
         final Message message = (Message) packet;
-        if (!getCarbonsEnabled()) {
-            return;
-        }
         CarbonExtension carbonExtension = CarbonExtension.from(message);
 
         if (carbonExtension == null) {
@@ -106,9 +116,13 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
 
     }
 
-    @Override
-    public void onServerInfoReceived(final ConnectionItem connection) {
-        onUseCarbonsSettingsChanged();
+    public boolean isCarbonsEnabledForConnection(ConnectionItem connection) {
+        if (!org.jivesoftware.smackx.carbons.CarbonManager
+                .getInstanceFor(connection.getConnectionThread().getXMPPConnection())
+                .getCarbonsEnabled()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -119,17 +133,9 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                org.jivesoftware.smackx.carbons.CarbonManager carbonManager
-                        = org.jivesoftware.smackx.carbons.CarbonManager
-                        .getInstanceFor(connection);
-                try {
-                    if (carbonManager.isSupportedByServer()) {
-                        boolean useCarbons = SettingsManager.connectionUseCarbons();
-                        carbonManager.setCarbonsEnabled(useCarbons);
-                        enabled_state = useCarbons;
-                    }
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                Collection<String> accounts = AccountManager.getInstance().getAccounts();
+                for (String account : accounts) {
+                    updateIsSupported(AccountManager.getInstance().getAccount(account));
                 }
             }
         });
@@ -149,6 +155,7 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         if (!SettingsManager.connectionUseCarbons()) {
             return;
         }
+
         if (SettingsManager.securityOtrMode() == SecurityOtrMode.disabled) {
             return;
         }
@@ -156,6 +163,10 @@ public class CarbonManager implements OnServerInfoReceivedListener, OnPacketList
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(abstractChat.getAccount(), abstractChat.getUser());
 
         if (securityLevel == SecurityLevel.plain) {
+            return;
+        }
+
+        if (isCarbonsEnabledForConnection(AccountManager.getInstance().getAccount(abstractChat.getAccount()))) {
             return;
         }
         CarbonExtension.Private.addTo(message);
