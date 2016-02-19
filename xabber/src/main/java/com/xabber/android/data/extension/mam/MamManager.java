@@ -229,19 +229,17 @@ public class MamManager implements OnAuthorizedListener {
         while (iterator.hasNext()) {
             MessageItem remoteMessage = iterator.next();
 
+            // assume that Stanza ID could be not unique
             if (localMessages.where()
                     .equalTo(MessageItem.Fields.STANZA_ID, remoteMessage.getStanzaId())
+                    .equalTo(MessageItem.Fields.TEXT, remoteMessage.getText())
                     .count() > 0) {
-                LogManager.i(this, "Sync. Found messages with same Stanza ID. removing. Remote message:"
+                LogManager.i(this, "Sync. Removing message with same Stanza ID and text. Remote message:"
                         + " Text: " + remoteMessage.getText()
                         + " Timestamp: " + remoteMessage.getTimestamp()
                         + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
                         + " StanzaId: " + remoteMessage.getStanzaId());
                 iterator.remove();
-                continue;
-            }
-
-            if (remoteMessage.getText() == null || remoteMessage.getTimestamp() == null) {
                 continue;
             }
 
@@ -252,7 +250,7 @@ public class MamManager implements OnAuthorizedListener {
                     .equalTo(MessageItem.Fields.TEXT, remoteMessage.getText()).findAll();
 
             if (isTimeStampSimilar(sameTextMessages, remoteMessageTimestamp)) {
-                LogManager.i(this, "Sync. Found messages with similar remote timestamp. Removing. Remote message:"
+                LogManager.i(this, "Sync. Found messages with same text and similar remote timestamp. Removing. Remote message:"
                         + " Text: " + remoteMessage.getText()
                         + " Timestamp: " + remoteMessage.getTimestamp()
                         + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
@@ -263,7 +261,7 @@ public class MamManager implements OnAuthorizedListener {
 
             if (remoteMessageDelayTimestamp != null
                     && isTimeStampSimilar(sameTextMessages, remoteMessageDelayTimestamp)) {
-                LogManager.i(this, "Sync. Found messages with similar remote delay timestamp. Removing. Remote message:"
+                LogManager.i(this, "Sync. Found messages with same text and similar remote delay timestamp. Removing. Remote message:"
                         + " Text: " + remoteMessage.getText()
                         + " Timestamp: " + remoteMessage.getTimestamp()
                         + " Delay Timestamp: " + remoteMessage.getDelayTimestamp()
