@@ -320,7 +320,7 @@ public class MamManager implements OnAuthorizedListener {
             if (syncInfo.getFirstMamMessageMamId() == null) {
                 syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
                 if (!mamQueryResult.messages.isEmpty()) {
-                    syncInfo.setFirstMamMessageStanzaId(mamQueryResult.mamFin.getRsmSet().getFirst());
+                    syncInfo.setFirstMamMessageStanzaId(mamQueryResult.messages.get(0).getForwardedPacket().getStanzaId());
                 }
             }
             if (mamQueryResult.mamFin.getRsmSet().getLast() != null) {
@@ -407,8 +407,8 @@ public class MamManager implements OnAuthorizedListener {
         }
 
         syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
-        if (messageItems != null && !messageItems.isEmpty()) {
-            syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
+        if (!mamQueryResult.messages.isEmpty()) {
+            syncInfo.setFirstMamMessageStanzaId(mamQueryResult.messages.get(0).getForwardedPacket().getStanzaId());
         }
         realm.commitTransaction();
     }
