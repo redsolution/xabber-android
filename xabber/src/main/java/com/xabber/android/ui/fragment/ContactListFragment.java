@@ -32,7 +32,7 @@ import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.message.OnChatChangedListener;
+import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.activity.AccountAdd;
@@ -50,10 +50,14 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
 import com.xabber.android.ui.preferences.AccountList;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, OnChatChangedListener, OnItemClickListener,
+        OnContactChangedListener, OnItemClickListener,
         OnContactListChangedListener, View.OnClickListener, GroupedContactAdapter.OnClickListener {
 
     private ContactListAdapter adapter;
@@ -146,9 +150,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onResume() {
         super.onResume();
+        EventBus.getDefault().register(this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
-        Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         adapter.onChange();
         scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
         scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
@@ -214,11 +218,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
     }
 
-    @Override
-    public void onChatChanged(String account, String user, boolean incoming) {
-        if (incoming) {
-            adapter.refreshRequest();
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent event) {
+        adapter.refreshRequest();
     }
 
     @Override
@@ -357,9 +359,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Force stop contact list updates before pause or application close.
      */
     public void unregisterListeners() {
+        EventBus.getDefault().unregister(this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
         adapter.removeRefreshRequests();
     }
 

@@ -29,6 +29,7 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -203,6 +204,7 @@ public abstract class AbstractChat extends BaseEntity {
         final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
                 incoming, notify, unencrypted, offline, stanzaId);
         saveMessageItem(messageItem);
+        EventBus.getDefault().post(new NewMessageEvent());
     }
 
     public void saveMessageItem(final MessageItem messageItem) {
@@ -213,7 +215,7 @@ public abstract class AbstractChat extends BaseEntity {
             public void execute(Realm realm) {
                 realm.copyToRealm(messageItem);
             }
-        }, null);
+        });
 
         realm.close();
     }
