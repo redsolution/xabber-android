@@ -53,6 +53,7 @@ import com.xabber.android.utils.StringUtils;
 import java.io.File;
 import java.util.Date;
 
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -187,6 +188,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         messageView.messageFileInfo.setVisibility(View.GONE);
         messageView.messageTextForFileName.setVisibility(View.GONE);
 
+        if (messageItem.isError()) {
+            return;
+        }
+
         String filePath = messageItem.getFilePath();
 
         if (filePath == null) {
@@ -240,6 +245,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             return;
         }
 
+        final String uniqueId = messageItem.getUniqueId();
+
         messageView.downloadButton.setVisibility(View.GONE);
         messageView.downloadProgressBar.setVisibility(View.VISIBLE);
         FileManager.getInstance().downloadFile(messageItem, new FileManager.ProgressListener() {
@@ -267,9 +274,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
             @Override
             public void onError() {
-                setUpFileMessage(messageView, messageItem);
-            }
+                Realm realm = Realm.getDefaultInstance();
 
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        MessageItem first = realm.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId).findFirst();
+                        first.setError(true);
+                    }
+                }, null);
+
+                realm.close();
+            }
 
         });
     }
