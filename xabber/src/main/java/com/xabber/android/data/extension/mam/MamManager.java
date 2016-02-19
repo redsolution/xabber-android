@@ -117,10 +117,8 @@ public class MamManager implements OnAuthorizedListener {
             return;
         }
 
-        final SyncCache syncCache = chat.getSyncCache();
-
-        if (syncCache.getLastSyncedTime() != null
-                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncCache.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
+        if (chat.getLastSyncedTime() != null
+                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - chat.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
             return;
         }
 
@@ -202,7 +200,7 @@ public class MamManager implements OnAuthorizedListener {
 
         LogManager.i(this, "receivedMessagesCount " + receivedMessagesCount);
 
-        chat.getSyncCache().setLastSyncedTime(new Date(System.currentTimeMillis()));
+        chat.setLastSyncedTime(new Date(System.currentTimeMillis()));
 
         Realm realm = Realm.getDefaultInstance();
         updateLastHistorySyncInfo(realm, chat, mamQueryResult);
@@ -334,23 +332,6 @@ public class MamManager implements OnAuthorizedListener {
         realm.commitTransaction();
     }
 
-    private void updatePreviousHistorySyncInfo(Realm realm, BaseEntity chat, org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, List<MessageItem> messageItems) {
-        SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
-
-        realm.beginTransaction();
-        if (mamQueryResult.messages.size() < PAGE_SIZE) {
-            syncInfo.setRemoteHistoryCompletelyLoaded(true);
-        }
-
-        syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
-        if (messageItems != null && !messageItems.isEmpty()) {
-            syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
-        }
-        realm.commitTransaction();
-    }
-
-
-
     public void requestPreviousHistory(final AbstractChat chat) {
         if (chat == null || chat.isRemotePreviousHistoryCompletelyLoaded()) {
             return;
@@ -415,6 +396,21 @@ public class MamManager implements OnAuthorizedListener {
 
         });
 
+    }
+
+    private void updatePreviousHistorySyncInfo(Realm realm, BaseEntity chat, org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, List<MessageItem> messageItems) {
+        SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
+
+        realm.beginTransaction();
+        if (mamQueryResult.messages.size() < PAGE_SIZE) {
+            syncInfo.setRemoteHistoryCompletelyLoaded(true);
+        }
+
+        syncInfo.setFirstMamMessageMamId(mamQueryResult.mamFin.getRsmSet().getFirst());
+        if (messageItems != null && !messageItems.isEmpty()) {
+            syncInfo.setFirstMamMessageStanzaId(messageItems.get(0).getStanzaId());
+        }
+        realm.commitTransaction();
     }
 
     private List<MessageItem> getMessageItems(org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult, AbstractChat chat) {

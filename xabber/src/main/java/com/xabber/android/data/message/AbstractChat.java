@@ -23,7 +23,6 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.mam.SyncCache;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
@@ -82,8 +81,7 @@ public abstract class AbstractChat extends BaseEntity {
 
     private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
-    private SyncCache syncCache;
-
+    private Date lastSyncedTime;
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -95,9 +93,6 @@ public abstract class AbstractChat extends BaseEntity {
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
         updateCreationTime();
-
-        syncCache = new SyncCache();
-
     }
 
     public boolean isRemotePreviousHistoryCompletelyLoaded() {
@@ -107,6 +102,15 @@ public abstract class AbstractChat extends BaseEntity {
     public void setRemotePreviousHistoryCompletelyLoaded(boolean remotePreviousHistoryCompletelyLoaded) {
         isRemotePreviousHistoryCompletelyLoaded = remotePreviousHistoryCompletelyLoaded;
     }
+
+    public Date getLastSyncedTime() {
+        return lastSyncedTime;
+    }
+
+    public void setLastSyncedTime(Date lastSyncedTime) {
+        this.lastSyncedTime = lastSyncedTime;
+    }
+
 
     public boolean isActive() {
         if (isPrivateMucChat && !isPrivateMucChatAccepted) {
@@ -571,9 +575,5 @@ public abstract class AbstractChat extends BaseEntity {
 
     public boolean isPrivateMucChatAccepted() {
         return isPrivateMucChatAccepted;
-    }
-
-    public SyncCache getSyncCache() {
-        return syncCache;
     }
 }
