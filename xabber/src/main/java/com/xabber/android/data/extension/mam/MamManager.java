@@ -77,77 +77,8 @@ public class MamManager implements OnAuthorizedListener {
         });
     }
 
-    public void requestLastHistory(final AbstractChat chat) {
-        if (chat == null) {
-            return;
-        }
-
-        final SyncCache syncCache = chat.getSyncCache();
-
-        if (syncCache.getLastSyncedTime() != null
-                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncCache.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
-            return;
-        }
-
-        final String account = chat.getAccount();
-        final String user = chat.getUser();
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
-            return;
-        }
-        ConnectionThread connectionThread = accountItem.getConnectionThread();
-
-        if (connectionThread == null) {
-            return;
-        }
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                if (!checkSupport(accountItem)) {
-                    return;
-                }
-
-                String lastMessageMamId;
-                {
-                    Realm realm = Realm.getDefaultInstance();
-                    lastMessageMamId = getSyncInfo(realm, account, user).getLastMessageMamId();
-                    realm.close();
-                }
-
-                org.jivesoftware.smackx.mam.MamManager mamManager
-                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
-                final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
-                try {
-                    EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
-                    if (lastMessageMamId == null) {
-                        mamQueryResult = mamManager.queryPage(user, PAGE_SIZE, null, "");
-                    } else {
-                        mamQueryResult = mamManager.queryPage(user, PAGE_SIZE, lastMessageMamId, null);
-                    }
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
-                    return;
-                } finally {
-                    EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
-                }
-
-                LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRsmSet().getCount() + " real: " + mamQueryResult.messages.size());
-
-                syncCache.setLastSyncedTime(new Date(System.currentTimeMillis()));
-
-                Realm realm = Realm.getDefaultInstance();
-                updateLastHistorySyncInfo(realm, chat, mamQueryResult);
-                syncMessages(realm, chat, getMessageItems(mamQueryResult, chat));
-                realm.close();
-            }
-        });
-    }
-
     private boolean checkSupport(AccountItem accountItem) {
-        String account = accountItem.getAccount();
-
-        Boolean isSupported = supportedByAccount.get(account);
+        Boolean isSupported = supportedByAccount.get(accountItem.getAccount());
 
         if (isSupported != null) {
             return isSupported;
@@ -179,6 +110,85 @@ public class MamManager implements OnAuthorizedListener {
         LogManager.i(this, "MAM support for account " + accountItem.getAccount() + " " + isSupported);
         supportedByAccount.put(accountItem.getAccount(), isSupported);
         return isSupported;
+    }
+
+    public void requestLastHistory(final AbstractChat chat) {
+        if (chat == null) {
+            return;
+        }
+
+        final SyncCache syncCache = chat.getSyncCache();
+
+        if (syncCache.getLastSyncedTime() != null
+                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - syncCache.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
+            return;
+        }
+
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
+            return;
+        }
+        ConnectionThread connectionThread = accountItem.getConnectionThread();
+
+        if (connectionThread == null) {
+            return;
+        }
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (!checkSupport(accountItem)) {
+                    return;
+                }
+
+                EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+
+                org.jivesoftware.smackx.mam.MamManager mamManager
+                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+
+                String lastMessageMamId;
+                int receivedMessagesCount;
+                do {
+                    Realm realm = Realm.getDefaultInstance();
+                    lastMessageMamId = getSyncInfo(realm, chat.getAccount(), chat.getUser()).getLastMessageMamId();
+                    realm.close();
+
+                    receivedMessagesCount = requestLastHistoryPage(mamManager, chat, lastMessageMamId);
+                } while (lastMessageMamId != null && receivedMessagesCount == PAGE_SIZE);
+
+                EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
+            }
+        });
+    }
+
+    public int requestLastHistoryPage(org.jivesoftware.smackx.mam.MamManager mamManager,
+                                      AbstractChat chat, String lastMessageMamId) {
+        LogManager.i(this, "requestLastHistoryPage " + chat.getUser());
+
+        final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
+        try {
+            if (lastMessageMamId == null) {
+                mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, "");
+            } else {
+                mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, lastMessageMamId, null);
+            }
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        int receivedMessagesCount = mamQueryResult.messages.size();
+
+        LogManager.i(this, "receivedMessagesCount " + receivedMessagesCount);
+
+        chat.getSyncCache().setLastSyncedTime(new Date(System.currentTimeMillis()));
+
+        Realm realm = Realm.getDefaultInstance();
+        updateLastHistorySyncInfo(realm, chat, mamQueryResult);
+        syncMessages(realm, chat, getMessageItems(mamQueryResult, chat));
+        realm.close();
+
+        return receivedMessagesCount;
     }
 
     public void syncMessages(Realm realm, AbstractChat chat, final Collection<MessageItem> messagesFromServer) {
