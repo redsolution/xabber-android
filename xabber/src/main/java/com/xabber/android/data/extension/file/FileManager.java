@@ -268,7 +268,10 @@ public class FileManager {
 
         ImageScaler imageScaler = new ImageScaler(imageView.getContext(), height, width).invoke();
         imageView.setLayoutParams(new LinearLayout.LayoutParams(imageScaler.getScaledWidth(), imageScaler.getScaledHeight()));
-        Glide.with(imageView.getContext()).load(file).crossFade().override(imageScaler.getScaledWidth(), imageScaler.getScaledHeight()).into(imageView);
+        Glide.with(Application.getInstance().getApplicationContext())
+                .load(file).crossFade()
+                .override(imageScaler.getScaledWidth(), imageScaler.getScaledHeight())
+                .into(imageView);
     }
 
     public static boolean treatAsDownloadable(String text) {
