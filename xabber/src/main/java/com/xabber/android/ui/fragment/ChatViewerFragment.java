@@ -61,6 +61,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -518,6 +519,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             isRemotePreviousHistoryRequested = false;
             previousHistoryProgressBar.setVisibility(View.GONE);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageUpdateEvent event) {
+        chatMessageAdapter.onChange();
     }
 
     private void onAttachButtonPressed() {
