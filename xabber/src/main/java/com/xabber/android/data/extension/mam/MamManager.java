@@ -154,11 +154,32 @@ public class MamManager implements OnAuthorizedListener {
                     realm.close();
 
                     receivedMessagesCount = requestLastHistoryPage(mamManager, chat, lastMessageMamId);
+
+                    // if it was NOT the first time, and we got exactly one page,
+                    // it means that there should be more unloaded recent history
                 } while (lastMessageMamId != null && receivedMessagesCount == PAGE_SIZE);
+
+                // if it was first time receiving history, and we got less than a page
+                // it mean that all previous history loaded
+                if (lastMessageMamId == null
+                        && receivedMessagesCount >= 0 && receivedMessagesCount < PAGE_SIZE) {
+                    setRemoteHistoryCompletelyLoaded(chat);
+                }
 
                 EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
             }
         });
+    }
+
+    public void setRemoteHistoryCompletelyLoaded(AbstractChat chat) {
+        LogManager.i(this, "setRemoteHistoryCompletelyLoaded " + chat.getUser());
+
+        Realm realm = Realm.getDefaultInstance();
+        SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
+        realm.beginTransaction();
+        syncInfo.setRemoteHistoryCompletelyLoaded(true);
+        realm.commitTransaction();
+        realm.close();
     }
 
     public int requestLastHistoryPage(org.jivesoftware.smackx.mam.MamManager mamManager,
@@ -174,7 +195,7 @@ public class MamManager implements OnAuthorizedListener {
             }
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
 
         int receivedMessagesCount = mamQueryResult.messages.size();
