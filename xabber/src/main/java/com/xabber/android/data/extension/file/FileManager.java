@@ -47,6 +47,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpHeaders;
+import io.realm.Realm;
 
 public class FileManager {
 
@@ -118,13 +119,25 @@ public class FileManager {
         LogManager.i(FileManager.class, "Requesting file size");
 
         AsyncHttpClient client = new AsyncHttpClient();
+        final String uniqueId = messageItem.getUniqueId();
         client.head(messageItem.getText(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                for (Header header : headers) {
+                for (final Header header : headers) {
                     if (header.getName().equals(HttpHeaders.CONTENT_LENGTH)) {
-                        messageItem.setFileSize(Long.parseLong(header.getValue()));
-                        MessageManager.getInstance().onChatChanged(messageItem.getAccount(), messageItem.getUser(), false);
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                MessageItem first = realm.where(MessageItem.class)
+                                        .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                        .findFirst();
+                                if (first != null) {
+                                    first.setFileSize(Long.parseLong(header.getValue()));
+                                }
+                            }
+                        }, null);
+                        realm.close();
                         break;
                     }
                 }
