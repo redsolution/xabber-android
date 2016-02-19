@@ -53,17 +53,6 @@
         tools:listitem="@layout/chat_viewer_outgoing_message"
         />
 
-    <ProgressBar
-        android:id="@+id/chat_last_history_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/input_layout"
-        android:layout_centerHorizontal="true"
-        android:paddingBottom="16dp"
-        android:visibility="gone"
-
-        />
-
     <LinearLayout
         android:id="@+id/input_layout"
         android:layout_width="match_parent"
@@ -143,12 +132,22 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/progress_bar_toolbar"
+        android:id="@+id/chat_previous_history_progress_bar"
         android:layout_below="@+id/toolbar_default"
         android:indeterminate="true"
         android:elevation="8dp"
-        android:layout_marginBottom="-8dp"
         android:layout_marginTop="-8dp"
+        android:visibility="gone"
+        />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/chat_last_history_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/input_layout"
+        android:indeterminate="true"
+        android:layout_marginBottom="-8dp"
         android:visibility="gone"
         />
 

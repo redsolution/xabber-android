@@ -449,7 +449,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
 
         lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
-        previousHistoryProgressBar = view.findViewById(R.id.progress_bar_toolbar);
+        previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
 
         return view;
     }
