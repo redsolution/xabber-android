@@ -477,10 +477,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             return;
         }
 
-        int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-        int firstVisibleItemPosition = pastVisibleItems;
+        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
 
-        if (pastVisibleItems / visibleItemCount <= 2) {
+        if (firstVisibleItemPosition / visibleItemCount <= 2) {
             requestRemoteHistoryLoad();
             return;
         }
@@ -1135,7 +1134,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     @Override
-    public void onChange(int prevItemCount) {
+    public void onMessageNumberChanged(int prevItemCount) {
         // if chat is scrolled to bottom we need to show new message
         if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
             scrollDown();
@@ -1144,9 +1143,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 layoutManager.scrollToPositionWithOffset(chatMessageAdapter.findMessagePosition(lastVisibleMessageItemId), (int) offset);
             }
         }
+    }
 
+    @Override
+    public void onMessagesUpdated() {
         updateFirstRemoteSyncedItemPosition();
-
         loadHistoryIfNeeded();
     }
 

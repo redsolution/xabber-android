@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
@@ -105,7 +104,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     public interface Listener {
         void onNoDownloadFilePermission();
-        void onChange(int prevItemCount);
+        void onMessageNumberChanged(int prevItemCount);
+        void onMessagesUpdated();
     }
 
     private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
@@ -420,9 +420,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     public void onChange() {
         lastUpdateTimeMillis = System.currentTimeMillis();
         notifyDataSetChanged();
+        listener.onMessagesUpdated();
         int itemCount = getItemCount();
         if (prevItemCount != itemCount) {
-            listener.onChange(prevItemCount);
+            listener.onMessageNumberChanged(prevItemCount);
             prevItemCount = itemCount;
         }
     }
