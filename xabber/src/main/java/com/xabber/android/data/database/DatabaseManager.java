@@ -126,11 +126,13 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                         if (oldVersion == 3) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addIndex(MessageItem.Fields.SENT);
+                            oldVersion++;
                         }
 
                         if (oldVersion == 4) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.FORWARDED, boolean.class);
+                            oldVersion++;
                         }
                     }
                 })
