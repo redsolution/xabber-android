@@ -137,12 +137,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private View previousHistoryProgressBar;
 
     private boolean isRemoteHistoryRequested = false;
-    private float offset;
-    private String lastVisibleMessageItemId;
-    private int lastVisibleItemPosition = RecyclerView.NO_POSITION;
     private int firstRemoteSyncedItemPosition = RecyclerView.NO_POSITION;
     private RealmResults<SyncInfo> syncInfoResults;
     private RealmResults<MessageItem> messageItems;
+    private boolean isMessageSent = false;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -261,15 +259,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-                lastVisibleMessageItemId = chatMessageAdapter.getMessageItemId(lastVisibleItemPosition);
-
-                View view = layoutManager.findViewByPosition(lastVisibleItemPosition);
-                if (view == null) {
-                    offset = 0;
-                } else {
-                    offset = view.getTop();
-                }
+                saveScrollState();
 
                 if (dy < 0) {
                     loadHistoryIfNeeded();
@@ -460,6 +450,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         return view;
     }
 
+    public void saveScrollState() {
+        ChatManager.getInstance().setScrollState(account, user, layoutManager.onSaveInstanceState());
+    }
+
     private void loadHistoryIfNeeded() {
         if (isRemoteHistoryRequested) {
             return;
@@ -635,6 +629,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         listener.registerChat(this);
         updateContact();
         restoreInputState();
+        restoreScrollState();
     }
 
 
@@ -717,6 +712,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         ChatStateManager.getInstance().onPaused(account, user);
 
         saveInputState();
+        saveScrollState();
         listener.unregisterChat(this);
     }
 
@@ -734,6 +730,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         clearInputText();
 
+        isMessageSent = true;
         sendMessage(text);
 
         listener.onMessageSent();
@@ -1129,14 +1126,20 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public void onMessageNumberChanged(int prevItemCount) {
-        // if chat is scrolled to bottom we need to show new message
-        if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
+        if (isMessageSent) {
+            isMessageSent = false;
             scrollDown();
         } else {
-            if (lastVisibleMessageItemId != null) {
-                layoutManager.scrollToPositionWithOffset(chatMessageAdapter.findMessagePosition(lastVisibleMessageItemId), (int) offset);
-            }
         }
+    }
+
+    public void restoreScrollState() {
+        layoutManager.onRestoreInstanceState(ChatManager.getInstance().getScrollState(account, user));
+    }
+
+    @Override
+    public void beforeUpdate() {
+        saveScrollState();
     }
 
     @Override

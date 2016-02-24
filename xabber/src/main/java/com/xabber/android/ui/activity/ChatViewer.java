@@ -38,6 +38,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
@@ -201,6 +202,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ChatManager.getInstance().clearScrollStates();
     }
 
 
