@@ -420,17 +420,12 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     public MessageItem getLastMessage() {
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<MessageItem> allSorted = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, user)
-                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-        realm.close();
+        RealmResults<MessageItem> messages = getMessages();
 
-        if (allSorted.isEmpty()) {
+        if (!messages.isLoaded() || messages.isEmpty()) {
             return null;
         } else {
-            return allSorted.last();
+            return messages.last();
         }
     }
 
@@ -438,12 +433,11 @@ public abstract class AbstractChat extends BaseEntity {
      * @return Time of last message in chat. Can be <code>null</code>.
      */
     public Date getLastTime() {
-        Realm realm = Realm.getDefaultInstance();
-        Number max = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, user)
-                .max(MessageItem.Fields.TIMESTAMP);
-        realm.close();
+        RealmResults<MessageItem> messages = getMessages();
+        Number max = null;
+        if (messages.isLoaded()) {
+            max = messages.where().max(MessageItem.Fields.TIMESTAMP);
+        }
 
         if (max != null) {
             return new Date(max.longValue());
