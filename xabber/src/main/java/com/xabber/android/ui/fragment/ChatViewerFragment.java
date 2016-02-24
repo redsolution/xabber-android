@@ -197,6 +197,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Override
     public void onDestroy() {
         super.onDestroy();
+        chatMessageAdapter.release();
     }
 
     @Override
@@ -249,10 +250,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         layoutManager.setStackFromEnd(true);
 
-        messageItems = ((ChatViewer)getActivity()).getRealm().where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
-                .equalTo(MessageItem.Fields.USER, this.user)
-                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        messageItems = getChat().getMessages();
 
         syncInfoResults = ((ChatViewer) getActivity()).getRealm().where(SyncInfo.class)
                 .equalTo(SyncInfo.FIELD_ACCOUNT, account)

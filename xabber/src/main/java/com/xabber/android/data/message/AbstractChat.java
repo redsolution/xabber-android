@@ -21,12 +21,12 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.android.data.extension.carbons.CarbonManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
@@ -82,6 +82,8 @@ public abstract class AbstractChat extends BaseEntity {
     private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
     private Date lastSyncedTime;
+    private RealmResults<MessageItem> messageItems;
+    private Realm realm;
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -132,6 +134,26 @@ public abstract class AbstractChat extends BaseEntity {
     void closeChat() {
         active = false;
         firstNotification = true;
+
+        if (realm != null && !realm.isClosed()) {
+            realm.close();
+        }
+    }
+
+    public RealmResults<MessageItem> getMessages() {
+        if (realm == null || realm.isClosed()) {
+            realm = Realm.getDefaultInstance();
+        }
+
+        if (messageItems == null) {
+            LogManager.i(this, "Requesting message items...");
+            messageItems = realm.where(MessageItem.class)
+                    .equalTo(MessageItem.Fields.ACCOUNT, account)
+                    .equalTo(MessageItem.Fields.USER, this.user)
+                    .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        }
+
+        return messageItems;
     }
 
     boolean isStatusTrackingEnabled() {

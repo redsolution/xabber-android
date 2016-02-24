@@ -26,12 +26,18 @@ public abstract class RealmRecyclerViewAdapter<T extends RealmObject, VH extends
         };
 
         if (listener != null && realmResults != null) {
-            realmResults.realm.handlerController.addChangeListenerAsWeakReference(listener);
+            this.realmResults.addChangeListener(listener);
         }
     }
 
     public void onChange() {
         notifyDataSetChanged();
+    }
+
+    public void release() {
+        if (listener != null && realmResults != null) {
+            realmResults.removeChangeListener(listener);
+        }
     }
 
     /**

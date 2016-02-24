@@ -208,6 +208,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param chat
      */
     public void removeChat(AbstractChat chat) {
+        chat.closeChat();
         chats.remove(chat.getAccount(), chat.getUser());
     }
 
