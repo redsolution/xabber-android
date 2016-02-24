@@ -24,6 +24,7 @@ import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.mam.SyncInfo;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
@@ -84,6 +85,7 @@ public abstract class AbstractChat extends BaseEntity {
     private Date lastSyncedTime;
     private RealmResults<MessageItem> messageItems;
     private Realm realm;
+    private RealmResults<SyncInfo> syncInfo;
 
     protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
@@ -154,6 +156,21 @@ public abstract class AbstractChat extends BaseEntity {
         }
 
         return messageItems;
+    }
+
+    public RealmResults<SyncInfo> getSyncInfo() {
+        if (realm == null || realm.isClosed()) {
+            realm = Realm.getDefaultInstance();
+        }
+
+        if (syncInfo == null) {
+            syncInfo = realm.where(SyncInfo.class)
+                    .equalTo(SyncInfo.FIELD_ACCOUNT, account)
+                    .equalTo(SyncInfo.FIELD_USER, user)
+                    .findAllAsync();
+        }
+
+        return syncInfo;
     }
 
     boolean isStatusTrackingEnabled() {

@@ -251,11 +251,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         layoutManager.setStackFromEnd(true);
 
         messageItems = getChat().getMessages();
-
-        syncInfoResults = ((ChatViewer) getActivity()).getRealm().where(SyncInfo.class)
-                .equalTo(SyncInfo.FIELD_ACCOUNT, account)
-                .equalTo(SyncInfo.FIELD_USER, user)
-                .findAllAsync();
+        syncInfoResults = getChat().getSyncInfo();
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
