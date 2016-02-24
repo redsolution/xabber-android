@@ -106,8 +106,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         void onNoDownloadFilePermission();
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
-
-        void beforeUpdate();
     }
 
     private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
@@ -421,7 +419,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     @Override
     public void onChange() {
         lastUpdateTimeMillis = System.currentTimeMillis();
-        listener.beforeUpdate();
         notifyDataSetChanged();
         listener.onMessagesUpdated();
         int itemCount = getItemCount();
