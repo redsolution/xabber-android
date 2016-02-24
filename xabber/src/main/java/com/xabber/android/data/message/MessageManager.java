@@ -235,14 +235,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 MessageItem newMessageItem = chat.createNewMessageItem(text);
                 realm.copyToRealm(newMessageItem);
             }
-        }, new Realm.Transaction.Callback() {
-            @Override
-            public void onSuccess() {
-                super.onSuccess();
-                chat.sendMessages();
-            }
         });
         realm.close();
+        chat.sendMessages();
     }
 
     public String createFileMessage(String account, String user, File file) {

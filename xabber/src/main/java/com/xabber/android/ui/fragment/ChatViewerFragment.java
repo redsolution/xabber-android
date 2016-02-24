@@ -140,7 +140,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private int firstRemoteSyncedItemPosition = RecyclerView.NO_POSITION;
     private RealmResults<SyncInfo> syncInfoResults;
     private RealmResults<MessageItem> messageItems;
-    private boolean isMessageSent = false;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -258,8 +257,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
-                saveScrollState();
 
                 if (dy < 0) {
                     loadHistoryIfNeeded();
@@ -730,7 +727,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         clearInputText();
 
-        isMessageSent = true;
         sendMessage(text);
 
         listener.onMessageSent();
@@ -744,6 +740,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
+        scrollDown();
     }
 
     /**
@@ -1126,11 +1123,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public void onMessageNumberChanged(int prevItemCount) {
-        if (isMessageSent) {
-            isMessageSent = false;
-            scrollDown();
-        } else {
-        }
+
     }
 
     public void restoreScrollState() {
@@ -1139,7 +1132,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public void beforeUpdate() {
-        saveScrollState();
     }
 
     @Override
