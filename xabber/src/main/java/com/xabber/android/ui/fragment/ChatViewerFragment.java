@@ -1128,11 +1128,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Override
     public void onMessageNumberChanged(int prevItemCount) {
-        int itemCount = chatMessageAdapter.getItemCount();
-        int delta = itemCount - prevItemCount;
-
         int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-        if (toBeScrolled || lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - delta)) {
+
+        if (toBeScrolled || lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
             toBeScrolled = true;
             scrollDown();
         }
@@ -1170,7 +1168,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         String firstRemotelySyncedMessageUniqueId = allSorted.last().getUniqueId();
 
         firstRemoteSyncedItemPosition = chatMessageAdapter.findMessagePosition(firstRemotelySyncedMessageUniqueId);
-        LogManager.i(this, "firstRemoteSyncedItemPosition: " + firstRemoteSyncedItemPosition);
     }
 
     public interface ChatViewerFragmentListener {
