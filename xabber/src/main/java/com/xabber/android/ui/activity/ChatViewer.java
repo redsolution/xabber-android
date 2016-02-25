@@ -200,8 +200,8 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         ChatManager.getInstance().clearScrollStates();
     }
 
