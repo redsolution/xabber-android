@@ -63,6 +63,7 @@ import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -538,6 +539,13 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MessageUpdateEvent event) {
         chatMessageAdapter.onChange();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NewIncomingMessageEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            playIncomingAnimation();
+        }
     }
 
     private void onAttachButtonPressed() {

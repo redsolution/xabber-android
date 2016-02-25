@@ -25,6 +25,7 @@ import com.xabber.xmpp.muc.MUC;
 
 import net.java.otr4j.OtrException;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
@@ -169,6 +170,7 @@ public class RegularChat extends AbstractChat {
                     unencrypted,
                     Delay.isOfflineMessage(Jid.getServer(account), packet),
                     packet.getStanzaId());
+            EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
         return true;
     }
