@@ -18,14 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.MessageItem;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,10 +41,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.TimeUnit;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpHeaders;
 import io.realm.Realm;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FileManager {
 
@@ -118,13 +119,25 @@ public class FileManager {
     private static void getFileUrlSize(final MessageItem messageItem) {
         LogManager.i(FileManager.class, "Requesting file size");
 
-        AsyncHttpClient client = new AsyncHttpClient();
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(messageItem.getText())
+                .head()
+                .build();
+
         final String uniqueId = messageItem.getUniqueId();
-        client.head(messageItem.getText(), new AsyncHttpResponseHandler() {
+
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                for (final Header header : headers) {
-                    if (header.getName().equals(HttpHeaders.CONTENT_LENGTH)) {
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String contentLength = response.header("Content-Length");
+                    if (contentLength != null) {
                         Realm realm = Realm.getDefaultInstance();
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
@@ -133,19 +146,13 @@ public class FileManager {
                                         .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
                                         .findFirst();
                                 if (first != null) {
-                                    first.setFileSize(Long.parseLong(header.getValue()));
+                                    first.setFileSize(Long.parseLong(contentLength));
                                 }
                             }
                         }, null);
                         realm.close();
-                        break;
                     }
                 }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
             }
         });
     }
@@ -158,7 +165,7 @@ public class FileManager {
     }
 
 
-    public void downloadFile(final MessageItem messageItem, final ProgressListener progressListener) {
+    public void downloadFile(final MessageItem messageItem, @Nullable final ProgressListener progressListener) {
         final String downloadUrl = messageItem.getText();
         if (startedDownloads.contains(downloadUrl)) {
             LogManager.i(FileManager.class, "Downloading of file " + downloadUrl + " already started");
@@ -167,44 +174,95 @@ public class FileManager {
         LogManager.i(FileManager.class, "Downloading file " + downloadUrl);
         startedDownloads.add(downloadUrl);
 
-        final AsyncHttpClient client = new AsyncHttpClient();
-        client.setLoggingEnabled(SettingsManager.debugLog());
-        client.setResponseTimeout(60 * 1000);
 
-        client.get(downloadUrl, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                super.onStart();
-                LogManager.i(FileManager.class, "on download start");
-            }
+        final String account = messageItem.getAccount();
+        final String user = messageItem.getUser();
+        final String uniqueId = messageItem.getUniqueId();
+        final String filePath = messageItem.getFilePath();
 
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
-                LogManager.i(FileManager.class, "on download onSuccess: " + statusCode);
-                saveFile(responseBody, new File(messageItem.getFilePath()), progressListener);
-                EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
-            }
+            public void run() {
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                        .readTimeout(2, TimeUnit.MINUTES)
+                        .connectTimeout(2, TimeUnit.MINUTES)
+                        .writeTimeout(2, TimeUnit.MINUTES)
+                        .build();
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                LogManager.i(FileManager.class, "on download onFailure: " + statusCode);
-                progressListener.onError();
-                EventBus.getDefault().post(new MessageUpdateEvent(messageItem.getAccount(), messageItem.getUser(), messageItem.getUniqueId()));
-            }
 
-            @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                if (progressListener != null) {
-                    progressListener.onProgress(bytesWritten, totalSize);
+                Request request = new Request.Builder()
+                        .get()
+                        .url(downloadUrl)
+                        .build();
+
+
+                Call call = client.newCall(request);
+
+                boolean success = false;
+                try {
+                    success = downloadFile(call, progressListener, filePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                startedDownloads.remove(downloadUrl);
+                EventBus.getDefault().post(new MessageUpdateEvent(account, user, uniqueId));
+
+                if (progressListener != null && !success) {
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressListener.onError();
+                        }
+                    });
                 }
             }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                startedDownloads.remove(downloadUrl);
-            }
         });
+    }
+
+    public boolean downloadFile(Call call, @Nullable final ProgressListener progressListener, String filePath) throws IOException {
+        boolean success = false;
+
+        Response response = call.execute();
+
+        if (response.isSuccessful()) {
+
+            byte[] buff = new byte[1024 * 4];
+            long downloaded = 0;
+            final long target = response.body().contentLength();
+            File file = new File(filePath);
+            new File(file.getParent()).mkdirs();
+            OutputStream output = new FileOutputStream(file);
+            InputStream inputStream = response.body().byteStream();
+            int bytesRead;
+            try {
+                while ((bytesRead = inputStream.read(buff)) != -1) {
+                    output.write(buff, 0, bytesRead);
+                    downloaded += bytesRead;
+
+                    final long finalDownloaded = downloaded;
+                    if (progressListener != null) {
+                         Application.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressListener.onProgress(finalDownloaded, target);
+                            }
+                        });
+                    }
+                }
+                output.flush();
+            } finally {
+                inputStream.close();
+                output.close();
+                if (downloaded == target) {
+                    success = true;
+                } else {
+                    file.delete();
+                }
+            }
+        }
+
+        return success;
     }
 
     private static void saveFile(final byte[] responseBody, final File file, final ProgressListener progressListener) {

@@ -270,14 +270,10 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     messageItem.setSent(false);
                 }
             }
-        }, new Realm.Transaction.Callback() {
-            @Override
-            public void onSuccess() {
-                chat.sendMessages();
-            }
         });
 
         realm.close();
+        chat.sendMessages();
     }
 
     public void updateMessageWithError(final String messageId) {
