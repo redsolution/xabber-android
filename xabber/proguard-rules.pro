@@ -1,6 +1,9 @@
 
 -keep class com.xabber.android.data.** { *; }
 
+# Marshmallow removed Notification.setLatestEventInfo()
+-dontwarn android.app.Notification
+
 # realm
 -keep class io.realm.annotations.RealmModule
 -keep @io.realm.annotations.RealmModule class *
