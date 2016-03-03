@@ -35,7 +35,7 @@ public abstract class RealmRecyclerViewAdapter<T extends RealmObject, VH extends
     }
 
     public void release() {
-        if (listener != null && realmResults != null) {
+        if (listener != null && realmResults != null && realmResults.isValid()) {
             realmResults.removeChangeListener(listener);
         }
     }
