@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.blocking;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.realm.BlockedContact;
 import com.xabber.android.data.database.realm.BlockedContactsForAccount;
 import com.xabber.android.data.entity.BaseEntity;
@@ -10,16 +11,12 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 
 /**
  * Local MUC private chat blocking
@@ -27,9 +24,6 @@ import io.realm.RealmResults;
 public class PrivateMucChatBlockingManager {
 
     private final static PrivateMucChatBlockingManager instance;
-
-    private Map<String, RealmList<BlockedContact>> blockListsForAccounts;
-    private Realm realm;
 
     static {
         instance = new PrivateMucChatBlockingManager();
@@ -40,54 +34,48 @@ public class PrivateMucChatBlockingManager {
         return instance;
     }
 
-    public PrivateMucChatBlockingManager() {
-        blockListsForAccounts = new ConcurrentHashMap<>();
-        realm = Realm.getDefaultInstance();
-        final RealmQuery<BlockedContactsForAccount> query = realm.where(BlockedContactsForAccount.class);
-        final RealmResults<BlockedContactsForAccount> all = query.findAll();
-        for (BlockedContactsForAccount blockedContactsForAccount : all) {
-            blockListsForAccounts.put(blockedContactsForAccount.getAccount(), blockedContactsForAccount.getBlockedContacts());
-        }
-    }
-
-    public Collection<String> getBlockedContacts(String account) {
-        return Collections.unmodifiableCollection(getBlockedListForAccount(account));
-    }
-
-    private List<String> getBlockedListForAccount(String account) {
-        createListForAccountIfNotExists(account);
+    public List<String> getBlockedContacts(String account) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmList<BlockedContact> blockedContactsForAccount = getBlockedContactsForAccount(account, realm);
 
         List<String> contacts = new ArrayList<>();
-        for (BlockedContact blockedContact : blockListsForAccounts.get(account)) {
+        for (BlockedContact blockedContact : blockedContactsForAccount) {
             contacts.add(blockedContact.getFullJid());
         }
+        realm.close();
 
         return contacts;
     }
 
-    private void createListForAccountIfNotExists(String account) {
-        if (!blockListsForAccounts.containsKey(account)) {
-            realm.beginTransaction();
-            final BlockedContactsForAccount blockedContactsForAccount = realm.createObject(BlockedContactsForAccount.class);
-            blockedContactsForAccount.setAccount(account);
-            realm.commitTransaction();
-            blockListsForAccounts.put(account, blockedContactsForAccount.getBlockedContacts());
-        }
-    }
-
     public void blockContact(String account, String user) {
-        createListForAccountIfNotExists(account);
+        Realm realm  = Realm.getDefaultInstance();
+
+        RealmList<BlockedContact> blockedContactsForAccount = getBlockedContactsForAccount(account, realm);
 
         realm.beginTransaction();
         final BlockedContact blockedContact = realm.createObject(BlockedContact.class);
         blockedContact.setFullJid(user);
-        blockListsForAccounts.get(account).add(blockedContact);
+        blockedContactsForAccount.add(blockedContact);
+
         realm.commitTransaction();
+        realm.close();
 
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
-
         notifyListeners(account);
+    }
+
+    private RealmList<BlockedContact> getBlockedContactsForAccount(String account, Realm realm) {
+        BlockedContactsForAccount blockedContactsForAccount = realm.where(BlockedContactsForAccount.class)
+                .equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account)
+                .findFirst();
+        if (blockedContactsForAccount == null) {
+            realm.beginTransaction();
+            blockedContactsForAccount = realm.createObject(BlockedContactsForAccount.class);
+            blockedContactsForAccount.setAccount(account);
+            realm.commitTransaction();
+        }
+        return blockedContactsForAccount.getBlockedContacts();
     }
 
     private void notifyListeners(String account) {
@@ -103,36 +91,36 @@ public class PrivateMucChatBlockingManager {
     }
 
     public Map<String, Collection<String>> getBlockedContacts() {
-        Map<String, Collection<String>> result = new HashMap<>();
+        Map<String, Collection<String>> blockedContacts = new HashMap<>();
 
-        for (String account : blockListsForAccounts.keySet()) {
-            result.put(account, getBlockedContacts(account));
+        for (String account : AccountManager.getInstance().getAccounts()) {
+            blockedContacts.put(account, getBlockedContacts(account));
         }
 
-        return Collections.unmodifiableMap(result);
+        return blockedContacts;
     }
 
     public void unblockContacts(String account, final List<String> contacts) {
-        if (blockListsForAccounts.containsKey(account)) {
-            final RealmList<BlockedContact> blockedContacts = blockListsForAccounts.get(account);
-            realm.beginTransaction();
+        Realm realm = Realm.getDefaultInstance();
+        RealmList<BlockedContact> blockedContacts = getBlockedContactsForAccount(account, realm);
+        realm.beginTransaction();
 
-            for (String contact : contacts) {
-                blockedContacts.removeAll(blockedContacts.where().equalTo(BlockedContact.FIELD_FULL_JID, contact).findAll());
-            }
-
-            realm.commitTransaction();
+        for (String contact : contacts) {
+            blockedContacts.removeAll(blockedContacts.where().equalTo(BlockedContact.FIELD_FULL_JID, contact).findAll());
         }
 
+        realm.commitTransaction();
+        realm.close();
         notifyListeners(account);
     }
 
     public void unblockAll(String account) {
-        if (blockListsForAccounts.containsKey(account)) {
-            realm.beginTransaction();
-            blockListsForAccounts.get(account).clear();
-            realm.commitTransaction();
-        }
+        Realm realm = Realm.getDefaultInstance();
+        RealmList<BlockedContact> blockedContactsForAccount = getBlockedContactsForAccount(account, realm);
+        realm.beginTransaction();
+        blockedContactsForAccount.clear();
+        realm.commitTransaction();
+        realm.close();
         notifyListeners(account);
     }
 
