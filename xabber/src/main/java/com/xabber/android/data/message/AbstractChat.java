@@ -422,10 +422,10 @@ public abstract class AbstractChat extends BaseEntity {
     public MessageItem getLastMessage() {
         RealmResults<MessageItem> messages = getMessages();
 
-        if (!messages.isLoaded() || messages.isEmpty()) {
+        if (!messages.isValid() || !messages.isLoaded() || messages.isEmpty()) {
             return null;
         } else {
-            return messages.last();
+            return realm.copyFromRealm(messages.last());
         }
     }
 
