@@ -69,7 +69,7 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
         Intent intent = getIntent();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager()
+            getFragmentManager()
                     .beginTransaction()
                     .add(R.id.fragment_container, ContactAddFragment.newInstance(getAccount(intent), getUser(intent)))
                     .commit();

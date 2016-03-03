@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.activity.ManagedActivity;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class GroupEditorAdapter extends ArrayAdapter<GroupEditorAdapter.Group> {
     private FragmentActivity activity;
     private int layoutResourceId;
 
-    public GroupEditorAdapter(FragmentActivity activity, int layoutResourceId, List<GroupEditorAdapter.Group> objects) {
+    public GroupEditorAdapter(ManagedActivity activity, int layoutResourceId, List<GroupEditorAdapter.Group> objects) {
         super(activity, layoutResourceId, objects);
 
         this.activity = activity;

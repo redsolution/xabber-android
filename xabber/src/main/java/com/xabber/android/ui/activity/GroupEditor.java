@@ -74,7 +74,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
         }
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, GroupEditorFragment.newInstance(account, user)).commit();
         }
 
