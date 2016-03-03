@@ -1,9 +1,9 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -37,6 +37,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.ContactAdd;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
 import com.xabber.android.ui.adapter.AccountConfiguration;
 import com.xabber.android.ui.adapter.ContactListAdapter;
@@ -182,12 +183,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(info.position);
         if (baseEntity instanceof AbstractContact) {
             ContextMenuHelper.createContactContextMenu(
-                    getActivity(), adapter, (AbstractContact) baseEntity, menu);
+                    (ManagedActivity) getActivity(), adapter, (AbstractContact) baseEntity, menu);
         } else if (baseEntity instanceof AccountConfiguration) {
             ContextMenuHelper.createAccountContextMenu(
-                    getActivity(), adapter, baseEntity.getAccount(), menu);
+                    (ManagedActivity) getActivity(), adapter, baseEntity.getAccount(), menu);
         } else if (baseEntity instanceof GroupConfiguration) {
-            ContextMenuHelper.createGroupContextMenu(getActivity(), adapter,
+            ContextMenuHelper.createGroupContextMenu((ManagedActivity) getActivity(), adapter,
                     baseEntity.getAccount(), baseEntity.getUser(), menu);
         } else {
             throw new IllegalStateException();
@@ -462,7 +463,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public void onAccountMenuClick(View view, final String account) {
         PopupMenu popup = new PopupMenu(getActivity(), view);
         popup.inflate(R.menu.account);
-        ContextMenuHelper.setUpAccountMenu(getActivity(), adapter, account, popup.getMenu());
+        ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, account, popup.getMenu());
         popup.show();
     }
 

@@ -15,6 +15,7 @@
 package com.xabber.android.ui.activity;
 
 import android.app.Dialog;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,7 +26,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -205,7 +205,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             sendText = savedInstanceState.getString(SAVED_SEND_TEXT);
             action = savedInstanceState.getString(SAVED_ACTION);
         } else {
-            getSupportFragmentManager().beginTransaction().add(R.id.container,
+            getFragmentManager().beginTransaction().add(R.id.container,
                     new ContactListFragment(), CONTACT_LIST_TAG).commit();
 
             sendText = null;
@@ -478,7 +478,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Fragment fragmentById = getSupportFragmentManager().findFragmentById(R.id.container);
+                Fragment fragmentById = getFragmentManager().findFragmentById(R.id.container);
                 ((ContactListFragment) fragmentById).getFilterableAdapter().getFilter().filter(newText);
                 return true;
             }
@@ -564,7 +564,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     private ContactListFragment getContactListFragment() {
-        return (ContactListFragment) getSupportFragmentManager().findFragmentByTag(CONTACT_LIST_TAG);
+        return (ContactListFragment) getFragmentManager().findFragmentByTag(CONTACT_LIST_TAG);
     }
 
     @Override
@@ -685,7 +685,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     @Override
     public void onAccountsChanged(Collection<String> accounts) {
-        ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
+        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
         barPainter.setDefaultColor();
     }
 
@@ -695,7 +695,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     private void rebuildAccountToggle() {
-        ((ContactListFragment)getSupportFragmentManager().findFragmentById(R.id.container)).rebuild();
+        ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).rebuild();
     }
 
     @Override
