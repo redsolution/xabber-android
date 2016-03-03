@@ -420,13 +420,22 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     public MessageItem getLastMessage() {
+        MessageItem lastNotEmptyTextMessage = null;
+
         RealmResults<MessageItem> messages = getMessages();
 
-        if (!messages.isValid() || !messages.isLoaded() || messages.isEmpty()) {
-            return null;
-        } else {
-            return realm.copyFromRealm(messages.last());
+        if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
+            lastNotEmptyTextMessage = messages.where()
+                    .not().isEmpty(MessageItem.Fields.TEXT)
+                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING)
+                    .last();
         }
+
+        if (lastNotEmptyTextMessage != null) {
+            lastNotEmptyTextMessage = realm.copyFromRealm(lastNotEmptyTextMessage);
+        }
+
+        return lastNotEmptyTextMessage;
     }
 
     /**
