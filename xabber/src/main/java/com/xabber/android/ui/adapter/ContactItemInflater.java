@@ -104,40 +104,33 @@ public class ContactItemInflater {
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
 
+        MessageItem lastMessage = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser()).getLastMessage();
+
+        if (lastMessage == null) {
+            statusText = contact.getStatusText().trim();
+        } else {
+            statusText = lastMessage.getText().trim();
+
+            viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, new Date(lastMessage.getTimestamp())));
+            viewHolder.smallRightText.setVisibility(View.VISIBLE);
+
+            if (!lastMessage.isIncoming()) {
+                viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
+                viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
+                viewHolder.outgoingMessageIndicator.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
+            }
+            viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
+            viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
+            viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
+            viewHolder.largeClientIcon.setVisibility(View.GONE);
+        }
 
         if (messageManager.hasActiveChat(contact.getAccount(), contact.getUser())) {
-
-            AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
-
-
 
             view.setBackgroundColor(ColorManager.getInstance().getActiveChatBackgroundColor());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getActiveChatSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getActiveChatLargeClientIconColor());
-
-            MessageItem lastMessage = chat.getLastMessage();
-            if (lastMessage == null) {
-                statusText = "";
-            } else {
-                statusText = lastMessage.getText().trim();
-            }
-            if (!statusText.isEmpty()) {
-
-                viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, new Date(lastMessage.getTimestamp())));
-                viewHolder.smallRightText.setVisibility(View.VISIBLE);
-
-                if (!lastMessage.isIncoming()) {
-                    viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
-                    viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
-                    viewHolder.outgoingMessageIndicator.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
-                }
-                viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
-                viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
-                viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
-                viewHolder.largeClientIcon.setVisibility(View.GONE);
-            }
         } else {
-            statusText = contact.getStatusText().trim();
             view.setBackgroundColor(ColorManager.getInstance().getContactBackground());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getContactSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getContactLargeClientIconColor());
