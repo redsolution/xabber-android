@@ -12,7 +12,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ContactEditor;
