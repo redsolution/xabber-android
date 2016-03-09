@@ -425,10 +425,13 @@ public abstract class AbstractChat extends BaseEntity {
         RealmResults<MessageItem> messages = getMessages();
 
         if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
-            lastNotEmptyTextMessage = messages.where()
+            RealmResults<MessageItem> messagesWithNotEmptyText = messages.where()
                     .not().isEmpty(MessageItem.Fields.TEXT)
-                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING)
-                    .last();
+                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+            if (!messagesWithNotEmptyText.isEmpty()) {
+                lastNotEmptyTextMessage = messagesWithNotEmptyText.last();
+            }
         }
 
         if (lastNotEmptyTextMessage != null) {
