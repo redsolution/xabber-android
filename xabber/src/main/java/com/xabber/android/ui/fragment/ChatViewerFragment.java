@@ -213,6 +213,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
         toolbar.inflateMenu(R.menu.chat);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

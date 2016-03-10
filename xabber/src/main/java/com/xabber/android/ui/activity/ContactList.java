@@ -195,6 +195,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         optionsMenu = toolbar.getMenu();
         setUpSearchView(optionsMenu);
         toolbar.setOnMenuItemClickListener(this);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
 
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
