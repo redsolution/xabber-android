@@ -83,7 +83,7 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
     }
 
     private void addContact() {
-        ((ContactAdder) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).addContact();
+        ((ContactAdder) getFragmentManager().findFragmentById(R.id.fragment_container)).addContact();
     }
 
     @Override
