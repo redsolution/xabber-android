@@ -21,13 +21,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountAddFragment;
 
-public class AccountAdd extends ManagedActivity {
+public class AccountAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountAdd.class);
@@ -50,11 +51,16 @@ public class AccountAdd extends ManagedActivity {
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_clear_white_24dp);
-        getSupportActionBar().setTitle(null);
+        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        toolbar.inflateMenu(R.menu.add_account);
+        toolbar.getMenu().findItem(R.id.action_add_account).setIcon(null);
+        toolbar.setOnMenuItemClickListener(this);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
@@ -80,5 +86,10 @@ public class AccountAdd extends ManagedActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return onOptionsItemSelected(item);
     }
 }

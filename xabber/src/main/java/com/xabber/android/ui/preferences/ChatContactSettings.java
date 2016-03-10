@@ -17,7 +17,9 @@ package com.xabber.android.ui.preferences;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -62,8 +64,14 @@ public class ChatContactSettings extends ManagedActivity
 
         setContentView(R.layout.activity_with_toolbar_and_container);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitle(getTitle());
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavUtils.navigateUpFromSameTask(ChatContactSettings.this);
+            }
+        });
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);

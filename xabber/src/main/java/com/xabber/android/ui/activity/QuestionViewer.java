@@ -17,7 +17,6 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -141,7 +140,7 @@ public class QuestionViewer extends ManagedActivity implements
         findViewById(R.id.cancel).setOnClickListener(this);
         findViewById(R.id.send).setOnClickListener(this);
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
         contactTitleActionBarInflater.setUpActionBarView();
     }
 

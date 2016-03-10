@@ -31,6 +31,7 @@ import com.xabber.android.ui.activity.ManagedListActivity;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.ConfirmDialog;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 /**
  * Provide possibility to add, edit and delete list items.
@@ -73,10 +74,9 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
     protected void onInflate(Bundle savedInstanceState) {
         setContentView(R.layout.list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-
-        setSupportActionBar(toolbar);
-
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getToolbarTitle());
+        toolbar.inflateMenu(getOptionsMenuId());
+        toolbar.getMenu().findItem(getAddActionId()).setIntent(getAddIntent());
         barPainter = new BarPainter(this, toolbar);
     }
 
@@ -84,6 +84,8 @@ public abstract class BaseListEditor<T> extends ManagedListActivity implements
 
     protected abstract void putSavedValue(Bundle bundle, String key,
                                           T actionWith);
+
+    protected abstract CharSequence getToolbarTitle();
 
     protected abstract int getOptionsMenuId();
 

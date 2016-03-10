@@ -7,6 +7,7 @@ import com.xabber.android.R;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class DebugSettings extends ManagedActivity {
     @Override
@@ -18,16 +19,11 @@ public class DebugSettings extends ManagedActivity {
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-
-        setSupportActionBar(toolbar);
+        String title = PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_debug));
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
-
-        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_debug)));
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

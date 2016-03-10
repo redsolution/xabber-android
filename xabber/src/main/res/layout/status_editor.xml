@@ -22,13 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
-        android:id="@+id/top_toolbar"
+        android:id="@+id/toolbar_default"
         />
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_below="@id/top_toolbar"
+        android:layout_below="@id/toolbar_default"
         android:padding="8dp"
         >
 

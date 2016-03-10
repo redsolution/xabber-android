@@ -27,6 +27,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ContactAddFragment;
 import com.xabber.android.ui.helper.ContactAdder;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class ContactAdd extends ManagedActivity implements ContactAddFragment.Listener {
 
@@ -57,14 +58,18 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_with_toolbar_and_container);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        setTitle(null);
+
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+        toolbar.inflateMenu(R.menu.add_contact);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onOptionsItemSelected(item);
+            }
+        });
+
         barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
-
-        setSupportActionBar(toolbar);
-
 
         Intent intent = getIntent();
 

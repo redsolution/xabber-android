@@ -17,7 +17,6 @@ package com.xabber.android.ui.preferences;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 
@@ -28,10 +27,10 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 import com.xabber.android.ui.activity.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 import java.util.Collection;
 
@@ -42,15 +41,6 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
 
     public static Intent createIntent(Context context) {
         return new Intent(context, AccountList.class);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        getSupportActionBar().setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts)));
     }
 
     @Override
@@ -144,6 +134,11 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
     @Override
     protected void putSavedValue(Bundle bundle, String key, String actionWith) {
         bundle.putString(key, actionWith);
+    }
+
+    @Override
+    protected CharSequence getToolbarTitle() {
+        return PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts));
     }
 
 }

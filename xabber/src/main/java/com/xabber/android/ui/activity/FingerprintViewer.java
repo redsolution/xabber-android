@@ -18,7 +18,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,7 +30,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
@@ -44,12 +42,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 import com.xabber.xmpp.address.Jid;
 
-import org.jivesoftware.smack.util.StringUtils;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
 import java.util.Collection;
 
 public class FingerprintViewer extends ManagedActivity implements
@@ -124,7 +116,7 @@ public class FingerprintViewer extends ManagedActivity implements
         copyView.setOnClickListener(this);
         isUpdating = false;
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
         contactTitleActionBarInflater.setUpActionBarView();
     }
 

@@ -21,6 +21,7 @@ import android.os.Bundle;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.adapter.PhraseListAdapter;
 
@@ -28,13 +29,6 @@ public class PhraseList extends BaseListEditor<Integer> {
 
     public static Intent createIntent(Context context) {
         return new Intent(context, PhraseList.class);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -89,6 +83,11 @@ public class PhraseList extends BaseListEditor<Integer> {
     @Override
     protected void putSavedValue(Bundle bundle, String key, Integer actionWith) {
         bundle.putInt(key, actionWith);
+    }
+
+    @Override
+    protected CharSequence getToolbarTitle() {
+        return PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.events_phrases));
     }
 
 }
