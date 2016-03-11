@@ -1,4 +1,16 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "io.realm:realm-gradle-plugin:0.88.0"
+    }
+}
+
 
 android {
     compileSdkVersion 23
@@ -72,7 +84,6 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.google.zxing:android-integration:3.2.1'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-    compile 'io.realm:realm-android:0.87.5'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
 
