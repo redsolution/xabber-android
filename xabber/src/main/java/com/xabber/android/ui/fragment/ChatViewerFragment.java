@@ -990,11 +990,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void saveFileToDownloads() {
+        final String filePath = clickedMessageItem.getFilePath();
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 try {
-                    FileManager.saveFileToDownloads(new File(clickedMessageItem.getFilePath()));
+                    FileManager.saveFileToDownloads(new File(filePath));
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
