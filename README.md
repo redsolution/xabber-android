@@ -50,7 +50,3 @@ We use crowdin.com as our translation system.
 All related resources are automatically generated from files got with crowdin.com.
 If you want to update any translation go to Xabber page https://crowdin.com/project/xabber and request to join our translation team
 Please don't create pull requests with translation fixes as any changes will be overwritten with the next update from crowdin.com.
-
-## Wiki
-
-Visit our wiki pages for additional information: https://github.com/redsolution/xabber-android/wiki
