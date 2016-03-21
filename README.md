@@ -40,6 +40,7 @@ Xabber uses Gradle build system. The only specific thing is git submodule for ot
 * XEP-0352: Client State Indication
 
 ## Translations
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/xabber/localized.svg)](https://crowdin.com/project/xabber)
 
 We use crowdin.com as our translation system.
 All related resources are automatically generated from files got with crowdin.com.
