@@ -338,15 +338,21 @@ public class MamManager implements OnAuthorizedListener {
         }
 
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
+        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
+            return;
+        }
         ConnectionThread connectionThread = accountItem.getConnectionThread();
 
-        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
+        if (connectionThread == null) {
             return;
         }
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
+                if (!checkSupport(accountItem)) {
+                    return;
+                }
 
                 String firstMamMessageMamId;
                 boolean remoteHistoryCompletelyLoaded;
@@ -363,10 +369,6 @@ public class MamManager implements OnAuthorizedListener {
                 }
 
                 if (firstMamMessageMamId == null || remoteHistoryCompletelyLoaded) {
-                    return;
-                }
-
-                if (!checkSupport(accountItem)) {
                     return;
                 }
 
