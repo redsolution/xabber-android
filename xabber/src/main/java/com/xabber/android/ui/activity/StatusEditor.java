@@ -43,6 +43,7 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
@@ -80,10 +81,14 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
 
         setContentView(R.layout.status_editor);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.top_toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        setTitle(null);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+        toolbar.inflateMenu(R.menu.set_status);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return onOptionsItemSelected(item);
+            }
+        });
 
         Intent intent = getIntent();
         account = StatusEditor.getAccount(intent);

@@ -17,12 +17,15 @@ package com.xabber.android.ui.preferences;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class PhraseEditor extends BasePhrasePreferences {
 
@@ -37,9 +40,6 @@ public class PhraseEditor extends BasePhrasePreferences {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         Integer index = getPhraseIndex(getIntent());
         if (index == null) {
@@ -58,8 +58,11 @@ public class PhraseEditor extends BasePhrasePreferences {
         if ("".equals(title))
             title = Application.getInstance().getString(
                     R.string.phrase_empty);
-        setTitle(title);
 
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
+
+        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter.setDefaultColor();
     }
 
     @Override

@@ -51,12 +51,7 @@
             android:src="@color/red_500"
             />
 
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/avatar_size_toolbar"
-            android:layout_height="@dimen/avatar_size_toolbar"
-            android:src="@drawable/ic_avatar_1"
-            />
+        <include layout="@layout/avatar" />
 
         <LinearLayout
             android:layout_width="0dp"

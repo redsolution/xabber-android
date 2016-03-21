@@ -16,9 +16,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:id="@+id/root_view"
-    >
+    android:id="@+id/root_view">
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -127,5 +127,29 @@
             android:tint="?attr/chat_input_button_color"
             />
     </LinearLayout>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chat_previous_history_progress_bar"
+        android:layout_below="@+id/toolbar_default"
+        android:indeterminate="true"
+        android:elevation="8dp"
+        android:layout_marginTop="-8dp"
+        android:visibility="gone"
+        />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/chat_last_history_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/input_layout"
+        android:indeterminate="true"
+        android:layout_marginBottom="-8dp"
+        android:visibility="gone"
+        />
+
 
 </RelativeLayout>

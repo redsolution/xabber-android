@@ -18,14 +18,14 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.message.MessageItem;
-import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.message.MessageUpdateEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -41,9 +41,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.TimeUnit;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpHeaders;
+import io.realm.Realm;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class FileManager {
 
@@ -71,12 +76,10 @@ public class FileManager {
         this.startedDownloads = new ConcurrentSkipListSet<>();
     }
 
-    public static void processFileMessage (final MessageItem messageItem, boolean download) {
+    public static void processFileMessage (final MessageItem messageItem, final boolean download) {
         if (!treatAsDownloadable(messageItem.getText())) {
             return;
         }
-
-        LogManager.i(FileManager.class, "Processing file message " + messageItem.getText());
 
         final URL url;
         try {
@@ -86,19 +89,25 @@ public class FileManager {
             return;
         }
 
-        File file = messageItem.getFile();
-
-        if (file == null) {
+        final File file;
+        if (messageItem.getFilePath() == null) {
             file = new File(getCachePath(url));
-            messageItem.setFile(file);
+            messageItem.setFilePath(file.getPath());
+        } else {
+            file = new File(messageItem.getFilePath());
         }
 
         if (!file.exists()) {
-            if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFile())) {
-                FileManager.getInstance().downloadFile(messageItem, null);
-            } else {
-                getFileUrlSize(messageItem);
-            }
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(file)) {
+                        FileManager.getInstance().downloadFile(messageItem, null);
+                    } else {
+                        getFileUrlSize(messageItem);
+                    }
+                }
+            });
         }
     }
 
@@ -110,22 +119,40 @@ public class FileManager {
     private static void getFileUrlSize(final MessageItem messageItem) {
         LogManager.i(FileManager.class, "Requesting file size");
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.head(messageItem.getText(), new AsyncHttpResponseHandler() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(messageItem.getText())
+                .head()
+                .build();
+
+        final String uniqueId = messageItem.getUniqueId();
+
+        client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                for (Header header : headers) {
-                    if (header.getName().equals(HttpHeaders.CONTENT_LENGTH)) {
-                        messageItem.setFileSize(Long.parseLong(header.getValue()));
-                        MessageManager.getInstance().onChatChanged(messageItem.getChat().getAccount(), messageItem.getChat().getUser(), false);
-                        break;
-                    }
-                }
+            public void onFailure(Call call, IOException e) {
+
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String contentLength = response.header("Content-Length");
+                    if (contentLength != null) {
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.executeTransaction(new Realm.Transaction() {
+                            @Override
+                            public void execute(Realm realm) {
+                                MessageItem first = realm.where(MessageItem.class)
+                                        .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                        .findFirst();
+                                if (first != null) {
+                                    first.setFileSize(Long.parseLong(contentLength));
+                                }
+                            }
+                        }, null);
+                        realm.close();
+                    }
+                }
             }
         });
     }
@@ -134,10 +161,11 @@ public class FileManager {
     public interface ProgressListener {
         void onProgress(long bytesWritten, long totalSize);
         void onFinish(long totalSize);
+        void onError();
     }
 
 
-    public void downloadFile(final MessageItem messageItem, final ProgressListener progressListener) {
+    public void downloadFile(final MessageItem messageItem, @Nullable final ProgressListener progressListener) {
         final String downloadUrl = messageItem.getText();
         if (startedDownloads.contains(downloadUrl)) {
             LogManager.i(FileManager.class, "Downloading of file " + downloadUrl + " already started");
@@ -146,42 +174,95 @@ public class FileManager {
         LogManager.i(FileManager.class, "Downloading file " + downloadUrl);
         startedDownloads.add(downloadUrl);
 
-        final AsyncHttpClient client = new AsyncHttpClient();
-        client.setLoggingEnabled(SettingsManager.debugLog());
-        client.setResponseTimeout(60 * 1000);
 
-        client.get(downloadUrl, new AsyncHttpResponseHandler() {
+        final String account = messageItem.getAccount();
+        final String user = messageItem.getUser();
+        final String uniqueId = messageItem.getUniqueId();
+        final String filePath = messageItem.getFilePath();
+
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
-            public void onStart() {
-                super.onStart();
-                LogManager.i(FileManager.class, "on download start");
-            }
+            public void run() {
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                        .readTimeout(2, TimeUnit.MINUTES)
+                        .connectTimeout(2, TimeUnit.MINUTES)
+                        .writeTimeout(2, TimeUnit.MINUTES)
+                        .build();
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, final byte[] responseBody) {
-                LogManager.i(FileManager.class, "on download onSuccess: " + statusCode);
-                saveFile(responseBody, messageItem.getFile(), progressListener);
-            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                LogManager.i(FileManager.class, "on download onFailure: " + statusCode);
+                Request request = new Request.Builder()
+                        .get()
+                        .url(downloadUrl)
+                        .build();
 
-            }
 
-            @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                if (progressListener != null) {
-                    progressListener.onProgress(bytesWritten, totalSize);
+                Call call = client.newCall(request);
+
+                boolean success = false;
+                try {
+                    success = downloadFile(call, progressListener, filePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                startedDownloads.remove(downloadUrl);
+                EventBus.getDefault().post(new MessageUpdateEvent(account, user, uniqueId));
+
+                if (progressListener != null && !success) {
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressListener.onError();
+                        }
+                    });
                 }
             }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                startedDownloads.remove(downloadUrl);
-            }
         });
+    }
+
+    public boolean downloadFile(Call call, @Nullable final ProgressListener progressListener, String filePath) throws IOException {
+        boolean success = false;
+
+        Response response = call.execute();
+
+        if (response.isSuccessful()) {
+
+            byte[] buff = new byte[1024 * 4];
+            long downloaded = 0;
+            final long target = response.body().contentLength();
+            File file = new File(filePath);
+            new File(file.getParent()).mkdirs();
+            OutputStream output = new FileOutputStream(file);
+            InputStream inputStream = response.body().byteStream();
+            int bytesRead;
+            try {
+                while ((bytesRead = inputStream.read(buff)) != -1) {
+                    output.write(buff, 0, bytesRead);
+                    downloaded += bytesRead;
+
+                    final long finalDownloaded = downloaded;
+                    if (progressListener != null) {
+                         Application.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressListener.onProgress(finalDownloaded, target);
+                            }
+                        });
+                    }
+                }
+                output.flush();
+            } finally {
+                inputStream.close();
+                output.close();
+                if (downloaded == target) {
+                    success = true;
+                } else {
+                    file.delete();
+                }
+            }
+        }
+
+        return success;
     }
 
     private static void saveFile(final byte[] responseBody, final File file, final ProgressListener progressListener) {
@@ -248,8 +329,6 @@ public class FileManager {
     }
 
     public static void loadImageFromFile(File file, ImageView imageView) {
-        LogManager.i(FileManager.class, "Loading image from file " + file.getPath());
-
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
@@ -260,7 +339,10 @@ public class FileManager {
 
         ImageScaler imageScaler = new ImageScaler(imageView.getContext(), height, width).invoke();
         imageView.setLayoutParams(new LinearLayout.LayoutParams(imageScaler.getScaledWidth(), imageScaler.getScaledHeight()));
-        Glide.with(imageView.getContext()).load(file).crossFade().override(imageScaler.getScaledWidth(), imageScaler.getScaledHeight()).into(imageView);
+        Glide.with(Application.getInstance().getApplicationContext())
+                .load(file).crossFade()
+                .override(imageScaler.getScaledWidth(), imageScaler.getScaledHeight())
+                .into(imageView);
     }
 
     public static boolean treatAsDownloadable(String text) {

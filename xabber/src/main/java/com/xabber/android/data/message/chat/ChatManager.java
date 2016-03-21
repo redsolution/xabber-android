@@ -16,12 +16,19 @@ package com.xabber.android.data.message.chat;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
+import com.xabber.android.data.database.sqlite.PrivateChatTable;
+import com.xabber.android.data.database.sqlite.ShowTextTable;
+import com.xabber.android.data.database.sqlite.SoundTable;
+import com.xabber.android.data.database.sqlite.Suppress100Table;
+import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 
@@ -76,14 +83,20 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Boolean> suppress100;
 
+    /**
+     * chat scroll states - position of message list
+     */
+    private final NestedMap<Parcelable> scrollStates;
+
     private ChatManager() {
-        chatInputs = new NestedMap<ChatInput>();
-        privateChats = new NestedMap<Object>();
-        sounds = new NestedMap<Uri>();
+        chatInputs = new NestedMap<>();
+        privateChats = new NestedMap<>();
+        sounds = new NestedMap<>();
         showText = new NestedMap<>();
-        makeVibro = new NestedMap<Boolean>();
-        notifyVisible = new NestedMap<Boolean>();
-        suppress100 = new NestedMap<Boolean>();
+        makeVibro = new NestedMap<>();
+        notifyVisible = new NestedMap<>();
+        suppress100 = new NestedMap<>();
+        scrollStates = new NestedMap<>();
     }
 
     public static ChatManager getInstance() {
@@ -433,5 +446,17 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                 Suppress100Table.getInstance().write(account, user, value);
             }
         });
+    }
+
+    public Parcelable getScrollState(String account, String user) {
+        return scrollStates.get(account, user);
+    }
+
+    public void setScrollState(String account, String user, Parcelable parcelable) {
+        scrollStates.put(account, user, parcelable);
+    }
+
+    public void clearScrollStates() {
+        scrollStates.clear();
     }
 }

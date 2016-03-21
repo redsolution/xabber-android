@@ -16,7 +16,7 @@
     <string-array name="managers">
         <item>com.xabber.android.data.SettingsManager</item>
         <item>com.xabber.android.data.LogManager</item>
-        <item>com.xabber.android.data.DatabaseManager</item>
+        <item>com.xabber.android.data.database.DatabaseManager</item>
         <item>com.xabber.android.data.extension.avatar.AvatarStorage</item>
         <item>com.xabber.android.data.extension.otr.OTRManager</item>
         <item>com.xabber.android.data.connection.ConnectionManager</item>
@@ -40,16 +40,13 @@
         <item>com.xabber.android.data.extension.cs.ChatStateManager</item>
         <item>com.xabber.android.data.connection.NetworkManager</item>
         <item>com.xabber.android.data.account.OAuthManager</item>
-        <item>com.xabber.android.data.roster.SyncManager</item>
         <item>com.xabber.android.data.message.ReceiptManager</item>
-        <item>com.xabber.android.data.extension.archive.MessageArchiveManager</item>
         <item>com.xabber.android.data.extension.ssn.SSNManager</item>
-        <item>com.xabber.android.data.extension.capability.ServerInfoManager</item>
-        <item>com.xabber.android.data.extension.time.TimeManager</item>
         <item>com.xabber.android.data.extension.attention.AttentionManager</item>
-        <item>com.xabber.xmpp.carbon.CarbonManager</item>
+        <item>com.xabber.android.data.extension.carbons.CarbonManager</item>
         <item>com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager</item>
         <item>com.xabber.android.data.extension.blocking.BlockingManager</item>
+        <item>com.xabber.android.data.extension.mam.MamManager</item>
     </string-array>
 
     <string-array name="contact_managers">
@@ -58,23 +55,23 @@
     </string-array>
 
     <string-array name="tables">
-        <item>com.xabber.android.data.account.AccountTable</item>
-        <item>com.xabber.android.data.extension.muc.RoomTable</item>
-        <item>com.xabber.android.data.message.MessageTable</item>
-        <item>com.xabber.android.data.roster.GroupTable</item>
-        <item>com.xabber.android.data.message.chat.PrivateChatTable</item>
-        <item>com.xabber.android.data.message.chat.NotifyVisibleTable</item>
-        <item>com.xabber.android.data.message.chat.ShowTextTable</item>
-        <item>com.xabber.android.data.message.chat.SoundTable</item>
-        <item>com.xabber.android.data.extension.vcard.VCardTable</item>
-        <item>com.xabber.android.data.extension.avatar.AvatarTable</item>
-        <item>com.xabber.android.data.extension.capability.CapabilitiesTable</item>
-        <item>com.xabber.android.data.account.StatusTable</item>
-        <item>com.xabber.android.data.extension.otr.OTRTable</item>
-        <item>com.xabber.android.data.message.chat.VibroTable</item>
-        <item>com.xabber.android.data.notification.NotificationTable</item>
-        <item>com.xabber.android.data.message.chat.Suppress100Table</item>
-        <item>com.xabber.android.data.message.phrase.PhraseTable</item>
+        <item>com.xabber.android.data.database.sqlite.AccountTable</item>
+        <item>com.xabber.android.data.database.sqlite.RoomTable</item>
+        <item>com.xabber.android.data.database.sqlite.MessageTable</item>
+        <item>com.xabber.android.data.database.sqlite.GroupTable</item>
+        <item>com.xabber.android.data.database.sqlite.PrivateChatTable</item>
+        <item>com.xabber.android.data.database.sqlite.NotifyVisibleTable</item>
+        <item>com.xabber.android.data.database.sqlite.ShowTextTable</item>
+        <item>com.xabber.android.data.database.sqlite.SoundTable</item>
+        <item>com.xabber.android.data.database.sqlite.VCardTable</item>
+        <item>com.xabber.android.data.database.sqlite.AvatarTable</item>
+        <item>com.xabber.android.data.database.sqlite.CapabilitiesTable</item>
+        <item>com.xabber.android.data.database.sqlite.StatusTable</item>
+        <item>com.xabber.android.data.database.sqlite.OTRTable</item>
+        <item>com.xabber.android.data.database.sqlite.VibroTable</item>
+        <item>com.xabber.android.data.database.sqlite.NotificationTable</item>
+        <item>com.xabber.android.data.database.sqlite.Suppress100Table</item>
+        <item>com.xabber.android.data.database.sqlite.PhraseTable</item>
     </string-array>
 
     <string name="in_never_value">-1</string>
@@ -352,7 +349,7 @@
     <bool name="connection_load_images_default">true</bool>
 
     <string name="connection_use_carbons_key">connection_use_carbons</string>
-    <bool name="connection_use_carbons_default">false</bool>
+    <bool name="connection_use_carbons_default">true</bool>
 
     <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
     <bool name="connection_use_plain_text_auth_default">false</bool>

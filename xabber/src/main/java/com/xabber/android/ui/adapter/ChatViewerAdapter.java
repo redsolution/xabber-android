@@ -183,6 +183,7 @@ public class ChatViewerAdapter extends FragmentStatePagerAdapter {
 
         if (currentFragment instanceof ChatViewerFragment) {
             ((ChatViewerFragment)currentFragment).saveInputState();
+            ((ChatViewerFragment)currentFragment).saveScrollState();
         }
 
         currentFragment = (Fragment) object;

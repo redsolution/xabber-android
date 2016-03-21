@@ -38,12 +38,11 @@ public class Delay {
      * specified.
      */
     public static Date getDelay(Stanza packet) {
-        DelayInformation delay = packet.getExtension("delay", "urn:xmpp:delay");
+        DelayInformation delay = DelayInformation.from(packet);
         // If there was no delay based on XEP-0203, then try XEP-0091 for
         // backward compatibility
         if (delay == null) {
-            delay = packet.getExtension("x",
-                    "jabber:x:delay");
+            delay = packet.getExtension("x", "jabber:x:delay");
         }
         if (delay == null)
             return null;

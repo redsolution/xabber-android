@@ -39,7 +39,6 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.attention.Attention;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -48,6 +47,7 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.attention.packet.AttentionExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 
 /**
@@ -71,7 +71,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
             public void connectionCreated(final XMPPConnection connection) {
                 synchronized (enabledLock) {
                     if (SettingsManager.chatsAttention())
-                        ServiceDiscoveryManager.getInstanceFor(connection).addFeature(Attention.NAMESPACE);
+                        ServiceDiscoveryManager.getInstanceFor(connection).addFeature(AttentionExtension.NAMESPACE);
                 }
             }
         });
@@ -117,16 +117,16 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                     continue;
                 boolean contains = false;
                 for (String feature : manager.getFeatures()) {
-                    if (Attention.NAMESPACE.equals(feature)) {
+                    if (AttentionExtension.NAMESPACE.equals(feature)) {
                         contains = true;
                     }
                 }
                 if (SettingsManager.chatsAttention() == contains)
                     continue;
                 if (SettingsManager.chatsAttention())
-                    manager.addFeature(Attention.NAMESPACE);
+                    manager.addFeature(AttentionExtension.NAMESPACE);
                 else
-                    manager.removeFeature(Attention.NAMESPACE);
+                    manager.removeFeature(AttentionExtension.NAMESPACE);
             }
             AccountManager.getInstance().resendPresence();
         }
@@ -159,7 +159,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         if (bareAddress == null)
             return;
         for (ExtensionElement packetExtension : packet.getExtensions()) {
-            if (packetExtension instanceof Attention) {
+            if (packetExtension instanceof AttentionExtension) {
                 MessageManager.getInstance().openChat(account, bareAddress);
                 MessageManager.getInstance()
                         .getOrCreateChat(account, bareAddress)
@@ -192,12 +192,12 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, to);
         if (clientInfo == null)
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
-        if (!clientInfo.getFeatures().contains(Attention.NAMESPACE))
+        if (!clientInfo.getFeatures().contains(AttentionExtension.NAMESPACE))
             throw new NetworkException(R.string.ATTENTION_IS_NOT_SUPPORTED);
         Message message = new Message();
         message.setTo(to);
         message.setType(Message.Type.headline);
-        message.addExtension(new Attention());
+        message.addExtension(new AttentionExtension());
         ConnectionManager.getInstance().sendStanza(account, message);
         chat.newAction(null, null, ChatAction.attention_called);
     }

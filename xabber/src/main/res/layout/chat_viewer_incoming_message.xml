@@ -108,6 +108,18 @@
         android:textSize="10sp"
         />
 
+    <ImageView
+        android:id="@+id/message_status_icon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_alignBottom="@+id/message_time"
+        android:layout_toRightOf="@+id/message_time"
+
+        android:src="@drawable/ic_message_synced_14dp"
+        android:layout_marginLeft="4dp"
+        />
+
+
     <TextView
         android:id="@+id/message_file_info"
         android:layout_width="wrap_content"
@@ -115,9 +127,9 @@
 
         android:layout_below="@+id/message_balloon"
         android:layout_toEndOf="@+id/message_time"
-        android:layout_toRightOf="@+id/message_time"
+        android:layout_toRightOf="@+id/message_status_icon"
 
-        android:paddingLeft="8dp"
+        android:paddingLeft="4dp"
 
         android:text="231KB"
 

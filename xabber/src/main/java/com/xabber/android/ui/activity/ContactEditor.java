@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -36,6 +34,7 @@ public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemCl
         if (rosterContact != null) {
             toolbar.inflateMenu(R.menu.contact_viewer);
             toolbar.setOnMenuItemClickListener(this);
+            toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         }
     }
 

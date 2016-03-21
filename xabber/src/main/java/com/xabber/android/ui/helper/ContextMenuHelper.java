@@ -17,7 +17,6 @@ package com.xabber.android.ui.helper;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,6 +45,7 @@ import com.xabber.android.ui.activity.ConferenceAdd;
 import com.xabber.android.ui.activity.ContactAdd;
 import com.xabber.android.ui.activity.ContactEditor;
 import com.xabber.android.ui.activity.GroupEditor;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.StatusEditor;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.BlockContactDialog;
@@ -64,7 +64,7 @@ public class ContextMenuHelper {
     private ContextMenuHelper() {
     }
 
-    public static void createContactContextMenu(final FragmentActivity activity,
+    public static void createContactContextMenu(final ManagedActivity activity,
             final UpdatableAdapter adapter, AbstractContact abstractContact, ContextMenu menu) {
         final String account = abstractContact.getAccount();
         final String user = abstractContact.getUser();
@@ -76,7 +76,7 @@ public class ContextMenuHelper {
         setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
     }
 
-    private static void setContactContextMenuActions(final FragmentActivity activity,
+    private static void setContactContextMenuActions(final ManagedActivity activity,
                                                      final UpdatableAdapter adapter,
                                                      ContextMenu menu,
                                                      final String account, final String user) {
@@ -274,7 +274,7 @@ public class ContextMenuHelper {
         }
     }
 
-    public static void createGroupContextMenu(final FragmentActivity activity,
+    public static void createGroupContextMenu(final ManagedActivity activity,
               final UpdatableAdapter adapter, final String account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
@@ -316,7 +316,7 @@ public class ContextMenuHelper {
         }
     }
 
-    public static void createAccountContextMenu( final FragmentActivity activity, final UpdatableAdapter adapter,
+    public static void createAccountContextMenu( final ManagedActivity activity, final UpdatableAdapter adapter,
                                                  final String account, ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.account, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
@@ -324,7 +324,7 @@ public class ContextMenuHelper {
         setUpAccountMenu(activity, adapter, account, menu);
     }
 
-    public static void setUpAccountMenu(final FragmentActivity activity, final UpdatableAdapter adapter, final String account, Menu menu) {
+    public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final String account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         ConnectionState state = accountItem.getState();
 

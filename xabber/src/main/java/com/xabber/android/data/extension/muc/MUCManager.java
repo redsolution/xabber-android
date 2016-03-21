@@ -27,6 +27,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
@@ -82,27 +83,28 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     @Override
     public void onLoad() {
-        final Collection<RoomChat> roomChats = new ArrayList<>();
-        final Collection<RoomChat> needJoins = new ArrayList<>();
-        Cursor cursor = RoomTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    RoomChat roomChat = new RoomChat(
-                            RoomTable.getAccount(cursor), RoomTable.getRoom(cursor),
-                            RoomTable.getNickname(cursor), RoomTable.getPassword(cursor));
-                    if (RoomTable.needJoin(cursor)) {
-                        needJoins.add(roomChat);
-                    }
-                    roomChats.add(roomChat);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                final Collection<RoomChat> roomChats = new ArrayList<>();
+                final Collection<RoomChat> needJoins = new ArrayList<>();
+                Cursor cursor = RoomTable.getInstance().list();
+                try {
+                    if (cursor.moveToFirst()) {
+                        do {
+                            RoomChat roomChat = new RoomChat(
+                                    RoomTable.getAccount(cursor), RoomTable.getRoom(cursor),
+                                    RoomTable.getNickname(cursor), RoomTable.getPassword(cursor));
+                            if (RoomTable.needJoin(cursor)) {
+                                needJoins.add(roomChat);
+                            }
+                            roomChats.add(roomChat);
+                        } while (cursor.moveToNext());
+                    }
+                } finally {
+                    cursor.close();
+                }
                 onLoaded(roomChats, needJoins);
             }
         });

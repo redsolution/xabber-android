@@ -17,7 +17,6 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -61,7 +60,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this, (Toolbar) findViewById(R.id.toolbar_default));
+        contactTitleActionBarInflater = new ContactTitleActionBarInflater(this);
         contactTitleActionBarInflater.setUpActionBarView();
 
         Intent intent = getIntent();
@@ -74,7 +73,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
         }
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, GroupEditorFragment.newInstance(account, user)).commit();
         }
 

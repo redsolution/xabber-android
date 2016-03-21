@@ -21,7 +21,7 @@ import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
@@ -45,6 +45,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import io.realm.Realm;
 
 /**
  * Chat room.
@@ -166,13 +168,8 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem newMessage(String text) {
-        return newMessage(nickname, text, null, null, false, false, false, false, true);
-    }
-
-    @Override
-    protected boolean canSendMessage() {
-        return super.canSendMessage() && state == RoomState.available;
+    protected MessageItem createNewMessageItem(String text) {
+        return createMessageItem(nickname, text, null, null, false, false, false, false, null);
     }
 
     @Override
@@ -196,7 +193,7 @@ public class RoomChat extends AbstractChat {
         if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error) {
-                String invite = invites.remove(message.getPacketID());
+                String invite = invites.remove(message.getStanzaId());
                 if (invite != null) {
                     newAction(nickname, invite, ChatAction.invite_error);
                 }
@@ -222,30 +219,32 @@ public class RoomChat extends AbstractChat {
                     return true;
                 }
                 this.subject = subject;
-                RosterManager.getInstance().onContactChanged(account, bareAddress);
+                RosterManager.onContactChanged(account, bareAddress);
                 newAction(resource, subject, ChatAction.subject);
             } else {
                 boolean notify = true;
-                String packetID = message.getPacketID();
+                String stanzaId = message.getStanzaId();
                 Date delay = Delay.getDelay(message);
                 if (delay != null) {
                     notify = false;
                 }
-                for (MessageItem messageItem : messages) {
-                    // Search for duplicates
-                    if (packetID != null && packetID.equals(messageItem.getPacketID())) {
-                        // Server send our own message back
-                        messageItem.markAsDelivered();
-                        RosterManager.getInstance().onContactChanged(account, user);
+
+                Realm realm = Realm.getDefaultInstance();
+                final MessageItem sameMessage = realm
+                        .where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
+                        .findFirst();
+
+                try {
+                    // Server send our own message back
+                    if (sameMessage != null) {
+                        realm.beginTransaction();
+                        sameMessage.setDelivered(true);
+                        realm.commitTransaction();
                         return true;
                     }
-                    if (delay != null) {
-                        if (delay.equals(messageItem.getDelayTimestamp())
-                                && resource.equals(messageItem.getResource())
-                                && text.equals(messageItem.getText())) {
-                            return true;
-                        }
-                    }
+                } finally {
+                    realm.close();
                 }
 
                 if (isSelf(resource)) { // Own message from other client
@@ -253,9 +252,7 @@ public class RoomChat extends AbstractChat {
                 }
 
                 updateThreadId(message.getThread());
-                MessageItem messageItem = newMessage(resource, text, null,
-                        delay, true, notify, false, false, true);
-                messageItem.setPacketID(packetID);
+                createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, message.getStanzaId());
             }
         } else if (packet instanceof Presence) {
             String stringPrep = Jid.getStringPrep(resource);
@@ -266,7 +263,7 @@ public class RoomChat extends AbstractChat {
                 occupants.put(stringPrep, newOccupant);
                 if (oldOccupant == null) {
                     onAvailable(resource);
-                    RosterManager.getInstance().onContactChanged(account, user);
+                    RosterManager.onContactChanged(account, user);
                 } else {
                     boolean changed = false;
                     if (oldOccupant.getAffiliation() != newOccupant.getAffiliation()) {
@@ -283,7 +280,7 @@ public class RoomChat extends AbstractChat {
                         onStatusChanged(resource, newOccupant.getStatusMode(), newOccupant.getStatusText());
                     }
                     if (changed) {
-                        RosterManager.getInstance().onContactChanged(account, user);
+                        RosterManager.onContactChanged(account, user);
                     }
                 }
             } else if (presence.getType() == Presence.Type.unavailable && state == RoomState.available) {
@@ -308,7 +305,7 @@ public class RoomChat extends AbstractChat {
                 } else {
                     onLeave(resource);
                 }
-                RosterManager.getInstance().onContactChanged(account, user);
+                RosterManager.onContactChanged(account, user);
             }
         }
         return true;
@@ -343,9 +340,9 @@ public class RoomChat extends AbstractChat {
             setState(RoomState.available);
             if (isRequested()) {
                 if (showStatusChange()) {
-                    newMessage(resource, Application.getInstance().getString(
+                    createAndSaveNewMessage(resource, Application.getInstance().getString(
                                     R.string.action_join_complete_to, user),
-                            ChatAction.complete, null, true, true, false, false, true);
+                            ChatAction.complete, null, true, true, false, false, null);
                 }
                 active = true;
                 setRequested(false);
@@ -421,7 +418,7 @@ public class RoomChat extends AbstractChat {
         }
         if (isSelf(resource)) {
             setState(RoomState.waiting);
-            RosterManager.getInstance().onContactChanged(account, user);
+            RosterManager.onContactChanged(account, user);
         }
     }
 

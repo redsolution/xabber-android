@@ -11,11 +11,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,22 +41,29 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
+import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
+import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
+import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
+import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
+import com.xabber.android.data.extension.mam.SyncInfo;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.MessageUpdateEvent;
+import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -76,6 +85,10 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
@@ -84,15 +97,17 @@ import java.util.TimerTask;
 import github.ankushsachdeva.emojicon.EmojiconGridView;
 import github.ankushsachdeva.emojicon.EmojiconsPopup;
 import github.ankushsachdeva.emojicon.emoji.Emojicon;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
-        ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener, ChatMessageAdapter.Listener {
+        ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
+        ChatMessageAdapter.Listener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
-    private static final int MINIMUM_MESSAGES_TO_LOAD = 10;
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
     private static final int PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS = 25;
@@ -110,7 +125,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private ChatViewerFragmentListener listener;
     private Animation shakeAnimation = null;
-    private RecyclerView recyclerView;
+    private RecyclerView realmRecyclerView;
     private View contactTitleView;
     private AbstractContact abstractContact;
     private LinearLayoutManager layoutManager;
@@ -119,6 +134,14 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private Timer stopTypingTimer = new Timer();
     private final long STOP_TYPING_DELAY = 4000; // in ms
     private ImageButton attachButton;
+    private View lastHistoryProgressBar;
+    private View previousHistoryProgressBar;
+
+    private boolean isRemoteHistoryRequested = false;
+    private int firstRemoteSyncedItemPosition = RecyclerView.NO_POSITION;
+    private RealmResults<SyncInfo> syncInfoResults;
+    private RealmResults<MessageItem> messageItems;
+    private boolean toBeScrolled;
 
     public static ChatViewerFragment newInstance(String account, String user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
@@ -149,6 +172,31 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         Bundle args = getArguments();
         account = args.getString(ARGUMENT_ACCOUNT, null);
         user = args.getString(ARGUMENT_USER, null);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+
+        if (!isRemoteHistoryRequested) {
+            MamManager.getInstance().requestLastHistory(abstractChat);
+        }
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        chatMessageAdapter.release();
     }
 
     @Override
@@ -165,6 +213,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
         toolbar.inflateMenu(R.menu.chat);
+        toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -194,14 +243,33 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             securityButton.setVisibility(View.GONE);
         }
 
-        chatMessageAdapter = new ChatMessageAdapter(getActivity(), account, user, this, this);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
-        recyclerView.setAdapter(chatMessageAdapter);
+        realmRecyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
 
         layoutManager = new LinearLayoutManager(getActivity());
+        realmRecyclerView.setLayoutManager(layoutManager);
+
         layoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(layoutManager);
+
+        messageItems = getChat().getMessages();
+        syncInfoResults = getChat().getSyncInfo();
+
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
+        realmRecyclerView.setAdapter(chatMessageAdapter);
+
+        realmRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy < 0) {
+                    loadHistoryIfNeeded();
+                }
+
+                if (dy >= 0) {
+                    toBeScrolled = false;
+                }
+            }
+        });
 
         // to avoid strange bug on some 4.x androids
         view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
@@ -379,7 +447,106 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             }
         });
 
+
+        lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
+        previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
+
         return view;
+    }
+
+    public void saveScrollState() {
+        ChatManager.getInstance().setScrollState(account, user, layoutManager.onSaveInstanceState());
+    }
+
+    private void loadHistoryIfNeeded() {
+        if (isRemoteHistoryRequested) {
+            return;
+        }
+
+        int visibleItemCount = layoutManager.getChildCount();
+
+        if (visibleItemCount == 0) {
+            return;
+        }
+
+        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+        if (firstVisibleItemPosition / visibleItemCount <= 2) {
+            requestRemoteHistoryLoad();
+            return;
+        }
+
+        if (firstVisibleItemPosition < firstRemoteSyncedItemPosition) {
+            requestRemoteHistoryLoad();
+            return;
+        }
+
+        if (firstVisibleItemPosition - firstRemoteSyncedItemPosition < visibleItemCount * 2) {
+            requestRemoteHistoryLoad();
+            return;
+        }
+    }
+
+    private void requestRemoteHistoryLoad() {
+        if (!isRemoteHistoryRequested) {
+            AbstractChat chat = getChat();
+            if (chat != null) {
+                MamManager.getInstance().requestPreviousHistory(chat);
+            }
+
+        }
+    }
+
+    @Nullable
+    private AbstractChat getChat() {
+        return MessageManager.getInstance().getChat(account, user);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LastHistoryLoadStartedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            lastHistoryProgressBar.setVisibility(View.VISIBLE);
+            isRemoteHistoryRequested = true;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(LastHistoryLoadFinishedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            lastHistoryProgressBar.setVisibility(View.GONE);
+            isRemoteHistoryRequested = false;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(PreviousHistoryLoadStartedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            LogManager.i(this, "PreviousHistoryLoadStartedEvent");
+            previousHistoryProgressBar.setVisibility(View.VISIBLE);
+            isRemoteHistoryRequested = true;
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(PreviousHistoryLoadFinishedEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
+            isRemoteHistoryRequested = false;
+            previousHistoryProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(MessageUpdateEvent event) {
+        chatMessageAdapter.onChange();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(NewIncomingMessageEvent event) {
+        if (event.getAccount().equals(account) && event.getUser().equals(user)) {
+            playIncomingAnimation();
+        }
     }
 
     private void onAttachButtonPressed() {
@@ -471,8 +638,9 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onResume() {
         super.onResume();
         listener.registerChat(this);
-        updateChat();
+        updateContact();
         restoreInputState();
+        restoreScrollState();
     }
 
 
@@ -555,6 +723,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         ChatStateManager.getInstance().onPaused(account, user);
 
         saveInputState();
+        saveScrollState();
         listener.unregisterChat(this);
     }
 
@@ -585,7 +754,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void sendMessage(String text) {
         MessageManager.getInstance().sendMessage(account, user, text);
-        updateChat();
+        scrollDown();
     }
 
     /**
@@ -636,25 +805,16 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    public void updateChat() {
+    public void updateContact() {
         ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
-        int itemCountBeforeUpdate = chatMessageAdapter.getItemCount();
-        chatMessageAdapter.onChange();
-        scrollChat(itemCountBeforeUpdate);
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
     }
 
-    private void scrollChat(int itemCountBeforeUpdate) {
-        int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
-        if (lastVisibleItemPosition == -1 || lastVisibleItemPosition == (itemCountBeforeUpdate - 1)) {
-            scrollDown();
-        }
-    }
-
     private void scrollDown() {
-        recyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
+        LogManager.i(this, "scrollDown");
+        realmRecyclerView.scrollToPosition(chatMessageAdapter.getItemCount() - 1);
     }
 
     private void updateSecurityButton() {
@@ -727,10 +887,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 startActivity(ChatContactSettings.createIntent(getActivity(), account, user));
                 return true;
 
-            case R.id.action_show_history:
-                showHistory(account, user);
-                return true;
-
             case R.id.action_authorization_settings:
                 startActivity(ConferenceAdd.createIntent(getActivity(), account, user));
                 return true;
@@ -776,16 +932,17 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             /* message popup menu */
 
             case R.id.action_message_repeat:
-                if (clickedMessageItem.isUploadFileMessage()) {
-                    uploadFile(clickedMessageItem.getFile().getPath());
+                if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
+                    uploadFile(clickedMessageItem.getFilePath());
                 } else {
                     sendMessage(clickedMessageItem.getText());
                 }
                 return true;
 
             case R.id.action_message_copy:
+                Spannable spannable = MessageItem.getSpannable(clickedMessageItem);
                 ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                        .setPrimaryClip(ClipData.newPlainText(clickedMessageItem.getSpannable(), clickedMessageItem.getSpannable()));
+                        .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
                 return true;
 
             case R.id.action_message_quote:
@@ -793,12 +950,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_message_remove:
-                MessageManager.getInstance().removeMessage(clickedMessageItem);
-                updateChat();
+                MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
                 return true;
 
             case R.id.action_message_open_file:
-                FileManager.openFile(getActivity(), clickedMessageItem.getFile());
+                FileManager.openFile(getActivity(), new File(clickedMessageItem.getFilePath()));
                 return true;
 
             case R.id.action_message_save_file:
@@ -834,11 +990,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void saveFileToDownloads() {
+        final String filePath = clickedMessageItem.getFilePath();
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 try {
-                    FileManager.saveFileToDownloads(clickedMessageItem.getFile());
+                    FileManager.saveFileToDownloads(new File(filePath));
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -856,11 +1013,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 }
             }
         });
-    }
-
-    private void showHistory(String account, String user) {
-        MessageManager.getInstance().requestToLoadLocalHistory(account, user);
-        MessageArchiveManager.getInstance().requestHistory(account, user, MINIMUM_MESSAGES_TO_LOAD, 0);
     }
 
     private void stopEncryption(String account, String user) {
@@ -946,15 +1098,15 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 menu.findItem(R.id.action_message_repeat).setVisible(true);
             }
 
-            if (clickedMessageItem.isUploadFileMessage()) {
+            if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
                 menu.findItem(R.id.action_message_copy).setVisible(false);
                 menu.findItem(R.id.action_message_quote).setVisible(false);
                 menu.findItem(R.id.action_message_remove).setVisible(false);
             }
 
-            final File file = clickedMessageItem.getFile();
+            String filePath = clickedMessageItem.getFilePath();
 
-            if (file != null && file.exists()) {
+            if (filePath != null && new File(filePath).exists()) {
                 menu.findItem(R.id.action_message_open_file).setVisible(true);
                 menu.findItem(R.id.action_message_save_file).setVisible(true);
             }
@@ -982,6 +1134,50 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Override
     public void onNoDownloadFilePermission() {
         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+    }
+
+    @Override
+    public void onMessageNumberChanged(int prevItemCount) {
+        int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+
+        if (toBeScrolled || lastVisibleItemPosition == -1 || lastVisibleItemPosition == (prevItemCount - 1)) {
+            toBeScrolled = true;
+            scrollDown();
+        }
+    }
+
+    public void restoreScrollState() {
+        layoutManager.onRestoreInstanceState(ChatManager.getInstance().getScrollState(account, user));
+    }
+
+    @Override
+    public void onMessagesUpdated() {
+        updateFirstRemoteSyncedItemPosition();
+        loadHistoryIfNeeded();
+    }
+
+    private void updateFirstRemoteSyncedItemPosition() {
+        if (!syncInfoResults.isLoaded() || !messageItems.isLoaded() || syncInfoResults.isEmpty()) {
+            return;
+        }
+
+        SyncInfo syncInfo = syncInfoResults.first();
+
+        String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
+        if (firstMamMessageStanzaId == null) {
+            return;
+        }
+
+        RealmResults<MessageItem> allSorted = messageItems.where()
+                .equalTo(MessageItem.Fields.STANZA_ID, firstMamMessageStanzaId)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+        if (allSorted.isEmpty()) {
+            return;
+        }
+
+        String firstRemotelySyncedMessageUniqueId = allSorted.last().getUniqueId();
+
+        firstRemoteSyncedItemPosition = chatMessageAdapter.findMessagePosition(firstRemotelySyncedMessageUniqueId);
     }
 
     public interface ChatViewerFragmentListener {

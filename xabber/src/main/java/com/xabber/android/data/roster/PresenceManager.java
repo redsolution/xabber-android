@@ -30,7 +30,6 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.OnAuthorizedListener;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -53,8 +52,8 @@ import java.util.HashSet;
  *
  * @author alexander.ivanov
  */
-public class PresenceManager implements OnArchiveModificationsReceivedListener,
-        OnLoadListener, OnAccountDisabledListener, OnDisconnectListener, OnPacketListener, OnAuthorizedListener {
+public class PresenceManager implements OnLoadListener, OnAccountDisabledListener,
+        OnDisconnectListener, OnPacketListener, OnAuthorizedListener {
 
     private final static PresenceManager instance;
 
@@ -227,11 +226,6 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
             }
         }
         RosterManager.onContactChanged(account, bareAddress);
-    }
-
-    @Override
-    public void onArchiveModificationsReceived(ConnectionItem connection) {
-
     }
 
     @Override

@@ -9,12 +9,7 @@
     android:paddingRight="24dp"
     >
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size_toolbar"
-        android:layout_height="@dimen/avatar_size_toolbar"
-        android:src="@drawable/ic_avatar_1"
-        />
+    <include layout="@layout/avatar" />
 
     <TextView
         android:id="@+id/name"

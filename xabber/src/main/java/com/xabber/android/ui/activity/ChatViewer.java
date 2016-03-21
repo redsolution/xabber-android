@@ -30,7 +30,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
@@ -38,7 +37,8 @@ import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.message.OnChatChangedListener;
+import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
@@ -48,8 +48,13 @@ import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ChatViewerFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.Collection;
 import java.util.HashSet;
+
 
 /**
  * Chat activity.
@@ -57,8 +62,8 @@ import java.util.HashSet;
  *
  * @author alexander.ivanov
  */
-public class ChatViewer extends ManagedActivity implements OnChatChangedListener,
-        OnContactChangedListener, OnAccountChangedListener, ViewPager.OnPageChangeListener,
+public class ChatViewer extends ManagedActivity implements OnContactChangedListener,
+        OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener,
         ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener {
 
@@ -194,6 +199,13 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         initChats();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ChatManager.getInstance().clearScrollStates();
+    }
+
+
     private void initChats() {
         if (initialChat != null) {
             chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), initialChat, this);
@@ -292,7 +304,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         super.onResume();
         isVisible = true;
 
-        Application.getInstance().addUIListener(OnChatChangedListener.class, this);
+        EventBus.getDefault().register(this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
@@ -344,7 +356,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
+        EventBus.getDefault().unregister(this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
@@ -365,20 +377,12 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         viewPager.setCurrentItem(position, smoothScroll);
     }
 
-    @Override
-    public void onChatChanged(final String account, final String user, final boolean incoming) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent event) {
         if (chatViewerAdapter.updateChats()) {
             chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
             selectPage();
         } else {
-            for (ChatViewerFragment chat : registeredChats) {
-                if (chat.isEqual(selectedChat)) {
-                    chat.updateChat();
-                    if (incoming) {
-                        chat.playIncomingAnimation();
-                    }
-                }
-            }
             updateRegisteredRecentChatsFragments();
             updateStatusBar();
         }
@@ -389,7 +393,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
         for (BaseEntity contact : entities) {
             for (ChatViewerFragment chat : registeredChats) {
                 if (chat.isEqual(contact)) {
-                    chat.updateChat();
+                    chat.updateContact();
                 }
             }
         }
@@ -425,9 +429,6 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
                 MessageManager.getInstance().setVisibleChat(selectedChat);
             }
 
-            MessageArchiveManager.getInstance().requestHistory(selectedChat.getAccount(), selectedChat.getUser(), 0,
-                    MessageManager.getInstance().getChat(selectedChat.getAccount(), selectedChat.getUser()).getRequiredMessageCount());
-
             NotificationManager.getInstance().removeMessageNotification(selectedChat.getAccount(), selectedChat.getUser());
         }
 
@@ -444,7 +445,7 @@ public class ChatViewer extends ManagedActivity implements OnChatChangedListener
 
     private void updateRegisteredChats() {
         for (ChatViewerFragment chat : registeredChats) {
-            chat.updateChat();
+            chat.updateContact();
         }
     }
 

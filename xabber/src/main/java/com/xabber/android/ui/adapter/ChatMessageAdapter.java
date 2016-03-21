@@ -34,27 +34,30 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.message.MessageItem;
-import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.fragment.ChatViewerFragment;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
-public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
+import io.realm.Realm;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
+
+
+public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, ChatMessageAdapter.BasicMessage> {
 
     public static final int VIEW_TYPE_INCOMING_MESSAGE = 2;
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
@@ -67,96 +70,42 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * Message font appearance.
      */
     private final int appearanceStyle;
-    private String account;
-    private String user;
     private boolean isMUC;
     private String mucNickname;
 
-    private List<MessageItem> messages;
     /**
      * Text with extra information.
      */
-    private String hint;
     private Listener listener;
 
-    public interface Listener {
-        void onNoDownloadFilePermission();
-    }
+    private String account;
+    private String user;
+    private int prevItemCount;
+    private long lastUpdateTimeMillis;
 
-    public ChatMessageAdapter(Context context, String account, String user, Message.MessageClickListener messageClickListener, ChatMessageAdapter.Listener listener) {
+    public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatViewerFragment chatViewerFragment) {
+        super(context, messageItems, true);
+
         this.context = context;
-        messages = Collections.emptyList();
-        this.account = account;
-        this.user = user;
-        this.messageClickListener = messageClickListener;
-        this.listener = listener;
+        this.messageClickListener = chatViewerFragment;
+
+        account = chat.getAccount();
+        user = chat.getUser();
 
         isMUC = MUCManager.getInstance().hasRoom(account, user);
         if (isMUC) {
             mucNickname = MUCManager.getInstance().getNickname(account, user);
         }
-        hint = null;
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
-    }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_HINT:
-                return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_info, parent, false));
-
-            case VIEW_TYPE_ACTION_MESSAGE:
-                return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_action_message, parent, false));
-
-            case VIEW_TYPE_INCOMING_MESSAGE:
-                return new IncomingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_incoming_message, parent, false), messageClickListener);
-
-            case VIEW_TYPE_OUTGOING_MESSAGE:
-                return new OutgoingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false), messageClickListener);
-            default:
-                return null;
-        }
+        this.listener = chatViewerFragment;
 
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final int viewType = getItemViewType(position);
-
-        MessageItem messageItem = getMessageItem(position);
-
-        switch (viewType) {
-            case VIEW_TYPE_HINT:
-                ((BasicMessage) holder).messageText.setText(hint);
-                break;
-
-            case VIEW_TYPE_ACTION_MESSAGE:
-                ChatAction action = messageItem.getAction();
-                String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
-
-                String name;
-                if (isMUC) {
-                    name = messageItem.getResource();
-                } else {
-                    name = RosterManager.getInstance().getBestContact(account, messageItem.getChat().getUser()).getName();
-                }
-                ((BasicMessage)holder).messageText.setText(time + ": "
-                        + action.getText(context, name, messageItem.getSpannable().toString()));
-
-                break;
-
-            case VIEW_TYPE_INCOMING_MESSAGE:
-                setUpIncomingMessage((IncomingMessage) holder, messageItem);
-                break;
-            case VIEW_TYPE_OUTGOING_MESSAGE:
-                setUpOutgoingMessage((Message) holder, messageItem);
-                break;
-        }
-
+    public interface Listener {
+        void onNoDownloadFilePermission();
+        void onMessageNumberChanged(int prevItemCount);
+        void onMessagesUpdated();
     }
 
     private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
@@ -170,6 +119,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
         setUpMessage(messageItem, incomingMessage);
+
+        if (messageItem.isReceivedFromMessageArchive()) {
+            incomingMessage.statusIcon.setVisibility(View.VISIBLE);
+        } else {
+            incomingMessage.statusIcon.setVisibility(View.GONE);
+        }
 
         setUpMessageBalloonBackground(incomingMessage.messageBalloon,
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
@@ -233,20 +188,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         messageView.messageFileInfo.setVisibility(View.GONE);
         messageView.messageTextForFileName.setVisibility(View.GONE);
 
-        if (messageItem.getFile() == null) {
+        if (messageItem.isError()) {
             return;
         }
 
-        LogManager.i(this, "processing file messageView " + messageItem.getText());
+        String filePath = messageItem.getFilePath();
+
+        if (filePath == null) {
+            return;
+        }
+
+        final File file = new File(filePath);
 
         messageView.messageText.setVisibility(View.GONE);
-        messageView.messageTextForFileName.setText(FileManager.getFileName(messageItem.getFile().getPath()));
+        messageView.messageTextForFileName.setText(FileManager.getFileName(file.getPath()));
         messageView.messageTextForFileName.setVisibility(View.VISIBLE);
 
         messageView.attachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FileManager.openFile(context, messageItem.getFile());
+                FileManager.openFile(context, file);
             }
         });
 
@@ -256,11 +217,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageView.messageFileInfo.setVisibility(View.VISIBLE);
         }
 
-        if (messageItem.getFile().exists()) {
-            onFileExists(messageView, messageItem.getFile());
+        if (file.exists()) {
+            onFileExists(messageView, file);
         } else {
             if (SettingsManager.connectionLoadImages()
-                    && FileManager.fileIsImage(messageItem.getFile())
+                    && FileManager.fileIsImage(file)
                     && PermissionsRequester.hasFileWritePermission()) {
                 LogManager.i(this, "Downloading file from message adapter");
                 downloadFile(messageView, messageItem);
@@ -278,9 +239,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void downloadFile(final Message messageView, final MessageItem messageItem) {
         if (!PermissionsRequester.hasFileWritePermission()) {
-            listener.onNoDownloadFilePermission();
+            if (listener != null) {
+                listener.onNoDownloadFilePermission();
+            }
             return;
         }
+
+        final String uniqueId = messageItem.getUniqueId();
 
         messageView.downloadButton.setVisibility(View.GONE);
         messageView.downloadProgressBar.setVisibility(View.VISIBLE);
@@ -304,8 +269,25 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             @Override
             public void onFinish(long totalSize) {
-                MessageManager.getInstance().onChatChanged(messageItem.getChat().getAccount(), messageItem.getChat().getUser(), false);
+                setUpFileMessage(messageView, messageItem);
             }
+
+            @Override
+            public void onError() {
+                Realm realm = Realm.getDefaultInstance();
+
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        MessageItem first = realm.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId).findFirst();
+                        first.setError(true);
+                    }
+                }, null);
+
+                realm.close();
+            }
+
         });
     }
 
@@ -331,32 +313,91 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        if (hint == null) {
-            return messages.size();
-        } else {
-            return messages.size() + 1;
-        }
+        return realmResults.size();
     }
 
     public MessageItem getMessageItem(int position) {
-        if (position < messages.size()) {
-            return messages.get(position);
-        } else {
+        if (position == RecyclerView.NO_POSITION) {
             return null;
         }
 
+        if (position < realmResults.size()) {
+            return realmResults.get(position);
+        } else {
+            return null;
+        }
+    }
 
-
+    public String getMessageItemId(int position) {
+        MessageItem messageItem = getMessageItem(position);
+        if (messageItem == null) {
+            return null;
+        } else {
+            return messageItem.getUniqueId();
+        }
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
+    public BasicMessage onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_HINT:
+                return new BasicMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_info, parent, false));
+
+            case VIEW_TYPE_ACTION_MESSAGE:
+                return new BasicMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_action_message, parent, false));
+
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                return new IncomingMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_incoming_message, parent, false), messageClickListener);
+
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                return new OutgoingMessage(LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false), messageClickListener);
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(BasicMessage holder, int position) {
+        final int viewType = getItemViewType(position);
+
+        MessageItem messageItem = getMessageItem(position);
+
+        switch (viewType) {
+            case VIEW_TYPE_HINT:
+//                holder.messageText.setText(hint);
+                break;
+
+            case VIEW_TYPE_ACTION_MESSAGE:
+                ChatAction action = MessageItem.getChatAction(messageItem);
+                String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
+
+                String name;
+                if (isMUC) {
+                    name = messageItem.getResource();
+                } else {
+                    name = RosterManager.getInstance().getBestContact(account, messageItem.getUser()).getName();
+                }
+                holder.messageText.setText(time + ": "
+                        + action.getText(context, name, MessageItem.getSpannable(messageItem).toString()));
+
+                break;
+
+            case VIEW_TYPE_INCOMING_MESSAGE:
+                setUpIncomingMessage((IncomingMessage) holder, messageItem);
+                break;
+            case VIEW_TYPE_OUTGOING_MESSAGE:
+                setUpOutgoingMessage((Message) holder, messageItem);
+                break;
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position >= messages.size()) {
+        if (position >= realmResults.size()) {
             return VIEW_TYPE_HINT;
         }
 
@@ -375,8 +416,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    private void setUpMessage(MessageItem messageItem, Message message) {
+    @Override
+    public void onChange() {
+        lastUpdateTimeMillis = System.currentTimeMillis();
+        notifyDataSetChanged();
+        listener.onMessagesUpdated();
+        int itemCount = getItemCount();
+        if (prevItemCount != itemCount) {
+            listener.onMessageNumberChanged(prevItemCount);
+            prevItemCount = itemCount;
+        }
+    }
 
+    private void setUpMessage(MessageItem messageItem, Message message) {
         if (isMUC) {
             message.messageHeader.setText(messageItem.getResource());
             message.messageHeader.setVisibility(View.VISIBLE);
@@ -384,7 +436,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             message.messageHeader.setVisibility(View.GONE);
         }
 
-        if (messageItem.isUnencypted()) {
+        if (messageItem.isUnencrypted()) {
             message.messageUnencrypted.setVisibility(View.VISIBLE);
         } else {
             message.messageUnencrypted.setVisibility(View.GONE);
@@ -393,17 +445,17 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.messageText.setTextAppearance(context, appearanceStyle);
         message.messageTextForFileName.setTextAppearance(context, appearanceStyle);
 
-        final Spannable spannable = messageItem.getSpannable();
+        final Spannable spannable = MessageItem.getSpannable(messageItem);
         Emoticons.getSmiledText(context, spannable, message.messageText);
         message.messageText.setText(spannable);
         message.messageText.setVisibility(View.VISIBLE);
 
-        String time = StringUtils.getSmartTimeText(context, messageItem.getTimestamp());
+        String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
 
-        Date delayTimestamp = messageItem.getDelayTimestamp();
+        Long delayTimestamp = messageItem.getDelayTimestamp();
         if (delayTimestamp != null) {
             String delay = context.getString(messageItem.isIncoming() ? R.string.chat_delay : R.string.chat_typed,
-                    StringUtils.getSmartTimeText(context, delayTimestamp));
+                    StringUtils.getSmartTimeText(context, new Date(delayTimestamp)));
             time += " (" + delay + ")";
         }
 
@@ -414,17 +466,24 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         message.statusIcon.setVisibility(View.VISIBLE);
         message.progressBar.setVisibility(View.GONE);
 
-        if (messageItem.isUploadFileMessage() && !messageItem.isError()) {
+        boolean isFileUploadInProgress = MessageItem.isUploadFileMessage(messageItem);
+
+        if (isFileUploadInProgress) {
             message.progressBar.setVisibility(View.VISIBLE);
         }
 
-        int messageIcon = R.drawable.ic_message_delivered_18dp;
-        if (messageItem.isError()) {
-            messageIcon = R.drawable.ic_message_has_error_18dp;
-        } else if (!messageItem.isUploadFileMessage() && !messageItem.isSent()) {
-            messageIcon = R.drawable.ic_message_not_sent_18dp;
+        int messageIcon = R.drawable.ic_message_delivered_14dp;
+        if (messageItem.isForwarded()) {
+            messageIcon = R.drawable.ic_message_forwarded_14dp;
+        } else if (messageItem.isReceivedFromMessageArchive()) {
+            messageIcon = R.drawable.ic_message_synced_14dp;
+        } else if (messageItem.isError()) {
+            messageIcon = R.drawable.ic_message_has_error_14dp;
+        } else if (!isFileUploadInProgress && !messageItem.isSent()
+                && lastUpdateTimeMillis - messageItem.getTimestamp() > 1000) {
+            messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
-            message.statusIcon.setVisibility(View.GONE);
+            message.statusIcon.setVisibility(View.INVISIBLE);
         }
 
         message.statusIcon.setImageResource(messageIcon);
@@ -432,8 +491,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private void setUpAvatar(MessageItem messageItem, IncomingMessage message) {
         if (SettingsManager.chatsShowAvatars()) {
-            final String account = messageItem.getChat().getAccount();
-            final String user = messageItem.getChat().getUser();
+            final String account = messageItem.getAccount();
+            final String user = messageItem.getUser();
             final String resource = messageItem.getResource();
 
             message.avatar.setVisibility(View.VISIBLE);
@@ -455,11 +514,14 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    @Override
-    public void onChange() {
-        messages = new ArrayList<>(MessageManager.getInstance().getMessages(account, user));
-        hint = getHint();
-        notifyDataSetChanged();
+    public int findMessagePosition(String uniqueId) {
+        for (int i = 0; i < realmResults.size(); i++) {
+            if (realmResults.get(i).getUniqueId().equals(uniqueId)) {
+                return i;
+            }
+        }
+
+        return RecyclerView.NO_POSITION;
     }
 
     /**
@@ -479,7 +541,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             if (abstractContact instanceof RoomContact) {
                 return context.getString(R.string.muc_is_unavailable);
             } else {
-                return context.getString(R.string.contact_is_offline, abstractContact.getName());
+                return context.getString(R.string.contact_is_offline);
             }
         }
         return null;
@@ -512,6 +574,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public TextView messageFileInfo;
         public TextView messageTextForFileName;
 
+        public ImageView statusIcon;
+
 
         public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
@@ -529,6 +593,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
             messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
             messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
+
+            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
 
             itemView.setOnClickListener(this);
         }
@@ -556,12 +622,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public static class OutgoingMessage extends Message {
 
-        public ImageView statusIcon;
+
         public ProgressBar progressBar;
 
         public OutgoingMessage(View itemView, MessageClickListener listener) {
             super(itemView, listener);
-            statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
             progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
         }
     }

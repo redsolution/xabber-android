@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.helper.SingleActivity;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 /**
  * Helper for dialog activities.
@@ -34,14 +35,16 @@ import com.xabber.android.ui.helper.SingleActivity;
  */
 public abstract class ManagedDialog extends SingleActivity {
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.dialog);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar_default));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        toolbar = ToolbarHelper.setUpDefaultToolbar(this);
+        toolbar.setNavigationIcon(null);
 
         findViewById(android.R.id.button1).setOnClickListener(
                 new OnClickListener() {
@@ -67,11 +70,11 @@ public abstract class ManagedDialog extends SingleActivity {
     }
 
     public void setDialogTitle(CharSequence title) {
-        getSupportActionBar().setTitle(title);
+        toolbar.setTitle(title);
     }
 
     public void setDialogTitle(int resid) {
-        getSupportActionBar().setTitle(resid);
+        toolbar.setTitle(resid);
     }
 
     public void setDialogMessage(CharSequence title) {

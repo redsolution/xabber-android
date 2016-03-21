@@ -2,11 +2,12 @@ package com.xabber.android.ui.fragment;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.OnAccountChangedListener;
@@ -32,12 +34,27 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     private View divider;
     private View headerTitle;
     private ImageView drawerHeaderImage;
+    private int[] headerImageResources;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         listener = (ContactListDrawerListener) activity;
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        TypedArray defaultAvatars = Application.getInstance().getResources()
+                .obtainTypedArray(R.array.navigation_drawer_header_images);
+        headerImageResources = new int[defaultAvatars.length()];
+        for (int index = 0; index < defaultAvatars.length(); index++) {
+            headerImageResources[index] = defaultAvatars.getResourceId(index, -1);
+        }
+        defaultAvatars.recycle();
+    }
+
 
     @Nullable
     @Override
@@ -117,7 +134,12 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
 
     private void update() {
         adapter.onChange();
-        drawerHeaderImage.setImageLevel(AccountPainter.getDefaultAccountColorLevel());
+
+        Glide.with(this)
+                .fromResource()
+                .load(headerImageResources[AccountPainter.getDefaultAccountColorLevel()])
+                .fitCenter()
+                .into(drawerHeaderImage);
 
         if (adapter.getCount() == 0) {
             headerTitle.setVisibility(View.GONE);

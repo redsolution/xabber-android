@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="navigation_drawer_header_images">
+        <item>@drawable/drawer_green</item>
+        <item>@drawable/drawer_orange</item>
+        <item>@drawable/drawer_red</item>
+        <item>@drawable/drawer_blue</item>
+        <item>@drawable/drawer_indigo</item>
+        <item>@drawable/drawer_blue_grey</item>
+        <item>@drawable/drawer_cyan</item>
+        <item>@drawable/drawer_teal</item>
+    </array>
+</resources>

@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ContactEditor;
@@ -19,6 +19,8 @@ import com.xabber.android.ui.activity.ContactViewer;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
+
+import java.util.Date;
 
 public class ContactItemInflater {
 
@@ -101,34 +103,33 @@ public class ContactItemInflater {
             viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
         }
 
+        MessageItem lastMessage = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser()).getLastMessage();
+
+        if (lastMessage == null) {
+            statusText = contact.getStatusText().trim();
+        } else {
+            statusText = lastMessage.getText().trim();
+
+            viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, new Date(lastMessage.getTimestamp())));
+            viewHolder.smallRightText.setVisibility(View.VISIBLE);
+
+            if (!lastMessage.isIncoming()) {
+                viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
+                viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
+                viewHolder.outgoingMessageIndicator.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
+            }
+            viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
+            viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
+            viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
+            viewHolder.largeClientIcon.setVisibility(View.GONE);
+        }
 
         if (messageManager.hasActiveChat(contact.getAccount(), contact.getUser())) {
-
-            AbstractChat chat = messageManager.getChat(contact.getAccount(), contact.getUser());
-
-            statusText = chat.getLastText().trim();
 
             view.setBackgroundColor(ColorManager.getInstance().getActiveChatBackgroundColor());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getActiveChatSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getActiveChatLargeClientIconColor());
-
-            if (!statusText.isEmpty()) {
-
-                viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, chat.getLastTime()));
-                viewHolder.smallRightText.setVisibility(View.VISIBLE);
-
-                if (!chat.isLastMessageIncoming()) {
-                    viewHolder.outgoingMessageIndicator.setText(context.getString(R.string.sender_is_you) + ": ");
-                    viewHolder.outgoingMessageIndicator.setVisibility(View.VISIBLE);
-                    viewHolder.outgoingMessageIndicator.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
-                }
-                viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
-                viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
-                viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
-                viewHolder.largeClientIcon.setVisibility(View.GONE);
-            }
         } else {
-            statusText = contact.getStatusText().trim();
             view.setBackgroundColor(ColorManager.getInstance().getContactBackground());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getContactSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getContactLargeClientIconColor());

@@ -15,21 +15,17 @@
 package com.xabber.android.data.message;
 
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.SettingsManager.SecurityOtrMode;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
-import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.archive.SaveMode;
 import com.xabber.xmpp.delay.Delay;
 import com.xabber.xmpp.muc.MUC;
 
 import net.java.otr4j.OtrException;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
@@ -73,29 +69,28 @@ public class RegularChat extends AbstractChat {
         return Type.chat;
     }
 
-    @Override
-    protected boolean canSendMessage() {
-        if (super.canSendMessage()) {
-            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
-                return true;
-            SecurityLevel securityLevel = OTRManager.getInstance()
-                    .getSecurityLevel(account, user);
-            if (securityLevel != SecurityLevel.plain)
-                return true;
-            try {
-                OTRManager.getInstance().startSession(account, user);
-            } catch (NetworkException e) {
-            }
-        }
-        return false;
-    }
+//    @Override
+//    protected boolean canSendMessage() {
+//        if (super.canSendMessage()) {
+//            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
+//                return true;
+//            SecurityLevel securityLevel = OTRManager.getInstance()
+//                    .getSecurityLevel(account, user);
+//            if (securityLevel != SecurityLevel.plain)
+//                return true;
+//            try {
+//                OTRManager.getInstance().startSession(account, user);
+//            } catch (NetworkException e) {
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     protected String prepareText(String text) {
         text = super.prepareText(text);
         try {
-            return OTRManager.getInstance().transformSending(account, user,
-                    text);
+            return OTRManager.getInstance().transformSending(account, user, text);
         } catch (OtrException e) {
             LogManager.exception(this, e);
             return null;
@@ -103,8 +98,8 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem newMessage(String text) {
-        return newMessage(
+    protected MessageItem createNewMessageItem(String text) {
+        return createMessageItem(
                 null,
                 text,
                 null,
@@ -113,8 +108,7 @@ public class RegularChat extends AbstractChat {
                 false,
                 false,
                 false,
-                MessageArchiveManager.getInstance().getSaveMode(account, user,
-                        getThreadId()) != SaveMode.fls);
+                null);
     }
 
     @Override
@@ -166,7 +160,7 @@ public class RegularChat extends AbstractChat {
                 return true;
             if (!"".equals(resource))
                 this.resource = resource;
-            newMessage(
+            createAndSaveNewMessage(
                     resource,
                     text,
                     null,
@@ -175,8 +169,8 @@ public class RegularChat extends AbstractChat {
                     true,
                     unencrypted,
                     Delay.isOfflineMessage(Jid.getServer(account), packet),
-                    MessageArchiveManager.getInstance().getSaveMode(account,
-                            user, getThreadId()) != SaveMode.fls);
+                    packet.getStanzaId());
+            EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
         return true;
     }

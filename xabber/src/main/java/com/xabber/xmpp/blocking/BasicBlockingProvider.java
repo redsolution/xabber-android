@@ -1,31 +1,40 @@
 package com.xabber.xmpp.blocking;
 
 
-import com.xabber.xmpp.AbstractIQProvider;
-
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 
-abstract class BasicBlockingProvider<BlockingIq extends BasicBlockingIq> extends AbstractIQProvider<BlockingIq> {
+abstract class BasicBlockingProvider<BlockingIq extends BasicBlockingIq> extends IQProvider<BlockingIq> {
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, BlockingIq instance) throws XmlPullParserException, IOException, SmackException {
-        if (super.parseInner(parser, instance)) {
-            return true;
-        }
+    public BlockingIq parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
+        BlockingIq instance = createInstance();
 
-        if (parser.getName().equalsIgnoreCase(XmlConstants.ITEM)) {
+        boolean done = false;
+        while (!done) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG) {
+                if (parser.getName().equalsIgnoreCase(XmlConstants.ITEM)) {
 
-            final String item = parser.getAttributeValue(null, XmlConstants.ITEM_JID);
-            if (item != null) {
-                instance.addItem(item);
+                    final String item = parser.getAttributeValue(null, XmlConstants.ITEM_JID);
+                    if (item != null) {
+                        instance.addItem(item);
+                    }
+                }
+            } else if (eventType == XmlPullParser.END_TAG && parser.getName().equals(instance.getChildElementName())) {
+                done = true;
             }
-            parser.next();
         }
 
-        return true;
+        return instance;
     }
+
+
+    protected abstract BlockingIq createInstance();
+
+
 }

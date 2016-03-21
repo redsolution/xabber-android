@@ -37,7 +37,7 @@ import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.xmpp.carbon.CarbonManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 
 import java.util.Collections;
 import java.util.Comparator;

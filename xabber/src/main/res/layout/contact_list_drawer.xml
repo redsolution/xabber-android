@@ -9,14 +9,14 @@
 
     <FrameLayout
         android:id="@+id/drawer_header"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/drawer_header_image"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/drawer_image" />
+            />
 
         <LinearLayout
             android:layout_width="match_parent"

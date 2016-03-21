@@ -21,14 +21,12 @@
     android:background="@drawable/ripple_background"
     >
 
-    <ImageView
-        android:id="@+id/avatar"
+    <include layout="@layout/avatar"
         android:layout_width="@dimen/avatar_size_toolbar"
         android:layout_height="@dimen/avatar_size_toolbar"
-        android:src="@drawable/ic_avatar_1"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:layout_centerInParent="true"
+        android:layout_marginTop="2dp"
         android:layout_alignParentLeft="true"
         />
 

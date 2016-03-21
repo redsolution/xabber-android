@@ -15,15 +15,16 @@
 package com.xabber.android.data.message;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.database.realm.MessageItem;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
@@ -35,17 +36,14 @@ import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
 
+import io.realm.Realm;
+
 /**
  * Manage message receive receipts as well as error replies.
  *
  * @author alexander.ivanov
  */
-public class ReceiptManager implements OnPacketListener, OnDisconnectListener, ReceiptReceivedListener {
-
-    /**
-     * Sent messages for packet ids in accounts.
-     */
-    private final NestedMap<MessageItem> sent;
+public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener {
 
     private final static ReceiptManager instance;
 
@@ -63,8 +61,6 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener, R
     }
 
     private ReceiptManager() {
-        sent = new NestedMap<>();
-
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
             @Override
             public void connectionCreated(final XMPPConnection connection) {
@@ -75,89 +71,79 @@ public class ReceiptManager implements OnPacketListener, OnDisconnectListener, R
 
     }
 
-    /**
-     * Update outgoing message before sending.
-     *
-     * @param abstractChat
-     * @param message
-     * @param messageItem
-     */
-    public void updateOutgoingMessage(AbstractChat abstractChat,
-                                      Message message, MessageItem messageItem) {
-        sent.put(abstractChat.getAccount(), message.getStanzaId(), messageItem);
-    }
-
     @Override
     public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
-        if (!(connection instanceof AccountItem))
+        if (!(connection instanceof AccountItem)) {
             return;
-        String account = ((AccountItem) connection).getAccount();
+        }
+        final String account = ((AccountItem) connection).getAccount();
         final String user = packet.getFrom();
-        if (user == null)
+        if (user == null) {
             return;
-        if (!(packet instanceof Message))
+        }
+        if (!(packet instanceof Message)) {
             return;
+        }
         final Message message = (Message) packet;
         if (message.getType() == Message.Type.error) {
-            final MessageItem messageItem = sent.remove(account,
-                    message.getPacketID());
-            if (messageItem != null && !messageItem.isError()) {
-                messageItem.markAsError();
-                Application.getInstance().runInBackground(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (messageItem.getId() != null)
-                            MessageTable.getInstance().markAsError(
-                                    messageItem.getId());
-                    }
-                });
-                MessageManager.getInstance().onChatChanged(
-                        messageItem.getChat().getAccount(),
-                        messageItem.getChat().getUser(), false);
-            }
+            markAsError(account, message);
         } else {
             // TODO setDefaultAutoReceiptMode should be used
-            for (ExtensionElement packetExtension : message.getExtensions())
+            for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof DeliveryReceiptRequest) {
                     String id = message.getPacketID();
-                    if (id == null)
+                    if (id == null) {
                         continue;
+                    }
                     Message receipt = new Message(user);
                     receipt.addExtension(new DeliveryReceipt(id));
                     // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
                     try {
-                        ConnectionManager.getInstance().sendStanza(account,
-                                receipt);
+                        ConnectionManager.getInstance().sendStanza(account, receipt);
                     } catch (NetworkException e) {
                         LogManager.exception(this, e);
                     }
                 }
+            }
         }
     }
 
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        String account = ((AccountItem) connection).getAccount();
-        sent.clear(account);
+    private void markAsError(final String account, final Message message) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        MessageItem first = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId()).findFirst();
+        if (first != null) {
+            first.setError(true);
+        }
+        realm.commitTransaction();
+        realm.close();
+        EventBus.getDefault().post(new MessageUpdateEvent(account));
     }
 
     @Override
-    public void onReceiptReceived(String fromJid, String toJid, String receiptId, Stanza stanza) {
-        DeliveryReceipt receipt = stanza.getExtension(DeliveryReceipt.ELEMENT, DeliveryReceipt.NAMESPACE);
+    public void onReceiptReceived(String fromJid, final String toJid, final String receiptId, Stanza stanza) {
+        DeliveryReceipt receipt = DeliveryReceipt.from((Message) stanza);
 
         if (receipt == null) {
             return;
         }
 
-        final MessageItem messageItem = sent.remove(toJid, receipt.getId());
-        if (messageItem != null && !messageItem.isDelivered()) {
-            messageItem.markAsDelivered();
-            MessageManager.getInstance().onChatChanged(
-                    messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser(), false);
+        markAsDelivered(toJid, receiptId);
+    }
+
+    private void markAsDelivered(final String toJid, final String receiptId) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        MessageItem first = realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
+        if (first != null) {
+            first.setDelivered(true);
         }
+        realm.commitTransaction();
+        realm.close();
+        EventBus.getDefault().post(new MessageUpdateEvent());
     }
 }

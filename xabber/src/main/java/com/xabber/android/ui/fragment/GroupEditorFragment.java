@@ -1,9 +1,9 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -17,6 +17,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.GroupEditorAdapter;
 
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
 
         setUpFooter();
 
-        groupEditorAdapter = new GroupEditorAdapter(getActivity(),
+        groupEditorAdapter = new GroupEditorAdapter((ManagedActivity) getActivity(),
                 R.layout.group_list_item, new ArrayList<GroupEditorAdapter.Group>());
 
         setListAdapter(groupEditorAdapter);
