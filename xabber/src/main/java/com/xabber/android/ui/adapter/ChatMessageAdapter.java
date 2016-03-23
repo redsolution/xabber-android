@@ -313,7 +313,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     @Override
     public int getItemCount() {
-        return realmResults.size();
+        if (realmResults.isValid() && realmResults.isLoaded()) {
+            return realmResults.size();
+        } else {
+            return 0;
+        }
     }
 
     public MessageItem getMessageItem(int position) {
