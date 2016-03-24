@@ -20,6 +20,7 @@ import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
+import java.io.File;
 import java.util.Date;
 
 public class ContactItemInflater {
@@ -108,7 +109,11 @@ public class ContactItemInflater {
         if (lastMessage == null) {
             statusText = contact.getStatusText().trim();
         } else {
-            statusText = lastMessage.getText().trim();
+            if (lastMessage.getFilePath() != null) {
+                statusText = new File(lastMessage.getFilePath()).getName();
+            } else {
+                statusText = lastMessage.getText().trim();
+            }
 
             viewHolder.smallRightText.setText(StringUtils.getSmartTimeText(context, new Date(lastMessage.getTimestamp())));
             viewHolder.smallRightText.setVisibility(View.VISIBLE);
