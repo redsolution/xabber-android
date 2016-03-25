@@ -19,21 +19,20 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
-import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
-import com.xabber.xmpp.muc.Affiliation;
-import com.xabber.xmpp.muc.MUC;
-import com.xabber.xmpp.muc.Role;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.muc.MUCAffiliation;
+import org.jivesoftware.smackx.muc.MUCRole;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.packet.MUCItem;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
@@ -183,7 +182,7 @@ public class RoomChat extends AbstractChat {
             return false;
         }
 
-        MUCUser mucUserExtension = MUC.getMUCUserExtension(packet);
+        MUCUser mucUserExtension = MUCUser.from(packet);
         if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
             return false;
         }
@@ -199,7 +198,7 @@ public class RoomChat extends AbstractChat {
                 }
                 return true;
             }
-            MUCUser mucUser = MUC.getMUCUserExtension(packet);
+            MUCUser mucUser = MUCUser.from(packet);
             if (mucUser != null && mucUser.getDecline() != null) {
                 onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
                 return true;
@@ -285,7 +284,7 @@ public class RoomChat extends AbstractChat {
                 }
             } else if (presence.getType() == Presence.Type.unavailable && state == RoomState.available) {
                 occupants.remove(stringPrep);
-                MUCUser mucUser = MUC.getMUCUserExtension(presence);
+                MUCUser mucUser = MUCUser.from(presence);
                 if (mucUser != null && mucUser.getStatus() != null) {
                     if (mucUser.getStatus().contains(MUCUser.Status.KICKED_307)) {
                         onKick(resource, mucUser.getItem().getActor());
@@ -368,21 +367,23 @@ public class RoomChat extends AbstractChat {
     private Occupant createOccupant(String resource, Presence presence) {
         Occupant occupant = new Occupant(resource);
         String jid = null;
-        Affiliation affiliation = Affiliation.none;
-        Role role = Role.none;
+        MUCAffiliation affiliation = MUCAffiliation.none;
+        MUCRole role = MUCRole.none;
+
+
         StatusMode statusMode = StatusMode.unavailable;
         String statusText = null;
-        MUCUser mucUser = MUC.getMUCUserExtension(presence);
+        MUCUser mucUser = MUCUser.from(presence);
         if (mucUser != null) {
             MUCItem item = mucUser.getItem();
             if (item != null) {
                 jid = item.getJid();
                 try {
-                    affiliation = Affiliation.fromString(item.getAffiliation().toString());
+                    affiliation = item.getAffiliation();
                 } catch (NoSuchElementException e) {
                 }
                 try {
-                    role = Role.fromString(item.getRole().toString());
+                    role = item.getRole();
                 } catch (NoSuchElementException e) {
                 }
                 statusMode = StatusMode.createStatusMode(presence);
@@ -400,10 +401,10 @@ public class RoomChat extends AbstractChat {
         return occupant;
     }
 
-    private void onAffiliationChanged(String resource, Affiliation affiliation) {
+    private void onAffiliationChanged(String resource, MUCAffiliation affiliation) {
     }
 
-    private void onRoleChanged(String resource, Role role) {
+    private void onRoleChanged(String resource, MUCRole role) {
     }
 
     private void onStatusChanged(String resource, StatusMode statusMode, String statusText) {

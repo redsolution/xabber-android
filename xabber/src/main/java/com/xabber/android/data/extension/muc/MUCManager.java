@@ -35,7 +35,6 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.muc.MUC;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
@@ -420,7 +419,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         if (message.getType() != Message.Type.normal && message.getType() != Message.Type.chat) {
             return;
         }
-        MUCUser mucUser = MUC.getMUCUserExtension(packet);
+        MUCUser mucUser = MUCUser.from(packet);
         if (mucUser == null || mucUser.getInvite() == null) {
             return;
         }

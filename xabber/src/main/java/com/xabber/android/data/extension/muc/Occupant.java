@@ -15,8 +15,9 @@
 package com.xabber.android.data.extension.muc;
 
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.xmpp.muc.Affiliation;
-import com.xabber.xmpp.muc.Role;
+
+import org.jivesoftware.smackx.muc.MUCAffiliation;
+import org.jivesoftware.smackx.muc.MUCRole;
 
 /**
  * Room occupant.
@@ -29,9 +30,9 @@ public class Occupant implements Comparable<Occupant> {
 
     private String jid;
 
-    private Role role;
+    private MUCRole role;
 
-    private Affiliation affiliation;
+    private MUCAffiliation affiliation;
 
     private StatusMode statusMode;
 
@@ -56,19 +57,19 @@ public class Occupant implements Comparable<Occupant> {
         this.jid = jid;
     }
 
-    public Role getRole() {
+    public MUCRole getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(MUCRole role) {
         this.role = role;
     }
 
-    public Affiliation getAffiliation() {
+    public MUCAffiliation getAffiliation() {
         return affiliation;
     }
 
-    public void setAffiliation(Affiliation affiliation) {
+    public void setAffiliation(MUCAffiliation affiliation) {
         this.affiliation = affiliation;
     }
 

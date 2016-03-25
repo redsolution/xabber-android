@@ -21,7 +21,6 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.delay.Delay;
-import com.xabber.xmpp.muc.MUC;
 
 import net.java.otr4j.OtrException;
 
@@ -132,7 +131,7 @@ public class RegularChat extends AbstractChat {
             if (message.getType() == Message.Type.error)
                 return true;
 
-            MUCUser mucUser = MUC.getMUCUserExtension(message);
+            MUCUser mucUser = MUCUser.from(message);
             if (mucUser != null && mucUser.getInvite() != null)
                 return true;
 

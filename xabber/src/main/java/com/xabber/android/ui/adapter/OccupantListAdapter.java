@@ -28,7 +28,8 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.ui.activity.ContactViewer;
 import com.xabber.android.ui.activity.OccupantList;
-import com.xabber.xmpp.muc.Role;
+
+import org.jivesoftware.smackx.muc.MUCRole;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,9 +116,9 @@ public class OccupantListAdapter extends BaseAdapter implements
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());
         int textStyle;
-        if (occupant.getRole() == Role.moderator)
+        if (occupant.getRole() == MUCRole.moderator)
             textStyle = R.style.OccupantList_Moderator;
-        else if (occupant.getRole() == Role.participant)
+        else if (occupant.getRole() == MUCRole.participant)
             textStyle = R.style.OccupantList_Participant;
         else
             textStyle = R.style.OccupantList_Visitor;
