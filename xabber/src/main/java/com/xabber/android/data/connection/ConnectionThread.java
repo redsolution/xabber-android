@@ -19,12 +19,9 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountProtocol;
-import com.xabber.android.data.account.OAuthManager;
-import com.xabber.android.data.account.OAuthResult;
 import com.xabber.android.data.roster.AccountRosterListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -99,12 +96,9 @@ public class ConnectionThread implements
 
     private final String login;
 
-    /**
-     * Refresh token for OAuth or regular password.
-     */
-    private final String token;
-
     private final String resource;
+
+    private final String password;
 
     private final boolean saslEnabled;
 
@@ -147,7 +141,7 @@ public class ConnectionThread implements
         ConnectionSettings connectionSettings = connectionItem.getConnectionSettings();
         protocol = connectionSettings.getProtocol();
         serverName = connectionSettings.getServerName();
-        token = connectionSettings.getPassword();
+        password = connectionSettings.getPassword();
         resource = connectionSettings.getResource();
         saslEnabled = connectionSettings.isSaslEnabled();
         tlsMode = connectionSettings.getTlsMode();
@@ -229,22 +223,13 @@ public class ConnectionThread implements
         org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
 
         connectionItem.onSRVResolved(this);
-        final String password = OAuthManager.getInstance().getPassword(protocol, token);
-        if (password != null) {
-            runOnConnectionThread(new Runnable() {
-                @Override
-                public void run() {
-                    connect(password);
-                }
-            });
-        } else {
-            runOnConnectionThread(new Runnable() {
-                @Override
-                public void run() {
-                    passwordRequest();
-                }
-            });
-        }
+
+        runOnConnectionThread(new Runnable() {
+            @Override
+            public void run() {
+                connect(password);
+            }
+        });
     }
 
     private void setUpSASL() {
@@ -262,46 +247,6 @@ public class ConnectionThread implements
                 SASLAuthentication.unBlacklistSASLMechanism(mechanism);
             }
         }
-    }
-
-    /**
-     * Request to renew password using OAuth.
-     */
-    private void passwordRequest() {
-        final OAuthResult oAuthResult;
-        try {
-            oAuthResult = OAuthManager.getInstance().requestAccessToken(
-                    protocol, token);
-        } catch (NetworkException e) {
-            throw new RuntimeException(e);
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onPasswordReceived(oAuthResult);
-            }
-        });
-    }
-
-    /**
-     * Called when password has been renewed.
-     *
-     * @param oAuthResult
-     */
-    private void onPasswordReceived(final OAuthResult oAuthResult) {
-        OAuthManager.getInstance().onAccessTokenReceived(oAuthResult);
-        if (oAuthResult == null) {
-            connectionItem.onAuthFailed();
-            return;
-        }
-        connectionItem.onPasswordChanged(oAuthResult.getRefreshToken());
-        final String password = oAuthResult.getAccessToken();
-        runOnConnectionThread(new Runnable() {
-            @Override
-            public void run() {
-                connect(password);
-            }
-        });
     }
 
     /**

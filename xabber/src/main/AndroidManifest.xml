@@ -168,9 +168,6 @@
                 android:value="com.xabber.android.ui.preferences.AccountList" />
         </activity>
         <activity
-            android:name=".ui.activity.OAuthActivity"
-            android:label="@string/account_oauth" />
-        <activity
             android:name=".ui.activity.ConferenceAdd"
             android:label="@string/muc_add"
             android:parentActivityName=".ui.activity.ConferenceSelectActivity">
