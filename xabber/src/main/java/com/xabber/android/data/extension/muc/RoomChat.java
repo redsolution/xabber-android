@@ -25,12 +25,12 @@ import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.delay.Delay;
 
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.MUCAffiliation;
 import org.jivesoftware.smackx.muc.MUCRole;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -223,7 +223,12 @@ public class RoomChat extends AbstractChat {
             } else {
                 boolean notify = true;
                 String stanzaId = message.getStanzaId();
-                Date delay = Delay.getDelay(message);
+                DelayInformation delayInformation = DelayInformation.from(message);
+                Date delay = null;
+                if (delayInformation != null) {
+                    delay = delayInformation.getStamp();
+                }
+
                 if (delay != null) {
                     notify = false;
                 }

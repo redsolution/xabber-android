@@ -14,13 +14,14 @@
  */
 package com.xabber.android.data.message;
 
+import android.text.TextUtils;
+
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.delay.Delay;
 
 import net.java.otr4j.OtrException;
 
@@ -29,7 +30,10 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
+
+import java.util.Date;
 
 /**
  * Represents normal chat.
@@ -163,16 +167,36 @@ public class RegularChat extends AbstractChat {
                     resource,
                     text,
                     null,
-                    Delay.getDelay(message),
+                    getDelayStamp(message),
                     true,
                     true,
                     unencrypted,
-                    Delay.isOfflineMessage(Jid.getServer(account), packet),
+                    isOfflineMessage(Jid.getServer(account), packet),
                     packet.getStanzaId());
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
         return true;
     }
+
+    /**
+     * @return Whether message was delayed by server.
+     */
+    public static boolean isOfflineMessage(String server, Stanza stanza) {
+        DelayInformation delayInformation = DelayInformation.from(stanza);
+
+        return delayInformation != null
+                && TextUtils.equals(Jid.getStringPrep(delayInformation.getFrom()), server);
+    }
+
+    public static Date getDelayStamp(Message message) {
+        DelayInformation delayInformation = DelayInformation.from(message);
+        if (delayInformation != null) {
+            return delayInformation.getStamp();
+        } else {
+            return null;
+        }
+    }
+
 
     @Override
     protected void onComplete() {
