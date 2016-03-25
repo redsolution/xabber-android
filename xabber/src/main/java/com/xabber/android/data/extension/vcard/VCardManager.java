@@ -288,6 +288,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final String userBareJid = srcUser;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+
         ConnectionThread connectionThread = accountItem.getConnectionThread();
 
         if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
