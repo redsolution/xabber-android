@@ -46,11 +46,6 @@
         <item>com.xabber.android.data.extension.mam.MamManager</item>
     </string-array>
 
-    <string-array name="contact_managers">
-        <item>com.xabber.android.data.account.AccountAuthenticator</item>
-        <item>com.xabber.android.data.roster.SyncManager</item>
-    </string-array>
-
     <string-array name="tables">
         <item>com.xabber.android.data.database.sqlite.AccountTable</item>
         <item>com.xabber.android.data.database.sqlite.RoomTable</item>

@@ -61,7 +61,6 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
-import com.xabber.android.ui.dialog.ContactIntegrationDialogFragment;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
 import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
@@ -379,16 +378,6 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 }
             } else {
                 SettingsManager.setDarkThemeSuggested();
-            }
-
-            if (!SettingsManager.contactIntegrationSuggested()
-                    && Application.getInstance().isContactsSupported()) {
-                if (AccountManager.getInstance().getAllAccounts().isEmpty()) {
-                    SettingsManager.setContactIntegrationSuggested();
-                } else {
-                    ContactIntegrationDialogFragment.newInstance()
-                            .show(getFragmentManager(), "CONTACT_INTEGRATION");
-                }
             }
         }
     }

@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountProtocol;
@@ -38,9 +37,6 @@ public class AccountEditorFragment extends BaseSettingsFragment {
             addPreferencesFromResource(R.xml.account_editor_xmpp);
         } else {
             throw new IllegalStateException();
-        }
-        if (!Application.getInstance().isContactsSupported()) {
-            getPreferenceScreen().removePreference(findPreference(getString(R.string.account_syncable_key)));
         }
 
         getPreferenceScreen().removePreference(findPreference(getString(R.string.account_sasl_key)));

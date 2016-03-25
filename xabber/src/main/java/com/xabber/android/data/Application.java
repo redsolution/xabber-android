@@ -15,7 +15,6 @@
 package com.xabber.android.data;
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Handler;
 
@@ -235,41 +234,17 @@ public class Application extends android.app.Application {
         return closing;
     }
 
-    /**
-     * Returns whether system contact storage is supported.
-     * <p/>
-     * Note:
-     * <p/>
-     * Please remove *_CONTACTS, *_ACCOUNTS, *_SETTINGS permissions,
-     * SyncAdapterService and AccountAuthenticatorService together from manifest
-     * file.
-     *
-     * @return
-     */
-    public boolean isContactsSupported() {
-        return checkCallingOrSelfPermission("android.permission.READ_CONTACTS") == PackageManager.PERMISSION_GRANTED;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-        ArrayList<String> contactManager = new ArrayList<>();
-        TypedArray contactManagerClasses = getResources().obtainTypedArray(R.array.contact_managers);
-        for (int index = 0; index < contactManagerClasses.length(); index++) {
-            contactManager.add(contactManagerClasses.getString(index));
-        }
-        contactManagerClasses.recycle();
-
         TypedArray managerClasses = getResources().obtainTypedArray(R.array.managers);
         for (int index = 0; index < managerClasses.length(); index++) {
-            if (isContactsSupported() || !contactManager.contains(managerClasses.getString(index))) {
-                try {
-                    Class.forName(managerClasses.getString(index));
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                Class.forName(managerClasses.getString(index));
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
         }
         managerClasses.recycle();
