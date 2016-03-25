@@ -6,7 +6,7 @@
     <extensionProvider>
         <elementName>x</elementName>
         <namespace>vcard-temp:x:update</namespace>
-        <className>com.xabber.xmpp.avatar.VCardUpdateProvider</className>
+        <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
     </extensionProvider>
 
     <!-- Stanza Session Negotiation -->

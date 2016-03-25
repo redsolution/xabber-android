@@ -12,15 +12,15 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.xmpp.avatar;
-
-import java.io.IOException;
-
-import org.xmlpull.v1.XmlSerializer;
+package com.xabber.xmpp.vcardupdate;
 
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.xmpp.PacketExtension;
 import com.xabber.xmpp.SerializerUtils;
+
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
 
 /**
  * vCard update packet.

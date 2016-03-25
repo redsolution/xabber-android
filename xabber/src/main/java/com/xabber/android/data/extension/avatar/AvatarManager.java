@@ -38,7 +38,7 @@ import com.xabber.android.data.database.sqlite.AvatarTable;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.avatar.VCardUpdate;
+import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;

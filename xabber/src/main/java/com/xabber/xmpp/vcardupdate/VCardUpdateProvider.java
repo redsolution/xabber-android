@@ -12,14 +12,14 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.xmpp.avatar;
+package com.xabber.xmpp.vcardupdate;
+
+import com.xabber.xmpp.AbstractExtensionProvider;
+import com.xabber.xmpp.ProviderUtils;
 
 import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-
-import com.xabber.xmpp.AbstractExtensionProvider;
-import com.xabber.xmpp.ProviderUtils;
 
 import java.io.IOException;
 
