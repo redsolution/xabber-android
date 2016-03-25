@@ -277,6 +277,10 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     @Override
     public void onAuthorized(final ConnectionItem connection) {
+        if (connection.getConnectionThread() == null) {
+            return;
+        }
+
         new Thread("Thread to check " + connection.getRealJid() + " for blocking command support") {
             @Override
             public void run() {
