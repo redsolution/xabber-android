@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection;
 
+import com.xabber.android.data.connection.listeners.OnResponseListener;
+
 import java.util.Date;
 
 /**

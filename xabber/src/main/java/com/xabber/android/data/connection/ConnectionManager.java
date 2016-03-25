@@ -23,6 +23,12 @@ import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.OnTimerListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.connection.listeners.OnConnectionListener;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.listeners.OnResponseListener;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.xmpp.address.Jid;
 

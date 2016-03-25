@@ -19,6 +19,8 @@ import com.xabber.android.data.OnTimerListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.connection.listeners.OnConnectionListener;
 
 import java.util.HashMap;
 import java.util.Map.Entry;

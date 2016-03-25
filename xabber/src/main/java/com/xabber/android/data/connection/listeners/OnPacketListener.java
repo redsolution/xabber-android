@@ -12,22 +12,28 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.connection;
+package com.xabber.android.data.connection.listeners;
 
 import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.connection.ConnectionItem;
+
+import org.jivesoftware.smack.packet.Stanza;
 
 /**
- * Listener for connection state change.
+ * Listener for incoming packet.
  *
  * @author alexander.ivanov
  */
-public interface OnConnectedListener extends BaseManagerInterface {
+public interface OnPacketListener extends BaseManagerInterface {
 
     /**
-     * Connection with server was established.
+     * Process packet from connection.
      *
      * @param connection
+     * @param bareAddress
+     * @param packet
+     * @return
      */
-    void onConnected(ConnectionItem connection);
+    void onPacket(ConnectionItem connection, String bareAddress, Stanza packet);
 
 }

@@ -12,22 +12,23 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.connection;
+package com.xabber.android.data.connection.listeners;
 
-import com.xabber.android.data.BaseManagerInterface;
+import org.jivesoftware.smack.packet.IQ;
 
 /**
- * Listener for connection state change.
+ * Listen for the response to the packet.
  *
  * @author alexander.ivanov
  */
-public interface OnDisconnectListener extends BaseManagerInterface {
+public interface OnResponseListener {
 
-    /**
-     * Disconnection occur on some reason.
-     *
-     * @param connection
-     */
-    void onDisconnect(ConnectionItem connection);
+    void onReceived(String account, String packetId, IQ iq);
+
+    void onError(String account, String packetId, IQ iq);
+
+    void onTimeout(String account, String packetId);
+
+    void onDisconnect(String account, String packetId);
 
 }

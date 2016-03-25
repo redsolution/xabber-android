@@ -12,24 +12,24 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.connection;
+package com.xabber.android.data.connection.listeners;
 
 import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.ConnectionThread;
 
 /**
- * Listener for authorization.
+ * Listener for connection state change.
  *
  * @author alexander.ivanov
  */
-public interface OnAuthorizedListener extends BaseManagerInterface {
+public interface OnConnectionListener extends BaseManagerInterface {
 
     /**
-     * Authorization was complied.
-     * <p/>
-     * No one another other packets has been sent or received yet.
+     * New {@link ConnectionThread} was created.
      *
      * @param connection
      */
-    void onAuthorized(ConnectionItem connection);
+    void onConnection(ConnectionItem connection);
 
 }

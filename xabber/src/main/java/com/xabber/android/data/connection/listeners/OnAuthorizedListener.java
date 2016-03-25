@@ -12,23 +12,25 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.connection;
+package com.xabber.android.data.connection.listeners;
 
-import org.jivesoftware.smack.packet.IQ;
+import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.connection.ConnectionItem;
 
 /**
- * Listen for the response to the packet.
+ * Listener for authorization.
  *
  * @author alexander.ivanov
  */
-public interface OnResponseListener {
+public interface OnAuthorizedListener extends BaseManagerInterface {
 
-    void onReceived(String account, String packetId, IQ iq);
-
-    void onError(String account, String packetId, IQ iq);
-
-    void onTimeout(String account, String packetId);
-
-    void onDisconnect(String account, String packetId);
+    /**
+     * Authorization was complied.
+     * <p/>
+     * No one another other packets has been sent or received yet.
+     *
+     * @param connection
+     */
+    void onAuthorized(ConnectionItem connection);
 
 }

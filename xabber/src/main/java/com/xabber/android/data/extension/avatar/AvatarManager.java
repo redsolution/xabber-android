@@ -32,7 +32,7 @@ import com.xabber.android.data.OnLowMemoryListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.AvatarTable;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.ui.color.ColorManager;

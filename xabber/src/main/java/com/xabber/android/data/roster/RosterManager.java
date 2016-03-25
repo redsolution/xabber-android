@@ -29,7 +29,7 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
-import com.xabber.android.data.connection.OnDisconnectListener;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;

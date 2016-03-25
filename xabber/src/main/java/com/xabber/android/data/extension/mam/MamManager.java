@@ -8,7 +8,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionThread;
-import com.xabber.android.data.connection.OnAuthorizedListener;
+import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.file.FileManager;

@@ -29,8 +29,8 @@ import com.xabber.android.data.account.listeners.OnAccountArchiveModeChangedList
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.OnDisconnectListener;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;

@@ -1,14 +1,13 @@
 package com.xabber.android.data.extension.carbons;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.OnAuthorizedListener;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;

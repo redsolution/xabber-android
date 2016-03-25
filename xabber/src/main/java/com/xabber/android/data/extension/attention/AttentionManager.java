@@ -27,7 +27,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;

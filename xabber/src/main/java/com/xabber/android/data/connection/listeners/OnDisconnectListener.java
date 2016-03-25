@@ -12,22 +12,23 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.connection;
+package com.xabber.android.data.connection.listeners;
 
 import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.connection.ConnectionItem;
 
 /**
  * Listener for connection state change.
  *
  * @author alexander.ivanov
  */
-public interface OnConnectionListener extends BaseManagerInterface {
+public interface OnDisconnectListener extends BaseManagerInterface {
 
     /**
-     * New {@link ConnectionThread} was created.
+     * Disconnection occur on some reason.
      *
      * @param connection
      */
-    void onConnection(ConnectionItem connection);
+    void onDisconnect(ConnectionItem connection);
 
 }
