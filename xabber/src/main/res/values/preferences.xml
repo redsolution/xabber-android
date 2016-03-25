@@ -36,7 +36,6 @@
         <item>com.xabber.android.data.notification.NotificationManager</item>
         <item>com.xabber.android.data.ActivityManager</item>
         <item>com.xabber.android.data.extension.capability.CapabilitiesManager</item>
-        <item>com.xabber.android.data.extension.ping.PingManager</item>
         <item>com.xabber.android.data.extension.cs.ChatStateManager</item>
         <item>com.xabber.android.data.connection.NetworkManager</item>
         <item>com.xabber.android.data.account.OAuthManager</item>
