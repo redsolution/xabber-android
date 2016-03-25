@@ -22,7 +22,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
 import com.xabber.android.data.database.sqlite.PrivateChatTable;
 import com.xabber.android.data.database.sqlite.ShowTextTable;

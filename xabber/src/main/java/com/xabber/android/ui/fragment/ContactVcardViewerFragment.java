@@ -18,8 +18,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
@@ -36,7 +36,6 @@ import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 import org.xmlpull.v1.XmlPullParser;

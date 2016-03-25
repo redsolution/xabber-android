@@ -12,17 +12,21 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.account;
+package com.xabber.android.data.account.listeners;
 
 import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.account.AccountItem;
 
-public interface OnAccountAddedListener extends BaseManagerInterface {
+public interface OnAccountRemovedListener extends BaseManagerInterface {
 
     /**
-     * New account was added to the account list.
+     * Account was removed from account list.
+     * <p/>
+     * {@link OnAccountDisabledListener#onAccountDisabled(AccountItem)} will be
+     * call first.
      *
      * @param accountItem
      */
-    void onAccountAdded(AccountItem accountItem);
+    void onAccountRemoved(AccountItem accountItem);
 
 }

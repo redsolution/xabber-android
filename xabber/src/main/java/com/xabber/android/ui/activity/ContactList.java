@@ -47,7 +47,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;

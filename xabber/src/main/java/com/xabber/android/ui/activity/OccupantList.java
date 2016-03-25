@@ -26,7 +26,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;

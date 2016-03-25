@@ -21,7 +21,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.database.sqlite.GroupTable;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;

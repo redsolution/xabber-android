@@ -14,14 +14,14 @@
  */
 package com.xabber.android.data.connection;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnTimerListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class ReconnectionManager implements OnConnectionListener,
         OnConnectedListener, OnAccountRemovedListener, OnTimerListener {

@@ -12,23 +12,18 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.account;
+package com.xabber.android.data.account.listeners;
 
 import com.xabber.android.data.BaseManagerInterface;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.OnConnectionListener;
+import com.xabber.android.data.account.AccountItem;
 
-public interface OnAccountOnlineListener extends BaseManagerInterface {
+public interface OnAccountAddedListener extends BaseManagerInterface {
 
     /**
-     * Go online requested.
-     * <p/>
-     * {@link OnAccountEnabledListener#onAccountEnabled(AccountItem)} and
-     * {@link OnConnectionListener#onConnection(ConnectionItem)} will be called
-     * first.
+     * New account was added to the account list.
      *
      * @param accountItem
      */
-    void onAccountOnline(AccountItem accountItem);
+    void onAccountAdded(AccountItem accountItem);
 
 }

@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;

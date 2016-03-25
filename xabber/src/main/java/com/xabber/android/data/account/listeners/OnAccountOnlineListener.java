@@ -12,18 +12,24 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.account;
+package com.xabber.android.data.account.listeners;
 
 import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnConnectionListener;
 
-public interface OnAccountArchiveModeChangedListener extends
-        BaseManagerInterface {
+public interface OnAccountOnlineListener extends BaseManagerInterface {
 
     /**
-     * Account's archive mode has been changed.
+     * Go online requested.
+     * <p/>
+     * {@link OnAccountEnabledListener#onAccountEnabled(AccountItem)} and
+     * {@link OnConnectionListener#onConnection(ConnectionItem)} will be called
+     * first.
      *
      * @param accountItem
      */
-    void onAccountArchiveModeChanged(AccountItem accountItem);
+    void onAccountOnline(AccountItem accountItem);
 
 }

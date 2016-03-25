@@ -12,23 +12,21 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.account;
+package com.xabber.android.data.account.listeners;
 
-import java.util.Collection;
+import com.xabber.android.data.BaseManagerInterface;
+import com.xabber.android.data.account.AccountItem;
 
-import com.xabber.android.data.BaseUIListener;
-
-/**
- * Listener for any account state change.
- *
- * @author alexander.ivanov
- */
-public interface OnAccountChangedListener extends BaseUIListener {
+public interface OnAccountEnabledListener extends BaseManagerInterface {
 
     /**
-     * State changed on connection, disconnection, authorization, etc.
+     * Account was enabled.
+     * <p/>
+     * {@link OnAccountAddedListener#onAccountAdded(AccountItem)} will be called
+     * first.
      *
-     * @param accounts
+     * @param accountItem
      */
-    void onAccountsChanged(Collection<String> accounts);
+    void onAccountEnabled(AccountItem accountItem);
+
 }

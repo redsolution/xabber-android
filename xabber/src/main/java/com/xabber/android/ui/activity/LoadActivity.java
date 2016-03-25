@@ -27,7 +27,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.helper.SingleActivity;
 
