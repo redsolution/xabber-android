@@ -173,20 +173,7 @@ public abstract class ConnectionItem {
                 state = ConnectionState.connecting;
                 connectionThread = new ConnectionThread(this);
 
-                boolean useSRVLookup;
-                String fullyQualifiedDomainName;
-                int port;
-                if (connectionSettings.isCustomHostAndPort()) {
-                    fullyQualifiedDomainName = connectionSettings.getHost();
-                    port = connectionSettings.getPort();
-                    useSRVLookup = false;
-                } else {
-                    fullyQualifiedDomainName = connectionSettings.getServerName();
-                    port = 5222;
-                    useSRVLookup = true;
-                }
-
-                connectionThread.start(fullyQualifiedDomainName, port, useSRVLookup, registerNewAccount);
+                connectionThread.start(registerNewAccount);
 
                 return true;
             } else {
@@ -334,23 +321,4 @@ public abstract class ConnectionItem {
             isConnectionRequestedByUser = false;
         }
     }
-
-    /**
-     * Called when another host should be used.
-     *
-     * @param connectionThread
-     * @param fqdn
-     * @param port
-     * @param useSrvLookup
-     */
-    protected void onSeeOtherHost(ConnectionThread connectionThread,
-                                  String fqdn, int port, boolean useSrvLookup) {
-        // TODO: Check for number of redirects.
-        if (onDisconnect(connectionThread)) {
-            state = ConnectionState.connecting;
-            this.connectionThread = new ConnectionThread(this);
-            this.connectionThread.start(fqdn, port, useSrvLookup, registerNewAccount);
-        }
-    }
-
 }
