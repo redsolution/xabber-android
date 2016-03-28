@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.content.res.TypedArray;
 import android.os.Handler;
 
+import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.R;
 import com.xabber.android.service.XabberService;
 
@@ -237,6 +238,9 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        LeakCanary.install(this);
+
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
         TypedArray managerClasses = getResources().obtainTypedArray(R.array.managers);
