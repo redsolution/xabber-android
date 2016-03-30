@@ -447,7 +447,7 @@ public abstract class AbstractChat extends BaseEntity {
     public Date getLastTime() {
         RealmResults<MessageItem> messages = getMessages();
         Number max = null;
-        if (messages.isLoaded()) {
+        if (messages.isValid() && messages.isLoaded()) {
             max = messages.where().max(MessageItem.Fields.TIMESTAMP);
         }
 
