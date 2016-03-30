@@ -21,7 +21,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.roster.AccountRosterListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -33,9 +32,9 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smack.packet.StreamError;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -46,32 +45,24 @@ import org.jivesoftware.smackx.ping.PingFailedListener;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
 
 /**
  * Provides connection workflow.
- * <p/>
- * Warning: SMACK with its connection is going to be removed!
  *
  * @author alexander.ivanov
  */
 public class ConnectionThread implements
         ConnectionListener,
         StanzaListener, PingFailedListener {
-
-    private static Pattern ADDRESS_AND_PORT = Pattern.compile("^(.*):(\\d+)$");
 
     /**
      * Filter to process all packets.
@@ -90,35 +81,10 @@ public class ConnectionThread implements
      */
     private final ExecutorService executorService;
 
-    private final AccountProtocol protocol;
-
-    private final String serverName;
-
-    private final String login;
-
-    private final String resource;
-
-    private final String password;
-
-    private final boolean saslEnabled;
-
-    private final TLSMode tlsMode;
-
-    private final boolean compression;
-
-    private final ProxyType proxyType;
-
-    private final String proxyHost;
-
-    private final int proxyPort;
-
-    private final String proxyUser;
-
-    private final String proxyPassword;
-
     private boolean started;
 
     private boolean registerNewAccount;
+    private ConnectionSettings connectionSettings;
 
     public ConnectionThread(final ConnectionItem connectionItem) {
         LogManager.i(this, "NEW connection thread " + connectionItem.getRealJid());
@@ -138,24 +104,6 @@ public class ConnectionThread implements
                     }
                 });
         ConnectionManager.getInstance().onConnection(this);
-        ConnectionSettings connectionSettings = connectionItem.getConnectionSettings();
-        protocol = connectionSettings.getProtocol();
-        serverName = connectionSettings.getServerName();
-        password = connectionSettings.getPassword();
-        resource = connectionSettings.getResource();
-        saslEnabled = connectionSettings.isSaslEnabled();
-        tlsMode = connectionSettings.getTlsMode();
-        compression = connectionSettings.useCompression();
-        if (saslEnabled && protocol == AccountProtocol.gtalk) {
-            login = connectionSettings.getUserName() + "@" + connectionSettings.getServerName();
-        } else {
-            login = connectionSettings.getUserName();
-        }
-        proxyType = connectionSettings.getProxyType();
-        proxyHost = connectionSettings.getProxyHost();
-        proxyPort = connectionSettings.getProxyPort();
-        proxyUser = connectionSettings.getProxyUser();
-        proxyPassword = connectionSettings.getProxyPassword();
         started = false;
     }
 
@@ -167,22 +115,52 @@ public class ConnectionThread implements
         return connectionItem;
     }
 
-    private void createConnection(String fqdn, int port, boolean useSRVLookup) {
-        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
-        if (useSRVLookup) {
-            builder.setServiceName(serverName);
-        } else {
-            builder.setHost(fqdn);
-            builder.setPort(port);
-            builder.setServiceName(serverName);
-        }
+    /**
+     * Start connection.
+     * <p/>
+     * This function can be called only once.
+     */
+    synchronized void start(final boolean registerNewAccount) {
+        LogManager.i(this, "start. registerNewAccount " + registerNewAccount);
 
-        onReady(builder);
+        connectionSettings = connectionItem.getConnectionSettings();
+
+        if (started) {
+            throw new IllegalStateException();
+        }
+        started = true;
+        this.registerNewAccount = registerNewAccount;
+
+        runOnConnectionThread(new Runnable() {
+            @Override
+            public void run() {
+                createConnection();
+                connect();
+            }
+        });
     }
 
-    private void onReady(XMPPTCPConnectionConfiguration.Builder builder) {
-        builder.setSecurityMode(tlsMode.getSecurityMode());
-        builder.setCompressionEnabled(compression);
+    /**
+     * Stop connection.
+     * <p/>
+     * start MUST BE CALLED FIRST.
+     */
+    void shutdown() {
+        executorService.shutdownNow();
+    }
+
+    private void createConnection() {
+        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
+
+        builder.setServiceName(connectionSettings.getServerName());
+
+        if (connectionSettings.isCustomHostAndPort()) {
+            builder.setHost(connectionSettings.getHost());
+            builder.setPort(connectionSettings.getPort());
+        }
+
+        builder.setSecurityMode(connectionSettings.getTlsMode().getSecurityMode());
+        builder.setCompressionEnabled(connectionSettings.useCompression());
         builder.setSendPresence(false);
 
         try {
@@ -221,15 +199,6 @@ public class ConnectionThread implements
         roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
 
         org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
-
-        connectionItem.onSRVResolved(this);
-
-        runOnConnectionThread(new Runnable() {
-            @Override
-            public void run() {
-                connect(password);
-            }
-        });
     }
 
     private void setUpSASL() {
@@ -249,148 +218,52 @@ public class ConnectionThread implements
         }
     }
 
-    /**
-     * Server requests us to see another host.
-     *
-     * @param target
-     */
-    private void seeOtherHost(String target) {
-        Matcher matcher = ADDRESS_AND_PORT.matcher(target);
-        int defaultPort = 5222;
-        if (matcher.matches()) {
-            String value = matcher.group(2);
-            try {
-                defaultPort = Integer.valueOf(value);
-                target = matcher.group(1);
-            } catch (NumberFormatException e2) {
-            }
-        }
-        final String fqdn = target;
-        final int port = defaultPort;
-        // TODO: Check for the same address.
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.onSeeOtherHost(ConnectionThread.this, fqdn, port, true);
-            }
-        });
-    }
-
-    /**
-     * Connect to the server.
-     *
-     * @param password
-     */
-    private void connect(final String password) {
+    private void connect() {
         try {
             xmppConnection.connect();
-        } catch (SmackException | IOException | XMPPException e) {
-            e.printStackTrace();
-            checkForCertificateError(e);
-            if (!checkForSeeOtherHost(e)) {
-                // There is no connection listeners yet, so we call onClose.
-                throw new RuntimeException(e);
-            }
+        } catch (SmackException e) {
+            // There is no connection listeners yet, so we call onClose.
+            LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            // There is no connection listeners yet, so we call onClose.
+            LogManager.w(this, "Connection failed. IOException " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (XMPPException e) {
+            // There is no connection listeners yet, so we call onClose.
+            LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
+            throw new RuntimeException(e);
         }
 
-//        try {
-//            xmppConnection.connect();
-//        } catch (XMPPException e) {
-//            checkForCertificateError(e);
-//            if (!checkForSeeOtherHost(e)) {
-//                // There is no connection listeners yet, so we call onClose.
-//                throw new RuntimeException(e);
-//            }
-//        } catch (IllegalStateException e) {
-//            // There is no connection listeners yet, so we call onClose.
-//            // connectionCreated() in other modules can fail.
-//            throw new RuntimeException(e);
-//        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onConnected(password);
+                onConnected();
             }
         });
-    }
 
-    /**
-     * Check for certificate exception.
-     *
-     * @param e
-     */
-    private void checkForCertificateError(Exception e) {
-        if (!(e instanceof SSLException)) {
-            return;
+        if (registerNewAccount) {
+            registerAccount();
+        } else {
+            login();
         }
-        Throwable e2 = e.getCause();
-        if (!(e2 instanceof CertificateException)) {
-            return;
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.onInvalidCertificate();
-            }
-        });
-    }
-
-    /**
-     * Check for see other host exception.
-     *
-     * @param e
-     * @return <code>true</code> if {@link StreamError.Condition#see_other_host} has
-     * been found.
-     */
-    private boolean checkForSeeOtherHost(Exception e) {
-        if (e instanceof XMPPException.StreamErrorException) {
-            XMPPException.StreamErrorException streamErrorException = (XMPPException.StreamErrorException) e;
-            if (streamErrorException.getStreamError().getCondition() == StreamError.Condition.see_other_host) {
-                String target = streamErrorException.getStreamError().getConditionText();
-                if (target == null || "".equals(target))
-                    return false;
-                LogManager.i(this, "See other host: " + target);
-                seeOtherHost(target);
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
      * Connection to the server has been established.
      *
-     * @param password
      */
-    private void onConnected(final String password) {
+    private void onConnected() {
         connectionItem.onConnected(this);
         ConnectionManager.getInstance().onConnected(this);
-        if(registerNewAccount) {
-            runOnConnectionThread(new Runnable() {
-                @Override
-                public void run() {
-                    registerAccount(password);
-                }
-            });
-        }
-        else {
-            runOnConnectionThread(new Runnable() {
-                @Override
-                public void run() {
-                    authorization(password);
-                }
-            });
-        }
     }
 
     /**
      * Register new account.
-     * 
-     * @param password
      */
-    private void registerAccount(final String password) {
+    private void registerAccount() {
         try {
-            AccountManager.getInstance(xmppConnection).createAccount(login, password);
+            AccountManager.getInstance(xmppConnection).createAccount(connectionSettings.getUserName(), connectionSettings.getPassword());
         } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
             LogManager.exception(connectionItem, e);
             connectionClosedOnError(e);
@@ -403,81 +276,63 @@ public class ConnectionThread implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onAccountRegistered(password);
+                onAccountRegistered();
             }
         });
+
+        login();
     }
 
-    /**
-     * New account has been registerd on the server.
-     * 
-     * @param password
-     */
-    private void onAccountRegistered(final String password) {
+    private void onAccountRegistered() {
         LogManager.i(this, "Account registered");
         connectionItem.onAccountRegistered(this);
-        runOnConnectionThread(new Runnable() {
-            @Override
-            public void run() {
-                authorization(password);
-            }
-        });
     }
 
-    /**
-     * Login.
-     *
-     * @param password
-     */
-    private void authorization(String password) {
+    private void login() {
+        boolean success = false;
+
         try {
-            xmppConnection.login(login, password, resource);
-        } catch (IOException | SmackException | XMPPException e) {
+            xmppConnection.login(
+                    connectionSettings.getUserName(),
+                    connectionSettings.getPassword(),
+                    connectionSettings.getResource());
+            success = true;
+        } catch (SASLErrorException saslErrorException) {
+            LogManager.w(this, "Login failed. SASLErrorException."
+                    + " SASLError: " + saslErrorException.getSASLFailure().getSASLError()
+                    + " Mechanism: " + saslErrorException.getMechanism());
+            saslErrorException.printStackTrace();
+
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Login failed. We don`t want to reconnect.
+                    connectionItem.onAuthFailed();
+                }
+            });
+            connectionClosed();
+        } catch (XMPPException e) {
+            LogManager.w(this, "Login failed. XMPPException " + e.getMessage() + " " + e.getMessage());
             e.printStackTrace();
             connectionClosedOnError(e);
-            xmppConnection.disconnect();
-            return;
+        } catch (SmackException e) {
+            LogManager.w(this, "Login failed. SmackException " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            LogManager.w(this, "Login failed. IOException " + e.getMessage());
+            e.printStackTrace();
         }
-//        } catch (XMPPException e) {
-//            LogManager.exception(connectionItem, e);
-//            // SASLAuthentication#authenticate(String,String,String)
-//            boolean SASLfailed = e.getMessage() != null
-//                    && e.getMessage().startsWith("SASL authentication ")
-//                    && !e.getMessage().endsWith("temporary-auth-failure");
-//            // NonSASLAuthentication#authenticate(String,String,String)
-//            // Authentication request failed (doesn't supported),
-//            // error was returned after negotiation or
-//            // authentication failed.
-//            boolean NonSASLfailed = e.getXMPPError() != null
-//                    && "Authentication failed.".equals(e.getMessage());
-//            if (SASLfailed || NonSASLfailed) {
-//                // connectionClosed can be called before from reader thread,
-//                // so don't check whether connection is managed.
-//                Application.getInstance().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        // Login failed. We don`t want to reconnect.
-//                        connectionItem.onAuthFailed();
-//                    }
-//                });
-//                connectionClosed();
-//            } else
-//                connectionClosedOnError(e);
-//            // Server will destroy connection, but we can speedup
-//            // it.
-//            xmppConnection.disconnect();
-//            return;
-//        } catch (SmackException | IOException e) {
-//            e.printStackTrace();
-//            return;
-//        }
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onAuthorized();
-            }
-        });
+        if (success) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    onAuthorized();
+                }
+            });
+        } else {
+            xmppConnection.disconnect();
+        }
     }
 
     /**
@@ -514,10 +369,6 @@ public class ConnectionThread implements
 
     @Override
     public void connectionClosedOnError(final Exception e) {
-        checkForCertificateError(e);
-        if (checkForSeeOtherHost(e))
-            return;
-
         if (SettingsManager.showConnectionErrors()) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -571,41 +422,6 @@ public class ConnectionThread implements
         public boolean accept(Stanza packet) {
             return true;
         }
-    }
-
-    /**
-     * Start connection.
-     * <p/>
-     * This function can be called only once.
-     *
-     * @param fqdn         Fully Qualified Domain Names.
-     * @param port         Preferred port.
-     * @param useSRVLookup Whether SRV lookup should be used.
-     */
-    synchronized void start(final String fqdn, final int port,
-                            final boolean useSRVLookup,
-                            final boolean registerNewAccount) {
-        LogManager.i(this, "start: " + fqdn);
-
-        if (started)
-            throw new IllegalStateException();
-        started = true;
-        this.registerNewAccount = registerNewAccount;
-        runOnConnectionThread(new Runnable() {
-            @Override
-            public void run() {
-                createConnection(fqdn, port, useSRVLookup);
-            }
-        });
-    }
-
-    /**
-     * Stop connection.
-     * <p/>
-     * start MUST BE CALLED FIRST.
-     */
-    void shutdown() {
-        executorService.shutdownNow();
     }
 
     /**
