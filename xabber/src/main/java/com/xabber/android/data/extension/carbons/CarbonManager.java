@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.carbons;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountItem;
@@ -73,7 +74,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
             }
 
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
     }
 

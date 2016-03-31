@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
@@ -253,7 +254,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
                 try {
                     vCard = ContactVcardViewerFragment.parseVCard(vCardXml);
                 } catch (XmlPullParserException | IOException | SmackException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
             }
 

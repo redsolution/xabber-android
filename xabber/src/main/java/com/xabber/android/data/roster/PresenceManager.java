@@ -18,6 +18,7 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -297,7 +298,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         try {
             resendPresence(((AccountItem) connection).getAccount());
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
     }
 }

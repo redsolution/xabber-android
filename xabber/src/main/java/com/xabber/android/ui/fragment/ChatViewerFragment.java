@@ -1003,7 +1003,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                         }
                     });
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

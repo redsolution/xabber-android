@@ -142,7 +142,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                 }
             });
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
     }
 
@@ -151,7 +151,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         try {
             url = new URL(getUrl);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
             return;
         }
 
@@ -162,7 +162,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
                     FileManager.saveFileToCache(file, url);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
             }
         });
@@ -196,7 +196,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                 try {
                     discoverSupport(connection.getConnectionThread().getXMPPConnection());
                 } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
             }
         }.start();

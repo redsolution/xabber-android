@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.BarPainter;
@@ -68,7 +69,7 @@ public class PreferenceEditor extends ManagedActivity
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
         return "";
     }

@@ -212,7 +212,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                             PresenceManager.getInstance().resendPresence(account);
                         }
                     } catch (NetworkException e) {
-                        e.printStackTrace();
+                        LogManager.exception(this, e);
                     }
                 }
             });

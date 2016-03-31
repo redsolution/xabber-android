@@ -176,7 +176,7 @@ public class ConnectionThread implements
                 TLSUtils.disableHostnameVerificationForTlsCertificicates(builder);
             }
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
 
         setUpSASL();
@@ -301,7 +301,7 @@ public class ConnectionThread implements
             LogManager.w(this, "Login failed. SASLErrorException."
                     + " SASLError: " + saslErrorException.getSASLFailure().getSASLError()
                     + " Mechanism: " + saslErrorException.getMechanism());
-            saslErrorException.printStackTrace();
+            LogManager.exception(this, saslErrorException);
 
             Application.getInstance().runOnUiThread(new Runnable() {
                 @Override
@@ -312,15 +312,10 @@ public class ConnectionThread implements
             });
             connectionClosed();
         } catch (XMPPException e) {
-            LogManager.w(this, "Login failed. XMPPException " + e.getMessage() + " " + e.getMessage());
-            e.printStackTrace();
+            LogManager.exception(this, e);
             connectionClosedOnError(e);
-        } catch (SmackException e) {
-            LogManager.w(this, "Login failed. SmackException " + e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            LogManager.w(this, "Login failed. IOException " + e.getMessage());
-            e.printStackTrace();
+        } catch (SmackException | IOException e) {
+            LogManager.exception(this, e);
         }
 
         if (success) {

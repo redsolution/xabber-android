@@ -137,7 +137,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                 }
             });
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
 
     }
@@ -202,7 +202,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                 }
             });
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
             listener.onError();
         }
 
@@ -270,7 +270,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                 }
             });
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
             listener.onError();
         }
     }
@@ -288,7 +288,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                     discoverSupport(connection.getConnectionThread().getXMPPConnection());
                     requestBlockList(connection.getConnectionThread().getXMPPConnection().getUser());
                 } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
             }
         }.start();

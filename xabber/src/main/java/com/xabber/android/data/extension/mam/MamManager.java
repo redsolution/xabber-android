@@ -103,7 +103,7 @@ public class MamManager implements OnAuthorizedListener {
             }
 
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
             return false;
         }
 
@@ -192,7 +192,7 @@ public class MamManager implements OnAuthorizedListener {
                 mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, lastMessageMamId, null);
             }
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
             return -1;
         }
 
@@ -380,7 +380,7 @@ public class MamManager implements OnAuthorizedListener {
                     LogManager.i("MAM", "Loading previous history");
                     mamQueryResult = mamManager.queryPage(chat.getUser(), PAGE_SIZE, null, firstMamMessageMamId);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                     EventBus.getDefault().post(new PreviousHistoryLoadFinishedEvent(chat));
                     return;
                 }

@@ -177,8 +177,9 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         try {
             xmppConnection.sendStanza(stanza);
         } catch (SmackException.NotConnectedException e) {
-            e.printStackTrace();
-            throw new NetworkException(R.string.XMPP_EXCEPTION);
+            NetworkException networkException = new NetworkException(R.string.XMPP_EXCEPTION);
+            networkException.initCause(e);
+            throw networkException;
         }
     }
 

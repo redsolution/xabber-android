@@ -52,6 +52,8 @@ import okhttp3.Response;
 
 public class FileManager {
 
+    public static final String LOG_TAG = FileManager.class.getSimpleName();
+
     public static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe", "gif"};
     public static final String[] VALID_CRYPTO_EXTENSIONS = {"pgp", "gpg", "otr"};
 
@@ -85,7 +87,7 @@ public class FileManager {
         try {
             url = new URL(messageItem.getText());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            LogManager.exception(LOG_TAG, e);
             return;
         }
 
@@ -202,7 +204,7 @@ public class FileManager {
                 try {
                     success = downloadFile(call, progressListener, filePath);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
 
                 startedDownloads.remove(downloadUrl);
@@ -278,7 +280,7 @@ public class FileManager {
                     bos.flush();
                     bos.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                     file.delete();
                 }
 
@@ -523,7 +525,7 @@ public class FileManager {
         try {
             fis.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogManager.exception(LOG_TAG, e);
         }
 
         return options.outHeight > maxSize || options.outWidth > maxSize;
@@ -539,7 +541,7 @@ public class FileManager {
         try {
             exif = new ExifInterface(srcPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogManager.exception(LOG_TAG, e);
             return false;
         }
 
@@ -573,7 +575,7 @@ public class FileManager {
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LogManager.exception(LOG_TAG, e);
             return null;
         } finally {
             if (bos != null) {
@@ -581,7 +583,7 @@ public class FileManager {
                     bos.flush();
                     bos.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LogManager.exception(LOG_TAG, e);
                 }
             }
         }

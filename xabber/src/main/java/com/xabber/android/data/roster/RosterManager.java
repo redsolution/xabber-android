@@ -132,7 +132,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 try {
                     roster.reload();
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
             }
         }

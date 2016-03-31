@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.ui.adapter.NavigationDrawerAccountAdapter;
 import com.xabber.android.ui.color.AccountPainter;
@@ -69,7 +70,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
                     .setText(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0)
                             .versionName);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
 
         View drawerHeader = view.findViewById(R.id.drawer_header);

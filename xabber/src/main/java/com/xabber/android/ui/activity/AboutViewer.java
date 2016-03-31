@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
+import com.xabber.android.data.LogManager;
 
 public class AboutViewer extends ManagedActivity implements View.OnClickListener {
 
@@ -82,7 +83,7 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             return getString(R.string.application_title_full) + " " + pInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
         return "";
     }

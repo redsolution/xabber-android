@@ -172,7 +172,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                     @Override
                     public void onError(Exception e) {
                         super.onError(e);
-                        e.printStackTrace();
+                        LogManager.exception(this, e);
                         LogManager.i("DatabaseManager", "onError " + e.getMessage());
                     }
                 });

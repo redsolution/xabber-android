@@ -395,7 +395,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             try {
                 result = dateFormat.parse(vCardBirthDate);
             } catch (ParseException e) {
-                e.printStackTrace();
+                LogManager.exception(this, e);
             }
 
             if (result != null) {
@@ -465,7 +465,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             try {
                 imageFile = FileManager.createTempImageFile(TEMP_FILE_NAME);
             } catch (IOException e) {
-                e.printStackTrace();
+                LogManager.exception(this, e);
             }
 
             if (imageFile != null) {
@@ -651,7 +651,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             try {
                 vCard.setAvatar(new URL(newAvatarImageUri.toString()));
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LogManager.exception(this, e);
             }
         }
 

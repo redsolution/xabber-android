@@ -396,7 +396,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                     try {
                         multiUserChat.leave();
                     } catch (SmackException.NotConnectedException e) {
-                        e.printStackTrace();
+                        LogManager.exception(this, e);
                     }
                 }
             };
@@ -490,7 +490,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                 try {
                     hostedRooms = MultiUserChatManager.getInstanceFor(xmppConnection).getHostedRooms(serviceName);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
 
                 final Collection<HostedRoom> finalHostedRooms = hostedRooms;
@@ -531,7 +531,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                     LogManager.i(MUCManager.class, "Requesting room info " + roomJid);
                     roomInfo = MultiUserChatManager.getInstanceFor(xmppConnection).getRoomInfo(roomJid);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
-                    e.printStackTrace();
+                    LogManager.exception(this, e);
                 }
 
                 final RoomInfo finalRoomInfo = roomInfo;
