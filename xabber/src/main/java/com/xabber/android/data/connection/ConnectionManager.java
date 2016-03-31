@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -35,11 +37,15 @@ import com.xabber.xmpp.address.Jid;
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.sm.StreamManagementException;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
@@ -154,13 +160,40 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     /**
-     * Send stanza to authenticated connection.
-     *
-     * @param account
-     * @param stanza
+     * Send stanza to authenticated connection and and acknowledged listener if Stream Management is enabled on server.
      */
-    public void sendStanza(String account, Stanza stanza)
-            throws NetworkException {
+    public void sendStanza(String account, Message stanza, StanzaListener acknowledgedListener) throws NetworkException {
+        XMPPTCPConnection xmppConnection = getXmppTcpConnection(account);
+
+        if (xmppConnection.isSmEnabled()) {
+            try {
+                xmppConnection.addStanzaIdAcknowledgedListener(stanza.getStanzaId(), acknowledgedListener);
+            } catch (StreamManagementException.StreamManagementNotEnabledException e) {
+                LogManager.exception(this, e);
+            }
+        }
+
+        sendStanza(xmppConnection, stanza);
+    }
+
+    /**
+     * Send stanza to authenticated connection.
+     */
+    public void sendStanza(String account, Stanza stanza) throws NetworkException {
+        sendStanza(getXmppTcpConnection(account), stanza);
+    }
+
+    private void sendStanza(@NonNull XMPPTCPConnection xmppConnection, @NonNull Stanza stanza) throws NetworkException {
+        try {
+            xmppConnection.sendStanza(stanza);
+        } catch (SmackException.NotConnectedException e) {
+            NetworkException networkException = new NetworkException(R.string.XMPP_EXCEPTION);
+            networkException.initCause(e);
+            throw networkException;
+        }
+    }
+
+    public @NonNull XMPPTCPConnection getXmppTcpConnection(String account) throws NetworkException {
         ConnectionThread connectionThread = null;
         for (ConnectionThread check : managedConnections) {
             if (check.getConnectionItem() instanceof AccountItem
@@ -172,15 +205,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         if (connectionThread == null || !connectionThread.getConnectionItem().getState().isConnected()) {
             throw new NetworkException(R.string.NOT_CONNECTED);
         }
-        XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-
-        try {
-            xmppConnection.sendStanza(stanza);
-        } catch (SmackException.NotConnectedException e) {
-            NetworkException networkException = new NetworkException(R.string.XMPP_EXCEPTION);
-            networkException.initCause(e);
-            throw networkException;
-        }
+        return (XMPPTCPConnection) connectionThread.getXMPPConnection();
     }
 
     /**

@@ -487,7 +487,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 && lastUpdateTimeMillis - messageItem.getTimestamp() > 1000) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
-            message.statusIcon.setVisibility(View.INVISIBLE);
+            if (messageItem.isAcknowledged()) {
+                messageIcon = R.drawable.ic_message_acknowledged_14dp;
+            } else {
+                message.statusIcon.setVisibility(View.INVISIBLE);
+            }
         }
 
         message.statusIcon.setImageResource(messageIcon);

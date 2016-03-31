@@ -30,6 +30,8 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.address.Jid;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
@@ -540,8 +542,28 @@ public abstract class AbstractChat extends BaseEntity {
                 message.addExtension(new DelayInformation(delayTimestamp));
             }
 
+            final String messageId = messageItem.getUniqueId();
             try {
-                ConnectionManager.getInstance().sendStanza(account, message);
+                ConnectionManager.getInstance().sendStanza(account, message, new StanzaListener() {
+                    @Override
+                    public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
+                        Realm localRealm = Realm.getDefaultInstance();
+                        localRealm.executeTransactionAsync(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    MessageItem acknowledgedMessage = realm
+                                            .where(MessageItem.class)
+                                            .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                                            .findFirst();
+
+                                    if (acknowledgedMessage != null) {
+                                        acknowledgedMessage.setAcknowledged(true);
+                                    }
+                                }
+                            });
+                        localRealm.close();
+                    }
+                });
             } catch (NetworkException e) {
                 return false;
             }

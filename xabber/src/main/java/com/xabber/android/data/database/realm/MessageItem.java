@@ -49,6 +49,7 @@ public class MessageItem extends RealmObject {
         public static final String FORWARDED = "forwarded";
         public static final String FILE_PATH = "filePath";
         public static final String FILE_SIZE = "fileSize";
+        public static final String ACKNOWLEDGED = "acknowledged";
 
     }
 
@@ -132,6 +133,11 @@ public class MessageItem extends RealmObject {
     private String filePath;
 
     private Long fileSize;
+
+    /**
+     * If message was acknowledged by server (XEP-0198: Stream Management)
+     */
+    private boolean acknowledged;
 
 
     public MessageItem(String uniqueId) {
@@ -322,5 +328,13 @@ public class MessageItem extends RealmObject {
 
     public static boolean isUploadFileMessage(MessageItem messageItem) {
         return messageItem.getFilePath() != null && !messageItem.isIncoming() && !messageItem.isSent();
+    }
+
+    public boolean isAcknowledged() {
+        return acknowledged;
+    }
+
+    public void setAcknowledged(boolean acknowledged) {
+        this.acknowledged = acknowledged;
     }
 }
