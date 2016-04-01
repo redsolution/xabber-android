@@ -28,6 +28,7 @@ import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.BaseEntity;
@@ -128,7 +129,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     private void requestRosterReloadIfNeeded() {
         for (String account : AccountManager.getInstance().getAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);
-            if (roster != null && !roster.isLoaded()) {
+            if (roster != null && !roster.isLoaded()
+                    && AccountManager.getInstance().getAccount(account).getState() == ConnectionState.connected) {
                 try {
                     roster.reload();
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException e) {
