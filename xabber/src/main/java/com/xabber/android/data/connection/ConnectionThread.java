@@ -41,6 +41,7 @@ import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.ping.PingFailedListener;
+import org.jivesoftware.smackx.ping.PingManager;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -60,7 +61,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
  *
  * @author alexander.ivanov
  */
-public class ConnectionThread implements StanzaListener, PingFailedListener {
+public class ConnectionThread implements StanzaListener {
 
     /**
      * Filter to process all packets.
@@ -195,8 +196,6 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
         roster.addRosterListener(rosterListener);
         roster.addRosterLoadedListener(rosterListener);
         roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
-
-        org.jivesoftware.smackx.ping.PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(this);
     }
 
     private void setUpSASL() {
@@ -305,10 +304,10 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
         }
     }
 
-    ConnectionListener connectionListener = new ConnectionListener() {
+    private ConnectionListener connectionListener = new ConnectionListener() {
         @Override
         public void connected(XMPPConnection connection) {
-            LogManager.d(this, "connected " + ((AccountItem)connectionItem).getAccount());
+            LogManager.d(this, "connected " + getConnectionItem().getRealJid());
 
             connectionItem.onConnected(ConnectionThread.this);
             ConnectionManager.getInstance().onConnected(ConnectionThread.this);
@@ -316,7 +315,9 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
 
         @Override
         public void authenticated(XMPPConnection connection, boolean resumed) {
-            LogManager.d(this, "authenticated " + ((AccountItem)connectionItem).getAccount() + " resumed " + resumed);
+            LogManager.d(this, "authenticated " + getConnectionItem().getRealJid() + " resumed " + resumed);
+
+            PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(pingFailedListener);
 
             connectionItem.onAuthorized(ConnectionThread.this);
             ConnectionManager.getInstance().onAuthorized(ConnectionThread.this);
@@ -325,7 +326,9 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
 
         @Override
         public void connectionClosed() {
-            LogManager.d(this, "connectionClosed " + ((AccountItem)connectionItem).getAccount());
+            LogManager.d(this, "connectionClosed " + getConnectionItem().getRealJid());
+
+            PingManager.getInstanceFor(xmppConnection).unregisterPingFailedListener(pingFailedListener);
 
             // Can be called on error, e.g. XMPPConnection#initConnection().
             runOnUiThread(new Runnable() {
@@ -338,7 +341,9 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
 
         @Override
         public void connectionClosedOnError(final Exception e) {
-            LogManager.d(this, "connectionClosedOnError " + ((AccountItem)connectionItem).getAccount() + " " + e.getMessage());
+            LogManager.d(this, "connectionClosedOnError " + getConnectionItem().getRealJid() + " " + e.getMessage());
+
+            PingManager.getInstanceFor(xmppConnection).unregisterPingFailedListener(pingFailedListener);
 
             if (SettingsManager.showConnectionErrors()) {
                 runOnUiThread(new Runnable() {
@@ -357,17 +362,17 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
 
         @Override
         public void reconnectionSuccessful() {
-            LogManager.d(this, "reconnectionSuccessful " + ((AccountItem)connectionItem).getAccount());
+            LogManager.d(this, "reconnectionSuccessful " + getConnectionItem().getRealJid());
         }
 
         @Override
         public void reconnectingIn(int seconds) {
-            LogManager.d(this, "reconnectingIn " + ((AccountItem)connectionItem).getAccount() + " " + seconds + " seconds");
+            LogManager.d(this, "reconnectingIn " + getConnectionItem().getRealJid() + " " + seconds + " seconds");
         }
 
         @Override
         public void reconnectionFailed(Exception e) {
-            LogManager.d(this, "reconnectionFailed " + ((AccountItem)connectionItem).getAccount() + " " + e.getMessage());
+            LogManager.d(this, "reconnectionFailed " + getConnectionItem().getRealJid() + " " + e.getMessage());
         }
     };
 
@@ -381,11 +386,13 @@ public class ConnectionThread implements StanzaListener, PingFailedListener {
         });
     }
 
-    @Override
-    public void pingFailed() {
-        LogManager.i(this, "pingFailed for " + getConnectionItem().getRealJid());
-        getConnectionItem().forceReconnect();
-    }
+    private PingFailedListener pingFailedListener = new PingFailedListener() {
+        @Override
+        public void pingFailed() {
+            LogManager.i(this, "pingFailed for " + getConnectionItem().getRealJid());
+            getConnectionItem().forceReconnect();
+        }
+    };
 
     /**
      * Filter to accept all packets.
