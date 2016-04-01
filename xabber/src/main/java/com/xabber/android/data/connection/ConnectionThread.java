@@ -60,9 +60,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
  *
  * @author alexander.ivanov
  */
-public class ConnectionThread implements
-        ConnectionListener,
-        StanzaListener, PingFailedListener {
+public class ConnectionThread implements StanzaListener, PingFailedListener {
 
     /**
      * Filter to process all packets.
@@ -183,7 +181,7 @@ public class ConnectionThread implements
 
         xmppConnection = new XMPPTCPConnection(builder.build());
         xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
-        xmppConnection.addConnectionListener(this);
+        xmppConnection.addConnectionListener(connectionListener);
 
         // enable Stream Management support. SMACK will only enable SM if supported by the server,
         // so no additional checks are required.
@@ -235,27 +233,11 @@ public class ConnectionThread implements
             throw new RuntimeException(e);
         }
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onConnected();
-            }
-        });
-
         if (registerNewAccount) {
             registerAccount();
         } else {
             login();
         }
-    }
-
-    /**
-     * Connection to the server has been established.
-     *
-     */
-    private void onConnected() {
-        connectionItem.onConnected(this);
-        ConnectionManager.getInstance().onConnected(this);
     }
 
     /**
@@ -266,7 +248,7 @@ public class ConnectionThread implements
             AccountManager.getInstance(xmppConnection).createAccount(connectionSettings.getUserName(), connectionSettings.getPassword());
         } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
             LogManager.exception(connectionItem, e);
-            connectionClosedOnError(e);
+            connectionListener.connectionClosedOnError(e);
             // Server will destroy connection, but we can speedup
             // it.
             xmppConnection.disconnect();
@@ -310,86 +292,84 @@ public class ConnectionThread implements
                     connectionItem.onAuthFailed();
                 }
             });
-            connectionClosed();
+            connectionListener.connectionClosed();
         } catch (XMPPException e) {
             LogManager.exception(this, e);
-            connectionClosedOnError(e);
+            connectionListener.connectionClosedOnError(e);
         } catch (SmackException | IOException e) {
             LogManager.exception(this, e);
         }
 
-        if (success) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    onAuthorized();
-                }
-            });
-        } else {
+        if (!success) {
             xmppConnection.disconnect();
         }
     }
 
-    /**
-     * Authorization passed.
-     */
-    private void onAuthorized() {
-        connectionItem.onAuthorized(this);
-        ConnectionManager.getInstance().onAuthorized(this);
-        if (connectionItem instanceof AccountItem) {
-            com.xabber.android.data.account.AccountManager.getInstance().removeAuthorizationError(
-                    ((AccountItem) connectionItem).getAccount());
+    ConnectionListener connectionListener = new ConnectionListener() {
+        @Override
+        public void connected(XMPPConnection connection) {
+            LogManager.d(this, "connected " + ((AccountItem)connectionItem).getAccount());
+
+            connectionItem.onConnected(ConnectionThread.this);
+            ConnectionManager.getInstance().onConnected(ConnectionThread.this);
         }
-        shutdown();
-    }
 
-    @Override
-    public void connected(XMPPConnection connection) {
-    }
+        @Override
+        public void authenticated(XMPPConnection connection, boolean resumed) {
+            LogManager.d(this, "authenticated " + ((AccountItem)connectionItem).getAccount() + " resumed " + resumed);
 
-    @Override
-    public void authenticated(XMPPConnection connection, boolean resumed) {
-    }
+            connectionItem.onAuthorized(ConnectionThread.this);
+            ConnectionManager.getInstance().onAuthorized(ConnectionThread.this);
+            shutdown();
+        }
 
-    @Override
-    public void connectionClosed() {
-        // Can be called on error, e.g. XMPPConnection#initConnection().
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.onClose(ConnectionThread.this);
-            }
-        });
-    }
+        @Override
+        public void connectionClosed() {
+            LogManager.d(this, "connectionClosed " + ((AccountItem)connectionItem).getAccount());
 
-    @Override
-    public void connectionClosedOnError(final Exception e) {
-        if (SettingsManager.showConnectionErrors()) {
+            // Can be called on error, e.g. XMPPConnection#initConnection().
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(Application.getInstance(),
-                            Application.getInstance().getString(R.string.CONNECTION_FAILED) + ": " + e.getMessage(),
-                            Toast.LENGTH_SHORT
-                    ).show();
+                    connectionItem.onClose(ConnectionThread.this);
                 }
             });
         }
 
-        connectionClosed();
-    }
+        @Override
+        public void connectionClosedOnError(final Exception e) {
+            LogManager.d(this, "connectionClosedOnError " + ((AccountItem)connectionItem).getAccount() + " " + e.getMessage());
 
-    @Override
-    public void reconnectingIn(int seconds) {
-    }
+            if (SettingsManager.showConnectionErrors()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Application.getInstance(),
+                                Application.getInstance().getString(R.string.CONNECTION_FAILED) + ": " + e.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+            }
 
-    @Override
-    public void reconnectionSuccessful() {
-    }
+            connectionClosed();
+        }
 
-    @Override
-    public void reconnectionFailed(Exception e) {
-    }
+        @Override
+        public void reconnectionSuccessful() {
+            LogManager.d(this, "reconnectionSuccessful " + ((AccountItem)connectionItem).getAccount());
+        }
+
+        @Override
+        public void reconnectingIn(int seconds) {
+            LogManager.d(this, "reconnectingIn " + ((AccountItem)connectionItem).getAccount() + " " + seconds + " seconds");
+        }
+
+        @Override
+        public void reconnectionFailed(Exception e) {
+            LogManager.d(this, "reconnectionFailed " + ((AccountItem)connectionItem).getAccount() + " " + e.getMessage());
+        }
+    };
 
     @Override
     public void processPacket(final Stanza packet) throws SmackException.NotConnectedException {
@@ -434,7 +414,7 @@ public class ConnectionThread implements
                     runnable.run();
                 } catch (RuntimeException e) {
                     LogManager.exception(connectionItem, e);
-                    connectionClosedOnError(e);
+                    connectionListener.connectionClosedOnError(e);
                 }
             }
         });

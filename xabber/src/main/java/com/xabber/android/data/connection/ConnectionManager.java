@@ -237,21 +237,33 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         if (!managedConnections.contains(connectionThread)) {
             return;
         }
-        for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
-            listener.onConnected(connectionThread.getConnectionItem());
-        }
+
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
+                    listener.onConnected(connectionThread.getConnectionItem());
+                }
+            }
+        });
     }
 
-    public void onAuthorized(ConnectionThread connectionThread) {
-        LogManager.i(this, "onAuthorized");
+    public void onAuthorized(final ConnectionThread connectionThread) {
         if (!managedConnections.contains(connectionThread)) {
             return;
         }
-        LogManager.i(this, "onAuthorized: " + connectionThread.getConnectionItem());
-        for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
-            listener.onAuthorized(connectionThread.getConnectionItem());
-        }
-        LogManager.i(this, "onAuthorized: finished");
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
+                    listener.onAuthorized(connectionThread.getConnectionItem());
+                }
+
+                AccountManager.getInstance().removeAuthorizationError(
+                        ((AccountItem)connectionThread.getConnectionItem()).getAccount());
+
+            }
+        });
     }
 
     public void onDisconnect(ConnectionThread connectionThread) {
