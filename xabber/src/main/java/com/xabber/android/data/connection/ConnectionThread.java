@@ -14,18 +14,12 @@
  */
 package com.xabber.android.data.connection;
 
-import android.widget.Toast;
-
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.roster.AccountRosterListener;
 
-import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -34,27 +28,13 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLErrorException;
-import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
-import org.jivesoftware.smack.util.TLSUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.X509TrustManager;
-
-import de.duenndns.ssl.MemorizingTrustManager;
 
 /**
  * Provides connection workflow.
@@ -63,215 +43,107 @@ import de.duenndns.ssl.MemorizingTrustManager;
  */
 public class ConnectionThread {
 
-    private final ConnectionItem connectionItem;
+    private final AccountItem accountItem;
+    private XMPPTCPConnection connection;
 
-    /**
-     * SMACK connection.
-     */
-    private XMPPTCPConnection xmppConnection;
-
-    /**
-     * Thread holder for this connection.
-     */
-    private final ExecutorService executorService;
-
-    private boolean started;
-
-    private boolean registerNewAccount;
-    private ConnectionSettings connectionSettings;
-
-    public ConnectionThread(final ConnectionItem connectionItem) {
-        LogManager.i(this, "NEW connection thread " + connectionItem.getRealJid());
-
-        this.connectionItem = connectionItem;
-        executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-                    @Override
-                    public Thread newThread(Runnable runnable) {
-                        Thread thread = new Thread(
-                                runnable,
-                                "Connection thread for "
-                                        + (connectionItem instanceof AccountItem ? ((AccountItem) connectionItem)
-                                        .getAccount() : connectionItem));
-                        thread.setPriority(Thread.MIN_PRIORITY);
-                        thread.setDaemon(true);
-                        return thread;
-                    }
-                });
-        ConnectionManager.getInstance().onConnection(this);
-        started = false;
+    public ConnectionThread(final AccountItem accountItem) {
+        this.accountItem = accountItem;
     }
 
-    public AbstractXMPPConnection getXMPPConnection() {
-        return xmppConnection;
+    public XMPPTCPConnection getXMPPConnection() {
+        return connection;
     }
 
-    public ConnectionItem getConnectionItem() {
-        return connectionItem;
+    public ConnectionItem getAccountItem() {
+        return accountItem;
     }
 
-    /**
-     * Start connection.
-     * <p/>
-     * This function can be called only once.
-     */
-    synchronized void start(final boolean registerNewAccount) {
+    void start(final boolean registerNewAccount) {
         LogManager.i(this, "start. registerNewAccount " + registerNewAccount);
 
-        connectionSettings = connectionItem.getConnectionSettings();
+        ConnectionManager.getInstance().onConnection(this);
 
-        if (started) {
-            throw new IllegalStateException();
-        }
-        started = true;
-        this.registerNewAccount = registerNewAccount;
-
-        runOnConnectionThread(new Runnable() {
-            @Override
-            public void run() {
-                createConnection();
-                connect();
-            }
-        });
+        Thread thread = new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        configureConnection();
+                        connect();
+                        if (registerNewAccount) {
+                            createAccount();
+                        }
+                        login();
+                    }
+                },
+                "Connection thread for " + accountItem.getRealJid());
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
     }
 
-    /**
-     * Stop connection.
-     * <p/>
-     * start MUST BE CALLED FIRST.
-     */
-    void shutdown() {
-        executorService.shutdownNow();
-    }
-
-    private void createConnection() {
-        XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
-
-        builder.setServiceName(connectionSettings.getServerName());
-
-        if (connectionSettings.isCustomHostAndPort()) {
-            builder.setHost(connectionSettings.getHost());
-            builder.setPort(connectionSettings.getPort());
-        }
-
-        builder.setSecurityMode(connectionSettings.getTlsMode().getSecurityMode());
-        builder.setCompressionEnabled(connectionSettings.useCompression());
-        builder.setSendPresence(false);
-
-        try {
-            if (SettingsManager.securityCheckCertificate()) {
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-                MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
-                sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
-                builder.setCustomSSLContext(sslContext);
-                builder.setHostnameVerifier(
-                        mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()));
-            } else {
-                TLSUtils.acceptAllCertificates(builder);
-                TLSUtils.disableHostnameVerificationForTlsCertificicates(builder);
-            }
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            LogManager.exception(this, e);
-        }
-
-        setUpSASL();
-
-        xmppConnection = new XMPPTCPConnection(builder.build());
-        xmppConnection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
-        xmppConnection.addConnectionListener(connectionListener);
+    public void configureConnection() {
+        connection = ConnectionBuilder.build(accountItem.getConnectionSettings());
 
         // enable Stream Management support. SMACK will only enable SM if supported by the server,
         // so no additional checks are required.
-        xmppConnection.setUseStreamManagement(true);
+        connection.setUseStreamManagement(true);
 
         // by default Smack disconnects in case of parsing errors
-        xmppConnection.setParsingExceptionCallback(new ExceptionLoggingCallback());
+        connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
 
-        AccountRosterListener rosterListener = new AccountRosterListener(((AccountItem)connectionItem).getAccount());
-        final Roster roster = Roster.getInstanceFor(xmppConnection);
+        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
+        connection.addConnectionListener(connectionListener);
+
+        AccountRosterListener rosterListener = new AccountRosterListener(accountItem.getAccount());
+        final Roster roster = Roster.getInstanceFor(connection);
         roster.addRosterListener(rosterListener);
         roster.addRosterLoadedListener(rosterListener);
         roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
     }
 
-    private void setUpSASL() {
-        if (SettingsManager.connectionUsePlainTextAuth()) {
-            final Map<String, String> registeredSASLMechanisms = SASLAuthentication.getRegisterdSASLMechanisms();
-            for (String mechanism : registeredSASLMechanisms.values()) {
-                SASLAuthentication.blacklistSASLMechanism(mechanism);
-            }
-
-            SASLAuthentication.unBlacklistSASLMechanism(SASLPlainMechanism.NAME);
-
-        } else {
-            final Map<String, String> registeredSASLMechanisms = SASLAuthentication.getRegisterdSASLMechanisms();
-            for (String mechanism : registeredSASLMechanisms.values()) {
-                SASLAuthentication.unBlacklistSASLMechanism(mechanism);
-            }
-        }
-    }
 
     private void connect() {
         try {
-            xmppConnection.connect();
+            connection.connect();
         } catch (SmackException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
-            throw new RuntimeException(e);
         } catch (IOException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. IOException " + e.getMessage());
-            throw new RuntimeException(e);
         } catch (XMPPException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
-            throw new RuntimeException(e);
-        }
-
-        if (registerNewAccount) {
-            registerAccount();
-        } else {
-            login();
         }
     }
 
-    /**
-     * Register new account.
-     */
-    private void registerAccount() {
+    private void createAccount() {
         try {
-            AccountManager.getInstance(xmppConnection).createAccount(connectionSettings.getUserName(), connectionSettings.getPassword());
+            AccountManager.getInstance(connection)
+                    .createAccount(accountItem.getConnectionSettings().getUserName(),
+                            accountItem.getConnectionSettings().getPassword());
         } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
-            LogManager.exception(connectionItem, e);
+            LogManager.exception(accountItem, e);
             connectionListener.connectionClosedOnError(e);
             // Server will destroy connection, but we can speedup
             // it.
-            xmppConnection.disconnect();
+            connection.disconnect();
             return;
         }
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onAccountRegistered();
-            }
-        });
-
-        login();
+        onAccountCreated();
     }
 
-    private void onAccountRegistered() {
-        LogManager.i(this, "Account registered");
-        connectionItem.onAccountRegistered(this);
+    private void onAccountCreated() {
+        LogManager.i(this, "Account created");
+        accountItem.onAccountRegistered(this);
     }
 
     private void login() {
         boolean success = false;
 
         try {
-            xmppConnection.login(
-                    connectionSettings.getUserName(),
-                    connectionSettings.getPassword(),
-                    connectionSettings.getResource());
+            connection.login();
             success = true;
         } catch (SASLErrorException saslErrorException) {
             LogManager.w(this, "Login failed. SASLErrorException."
@@ -283,7 +155,7 @@ public class ConnectionThread {
                 @Override
                 public void run() {
                     // Login failed. We don`t want to reconnect.
-                    connectionItem.onAuthFailed();
+                    accountItem.onAuthFailed();
                 }
             });
             connectionListener.connectionClosed();
@@ -295,79 +167,57 @@ public class ConnectionThread {
         }
 
         if (!success) {
-            xmppConnection.disconnect();
+            connection.disconnect();
         }
     }
 
     private ConnectionListener connectionListener = new ConnectionListener() {
         @Override
         public void connected(XMPPConnection connection) {
-            LogManager.d(this, "connected " + getConnectionItem().getRealJid());
+            LogManager.d(this, "connected " + getAccountItem().getRealJid());
 
-            connectionItem.onConnected(ConnectionThread.this);
+            accountItem.onConnected(ConnectionThread.this);
             ConnectionManager.getInstance().onConnected(ConnectionThread.this);
         }
 
         @Override
         public void authenticated(XMPPConnection connection, boolean resumed) {
-            LogManager.d(this, "authenticated " + getConnectionItem().getRealJid() + " resumed " + resumed);
+            LogManager.d(this, "authenticated " + getAccountItem().getRealJid() + " resumed " + resumed);
 
-            PingManager.getInstanceFor(xmppConnection).registerPingFailedListener(pingFailedListener);
+            PingManager.getInstanceFor(ConnectionThread.this.connection).registerPingFailedListener(pingFailedListener);
 
-            connectionItem.onAuthorized(ConnectionThread.this);
+            accountItem.onAuthorized(ConnectionThread.this);
             ConnectionManager.getInstance().onAuthorized(ConnectionThread.this);
-            shutdown();
         }
 
         @Override
         public void connectionClosed() {
-            LogManager.d(this, "connectionClosed " + getConnectionItem().getRealJid());
+            LogManager.d(this, "connectionClosed " + getAccountItem().getRealJid());
 
-            PingManager.getInstanceFor(xmppConnection).unregisterPingFailedListener(pingFailedListener);
-
-            // Can be called on error, e.g. XMPPConnection#initConnection().
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    connectionItem.onClose(ConnectionThread.this);
-                }
-            });
+            accountItem.onClose(ConnectionThread.this);
         }
 
         @Override
         public void connectionClosedOnError(final Exception e) {
-            LogManager.d(this, "connectionClosedOnError " + getConnectionItem().getRealJid() + " " + e.getMessage());
+            LogManager.d(this, "connectionClosedOnError " + getAccountItem().getRealJid() + " " + e.getMessage());
 
-            PingManager.getInstanceFor(xmppConnection).unregisterPingFailedListener(pingFailedListener);
-
-            if (SettingsManager.showConnectionErrors()) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(Application.getInstance(),
-                                Application.getInstance().getString(R.string.CONNECTION_FAILED) + ": " + e.getMessage(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                });
-            }
-
+            PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
             connectionClosed();
         }
 
         @Override
         public void reconnectionSuccessful() {
-            LogManager.d(this, "reconnectionSuccessful " + getConnectionItem().getRealJid());
+            LogManager.d(this, "reconnectionSuccessful " + getAccountItem().getRealJid());
         }
 
         @Override
         public void reconnectingIn(int seconds) {
-            LogManager.d(this, "reconnectingIn " + getConnectionItem().getRealJid() + " " + seconds + " seconds");
+            LogManager.d(this, "reconnectingIn " + getAccountItem().getRealJid() + " " + seconds + " seconds");
         }
 
         @Override
         public void reconnectionFailed(Exception e) {
-            LogManager.d(this, "reconnectionFailed " + getConnectionItem().getRealJid() + " " + e.getMessage());
+            LogManager.d(this, "reconnectionFailed " + getAccountItem().getRealJid() + " " + e.getMessage());
         }
     };
 
@@ -387,47 +237,9 @@ public class ConnectionThread {
     private PingFailedListener pingFailedListener = new PingFailedListener() {
         @Override
         public void pingFailed() {
-            LogManager.i(this, "pingFailed for " + getConnectionItem().getRealJid());
-            getConnectionItem().forceReconnect();
+            LogManager.i(this, "pingFailed for " + getAccountItem().getRealJid());
+            getAccountItem().forceReconnect();
         }
     };
-
-
-    /**
-     * Submit task to be executed in connection thread.
-     *
-     * @param runnable
-     */
-    private void runOnConnectionThread(final Runnable runnable) {
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                if (!connectionItem.isManaged(ConnectionThread.this))
-                    return;
-                try {
-                    runnable.run();
-                } catch (RuntimeException e) {
-                    LogManager.exception(connectionItem, e);
-                    connectionListener.connectionClosedOnError(e);
-                }
-            }
-        });
-    }
-
-    /**
-     * Commit changes received from connection thread in UI thread.
-     *
-     * @param runnable
-     */
-    private void runOnUiThread(final Runnable runnable) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!connectionItem.isManaged(ConnectionThread.this))
-                    return;
-                runnable.run();
-            }
-        });
-    }
 
 }

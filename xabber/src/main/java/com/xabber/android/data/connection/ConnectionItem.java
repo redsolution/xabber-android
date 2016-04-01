@@ -17,6 +17,7 @@ package com.xabber.android.data.connection;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountProtocol;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -171,7 +172,7 @@ public abstract class ConnectionItem {
                     isConnectionRequestedByUser = true;
                 }
                 state = ConnectionState.connecting;
-                connectionThread = new ConnectionThread(this);
+                connectionThread = new ConnectionThread((AccountItem) this);
 
                 connectionThread.start(registerNewAccount);
 
@@ -252,7 +253,7 @@ public abstract class ConnectionItem {
     /**
      * Connection has been established.
      */
-    protected void onConnected(ConnectionThread connectionThread) {
+    public void onConnected(ConnectionThread connectionThread) {
         if (isRegisterAccount()) {
             state = ConnectionState.registration;
         } else if (isManaged(connectionThread)) {
@@ -273,13 +274,13 @@ public abstract class ConnectionItem {
     /**
      * Authorization failed.
      */
-    protected void onAuthFailed() {
+    public void onAuthFailed() {
     }
 
     /**
      * Authorization passed.
      */
-    protected void onAuthorized(ConnectionThread connectionThread) {
+    public void onAuthorized(ConnectionThread connectionThread) {
         if (isManaged(connectionThread)) {
             state = ConnectionState.connected;
         }
@@ -302,16 +303,13 @@ public abstract class ConnectionItem {
         }
 
         ConnectionManager.getInstance().onDisconnect(connectionThread);
-        if (acceptable) {
-            connectionThread.shutdown();
-        }
         return acceptable;
     }
 
     /**
      * Called when connection was closed for some reason.
      */
-    protected void onClose(ConnectionThread connectionThread) {
+    public void onClose(ConnectionThread connectionThread) {
         if (onDisconnect(connectionThread)) {
             state = ConnectionState.waiting;
             this.connectionThread = null;

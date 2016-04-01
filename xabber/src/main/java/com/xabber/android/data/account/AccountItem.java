@@ -406,13 +406,13 @@ public class AccountItem extends ConnectionItem {
     }
 
     @Override
-    protected void onConnected(ConnectionThread connectionThread) {
+    public void onConnected(ConnectionThread connectionThread) {
         super.onConnected(connectionThread);
         AccountManager.getInstance().onAccountChanged(account);
     }
 
     @Override
-    protected void onAuthFailed() {
+    public void onAuthFailed() {
         super.onAuthFailed();
         // Login failed. We don`t want to reconnect.
         authFailed = true;
@@ -421,13 +421,13 @@ public class AccountItem extends ConnectionItem {
     }
 
     @Override
-    protected void onAuthorized(ConnectionThread connectionThread) {
+    public void onAuthorized(ConnectionThread connectionThread) {
         super.onAuthorized(connectionThread);
         AccountManager.getInstance().onAccountChanged(account);
     }
 
     @Override
-    protected void onClose(ConnectionThread connectionThread) {
+    public void onClose(ConnectionThread connectionThread) {
         super.onClose(connectionThread);
         AccountManager.getInstance().onAccountChanged(account);
     }
