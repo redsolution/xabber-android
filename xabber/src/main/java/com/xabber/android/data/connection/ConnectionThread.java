@@ -30,12 +30,12 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.filter.StanzaFilter;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
+import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
@@ -61,12 +61,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
  *
  * @author alexander.ivanov
  */
-public class ConnectionThread implements StanzaListener {
-
-    /**
-     * Filter to process all packets.
-     */
-    private final AcceptAll ACCEPT_ALL = new AcceptAll();
+public class ConnectionThread {
 
     private final ConnectionItem connectionItem;
 
@@ -181,7 +176,7 @@ public class ConnectionThread implements StanzaListener {
         setUpSASL();
 
         xmppConnection = new XMPPTCPConnection(builder.build());
-        xmppConnection.addAsyncStanzaListener(this, ACCEPT_ALL);
+        xmppConnection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
         xmppConnection.addConnectionListener(connectionListener);
 
         // enable Stream Management support. SMACK will only enable SM if supported by the server,
@@ -376,15 +371,18 @@ public class ConnectionThread implements StanzaListener {
         }
     };
 
-    @Override
-    public void processPacket(final Stanza packet) throws SmackException.NotConnectedException {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ConnectionManager.getInstance().processPacket(ConnectionThread.this, packet);
-            }
-        });
-    }
+    private StanzaListener everyStanzaListener = new StanzaListener() {
+        @Override
+        public void processPacket(final Stanza stanza) throws SmackException.NotConnectedException {
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ConnectionManager.getInstance().processPacket(ConnectionThread.this, stanza);
+                }
+            });
+
+        }
+    };
 
     private PingFailedListener pingFailedListener = new PingFailedListener() {
         @Override
@@ -394,17 +392,6 @@ public class ConnectionThread implements StanzaListener {
         }
     };
 
-    /**
-     * Filter to accept all packets.
-     *
-     * @author alexander.ivanov
-     */
-    static class AcceptAll implements StanzaFilter {
-        @Override
-        public boolean accept(Stanza packet) {
-            return true;
-        }
-    }
 
     /**
      * Submit task to be executed in connection thread.
