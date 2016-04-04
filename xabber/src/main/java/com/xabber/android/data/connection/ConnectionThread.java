@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
@@ -44,17 +46,19 @@ import java.io.IOException;
 public class ConnectionThread {
 
     private final AccountItem accountItem;
-    private XMPPTCPConnection connection;
+    private final XMPPTCPConnection connection;
 
-    public ConnectionThread(final AccountItem accountItem) {
+    public ConnectionThread(@NonNull final AccountItem accountItem) {
         this.accountItem = accountItem;
+        connection = ConnectionBuilder.build(accountItem.getConnectionSettings());
+        configureConnection();
     }
 
-    public XMPPTCPConnection getXMPPConnection() {
+    public @NonNull XMPPTCPConnection getXMPPConnection() {
         return connection;
     }
 
-    public ConnectionItem getAccountItem() {
+    public @NonNull AccountItem getAccountItem() {
         return accountItem;
     }
 
@@ -67,12 +71,18 @@ public class ConnectionThread {
                 new Runnable() {
                     @Override
                     public void run() {
-                        configureConnection();
-                        connect();
-                        if (registerNewAccount) {
-                            createAccount();
+                        boolean success = connect();
+                        if (success && registerNewAccount) {
+                            success = createAccount();
                         }
-                        login();
+
+                        if (success) {
+                            success = login();
+                        }
+
+                        if (!success) {
+                            connection.disconnect();
+                        }
                     }
                 },
                 "Connection thread for " + accountItem.getRealJid());
@@ -81,9 +91,7 @@ public class ConnectionThread {
         thread.start();
     }
 
-    public void configureConnection() {
-        connection = ConnectionBuilder.build(accountItem.getConnectionSettings());
-
+    private void configureConnection() {
         // enable Stream Management support. SMACK will only enable SM if supported by the server,
         // so no additional checks are required.
         connection.setUseStreamManagement(true);
@@ -91,20 +99,24 @@ public class ConnectionThread {
         // by default Smack disconnects in case of parsing errors
         connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
 
-        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
-        connection.addConnectionListener(connectionListener);
-
         AccountRosterListener rosterListener = new AccountRosterListener(accountItem.getAccount());
         final Roster roster = Roster.getInstanceFor(connection);
         roster.addRosterListener(rosterListener);
         roster.addRosterLoadedListener(rosterListener);
         roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
+        roster.setRosterLoadedAtLogin(true);
+
+        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
+        connection.addConnectionListener(connectionListener);
     }
 
 
-    private void connect() {
+    private boolean connect() {
+        boolean success = false;
+
         try {
             connection.connect();
+            success = true;
         } catch (SmackException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
@@ -115,23 +127,25 @@ public class ConnectionThread {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
         }
+        return success;
     }
 
-    private void createAccount() {
+    private boolean createAccount() {
+        boolean success = false;
         try {
             AccountManager.getInstance(connection)
                     .createAccount(accountItem.getConnectionSettings().getUserName(),
                             accountItem.getConnectionSettings().getPassword());
+            success = true;
         } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
             LogManager.exception(accountItem, e);
-            connectionListener.connectionClosedOnError(e);
-            // Server will destroy connection, but we can speedup
-            // it.
-            connection.disconnect();
-            return;
         }
 
-        onAccountCreated();
+        if (success) {
+            onAccountCreated();
+        }
+
+        return success;
     }
 
     private void onAccountCreated() {
@@ -139,7 +153,7 @@ public class ConnectionThread {
         accountItem.onAccountRegistered(this);
     }
 
-    private void login() {
+    private boolean login() {
         boolean success = false;
 
         try {
@@ -166,9 +180,7 @@ public class ConnectionThread {
             LogManager.exception(this, e);
         }
 
-        if (!success) {
-            connection.disconnect();
-        }
+        return success;
     }
 
     private ConnectionListener connectionListener = new ConnectionListener() {
