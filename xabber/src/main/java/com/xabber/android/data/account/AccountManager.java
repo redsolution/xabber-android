@@ -575,7 +575,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
             if (changed || reconnect) {
                 result.updateConnection(true);
-                result.forceReconnect();
             }
             if (changed && !enabled) {
                 enabledAccounts.remove(account);
