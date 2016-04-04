@@ -47,6 +47,10 @@ import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
 import org.jivesoftware.smackx.muc.RoomInfo;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,9 +96,17 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                 try {
                     if (cursor.moveToFirst()) {
                         do {
+
+                            Resourcepart nickName = Resourcepart.EMPTY;
+                            try {
+                                nickName = Resourcepart.from(RoomTable.getNickname(cursor));
+                            } catch (XmppStringprepException e) {
+                                e.printStackTrace();
+                            }
+
                             RoomChat roomChat = new RoomChat(
                                     RoomTable.getAccount(cursor), RoomTable.getRoom(cursor),
-                                    RoomTable.getNickname(cursor), RoomTable.getPassword(cursor));
+                                    nickName, RoomTable.getPassword(cursor));
                             if (RoomTable.needJoin(cursor)) {
                                 needJoins.add(roomChat);
                             }
@@ -128,7 +140,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     /**
      * @return <code>null</code> if does not exists.
      */
-    public RoomChat getRoomChat(String account, String room) {
+    public RoomChat getRoomChat(String account, EntityBareJid room) {
         AbstractChat chat = MessageManager.getInstance().getChat(account, room);
         if (chat != null && chat instanceof RoomChat) {
             return (RoomChat) chat;
@@ -147,13 +159,10 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         return hasRoom(account, Jid.getBareAddress(user)) && !"".equals(Jid.getResource(user));
     }
 
-    /**
-     * @return nickname or empty string if room does not exists.
-     */
-    public String getNickname(String account, String room) {
+    public Resourcepart getNickname(String account, String room) {
         RoomChat roomChat = getRoomChat(account, room);
         if (roomChat == null) {
-            return "";
+            return Resourcepart.EMPTY;
         }
         return roomChat.getNickname();
     }
@@ -214,7 +223,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
      * Creates or updates existed room.
      *
      */
-    public void createRoom(String account, String room, String nickname,
+    public void createRoom(String account, String room, Resourcepart nickname,
                            String password, boolean join) {
         removeInvite(getInvite(account, room));
         AbstractChat chat = MessageManager.getInstance().getChat(account, room);
@@ -236,12 +245,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         }
     }
 
-    private void requestToWriteRoom(final String account, final String room,
-                                    final String nickname, final String password, final boolean join) {
+    private void requestToWriteRoom(final String account, final EntityBareJid room,
+                                    final Resourcepart nickname, final String password, final boolean join) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                RoomTable.getInstance().write(account, room, nickname,
+                RoomTable.getInstance().write(account, room, nickname.toString(),
                         password, join);
             }
         });
@@ -268,10 +277,10 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
      *
      * @param requested Whether user request to join the room.
      */
-    public void joinRoom(final String account, final String room, boolean requested) {
+    public void joinRoom(final String account, final EntityBareJid room, boolean requested) {
         final XMPPConnection xmppConnection;
         final RoomChat roomChat;
-        final String nickname;
+        final Resourcepart nickname;
         final String password;
         final Thread thread;
         roomChat = getRoomChat(account, room);
@@ -330,7 +339,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 roomChat.setState(RoomState.occupation);
                             }
                             removeAuthorizationError(account, room);
-                            RosterManager.getInstance().onContactChanged(account, room);
+                            RosterManager.onContactChanged(account, room);
                         }
                     });
                     return;
@@ -407,7 +416,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
@@ -457,12 +466,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         roomChat.newAction(roomChat.getNickname(), user, ChatAction.invite_sent);
     }
 
-    public void removeAuthorizationError(String account, String room) {
-        authorizationErrorProvider.remove(account, room);
+    public void removeAuthorizationError(String account, EntityBareJid room) {
+        authorizationErrorProvider.remove(account, room.toString());
     }
 
-    public void addAuthorizationError(String account, String room) {
-        authorizationErrorProvider.add(new RoomAuthorizationError(account, room), null);
+    public void addAuthorizationError(String account, EntityBareJid room) {
+        authorizationErrorProvider.add(new RoomAuthorizationError(account, room.toString()), null);
     }
 
 

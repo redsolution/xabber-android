@@ -25,6 +25,8 @@ import com.xabber.android.data.connection.TLSMode;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.parts.Localpart;
 
 import java.security.KeyPair;
 import java.util.Date;
@@ -99,7 +101,7 @@ public class AccountItem extends ConnectionItem {
     private ArchiveMode archiveMode;
 
     public AccountItem(AccountProtocol protocol, boolean custom, String host,
-                       int port, String serverName, String userName, String resource,
+                       int port, DomainBareJid serverName, Localpart userName, String resource,
                        boolean storePassword, String password, int colorIndex,
                        int priority, StatusMode statusMode, String statusText,
                        boolean enabled, boolean saslEnabled, TLSMode tlsMode,

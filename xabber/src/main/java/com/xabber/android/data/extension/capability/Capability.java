@@ -14,13 +14,13 @@
  */
 package com.xabber.android.data.extension.capability;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-
 import com.xabber.android.data.entity.BaseEntity;
 
 import org.jivesoftware.smack.util.stringencoder.Base64;
+import org.jxmpp.jid.Jid;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 class Capability extends BaseEntity {
 
@@ -43,10 +43,10 @@ class Capability extends BaseEntity {
      */
     private final String version;
 
-    public Capability(String account, String user, String hash, String node,
+    public Capability(String account, Jid user, String hash, String node,
                       String version) {
         super((isLegacy(hash) || isSupportedHash(hash)) ? null : account,
-                (isLegacy(hash) || isSupportedHash(hash)) ? null : user);
+                (isLegacy(hash) || isSupportedHash(hash)) ? null : user.toString());
         this.hash = hash;
         this.node = node;
         this.version = version;

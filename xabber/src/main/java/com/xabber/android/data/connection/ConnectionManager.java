@@ -32,7 +32,6 @@ import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.connection.listeners.OnResponseListener;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.SmackConfiguration;
@@ -190,14 +189,15 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             NetworkException networkException = new NetworkException(R.string.XMPP_EXCEPTION);
             networkException.initCause(e);
             throw networkException;
+        } catch (InterruptedException e) {
+            LogManager.exception(this, e);
         }
     }
 
     public @NonNull XMPPTCPConnection getXmppTcpConnection(String account) throws NetworkException {
         ConnectionThread connectionThread = null;
         for (ConnectionThread check : managedConnections) {
-            if (check.getAccountItem() instanceof AccountItem
-                    && ((AccountItem) check.getAccountItem()).getAccount().equals(account)) {
+            if (check.getAccountItem().getAccount().equals(account)) {
                 connectionThread = check;
                 break;
             }
@@ -205,7 +205,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         if (connectionThread == null || !connectionThread.getAccountItem().getState().isConnected()) {
             throw new NetworkException(R.string.NOT_CONNECTED);
         }
-        return (XMPPTCPConnection) connectionThread.getXMPPConnection();
+        return connectionThread.getXMPPConnection();
     }
 
     /**
@@ -260,7 +260,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
                 }
 
                 AccountManager.getInstance().removeAuthorizationError(
-                        ((AccountItem)connectionThread.getAccountItem()).getAccount());
+                        connectionThread.getAccountItem().getAccount());
 
             }
         });
@@ -289,7 +289,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             return;
         }
         ConnectionItem connectionItem = connectionThread.getAccountItem();
-        if (stanza instanceof IQ && connectionItem instanceof AccountItem) {
+        if (stanza instanceof IQ) {
             IQ iq = (IQ) stanza;
             String packetId = iq.getStanzaId();
             if (packetId != null && (iq.getType() == Type.result || iq.getType() == Type.error)) {
@@ -305,7 +305,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             }
         }
         for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
-            listener.onPacket(connectionItem, Jid.getBareAddress(stanza.getFrom()), stanza);
+            listener.onPacket(connectionItem, stanza.getFrom().asBareJid(), stanza);
         }
     }
 

@@ -14,10 +14,14 @@
  */
 package com.xabber.android.data.extension.muc;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.data.account.StatusMode;
 
 import org.jivesoftware.smackx.muc.MUCAffiliation;
 import org.jivesoftware.smackx.muc.MUCRole;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 /**
  * Room occupant.
@@ -26,9 +30,9 @@ import org.jivesoftware.smackx.muc.MUCRole;
  */
 public class Occupant implements Comparable<Occupant> {
 
-    private final String nickname;
+    private final Resourcepart nickname;
 
-    private String jid;
+    private Jid jid;
 
     private MUCRole role;
 
@@ -38,22 +42,22 @@ public class Occupant implements Comparable<Occupant> {
 
     private String statusText;
 
-    public Occupant(String nickname) {
+    public Occupant(Resourcepart nickname) {
         this.nickname = nickname;
     }
 
-    public String getNickname() {
+    public Resourcepart getNickname() {
         return nickname;
     }
 
     /**
      * @return can be <code>null</code>.
      */
-    public String getJid() {
+    public Jid getJid() {
         return jid;
     }
 
-    public void setJid(String jid) {
+    public void setJid(Jid jid) {
         this.jid = jid;
     }
 
@@ -90,12 +94,12 @@ public class Occupant implements Comparable<Occupant> {
     }
 
     @Override
-    public int compareTo(Occupant another) {
+    public int compareTo(@NonNull Occupant another) {
         int result = another.role.ordinal() - role.ordinal();
         if (result != 0) {
             return result;
         }
-        return nickname.compareTo(another.nickname);
+        return nickname.toString().compareTo(another.nickname.toString());
     }
 
 }

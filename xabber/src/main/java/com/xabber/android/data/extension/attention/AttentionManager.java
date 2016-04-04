@@ -49,6 +49,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.attention.packet.AttentionExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.BareJid;
 
 /**
  * XEP-0224: Attention.
@@ -148,7 +149,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         if (!(packet instanceof Message))

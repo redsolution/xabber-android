@@ -34,6 +34,7 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
@@ -79,7 +80,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, final BareJid bareAddress, Stanza packet) {
         String from = packet.getFrom();
         if (from == null)
             return;

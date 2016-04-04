@@ -126,6 +126,8 @@ public class ConnectionThread {
         } catch (XMPPException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
+        } catch (InterruptedException e) {
+            LogManager.w(this, "Connection failed. InterruptedException " + e.getMessage());
         }
         return success;
     }
@@ -137,7 +139,7 @@ public class ConnectionThread {
                     .createAccount(accountItem.getConnectionSettings().getUserName(),
                             accountItem.getConnectionSettings().getPassword());
             success = true;
-        } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+        } catch (SmackException.NoResponseException | SmackException.NotConnectedException | XMPPException.XMPPErrorException | InterruptedException e) {
             LogManager.exception(accountItem, e);
         }
 
@@ -176,7 +178,7 @@ public class ConnectionThread {
         } catch (XMPPException e) {
             LogManager.exception(this, e);
             connectionListener.connectionClosedOnError(e);
-        } catch (SmackException | IOException e) {
+        } catch (SmackException | IOException | InterruptedException e) {
             LogManager.exception(this, e);
         }
 

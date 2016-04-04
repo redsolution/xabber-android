@@ -46,6 +46,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -559,7 +560,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     /**
      * Notifies registered {@link OnContactChangedListener}.
      */
-    public static void onContactChanged(String account, String bareAddress) {
+    public static void onContactChanged(String account, EntityBareJid bareAddress) {
         final ArrayList<BaseEntity> entities = new ArrayList<>();
         entities.add(new BaseEntity(account, bareAddress));
         onContactsChanged(entities);

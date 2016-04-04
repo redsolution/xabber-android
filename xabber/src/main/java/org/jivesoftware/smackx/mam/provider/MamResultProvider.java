@@ -15,15 +15,11 @@
  */
 package org.jivesoftware.smackx.mam.provider;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.forward.provider.ForwardedProvider;
 import org.jivesoftware.smackx.mam.packet.MamResultExtension;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 /**
  *
@@ -36,7 +32,7 @@ public class MamResultProvider extends ExtensionElementProvider<MamResultExtensi
      * @see org.jivesoftware.smack.provider.Provider#parse(org.xmlpull.v1.XmlPullParser, int)
      */
     @Override
-    public MamResultExtension parse(XmlPullParser parser, int initialDepth) throws IOException, XmlPullParserException, SmackException {
+    public MamResultExtension parse(XmlPullParser parser, int initialDepth) throws Exception {
         boolean done = false;
 
         String queryId = parser.getAttributeValue("", "queryid");

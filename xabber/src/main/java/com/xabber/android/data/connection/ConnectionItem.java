@@ -22,6 +22,9 @@ import com.xabber.android.data.account.AccountProtocol;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.EntityFullJid;
+import org.jxmpp.jid.parts.Localpart;
 
 /**
  * Abstract connection.
@@ -61,7 +64,7 @@ public abstract class ConnectionItem {
     private boolean registerNewAccount;
 
     public ConnectionItem(AccountProtocol protocol, boolean custom,
-                          String host, int port, String serverName, String userName,
+                          String host, int port, DomainBareJid serverName, Localpart userName,
                           String resource, boolean storePassword, String password,
                           boolean saslEnabled, TLSMode tlsMode, boolean compression,
                           ProxyType proxyType, String proxyHost, int proxyPort,
@@ -115,16 +118,13 @@ public abstract class ConnectionItem {
      *
      * @return <code>null</code> if connection is not established.
      */
-    public String getRealJid() {
+    public EntityFullJid getRealJid() {
         ConnectionThread connectionThread = getConnectionThread();
         if (connectionThread == null) {
             return null;
         }
-        XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-        if (xmppConnection == null) {
-            return null;
-        }
-        String user = xmppConnection.getUser();
+
+        EntityFullJid user = connectionThread.getXMPPConnection().getUser();
         if (user == null) {
             return null;
         }
@@ -207,12 +207,11 @@ public abstract class ConnectionItem {
             @Override
             public void run() {
                 AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-                if (xmppConnection != null)
-                    try {
-                        xmppConnection.disconnect();
-                    } catch (RuntimeException e) {
-                        // connectionClose() in smack can fail.
-                    }
+                try {
+                    xmppConnection.disconnect();
+                } catch (RuntimeException e) {
+                    // connectionClose() in smack can fail.
+                }
             }
 
         };

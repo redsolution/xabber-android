@@ -23,6 +23,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -143,7 +144,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
         if (packet instanceof Block && ((Block) packet).getType() == IQ.Type.set) {
             LogManager.i(this, "Block push received");
             Block block = (Block) packet;

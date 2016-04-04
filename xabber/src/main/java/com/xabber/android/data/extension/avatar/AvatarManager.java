@@ -42,6 +42,7 @@ import com.xabber.xmpp.vcardupdate.VCardUpdate;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jxmpp.jid.BareJid;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -411,7 +412,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
         if (!(packet instanceof Presence) || bareAddress == null) {
             return;
         }

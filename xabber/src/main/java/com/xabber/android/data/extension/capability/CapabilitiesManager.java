@@ -42,6 +42,7 @@ import org.jivesoftware.smackx.caps.packet.CapsExtension;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -142,9 +143,8 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param user    full JID.
      * @return <code>null</code> if there is no available information.
      */
-    public ClientInfo getClientInfo(String account, String user) {
-        Capability capability = userCapabilities.get(account,
-                Jid.getStringPrep(user));
+    public ClientInfo getClientInfo(String account, org.jxmpp.jid.Jid user) {
+        Capability capability = userCapabilities.get(account, user.toString());
         if (capability == null)
             return null;
         return clientInformations.get(capability);
@@ -193,22 +193,19 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param account
      * @param user
      */
-    public void request(String account, String user) {
-        user = Jid.getStringPrep(user);
-        Capability capability = new Capability(account,
-                Jid.getStringPrep(user), Capability.DIRECT_REQUEST_METHOD, null, null);
-        userCapabilities.put(account, Jid.getStringPrep(user), capability);
+    public void request(String account, org.jxmpp.jid.Jid user) {
+        Capability capability = new Capability(account, user, Capability.DIRECT_REQUEST_METHOD, null, null);
+        userCapabilities.put(account, user.toString(), capability);
         request(account, user, capability);
     }
 
     /**
      * Requests disco info.
-     *
-     * @param account
+     *  @param account
      * @param user
      * @param capability
      */
-    private void request(String account, String user, Capability capability) {
+    private void request(String account, org.jxmpp.jid.Jid user, Capability capability) {
         for (DiscoverInfoRequest check : requests) {
             if (capability.equals(check.getCapability())) {
                 return;
@@ -224,8 +221,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         } catch (NetworkException e) {
             return;
         }
-        requests.add(new DiscoverInfoRequest(account, Jid.getStringPrep(user),
-                packet.getStanzaId(), capability));
+        requests.add(new DiscoverInfoRequest(account, user, packet.getStanzaId(), capability));
     }
 
     private boolean isValid(DiscoverInfo discoverInfo) {
@@ -423,13 +419,13 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     }
 
     public void onPresenceChanged(final String account, final Presence presence) {
-        final String user = Jid.getStringPrep(presence.getFrom());
+        final org.jxmpp.jid.Jid user = presence.getFrom();
         if (user == null)
             return;
         if (presence.getType() == Presence.Type.error)
             return;
         if (presence.getType() == Presence.Type.unavailable) {
-            userCapabilities.remove(account, user);
+            userCapabilities.remove(account, user.toString());
             return;
         }
 
@@ -444,10 +440,10 @@ public class CapabilitiesManager implements OnAuthorizedListener,
                 Capability capability = new Capability(account, user,
                         capsExtension.getHash(), capsExtension.getNode(),
                         capsExtension.getVer());
-                if (capability.equals(userCapabilities.get(account, user))) {
+                if (capability.equals(userCapabilities.get(account, user.toString()))) {
                     continue;
                 }
-                userCapabilities.put(account, user, capability);
+                userCapabilities.put(account, user.toString(), capability);
                 ClientInfo clientInfo = clientInformations.get(capability);
                 if (clientInfo == null || clientInfo == INVALID_CLIENT_INFO) {
                     request(account, presence.getFrom(), capability);
@@ -457,11 +453,11 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String account = ((AccountItem) connection).getAccount();
-        final String user = Jid.getStringPrep(packet.getFrom());
+        final org.jxmpp.jid.Jid user = packet.getFrom();
         if (packet instanceof IQ) {
             IQ iq = (IQ) packet;
             if (iq.getType() != Type.error
@@ -527,7 +523,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
                 if (capability.equals(entry.getValue()))
                     entities.add(new BaseEntity(account, Jid
                             .getBareAddress(entry.getSecond())));
-            RosterManager.getInstance().onContactsChanged(entities);
+            RosterManager.onContactsChanged(entities);
         }
     }
 }

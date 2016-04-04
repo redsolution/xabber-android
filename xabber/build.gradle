@@ -72,7 +72,7 @@ android {
 }
 
 ext {
-    smackVersion = '4.1.6'
+    smackVersion = '4.2.0-alpha3'
     leakCanaryVersion = '1.4-beta2'
 }
 

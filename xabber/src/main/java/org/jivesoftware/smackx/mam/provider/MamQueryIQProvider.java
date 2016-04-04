@@ -15,15 +15,11 @@
  */
 package org.jivesoftware.smackx.mam.provider;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smackx.mam.packet.MamQueryIQ;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 /**
  *
@@ -36,7 +32,7 @@ public class MamQueryIQProvider extends IQProvider<MamQueryIQ> {
      * @see org.jivesoftware.smack.provider.Provider#parse(org.xmlpull.v1.XmlPullParser, int)
      */
     @Override
-    public MamQueryIQ parse(XmlPullParser parser, int initialDepth) throws IOException, XmlPullParserException, SmackException {
+    public MamQueryIQ parse(XmlPullParser parser, int initialDepth) throws Exception {
         boolean done = false;
 
         MamQueryIQ stanza = new MamQueryIQ(parser.getAttributeValue("", "queryid"));

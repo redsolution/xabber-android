@@ -49,6 +49,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
+import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -265,7 +266,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, final BareJid bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }

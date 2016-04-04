@@ -16,14 +16,10 @@ package com.xabber.xmpp.ssn;
 
 import com.xabber.xmpp.AbstractExtensionProvider;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 public class FeatureProvider extends AbstractExtensionProvider<Feature> {
 
@@ -33,7 +29,7 @@ public class FeatureProvider extends AbstractExtensionProvider<Feature> {
     }
 
     @Override
-    protected boolean parseInner(XmlPullParser parser, Feature instance) throws XmlPullParserException, IOException, SmackException {
+    protected boolean parseInner(XmlPullParser parser, Feature instance) throws Exception {
         if (super.parseInner(parser, instance))
             return true;
         if (DataForm.ELEMENT.equals(parser.getName())

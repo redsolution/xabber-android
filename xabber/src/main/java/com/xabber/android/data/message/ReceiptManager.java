@@ -34,6 +34,7 @@ import org.jivesoftware.smackx.receipts.DeliveryReceipt;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
+import org.jxmpp.jid.BareJid;
 
 import io.realm.Realm;
 
@@ -71,7 +72,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }

@@ -49,6 +49,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.BareJid;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -298,7 +299,7 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, final BareJid bareAddress, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String resource = Jid.getResource(packet.getFrom());

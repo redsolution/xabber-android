@@ -37,6 +37,7 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -207,10 +208,18 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     /**
-     * @param text
-     * @return New message instance.
+     *
+     * @param resource
+     * @param s
+     *@param action
+     * @param delay
+     * @param incoming
+     * @param notify
+     * @param unencrypted
+     * @param offline
+     * @param text  @return New message instance.
      */
-    protected void createAndSaveNewMessage(String text) {
+    protected void createAndSaveNewMessage(Resourcepart resource, String s, Object action, Date delay, boolean incoming, boolean notify, boolean unencrypted, boolean offline, String text) {
         MessageItem newMessageItem = createNewMessageItem(text);
         saveMessageItem(newMessageItem);
     }
@@ -219,12 +228,11 @@ public abstract class AbstractChat extends BaseEntity {
 
     /**
      * Creates new action.
-     *
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
      * @param action
      */
-    public void newAction(String resource, String text, ChatAction action) {
+    public void newAction(Resourcepart resource, String text, ChatAction action) {
         createAndSaveNewMessage(resource, text, action, null, true, false, false, false, null);
     }
 
@@ -243,7 +251,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
-    protected void createAndSaveNewMessage(String resource, String text,
+    protected void createAndSaveNewMessage(Resourcepart resource, String text,
                                            final ChatAction action, final Date delayTimestamp, final boolean incoming,
                                            boolean notify, final boolean unencrypted, final boolean offline, final String stanzaId) {
         final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
@@ -265,17 +273,14 @@ public abstract class AbstractChat extends BaseEntity {
         realm.close();
     }
 
-    protected MessageItem createMessageItem(String resource, String text, ChatAction action,
-                                          Date delayTimestamp, boolean incoming, boolean notify,
-                                          boolean unencrypted, boolean offline, String stanzaId) {
+    protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
+                                            Date delayTimestamp, boolean incoming, boolean notify,
+                                            boolean unencrypted, boolean offline, String stanzaId) {
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
         if (action == null && text == null) {
             throw new IllegalArgumentException();
-        }
-        if (resource == null) {
-            resource = "";
         }
         if (text == null) {
             text = "";
@@ -309,7 +314,10 @@ public abstract class AbstractChat extends BaseEntity {
 
         messageItem.setAccount(account);
         messageItem.setUser(user);
-        messageItem.setResource(resource);
+
+        if (resource == null) {
+            messageItem.setResource("");
+        }
         if (action != null) {
             messageItem.setAction(action.toString());
         }
@@ -417,7 +425,7 @@ public abstract class AbstractChat extends BaseEntity {
      * @param user        full jid.
      * @return Whether chat accepts packets from specified user.
      */
-    boolean accept(String bareAddress, String user) {
+    boolean accept(String bareAddress, org.jxmpp.jid.Jid user) {
         return this.user.equals(bareAddress);
     }
 

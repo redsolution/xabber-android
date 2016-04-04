@@ -146,7 +146,7 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
             type = getType(active);
             suspended = isSuspended(active);
         }
-        if (this.type == type) {
+        if (this.type.equals(type)) {
             if (this.suspended == suspended)
                 LogManager.i(this, "State does not changed.");
             else if (suspended)

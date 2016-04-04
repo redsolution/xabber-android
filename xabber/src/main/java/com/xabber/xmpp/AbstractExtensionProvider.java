@@ -15,11 +15,7 @@
 package com.xabber.xmpp;
 
 
-import org.jivesoftware.smack.SmackException;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 /**
  * Provides common interface to parse extensions.
@@ -48,7 +44,7 @@ public abstract class AbstractExtensionProvider<Extension extends PacketExtensio
      * @return new instance.
      * @throws Exception if an error occurs while parsing.
      */
-    public Extension provideInstance(XmlPullParser parser) throws IOException, XmlPullParserException, SmackException {
+    public Extension provideInstance(XmlPullParser parser) throws Exception {
         Extension instance = createInstance(parser);
         return parseTag(parser, instance);
     }
@@ -64,7 +60,7 @@ public abstract class AbstractExtensionProvider<Extension extends PacketExtensio
      * @return updated or replaced instance.
      * @throws Exception if an error occurs parsing the XML.
      */
-    public Extension parseTag(XmlPullParser parser, Extension instance) throws IOException, XmlPullParserException, SmackException {
+    public Extension parseTag(XmlPullParser parser, Extension instance) throws Exception {
         String name = parser.getName();
         instance = preProcess(parser, instance);
         while (true) {
@@ -120,13 +116,13 @@ public abstract class AbstractExtensionProvider<Extension extends PacketExtensio
      * @return Whether parser position have been changed.
      * @throws Exception
      */
-    protected boolean parseInner(XmlPullParser parser, Extension instance) throws XmlPullParserException, IOException, SmackException {
+    protected boolean parseInner(XmlPullParser parser, Extension instance) throws Exception {
         return false;
     }
 
 
     @Override
-    public Extension parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
+    public Extension parse(XmlPullParser parser, int initialDepth) throws Exception {
         return provideInstance(parser);
     }
 

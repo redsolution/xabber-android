@@ -19,6 +19,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
+import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
@@ -79,7 +80,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
 
         if (!(connection instanceof AccountItem)) {
             return;

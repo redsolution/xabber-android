@@ -1,19 +1,15 @@
 package org.jivesoftware.smackx.mam.provider;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.IQProvider;
 import org.jivesoftware.smack.util.ParserUtils;
 import org.jivesoftware.smackx.mam.packet.MamFinIQ;
 import org.jivesoftware.smackx.rsm.packet.RSMSet;
 import org.jivesoftware.smackx.rsm.provider.RSMSetProvider;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 public class MamFinIQProvider extends IQProvider<MamFinIQ> {
     @Override
-    public MamFinIQ parse(XmlPullParser parser, int initialDepth) throws XmlPullParserException, IOException, SmackException {
+    public MamFinIQ parse(XmlPullParser parser, int initialDepth) throws Exception {
         boolean done = false;
 
         MamFinIQ mamFinIQ = new MamFinIQ();

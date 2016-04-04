@@ -87,7 +87,7 @@ public class MamManager extends Manager {
         sdm.addFeature(MamPacket.NAMESPACE);
     }
 
-    public MamPrefIQ getArchivingPreferences() throws NotConnectedException {
+    public MamPrefIQ getArchivingPreferences() throws NotConnectedException, InterruptedException {
         MamPrefIQ prefIQ = new MamPrefIQ();
         prefIQ.setType(IQ.Type.get);
 
@@ -101,7 +101,7 @@ public class MamManager extends Manager {
         }
     }
 
-    public boolean updateArchivingPreferences(Behaviour defaultBehaviour) throws NotConnectedException {
+    public boolean updateArchivingPreferences(Behaviour defaultBehaviour) throws NotConnectedException, InterruptedException {
         MamPrefIQ request = new MamPrefIQ();
         request.setType(IQ.Type.set);
         request.setBehaviour(defaultBehaviour);

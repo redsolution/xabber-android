@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnWipeListener;
@@ -48,6 +49,10 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.util.StringUtils;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
 import org.jxmpp.util.XmppStringUtils;
 
 import java.security.KeyPair;
@@ -174,13 +179,27 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         try {
             if (cursor.moveToFirst()) {
                 do {
+                    DomainBareJid serverName = null;
+                    try {
+                        serverName = JidCreate.domainBareFrom(AccountTable.getServerName(cursor));
+                    } catch (XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
+
+                    Localpart userName = null;
+                    try {
+                        userName = Localpart.from(AccountTable.getUserName(cursor));
+                    } catch (XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
+
                     AccountItem accountItem = new AccountItem(
                             AccountTable.getProtocol(cursor),
                             AccountTable.isCustom(cursor),
                             AccountTable.getHost(cursor),
                             AccountTable.getPort(cursor),
-                            AccountTable.getServerName(cursor),
-                            AccountTable.getUserName(cursor),
+                            serverName,
+                            userName,
                             AccountTable.getResource(cursor),
                             AccountTable.isStorePassword(cursor),
                             AccountTable.getPassword(cursor),
@@ -294,7 +313,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * Creates new account and starts connection.
      */
     private AccountItem addAccount(AccountProtocol protocol, boolean custom, String host, int port,
-                                   String serverName, String userName, boolean storePassword,
+                                   DomainBareJid serverName, Localpart userName, boolean storePassword,
                                    String password, String resource, int color, int priority,
                                    StatusMode statusMode, String statusText, boolean enabled,
                                    boolean saslEnabled, TLSMode tlsMode, boolean compression,
@@ -334,26 +353,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     public String addAccount(String user, String password, AccountType accountType, boolean syncable,
                              boolean storePassword, boolean useOrbot, boolean registerNewAccount)
             throws NetworkException {
-        if (accountType.getProtocol().isOAuth()) {
-            int index = 1;
-            while (true) {
-                user = String.valueOf(index);
-                boolean found = false;
-                for (AccountItem accountItem : accountItems.values()) {
-                    if (accountItem.getConnectionSettings().getServerName()
-                            .equals(accountType.getFirstServer())
-                            && accountItem.getConnectionSettings().getUserName().equals(user)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    break;
-                }
-                index++;
-            }
-        }
-
         if (user == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
         }
@@ -366,8 +365,18 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
         }
 
-        String serverName = XmppStringUtils.parseDomain(user);
-        String userName = XmppStringUtils.parseLocalpart(user);
+        DomainBareJid serverName;
+        try {
+            serverName = JidCreate.domainBareFrom(user);
+        } catch (XmppStringprepException e) {
+            throw new NetworkException(R.string.INCORRECT_USER_NAME);
+        }
+        Localpart userName;
+        try {
+            userName = Localpart.from(XmppStringUtils.parseLocalpart(user));
+        } catch (XmppStringprepException e) {
+            throw new NetworkException(R.string.INCORRECT_USER_NAME);
+        }
         String resource = XmppStringUtils.parseResource(user);
         String host = accountType.getHost();
         int port = accountType.getPort();
@@ -376,13 +385,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             tlsRequired = true;
         }
 
-        if ("".equals(serverName)) {
-            throw new NetworkException(R.string.EMPTY_SERVER_NAME);
-        } else if (!accountType.isAllowServer() && !serverName.equals(accountType.getFirstServer())) {
-            throw new NetworkException(R.string.INCORRECT_USER_NAME);
-        }
-
-        if ("".equals(userName)) {
+        if (userName == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
         }
         if ("".equals(resource)) {
@@ -390,9 +393,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         }
 
         if (accountType.getId() == R.array.account_type_xmpp) {
-            host = serverName;
+            host = serverName.getDomain().toString();
             for (AccountType check : accountTypes) {
-                if (check.getServers().contains(serverName)) {
+                if (check.getServers().contains(serverName.getDomain().toString())) {
                     accountType = check;
                     host = check.getHost();
                     port = check.getPort();
@@ -404,7 +407,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
         AccountItem accountItem;
         while(true) {
-            if (getAccount(userName + '@' + serverName + '/' + resource) == null) {
+            if (getAccount(userName.toString() + '@' + serverName.getDomain() + '/' + resource) == null) {
                 break;
             }
             resource = generateResource();
@@ -504,8 +507,8 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param syncable
      * @param archiveMode
      */
-    public void updateAccount(String account, boolean custom, String host, int port, String serverName,
-                              String userName, boolean storePassword, String password, String resource,
+    public void updateAccount(String account, boolean custom, String host, int port, DomainBareJid serverName,
+                              Localpart userName, boolean storePassword, String password, String resource,
                               int priority, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
                               String proxyUser, String proxyPassword, boolean syncable,
@@ -858,7 +861,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             AccountProtocol accountProtocol = accountItem.getConnectionSettings().getProtocol();
             String name;
             if (hasSameProtocol(account)) {
-                name = accountItem.getConnectionSettings().getUserName();
+                name = accountItem.getConnectionSettings().getUserName().toString();
             } else {
                 return application.getString(accountProtocol.getNameResource());
             }

@@ -415,8 +415,8 @@ public class AccountTable extends AbstractTable {
         values.put(Fields.CUSTOM, connectionSettings.isCustomHostAndPort() ? 1 : 0);
         values.put(Fields.HOST, connectionSettings.getHost());
         values.put(Fields.PORT, connectionSettings.getPort());
-        values.put(Fields.SERVER_NAME, connectionSettings.getServerName());
-        values.put(Fields.USER_NAME, connectionSettings.getUserName());
+        values.put(Fields.SERVER_NAME, connectionSettings.getServerName().getDomain().toString());
+        values.put(Fields.USER_NAME, connectionSettings.getUserName().toString());
 
         String password = connectionSettings.getPassword();
         if (!accountItem.isStorePassword()) {
@@ -472,7 +472,6 @@ public class AccountTable extends AbstractTable {
     /**
      * Delete record from database.
      *
-     * @param accountItem
      * @return <b>True</b> if record was removed.
      */
     public void remove(String account, long id) {

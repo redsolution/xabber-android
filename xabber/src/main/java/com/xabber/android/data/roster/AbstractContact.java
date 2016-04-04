@@ -90,7 +90,7 @@ public class AbstractContact extends BaseEntity {
             return ClientSoftware.unknown;
         }
 
-        final String fullJid = presence.getFrom();
+        final org.jxmpp.jid.Jid fullJid = presence.getFrom();
         ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, fullJid);
         if (clientInfo == null) {
 
