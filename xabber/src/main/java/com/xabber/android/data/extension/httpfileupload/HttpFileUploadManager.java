@@ -190,7 +190,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
     @Override
     public void onAuthorized(final ConnectionItem connection) {
-        new Thread("Thread to check for " + connection.getRealJid()) {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -199,6 +199,6 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                     LogManager.exception(this, e);
                 }
             }
-        }.start();
+        });
     }
 }
