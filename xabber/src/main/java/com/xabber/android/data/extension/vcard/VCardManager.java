@@ -30,6 +30,7 @@ import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.VCardTable;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
@@ -50,6 +51,7 @@ import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -138,10 +140,14 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             }
         }
 
+        Collection<String> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+
         // Request vCards for new contacts.
         for (RosterContact contact : RosterManager.getInstance().getContacts()) {
             if (account.equals(contact.getAccount()) && !names.containsKey(contact.getUser())) {
-                request(account, contact.getUser());
+                if (!blockedContacts.contains(contact.getUser())) {
+                    request(account, contact.getUser());
+                }
             }
         }
     }
