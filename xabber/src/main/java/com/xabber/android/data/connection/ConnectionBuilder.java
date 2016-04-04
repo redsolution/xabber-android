@@ -7,6 +7,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 
 import org.jivesoftware.smack.SASLAuthentication;
+import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -59,6 +60,48 @@ public class ConnectionBuilder {
         setUpSasl();
 
         return new XMPPTCPConnection(builder.build());
+    }
+
+    private static ProxyInfo getProxyInfo(ConnectionSettings connectionSettings) {
+
+        ProxyInfo proxyInfo;
+
+        ProxyType proxyType = connectionSettings.getProxyType();
+
+        String proxyHost = connectionSettings.getProxyHost();
+        int proxyPort = connectionSettings.getProxyPort();
+        String proxyPassword = connectionSettings.getProxyPassword();
+        String proxyUser = connectionSettings.getProxyUser();
+
+        if (proxyType == null) {
+            proxyInfo = ProxyInfo.forDefaultProxy();
+        } else {
+            switch (proxyType) {
+                case none:
+                    proxyInfo = ProxyInfo.forNoProxy();
+                    break;
+                case http:
+                    proxyInfo = ProxyInfo.forHttpProxy(proxyHost, proxyPort, proxyUser, proxyPassword);
+                    break;
+                case socks4:
+                    proxyInfo = ProxyInfo.forSocks4Proxy(proxyHost, proxyPort, proxyUser, proxyPassword);
+                    break;
+                case socks5:
+                    proxyInfo = ProxyInfo.forSocks5Proxy(proxyHost, proxyPort, proxyUser, proxyPassword);
+                    break;
+                case orbot:
+                    proxyHost = "localhost";
+                    proxyPort = 9050;
+                    proxyPassword = "";
+                    proxyUser = "";
+                    proxyInfo = ProxyInfo.forSocks5Proxy(proxyHost, proxyPort, proxyUser, proxyPassword);
+                    break;
+                default:
+                    proxyInfo = ProxyInfo.forDefaultProxy();
+            }
+        }
+
+        return proxyInfo;
     }
 
     private static void setUpSasl() {
