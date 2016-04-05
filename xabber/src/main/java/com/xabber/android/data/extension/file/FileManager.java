@@ -177,8 +177,8 @@ public class FileManager {
         startedDownloads.add(downloadUrl);
 
 
-        final String account = messageItem.getAccount();
-        final String user = messageItem.getUser();
+        final AccountJid account = messageItem.getAccount();
+        final UserJid user = messageItem.getUser();
         final String uniqueId = messageItem.getUniqueId();
         final String filePath = messageItem.getFilePath();
 

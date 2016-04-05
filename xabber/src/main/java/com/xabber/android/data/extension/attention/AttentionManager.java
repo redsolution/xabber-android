@@ -28,6 +28,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
@@ -49,7 +50,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.attention.packet.AttentionExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jxmpp.jid.BareJid;
 
 /**
  * XEP-0224: Attention.
@@ -102,7 +102,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
     public void onSettingsChanged() {
         synchronized (enabledLock) {
-            for (String account : AccountManager.getInstance().getAccounts()) {
+            for (AccountJid account : AccountManager.getInstance().getAccounts()) {
                 ConnectionThread connectionThread = AccountManager
                         .getInstance().getAccount(account)
                         .getConnectionThread();
@@ -149,29 +149,31 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza stanza) {
         if (!(connection instanceof AccountItem))
             return;
-        if (!(packet instanceof Message))
+        if (!(stanza instanceof Message))
             return;
         if (!SettingsManager.chatsAttention())
             return;
-        final String account = ((AccountItem) connection).getAccount();
-        if (bareAddress == null)
+        final AccountJid account = ((AccountItem) connection).getAccount();
+
+        org.jxmpp.jid.Jid from = stanza.getFrom();
+
+        if (from == null)
             return;
-        for (ExtensionElement packetExtension : packet.getExtensions()) {
+        for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
-                MessageManager.getInstance().openChat(account, bareAddress);
+                MessageManager.getInstance().openChat(account, from);
                 MessageManager.getInstance()
-                        .getOrCreateChat(account, bareAddress)
+                        .getOrCreateChat(account, from)
                         .newAction(null, null, ChatAction.attention_requested);
-                attentionRequestProvider.add(new AttentionRequest(account,
-                        bareAddress), true);
+                attentionRequestProvider.add(new AttentionRequest(account, from), true);
             }
         }
     }
 
-    public void sendAttention(String account, String user) throws NetworkException {
+    public void sendAttention(AccountJid account, UserJid user) throws NetworkException {
         AbstractChat chat = MessageManager.getInstance().getOrCreateChat(account, user);
         if (!(chat instanceof RegularChat)) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);

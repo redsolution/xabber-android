@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
@@ -49,7 +50,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        String account = (String) adapter.getItem(which);
+        AccountJid account = (AccountJid) adapter.getItem(which);
         OnChooseListener listener = (OnChooseListener) getActivity();
         listener.onChoose(account, user, text);
     }
@@ -58,7 +59,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
 
         public Adapter(Activity activity) {
             super(activity);
-            ArrayList<String> available = new ArrayList<>();
+            ArrayList<AccountJid> available = new ArrayList<>();
             for (RosterContact check : RosterManager.getInstance().getContacts()) {
                 if (check.isEnabled() && check.getUser().equals(user)) {
                     available.add(check.getAccount());
@@ -78,7 +79,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
     }
 
     public interface OnChooseListener {
-        void onChoose(String account, String user, String text);
+        void onChoose(AccountJid account, String user, String text);
     }
 
 }

@@ -27,7 +27,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -35,7 +37,8 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
-import com.xabber.xmpp.address.Jid;
+
+import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
@@ -51,8 +54,8 @@ public class QuestionViewer extends ManagedActivity implements
     private static final String EXTRA_FIELD_ANSWER_REQUEST = "com.xabber.android.data.ui.QuestionViewer.ANSWER_REQUEST";
     private static final String EXTRA_FIELD_CANCEL = "com.xabber.android.data.ui.QuestionViewer.CANCEL";
     ContactTitleActionBarInflater contactTitleActionBarInflater;
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
     private boolean showQuestion;
     private boolean answerRequest;
     private EditText questionView;
@@ -63,7 +66,7 @@ public class QuestionViewer extends ManagedActivity implements
      * @param user
      * @return Intent to cancel negotiation.
      */
-    public static Intent createCancelIntent(Context context, String account, String user) {
+    public static Intent createCancelIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
                 .setAccount(account).setUser(user).build();
         intent.putExtra(EXTRA_FIELD_CANCEL, true);
@@ -80,7 +83,7 @@ public class QuestionViewer extends ManagedActivity implements
      *                      answerRequest are <code>true</code>.
      * @return
      */
-    public static Intent createIntent(Context context, String account, String user,
+    public static Intent createIntent(Context context, AccountJid account, UserJid user,
                                       boolean showQuestion, boolean answerRequest, String question) {
         Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
                 .setAccount(account).setUser(user).build();
@@ -90,11 +93,11 @@ public class QuestionViewer extends ManagedActivity implements
         return intent;
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -161,7 +164,7 @@ public class QuestionViewer extends ManagedActivity implements
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        String thisBareAddress = Jid.getBareAddress(user);
+        BareJid thisBareAddress = user.getJid().asBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
                 update();
@@ -171,7 +174,7 @@ public class QuestionViewer extends ManagedActivity implements
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             update();
         }

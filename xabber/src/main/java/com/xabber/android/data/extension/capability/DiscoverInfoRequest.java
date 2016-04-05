@@ -29,7 +29,7 @@ class DiscoverInfoRequest extends BaseEntity {
 
     private final Capability capability;
 
-    public DiscoverInfoRequest(String account, Jid user, String packetId,
+    public DiscoverInfoRequest(AccountJid account, Jid user, String packetId,
                                Capability capability) {
         super(account, user.toString());
         this.packetId = packetId;

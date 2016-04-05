@@ -32,6 +32,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -42,18 +44,18 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_USER";
 
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
 
     private EditText nameView;
     private CheckBox sendView;
 
-    public static ChatExportDialogFragment newInstance(String account, String user) {
+    public static ChatExportDialogFragment newInstance(AccountJid account, UserJid user) {
         ChatExportDialogFragment fragment = new ChatExportDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -61,8 +63,8 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        user = (UserJid) args.getSerializable(ARGUMENT_USER);
 
         View layout = getActivity().getLayoutInflater().inflate(R.layout.export_chat, null);
         nameView = (EditText) layout.findViewById(R.id.name);
@@ -94,12 +96,12 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     // TODO get rid of async task
     private class ChatExportAsyncTask extends AsyncTask<Void, Void, File> {
 
-        private final String account;
-        private final String user;
+        private final AccountJid account;
+        private final UserJid user;
         private final String name;
         private final boolean send;
 
-        public ChatExportAsyncTask(String account, String user, String name, boolean send) {
+        public ChatExportAsyncTask(AccountJid account, UserJid user, String name, boolean send) {
             this.account = account;
             this.user = user;
             this.name = name;

@@ -27,7 +27,9 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -39,6 +41,8 @@ import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.xmpp.address.Jid;
 
+import org.jxmpp.jid.DomainBareJid;
+
 import java.util.Collection;
 
 /**
@@ -49,20 +53,20 @@ import java.util.Collection;
 public class OccupantList extends ManagedListActivity implements
         OnAccountChangedListener, OnContactChangedListener, AdapterView.OnItemClickListener {
 
-    private String account;
-    private String room;
+    private AccountJid account;
+    private DomainBareJid room;
     private OccupantListAdapter listAdapter;
 
-    public static Intent createIntent(Context context, String account, String user) {
+    public static Intent createIntent(Context context, AccountJid account, DomainBareJid room) {
         return new EntityIntentBuilder(context, OccupantList.class)
-                .setAccount(account).setUser(user).build();
+                .setAccount(account).setUser(room).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

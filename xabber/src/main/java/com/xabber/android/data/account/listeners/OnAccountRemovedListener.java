@@ -24,8 +24,6 @@ public interface OnAccountRemovedListener extends BaseManagerInterface {
      * <p/>
      * {@link OnAccountDisabledListener#onAccountDisabled(AccountItem)} will be
      * call first.
-     *
-     * @param accountItem
      */
     void onAccountRemoved(AccountItem accountItem);
 

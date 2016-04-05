@@ -26,8 +26,6 @@ public interface OnDisconnectListener extends BaseManagerInterface {
 
     /**
      * Disconnection occur on some reason.
-     *
-     * @param connection
      */
     void onDisconnect(ConnectionItem connection);
 

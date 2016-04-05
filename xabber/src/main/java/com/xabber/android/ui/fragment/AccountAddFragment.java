@@ -16,6 +16,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.AccountType;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.AccountViewer;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
@@ -81,7 +82,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
         AccountType accountType = AccountManager.getInstance().getAccountTypes().get(0);
 
-        String account;
+        AccountJid account;
         try {
             account = AccountManager.getInstance().addAccount(
                     userView.getText().toString(),

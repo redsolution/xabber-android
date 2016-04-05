@@ -43,7 +43,7 @@ class Capability extends BaseEntity {
      */
     private final String version;
 
-    public Capability(String account, Jid user, String hash, String node,
+    public Capability(AccountJid account, Jid user, String hash, String node,
                       String version) {
         super((isLegacy(hash) || isSupportedHash(hash)) ? null : account,
                 (isLegacy(hash) || isSupportedHash(hash)) ? null : user.toString());

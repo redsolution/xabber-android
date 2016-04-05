@@ -29,8 +29,10 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedNestedMaps;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -49,7 +51,6 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jxmpp.jid.BareJid;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -140,7 +141,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * @param bareAddress
      * @return <code>null</code> if there is no available information.
      */
-    public ChatState getChatState(String account, String bareAddress) {
+    public ChatState getChatState(AccountJid account, String bareAddress) {
         Map<String, ChatState> map = chatStates.get(account, bareAddress);
         if (map == null)
             return null;
@@ -202,7 +203,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * @param user
      * @param chatState
      */
-    private void updateChatState(String account, String user,
+    private void updateChatState(AccountJid account, UserJid user,
                                  ChatState chatState) {
         if (!SettingsManager.chatsStateNotification()
                 || sent.get(account, user) == chatState)
@@ -228,7 +229,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * @param account
      * @param user
      */
-    private void cancelPauseIntent(String account, String user) {
+    private void cancelPauseIntent(AccountJid account, UserJid user) {
         PendingIntent pendingIntent = pauseIntents.remove(account, user);
         if (pendingIntent != null)
             alarmManager.cancel(pendingIntent);
@@ -240,7 +241,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * @param account
      * @param user
      */
-    public void onComposing(String account, String user, CharSequence text) {
+    public void onComposing(AccountJid account, UserJid user, CharSequence text) {
         cancelPauseIntent(account, user);
         if (text.length() == 0) {
             updateChatState(account, user, ChatState.active);
@@ -260,7 +261,7 @@ public class ChatStateManager implements OnDisconnectListener,
         pauseIntents.put(account, user, pendingIntent);
     }
 
-    public void onPaused(String account, String user) {
+    public void onPaused(AccountJid account, UserJid user) {
         if (account == null || user == null)
             return;
         if (sent.get(account, user) != ChatState.composing) {
@@ -275,7 +276,7 @@ public class ChatStateManager implements OnDisconnectListener,
     public void onDisconnect(ConnectionItem connection) {
         if (!(connection instanceof AccountItem))
             return;
-        String account = ((AccountItem) connection).getAccount();
+        AccountJid account = ((AccountItem) connection).getAccount();
         chatStates.clear(account);
         for (Map<String, Runnable> map : stateCleaners.getNested(account)
                 .values())
@@ -290,7 +291,7 @@ public class ChatStateManager implements OnDisconnectListener,
         pauseIntents.clear(account);
     }
 
-    private void removeCallback(String account, String bareAddress,
+    private void removeCallback(AccountJid account, String bareAddress,
                                 String resource) {
         Runnable runnable = stateCleaners
                 .remove(account, bareAddress, resource);
@@ -299,13 +300,13 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String resource = Jid.getResource(packet.getFrom());
         if (resource == null)
             return;
-        final String account = ((AccountItem) connection).getAccount();
+        final AccountJid account = ((AccountItem) connection).getAccount();
         if (packet instanceof Presence) {
             Presence presence = (Presence) packet;
             if (presence.getType() != Type.unavailable)

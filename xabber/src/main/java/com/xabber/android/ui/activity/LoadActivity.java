@@ -28,6 +28,7 @@ import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.helper.SingleActivity;
 
@@ -75,7 +76,7 @@ public class LoadActivity extends SingleActivity implements
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         update();
     }
 

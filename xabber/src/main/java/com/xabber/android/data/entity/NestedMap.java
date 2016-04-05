@@ -32,7 +32,7 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
     private final Map<String, Map<String, T>> map;
 
     public NestedMap() {
-        map = new HashMap<String, Map<String, T>>();
+        map = new HashMap<>();
     }
 
     /**

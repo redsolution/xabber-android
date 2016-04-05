@@ -17,16 +17,19 @@ package com.xabber.android.data.roster;
 import android.graphics.drawable.Drawable;
 
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.packet.Presence;
+import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +43,7 @@ import java.util.Collections;
 public class AbstractContact extends BaseEntity {
 
 
-    public AbstractContact(String account, String user) {
+    public AbstractContact(AccountJid account, UserJid user) {
         super(account, user);
     }
 
@@ -50,24 +53,27 @@ public class AbstractContact extends BaseEntity {
      * @return Verbose name.
      */
     public String getName() {
-        String vCardName = VCardManager.getInstance().getName(user);
+        String vCardName = VCardManager.getInstance().getName(user.getJid());
 
         if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-            String name;
+            String name = "";
 
             if (!"".equals(vCardName)) {
                 name = vCardName;
             } else {
-                name = Jid.getResource(user);
+                Resourcepart resourcepart = user.getJid().getResourceOrNull();
+                if (resourcepart != null) {
+                    name = resourcepart.toString();
+                }
             }
 
-            return String.format("%s (%s)", name, Jid.getBareAddress(user));
+            return String.format("%s (%s)", name, user.getJid().asBareJid().toString());
         }
 
         if (!"".equals(vCardName))
             return vCardName;
 
-        return user;
+        return user.toString();
     }
 
     public StatusMode getStatusMode() {
@@ -90,7 +96,7 @@ public class AbstractContact extends BaseEntity {
             return ClientSoftware.unknown;
         }
 
-        final org.jxmpp.jid.Jid fullJid = presence.getFrom();
+        FullJid fullJid = presence.getFrom().asFullJidIfPossible();
         ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, fullJid);
         if (clientInfo == null) {
 

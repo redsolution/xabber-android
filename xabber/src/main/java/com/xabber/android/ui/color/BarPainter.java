@@ -3,6 +3,8 @@ package com.xabber.android.ui.color;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.xabber.android.data.entity.AccountJid;
+
 public class BarPainter {
 
     private final Toolbar toolbar;
@@ -17,7 +19,7 @@ public class BarPainter {
         accountPainter = new AccountPainter(activity);
     }
 
-    public void updateWithAccountName(String account) {
+    public void updateWithAccountName(AccountJid account) {
         toolbar.setBackgroundColor(accountPainter.getAccountMainColor(account));
         statusBarPainter.updateWithAccountName(account);
     }

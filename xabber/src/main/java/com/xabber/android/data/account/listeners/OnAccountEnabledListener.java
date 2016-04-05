@@ -24,8 +24,6 @@ public interface OnAccountEnabledListener extends BaseManagerInterface {
      * <p/>
      * {@link OnAccountAddedListener#onAccountAdded(AccountItem)} will be called
      * first.
-     *
-     * @param accountItem
      */
     void onAccountEnabled(AccountItem accountItem);
 

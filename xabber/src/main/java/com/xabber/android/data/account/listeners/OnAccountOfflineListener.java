@@ -21,8 +21,6 @@ public interface OnAccountOfflineListener extends BaseManagerInterface {
 
     /**
      * Go offline requested.
-     *
-     * @param accountItem
      */
     void onAccountOffline(AccountItem accountItem);
 

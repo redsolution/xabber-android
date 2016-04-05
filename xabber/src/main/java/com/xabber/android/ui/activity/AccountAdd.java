@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountAddFragment;
@@ -34,7 +35,7 @@ public class AccountAdd extends ManagedActivity implements Toolbar.OnMenuItemCli
         return new Intent(context, AccountAdd.class);
     }
 
-    public static Intent createAuthenticatorResult(String account) {
+    public static Intent createAuthenticatorResult(AccountJid account) {
         return new AccountIntentBuilder(null, null).setAccount(account).build();
     }
 

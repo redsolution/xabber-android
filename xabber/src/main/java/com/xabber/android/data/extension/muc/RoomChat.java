@@ -35,6 +35,7 @@ import org.jivesoftware.smackx.muc.MUCRole;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.packet.MUCItem;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Collection;
@@ -79,7 +80,7 @@ public class RoomChat extends AbstractChat {
      */
     private MultiUserChat multiUserChat;
 
-    RoomChat(String account, String user, Resourcepart nickname, String password) {
+    RoomChat(AccountJid account, EntityBareJid user, Resourcepart nickname, String password) {
         super(account, user, false);
         this.nickname = nickname;
         this.password = password;
@@ -92,7 +93,7 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    public String getTo() {
+    public EntityBareJid getTo() {
         return user;
     }
 
@@ -101,7 +102,7 @@ public class RoomChat extends AbstractChat {
         return Type.groupchat;
     }
 
-    String getRoom() {
+    EntityBareJid getRoom() {
         return user;
     }
 
@@ -161,7 +162,7 @@ public class RoomChat extends AbstractChat {
         this.multiUserChat = multiUserChat;
     }
 
-    void putInvite(String packetID, String user) {
+    void putInvite(String packetID, UserJid user) {
         invites.put(packetID, user);
     }
 
@@ -176,7 +177,7 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(String bareAddress, Stanza packet) {
+    protected boolean onPacket(EntityBareJid bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet)) {
             return false;
         }

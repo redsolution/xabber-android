@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.connection.listeners;
 
+import com.xabber.android.data.entity.AccountJid;
+
 import org.jivesoftware.smack.packet.IQ;
 
 /**
@@ -23,12 +25,12 @@ import org.jivesoftware.smack.packet.IQ;
  */
 public interface OnResponseListener {
 
-    void onReceived(String account, String packetId, IQ iq);
+    void onReceived(AccountJid account, String packetId, IQ iq);
 
-    void onError(String account, String packetId, IQ iq);
+    void onError(AccountJid account, String packetId, IQ iq);
 
-    void onTimeout(String account, String packetId);
+    void onTimeout(AccountJid account, String packetId);
 
-    void onDisconnect(String account, String packetId);
+    void onDisconnect(AccountJid account, String packetId);
 
 }

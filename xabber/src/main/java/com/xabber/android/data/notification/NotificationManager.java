@@ -41,6 +41,8 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.database.sqlite.NotificationTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
@@ -362,7 +364,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         int connected = 0;
 
         Collection<String> accountList = AccountManager.getInstance().getAccounts();
-        for (String account : accountList) {
+        for (AccountJid account : accountList) {
             ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
 
             if (RosterManager.getInstance().isRosterReceived(account)) {
@@ -452,7 +454,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
     }
 
-    private MessageNotification getMessageNotification(String account, String user) {
+    private MessageNotification getMessageNotification(AccountJid account, UserJid user) {
         for (MessageNotification messageNotification : messageNotifications) {
             if (messageNotification.equals(account, user)) {
                 return messageNotification;
@@ -473,8 +475,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         messageNotification.addMessage(MessageItem.getDisplayText(messageItem));
         messageNotifications.add(messageNotification);
 
-        final String account = messageNotification.getAccount();
-        final String user = messageNotification.getUser();
+        final AccountJid account = messageNotification.getAccount();
+        final UserJid user = messageNotification.getUser();
         final String text = messageNotification.getText();
         final Date timestamp = messageNotification.getTimestamp();
         final int count = messageNotification.getCount();
@@ -504,7 +506,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         updateMessageNotification(null);
     }
 
-    public int getNotificationMessageCount(String account, String user) {
+    public int getNotificationMessageCount(AccountJid account, UserJid user) {
         MessageNotification messageNotification = getMessageNotification(
                 account, user);
         if (messageNotification == null)
@@ -512,7 +514,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         return messageNotification.getCount();
     }
 
-    public void removeMessageNotification(final String account, final String user) {
+    public void removeMessageNotification(final AccountJid account, final UserJid user) {
         MessageNotification messageNotification = getMessageNotification(account, user);
         if (messageNotification == null)
             return;
@@ -545,7 +547,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onAccountArchiveModeChanged(AccountItem accountItem) {
-        final String account = accountItem.getAccount();
+        final AccountJid account = accountItem.getAccount();
         if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore)
             return;
         Application.getInstance().runInBackground(new Runnable() {

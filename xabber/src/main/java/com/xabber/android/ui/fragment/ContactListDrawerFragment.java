@@ -159,6 +159,6 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     public interface ContactListDrawerListener {
         void onContactListDrawerListener(int viewId);
 
-        void onAccountSelected(String account);
+        void onAccountSelected(AccountJid account);
     }
 }

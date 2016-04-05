@@ -25,7 +25,7 @@ import com.xabber.android.ui.activity.QuestionViewer;
 
 public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
-    public SMProgress(String account, String user) {
+    public SMProgress(AccountJid account, UserJid user) {
         super(account, user);
     }
 

@@ -30,6 +30,7 @@ import com.soundcloud.android.crop.Crop;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
@@ -82,7 +83,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final int MAX_IMAGE_SIZE = 512;
 
     private VCard vCard;
-    private String account;
+    private AccountJid account;
     private View progressBar;
     private boolean isSaveSuccess;
     private Listener listener;
@@ -144,7 +145,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         void enableSave();
     }
 
-    public static AccountInfoEditorFragment newInstance(String account, String vCard) {
+    public static AccountInfoEditorFragment newInstance(AccountJid account, String vCard) {
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
 
         Bundle arguments = new Bundle();
@@ -724,7 +725,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onVCardSaveSuccess(String account) {
+    public void onVCardSaveSuccess(AccountJid account) {
         if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(account))) {
             return;
         }
@@ -735,7 +736,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onVCardSaveFailed(String account) {
+    public void onVCardSaveFailed(AccountJid account) {
         if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(account))) {
             return;
         }
@@ -747,7 +748,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onVCardReceived(String account, String bareAddress, VCard vCard) {
+    public void onVCardReceived(AccountJid account, String bareAddress, VCard vCard) {
         if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(bareAddress))) {
             return;
         }
@@ -772,7 +773,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onVCardFailed(String account, String bareAddress) {
+    public void onVCardFailed(AccountJid account, String bareAddress) {
         if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(bareAddress))) {
             return;
         }

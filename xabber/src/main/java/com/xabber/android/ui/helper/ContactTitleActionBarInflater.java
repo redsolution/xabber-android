@@ -42,8 +42,8 @@ public class ContactTitleActionBarInflater {
         ContactTitleInflater.updateTitle(contactView, activity, abstractContact);
     }
 
-    public void setStatusText(String user) {
-        ((TextView) contactView.findViewById(R.id.status_text)).setText(user);
+    public void setStatusText(String test) {
+        ((TextView) contactView.findViewById(R.id.status_text)).setText(test);
     }
 
     public void hideStatusIcon() {

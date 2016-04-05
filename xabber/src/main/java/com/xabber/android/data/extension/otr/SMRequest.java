@@ -27,7 +27,7 @@ public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
     private final String question;
 
-    public SMRequest(String account, String user, String question) {
+    public SMRequest(AccountJid account, UserJid user, String question) {
         super(account, user);
         this.question = question;
     }

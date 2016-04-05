@@ -16,6 +16,8 @@ package com.xabber.android.data.roster;
 
 import com.xabber.android.data.BaseManagerInterface;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 
 /**
  * Listen for changes in presence.
@@ -26,25 +28,12 @@ public interface OnStatusChangeListener extends BaseManagerInterface {
 
     /**
      * Notify when only status text changed.
-     *
-     * @param account
-     * @param bareAddress
-     * @param resource
-     * @param statusText
      */
-    void onStatusChanged(String account, String bareAddress, String resource,
-                         String statusText);
+    void onStatusChanged(AccountJid account, UserJid user, String statusText);
 
     /**
      * Notify when status mode changed.
-     *
-     * @param account
-     * @param bareAddress
-     * @param resource
-     * @param statusMode
-     * @param statusText
      */
-    void onStatusChanged(String account, String bareAddress, String resource,
-                         StatusMode statusMode, String statusText);
+    void onStatusChanged(AccountJid account, UserJid user, StatusMode statusMode, String statusText);
 
 }

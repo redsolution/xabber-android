@@ -14,6 +14,10 @@
  */
 package com.xabber.android.data.entity;
 
+import android.support.annotation.NonNull;
+
+import org.jxmpp.jid.Jid;
+
 /**
  * Object with account and user fields.
  *
@@ -22,9 +26,9 @@ package com.xabber.android.data.entity;
 public class BaseEntity extends AccountRelated implements
         Comparable<BaseEntity> {
 
-    protected final String user;
+    protected final @NonNull UserJid user;
 
-    public BaseEntity(String account, String user) {
+    public BaseEntity(AccountJid account, @NonNull UserJid user) {
         super(account);
         this.user = user;
     }
@@ -33,7 +37,8 @@ public class BaseEntity extends AccountRelated implements
         this(baseEntity.account, baseEntity.user);
     }
 
-    public String getUser() {
+    @NonNull
+    public UserJid getUser() {
         return user;
     }
 
@@ -41,27 +46,18 @@ public class BaseEntity extends AccountRelated implements
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        result = prime * result + (user.hashCode());
         return result;
     }
 
-    public boolean equals(String account, String user) {
-        if (this.account == null) {
-            if (account != null)
-                return false;
-        } else {
-            if (!this.account.equals(account))
-                return false;
-        }
-        if (this.user == null) {
-            if (user != null)
-                return false;
-        } else {
-            if (!this.user.equals(user))
-                return false;
-        }
-        return true;
+    public boolean equals(AccountJid account, UserJid user) {
+        return this.account.equals(account) && this.user.equals(user);
     }
+
+    public boolean equals(AccountJid account, Jid jid) {
+        return this.account.equals(account) && this.user.equals(jid);
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -70,39 +66,18 @@ public class BaseEntity extends AccountRelated implements
         if (!super.equals(obj))
             return false;
         BaseEntity other = (BaseEntity) obj;
-        if (user == null) {
-            if (other.user != null)
-                return false;
-        } else if (!user.equals(other.user))
-            return false;
-        return true;
+        return user.equals(other.user);
     }
 
     @Override
-    public int compareTo(BaseEntity another) {
-        if (account == null) {
-            if (another.account != null)
-                return -1;
-        } else {
-            if (another.account == null)
-                return 1;
-            else {
-                int result = account.compareTo(another.account);
-                if (result != 0)
-                    return result;
-            }
+    public int compareTo(@NonNull BaseEntity another) {
+        int accountResult = account.compareTo(another.account);
+        if (accountResult != 0) {
+            return accountResult;
         }
-        if (user == null) {
-            if (another.user != null)
-                return -1;
-        } else {
-            if (another.user == null)
-                return 1;
-            else {
-                int result = user.compareTo(another.user);
-                if (result != 0)
-                    return result;
-            }
+        int userResult = user.compareTo(another.user);
+        if (userResult != 0) {
+            return userResult;
         }
         return 0;
     }

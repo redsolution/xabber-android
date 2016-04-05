@@ -14,18 +14,20 @@
  */
 package com.xabber.android.data.message.phrase;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.database.sqlite.PhraseTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Manage custom notification based on message.
@@ -90,7 +92,7 @@ public class PhraseManager implements OnLoadListener {
      * @return Sound associated with first matched phrase. Chat specific setting
      * if no one matches .
      */
-    public Uri getSound(String account, String user, String text) {
+    public Uri getSound(AccountJid account, UserJid user, String text) {
         Collection<String> groups = RosterManager.getInstance().getGroups(
                 account, user);
         for (Phrase phrase : phrases)
@@ -111,7 +113,7 @@ public class PhraseManager implements OnLoadListener {
      * @param regexp
      * @param sound
      */
-    public void updateOrCreatePhrase(Phrase phrase, String value, String user,
+    public void updateOrCreatePhrase(Phrase phrase, String value, UserJid user,
                                      String group, boolean regexp, Uri sound) {
         if (phrase == null) {
             phrase = new Phrase(null, value, user, group, regexp, sound);
@@ -132,7 +134,7 @@ public class PhraseManager implements OnLoadListener {
     }
 
     private void writePhrase(final Phrase phrase, final String value,
-                             final String user, final String group, final boolean regexp,
+                             final UserJid user, final String group, final boolean regexp,
                              final Uri sound) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override

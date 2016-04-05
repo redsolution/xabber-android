@@ -15,11 +15,13 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.ContactAdder;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
+import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -39,11 +41,11 @@ public class ContactAddFragment extends GroupEditorFragment
     private String name;
     private View accountSelectorPanel;
 
-    public static ContactAddFragment newInstance(String account, String user) {
+    public static ContactAddFragment newInstance(AccountJid account, UserJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ACCOUNT, account);
-        args.putString(ARG_USER, user);
+        args.putSerializable(ARG_ACCOUNT, account);
+        args.putSerializable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,8 +63,8 @@ public class ContactAddFragment extends GroupEditorFragment
 
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
-            setAccount(savedInstanceState.getString(SAVED_ACCOUNT));
-            setUser(savedInstanceState.getString(SAVED_USER));
+            setAccount((AccountJid) savedInstanceState.getSerializable(SAVED_ACCOUNT));
+            setUser((UserJid) savedInstanceState.getSerializable(SAVED_USER));
         } else {
             if (getAccount() == null || getUser() == null) {
                 name = null;
@@ -179,13 +181,13 @@ public class ContactAddFragment extends GroupEditorFragment
             return;
         }
 
-        String user = userView.getText().toString();
+        UserJid user = userView.getText().toString();
         if ("".equals(user)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
                     Toast.LENGTH_LONG).show();
             return;
         }
-        String account = (String) accountView.getSelectedItem();
+        AccountJid account = (String) accountView.getSelectedItem();
         if (account == null) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
                     Toast.LENGTH_LONG).show();
@@ -210,6 +212,6 @@ public class ContactAddFragment extends GroupEditorFragment
     }
 
     public interface Listener {
-        void onAccountSelected(String account);
+        void onAccountSelected(AccountJid account);
     }
 }

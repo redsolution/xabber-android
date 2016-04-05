@@ -25,6 +25,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.BarPainter;
@@ -32,19 +34,19 @@ import com.xabber.android.ui.color.BarPainter;
 public class ChatContactSettings extends ManagedActivity
         implements ChatContactSettingsFragment.ChatEditorFragmentInteractionListener {
 
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
     private AccountItem accountItem;
 
-    public static Intent createIntent(Context context, String account, String user) {
+    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ChatContactSettings.class).setAccount(account).setUser(user).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -83,7 +85,7 @@ public class ChatContactSettings extends ManagedActivity
     }
 
     @Override
-    public String getAccount() {
+    public AccountJid getAccount() {
         return account;
     }
 
@@ -93,7 +95,7 @@ public class ChatContactSettings extends ManagedActivity
     }
 
     @Override
-    public String getUser() {
+    public UserJid getUser() {
         return user;
     }
 }

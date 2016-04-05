@@ -18,13 +18,14 @@ import android.content.Intent;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
 
 public class PasswordRequest extends AccountRelated implements
         AccountNotificationItem {
 
-    public PasswordRequest(String account) {
+    public PasswordRequest(AccountJid account) {
         super(account);
     }
 

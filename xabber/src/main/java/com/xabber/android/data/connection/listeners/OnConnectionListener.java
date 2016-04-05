@@ -27,8 +27,6 @@ public interface OnConnectionListener extends BaseManagerInterface {
 
     /**
      * New {@link ConnectionThread} was created.
-     *
-     * @param connection
      */
     void onConnection(ConnectionItem connection);
 

@@ -12,7 +12,6 @@ import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.TLSUtils;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -40,11 +39,7 @@ public class ConnectionBuilder {
         builder.setCompressionEnabled(connectionSettings.useCompression());
         builder.setSendPresence(false);
         builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getPassword());
-        try {
-            builder.setResource(connectionSettings.getResource());
-        } catch (XmppStringprepException e) {
-            LogManager.exception(LOG_TAG, e);
-        }
+        builder.setResource(connectionSettings.getResource());
 
         builder.setProxyInfo(getProxyInfo(connectionSettings));
 

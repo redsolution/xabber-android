@@ -35,8 +35,6 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
-import org.jivesoftware.smack.roster.RosterEntry;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +43,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -148,7 +145,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getContacts();
 
         Map<String, Collection<String>> blockedContacts = new TreeMap<>();
-        for (String account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
             blockedContacts.put(account, BlockingManager.getInstance().getBlockedContacts(account));
         }
 
@@ -199,7 +196,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
 
         final Map<String, AccountConfiguration> accounts = new TreeMap<>();
 
-        for (String account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
             accounts.put(account, null);
         }
 
@@ -211,7 +208,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
         for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
             if ((abstractChat instanceof RoomChat || abstractChat.isActive())
                     && accounts.containsKey(abstractChat.getAccount())) {
-                final String account = abstractChat.getAccount();
+                final AccountJid account = abstractChat.getAccount();
                 Map<String, AbstractChat> users = abstractChats.get(account);
                 if (users == null) {
                     users = new TreeMap<>();
@@ -253,7 +250,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                 }
                 hasContacts = true;
                 final boolean online = rosterContact.getStatusMode().isOnline();
-                final String account = rosterContact.getAccount();
+                final AccountJid account = rosterContact.getAccount();
                 final Map<String, AbstractChat> users = abstractChats.get(account);
                 final AbstractChat abstractChat;
                 if (users == null) {
@@ -410,7 +407,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
             if (!rosterContact.isEnabled()) {
                 continue;
             }
-            final String account = rosterContact.getAccount();
+            final AccountJid account = rosterContact.getAccount();
             final Map<String, AbstractChat> users = abstractChats.get(account);
             if (users != null) {
                 users.remove(rosterContact.getUser());
@@ -454,13 +451,13 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
     }
 
     public static class AccountTopSeparator extends BaseEntity {
-        public AccountTopSeparator(String account, String user) {
+        public AccountTopSeparator(AccountJid account, UserJid user) {
             super(account, user);
         }
     }
 
     public static class AccountBottomSeparator extends BaseEntity {
-        public AccountBottomSeparator(String account, String user) {
+        public AccountBottomSeparator(AccountJid account, UserJid user) {
             super(account, user);
         }
     }

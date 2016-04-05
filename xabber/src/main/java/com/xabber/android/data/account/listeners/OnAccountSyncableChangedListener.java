@@ -21,8 +21,6 @@ public interface OnAccountSyncableChangedListener extends BaseManagerInterface {
 
     /**
      * Account's syncable has been changed.
-     *
-     * @param accountItem
      */
     void onAccountSyncableChanged(AccountItem accountItem);
 

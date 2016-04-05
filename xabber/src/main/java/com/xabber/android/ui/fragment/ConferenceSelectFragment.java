@@ -40,7 +40,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     private EditText roomView;
     private HostedConferencesAdapter hostedConferencesAdapter;
     private View roomsProgressBar;
-    private String account;
+    private AccountJid account;
 
     Listener listener;
     private Button nextButton;
@@ -296,6 +296,6 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     }
 
     public interface Listener {
-        void onAccountSelected(String account);
+        void onAccountSelected(AccountJid account);
     }
 }

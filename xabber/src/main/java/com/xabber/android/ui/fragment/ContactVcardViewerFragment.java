@@ -20,7 +20,9 @@ import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
@@ -53,8 +55,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static final String ARGUMENT_USER = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_USER";
     private static final String SAVED_VCARD = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD";
     private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
-    String account;
-    String user;
+    AccountJid account;
+    UserJid user;
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
     private VCard vCard;
@@ -66,12 +68,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         void onVCardReceived();
     }
 
-    public static ContactVcardViewerFragment newInstance(String account, String user) {
+    public static ContactVcardViewerFragment newInstance(AccountJid account, UserJid user) {
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -88,8 +90,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        user = (UserJid) args.getSerializable(ARGUMENT_USER);
 
         vCard = null;
         vCardError = false;
@@ -106,7 +108,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         }
     }
 
-    public static VCard parseVCard(String xml) throws XmlPullParserException, IOException, SmackException {
+    public static VCard parseVCard(String xml) throws Exception {
         XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
         parser.setInput(new StringReader(xml));
@@ -183,7 +185,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onVCardReceived(String account, String bareAddress, VCard vCard) {
+    public void onVCardReceived(AccountJid account, String bareAddress, VCard vCard) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
         }
@@ -195,7 +197,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onVCardFailed(String account, String bareAddress) {
+    public void onVCardFailed(AccountJid account, String bareAddress) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
         }
@@ -242,7 +244,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return source + splitter + value;
     }
 
-    public void updateContact(String account, String bareAddress) {
+    public void updateContact(AccountJid account, String bareAddress) {
         this.account = account;
         this.user = bareAddress;
 
@@ -262,11 +264,11 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
     }
 
-    private void fillResourceList(String account, String bareAddress, List<View> resourcesList) {
+    private void fillResourceList(AccountJid account, String bareAddress, List<View> resourcesList) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
 
         for (Presence presence : allPresences) {
-            String user = presence.getFrom();
+            UserJid user = presence.getFrom();
             ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
 
             String client = "";

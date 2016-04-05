@@ -6,6 +6,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
 import com.xabber.android.data.roster.AbstractContact;
@@ -17,7 +19,7 @@ public class MucInviteDialog extends BaseContactDialog {
 
     private RoomInvite roomInvite;
 
-    public static DialogFragment newInstance(String account, String contact) {
+    public static DialogFragment newInstance(AccountJid account, UserJid contact) {
         DialogFragment fragment = new MucInviteDialog();
         setArguments(account, contact, fragment);
         return fragment;
@@ -50,7 +52,7 @@ public class MucInviteDialog extends BaseContactDialog {
 
     @Override
     protected void onPositiveButtonClick() {
-        startActivity(ConferenceAdd.createIntent(getActivity(), getAccount(), getContact()));
+        startActivity(ConferenceAdd.createIntent(getActivity(), getAccount(), getContact().getJid().asEntityBareJidIfPossible()));
     }
 
     @Override
@@ -65,7 +67,7 @@ public class MucInviteDialog extends BaseContactDialog {
 
     @Override
     protected void setUpContactTitleView(View view) {
-        roomInvite = MUCManager.getInstance().getInvite(getAccount(), getContact());
+        roomInvite = MUCManager.getInstance().getInvite(getAccount(), getContact().getJid().asEntityBareJidIfPossible());
         final String inviter = Jid.getBareAddress(roomInvite.getInviter());
 
         final AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), inviter);

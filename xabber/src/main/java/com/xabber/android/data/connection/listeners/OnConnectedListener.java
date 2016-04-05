@@ -26,8 +26,6 @@ public interface OnConnectedListener extends BaseManagerInterface {
 
     /**
      * Connection with server was established.
-     *
-     * @param connection
      */
     void onConnected(ConnectionItem connection);
 

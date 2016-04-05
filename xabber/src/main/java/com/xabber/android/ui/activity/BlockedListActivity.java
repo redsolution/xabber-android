@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
@@ -29,16 +30,16 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     public static final String SAVED_CHECKED_CONTACTS = "com.xabber.android.ui.activity.BlockedListActivity.SAVED_CHECKED_CONTACTS";
     private BlockedListAdapter adapter;
-    private String account;
+    private AccountJid account;
     private Toolbar toolbar;
     private BarPainter barPainter;
     private int previousSize;
 
-    public static Intent createIntent(Context context, String account) {
+    public static Intent createIntent(Context context, AccountJid account) {
         return new AccountIntentBuilder(context, BlockedListActivity.class).setAccount(account).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
@@ -184,7 +185,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     @Override
-    public void onBlockedListChanged(String account) {
+    public void onBlockedListChanged(AccountJid account) {
         update();
     }
 

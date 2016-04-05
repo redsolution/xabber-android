@@ -14,6 +14,9 @@
  */
 package com.xabber.android.data.notification;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+
 public class EntityNotificationProvider<T extends EntityNotificationItem>
         extends BaseAccountNotificationProvider<T> {
 
@@ -22,11 +25,11 @@ public class EntityNotificationProvider<T extends EntityNotificationItem>
     }
 
     @Override
-    public T get(String account) {
+    public T get(AccountJid account) {
         throw new UnsupportedOperationException();
     }
 
-    public T get(String account, String user) {
+    public T get(AccountJid account, UserJid user) {
         for (T item : items)
             if (item.getAccount().equals(account)
                     && item.getUser().equals(user))
@@ -34,7 +37,7 @@ public class EntityNotificationProvider<T extends EntityNotificationItem>
         return null;
     }
 
-    public boolean remove(String account, String user) {
+    public boolean remove(AccountJid account, UserJid user) {
         return remove(get(account, user));
     }
 

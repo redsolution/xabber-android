@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.account;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.R;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -22,11 +24,13 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.entity.AccountJid;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.security.KeyPair;
 import java.util.Date;
@@ -39,11 +43,9 @@ import java.util.Date;
 public class AccountItem extends ConnectionItem {
 
     public static final String UNDEFINED_PASSWORD = "com.xabber.android.data.core.AccountItem.UNDEFINED_PASSWORD";
-    /**
-     * Full jid calculated according to {@link #userName}, {@link #serverName},
-     * {@link #resource}.
-     */
-    private final String account;
+
+    @NonNull
+    private final AccountJid account;
     /**
      * Id in database.
      * <p/>
@@ -101,7 +103,7 @@ public class AccountItem extends ConnectionItem {
     private ArchiveMode archiveMode;
 
     public AccountItem(AccountProtocol protocol, boolean custom, String host,
-                       int port, DomainBareJid serverName, Localpart userName, String resource,
+                       int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, int colorIndex,
                        int priority, StatusMode statusMode, String statusText,
                        boolean enabled, boolean saslEnabled, TLSMode tlsMode,
@@ -113,7 +115,7 @@ public class AccountItem extends ConnectionItem {
                 storePassword, password, saslEnabled, tlsMode, compression,
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         this.id = null;
-        this.account = userName + "@" + serverName + "/" + resource;
+        this.account = AccountJid.from(userName, serverName, resource);
         this.colorIndex = colorIndex;
 
         this.enabled = enabled;
@@ -159,7 +161,8 @@ public class AccountItem extends ConnectionItem {
     /**
      * @return Account's JID.
      */
-    public String getAccount() {
+    @NonNull
+    public AccountJid getAccount() {
         return account;
     }
 
@@ -185,8 +188,6 @@ public class AccountItem extends ConnectionItem {
     /**
      * Sets whether roster contacts can be synchronized with system contact
      * list.
-     *
-     * @param syncable
      */
     void setSyncable(boolean syncable) {
         this.syncable = syncable;
@@ -201,8 +202,6 @@ public class AccountItem extends ConnectionItem {
 
     /**
      * Sets whether password must be stored in database.
-     *
-     * @param storePassword
      */
     void setStorePassword(boolean storePassword) {
         this.storePassword = storePassword;
@@ -337,14 +336,6 @@ public class AccountItem extends ConnectionItem {
 
     /**
      * Update connection options
-     *
-     * @param custom
-     * @param host
-     * @param port
-     * @param password
-     * @param saslEnabled
-     * @param tlsMode
-     * @param compression
      */
     void updateConnectionSettings(boolean custom, String host, int port,
                                   String password, boolean saslEnabled, TLSMode tlsMode,

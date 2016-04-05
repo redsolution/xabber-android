@@ -42,7 +42,9 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
@@ -117,8 +119,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private EditText inputView;
     private ChatMessageAdapter chatMessageAdapter;
     private boolean skipOnTextChanges = false;
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
     private ImageButton sendButton;
     private ImageButton securityButton;
     private Toolbar toolbar;
@@ -143,12 +145,12 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
 
-    public static ChatViewerFragment newInstance(String account, String user) {
+    public static ChatViewerFragment newInstance(AccountJid account, UserJid user) {
         ChatViewerFragment fragment = new ChatViewerFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -170,8 +172,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        user = (UserJid) args.getSerializable(ARGUMENT_USER);
 
     }
 
@@ -179,7 +181,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user.getJid());
 
         if (!isRemoteHistoryRequested) {
             MamManager.getInstance().requestLastHistory(abstractChat);
@@ -228,7 +230,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user.getJid());
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
 
@@ -833,11 +835,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         skipOnTextChanges = false;
     }
 
-    public String getAccount() {
+    public AccountJid getAccount() {
         return account;
     }
 
-    public String getUser() {
+    public UserJid getUser() {
         return user;
     }
 
@@ -1015,7 +1017,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         });
     }
 
-    private void stopEncryption(String account, String user) {
+    private void stopEncryption(AccountJid account, UserJid user) {
         try {
             OTRManager.getInstance().endSession(account, user);
         } catch (NetworkException e) {
@@ -1023,7 +1025,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    private void restartEncryption(String account, String user) {
+    private void restartEncryption(AccountJid account, UserJid user) {
         try {
             OTRManager.getInstance().refreshSession(account, user);
         } catch (NetworkException e) {
@@ -1031,7 +1033,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         }
     }
 
-    private void startEncryption(String account, String user) {
+    private void startEncryption(AccountJid account, UserJid user) {
         try {
             OTRManager.getInstance().startSession(account, user);
         } catch (NetworkException e) {
@@ -1056,17 +1058,17 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         startActivity(intent);
     }
 
-    private void closeChat(String account, String user) {
+    private void closeChat(AccountJid account, UserJid user) {
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
         listener.onCloseChat();
     }
 
-    private void clearHistory(String account, String user) {
+    private void clearHistory(AccountJid account, UserJid user) {
         MessageManager.getInstance().clearHistory(account, user);
     }
 
-    private void leaveConference(String account, String user) {
+    private void leaveConference(AccountJid account, UserJid user) {
         MUCManager.getInstance().leaveRoom(account, user);
         closeChat(account, user);
     }

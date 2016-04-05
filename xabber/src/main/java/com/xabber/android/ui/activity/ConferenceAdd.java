@@ -23,28 +23,32 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ConferenceAddFragment;
+
+import org.jxmpp.jid.EntityBareJid;
 
 public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.activity.ConferenceAdd.SAVED_ACCOUNT";
     private static final String SAVED_ROOM = "com.xabber.android.ui.activity.ConferenceAdd.SAVED_ROOM";
 
-    private String account;
+    private AccountJid account;
     private String room;
 
-    public static Intent createIntent(Context context, String account, String room) {
+    public static Intent createIntent(Context context, AccountJid account, EntityBareJid room) {
         return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(room).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

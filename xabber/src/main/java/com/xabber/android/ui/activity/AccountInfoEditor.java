@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
@@ -26,13 +27,13 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
     private Toolbar toolbar;
 
 
-    public static Intent createIntent(Context context, String account, String vCard) {
+    public static Intent createIntent(Context context, AccountJid account, String vCard) {
         Intent intent = new EntityIntentBuilder(context, AccountInfoEditor.class).setAccount(account).build();
         intent.putExtra(ARG_VCARD, vCard);
         return intent;
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return EntityIntentBuilder.getAccount(intent);
     }
 
@@ -44,7 +45,7 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
 
 
         Intent intent = getIntent();
-        String account = getAccount(intent);
+        AccountJid account = getAccount(intent);
         String vCard = intent.getStringExtra(ARG_VCARD);
 
         if (AccountManager.getInstance().getAccount(account) == null) {

@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -18,15 +20,15 @@ public class MUCDeleteDialogFragment extends DialogFragment implements DialogInt
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.MUCDeleteDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.MUCDeleteDialogFragment.ARGUMENT_USER";
 
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
 
-    public static MUCDeleteDialogFragment newInstance(String account, String user) {
+    public static MUCDeleteDialogFragment newInstance(AccountJid account, UserJid user) {
         MUCDeleteDialogFragment fragment = new MUCDeleteDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -34,8 +36,8 @@ public class MUCDeleteDialogFragment extends DialogFragment implements DialogInt
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        user = (UserJid) args.getSerializable(ARGUMENT_USER);
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.muc_delete_confirm),
@@ -51,7 +53,7 @@ public class MUCDeleteDialogFragment extends DialogFragment implements DialogInt
             return;
         }
 
-        MUCManager.getInstance().removeRoom(account, user);
+        MUCManager.getInstance().removeRoom(account, user.getJid().asEntityBareJidIfPossible());
         MessageManager.getInstance().closeChat(account, user);
         NotificationManager.getInstance().removeMessageNotification(account, user);
     }

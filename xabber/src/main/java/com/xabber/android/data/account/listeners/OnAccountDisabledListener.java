@@ -27,8 +27,6 @@ public interface OnAccountDisabledListener extends BaseManagerInterface {
      * {@link OnAccountOfflineListener#onAccountOffline(AccountItem)} and
      * {@link OnDisconnectListener#onDisconnect(ConnectionItem)} will be call
      * first.
-     *
-     * @param accountItem
      */
     void onAccountDisabled(AccountItem accountItem);
 

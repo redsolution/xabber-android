@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -25,13 +27,13 @@ import java.util.Set;
 
 public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
-    private String account;
-    private List<String> blockedContacts;
+    private AccountJid account;
+    private List<UserJid> blockedContacts;
     private OnBlockedContactClickListener listener;
 
     private Set<String> checkedContacts;
 
-    public BlockedListAdapter(String account) {
+    public BlockedListAdapter(AccountJid account) {
         this.account = account;
         blockedContacts = new ArrayList<>();
         checkedContacts = new HashSet<>();
@@ -94,12 +96,12 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onChange() {
         blockedContacts.clear();
-        final Collection<String> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
         if (blockedContacts != null) {
             this.blockedContacts.addAll(blockedContacts);
         }
 
-        final Collection<String> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
+        final Collection<UserJid> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
         if (blockedMucContacts != null) {
             this.blockedContacts.addAll(blockedMucContacts);
         }

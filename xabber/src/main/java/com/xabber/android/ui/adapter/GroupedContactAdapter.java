@@ -277,7 +277,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
         final AccountConfiguration configuration = (AccountConfiguration) getItem(position);
 
-        final String account = configuration.getAccount();
+        final AccountJid account = configuration.getAccount();
 
         viewHolder.statusIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -447,7 +447,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         Map<String, AccountConfiguration> accounts, Map<String, GroupConfiguration> groups,
         List<AbstractContact> contacts, boolean showAccounts, boolean showGroups) {
         if (showAccounts) {
-            final String account = abstractContact.getAccount();
+            final AccountJid account = abstractContact.getAccount();
             final AccountConfiguration accountConfiguration;
             accountConfiguration = accounts.get(account);
             if (accountConfiguration == null) {
@@ -579,13 +579,13 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
     /**
      * Sets whether group in specified account is expanded.
      */
-    public void setExpanded(String account, String group, boolean expanded) {
+    public void setExpanded(AccountJid account, String group, boolean expanded) {
         GroupManager.getInstance().setExpanded(account, group, expanded);
         onChange();
     }
 
     public interface OnClickListener {
-        void onAccountMenuClick(View view, String account);
+        void onAccountMenuClick(View view, AccountJid account);
     }
 
     /**

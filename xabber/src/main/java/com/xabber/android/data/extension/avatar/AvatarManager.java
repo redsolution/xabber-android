@@ -34,6 +34,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.AvatarTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.address.Jid;
@@ -242,9 +244,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @Nullable
-    public String getHash(String bareAddress) {
-        String hash = hashes.get(bareAddress);
-        return hash;
+    public String getHash(BareJid bareAddress) {
+        return hashes.get(bareAddress.toString());
     }
 
     /**
@@ -283,7 +284,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * <li>account has no avatar.</li>
      * </ul>
      */
-    public Drawable getAccountAvatar(String account) {
+    public Drawable getAccountAvatar(AccountJid account) {
         Bitmap value = getBitmap(Jid.getBareAddress(account));
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
@@ -293,7 +294,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @NonNull
-    public Drawable getDefaultAccountAvatar(String account) {
+    public Drawable getDefaultAccountAvatar(AccountJid account) {
         Drawable[] layers = new Drawable[2];
         layers[0] = new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
@@ -306,7 +307,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getUserAvatar(String user) {
+    public Drawable getUserAvatar(UserJid user) {
         Bitmap value = getBitmap(user);
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
@@ -330,7 +331,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Bitmap getUserBitmap(String user) {
+    public Bitmap getUserBitmap(UserJid user) {
         Bitmap value = getBitmap(user);
         if (value != null) {
             return value;
@@ -345,7 +346,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getUserAvatarForContactList(String user) {
+    public Drawable getUserAvatarForContactList(UserJid user) {
         Drawable drawable = contactListDrawables.get(user);
         if (drawable == null) {
             drawable = getUserAvatar(user);
@@ -360,7 +361,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getRoomAvatar(String user) {
+    public Drawable getRoomAvatar(UserJid user) {
         return getDefaultAvatarDrawable(roomAvatarSet.getResourceId(user));
     }
 
@@ -370,7 +371,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Bitmap getRoomBitmap(String user) {
+    public Bitmap getRoomBitmap(UserJid user) {
         return drawableToBitmap(getRoomAvatar(user));
     }
 
@@ -380,7 +381,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getRoomAvatarForContactList(String user) {
+    public Drawable getRoomAvatarForContactList(UserJid user) {
         Drawable drawable = contactListDrawables.get(user);
         if (drawable == null) {
             drawable = getRoomAvatar(user);
@@ -395,7 +396,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getOccupantAvatar(String user) {
+    public Drawable getOccupantAvatar(UserJid user) {
         return getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
     }
 
@@ -412,14 +413,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         if (!(packet instanceof Presence) || bareAddress == null) {
             return;
         }
         if (!(connection instanceof AccountItem)) {
             return;
         }
-        String account = ((AccountItem) connection).getAccount();
+        AccountJid account = ((AccountItem) connection).getAccount();
         Presence presence = (Presence) packet;
         if (presence.getType() == Presence.Type.error) {
             return;
@@ -434,7 +435,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         }
     }
 
-    private void onPhotoReady(final String account, final String bareAddress, VCardUpdate vCardUpdate) {
+    private void onPhotoReady(final AccountJid account, final String bareAddress, VCardUpdate vCardUpdate) {
         if (vCardUpdate.isEmpty()) {
             setHash(bareAddress, EMPTY_HASH);
             return;
@@ -459,7 +460,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param bareAddress
      * @param hash
      */
-    private void loadBitmap(final String account, final String bareAddress, final String hash) {
+    private void loadBitmap(final AccountJid account, final String bareAddress, final String hash) {
         final byte[] value = AvatarStorage.getInstance().read(hash);
         final Bitmap bitmap = makeBitmap(value);
         Application.getInstance().runOnUiThread(new Runnable() {
@@ -479,7 +480,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param value
      * @param bitmap
      */
-    private void onBitmapLoaded(String account, String bareAddress,
+    private void onBitmapLoaded(AccountJid account, String bareAddress,
                                 String hash, byte[] value, Bitmap bitmap) {
         if (value == null) {
             if (SettingsManager.connectionLoadVCard()) {

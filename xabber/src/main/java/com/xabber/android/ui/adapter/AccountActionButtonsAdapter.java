@@ -9,6 +9,7 @@ import com.melnykov.fab.FloatingActionButton;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
@@ -36,7 +37,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
     /**
      * List of accounts.
      */
-    private final ArrayList<String> accounts;
+    private final ArrayList<AccountJid> accounts;
 
     public AccountActionButtonsAdapter(Activity activity,
                                        View.OnClickListener onClickListener, LinearLayout linearLayout) {
@@ -79,7 +80,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
             View view = linearLayout.getChildAt(index);
 
             final CircleImageView circleImageView = (CircleImageView) view.findViewById(R.id.account_avatar);
-            final String account = accounts.get(index);
+            final AccountJid account = accounts.get(index);
             circleImageView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
             FloatingActionButton backgroundActionButton = (FloatingActionButton) view.findViewById(R.id.fab);
@@ -124,7 +125,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
         return accounts.get(position);
     }
 
-    public String getItemForView(View view) {
+    public AccountJid getItemForView(View view) {
         for (int index = 0; index < linearLayout.getChildCount(); index++) {
             if (view == linearLayout.getChildAt(index)) {
                 return accounts.get(index);

@@ -48,7 +48,9 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -132,28 +134,28 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         return new Intent(context, ContactList.class);
     }
 
-    public static Intent createRoomInviteIntent(Context context, String account, String room) {
+    public static Intent createRoomInviteIntent(Context context, AccountJid account, String room) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
                 .setAccount(account).setUser(room).build();
         intent.setAction(ACTION_ROOM_INVITE);
         return intent;
     }
 
-    public static Intent createMucPrivateChatInviteIntent(Context context, String account, String user) {
+    public static Intent createMucPrivateChatInviteIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_MUC_PRIVATE_CHAT_INVITE);
         return intent;
     }
 
-    public static Intent createContactSubscriptionIntent(Context context, String account, String user) {
+    public static Intent createContactSubscriptionIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_CONTACT_SUBSCRIPTION);
         return intent;
     }
 
-    public static Intent createMucInviteIntent(Context context, String account, String user) {
+    public static Intent createMucInviteIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
                 .setAccount(account).setUser(user).build();
         intent.setAction(ACTION_INCOMING_MUC_INVITE);
@@ -237,7 +239,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
      * @param user
      * @param text can be <code>null</code>.
      */
-    private void openChat(String user, String text) {
+    private void openChat(UserJid user, String text) {
         String bareAddress = Jid.getBareAddress(user);
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : MessageManager.getInstance().getChats()) {
@@ -384,8 +386,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private void showMucInviteDialog() {
         Intent intent = getIntent();
-        String account = getRoomInviteAccount(intent);
-        String user = getRoomInviteUser(intent);
+        AccountJid account = getRoomInviteAccount(intent);
+        UserJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
             MucInviteDialog.newInstance(account, user).show(getFragmentManager(), MucInviteDialog.class.getName());
         }
@@ -393,8 +395,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private void showContactSubscriptionDialog() {
         Intent intent = getIntent();
-        String account = getRoomInviteAccount(intent);
-        String user = getRoomInviteUser(intent);
+        AccountJid account = getRoomInviteAccount(intent);
+        UserJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
             ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(), ContactSubscriptionDialog.class.getName());
         }
@@ -402,8 +404,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private void showMucPrivateChatDialog() {
         Intent intent = getIntent();
-        String account = getRoomInviteAccount(intent);
-        String user = getRoomInviteUser(intent);
+        AccountJid account = getRoomInviteAccount(intent);
+        UserJid user = getRoomInviteUser(intent);
         if (account != null && user != null) {
             MucPrivateChatInvitationDialog.newInstance(account, user).show(getFragmentManager(), MucPrivateChatInvitationDialog.class.getName());
         }
@@ -602,8 +604,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             case ACTION_ROOM_INVITE: {
                 action = null;
                 Intent intent = getIntent();
-                String account = getRoomInviteAccount(intent);
-                String user = getRoomInviteUser(intent);
+                AccountJid account = getRoomInviteAccount(intent);
+                UserJid user = getRoomInviteUser(intent);
                 if (account != null && user != null) {
                     try {
                         MUCManager.getInstance().invite(account, user, abstractContact.getUser());
@@ -680,7 +682,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     @Override
-    public void onChoose(String account, String user, String text) {
+    public void onChoose(AccountJid account, UserJid user, String text) {
         openChat(new BaseEntity(account, user), text);
     }
 
@@ -708,7 +710,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     @Override
-    public void onAccountSelected(String account) {
+    public void onAccountSelected(AccountJid account) {
         drawerLayout.closeDrawers();
         startActivity(AccountViewer.createAccountInfoIntent(this, account));
     }

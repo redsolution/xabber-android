@@ -36,7 +36,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
         } else {
             view = convertView;
         }
-        String account = getItem(position);
+        AccountJid account = getItem(position);
 
         ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable((ColorManager.getInstance().getAccountPainter().getAccountMainColor(account))));
         ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));

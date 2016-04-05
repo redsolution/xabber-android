@@ -30,6 +30,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
@@ -66,8 +68,8 @@ public class ContextMenuHelper {
 
     public static void createContactContextMenu(final ManagedActivity activity,
             final UpdatableAdapter adapter, AbstractContact abstractContact, ContextMenu menu) {
-        final String account = abstractContact.getAccount();
-        final String user = abstractContact.getUser();
+        final AccountJid account = abstractContact.getAccount();
+        final UserJid user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
         inflater.inflate(R.menu.contact_list_contact_context_menu, menu);
@@ -79,7 +81,7 @@ public class ContextMenuHelper {
     private static void setContactContextMenuActions(final ManagedActivity activity,
                                                      final UpdatableAdapter adapter,
                                                      ContextMenu menu,
-                                                     final String account, final String user) {
+                                                     final AccountJid account, final UserJid user) {
         menu.findItem(R.id.action_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
 
@@ -109,8 +111,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        MUCManager.getInstance().joinRoom(account,
-                                user, true);
+                        MUCManager.getInstance().joinRoom(account, user, true);
                         return true;
                     }
                 });
@@ -220,7 +221,7 @@ public class ContextMenuHelper {
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
                                                             ContextMenu menu,
-                                                            String account, String user) {
+                                                            AccountJid account, UserJid user) {
         // all menu items are visible by default
         // it allows to hide items in xml file without touching code
 
@@ -275,7 +276,7 @@ public class ContextMenuHelper {
     }
 
     public static void createGroupContextMenu(final ManagedActivity activity,
-              final UpdatableAdapter adapter, final String account, final String group, ContextMenu menu) {
+              final UpdatableAdapter adapter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
@@ -317,14 +318,14 @@ public class ContextMenuHelper {
     }
 
     public static void createAccountContextMenu( final ManagedActivity activity, final UpdatableAdapter adapter,
-                                                 final String account, ContextMenu menu) {
+                                                 final AccountJid account, ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.account, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
 
         setUpAccountMenu(activity, adapter, account, menu);
     }
 
-    public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final String account, Menu menu) {
+    public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final AccountJid account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         ConnectionState state = accountItem.getState();
 
@@ -371,7 +372,7 @@ public class ContextMenuHelper {
     }
 
     public static AlertDialog createOfflineContactsDialog(Context context, final UpdatableAdapter adapter,
-                                                          final String account, final String group) {
+                                                          final AccountJid account, final String group) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.show_offline_settings)
                 .setSingleChoiceItems(

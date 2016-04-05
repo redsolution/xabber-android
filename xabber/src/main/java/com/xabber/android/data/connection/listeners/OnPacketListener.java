@@ -18,7 +18,6 @@ import com.xabber.android.data.BaseManagerInterface;
 import com.xabber.android.data.connection.ConnectionItem;
 
 import org.jivesoftware.smack.packet.Stanza;
-import org.jxmpp.jid.BareJid;
 
 /**
  * Listener for incoming packet.
@@ -29,12 +28,7 @@ public interface OnPacketListener extends BaseManagerInterface {
 
     /**
      * Process packet from connection.
-     *
-     * @param connection
-     * @param bareAddress
-     * @param packet
-     * @return
      */
-    void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet);
+    void onPacket(ConnectionItem connection, Stanza packet);
 
 }

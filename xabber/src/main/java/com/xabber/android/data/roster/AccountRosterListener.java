@@ -4,43 +4,44 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.entity.UserJid;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterListener;
 import org.jivesoftware.smack.roster.RosterLoadedListener;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class AccountRosterListener implements RosterListener, RosterLoadedListener {
 
-    private String account;
+    private AccountJid account;
 
-    public String getAccount() {
+    public AccountJid getAccount() {
         return account;
     }
 
-    public AccountRosterListener(String account) {
+    public AccountRosterListener(AccountJid account) {
         this.account = account;
     }
 
     @Override
-    public void entriesAdded(Collection<String> addresses) {
-        update(addresses);
+    public void entriesAdded(Collection<Jid> collection) {
+        update(collection);
     }
 
     @Override
-    public void entriesUpdated(Collection<String> addresses) {
-        update(addresses);
+    public void entriesUpdated(Collection<Jid> collection) {
+        update(collection);
     }
 
-
     @Override
-    public void entriesDeleted(Collection<String> addresses) {
-        update(addresses);
+    public void entriesDeleted(Collection<Jid> collection) {
+        update(collection);
     }
 
     @Override
@@ -48,13 +49,13 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
         PresenceManager.getInstance().onPresenceChanged(account, presence);
     }
 
-    private void update(Collection<String> addresses) {
+    private void update(Collection<Jid> addresses) {
         RosterManager.getInstance().updateContacts();
 
         Collection<BaseEntity> entities = new ArrayList<>();
 
-        for (String address : addresses) {
-            entities.add(new BaseEntity(account, address));
+        for (Jid address : addresses) {
+            entities.add(new BaseEntity(account, UserJid.from(address)));
         }
 
         RosterManager.onContactsChanged(entities);
@@ -72,5 +73,10 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
             listener.onRosterReceived(accountItem);
         }
         AccountManager.getInstance().onAccountChanged(this.account);
+    }
+
+    @Override
+    public void onRosterLoadingFailed(Exception e) {
+        LogManager.exception(this, e);
     }
 }

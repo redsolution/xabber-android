@@ -8,11 +8,11 @@ public class PreviousHistoryLoadStartedEvent extends BaseChatEvent {
         super(entity);
     }
 
-    public String getAccount() {
+    public AccountJid getAccount() {
         return getEntity().getAccount();
     }
 
-    public String getUser() {
+    public UserJid getUser() {
         return getEntity().getUser();
     }
 }

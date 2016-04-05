@@ -14,12 +14,14 @@
  */
 package com.xabber.android.ui.adapter;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.roster.GroupStateProvider;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.TreeMap;
-
-import com.xabber.android.data.roster.GroupStateProvider;
 
 /**
  * Account representation in the contact list.
@@ -28,7 +30,7 @@ public class AccountConfiguration extends GroupConfiguration {
 
     private final TreeMap<String, GroupConfiguration> groups;
 
-    public AccountConfiguration(String account, String user,
+    public AccountConfiguration(AccountJid account, UserJid user,
                                 GroupStateProvider groupStateProvider) {
         super(account, user, groupStateProvider);
         groups = new TreeMap<>();

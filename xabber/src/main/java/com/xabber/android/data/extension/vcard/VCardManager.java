@@ -29,6 +29,8 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.VCardTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
@@ -38,7 +40,6 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.StructuredName;
-import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -49,7 +50,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,7 +73,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     /**
      * Nick and formatted names for the users.
      */
-    private final Map<String, StructuredName> names;
+    private final Map<Jid, StructuredName> names;
 
     /**
      * List of accounts which requests its avatar in order to avoid subsequence
@@ -132,7 +133,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     @Override
     public void onRosterReceived(AccountItem accountItem) {
-        String account = accountItem.getAccount();
+        AccountJid account = accountItem.getAccount();
         if (!accountRequested.contains(account) && SettingsManager.connectionLoadVCard()) {
             String bareAddress = Jid.getBareAddress(accountItem.getRealJid());
             if (bareAddress != null && !names.containsKey(bareAddress)) {
@@ -161,14 +162,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     /**
      * Requests vCard.
      */
-    public void request(String account, String bareAddress) {
+    public void request(AccountJid account, String bareAddress) {
         requestVCard(account, bareAddress);
     }
 
     /**
      * Get uses's nick name.
      *
-     * @param bareAddress
      * @return first specified value:
      * <ul>
      * <li>nick name</li>
@@ -176,8 +176,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
      * <li>empty string</li>
      * </ul>
      */
-    public String getName(String bareAddress) {
-        StructuredName name = names.get(bareAddress);
+    public String getName(Jid jid) {
+        StructuredName name = names.get(jid);
         if (name == null)
             return "";
         return name.getBestName();
@@ -193,7 +193,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         return names.get(bareAddress);
     }
 
-    private void onVCardReceived(final String account, final String bareAddress, final VCard vCard) {
+    private void onVCardReceived(final AccountJid account, final String bareAddress, final VCard vCard) {
         final StructuredName name;
         if (vCard.getType() == Type.error) {
             onVCardFailed(account, bareAddress);
@@ -247,30 +247,30 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    private void onVCardFailed(final String account, final String bareAddress) {
+    private void onVCardFailed(final AccountJid account, final String bareAddress) {
         for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
             listener.onVCardFailed(account, bareAddress);
         }
     }
 
-    private void onVCardSaveSuccess(String account) {
+    private void onVCardSaveSuccess(AccountJid account) {
         for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
             listener.onVCardSaveSuccess(account);
         }
     }
 
-    private void onVCardSaveFailed(String account) {
+    private void onVCardSaveFailed(AccountJid account) {
         for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
             listener.onVCardSaveFailed(account);
         }
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
-        String account = ((AccountItem) connection).getAccount();
+        AccountJid account = ((AccountItem) connection).getAccount();
         if (packet instanceof Presence && ((Presence) packet).getType() != Presence.Type.error) {
             if (bareAddress == null) {
                 return;
@@ -291,7 +291,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    private void requestVCard(final String account, final String srcUser) {
+    private void requestVCard(final AccountJid account, final String srcUser) {
         final String userBareJid = srcUser;
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
@@ -349,7 +349,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         thread.start();
     }
 
-    public void saveVCard(final String account, final VCard vCard) {
+    public void saveVCard(final AccountJid account, final VCard vCard) {
         ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
         if (connectionThread == null) {
             onVCardSaveFailed(account);
@@ -401,11 +401,11 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         thread.start();
     }
 
-    public boolean isVCardRequested(String user) {
+    public boolean isVCardRequested(UserJid user) {
         return vCardRequests.contains(Jid.getBareAddress(user));
     }
 
-    public boolean isVCardSaveRequested(String account) {
+    public boolean isVCardSaveRequested(AccountJid account) {
         return vCardSaveRequests.contains(account);
     }
 

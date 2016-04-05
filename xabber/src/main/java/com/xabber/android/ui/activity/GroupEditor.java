@@ -22,14 +22,17 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.fragment.GroupEditorFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
-import com.xabber.xmpp.address.Jid;
+
+import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
@@ -37,21 +40,21 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
         OnAccountChangedListener {
 
     ContactTitleActionBarInflater contactTitleActionBarInflater;
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
 
-    public static Intent createIntent(Context context, String account, String user) {
+    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, GroupEditor.class)
                 .setAccount(account).setUser(user).build();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -97,13 +100,13 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
     private void update() {
         AbstractContact abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleActionBarInflater.update(abstractContact);
-        contactTitleActionBarInflater.setStatusText(user);
+        contactTitleActionBarInflater.setStatusText(user.toString());
         contactTitleActionBarInflater.hideStatusIcon();
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        String thisBareAddress = Jid.getBareAddress(user);
+        BareJid thisBareAddress = user.getJid().asBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
                 update();
@@ -113,7 +116,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             update();
         }

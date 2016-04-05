@@ -18,6 +18,7 @@ import com.xabber.android.data.account.AccountProtocol;
 
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.jid.parts.Resourcepart;
 
 /**
  * Settings for connection.
@@ -44,7 +45,7 @@ public class ConnectionSettings {
     /**
      * Resource part of jid.
      */
-    private final String resource;
+    private final Resourcepart resource;
 
     /**
      * Use custom connection host and port.
@@ -92,7 +93,7 @@ public class ConnectionSettings {
     private String proxyPassword;
 
     public ConnectionSettings(AccountProtocol protocol, Localpart userName,
-                              DomainBareJid serverName, String resource, boolean custom, String host,
+                              DomainBareJid serverName, Resourcepart resource, boolean custom, String host,
                               int port, String password, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost,
                               int proxyPort, String proxyUser, String proxyPassword) {
@@ -151,7 +152,7 @@ public class ConnectionSettings {
         return port;
     }
 
-    public String getResource() {
+    public Resourcepart getResource() {
         return resource;
     }
 

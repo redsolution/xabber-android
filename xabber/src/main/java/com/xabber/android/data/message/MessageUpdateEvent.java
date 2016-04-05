@@ -2,41 +2,47 @@ package com.xabber.android.data.message;
 
 import android.support.annotation.Nullable;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+
 public class MessageUpdateEvent {
 
     @Nullable
-    private String account;
+    private AccountJid account;
     @Nullable
-    private String user;
+    private UserJid user;
     @Nullable
     private String uniqueId;
 
     public MessageUpdateEvent() {
     }
 
-    public MessageUpdateEvent(String account) {
+    public MessageUpdateEvent(@Nullable AccountJid account) {
         this.account = account;
     }
 
-    public MessageUpdateEvent(String account, String user) {
+    public MessageUpdateEvent(@Nullable AccountJid account, @Nullable UserJid user) {
         this.account = account;
         this.user = user;
     }
 
-    public MessageUpdateEvent(String account, String user, String uniqueId) {
+    public MessageUpdateEvent(@Nullable AccountJid account, @Nullable UserJid user, @Nullable String uniqueId) {
         this.account = account;
         this.user = user;
         this.uniqueId = uniqueId;
     }
 
-    public String getAccount() {
+    @Nullable
+    public AccountJid getAccount() {
         return account;
     }
 
-    public String getUser() {
+    @Nullable
+    public UserJid getUser() {
         return user;
     }
 
+    @Nullable
     public String getUniqueId() {
         return uniqueId;
     }

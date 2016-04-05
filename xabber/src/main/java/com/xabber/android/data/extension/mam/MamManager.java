@@ -295,7 +295,7 @@ public class MamManager implements OnAuthorizedListener {
     }
 
     @NonNull
-    private SyncInfo getSyncInfo(Realm realm, String account, String user) {
+    private SyncInfo getSyncInfo(Realm realm, AccountJid account, UserJid user) {
         SyncInfo syncInfo = realm.where(SyncInfo.class)
                 .equalTo(SyncInfo.FIELD_ACCOUNT, account)
                 .equalTo(SyncInfo.FIELD_USER, user).findFirst();

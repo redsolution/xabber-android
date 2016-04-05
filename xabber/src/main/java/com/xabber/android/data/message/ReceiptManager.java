@@ -22,6 +22,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
@@ -34,7 +35,7 @@ import org.jivesoftware.smackx.receipts.DeliveryReceipt;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.receipts.ReceiptReceivedListener;
-import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
 
 import io.realm.Realm;
 
@@ -72,13 +73,13 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
-        final String account = ((AccountItem) connection).getAccount();
-        final String user = packet.getFrom();
-        if (user == null) {
+        final AccountJid account = ((AccountItem) connection).getAccount();
+        final Jid from = packet.getFrom();
+        if (from == null) {
             return;
         }
         if (!(packet instanceof Message)) {
@@ -91,11 +92,11 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof DeliveryReceiptRequest) {
-                    String id = message.getPacketID();
+                    String id = message.getStanzaId();
                     if (id == null) {
                         continue;
                     }
-                    Message receipt = new Message(user);
+                    Message receipt = new Message(from);
                     receipt.addExtension(new DeliveryReceipt(id));
                     // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
@@ -109,11 +110,11 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         }
     }
 
-    private void markAsError(final String account, final Message message) {
+    private void markAsError(final AccountJid account, final Message message) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account)
+                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                 .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId()).findFirst();
         if (first != null) {
             first.setError(true);
@@ -124,7 +125,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     @Override
-    public void onReceiptReceived(String fromJid, final String toJid, final String receiptId, Stanza stanza) {
+    public void onReceiptReceived(Jid fromJid, final Jid toJid, final String receiptId, Stanza stanza) {
         DeliveryReceipt receipt = DeliveryReceipt.from((Message) stanza);
 
         if (receipt == null) {
@@ -134,7 +135,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         markAsDelivered(toJid, receiptId);
     }
 
-    private void markAsDelivered(final String toJid, final String receiptId) {
+    private void markAsDelivered(final Jid toJid, final String receiptId) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         MessageItem first = realm.where(MessageItem.class)

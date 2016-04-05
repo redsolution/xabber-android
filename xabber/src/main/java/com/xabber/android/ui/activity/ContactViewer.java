@@ -29,7 +29,9 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
@@ -52,23 +54,23 @@ import java.util.List;
 public class ContactViewer extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener {
 
-    private String account;
-    private String bareAddress;
+    private AccountJid account;
+    private UserJid user;
     private Toolbar toolbar;
     private View contactTitleView;
     private AbstractContact bestContact;
     private CollapsingToolbarLayout collapsingToolbar;
 
-    public static Intent createIntent(Context context, String account, String user) {
+    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactViewer.class)
                 .setAccount(account).setUser(user).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -98,21 +100,21 @@ public class ContactViewer extends ManagedActivity implements
                         for (RosterContact rosterContact : RosterManager.getInstance().getContacts())
                             if (id.equals(rosterContact.getViewId())) {
                                 account = rosterContact.getAccount();
-                                bareAddress = rosterContact.getUser();
+                                user = rosterContact.getUser();
                                 break;
                             }
                 }
             }
         } else {
             account = getAccount(getIntent());
-            bareAddress = getUser(getIntent());
+            user = getUser(getIntent());
         }
 
-        if (bareAddress != null && bareAddress.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
-            bareAddress = Jid.getBareAddress(AccountManager.getInstance().getAccount(account).getRealJid());
+        if (user != null && user.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
+            user = Jid.getBareAddress(AccountManager.getInstance().getAccount(account).getRealJid());
         }
 
-        if (account == null || bareAddress == null) {
+        if (account == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
             return;
@@ -123,10 +125,10 @@ public class ContactViewer extends ManagedActivity implements
         if (savedInstanceState == null) {
 
             Fragment fragment;
-            if (MUCManager.getInstance().hasRoom(account, bareAddress)) {
-                fragment = ConferenceInfoFragment.newInstance(account, bareAddress);
+            if (MUCManager.getInstance().hasRoom(account, user)) {
+                fragment = ConferenceInfoFragment.newInstance(account, user);
             } else {
-                fragment = ContactVcardViewerFragment.newInstance(account, bareAddress);
+                fragment = ContactVcardViewerFragment.newInstance(account, user);
             }
 
             getFragmentManager().beginTransaction().add(R.id.scrollable_container, fragment).commit();
@@ -134,7 +136,7 @@ public class ContactViewer extends ManagedActivity implements
 
         }
 
-        bestContact = RosterManager.getInstance().getBestContact(account, bareAddress);
+        bestContact = RosterManager.getInstance().getBestContact(account, user);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
@@ -183,7 +185,7 @@ public class ContactViewer extends ManagedActivity implements
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
         for (BaseEntity entity : entities) {
-            if (entity.equals(account, bareAddress)) {
+            if (entity.equals(account, user)) {
                 updateName();
                 break;
             }
@@ -191,32 +193,32 @@ public class ContactViewer extends ManagedActivity implements
     }
 
     private void updateName() {
-        if (MUCManager.getInstance().isMucPrivateChat(account, bareAddress)) {
-            String vCardName = VCardManager.getInstance().getName(bareAddress);
+        if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
+            String vCardName = VCardManager.getInstance().getName(user);
             if (!"".equals(vCardName)) {
                 collapsingToolbar.setTitle(vCardName);
             } else {
-                collapsingToolbar.setTitle(Jid.getResource(bareAddress));
+                collapsingToolbar.setTitle(Jid.getResource(user));
             }
 
         } else {
-            collapsingToolbar.setTitle(RosterManager.getInstance().getBestContact(account, bareAddress).getName());
+            collapsingToolbar.setTitle(RosterManager.getInstance().getBestContact(account, user).getName());
         }
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             updateName();
         }
     }
 
-    protected String getAccount() {
+    protected AccountJid getAccount() {
         return account;
     }
 
-    protected String getBareAddress() {
-        return bareAddress;
+    protected UserJid getUser() {
+        return user;
     }
 
     @Override

@@ -15,6 +15,8 @@
 package com.xabber.android.data.extension.vcard;
 
 import com.xabber.android.data.BaseUIListener;
+import com.xabber.android.data.entity.AccountJid;
+
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 /**
@@ -31,7 +33,7 @@ public interface OnVCardListener extends BaseUIListener {
      * @param bareAddress
      * @param vCard
      */
-    void onVCardReceived(String account, String bareAddress, VCard vCard);
+    void onVCardReceived(AccountJid account, String bareAddress, VCard vCard);
 
     /**
      * Fail occurred on vCard response.
@@ -39,6 +41,6 @@ public interface OnVCardListener extends BaseUIListener {
      * @param account
      * @param bareAddress
      */
-    void onVCardFailed(String account, String bareAddress);
+    void onVCardFailed(AccountJid account, String bareAddress);
 
 }

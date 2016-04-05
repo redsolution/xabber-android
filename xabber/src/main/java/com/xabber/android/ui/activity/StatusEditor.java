@@ -39,6 +39,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.SavedStatus;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.StatusEditorAdapter;
 import com.xabber.android.ui.adapter.StatusModeAdapter;
@@ -50,7 +51,7 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
     private static final String SAVED_TEXT = "com.xabber.android.ui.activity.StatusEditor.SAVED_TEXT";
     private static final String SAVED_MODE = "com.xabber.android.ui.activity.StatusEditor.SAVED_MODE";
 
-    private String account;
+    private AccountJid account;
     private Spinner statusModeView;
     private EditText statusTextView;
 
@@ -62,11 +63,11 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         return StatusEditor.createIntent(context, null);
     }
 
-    public static Intent createIntent(Context context, String account) {
+    public static Intent createIntent(Context context, AccountJid account) {
         return new AccountIntentBuilder(context, StatusEditor.class).setAccount(account).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 

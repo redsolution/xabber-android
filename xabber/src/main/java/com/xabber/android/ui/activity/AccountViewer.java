@@ -16,6 +16,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
@@ -43,7 +44,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
     public static final String INTENT_SHOW_ACCOUNT_INFO = "com.xabber.android.ui.activity.AccountViewer.INTENT_SHOW_ACCOUNT_INFO";
     public static final String SAVE_SHOW_ACCOUNT_INFO = "com.xabber.android.ui.activity.AccountViewer.SAVE_SHOW_ACCOUNT_INFO";
 
-    private String account;
+    private AccountJid account;
     private AccountItem accountItem;
     private View contactTitleView;
     private AbstractContact bestContact;
@@ -55,21 +56,21 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
     private boolean showAccountInfo;
     private TextView statusText;
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
-    public static Intent createAccountInfoIntent(Context context, String account) {
+    public static Intent createAccountInfoIntent(Context context, AccountJid account) {
         return createIntent(context, account, true);
     }
 
-    public static Intent createAccountPreferencesIntent(Context context, String account) {
+    public static Intent createAccountPreferencesIntent(Context context, AccountJid account) {
         return createIntent(context, account, false);
     }
 
     @NonNull
-    private static Intent createIntent(Context context, String account, boolean showAccountInfo) {
-        final Intent intent = new AccountIntentBuilder(context, AccountViewer.class).setAccount(account).build();
+    private static Intent createIntent(Context context, AccountJid account, boolean showAccountInfo) {
+        final Intent intent = new AccountIntentBuilder(context, AccountViewer.class).setAccount(AccountJid).build();
         intent.putExtra(INTENT_SHOW_ACCOUNT_INFO, showAccountInfo);
         return intent;
     }
@@ -273,7 +274,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
     }
 
     @Override
-    public String getAccount() {
+    public AccountJid getAccount() {
         return account;
     }
 

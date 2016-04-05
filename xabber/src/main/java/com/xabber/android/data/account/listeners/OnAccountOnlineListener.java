@@ -27,8 +27,6 @@ public interface OnAccountOnlineListener extends BaseManagerInterface {
      * {@link OnAccountEnabledListener#onAccountEnabled(AccountItem)} and
      * {@link OnConnectionListener#onConnection(ConnectionItem)} will be called
      * first.
-     *
-     * @param accountItem
      */
     void onAccountOnline(AccountItem accountItem);
 

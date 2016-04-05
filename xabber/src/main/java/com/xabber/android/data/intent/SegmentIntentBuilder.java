@@ -14,13 +14,13 @@
  */
 package com.xabber.android.data.intent;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SegmentIntentBuilder<T extends SegmentIntentBuilder<?>> extends
         BaseIntentBuilder<T> {
@@ -29,7 +29,7 @@ public class SegmentIntentBuilder<T extends SegmentIntentBuilder<?>> extends
 
     public SegmentIntentBuilder(Context context, Class<?> cls) {
         super(context, cls);
-        segments = new ArrayList<String>();
+        segments = new ArrayList<>();
     }
 
     protected int getSegmentCount() {

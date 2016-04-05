@@ -10,6 +10,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -21,15 +23,15 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ContactDeleteDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ContactDeleteDialogFragment.ARGUMENT_USER";
 
-    private String user;
-    private String account;
+    private UserJid user;
+    private AccountJid account;
 
-    public static ContactDeleteDialogFragment newInstance(String account, String user) {
+    public static ContactDeleteDialogFragment newInstance(AccountJid account, UserJid user) {
         ContactDeleteDialogFragment fragment = new ContactDeleteDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -37,8 +39,8 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        user = (UserJid) args.getSerializable(ARGUMENT_USER);
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.contact_delete_confirm),

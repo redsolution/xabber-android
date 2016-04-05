@@ -28,6 +28,7 @@ import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.CapabilitiesTable;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.roster.RosterManager;
@@ -42,7 +43,7 @@ import org.jivesoftware.smackx.caps.packet.CapsExtension;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.FullJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -143,7 +144,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param user    full JID.
      * @return <code>null</code> if there is no available information.
      */
-    public ClientInfo getClientInfo(String account, org.jxmpp.jid.Jid user) {
+    public ClientInfo getClientInfo(AccountJid account, FullJid user) {
         Capability capability = userCapabilities.get(account, user.toString());
         if (capability == null)
             return null;
@@ -193,7 +194,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param account
      * @param user
      */
-    public void request(String account, org.jxmpp.jid.Jid user) {
+    public void request(AccountJid account, org.jxmpp.jid.Jid user) {
         Capability capability = new Capability(account, user, Capability.DIRECT_REQUEST_METHOD, null, null);
         userCapabilities.put(account, user.toString(), capability);
         request(account, user, capability);
@@ -205,7 +206,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param user
      * @param capability
      */
-    private void request(String account, org.jxmpp.jid.Jid user, Capability capability) {
+    private void request(AccountJid account, org.jxmpp.jid.Jid user, Capability capability) {
         for (DiscoverInfoRequest check : requests) {
             if (capability.equals(check.getCapability())) {
                 return;
@@ -398,7 +399,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         removeAccountInfo(accountItem.getAccount());
     }
 
-    private void removeAccountInfo(String account) {
+    private void removeAccountInfo(AccountJid account) {
         userCapabilities.clear(account);
         Iterator<Capability> iterator = clientInformations.keySet().iterator();
         while (iterator.hasNext())
@@ -410,7 +411,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     public void onDisconnect(ConnectionItem connection) {
         if (!(connection instanceof AccountItem))
             return;
-        String account = ((AccountItem) connection).getAccount();
+        AccountJid account = ((AccountItem) connection).getAccount();
         Iterator<DiscoverInfoRequest> iterator = requests.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getAccount().equals(account))
@@ -418,7 +419,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         }
     }
 
-    public void onPresenceChanged(final String account, final Presence presence) {
+    public void onPresenceChanged(final AccountJid account, final Presence presence) {
         final org.jxmpp.jid.Jid user = presence.getFrom();
         if (user == null)
             return;
@@ -453,10 +454,10 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
-        final String account = ((AccountItem) connection).getAccount();
+        final AccountJid account = ((AccountItem) connection).getAccount();
         final org.jxmpp.jid.Jid user = packet.getFrom();
         if (packet instanceof IQ) {
             IQ iq = (IQ) packet;

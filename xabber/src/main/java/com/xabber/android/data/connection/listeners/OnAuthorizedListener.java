@@ -28,8 +28,6 @@ public interface OnAuthorizedListener extends BaseManagerInterface {
      * Authorization was complied.
      * <p/>
      * No one another other packets has been sent or received yet.
-     *
-     * @param connection
      */
     void onAuthorized(ConnectionItem connection);
 

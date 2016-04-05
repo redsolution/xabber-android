@@ -78,8 +78,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
      */
     private Listener listener;
 
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
     private int prevItemCount;
     private long lastUpdateTimeMillis;
 
@@ -499,8 +499,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     private void setUpAvatar(MessageItem messageItem, IncomingMessage message) {
         if (SettingsManager.chatsShowAvatars()) {
-            final String account = messageItem.getAccount();
-            final String user = messageItem.getUser();
+            final AccountJid account = messageItem.getAccount();
+            final UserJid user = messageItem.getUser();
             final String resource = messageItem.getResource();
 
             message.avatar.setVisibility(View.VISIBLE);

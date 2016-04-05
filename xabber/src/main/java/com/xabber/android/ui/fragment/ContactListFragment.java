@@ -379,7 +379,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      *
      * @param account
      */
-    void scrollTo(String account) {
+    void scrollTo(AccountJid account) {
         long count = listView.getCount();
         for (int position = 0; position < (int) count; position++) {
             BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(position);
@@ -397,7 +397,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      *
      * @param account
      */
-    void setSelectedAccount(String account) {
+    void setSelectedAccount(AccountJid account) {
         if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
             SettingsManager.setContactsSelectedAccount("");
         } else {
@@ -435,7 +435,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         }
 
 
-        String account = accountActionButtonsAdapter.getItemForView(view);
+        AccountJid account = accountActionButtonsAdapter.getItemForView(view);
         if (account == null) { // Check for tap on account in the title
             return;
         }
@@ -460,7 +460,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
-    public void onAccountMenuClick(View view, final String account) {
+    public void onAccountMenuClick(View view, final AccountJid account) {
         PopupMenu popup = new PopupMenu(getActivity(), view);
         popup.inflate(R.menu.account);
         ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, account, popup.getMenu());

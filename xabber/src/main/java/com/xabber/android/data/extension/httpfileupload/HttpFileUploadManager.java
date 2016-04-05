@@ -5,10 +5,13 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnResponseListener;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
@@ -18,6 +21,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.DomainBareJid;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,13 +56,13 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         return instance;
     }
 
-    private Map<String, String> uploadServers = new ConcurrentHashMap<>();
+    private Map<AccountJid, String> uploadServers = new ConcurrentHashMap<>();
 
-    public boolean isFileUploadSupported(String account) {
+    public boolean isFileUploadSupported(AccountJid account) {
         return uploadServers.containsKey(account);
     }
 
-    public void uploadFile(final String account, final String user, final String filePath) {
+    public void uploadFile(final AccountJid account, final UserJid user, final String filePath) {
         final String uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             return;
@@ -75,7 +79,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         try {
             ConnectionManager.getInstance().sendRequest(account, httpFileUpload, new OnResponseListener() {
                 @Override
-                public void onReceived(final String account, String packetId, IQ iq) {
+                public void onReceived(final AccountJid account, String packetId, IQ iq) {
                     if (!httpFileUpload.getStanzaId().equals(packetId) || !(iq instanceof Slot)) {
                         return;
                     }
@@ -84,7 +88,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                 }
 
 
-                private void uploadFileToSlot(final String account, final Slot slot) {
+                private void uploadFileToSlot(final AccountJid account, final Slot slot) {
                     OkHttpClient client = new OkHttpClient().newBuilder()
                             .writeTimeout(5, TimeUnit.MINUTES)
                             .connectTimeout(5, TimeUnit.MINUTES)
@@ -126,18 +130,18 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                 }
 
                 @Override
-                public void onError(String account, String packetId, IQ iq) {
+                public void onError(AccountJid account, String packetId, IQ iq) {
                     LogManager.i(this, "On HTTP file upload slot error");
                     Application.getInstance().onError(R.string.http_file_upload_slot_error);
                 }
 
                 @Override
-                public void onTimeout(String account, String packetId) {
+                public void onTimeout(AccountJid account, String packetId) {
 
                 }
 
                 @Override
-                public void onDisconnect(String account, String packetId) {
+                public void onDisconnect(AccountJid account, String packetId) {
 
                 }
             });
@@ -168,23 +172,19 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         });
     }
 
-    private void discoverSupport(XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
-            XMPPException.XMPPErrorException, SmackException.NoResponseException {
-
-        final String account = xmppConnection.getUser();
+    private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
+            XMPPException.XMPPErrorException, SmackException.NoResponseException, InterruptedException {
 
         uploadServers.remove(account);
 
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
 
-        List<String> services = discoManager.findServices(com.xabber.xmpp.httpfileupload.Request.NAMESPACE, true, true);
+        List<DomainBareJid> services = discoManager.findServices(com.xabber.xmpp.httpfileupload.Request.NAMESPACE, true, true);
 
         if (!services.isEmpty()) {
-            final String uploadServerUrl = services.get(0);
-            if (!uploadServerUrl.isEmpty()) {
-                LogManager.i(this, "Http file upload server: " + uploadServerUrl);
-                uploadServers.put(account, uploadServerUrl);
-            }
+            final DomainBareJid uploadServerUrl = services.get(0);
+            LogManager.i(this, "Http file upload server: " + uploadServerUrl);
+            uploadServers.put(account, uploadServerUrl.toString());
         }
     }
 
@@ -193,9 +193,11 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
+                AccountJid account = ((AccountItem) connection).getAccount();
                 try {
-                    discoverSupport(connection.getConnectionThread().getXMPPConnection());
-                } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
+                    discoverSupport(account, connection.getConnectionThread().getXMPPConnection());
+                } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
+                        | SmackException.NoResponseException | InterruptedException e) {
                     LogManager.exception(this, e);
                 }
             }

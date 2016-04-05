@@ -8,7 +8,9 @@ import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.connection.listeners.OnResponseListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -23,7 +25,6 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
-import org.jxmpp.jid.BareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,8 +38,8 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     private final static BlockingManager instance;
 
-    private Map<String, Boolean> supportForAccounts;
-    private Map<String, List<String>> blockListsForAccounts;
+    private Map<AccountJid, Boolean> supportForAccounts;
+    private Map<AccountJid, List<UserJid>> blockListsForAccounts;
 
     static {
         instance = new BlockingManager();
@@ -57,7 +58,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
     private void discoverSupport(XMPPConnection xmppConnection)
             throws SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
-        final String account = xmppConnection.getUser();
+        final AccountJid account = xmppConnection.getUser();
         final boolean isSupported = discoManager.serverSupportsFeature(XmlConstants.NAMESPACE);
 
         if (isSupported) {
@@ -67,7 +68,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         supportForAccounts.put(account, isSupported);
     }
 
-    public boolean isSupported(String account) {
+    public boolean isSupported(AccountJid account) {
         final Boolean isSupported = supportForAccounts.get(account);
         if (isSupported == null) {
             return false;
@@ -75,23 +76,23 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         return isSupported;
     }
 
-    public Map<String, List<String>> getBlockedContacts() {
+    public Map<AccountJid, List<UserJid>> getBlockedContacts() {
         return Collections.unmodifiableMap(blockListsForAccounts);
     }
 
-    public Collection<String> getBlockedContacts(String account) {
+    public Collection<UserJid> getBlockedContacts(AccountJid account) {
 
         return Collections.unmodifiableCollection(getBlockedListForAccount(account));
     }
 
-    private List<String> getBlockedListForAccount(String account) {
+    private List<UserJid> getBlockedListForAccount(AccountJid account) {
         if (!blockListsForAccounts.containsKey(account)) {
-            blockListsForAccounts.put(account, new ArrayList<String>());
+            blockListsForAccounts.put(account, new ArrayList<UserJid>());
         }
         return blockListsForAccounts.get(account);
     }
 
-    public void requestBlockList(String account) {
+    public void requestBlockList(AccountJid account) {
         if (!isSupported(account)) {
             return;
         }
@@ -103,7 +104,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             ConnectionManager.getInstance().sendRequest(account, blockListRequest, new OnResponseListener() {
 
                 @Override
-                public void onReceived(String account, String packetId, IQ iq) {
+                public void onReceived(AccountJid account, String packetId, IQ iq) {
                     if (!blockListRequest.getStanzaId().equals(packetId) || !(iq instanceof BlockList)) {
                         return;
                     }
@@ -123,17 +124,17 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                 }
 
                 @Override
-                public void onError(String account, String packetId, IQ iq) {
+                public void onError(AccountJid account, String packetId, IQ iq) {
 
                 }
 
                 @Override
-                public void onTimeout(String account, String packetId) {
+                public void onTimeout(AccountJid account, String packetId) {
 
                 }
 
                 @Override
-                public void onDisconnect(String account, String packetId) {
+                public void onDisconnect(AccountJid account, String packetId) {
 
                 }
             });
@@ -144,7 +145,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         if (packet instanceof Block && ((Block) packet).getType() == IQ.Type.set) {
             LogManager.i(this, "Block push received");
             Block block = (Block) packet;
@@ -165,7 +166,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         void onError();
     }
 
-    public void blockContact(String account, final String contactJid, final BlockContactListener listener) {
+    public void blockContact(AccountJid account, final UserJid contactJid, final BlockContactListener listener) {
         final Block blockRequest  = new Block();
         blockRequest.setType(IQ.Type.set);
         blockRequest.addItem(contactJid);
@@ -174,7 +175,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             ConnectionManager.getInstance().sendRequest(account, blockRequest, new OnResponseListener() {
 
                 @Override
-                public void onReceived(String account, String packetId, IQ iq) {
+                public void onReceived(AccountJid account, String packetId, IQ iq) {
                     if (!blockRequest.getStanzaId().equals(packetId)) {
                         return;
                     }
@@ -188,17 +189,17 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                 }
 
                 @Override
-                public void onError(String account, String packetId, IQ iq) {
+                public void onError(AccountJid account, String packetId, IQ iq) {
                     listener.onError();
                 }
 
                 @Override
-                public void onTimeout(String account, String packetId) {
+                public void onTimeout(AccountJid account, String packetId) {
                     listener.onError();
                 }
 
                 @Override
-                public void onDisconnect(String account, String packetId) {
+                public void onDisconnect(AccountJid account, String packetId) {
                     listener.onError();
                 }
             });
@@ -209,7 +210,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     }
 
-    private void blockContactLocally(String account, String contactJid) {
+    private void blockContactLocally(AccountJid account, String contactJid) {
         MessageManager.getInstance().closeChat(account, contactJid);
         NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
@@ -219,7 +220,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         void onError();
     }
 
-    public void unblockContacts(String account, final List<String> contacts, final UnblockContactListener listener) {
+    public void unblockContacts(AccountJid account, final List<String> contacts, final UnblockContactListener listener) {
         if (!isSupported(account)) {
             return;
         }
@@ -233,16 +234,16 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         sendUnblock(account, listener, unblockRequest);
     }
 
-    public void unblockAll(String account, final UnblockContactListener listener) {
+    public void unblockAll(AccountJid account, final UnblockContactListener listener) {
         unblockContacts(account, blockListsForAccounts.get(account), listener);
     }
 
-    private void sendUnblock(String account, final UnblockContactListener listener, final Unblock unblockRequest) {
+    private void sendUnblock(AccountJid account, final UnblockContactListener listener, final Unblock unblockRequest) {
         try {
             ConnectionManager.getInstance().sendRequest(account, unblockRequest, new OnResponseListener() {
 
                 @Override
-                public void onReceived(String account, String packetId, IQ iq) {
+                public void onReceived(AccountJid account, String packetId, IQ iq) {
                     if (!unblockRequest.getStanzaId().equals(packetId)) {
                         return;
                     }
@@ -256,17 +257,17 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                 }
 
                 @Override
-                public void onError(String account, String packetId, IQ iq) {
+                public void onError(AccountJid account, String packetId, IQ iq) {
                     listener.onError();
                 }
 
                 @Override
-                public void onTimeout(String account, String packetId) {
+                public void onTimeout(AccountJid account, String packetId) {
                     listener.onError();
                 }
 
                 @Override
-                public void onDisconnect(String account, String packetId) {
+                public void onDisconnect(AccountJid account, String packetId) {
                     listener.onError();
                 }
             });

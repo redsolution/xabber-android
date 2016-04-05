@@ -26,7 +26,7 @@ import com.xabber.android.ui.activity.ChatViewer;
 public class AttentionRequest extends BaseEntity implements
         EntityNotificationItem {
 
-    public AttentionRequest(String account, String user) {
+    public AttentionRequest(AccountJid account, UserJid user) {
         super(account, user);
     }
 

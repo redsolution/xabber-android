@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.entity;
 
+import android.support.annotation.NonNull;
+
 /**
  * Object with relation to the account.
  *
@@ -21,14 +23,15 @@ package com.xabber.android.data.entity;
  */
 public abstract class AccountRelated {
 
-    protected final String account;
+    protected final @NonNull AccountJid account;
 
-    public AccountRelated(String account) {
+    public AccountRelated(@NonNull AccountJid account) {
         super();
         this.account = account;
     }
 
-    public String getAccount() {
+    @NonNull
+    public AccountJid getAccount() {
         return account;
     }
 
@@ -36,23 +39,20 @@ public abstract class AccountRelated {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((account == null) ? 0 : account.hashCode());
+        result = prime * result + (account.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (obj instanceof AccountRelated && this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null || !(obj instanceof AccountRelated)) {
             return false;
+        }
         AccountRelated other = (AccountRelated) obj;
-        if (account == null) {
-            if (other.account != null)
-                return false;
-        } else if (!account.equals(other.account))
-            return false;
-        return true;
+        return account.equals(other.account);
     }
 
 }

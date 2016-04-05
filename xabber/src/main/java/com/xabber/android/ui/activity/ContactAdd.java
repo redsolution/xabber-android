@@ -23,6 +23,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ContactAddFragment;
@@ -37,19 +39,19 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
         return createIntent(context, null);
     }
 
-    public static Intent createIntent(Context context, String account) {
+    public static Intent createIntent(Context context, AccountJid account) {
         return createIntent(context, account, null);
     }
 
-    public static Intent createIntent(Context context, String account, String user) {
+    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ContactAdd.class).setAccount(account).setUser(user).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -107,7 +109,7 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
     }
 
     @Override
-    public void onAccountSelected(String account) {
+    public void onAccountSelected(AccountJid account) {
         barPainter.updateWithAccountName(account);
     }
 }

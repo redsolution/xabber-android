@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ConferenceSelectFragment;
@@ -48,7 +49,7 @@ public class ConferenceSelectActivity extends ManagedActivity implements Confere
     }
 
     @Override
-    public void onAccountSelected(String account) {
+    public void onAccountSelected(AccountJid account) {
         barPainter.updateWithAccountName(account);
     }
 }

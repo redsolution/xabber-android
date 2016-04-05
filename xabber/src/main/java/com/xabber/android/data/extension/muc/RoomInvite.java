@@ -47,7 +47,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
      */
     private final String password;
 
-    public RoomInvite(String account, String user, String inviter, String reason, String password) {
+    public RoomInvite(AccountJid account, UserJid user, String inviter, String reason, String password) {
         super(account, user);
         this.inviter = inviter;
         this.reason = reason == null ? "" : reason;

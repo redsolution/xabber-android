@@ -21,8 +21,6 @@ public interface OnAccountAddedListener extends BaseManagerInterface {
 
     /**
      * New account was added to the account list.
-     *
-     * @param accountItem
      */
     void onAccountAdded(AccountItem accountItem);
 

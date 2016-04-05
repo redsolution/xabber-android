@@ -29,7 +29,9 @@ import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
@@ -108,7 +110,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         }
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         String value = EntityIntentBuilder.getAccount(intent);
         if (value != null)
             return value;
@@ -116,7 +118,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         return intent.getStringExtra("com.xabber.android.data.account");
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         String value = EntityIntentBuilder.getUser(intent);
         if (value != null)
             return value;
@@ -128,7 +130,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         return ACTION_ATTENTION.equals(intent.getAction());
     }
 
-    public static Intent createSpecificChatIntent(Context context, String account, String user) {
+    public static Intent createSpecificChatIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = new EntityIntentBuilder(context, ChatViewer.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_SPECIFIC_CHAT);
         return intent;
@@ -140,13 +142,13 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         return intent;
     }
 
-    public static Intent createClearTopIntent(Context context, String account, String user) {
+    public static Intent createClearTopIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = createSpecificChatIntent(context, account, user);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return intent;
     }
 
-    public static Intent createShortCutIntent(Context context, String account, String user) {
+    public static Intent createShortCutIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = createClearTopIntent(context, account, user);
         intent.setAction(ACTION_SHORTCUT);
         return intent;
@@ -164,14 +166,14 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
      *                of messages. Else only one message can be send.
      * @return
      */
-    public static Intent createSendIntent(Context context, String account, String user, String text) {
+    public static Intent createSendIntent(Context context, AccountJid account, UserJid user, String text) {
         Intent intent = ChatViewer.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
         return intent;
     }
 
-    public static Intent createAttentionRequestIntent(Context context, String account, String user) {
+    public static Intent createAttentionRequestIntent(Context context, AccountJid account, UserJid user) {
         Intent intent = ChatViewer.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
         return intent;
@@ -234,8 +236,8 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
 
     private void getInitialChatFromIntent() {
         Intent intent = getIntent();
-        String account = getAccount(intent);
-        String user = getUser(intent);
+        AccountJid account = getAccount(intent);
+        UserJid user = getUser(intent);
         if (account != null && user != null) {
             initialChat = new BaseEntity(account, user);
         }
@@ -534,7 +536,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
     }
 
     @Override
-    public void onBlockedListChanged(String account) {
+    public void onBlockedListChanged(AccountJid account) {
         // if chat of blocked contact is currently opened, it should be closed
         if (selectedChat != null) {
             final Collection<String> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);

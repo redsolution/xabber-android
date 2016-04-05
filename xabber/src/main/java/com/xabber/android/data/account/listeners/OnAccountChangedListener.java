@@ -15,6 +15,7 @@
 package com.xabber.android.data.account.listeners;
 
 import com.xabber.android.data.BaseUIListener;
+import com.xabber.android.data.entity.AccountJid;
 
 import java.util.Collection;
 
@@ -27,8 +28,6 @@ public interface OnAccountChangedListener extends BaseUIListener {
 
     /**
      * State changed on connection, disconnection, authorization, etc.
-     *
-     * @param accounts
      */
-    void onAccountsChanged(Collection<String> accounts);
+    void onAccountsChanged(Collection<AccountJid> accounts);
 }

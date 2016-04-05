@@ -25,6 +25,7 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.jid.parts.Resourcepart;
 
 /**
  * Abstract connection.
@@ -65,7 +66,7 @@ public abstract class ConnectionItem {
 
     public ConnectionItem(AccountProtocol protocol, boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
-                          String resource, boolean storePassword, String password,
+                          Resourcepart resource, boolean storePassword, String password,
                           boolean saslEnabled, TLSMode tlsMode, boolean compression,
                           ProxyType proxyType, String proxyHost, int proxyPort,
                           String proxyUser, String proxyPassword) {

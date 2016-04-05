@@ -18,10 +18,11 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
-import com.xabber.xmpp.address.Jid;
 
 import net.java.otr4j.OtrException;
 
@@ -32,6 +33,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.Date;
 
@@ -48,7 +50,7 @@ public class RegularChat extends AbstractChat {
     private String resource;
 
 
-    RegularChat(String account, String user, boolean isPrivateMucChat) {
+    RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
         super(account, user, isPrivateMucChat);
         resource = null;
     }
@@ -58,7 +60,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    public String getTo() {
+    public EntityBareJid getTo() {
         if (resource == null
                 || (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user)) && getType() != Message.Type.groupchat )) {
             return user;
@@ -115,7 +117,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(String bareAddress, Stanza packet) {
+    protected boolean onPacket(EntityBareJid bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet))
             return false;
         final String resource = Jid.getResource(packet.getFrom());

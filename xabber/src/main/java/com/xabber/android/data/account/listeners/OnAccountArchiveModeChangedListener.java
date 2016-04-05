@@ -22,8 +22,6 @@ public interface OnAccountArchiveModeChangedListener extends
 
     /**
      * Account's archive mode has been changed.
-     *
-     * @param accountItem
      */
     void onAccountArchiveModeChanged(AccountItem accountItem);
 

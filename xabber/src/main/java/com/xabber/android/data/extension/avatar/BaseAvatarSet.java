@@ -80,7 +80,7 @@ public class BaseAvatarSet implements OnLowMemoryListener {
      * @param user
      * @return
      */
-    protected int getIndex(String user) {
+    protected int getIndex(UserJid user) {
         return user.hashCode();
     }
 
@@ -90,7 +90,7 @@ public class BaseAvatarSet implements OnLowMemoryListener {
      * @param user
      * @return
      */
-    public DefaultAvatar getResourceId(String user) {
+    public DefaultAvatar getResourceId(UserJid user) {
         DefaultAvatar avatar = resources.get(user);
         if (avatar == null) {
             avatar = getElement(getIndex(user));

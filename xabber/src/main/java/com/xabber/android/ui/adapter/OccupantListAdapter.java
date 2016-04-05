@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
@@ -43,12 +44,12 @@ public class OccupantListAdapter extends BaseAdapter implements
         UpdatableAdapter {
 
     private final Activity activity;
-    private final String account;
+    private final AccountJid account;
     private final String room;
 
     private final ArrayList<Occupant> occupants;
 
-    public OccupantListAdapter(Activity activity, String account, String room) {
+    public OccupantListAdapter(Activity activity, AccountJid account, String room) {
         this.activity = activity;
         this.account = account;
         this.room = room;

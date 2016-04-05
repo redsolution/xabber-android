@@ -34,7 +34,6 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
-import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
@@ -80,14 +79,14 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final BareJid bareAddress, Stanza packet) {
+    public void onPacket(ConnectionItem connection, Stanza packet) {
         String from = packet.getFrom();
         if (from == null)
             return;
         if (!(connection instanceof AccountItem)
                 || !(packet instanceof Message))
             return;
-        String account = ((AccountItem) connection).getAccount();
+        AccountJid account = ((AccountItem) connection).getAccount();
         Message message = (Message) packet;
         String session = message.getThread();
         if (session == null)
@@ -109,7 +108,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
             }
     }
 
-    private void onFormReceived(String account, String from,
+    private void onFormReceived(AccountJid account, String from,
                                 String bareAddress, String session, Feature feature) {
         OtrMode otrMode = getOtrMode(account, bareAddress, session);
         boolean cancel = false;
@@ -172,7 +171,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         sendFeature(account, from, session, new Feature(dataForm));
     }
 
-    private void onSubmitReceived(String account, String from,
+    private void onSubmitReceived(AccountJid account, String from,
                                   String bareAddress, String session, Feature feature) {
         if (feature.getTerminateValue() != null) {
             onTerminateReceived(account, from, session);
@@ -201,7 +200,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         }
     }
 
-    private void onTerminateReceived(String account, String from, String session) {
+    private void onTerminateReceived(AccountJid account, String from, String session) {
         if (sessionStates.get(account, session) == null)
             return;
         sessionStates.remove(account, session);
@@ -210,7 +209,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         sendFeature(account, from, session, new Feature(dataForm));
     }
 
-    private OtrMode getOtrMode(String account, String bareAddress,
+    private OtrMode getOtrMode(AccountJid account, String bareAddress,
                                String session) {
         OtrMode otrMode = sessionOtrs.get(account, session);
         if (otrMode != null)
@@ -220,7 +219,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         return OtrMode.concede;
     }
 
-    private boolean isAccepted(String account, String from, String bareAddress,
+    private boolean isAccepted(AccountJid account, String from, String bareAddress,
                                String session, Feature feature) {
         Boolean accept = feature.getAcceptValue();
         if (accept != null && !accept) {
@@ -236,7 +235,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         return true;
     }
 
-    private void onResultReceived(String account, String from,
+    private void onResultReceived(AccountJid account, String from,
                                   String bareAddress, String session, Feature feature) {
         isAccepted(account, from, bareAddress, session, feature);
     }
@@ -250,7 +249,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
      * @param otrMode
      * @throws NetworkException
      */
-    public void setSessionOtrMode(String account, String user, String session,
+    public void setSessionOtrMode(AccountJid account, UserJid user, String session,
                                   OtrMode otrMode) {
         if (sessionOtrs.get(account, session) == otrMode)
             return;
@@ -273,7 +272,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         sendFeature(account, user, session, new Feature(dataForm));
     }
 
-    private void sendFeature(String account, String user, String session,
+    private void sendFeature(AccountJid account, UserJid user, String session,
                              Feature feature) {
         Message message = new Message(user, Message.Type.normal);
         message.setThread(session);

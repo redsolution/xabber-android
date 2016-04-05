@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 
@@ -17,13 +18,13 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.UnblockAllContactsDialog.ARGUMENT_ACCOUNT";
 
-    private String account;
+    private AccountJid account;
 
-    public static UnblockAllContactsDialog newInstance(String account) {
+    public static UnblockAllContactsDialog newInstance(AccountJid account) {
         UnblockAllContactsDialog fragment = new UnblockAllContactsDialog();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -31,7 +32,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.unblock_all_contacts_confirm),

@@ -1,19 +1,22 @@
 package com.xabber.android.data.message;
 
-public class NewIncomingMessageEvent {
-    private final String account;
-    private final String user;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 
-    public NewIncomingMessageEvent(String account, String user) {
+public class NewIncomingMessageEvent {
+    private final AccountJid account;
+    private final UserJid user;
+
+    public NewIncomingMessageEvent(AccountJid account, UserJid user) {
         this.account = account;
         this.user = user;
     }
 
-    public String getAccount() {
+    public AccountJid getAccount() {
         return account;
     }
 
-    public String getUser() {
+    public UserJid getUser() {
         return user;
     }
 }

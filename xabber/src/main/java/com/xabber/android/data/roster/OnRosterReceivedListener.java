@@ -26,8 +26,6 @@ public interface OnRosterReceivedListener extends BaseManagerInterface {
 
     /**
      * Roster was received.
-     *
-     * @param accountItem
      */
     void onRosterReceived(AccountItem accountItem);
 

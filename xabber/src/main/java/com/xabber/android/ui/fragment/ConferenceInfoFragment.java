@@ -18,7 +18,7 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
     public static final String ARGUMENT_ROOM = "com.xabber.android.ui.fragment.ConferenceInfoFragment.ARGUMENT_ROOM";
     public static final String SAVE_IS_LOADED = "com.xabber.android.ui.fragment.ConferenceInfoFragment.SAVE_IS_LOADED";
 
-    private String account;
+    private AccountJid account;
     private String room;
 
     private TextView jidTextView;
@@ -35,7 +35,7 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
 
     private boolean isInfoLoaded;
 
-    public static ConferenceInfoFragment newInstance(String account, String room) {
+    public static ConferenceInfoFragment newInstance(AccountJid account, String room) {
         ConferenceInfoFragment fragment = new ConferenceInfoFragment();
         Bundle args = new Bundle();
         args.putString(ARGUMENT_ACCOUNT, account);

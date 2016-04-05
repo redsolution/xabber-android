@@ -59,7 +59,7 @@ public class ChatScrollIndicatorAdapter {
             final AccountPainter accountPainter = ColorManager.getInstance().getAccountPainter();
 
             if (i > 0) {
-                final String account = activeChats.get(i - 1).getAccount();
+                final AccountJid account = activeChats.get(i - 1).getAccount();
                 ((GradientDrawable)accountViewHolder.body.getDrawable()).setColor(accountPainter.getAccountMainColor(account));
                 ((GradientDrawable)accountViewHolder.selection.getDrawable()).setColor(accountPainter.getAccountMainColor(account));
             } else {

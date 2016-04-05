@@ -14,11 +14,13 @@
  */
 package com.xabber.android.data.message.phrase;
 
+import android.net.Uri;
+
+import com.xabber.android.data.entity.UserJid;
+
 import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import android.net.Uri;
 
 /**
  * Settings for phrase search.
@@ -40,7 +42,7 @@ public class Phrase {
     /**
      * Part of sender's JID.
      */
-    private String user;
+    private UserJid user;
 
     /**
      * Part of one of the sender's roster groups.
@@ -54,7 +56,7 @@ public class Phrase {
     private Pattern userPattern;
     private Pattern groupPattern;
 
-    public Phrase(Long id, String value, String user, String group,
+    public Phrase(Long id, String value, UserJid user, String group,
                   boolean regexp, Uri sound) {
         super();
         setId(id);
@@ -68,7 +70,7 @@ public class Phrase {
      * @return Whether phrase was found in specified text for user in specified
      * groups.
      */
-    public boolean matches(String text, String user, Collection<String> groups) {
+    public boolean matches(String text, UserJid user, Collection<String> groups) {
         if (textPattern.matcher(text).find()
                 && userPattern.matcher(user).find()) {
             if (groups.isEmpty())
@@ -108,7 +110,7 @@ public class Phrase {
         return sound;
     }
 
-    void update(String text, String user, String group, boolean regexp,
+    void update(String text, UserJid user, String group, boolean regexp,
                 Uri sound) {
         this.text = text;
         this.user = user;

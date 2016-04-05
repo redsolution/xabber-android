@@ -33,8 +33,7 @@ public class ResourceItem implements Comparable<ResourceItem> {
     private String statusText;
     private int priority;
 
-    public ResourceItem(String verbose, StatusMode statusMode,
-                        String statusText, int priority) {
+    public ResourceItem(String verbose, StatusMode statusMode, String statusText, int priority) {
         this.verbose = verbose;
         this.statusMode = statusMode;
         this.statusText = statusText;
@@ -60,7 +59,7 @@ public class ResourceItem implements Comparable<ResourceItem> {
      * @param bareAddress
      * @return Full JID.
      */
-    public String getUser(String bareAddress) {
+    public UserJid getUser(String bareAddress) {
         return bareAddress + "/" + verbose;
     }
 

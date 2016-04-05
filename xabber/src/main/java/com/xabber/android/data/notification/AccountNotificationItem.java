@@ -15,6 +15,8 @@
 package com.xabber.android.data.notification;
 
 
+import com.xabber.android.data.entity.AccountJid;
+
 /**
  * Account related notification to be displayed.
  *
@@ -22,6 +24,6 @@ package com.xabber.android.data.notification;
  */
 public interface AccountNotificationItem extends NotificationItem {
 
-    String getAccount();
+    AccountJid getAccount();
 
 }

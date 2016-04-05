@@ -14,16 +14,19 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import android.support.annotation.NonNull;
 
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.GroupStateProvider;
 import com.xabber.android.data.roster.ShowOfflineMode;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Group representation in the contact list.
@@ -60,7 +63,7 @@ public class GroupConfiguration extends BaseEntity {
      */
     private final ShowOfflineMode showOfflineMode;
 
-    public GroupConfiguration(String account, String group,
+    public GroupConfiguration(AccountJid account, String group,
                               GroupStateProvider groupStateProvider) {
         super(account, group);
         abstractContacts = new ArrayList<>();
@@ -153,7 +156,7 @@ public class GroupConfiguration extends BaseEntity {
     }
 
     @Override
-    public int compareTo(BaseEntity another) {
+    public int compareTo(@NonNull BaseEntity another) {
         final String anotherUser = another.getUser();
         int result = account.compareTo(another.getAccount());
         if (result != 0) {
