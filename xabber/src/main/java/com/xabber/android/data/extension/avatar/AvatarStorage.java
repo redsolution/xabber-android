@@ -14,16 +14,15 @@
  */
 package com.xabber.android.data.extension.avatar;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Manager for avatar files.
@@ -51,8 +50,9 @@ class AvatarStorage implements OnLoadListener, OnClearListener {
 
     @Override
     public void onLoad() {
-        if (!folder.exists())
+        if (!folder.exists()) {
             folder.mkdirs();
+        }
     }
 
     private File getFile(String hash) {
@@ -67,9 +67,8 @@ class AvatarStorage implements OnLoadListener, OnClearListener {
             value = new byte[inputStream.available()];
             inputStream.read(value);
             inputStream.close();
-        } catch (FileNotFoundException e) {
-            value = null;
         } catch (IOException e) {
+            LogManager.exception(this, e);
             value = null;
         }
         return value;
@@ -80,8 +79,6 @@ class AvatarStorage implements OnLoadListener, OnClearListener {
             FileOutputStream outputStream = new FileOutputStream(getFile(hash));
             outputStream.write(value);
             outputStream.close();
-        } catch (FileNotFoundException e) {
-            LogManager.exception(this, e);
         } catch (IOException e) {
             LogManager.exception(this, e);
         }
@@ -89,7 +86,8 @@ class AvatarStorage implements OnLoadListener, OnClearListener {
 
     @Override
     public void onClear() {
-        for (File file : folder.listFiles())
+        for (File file : folder.listFiles()) {
             file.delete();
+        }
     }
 }

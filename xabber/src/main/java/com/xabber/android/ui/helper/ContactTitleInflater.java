@@ -23,7 +23,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 

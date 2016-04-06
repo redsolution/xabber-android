@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.activity.ChatViewer;
 import com.xabber.android.ui.activity.ConferenceAdd;

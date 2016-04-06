@@ -19,7 +19,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.ChatAction;
+
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 /**
  * Storage with messages.
@@ -279,11 +284,11 @@ public class MessageTable extends AbstractEntityTable {
         }
     }
 
-    public static MessageItem createMessageItem(Cursor cursor) {
+    public static MessageItem createMessageItem(Cursor cursor) throws XmppStringprepException {
         MessageItem messageItem = new MessageItem();
-        messageItem.setAccount(getAccount(cursor));
-        messageItem.setUser(getUser(cursor));
-        messageItem.setResource(getResource(cursor));
+        messageItem.setAccount(AccountJid.from(getAccount(cursor)));
+        messageItem.setUser(UserJid.from(getUser(cursor)));
+        messageItem.setResource(Resourcepart.from(getResource(cursor)));
         messageItem.setText(getText(cursor));
 
         ChatAction action = getAction(cursor);

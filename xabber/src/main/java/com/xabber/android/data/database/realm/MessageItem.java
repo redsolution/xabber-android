@@ -17,7 +17,13 @@ package com.xabber.android.data.database.realm;
 import android.text.Spannable;
 import android.text.SpannableString;
 
+import com.xabber.android.data.LogManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.ChatAction;
+
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.File;
 import java.util.UUID;
@@ -156,28 +162,47 @@ public class MessageItem extends RealmObject {
         this.uniqueId = uniqueId;
     }
 
-    public String getAccount() {
-        return account;
+    public AccountJid getAccount() {
+        try {
+            return AccountJid.from(account);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setAccount(AccountJid account) {
+        this.account = account.toString();
     }
 
-    public String getUser() {
-        return user;
+    public UserJid getUser() {
+        try {
+            return UserJid.from(user);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            throw new IllegalStateException();
+        }
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUser(UserJid user) {
+        this.user = user.toString();
     }
 
-    public String getResource() {
-        return resource;
+    public Resourcepart getResource() {
+        if (resource == null) {
+            return Resourcepart.EMPTY;
+        }
+
+        try {
+            return Resourcepart.from(resource);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return Resourcepart.EMPTY;
+        }
     }
 
-    public void setResource(String resource) {
-        this.resource = resource;
+    public void setResource(Resourcepart resource) {
+        this.resource = resource.toString();
     }
 
     public String getText() {

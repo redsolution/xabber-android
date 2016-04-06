@@ -31,6 +31,7 @@ import com.xabber.android.data.account.CommonState;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;

@@ -14,7 +14,9 @@
  */
 package com.xabber.android.data.notification;
 
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 
 import java.util.Date;
 

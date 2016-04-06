@@ -63,7 +63,7 @@ public class PrivateMucChatBlockingManager {
 
         realm.beginTransaction();
         final BlockedContact blockedContact = realm.createObject(BlockedContact.class);
-        blockedContact.setFullJid(user);
+        blockedContact.setFullJid(user.getJid().asFullJidIfPossible().toString());
         blockedContactsForAccount.add(blockedContact);
 
         realm.commitTransaction();

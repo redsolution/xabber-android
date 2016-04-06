@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.xabber.android.data.LogManager;
@@ -34,6 +35,10 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Domainpart;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Date;
 
@@ -47,7 +52,7 @@ public class RegularChat extends AbstractChat {
     /**
      * Resource used for contact.
      */
-    private String resource;
+    private Resourcepart resource;
 
 
     RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
@@ -55,17 +60,18 @@ public class RegularChat extends AbstractChat {
         resource = null;
     }
 
-    public String getResource() {
+    public Resourcepart getResource() {
         return resource;
     }
 
+    @NonNull
     @Override
-    public EntityBareJid getTo() {
+    public Jid getTo() {
         if (resource == null
-                || (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user)) && getType() != Message.Type.groupchat )) {
-            return user;
+                || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat )) {
+            return user.getJid();
         } else {
-            return user + "/" + resource;
+            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
         }
     }
 
@@ -120,7 +126,7 @@ public class RegularChat extends AbstractChat {
     protected boolean onPacket(EntityBareJid bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet))
             return false;
-        final String resource = Jid.getResource(packet.getFrom());
+        final Resourcepart resource = packet.getFrom().getResourceOrNull();
         if (packet instanceof Presence) {
             final Presence presence = (Presence) packet;
 
@@ -163,8 +169,9 @@ public class RegularChat extends AbstractChat {
             // System message received.
             if (text == null || text.trim().equals(""))
                 return true;
-            if (!"".equals(resource))
+            if (!resource.equals(Resourcepart.EMPTY)) {
                 this.resource = resource;
+            }
             createAndSaveNewMessage(
                     resource,
                     text,
@@ -173,7 +180,7 @@ public class RegularChat extends AbstractChat {
                     true,
                     true,
                     unencrypted,
-                    isOfflineMessage(Jid.getServer(account), packet),
+                    isOfflineMessage(account.getFullJid().getDomain(), packet),
                     packet.getStanzaId());
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
@@ -183,11 +190,11 @@ public class RegularChat extends AbstractChat {
     /**
      * @return Whether message was delayed by server.
      */
-    public static boolean isOfflineMessage(String server, Stanza stanza) {
+    public static boolean isOfflineMessage(Domainpart server, Stanza stanza) {
         DelayInformation delayInformation = DelayInformation.from(stanza);
 
         return delayInformation != null
-                && TextUtils.equals(Jid.getStringPrep(delayInformation.getFrom()), server);
+                && TextUtils.equals(delayInformation.getFrom(), server);
     }
 
     public static Date getDelayStamp(Message message) {

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 
 import org.jivesoftware.smackx.muc.RoomInfo;

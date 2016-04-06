@@ -53,7 +53,7 @@ public class MessageNotificationCreator {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
-        notificationBuilder.setSubText(message.getAccount());
+        notificationBuilder.setSubText(message.getAccount().toString());
 
         notificationBuilder.setTicker(getText(message, showText));
 
@@ -126,7 +126,7 @@ public class MessageNotificationCreator {
 
     private android.graphics.Bitmap getLargeIcon(MessageNotification message) {
         if (isFromOneContact()) {
-            if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser())) {
+            if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible())) {
                 return AvatarManager.getInstance().getRoomBitmap(message.getUser());
             } else {
                 return AvatarManager.getInstance().getUserBitmap(message.getUser());
@@ -147,11 +147,11 @@ public class MessageNotificationCreator {
             if (showText) {
                 bigTextStyle.bigText(message.getText());
             }
-            bigTextStyle.setSummaryText(message.getAccount());
+            bigTextStyle.setSummaryText(message.getAccount().toString());
 
             return bigTextStyle;
         } else {
-            return getInboxStyle(messageCount, message.getAccount());
+            return getInboxStyle(messageCount, message.getAccount().toString());
         }
     }
 

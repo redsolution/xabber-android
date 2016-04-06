@@ -22,9 +22,11 @@ import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.AccountViewer;
 import com.xabber.android.ui.activity.PreferenceSummaryHelper;
@@ -32,9 +34,11 @@ import com.xabber.android.ui.activity.StatusEditor;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 
+import org.jxmpp.stringprep.XmppStringprepException;
+
 import java.util.Collection;
 
-public class AccountList extends BaseListEditor<String> implements OnAccountChangedListener {
+public class AccountList extends BaseListEditor<AccountJid> implements OnAccountChangedListener {
 
     private static final int CONTEXT_MENU_VIEW_ACCOUNT_ID = 0x20;
     private static final int CONTEXT_MENU_STATUS_EDITOR_ID = 0x30;
@@ -59,7 +63,7 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
     }
 
     @Override
-    protected Intent getEditIntent(String actionWith) {
+    protected Intent getEditIntent(AccountJid actionWith) {
         return AccountViewer.createAccountPreferencesIntent(this, actionWith);
     }
 
@@ -69,17 +73,17 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
     }
 
     @Override
-    protected String getRemoveConfirmation(String actionWith) {
+    protected String getRemoveConfirmation(AccountJid actionWith) {
         return getString(R.string.account_delete_confirm, AccountManager.getInstance().getVerboseName(actionWith));
     }
 
     @Override
-    protected void removeItem(String actionWith) {
+    protected void removeItem(AccountJid actionWith) {
         AccountManager.getInstance().removeAccount(actionWith);
     }
 
     @Override
-    protected BaseListEditorAdapter<String> createListAdapter() {
+    protected BaseListEditorAdapter<AccountJid> createListAdapter() {
         return new AccountListAdapter(this);
     }
 
@@ -96,7 +100,7 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
     }
 
     @Override
-    protected void onCreateContextMenu(ContextMenu menu, String actionWith) {
+    protected void onCreateContextMenu(ContextMenu menu, AccountJid actionWith) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(actionWith);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(actionWith));
         if (accountItem.isEnabled()) {
@@ -122,18 +126,23 @@ public class AccountList extends BaseListEditor<String> implements OnAccountChan
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         adapter.onChange();
     }
 
     @Override
-    protected String getSavedValue(Bundle bundle, String key) {
-        return bundle.getString(key);
+    protected AccountJid getSavedValue(Bundle bundle, String key) {
+        try {
+            return AccountJid.from(bundle.getString(key));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return null;
+        }
     }
 
     @Override
-    protected void putSavedValue(Bundle bundle, String key, String actionWith) {
-        bundle.putString(key, actionWith);
+    protected void putSavedValue(Bundle bundle, String key, AccountJid actionWith) {
+        bundle.putString(key, actionWith.toString());
     }
 
     @Override

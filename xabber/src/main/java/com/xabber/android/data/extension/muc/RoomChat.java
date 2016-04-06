@@ -14,12 +14,16 @@
  */
 package com.xabber.android.data.extension.muc;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -63,7 +67,7 @@ public class RoomChat extends AbstractChat {
     /**
      * Invited user for the sent packet ID.
      */
-    private final Map<String, String> invites;
+    private final Map<String, UserJid> invites;
     /**
      * Joining was requested from the UI.
      */
@@ -81,7 +85,7 @@ public class RoomChat extends AbstractChat {
     private MultiUserChat multiUserChat;
 
     RoomChat(AccountJid account, EntityBareJid user, Resourcepart nickname, String password) {
-        super(account, user, false);
+        super(account, UserJid.from(user), false);
         this.nickname = nickname;
         this.password = password;
         requested = false;
@@ -92,9 +96,10 @@ public class RoomChat extends AbstractChat {
         invites = new HashMap<>();
     }
 
+    @NonNull
     @Override
     public EntityBareJid getTo() {
-        return user;
+        return getRoom();
     }
 
     @Override
@@ -103,7 +108,7 @@ public class RoomChat extends AbstractChat {
     }
 
     EntityBareJid getRoom() {
-        return user;
+        return user.getJid().asEntityBareJidIfPossible();
     }
 
     Resourcepart getNickname() {
@@ -192,9 +197,9 @@ public class RoomChat extends AbstractChat {
         if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error) {
-                String invite = invites.remove(message.getStanzaId());
+                UserJid invite = invites.remove(message.getStanzaId());
                 if (invite != null) {
-                    newAction(nickname, invite, ChatAction.invite_error);
+                    newAction(nickname, invite.toString(), ChatAction.invite_error);
                 }
                 return true;
             }
@@ -218,7 +223,7 @@ public class RoomChat extends AbstractChat {
                     return true;
                 }
                 this.subject = subject;
-                RosterManager.onContactChanged(account, bareAddress);
+                RosterManager.onContactChanged(account, UserJid.from(bareAddress));
                 newAction(resource, subject, ChatAction.subject);
             } else {
                 boolean notify = true;
@@ -441,7 +446,7 @@ public class RoomChat extends AbstractChat {
             newAction(resource, actor.toString(), ChatAction.kick);
         }
         if (isSelf(resource)) {
-            MUCManager.getInstance().leaveRoom(account, user);
+            MUCManager.getInstance().leaveRoom(account, getRoom());
         }
     }
 
@@ -456,7 +461,7 @@ public class RoomChat extends AbstractChat {
             newAction(resource, actor.toString(), ChatAction.ban);
         }
         if (isSelf(resource)) {
-            MUCManager.getInstance().leaveRoom(account, user);
+            MUCManager.getInstance().leaveRoom(account, getRoom());
         }
     }
 
@@ -483,7 +488,7 @@ public class RoomChat extends AbstractChat {
             newAction(resource, actor.toString(), ChatAction.kick);
         }
         if (isSelf(resource)) {
-            MUCManager.getInstance().leaveRoom(account, user);
+            MUCManager.getInstance().leaveRoom(account, getRoom());
         }
     }
 
@@ -491,7 +496,7 @@ public class RoomChat extends AbstractChat {
     protected void onComplete() {
         super.onComplete();
         if (getState() == RoomState.waiting) {
-            MUCManager.getInstance().joinRoom(account, user, false);
+            MUCManager.getInstance().joinRoom(account, getRoom(), false);
         }
     }
 

@@ -15,7 +15,7 @@
 package com.xabber.android.data.roster;
 
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.xmpp.address.Jid;
+
 
 /**
  * Represents information about contact's resource.
@@ -59,9 +59,9 @@ public class ResourceItem implements Comparable<ResourceItem> {
      * @param bareAddress
      * @return Full JID.
      */
-    public UserJid getUser(String bareAddress) {
-        return bareAddress + "/" + verbose;
-    }
+//    public UserJid getUser(String bareAddress) {
+//        return bareAddress + "/" + verbose;
+//    }
 
     public StatusMode getStatusMode() {
         return statusMode;

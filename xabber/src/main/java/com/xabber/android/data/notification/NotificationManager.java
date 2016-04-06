@@ -53,6 +53,8 @@ import com.xabber.android.ui.activity.ReconnectionActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
+import org.jxmpp.stringprep.XmppStringprepException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -191,12 +193,16 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    messageNotifications.add(new MessageNotification(
-                            NotificationTable.getAccount(cursor),
-                            NotificationTable.getUser(cursor),
-                            NotificationTable.getText(cursor),
-                            NotificationTable.getTimeStamp(cursor),
-                            NotificationTable.getCount(cursor)));
+                    try {
+                        messageNotifications.add(new MessageNotification(
+                        AccountJid.from(NotificationTable.getAccount(cursor)),
+                        UserJid.from(NotificationTable.getUser(cursor)),
+                        NotificationTable.getText(cursor),
+                        NotificationTable.getTimeStamp(cursor),
+                        NotificationTable.getCount(cursor)));
+                    } catch (XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -363,7 +369,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         int connecting = 0;
         int connected = 0;
 
-        Collection<String> accountList = AccountManager.getInstance().getAccounts();
+        Collection<AccountJid> accountList = AccountManager.getInstance().getAccounts();
         for (AccountJid account : accountList) {
             ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
 
@@ -485,7 +491,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             Application.getInstance().runInBackground(new Runnable() {
                 @Override
                 public void run() {
-                    NotificationTable.getInstance().write(account, user, text, timestamp, count);
+                    NotificationTable.getInstance().write(account.toString(), user.toString(), text, timestamp, count);
                 }
             });
         }
@@ -522,7 +528,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                NotificationTable.getInstance().remove(account, user);
+                NotificationTable.getInstance().remove(account.toString(), user.toString());
             }
         });
         updateMessageNotification(null);
@@ -553,13 +559,13 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                NotificationTable.getInstance().removeAccount(account);
+                NotificationTable.getInstance().removeAccount(account.toString());
             }
         });
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         handler.post(this);
     }
 

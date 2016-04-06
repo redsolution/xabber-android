@@ -18,7 +18,6 @@ import android.os.Environment;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -56,8 +55,6 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.FullJid;
-import org.jxmpp.jid.Jid;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -129,17 +126,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         .findAll();
 
                 for (MessageItem messageItem : messagesToSend) {
-                    AccountJid account = null;
-                    UserJid user = null;
-                    try {
-                        account = AccountJid.from(messageItem.getAccount());
-                        user = UserJid.from(messageItem.getUser());
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
+                    AccountJid account = messageItem.getAccount();
+                    UserJid user = messageItem.getUser();
 
                     if (account != null && user != null) {
-                        if (getChat(account, user.getJid()) == null) {
+                        if (getChat(account, user) == null) {
                             createChat(account, user);
                         }
                     }
@@ -154,8 +145,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     /**
      * @return <code>null</code> if there is no such chat.
      */
-    public AbstractChat getChat(AccountJid account, Jid jid) {
-        return chats.get(account.toString(), jid.toString());
+    public AbstractChat getChat(AccountJid account, UserJid user) {
+        return chats.get(account.toString(), user.toString());
     }
 
     public Collection<AbstractChat> getChats() {
@@ -208,7 +199,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param chat
      */
     public void addChat(AbstractChat chat) {
-        if (getChat(chat.getAccount(), chat.getUser().getJid()) != null) {
+        if (getChat(chat.getAccount(), chat.getUser()) != null) {
             throw new IllegalStateException();
         }
         chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
@@ -232,7 +223,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param text
      */
     public void sendMessage(AccountJid account, UserJid user, String text) {
-        AbstractChat chat = getChat(account, user.getJid());
+        AbstractChat chat = getChat(account, user);
         if (chat == null) {
             chat = createChat(account, user);
         }
@@ -253,7 +244,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public String createFileMessage(AccountJid account, UserJid user, File file) {
-        AbstractChat chat = getChat(account, user.getJid());
+        AbstractChat chat = getChat(account, user);
         if (chat == null) {
             chat = createChat(account, user);
         }
@@ -263,7 +254,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final String text) {
-        final AbstractChat chat = getChat(account, user.getJid());
+        final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
         }
@@ -313,7 +304,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @return Where there is active chat.
      */
     public boolean hasActiveChat(AccountJid account, UserJid user) {
-        AbstractChat chat = getChat(account, user.getJid());
+        AbstractChat chat = getChat(account, user);
         return chat != null && chat.isActive();
     }
 
@@ -334,20 +325,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * Returns existed chat or create new one.
      *
      */
-    public AbstractChat getOrCreateChat(AccountJid account, UserJid userJid) {
-        if (MUCManager.getInstance().isMucPrivateChat(account, userJid)) {
-            return getOrCreatePrivateMucChat(account, userJid.getJid().asFullJidIfPossible());
+    public AbstractChat getOrCreateChat(AccountJid account, UserJid user) {
+        if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
+            return getOrCreatePrivateMucChat(account, user.getJid().asFullJidIfPossible());
         }
 
-        AbstractChat chat = getChat(account, userJid.getJid().asBareJid());
+        AbstractChat chat = getChat(account, user);
         if (chat == null) {
-            chat = createChat(account, userJid);
+            chat = createChat(account, user);
         }
         return chat;
     }
 
     public AbstractChat getOrCreatePrivateMucChat(AccountJid account, FullJid fullJid) {
-        AbstractChat chat = getChat(account, fullJid);
+        AbstractChat chat = getChat(account, UserJid.from(fullJid));
         if (chat == null) {
             chat = createPrivateMucChat(account, fullJid);
         }
@@ -376,7 +367,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param user
      */
     public void closeChat(AccountJid account, UserJid user) {
-        AbstractChat chat = getChat(account, user.getJid());
+        AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
         }
@@ -534,28 +525,28 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
         AccountJid account = ((AccountItem) connection).getAccount();
 
-        String contact;
+        UserJid contact;
 
-        if (packet instanceof Message) {
-            Message message = (Message) packet;
-            if (MUCManager.getInstance().hasRoom(account, bareAddress)
+        if (stanza instanceof Message) {
+            Message message = (Message) stanza;
+            if (MUCManager.getInstance().hasRoom(account, stanza.getFrom().asEntityBareJidIfPossible())
                     && message.getType() != Message.Type.groupchat ) {
-                contact = packet.getFrom();
+                contact = UserJid.from(stanza.getFrom());
             }
         }
 
 
 
-        final UserJid user = packet.getFrom();
+        final UserJid user = UserJid.from(stanza.getFrom());
         boolean processed = false;
-        for (AbstractChat chat : chats.getNested(account).values()) {
-            if (chat.onPacket(contact, packet)) {
+        for (AbstractChat chat : chats.getNested(account.toString()).values()) {
+            if (chat.onPacket(contact, stanza)) {
                 processed = true;
                 break;
             }
@@ -563,7 +554,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
         final AbstractChat chat = getChat(account, user);
 
-        if (chat != null && packet instanceof Message) {
+        if (chat != null && stanza instanceof Message) {
             if (chat.isPrivateMucChat() && !chat.isPrivateMucChatAccepted()) {
                 if (mucPrivateChatRequestProvider.get(chat.getAccount(), chat.getUser()) == null) {
                     if (!PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(chat.getUser())) {
@@ -575,15 +566,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             return;
         }
-        if (!processed && packet instanceof Message) {
-            final Message message = (Message) packet;
+        if (!processed && stanza instanceof Message) {
+            final Message message = (Message) stanza;
             final String body = message.getBody();
             if (body == null) {
                 return;
             }
 
-            if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user))) {
-                createPrivateMucChat(account, user).onPacket(contact, packet);
+            if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+                createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(contact, stanza);
                 if (!PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(user)) {
                     mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
                 }
@@ -596,7 +587,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
 
-            createChat(account, user).onPacket(contact, packet);
+            createChat(account, user).onPacket(contact, stanza);
         }
     }
 
@@ -718,7 +709,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     }
                     final String name;
                     if (isMUC) {
-                        name = messageItem.getResource();
+                        name = messageItem.getResource().toString();
                     } else {
                         if (messageItem.isIncoming()) {
                             name = userName;
@@ -769,7 +760,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     public void acceptMucPrivateChat(AccountJid account, UserJid user) {
         mucPrivateChatRequestProvider.remove(account, user);
-        getOrCreatePrivateMucChat(account, user).setIsPrivateMucChatAccepted(true);
+        getOrCreatePrivateMucChat(account, user.getJid().asFullJidIfPossible()).setIsPrivateMucChatAccepted(true);
     }
 
     public void discardMucPrivateChat(AccountJid account, UserJid user) {

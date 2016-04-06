@@ -40,6 +40,7 @@ import org.jivesoftware.smackx.rsm.packet.RSMSet;
 import org.jivesoftware.smackx.xdata.Form;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.util.XmppDateTime;
 
 import java.util.ArrayList;
@@ -132,12 +133,12 @@ public class MamManager extends Manager {
      * @throws NotConnectedException
      * @throws InterruptedException
      */
-    public MamQueryResult queryArchive(String domain, Integer max, Date start, Date end, String withJid) throws NoResponseException,
+    public MamQueryResult queryArchive(String domain, Integer max, Date start, Date end, Jid withJid) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
         return queryArchive(domain, null, max, start, end, withJid, false);
     }
 
-    public MamQueryResult queryArchiveLast(Integer max, String withJid) throws NoResponseException,
+    public MamQueryResult queryArchiveLast(Integer max, Jid withJid) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
         return queryArchive(null, null, max, null, null, withJid, true);
     }
@@ -164,7 +165,7 @@ public class MamManager extends Manager {
      * @throws NotConnectedException
      * @throws InterruptedException
      */
-    public MamQueryResult queryArchive(String domain, String node, Integer max, Date start, Date end, String withJid, boolean last) throws NoResponseException,
+    public MamQueryResult queryArchive(String domain, String node, Integer max, Date start, Date end, Jid withJid, boolean last) throws NoResponseException,
             XMPPErrorException, NotConnectedException, InterruptedException {
         DataForm dataForm = createDataForm(start, end, withJid);
 
@@ -186,7 +187,7 @@ public class MamManager extends Manager {
         return queryArchive(mamQueryIQ, 0);
     }
 
-    public MamQueryResult queryPage(String withJid, int max, String after, String before) throws XMPPErrorException, NotConnectedException, InterruptedException, NoResponseException {
+    public MamQueryResult queryPage(Jid withJid, int max, String after, String before) throws XMPPErrorException, NotConnectedException, InterruptedException, NoResponseException {
         DataForm dataForm = createDataForm(null, null, withJid);
         String queryId = UUID.randomUUID().toString();
         MamQueryIQ mamQueryIQ = new MamQueryIQ(queryId, null, dataForm);
@@ -196,7 +197,7 @@ public class MamManager extends Manager {
     }
 
     @Nullable
-    private DataForm createDataForm(Date start, Date end, String withJid) {
+    private DataForm createDataForm(Date start, Date end, Jid withJid) {
         DataForm dataForm = null;
         if (start != null || end != null || withJid != null) {
             dataForm = getNewMamForm();
@@ -212,7 +213,7 @@ public class MamManager extends Manager {
             }
             if (withJid != null) {
                 FormField formField = new FormField("with");
-                formField.addValue(withJid);
+                formField.addValue(withJid.toString());
                 dataForm.addField(formField);
             }
         }

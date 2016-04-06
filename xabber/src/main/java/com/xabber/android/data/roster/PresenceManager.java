@@ -203,11 +203,11 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public void onPresenceChanged(AccountJid account, Presence presence) {
-        org.jxmpp.jid.Jid from = presence.getFrom();
+        UserJid from = UserJid.from(presence.getFrom());
 
         CapabilitiesManager.getInstance().onPresenceChanged(account, presence);
         for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
-                listener.onStatusChanged(account, UserJid.from(from),
+                listener.onStatusChanged(account, from,
                         StatusMode.createStatusMode(presence), presence.getStatus());
         }
 
@@ -220,7 +220,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 listener.onPresenceChanged(rosterContacts);
             }
         }
-        RosterManager.onContactChanged(account, bareAddress);
+        RosterManager.onContactChanged(account, from);
     }
 
     @Override
@@ -240,7 +240,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * @throws NetworkException
      */
     public void resendPresence(AccountJid account) throws NetworkException {
-        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getFullJid().asBareJid());
+        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getFullJid().asBareJid()));
     }
 
     public void sendVCardUpdatePresence(AccountJid account, String hash) throws NetworkException {
@@ -253,7 +253,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza stanza) {
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
@@ -264,22 +264,21 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
         Presence presence = (Presence) stanza;
 
-        org.jxmpp.jid.Jid from = presence.getFrom();
-        BareJid bareJid = from.asBareJid();
+        UserJid from = UserJid.from(stanza.getFrom());
 
         if (presence.getType() == Presence.Type.subscribe) {
             AccountJid account = ((AccountItem) connection).getAccount();
 
             // Subscription request
             HashSet<BareJid> set = requestedSubscriptions.get(account);
-            if (set != null && set.contains(bareJid)) {
+            if (set != null && set.contains(from)) {
                 try {
-                    acceptSubscription(account, bareJid);
+                    acceptSubscription(account, from);
                 } catch (NetworkException e) {
                 }
-                subscriptionRequestProvider.remove(account, bareJid);
+                subscriptionRequestProvider.remove(account, from);
             } else {
-                subscriptionRequestProvider.add(new SubscriptionRequest(account, bareJid), null);
+                subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
             }
         }
     }

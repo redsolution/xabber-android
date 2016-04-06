@@ -9,6 +9,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.AbstractChat;
@@ -73,13 +74,14 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
                 carbonManager.setCarbonsEnabled(SettingsManager.connectionUseCarbons());
             }
 
-        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                | SmackException.NotConnectedException | InterruptedException e) {
             LogManager.exception(this, e);
         }
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza packet) {
 
         if (!(connection instanceof AccountItem)) {
             return;
@@ -93,8 +95,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
             return;
         }
 
-        final UserJid user = packet.getFrom();
-        if (user == null) {
+        if (packet.getFrom() == null) {
             return;
         }
         if (!(packet instanceof Message)) {
@@ -111,18 +112,15 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
         if (carbonExtension.getForwarded() == null) {
             return;
         }
-        Message forwardedMsg = (Message) carbonExtension.getForwarded().getForwardedPacket();
+        Message forwardedMsg = (Message) carbonExtension.getForwarded().getForwardedStanza();
         MessageManager.getInstance().displayForwardedMessage(connection, forwardedMsg, carbonExtension.getDirection());
 
     }
 
     public boolean isCarbonsEnabledForConnection(ConnectionItem connection) {
-        if (!org.jivesoftware.smackx.carbons.CarbonManager
+        return org.jivesoftware.smackx.carbons.CarbonManager
                 .getInstanceFor(connection.getConnectionThread().getXMPPConnection())
-                .getCarbonsEnabled()) {
-            return false;
-        }
-        return true;
+                .getCarbonsEnabled();
     }
 
     /**
@@ -133,7 +131,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Collection<String> accounts = AccountManager.getInstance().getAccounts();
+                Collection<AccountJid> accounts = AccountManager.getInstance().getAccounts();
                 for (AccountJid account : accounts) {
                     updateIsSupported(AccountManager.getInstance().getAccount(account));
                 }

@@ -74,8 +74,9 @@ import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
-import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.uri.XMPPUri;
+
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -134,9 +135,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         return new Intent(context, ContactList.class);
     }
 
-    public static Intent createRoomInviteIntent(Context context, AccountJid account, String room) {
+    public static Intent createRoomInviteIntent(Context context, AccountJid account, EntityBareJid room) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
-                .setAccount(account).setUser(room).build();
+                .setAccount(account).setUser(UserJid.from(room)).build();
         intent.setAction(ACTION_ROOM_INVITE);
         return intent;
     }

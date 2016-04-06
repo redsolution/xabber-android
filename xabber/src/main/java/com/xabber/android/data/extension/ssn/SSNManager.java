@@ -23,7 +23,9 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.xmpp.archive.OtrMode;
 import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
@@ -79,7 +81,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza packet) {
         String from = packet.getFrom();
         if (from == null)
             return;
@@ -249,7 +251,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
      * @param otrMode
      * @throws NetworkException
      */
-    public void setSessionOtrMode(AccountJid account, UserJid user, String session,
+    public void setSessionOtrMode(String account, String user, String session,
                                   OtrMode otrMode) {
         if (sessionOtrs.get(account, session) == otrMode)
             return;

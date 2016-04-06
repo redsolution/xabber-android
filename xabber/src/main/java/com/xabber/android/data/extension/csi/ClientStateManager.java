@@ -4,6 +4,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionThread;
+import com.xabber.android.data.entity.AccountJid;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -32,7 +33,7 @@ public class ClientStateManager {
 
     protected static void sendClientState(Nonza nonza) {
         AccountManager accountManager = AccountManager.getInstance();
-        for (String accountName : accountManager.getAccounts()) {
+        for (AccountJid accountName : accountManager.getAccounts()) {
             AccountItem account = accountManager.getAccount(accountName);
             if (account == null) {
                 continue;

@@ -29,6 +29,6 @@ public interface OnPacketListener extends BaseManagerInterface {
     /**
      * Process packet from connection.
      */
-    void onPacket(ConnectionItem connection, Stanza packet);
+    void onStanza(ConnectionItem connection, Stanza packet);
 
 }

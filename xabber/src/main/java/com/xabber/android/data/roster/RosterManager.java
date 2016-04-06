@@ -211,7 +211,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * @return
      */
     public AbstractContact getBestContact(AccountJid account, UserJid user) {
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user.getJid());
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
         if (abstractChat != null && abstractChat instanceof RoomChat) {
             return new RoomContact((RoomChat) abstractChat);
         }

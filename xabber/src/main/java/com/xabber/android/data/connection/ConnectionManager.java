@@ -305,7 +305,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             }
         }
         for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
-            listener.onPacket(connectionItem, stanza);
+            listener.onStanza(connectionItem, stanza);
         }
     }
 

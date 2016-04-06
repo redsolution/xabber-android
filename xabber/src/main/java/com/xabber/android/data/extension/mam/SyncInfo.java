@@ -1,5 +1,8 @@
 package com.xabber.android.data.extension.mam;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 
@@ -27,16 +30,16 @@ public class SyncInfo extends RealmObject {
         return account;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setAccount(AccountJid account) {
+        this.account = account.toString();
     }
 
     public String getUser() {
         return user;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUser(UserJid user) {
+        this.user = user.toString();
     }
 
     public String getFirstMamMessageMamId() {

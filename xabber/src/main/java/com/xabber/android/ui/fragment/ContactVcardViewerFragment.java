@@ -29,7 +29,6 @@ import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;

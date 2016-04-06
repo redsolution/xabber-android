@@ -3,6 +3,7 @@ package com.xabber.xmpp.blocking;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.provider.IQProvider;
+import org.jxmpp.jid.impl.JidCreate;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -22,7 +23,7 @@ abstract class BasicBlockingProvider<BlockingIq extends BasicBlockingIq> extends
 
                     final String item = parser.getAttributeValue(null, XmlConstants.ITEM_JID);
                     if (item != null) {
-                        instance.addItem(item);
+                        instance.addItem(JidCreate.from(item));
                     }
                 }
             } else if (eventType == XmlPullParser.END_TAG && parser.getName().equals(instance.getChildElementName())) {

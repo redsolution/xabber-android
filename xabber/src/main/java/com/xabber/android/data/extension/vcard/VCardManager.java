@@ -79,7 +79,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
      * List of accounts which requests its avatar in order to avoid subsequence
      * requests.
      */
-    private final ArrayList<String> accountRequested;
+    private final ArrayList<AccountJid> accountRequested;
 
     private final static VCardManager instance;
 
@@ -127,7 +127,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         });
     }
 
-    private void onLoaded(Map<String, StructuredName> names) {
+    private void onLoaded(Map<Jid, StructuredName> names) {
         this.names.putAll(names);
     }
 
@@ -162,8 +162,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     /**
      * Requests vCard.
      */
-    public void request(AccountJid account, String bareAddress) {
-        requestVCard(account, bareAddress);
+    public void request(AccountJid account, Jid jid) {
+        requestVCard(account, jid);
     }
 
     /**
@@ -243,7 +243,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         if (vCard.getFrom() == null) { // account it self
             AccountManager.getInstance().onAccountChanged(account);
         } else {
-            RosterManager.getInstance().onContactChanged(account, bareAddress);
+            RosterManager.onContactChanged(account, bareAddress);
         }
     }
 
@@ -266,7 +266,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }

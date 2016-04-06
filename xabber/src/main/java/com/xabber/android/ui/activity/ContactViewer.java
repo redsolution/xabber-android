@@ -46,7 +46,6 @@ import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ConferenceInfoFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
-import com.xabber.xmpp.address.Jid;
 
 import java.util.Collection;
 import java.util.List;

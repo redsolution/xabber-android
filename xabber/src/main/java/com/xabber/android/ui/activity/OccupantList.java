@@ -39,9 +39,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.color.BarPainter;
-import com.xabber.xmpp.address.Jid;
 
-import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.Collection;
 
@@ -54,12 +53,12 @@ public class OccupantList extends ManagedListActivity implements
         OnAccountChangedListener, OnContactChangedListener, AdapterView.OnItemClickListener {
 
     private AccountJid account;
-    private DomainBareJid room;
+    private EntityBareJid room;
     private OccupantListAdapter listAdapter;
 
-    public static Intent createIntent(Context context, AccountJid account, DomainBareJid room) {
+    public static Intent createIntent(Context context, AccountJid account, EntityBareJid room) {
         return new EntityIntentBuilder(context, OccupantList.class)
-                .setAccount(account).setUser(room).build();
+                .setAccount(account).setUser(UserJid.from(room)).build();
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -78,7 +77,7 @@ public class OccupantList extends ManagedListActivity implements
         }
 
         account = getAccount(getIntent());
-        room = Jid.getBareAddress(getUser(getIntent()));
+        room = getUser(getIntent()).getJid().asEntityBareJidIfPossible();
         if (account == null || room == null || !MUCManager.getInstance().hasRoom(account, room)) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
@@ -122,13 +121,13 @@ public class OccupantList extends ManagedListActivity implements
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        if (entities.contains(new BaseEntity(account, room))) {
+        if (entities.contains(new BaseEntity(account, UserJid.from(room)))) {
             listAdapter.onChange();
         }
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             listAdapter.onChange();
         }

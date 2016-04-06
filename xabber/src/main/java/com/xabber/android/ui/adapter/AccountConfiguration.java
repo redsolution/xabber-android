@@ -52,7 +52,7 @@ public class AccountConfiguration extends GroupConfiguration {
      * @param groupConfiguration
      */
     public void addGroupConfiguration(GroupConfiguration groupConfiguration) {
-        groups.put(groupConfiguration.getUser(), groupConfiguration);
+        groups.put(groupConfiguration.getGroup(), groupConfiguration);
     }
 
     /**

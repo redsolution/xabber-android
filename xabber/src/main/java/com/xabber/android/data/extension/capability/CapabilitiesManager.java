@@ -31,8 +31,8 @@ import com.xabber.android.data.database.sqlite.CapabilitiesTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.IQ;
@@ -44,6 +44,8 @@ import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,15 +102,15 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     private final Map<Capability, ClientInfo> clientInformations;
 
     private CapabilitiesManager() {
-        requests = new ArrayList<DiscoverInfoRequest>();
-        userCapabilities = new NestedMap<Capability>();
-        clientInformations = new HashMap<Capability, ClientInfo>();
+        requests = new ArrayList<>();
+        userCapabilities = new NestedMap<>();
+        clientInformations = new HashMap<>();
     }
 
     @Override
     public void onLoad() {
         Cursor cursor = CapabilitiesTable.getInstance().list();
-        final Map<Capability, ClientInfo> clientInformations = new HashMap<Capability, ClientInfo>();
+        final Map<Capability, ClientInfo> clientInformations = new HashMap<>();
         try {
             if (cursor.moveToFirst()) {
                 do {
@@ -145,7 +147,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @return <code>null</code> if there is no available information.
      */
     public ClientInfo getClientInfo(AccountJid account, FullJid user) {
-        Capability capability = userCapabilities.get(account, user.toString());
+        Capability capability = userCapabilities.get(account.toString(), user.toString());
         if (capability == null)
             return null;
         return clientInformations.get(capability);
@@ -194,9 +196,9 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param account
      * @param user
      */
-    public void request(AccountJid account, org.jxmpp.jid.Jid user) {
+    public void request(AccountJid account, UserJid user) {
         Capability capability = new Capability(account, user, Capability.DIRECT_REQUEST_METHOD, null, null);
-        userCapabilities.put(account, user.toString(), capability);
+        userCapabilities.put(account.toString(), user.toString(), capability);
         request(account, user, capability);
     }
 
@@ -206,14 +208,14 @@ public class CapabilitiesManager implements OnAuthorizedListener,
      * @param user
      * @param capability
      */
-    private void request(AccountJid account, org.jxmpp.jid.Jid user, Capability capability) {
+    private void request(AccountJid account, UserJid user, Capability capability) {
         for (DiscoverInfoRequest check : requests) {
             if (capability.equals(check.getCapability())) {
                 return;
             }
         }
         DiscoverInfo packet = new DiscoverInfo();
-        packet.setTo(user);
+        packet.setTo(user.getJid());
         packet.setType(Type.get);
         if (capability.getNode() != null && capability.getVersion() != null)
             packet.setNode(capability.getNode() + "#" + capability.getVersion());
@@ -400,7 +402,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     }
 
     private void removeAccountInfo(AccountJid account) {
-        userCapabilities.clear(account);
+        userCapabilities.clear(account.toString());
         Iterator<Capability> iterator = clientInformations.keySet().iterator();
         while (iterator.hasNext())
             if (account.equals(iterator.next().getAccount()))
@@ -420,13 +422,11 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     }
 
     public void onPresenceChanged(final AccountJid account, final Presence presence) {
-        final org.jxmpp.jid.Jid user = presence.getFrom();
-        if (user == null)
-            return;
+        final UserJid user = UserJid.from(presence.getFrom());
         if (presence.getType() == Presence.Type.error)
             return;
         if (presence.getType() == Presence.Type.unavailable) {
-            userCapabilities.remove(account, user.toString());
+            userCapabilities.remove(account.toString(), user.toString());
             return;
         }
 
@@ -441,20 +441,20 @@ public class CapabilitiesManager implements OnAuthorizedListener,
                 Capability capability = new Capability(account, user,
                         capsExtension.getHash(), capsExtension.getNode(),
                         capsExtension.getVer());
-                if (capability.equals(userCapabilities.get(account, user.toString()))) {
+                if (capability.equals(userCapabilities.get(account.toString(), user.toString()))) {
                     continue;
                 }
-                userCapabilities.put(account, user.toString(), capability);
+                userCapabilities.put(account.toString(), user.toString(), capability);
                 ClientInfo clientInfo = clientInformations.get(capability);
                 if (clientInfo == null || clientInfo == INVALID_CLIENT_INFO) {
-                    request(account, presence.getFrom(), capability);
+                    request(account, user, capability);
                 }
             }
         }
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final AccountJid account = ((AccountItem) connection).getAccount();
@@ -520,10 +520,16 @@ public class CapabilitiesManager implements OnAuthorizedListener,
                 throw new IllegalStateException();
             clientInformations.put(capability, clientInfo);
             ArrayList<BaseEntity> entities = new ArrayList<>();
-            for (NestedMap.Entry<Capability> entry : userCapabilities)
-                if (capability.equals(entry.getValue()))
-                    entities.add(new BaseEntity(account, Jid
-                            .getBareAddress(entry.getSecond())));
+            for (NestedMap.Entry<Capability> entry : userCapabilities) {
+                if (capability.equals(entry.getValue())) {
+                    try {
+                        entities.add(new BaseEntity(account,
+                                UserJid.from(JidCreate.bareFrom(entry.getSecond()))));
+                    } catch (XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
+                }
+            }
             RosterManager.onContactsChanged(entities);
         }
     }

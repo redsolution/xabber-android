@@ -27,7 +27,6 @@ import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
-import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smack.SmackException;

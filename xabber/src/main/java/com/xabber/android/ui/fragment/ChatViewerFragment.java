@@ -90,6 +90,7 @@ import com.xabber.android.ui.preferences.ChatContactSettings;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jxmpp.jid.impl.JidCreate;
 
 import java.io.File;
 import java.io.IOException;
@@ -181,7 +182,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user.getJid());
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
         if (!isRemoteHistoryRequested) {
             MamManager.getInstance().requestLastHistory(abstractChat);
@@ -230,7 +231,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user.getJid());
+        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
 
@@ -890,7 +891,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_authorization_settings:
-                startActivity(ConferenceAdd.createIntent(getActivity(), account, user));
+                startActivity(ConferenceAdd.createIntent(getActivity(), account, user.getJid().asEntityBareJidIfPossible()));
                 return true;
 
             case R.id.action_close_chat:
@@ -916,11 +917,11 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             /* conference specific options menu */
 
             case R.id.action_join_conference:
-                MUCManager.getInstance().joinRoom(account, user, true);
+                MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
                 return true;
 
             case R.id.action_invite_to_chat:
-                startActivity(ContactList.createRoomInviteIntent(getActivity(), account, user));
+                startActivity(ContactList.createRoomInviteIntent(getActivity(), account, user.getJid().asEntityBareJidIfPossible()));
                 return true;
 
             case R.id.action_leave_conference:
@@ -928,7 +929,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_list_of_occupants:
-                startActivity(OccupantList.createIntent(getActivity(), account, user));
+                startActivity(OccupantList.createIntent(getActivity(), account, user.getJid().asEntityBareJidIfPossible()));
                 return true;
 
             /* message popup menu */
@@ -964,7 +965,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_message_open_muc_private_chat:
-                String occupantFullJid = user + "/" + clickedMessageItem.getResource();
+                UserJid occupantFullJid = UserJid.from(
+                        JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
+                                clickedMessageItem.getResource()));
+
                 MessageManager.getInstance().openChat(account, occupantFullJid);
                 startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, occupantFullJid));
                 return true;
@@ -1069,7 +1073,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     private void leaveConference(AccountJid account, UserJid user) {
-        MUCManager.getInstance().leaveRoom(account, user);
+        MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
         closeChat(account, user);
     }
 
@@ -1113,7 +1117,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 menu.findItem(R.id.action_message_save_file).setVisible(true);
             }
 
-            if (clickedMessageItem.isIncoming() && MUCManager.getInstance().hasRoom(account, user)) {
+            if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
+                    .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_message_open_muc_private_chat).setVisible(true);
             }
 

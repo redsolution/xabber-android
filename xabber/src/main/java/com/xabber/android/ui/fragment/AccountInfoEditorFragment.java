@@ -38,7 +38,6 @@ import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.ui.activity.ChatViewer;
 import com.xabber.android.ui.helper.PermissionsRequester;
-import com.xabber.xmpp.address.Jid;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;

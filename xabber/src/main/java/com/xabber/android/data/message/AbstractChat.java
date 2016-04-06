@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.message;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -38,7 +40,7 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
-import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
@@ -92,7 +94,7 @@ public abstract class AbstractChat extends BaseEntity {
     private Realm realm;
     private RealmResults<SyncInfo> syncInfo;
 
-    protected AbstractChat(final AccountJid account, final UserJid user, boolean isPrivateMucChat) {
+    protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : UserJid.from(user.getJid().asBareJid()));
         LogManager.i("AbstractChat", "AbstractChat user: " + user);
         threadId = StringUtils.randomString(12);
@@ -193,7 +195,8 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * @return Target address for sending message.
      */
-    public abstract EntityBareJid getTo();
+    @NonNull
+    public abstract Jid getTo();
 
     /**
      * @return Message type to be assigned.
@@ -322,11 +325,11 @@ public abstract class AbstractChat extends BaseEntity {
 
         MessageItem messageItem = new MessageItem();
 
-        messageItem.setAccount(account.toString());
-        messageItem.setUser(user.toString());
+        messageItem.setAccount(account);
+        messageItem.setUser(user);
 
         if (resource == null) {
-            messageItem.setResource("");
+            messageItem.setResource(Resourcepart.EMPTY);
         }
         if (action != null) {
             messageItem.setAction(action.toString());
@@ -366,8 +369,8 @@ public abstract class AbstractChat extends BaseEntity {
             @Override
             public void execute(Realm realm) {
                 MessageItem messageItem = new MessageItem(messageId);
-                messageItem.setAccount(account.toString());
-                messageItem.setUser(user.toString());
+                messageItem.setAccount(account);
+                messageItem.setUser(user);
                 messageItem.setText(file.getName());
                 messageItem.setFilePath(file.getPath());
                 messageItem.setTimestamp(System.currentTimeMillis());
@@ -431,12 +434,10 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     /**
-     * @param bareAddress bareAddress of the user.
-     * @param user        full jid.
      * @return Whether chat accepts packets from specified user.
      */
-    boolean accept(EntityBareJid bareAddress, org.jxmpp.jid.Jid user) {
-        return this.user.getJid().equals(bareAddress);
+    boolean accept(UserJid jid) {
+        return this.user.equals(jid);
     }
 
     public MessageItem getLastMessage() {
@@ -622,12 +623,12 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Processes incoming packet.
      *
-     * @param bareAddress
+     * @param userJid
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(EntityBareJid bareAddress, Stanza packet) {
-        return accept(bareAddress, packet.getFrom());
+    protected boolean onPacket(UserJid userJid, Stanza packet) {
+        return accept(userJid);
     }
 
     /**

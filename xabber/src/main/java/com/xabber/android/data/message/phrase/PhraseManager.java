@@ -96,7 +96,7 @@ public class PhraseManager implements OnLoadListener {
         Collection<String> groups = RosterManager.getInstance().getGroups(
                 account, user);
         for (Phrase phrase : phrases)
-            if (phrase.matches(text, user, groups)) {
+            if (phrase.matches(text, user.toString(), groups)) {
                 Uri value = phrase.getSound();
                 if (ChatManager.EMPTY_SOUND.equals(value))
                     return null;
@@ -113,7 +113,7 @@ public class PhraseManager implements OnLoadListener {
      * @param regexp
      * @param sound
      */
-    public void updateOrCreatePhrase(Phrase phrase, String value, UserJid user,
+    public void updateOrCreatePhrase(Phrase phrase, String value, String user,
                                      String group, boolean regexp, Uri sound) {
         if (phrase == null) {
             phrase = new Phrase(null, value, user, group, regexp, sound);
@@ -134,7 +134,7 @@ public class PhraseManager implements OnLoadListener {
     }
 
     private void writePhrase(final Phrase phrase, final String value,
-                             final UserJid user, final String group, final boolean regexp,
+                             final String user, final String group, final boolean regexp,
                              final Uri sound) {
         Application.getInstance().runInBackground(new Runnable() {
             @Override

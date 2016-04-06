@@ -1,11 +1,11 @@
 package com.xabber.android.data.extension.avatar;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import android.content.Context;
 
 import com.xabber.android.data.Application;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Helper class to create shortcuts under Android >= 3.
@@ -27,18 +27,12 @@ public class HoneycombShortcutHelper {
         try {
             method = activityManager.getClass().getMethod(
                     "getLauncherLargeIconSize", (Class[]) null);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
+        } catch (SecurityException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
         try {
             return (Integer) method.invoke(activityManager, (Object[]) null);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

@@ -38,7 +38,6 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.ComposingPausedReceiver;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -51,6 +50,9 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -101,7 +103,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * Information about chat state notification support for lower cased
      * resource for bareAddress in account.
      */
-    private final NestedNestedMaps<String, Boolean> supports;
+    private final NestedNestedMaps<Resourcepart, Boolean> supports;
 
     /**
      * Sent chat state notifications for bareAddress in account.
@@ -142,7 +144,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * @return <code>null</code> if there is no available information.
      */
     public ChatState getChatState(AccountJid account, String bareAddress) {
-        Map<String, ChatState> map = chatStates.get(account, bareAddress);
+        Map<String, ChatState> map = chatStates.get(account.toString(), bareAddress);
         if (map == null)
             return null;
         ChatState chatState = null;
@@ -162,12 +164,12 @@ public class ChatStateManager implements OnDisconnectListener,
     private boolean isSupported(AbstractChat chat, boolean outgoingMessage) {
         if (chat instanceof RoomChat)
             return false;
-        String to = chat.getTo();
-        String bareAddress = Jid.getBareAddress(to);
-        String resource = Jid.getResource(to);
-        Map<String, Boolean> map = supports.get(chat.getAccount(), bareAddress);
+        Jid to = chat.getTo();
+        BareJid bareAddress = to.asBareJid();
+        Resourcepart resource = to.getResourceOrNull();
+        Map<Resourcepart, Boolean> map = supports.get(chat.getAccount().toString(), bareAddress.toString());
         if (map != null) {
-            if (!"".equals(resource)) {
+            if (!resource.equals(Resourcepart.EMPTY)) {
                 Boolean value = map.get(resource);
                 if (value != null)
                     return value;
@@ -192,7 +194,7 @@ public class ChatStateManager implements OnDisconnectListener,
         if (!isSupported(chat, true))
             return;
         message.addExtension(new ChatStateExtension(ChatState.active));
-        sent.put(chat.getAccount(), chat.getUser(), ChatState.active);
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
         cancelPauseIntent(chat.getAccount(), chat.getUser());
     }
 
@@ -206,12 +208,12 @@ public class ChatStateManager implements OnDisconnectListener,
     private void updateChatState(AccountJid account, UserJid user,
                                  ChatState chatState) {
         if (!SettingsManager.chatsStateNotification()
-                || sent.get(account, user) == chatState)
+                || sent.get(account.toString(), user.toString()) == chatState)
             return;
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
         if (chat == null || !isSupported(chat, false))
             return;
-        sent.put(chat.getAccount(), chat.getUser(), chatState);
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
         Message message = new Message();
         message.setType(chat.getType());
         message.setTo(chat.getTo());
@@ -230,7 +232,7 @@ public class ChatStateManager implements OnDisconnectListener,
      * @param user
      */
     private void cancelPauseIntent(AccountJid account, UserJid user) {
-        PendingIntent pendingIntent = pauseIntents.remove(account, user);
+        PendingIntent pendingIntent = pauseIntents.remove(account.toString(), user.toString());
         if (pendingIntent != null)
             alarmManager.cancel(pendingIntent);
     }
@@ -258,18 +260,18 @@ public class ChatStateManager implements OnDisconnectListener,
         calendar.add(Calendar.MILLISECOND, PAUSE_TIMEOUT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 pendingIntent);
-        pauseIntents.put(account, user, pendingIntent);
+        pauseIntents.put(account.toString(), user.toString(), pendingIntent);
     }
 
     public void onPaused(AccountJid account, UserJid user) {
         if (account == null || user == null)
             return;
-        if (sent.get(account, user) != ChatState.composing) {
+        if (sent.get(account.toString(), user.toString()) != ChatState.composing) {
             return;
         }
 
         updateChatState(account, user, ChatState.paused);
-        pauseIntents.remove(account, user);
+        pauseIntents.remove(account.toString(), user.toString());
     }
 
     @Override
@@ -277,30 +279,30 @@ public class ChatStateManager implements OnDisconnectListener,
         if (!(connection instanceof AccountItem))
             return;
         AccountJid account = ((AccountItem) connection).getAccount();
-        chatStates.clear(account);
-        for (Map<String, Runnable> map : stateCleaners.getNested(account)
+        chatStates.clear(account.toString());
+        for (Map<String, Runnable> map : stateCleaners.getNested(account.toString())
                 .values())
             for (Runnable runnable : map.values())
                 handler.removeCallbacks(runnable);
-        stateCleaners.clear(account);
-        supports.clear(account);
-        sent.clear(account);
-        for (PendingIntent pendingIntent : pauseIntents.getNested(account)
+        stateCleaners.clear(account.toString());
+        supports.clear(account.toString());
+        sent.clear(account.toString());
+        for (PendingIntent pendingIntent : pauseIntents.getNested(account.toString())
                 .values())
             alarmManager.cancel(pendingIntent);
-        pauseIntents.clear(account);
+        pauseIntents.clear(account.toString());
     }
 
     private void removeCallback(AccountJid account, String bareAddress,
                                 String resource) {
         Runnable runnable = stateCleaners
-                .remove(account, bareAddress, resource);
+                .remove(account.toString(), bareAddress, resource);
         if (runnable != null)
             handler.removeCallbacks(runnable);
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem))
             return;
         final String resource = Jid.getResource(packet.getFrom());
@@ -331,16 +333,14 @@ public class ChatStateManager implements OnDisconnectListener,
                                 chatStates.remove(account, bareAddress,
                                         resource);
                                 removeCallback(account, bareAddress, resource);
-                                RosterManager.getInstance().onContactChanged(
-                                        account, bareAddress);
+                                RosterManager.onContactChanged(account, bareAddress);
                             }
                         };
                         handler.postDelayed(runnable, REMOVE_STATE_DELAY);
                         stateCleaners.put(account, bareAddress, resource,
                                 runnable);
                     }
-                    RosterManager.getInstance().onContactChanged(account,
-                            bareAddress);
+                    RosterManager.onContactChanged(account, bareAddress);
                     support = true;
                     break;
                 }

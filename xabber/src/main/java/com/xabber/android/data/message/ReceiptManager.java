@@ -73,7 +73,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, Stanza packet) {
+    public void onStanza(ConnectionItem connection, Stanza packet) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
