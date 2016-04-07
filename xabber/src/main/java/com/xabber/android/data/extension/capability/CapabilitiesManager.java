@@ -44,6 +44,7 @@ import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -192,11 +193,8 @@ public class CapabilitiesManager implements OnAuthorizedListener,
 
     /**
      * Requests disco info.
-     *
-     * @param account
-     * @param user
      */
-    public void request(AccountJid account, UserJid user) {
+    public void request(AccountJid account, Jid user) {
         Capability capability = new Capability(account, user, Capability.DIRECT_REQUEST_METHOD, null, null);
         userCapabilities.put(account.toString(), user.toString(), capability);
         request(account, user, capability);
@@ -204,18 +202,15 @@ public class CapabilitiesManager implements OnAuthorizedListener,
 
     /**
      * Requests disco info.
-     *  @param account
-     * @param user
-     * @param capability
      */
-    private void request(AccountJid account, UserJid user, Capability capability) {
+    private void request(AccountJid account, Jid user, Capability capability) {
         for (DiscoverInfoRequest check : requests) {
             if (capability.equals(check.getCapability())) {
                 return;
             }
         }
         DiscoverInfo packet = new DiscoverInfo();
-        packet.setTo(user.getJid());
+        packet.setTo(user);
         packet.setType(Type.get);
         if (capability.getNode() != null && capability.getVersion() != null)
             packet.setNode(capability.getNode() + "#" + capability.getVersion());
@@ -422,7 +417,7 @@ public class CapabilitiesManager implements OnAuthorizedListener,
     }
 
     public void onPresenceChanged(final AccountJid account, final Presence presence) {
-        final UserJid user = UserJid.from(presence.getFrom());
+        final Jid user = presence.getFrom();
         if (presence.getType() == Presence.Type.error)
             return;
         if (presence.getType() == Presence.Type.unavailable) {

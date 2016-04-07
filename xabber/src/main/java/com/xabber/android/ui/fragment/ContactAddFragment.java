@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -25,6 +26,7 @@ import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
 
@@ -70,13 +72,13 @@ public class ContactAddFragment extends GroupEditorFragment
                 name = null;
             } else {
                 name = RosterManager.getInstance().getName(getAccount(), getUser());
-                if (getUser().equals(name)) {
+                if (getUser().getJid().asBareJid().toString().equals(name)) {
                     name = null;
                 }
             }
         }
         if (getAccount() == null) {
-            Collection<String> accounts = AccountManager.getInstance().getAccounts();
+            Collection<AccountJid> accounts = AccountManager.getInstance().getAccounts();
             if (accounts.size() == 1) {
                 setAccount(accounts.iterator().next());
             }
@@ -124,7 +126,7 @@ public class ContactAddFragment extends GroupEditorFragment
         nameView = (EditText) headerView.findViewById(R.id.contact_name);
 
         if (getUser() != null) {
-            userView.setText(getUser());
+            userView.setText(getUser().toString());
         }
         if (name != null) {
             nameView.setText(name);
@@ -134,7 +136,7 @@ public class ContactAddFragment extends GroupEditorFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SAVED_ACCOUNT, getAccount());
+        outState.putSerializable(SAVED_ACCOUNT, getAccount());
         outState.putString(SAVED_USER, userView.getText().toString());
         outState.putString(SAVED_NAME, nameView.getText().toString());
 
@@ -148,11 +150,11 @@ public class ContactAddFragment extends GroupEditorFragment
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String selectedAccount = (String) accountView.getSelectedItem();
+        AccountJid selectedAccount = (AccountJid) accountView.getSelectedItem();
 
         if (selectedAccount == null) {
             onNothingSelected(parent);
-            setAccount(selectedAccount);
+            setAccount(null);
         } else {
             listenerActivity.onAccountSelected(selectedAccount);
 
@@ -181,13 +183,16 @@ public class ContactAddFragment extends GroupEditorFragment
             return;
         }
 
-        UserJid user = userView.getText().toString();
-        if ("".equals(user)) {
+        UserJid user;
+        try {
+            user = UserJid.from(userView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
                     Toast.LENGTH_LONG).show();
             return;
         }
-        AccountJid account = (String) accountView.getSelectedItem();
+
+        AccountJid account = (AccountJid) accountView.getSelectedItem();
         if (account == null) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
                     Toast.LENGTH_LONG).show();
@@ -206,6 +211,8 @@ public class ContactAddFragment extends GroupEditorFragment
             Application.getInstance().onError(R.string.CONNECTION_FAILED);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
+        } catch (InterruptedException e) {
+            LogManager.exception(this, e);
         }
 
         getActivity().finish();

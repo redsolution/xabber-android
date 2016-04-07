@@ -15,6 +15,7 @@
 package com.xabber.android.data.extension.otr;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
@@ -57,6 +58,8 @@ import net.java.otr4j.session.InstanceTag;
 import net.java.otr4j.session.Session;
 import net.java.otr4j.session.SessionID;
 import net.java.otr4j.session.SessionStatus;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -203,8 +206,14 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         LogManager.i(this, "Ended session for " + user);
     }
 
+    @Nullable
     private AbstractChat getChat(String account, String user) {
-        return MessageManager.getInstance().getChat(account, user);
+        try {
+            return MessageManager.getInstance().getChat(AccountJid.from(account), UserJid.from(user));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return null;
+        }
     }
 
     public void endSession(AccountJid account, UserJid user) throws NetworkException {
@@ -308,7 +317,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     private KeyPair getLocalKeyPair(String account) throws OtrException {
-        KeyPair keyPair = AccountManager.getInstance().getAccount(account).getKeyPair();
+        KeyPair keyPair = null;
+        try {
+            keyPair = AccountManager.getInstance().getAccount(AccountJid.from(account)).getKeyPair();
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
         if (keyPair == null) {
             throw new OtrException(new IllegalStateException("KeyPair is not ready, yet."));
         }
@@ -348,7 +362,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             }
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, isVerified(sessionID.getAccountID(),
                     sessionID.getUserID()) ? ChatAction.otr_verified : ChatAction.otr_encryption);
-            getChat(sessionID.getAccountID(), sessionID.getUserID()).sendMessages();
+            AbstractChat chat = getChat(sessionID.getAccountID(), sessionID.getUserID());
+            if (chat != null) {
+                chat.sendMessages();
+            }
         } else if (sStatus == SessionStatus.PLAINTEXT) {
             actives.remove(sessionID.getAccountID(), sessionID.getUserID());
             sessions.remove(sessionID.getAccountID(), sessionID.getUserID());
@@ -367,12 +384,25 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         } else {
             throw new IllegalStateException();
         }
-        RosterManager.onContactChanged(sessionID.getAccountID(), sessionID.getUserID());
+        onContactChanged(sessionID);
+    }
+
+    public void onContactChanged(SessionID sessionID) {
+        try {
+            RosterManager.onContactChanged(AccountJid.from(sessionID.getAccountID()), UserJid.from(sessionID.getUserID()));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override
     public void askForSecret(SessionID sessionID, InstanceTag receiverTag, String question) {
-        smRequestProvider.add(new SMRequest(sessionID.getAccountID(), sessionID.getUserID(), question), true);
+        try {
+            smRequestProvider.add(new SMRequest(AccountJid.from(sessionID.getAccountID()),
+                    UserJid.from(sessionID.getUserID()), question), true);
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     /**
@@ -420,13 +450,18 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     public boolean isVerified(AccountJid account, UserJid user) {
-        String active = actives.get(account.toString(), user.toString());
+        return isVerified(account.toString(), user.toString());
+    }
+
+    private boolean isVerified(String account, String user) {
+        String active = actives.get(account, user);
         if (active == null) {
             return false;
         }
-        Boolean value = fingerprints.get(account.toString(), user.toString(), active);
+        Boolean value = fingerprints.get(account, user, active);
         return value != null && value;
     }
+
 
     private void setVerifyWithoutNotification(String account, String user, String fingerprint, boolean value) {
         fingerprints.put(account, user, fingerprint, value);
@@ -454,7 +489,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         setVerifyWithoutNotification(sessionID.getAccountID(), sessionID.getUserID(), active, value);
         newAction(sessionID.getAccountID(), sessionID.getUserID(), null,
                 value ? ChatAction.otr_smp_verified : ChatAction.otr_smp_unverified);
-        RosterManager.onContactChanged(sessionID.getAccountID(), sessionID.getUserID());
+        onContactChanged(sessionID);
     }
 
     @Override
@@ -477,6 +512,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         return actives.get(account.toString(), user.toString());
     }
 
+    @Nullable
     public String getLocalFingerprint(AccountJid account) {
         try {
             return OtrCryptoEngine.getFingerprint(getLocalKeyPair(account.toString()).getPublic());
@@ -486,9 +522,15 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         return null;
     }
 
+    @Nullable
     @Override
     public byte[] getLocalFingerprintRaw(SessionID sessionID) {
-        return SerializationUtils.hexStringToByteArray(getLocalFingerprint(sessionID.getAccountID()));
+        try {
+            return SerializationUtils.hexStringToByteArray(getLocalFingerprint(AccountJid.from(sessionID.getAccountID())));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return null;
+        }
     }
 
     @Override
@@ -504,7 +546,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         removeSMRequest(account, user);
         addSMProgress(account, user);
         try {
-            getOrCreateSession(account, user).respondSmp(question, secret);
+            getOrCreateSession(account.toString(), user.toString()).respondSmp(question, secret);
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
@@ -538,8 +580,16 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    private void removeSMRequest(String account, String user) {
+    private void removeSMRequest(AccountJid account, UserJid user) {
         smRequestProvider.remove(account, user);
+    }
+
+    private void removeSMRequest(String account, String user) {
+        try {
+            smRequestProvider.remove(AccountJid.from(account), UserJid.from(user));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     private void addSMProgress(AccountJid account, UserJid user) {
@@ -547,7 +597,11 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     private void removeSMProgress(String account, String user) {
-        smProgressProvider.remove(account, user);
+        try {
+            smProgressProvider.remove(AccountJid.from(account), UserJid.from(user));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override

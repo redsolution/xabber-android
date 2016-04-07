@@ -28,6 +28,11 @@ import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,7 +153,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String newAccount = (String) accountView.getSelectedItem();
+        AccountJid newAccount = (AccountJid) accountView.getSelectedItem();
 
         if (account != null && account.equals(newAccount)) {
             return;
@@ -205,15 +210,14 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     }
 
     private void storeConferenceList(Bundle intent) {
-        List<HostedRoom> conferencesList = new ArrayList<>();
-        conferencesList.addAll(hostedConferencesAdapter.getConferencesList());
+        List<HostedRoom> conferencesList = hostedConferencesAdapter.getConferencesList();
 
         ArrayList<String> names = new ArrayList<>();
         ArrayList<String> jids = new ArrayList<>();
 
         for (HostedRoom hostedRoom : conferencesList) {
             names.add(hostedRoom.getName());
-            jids.add(hostedRoom.getJid());
+            jids.add(hostedRoom.getJid().toString());
         }
 
         intent.putStringArrayList(ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES, names);
@@ -239,21 +243,25 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_SHORT).show();
             return;
         }
-        String server = serverView.getText().toString();
-        if ("".equals(server)) {
+        DomainBareJid server;
+        try {
+            server = JidCreate.domainBareFrom(serverView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_SERVER_NAME), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String room = roomView.getText().toString();
-        if ("".equals(room)) {
+        Localpart room;
+        try {
+            room = Localpart.from(roomView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ROOM_NAME), Toast.LENGTH_LONG).show();
             return;
         }
 
-        room = room + "@" + server;
+        EntityBareJid roomJid = JidCreate.entityBareFrom(room, server);
 
-        startActivity(ConferenceAdd.createIntent(getActivity(), account, room));
+        startActivity(ConferenceAdd.createIntent(getActivity(), account, roomJid));
     }
 
     private void onRequestHostedRoomsClick() {
@@ -261,8 +269,10 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_SHORT).show();
             return;
         }
-        String server = serverView.getText().toString();
-        if ("".equals(server)) {
+        DomainBareJid server;
+        try {
+            server = JidCreate.domainBareFrom(serverView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_SERVER_NAME), Toast.LENGTH_SHORT).show();
             return;
         }

@@ -34,7 +34,6 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Domainpart;
@@ -123,7 +122,7 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(EntityBareJid bareAddress, Stanza packet) {
+    protected boolean onPacket(UserJid bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet))
             return false;
         final Resourcepart resource = packet.getFrom().getResourceOrNull();

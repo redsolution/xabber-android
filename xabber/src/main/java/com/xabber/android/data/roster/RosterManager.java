@@ -48,6 +48,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,12 +112,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
-    public List<Presence> getPresences(AccountJid account, UserJid user) {
+    public List<Presence> getPresences(AccountJid account, Jid user) {
         final Roster roster = getRoster(account);
         if (roster == null) {
             return new ArrayList<>();
         } else {
-            return roster.getAvailablePresences(user.getJid().asBareJid());
+            return roster.getAvailablePresences(user.asBareJid());
         }
     }
 

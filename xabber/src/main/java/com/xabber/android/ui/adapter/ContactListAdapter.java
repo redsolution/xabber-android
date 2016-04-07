@@ -146,7 +146,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
 
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getContacts();
 
-        Map<String, Collection<String>> blockedContacts = new TreeMap<>();
+        Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
         for (AccountJid account : AccountManager.getInstance().getAccounts()) {
             blockedContacts.put(account, BlockingManager.getInstance().getBlockedContacts(account));
         }
@@ -168,7 +168,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
         final boolean showAccounts = SettingsManager.contactsShowAccounts();
         final Comparator<AbstractContact> comparator = SettingsManager.contactsOrder();
         final CommonState commonState = AccountManager.getInstance().getCommonState();
-        final String selectedAccount = AccountManager.getInstance().getSelectedAccount();
+        final AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
 
         /**
@@ -196,7 +196,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
          */
         boolean hasVisibleContacts = false;
 
-        final Map<String, AccountConfiguration> accounts = new TreeMap<>();
+        final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
 
         for (AccountJid account : AccountManager.getInstance().getAccounts()) {
             accounts.put(account, null);
@@ -205,13 +205,13 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
         /**
          * List of rooms and active chats grouped by users inside accounts.
          */
-        final Map<String, Map<String, AbstractChat>> abstractChats = new TreeMap<>();
+        final Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats = new TreeMap<>();
 
         for (AbstractChat abstractChat : MessageManager.getInstance().getChats()) {
             if ((abstractChat instanceof RoomChat || abstractChat.isActive())
                     && accounts.containsKey(abstractChat.getAccount())) {
                 final AccountJid account = abstractChat.getAccount();
-                Map<String, AbstractChat> users = abstractChats.get(account);
+                Map<UserJid, AbstractChat> users = abstractChats.get(account);
                 if (users == null) {
                     users = new TreeMap<>();
                     abstractChats.put(account, users);
@@ -225,7 +225,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
             if (showAccounts) {
                 groups = null;
                 contacts = null;
-                for (Entry<String, AccountConfiguration> entry : accounts.entrySet()) {
+                for (Entry<AccountJid, AccountConfiguration> entry : accounts.entrySet()) {
                     entry.setValue(new AccountConfiguration(entry.getKey(),
                             GroupManager.IS_ACCOUNT, GroupManager.getInstance()));
                 }
@@ -253,7 +253,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                 hasContacts = true;
                 final boolean online = rosterContact.getStatusMode().isOnline();
                 final AccountJid account = rosterContact.getAccount();
-                final Map<String, AbstractChat> users = abstractChats.get(account);
+                final Map<UserJid, AbstractChat> users = abstractChats.get(account);
                 final AbstractChat abstractChat;
                 if (users == null) {
                     abstractChat = null;
@@ -279,7 +279,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                     hasVisibleContacts = true;
                 }
             }
-            for (Map<String, AbstractChat> users : abstractChats.values()) {
+            for (Map<UserJid, AbstractChat> users : abstractChats.values())
                 for (AbstractChat abstractChat : users.values()) {
                     final AbstractContact abstractContact;
                     if (abstractChat instanceof RoomChat) {
@@ -317,7 +317,6 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                     addContact(abstractContact, group, online, accounts, groups, contacts,
                             showAccounts, showGroups);
                 }
-            }
 
             hasActiveChats = activeChats != null && activeChats.getTotal() > 0;
 

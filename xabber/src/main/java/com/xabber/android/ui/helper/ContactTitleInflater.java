@@ -36,7 +36,7 @@ public class ContactTitleInflater {
         nameView.setText(abstractContact.getName());
 
         // if it is account, not simple user contact
-        if (Jid.getBareAddress(abstractContact.getUser()).equals(Jid.getBareAddress(abstractContact.getAccount()))) {
+        if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
         } else {
             avatarView.setImageDrawable(abstractContact.getAvatar());

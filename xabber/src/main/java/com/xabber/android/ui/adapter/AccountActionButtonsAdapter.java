@@ -90,7 +90,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
             backgroundActionButton.setColorPressed(accountPainter.getAccountDarkColor(account));
             backgroundActionButton.setColorRipple(accountPainter.getAccountRippleColor(account));
 
-            String selectedAccount = AccountManager.getInstance().getSelectedAccount();
+            AccountJid selectedAccount = AccountManager.getInstance().getSelectedAccount();
 
             int shadowVisibility;
 
@@ -98,7 +98,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
                 shadowVisibility = View.GONE;
             } else {
                 shadowVisibility = View.VISIBLE;
-                if (selectedAccount.equalsIgnoreCase(account)) {
+                if (selectedAccount.equals(account)) {
                     shadowVisibility = View.GONE;
                 }
             }

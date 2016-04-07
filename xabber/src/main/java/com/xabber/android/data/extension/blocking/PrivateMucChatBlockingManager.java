@@ -109,13 +109,13 @@ public class PrivateMucChatBlockingManager {
         return blockedContacts;
     }
 
-    public void unblockContacts(AccountJid account, final List<String> contacts) {
+    public void unblockContacts(AccountJid account, final List<UserJid> contacts) {
         Realm realm = Realm.getDefaultInstance();
         RealmList<BlockedContact> blockedContacts = getBlockedContactsForAccount(account, realm);
         realm.beginTransaction();
 
-        for (String contact : contacts) {
-            blockedContacts.removeAll(blockedContacts.where().equalTo(BlockedContact.FIELD_FULL_JID, contact).findAll());
+        for (UserJid contact : contacts) {
+            blockedContacts.removeAll(blockedContacts.where().equalTo(BlockedContact.FIELD_FULL_JID, contact.toString()).findAll());
         }
 
         realm.commitTransaction();

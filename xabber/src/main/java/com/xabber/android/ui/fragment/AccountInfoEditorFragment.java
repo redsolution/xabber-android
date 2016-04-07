@@ -42,9 +42,8 @@ import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.xmlpull.v1.XmlPullParserException;
+import org.jxmpp.jid.Jid;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +147,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
         arguments.putString(ARGUMENT_VCARD, vCard);
         fragment.setArguments(arguments);
         return fragment;
@@ -168,12 +167,12 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
+        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
         String vCardString = args.getString(ARGUMENT_VCARD, null);
         if (vCardString != null) {
             try {
                 vCard = ContactVcardViewerFragment.parseVCard(vCardString);
-            } catch (XmlPullParserException | IOException | SmackException e) {
+            } catch (Exception e) {
                 LogManager.exception(this, e);
             }
         }
@@ -291,7 +290,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         Application.getInstance().addUIListener(OnVCardListener.class, this);
 
         VCardManager vCardManager = VCardManager.getInstance();
-        if (vCardManager.isVCardRequested(account) || vCardManager.isVCardSaveRequested(account)) {
+        if (vCardManager.isVCardRequested(account.getFullJid()) || vCardManager.isVCardSaveRequested(account)) {
             enableProgressMode(getString(R.string.saving));
         }
         updateFromVCardFlag = false;
@@ -324,7 +323,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void setFieldsFromVCard() {
-        account_jid.setText(Jid.getBareAddress(account));
+        account_jid.setText(account.getFullJid().asBareJid().toString());
 
         formattedName.setText(vCard.getField(VCardProperty.FN.name()));
         prefixName.setText(vCard.getPrefix());
@@ -725,18 +724,18 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
 
     @Override
     public void onVCardSaveSuccess(AccountJid account) {
-        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(account))) {
+        if (!this.account.equals(account)) {
             return;
         }
 
         enableProgressMode(getString(R.string.saving));
-        VCardManager.getInstance().request(account, account);
+        VCardManager.getInstance().request(account, account.getFullJid());
         isSaveSuccess = true;
     }
 
     @Override
     public void onVCardSaveFailed(AccountJid account) {
-        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(account))) {
+        if (!this.account.equals(account)) {
             return;
         }
 
@@ -747,8 +746,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onVCardReceived(AccountJid account, String bareAddress, VCard vCard) {
-        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(bareAddress))) {
+    public void onVCardReceived(AccountJid account, Jid bareAddress, VCard vCard) {
+        if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
             return;
         }
 
@@ -772,8 +771,8 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     @Override
-    public void onVCardFailed(AccountJid account, String bareAddress) {
-        if (!Jid.getBareAddress(this.account).equals(Jid.getBareAddress(bareAddress))) {
+    public void onVCardFailed(AccountJid account, Jid bareAddress) {
+        if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
             return;
         }
 

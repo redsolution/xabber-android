@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -22,12 +23,16 @@ import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConferenceFilterActivity extends ManagedActivity implements TextWatcher, View.OnClickListener,
         AdapterView.OnItemClickListener, TextView.OnEditorActionListener {
+
+    private static final String LOG_TAG = ConferenceFilterActivity.class.getSimpleName();
 
     public static final String ARG_CONFERENCE_NAME = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_NAME";
     public static final String ARG_CONFERENCE_LIST_NAMES = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES";
@@ -114,9 +119,13 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
 
         if (conferencesNames != null && conferencesJids != null && conferencesNames.size() == conferencesJids.size()) {
             for (int i = 0; i < conferencesNames.size(); i++) {
-                DiscoverItems.Item item = new DiscoverItems.Item(conferencesJids.get(i));
-                item.setName(conferencesNames.get(i));
-                conferences.add(new HostedRoom(item));
+                try {
+                    DiscoverItems.Item item = new DiscoverItems.Item(JidCreate.from(conferencesJids.get(i)));
+                    item.setName(conferencesNames.get(i));
+                    conferences.add(new HostedRoom(item));
+                } catch (XmppStringprepException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
             }
         }
         return conferences;

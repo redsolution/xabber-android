@@ -43,6 +43,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -76,7 +77,9 @@ import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.uri.XMPPUri;
 
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -163,11 +166,11 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         return intent;
     }
 
-    private static String getRoomInviteAccount(Intent intent) {
+    private static AccountJid getRoomInviteAccount(Intent intent) {
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static String getRoomInviteUser(Intent intent) {
+    private static UserJid getRoomInviteUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 
@@ -241,7 +244,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
      * @param text can be <code>null</code>.
      */
     private void openChat(UserJid user, String text) {
-        String bareAddress = Jid.getBareAddress(user);
+        BareJid bareAddress = user.getJid().asBareJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : MessageManager.getInstance().getChats()) {
             if (check.isActive() && check.getUser().equals(bareAddress)) {
@@ -262,16 +265,15 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             openChat(entities.get(0), text);
             return;
         }
-        Collection<String> accounts = AccountManager.getInstance()
-                .getAccounts();
+        Collection<AccountJid> accounts = AccountManager.getInstance().getAccounts();
         if (accounts.isEmpty()) {
             return;
         }
         if (accounts.size() == 1) {
-            openChat(new BaseEntity(accounts.iterator().next(), bareAddress), text);
+            openChat(new BaseEntity(accounts.iterator().next(), UserJid.from(bareAddress)), text);
             return;
         }
-        AccountChooseDialogFragment.newInstance(bareAddress, text)
+        AccountChooseDialogFragment.newInstance(UserJid.from(bareAddress), text)
                 .show(getFragmentManager(), "OPEN_WITH_ACCOUNT");
     }
 
@@ -325,7 +327,17 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                             if (texts != null && !texts.isEmpty()) {
                                 text = texts.get(0);
                             }
-                            openChat(xmppUri.getPath(), text);
+
+                            UserJid user = null;
+                            try {
+                                user = UserJid.from(xmppUri.getPath());
+                            } catch (XmppStringprepException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (user != null) {
+                                openChat(user, text);
+                            }
                         }
                     }
                     break;
@@ -336,7 +348,12 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                     if (data != null) {
                         String path = data.getPath();
                         if (path != null && path.startsWith("/")) {
-                            openChat(path.substring(1), null);
+                            try {
+                                UserJid user = UserJid.from(path.substring(1));
+                                openChat(user, null);
+                            } catch (XmppStringprepException e) {
+                                LogManager.exception(this, e);
+                            }
                         }
                     }
                     break;
@@ -609,7 +626,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 UserJid user = getRoomInviteUser(intent);
                 if (account != null && user != null) {
                     try {
-                        MUCManager.getInstance().invite(account, user, abstractContact.getUser());
+                        MUCManager.getInstance().invite(account, user.getJid().asEntityBareJidIfPossible(), abstractContact.getUser());
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                     }
@@ -677,7 +694,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         ((ContactListFragment)getFragmentManager().findFragmentById(R.id.container)).onAccountsChanged();
         barPainter.setDefaultColor();
     }

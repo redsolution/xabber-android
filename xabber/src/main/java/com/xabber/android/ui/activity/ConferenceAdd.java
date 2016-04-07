@@ -38,10 +38,10 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
     private static final String SAVED_ROOM = "com.xabber.android.ui.activity.ConferenceAdd.SAVED_ROOM";
 
     private AccountJid account;
-    private String room;
+    private EntityBareJid room;
 
     public static Intent createIntent(Context context, AccountJid account, EntityBareJid room) {
-        return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(room).build();
+        return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(UserJid.from(room)).build();
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -78,11 +78,11 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
         Intent intent = getIntent();
 
         if (savedInstanceState != null) {
-            account = savedInstanceState.getString(SAVED_ACCOUNT);
-            room = savedInstanceState.getString(SAVED_ROOM);
+            account = (AccountJid) savedInstanceState.getSerializable(SAVED_ACCOUNT);
+            room = (EntityBareJid) savedInstanceState.getSerializable(SAVED_ROOM);
         } else {
             account = getAccount(intent);
-            room = getUser(intent);
+            room = getUser(intent).getJid().asEntityBareJidIfPossible();
         }
 
         barPainter.updateWithAccountName(account);
@@ -100,8 +100,8 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SAVED_ACCOUNT, account);
-        outState.putString(SAVED_ROOM, room);
+        outState.putSerializable(SAVED_ACCOUNT, account);
+        outState.putSerializable(SAVED_ROOM, room);
     }
 
     @Override

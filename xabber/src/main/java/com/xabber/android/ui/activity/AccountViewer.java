@@ -17,6 +17,7 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
@@ -29,11 +30,7 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
 import com.xabber.xmpp.vcard.VCardProperty;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItemClickListener,
         ContactVcardViewerFragment.Listener, AccountEditorFragment.AccountEditorFragmentInteractionListener {
@@ -69,7 +66,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
     @NonNull
     private static Intent createIntent(Context context, AccountJid account, boolean showAccountInfo) {
-        final Intent intent = new AccountIntentBuilder(context, AccountViewer.class).setAccount(AccountJid).build();
+        final Intent intent = new AccountIntentBuilder(context, AccountViewer.class).setAccount(account).build();
         intent.putExtra(INTENT_SHOW_ACCOUNT_INFO, showAccountInfo);
         return intent;
     }
@@ -117,7 +114,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
-        bestContact = RosterManager.getInstance().getBestContact(account, Jid.getBareAddress(account));
+        bestContact = RosterManager.getInstance().getBestContact(account, UserJid.from(account.getFullJid().asBareJid()));
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
         contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(account));
@@ -130,7 +127,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.scrollable_container, ContactVcardViewerFragment.newInstance(account, Jid.getBareAddress(account)))
+                    .add(R.id.scrollable_container, ContactVcardViewerFragment.newInstance(account, UserJid.from(account.getFullJid().asBareJid())))
                     .add(R.id.fragment_container, new AccountEditorFragment())
                     .commit();
         } else {
@@ -161,7 +158,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
     private void updateTitle() {
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact);
         statusIcon.setVisibility(View.GONE);
-        statusText.setText(Jid.getBareAddress(account));
+        statusText.setText(account.getFullJid().asBareJid().toString());
     }
 
     @Override
@@ -253,14 +250,14 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
             if (vCardXml != null) {
                 try {
                     vCard = ContactVcardViewerFragment.parseVCard(vCardXml);
-                } catch (XmlPullParserException | IOException | SmackException e) {
+                } catch (Exception e) {
                     LogManager.exception(this, e);
                 }
             }
 
             if (vCard != null) {
                 vCard.getField(VCardProperty.NICKNAME.name());
-                contactVcardViewerFragment.onVCardReceived(account, Jid.getBareAddress(account), vCard);
+                contactVcardViewerFragment.onVCardReceived(account, account.getFullJid().asBareJid(), vCard);
             } else {
                 contactVcardViewerFragment.requestVCard();
             }

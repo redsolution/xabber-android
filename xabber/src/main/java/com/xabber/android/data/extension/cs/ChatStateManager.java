@@ -91,13 +91,13 @@ public class ChatStateManager implements OnDisconnectListener,
     /**
      * Chat states for lower cased resource for bareAddress in account.
      */
-    private final NestedNestedMaps<String, ChatState> chatStates;
+    private final NestedNestedMaps<Resourcepart, ChatState> chatStates;
 
     /**
      * Cleaners for chat states for lower cased resource for bareAddress in
      * account.
      */
-    private final NestedNestedMaps<String, Runnable> stateCleaners;
+    private final NestedNestedMaps<Resourcepart, Runnable> stateCleaners;
 
     /**
      * Information about chat state notification support for lower cased
@@ -126,11 +126,11 @@ public class ChatStateManager implements OnDisconnectListener,
     private final Handler handler;
 
     private ChatStateManager() {
-        chatStates = new NestedNestedMaps<String, ChatState>();
-        stateCleaners = new NestedNestedMaps<String, Runnable>();
-        supports = new NestedNestedMaps<String, Boolean>();
-        sent = new NestedMap<ChatState>();
-        pauseIntents = new NestedMap<PendingIntent>();
+        chatStates = new NestedNestedMaps<>();
+        stateCleaners = new NestedNestedMaps<>();
+        supports = new NestedNestedMaps<>();
+        sent = new NestedMap<>();
+        pauseIntents = new NestedMap<>();
         alarmManager = (AlarmManager) Application.getInstance()
                 .getSystemService(Context.ALARM_SERVICE);
         handler = new Handler();
@@ -143,14 +143,17 @@ public class ChatStateManager implements OnDisconnectListener,
      * @param bareAddress
      * @return <code>null</code> if there is no available information.
      */
-    public ChatState getChatState(AccountJid account, String bareAddress) {
-        Map<String, ChatState> map = chatStates.get(account.toString(), bareAddress);
-        if (map == null)
+    public ChatState getChatState(AccountJid account, UserJid bareAddress) {
+        Map<Resourcepart, ChatState> map = chatStates.get(account.toString(), bareAddress.toString());
+        if (map == null) {
             return null;
+        }
         ChatState chatState = null;
-        for (ChatState check : map.values())
-            if (chatState == null || check.compareTo(chatState) < 0)
+        for (ChatState check : map.values()) {
+            if (chatState == null || check.compareTo(chatState) < 0) {
                 chatState = check;
+            }
+        }
         return chatState;
     }
 
@@ -280,79 +283,82 @@ public class ChatStateManager implements OnDisconnectListener,
             return;
         AccountJid account = ((AccountItem) connection).getAccount();
         chatStates.clear(account.toString());
-        for (Map<String, Runnable> map : stateCleaners.getNested(account.toString())
-                .values())
-            for (Runnable runnable : map.values())
+        for (Map<Resourcepart, Runnable> map : stateCleaners.getNested(account.toString()).values()) {
+            for (Runnable runnable : map.values()) {
                 handler.removeCallbacks(runnable);
+            }
+        }
         stateCleaners.clear(account.toString());
         supports.clear(account.toString());
         sent.clear(account.toString());
-        for (PendingIntent pendingIntent : pauseIntents.getNested(account.toString())
-                .values())
+        for (PendingIntent pendingIntent : pauseIntents.getNested(account.toString()).values()) {
             alarmManager.cancel(pendingIntent);
+        }
         pauseIntents.clear(account.toString());
     }
 
-    private void removeCallback(AccountJid account, String bareAddress,
-                                String resource) {
-        Runnable runnable = stateCleaners
-                .remove(account.toString(), bareAddress, resource);
-        if (runnable != null)
+    private void removeCallback(AccountJid account, BareJid bareAddress, Resourcepart resource) {
+        Runnable runnable = stateCleaners.remove(account.toString(), bareAddress.toString(), resource);
+        if (runnable != null) {
             handler.removeCallbacks(runnable);
+        }
     }
 
     @Override
-    public void onStanza(ConnectionItem connection, Stanza packet) {
-        if (!(connection instanceof AccountItem))
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
+        final Resourcepart resource = stanza.getFrom().getResourceOrNull();
+        if (resource == null) {
             return;
-        final String resource = Jid.getResource(packet.getFrom());
-        if (resource == null)
-            return;
+        }
+
         final AccountJid account = ((AccountItem) connection).getAccount();
-        if (packet instanceof Presence) {
-            Presence presence = (Presence) packet;
-            if (presence.getType() != Type.unavailable)
+        final BareJid bareJid = stanza.getFrom().asBareJid();
+
+        if (stanza instanceof Presence) {
+            Presence presence = (Presence) stanza;
+            if (presence.getType() != Type.unavailable) {
                 return;
-            chatStates.remove(account, bareAddress, resource);
-            removeCallback(account, bareAddress, resource);
-            supports.remove(account, bareAddress, resource);
-        } else if (packet instanceof Message) {
+            }
+            chatStates.remove(account.toString(), bareJid.toString(), resource);
+            removeCallback(account, bareJid, resource);
+            supports.remove(account.toString(), bareJid.toString(), resource);
+        } else if (stanza instanceof Message) {
             boolean support = false;
-            for (ExtensionElement extension : packet.getExtensions())
+            for (ExtensionElement extension : stanza.getExtensions())
                 if (extension instanceof ChatStateExtension) {
-                    removeCallback(account, bareAddress, resource);
+                    removeCallback(account, bareJid, resource);
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
-                    chatStates.put(account, bareAddress, resource, chatState);
+                    chatStates.put(account.toString(), bareJid.toString(), resource, chatState);
                     if (chatState != ChatState.active) {
                         Runnable runnable = new Runnable() {
                             @Override
                             public void run() {
-                                if (this != stateCleaners.get(account,
-                                        bareAddress, resource))
+                                if (this != stateCleaners.get(account.toString(), bareJid.toString(), resource)) {
                                     return;
-                                chatStates.remove(account, bareAddress,
-                                        resource);
-                                removeCallback(account, bareAddress, resource);
-                                RosterManager.onContactChanged(account, bareAddress);
+                                }
+                                chatStates.remove(account.toString(), bareJid.toString(), resource);
+                                removeCallback(account, bareJid, resource);
+                                RosterManager.onContactChanged(account, UserJid.from(bareJid));
                             }
                         };
                         handler.postDelayed(runnable, REMOVE_STATE_DELAY);
-                        stateCleaners.put(account, bareAddress, resource,
-                                runnable);
+                        stateCleaners.put(account.toString(), bareJid.toString(), resource, runnable);
                     }
-                    RosterManager.onContactChanged(account, bareAddress);
+                    RosterManager.onContactChanged(account, UserJid.from(bareJid));
                     support = true;
                     break;
                 }
-            Message message = (Message) packet;
+            Message message = (Message) stanza;
             if (message.getType() != Message.Type.chat
-                    && message.getType() != Message.Type.groupchat)
+                    && message.getType() != Message.Type.groupchat) {
                 return;
-            if (support)
-                supports.put(account, bareAddress, resource, true);
-            else if (supports.get(account, bareAddress, resource) == null)
+            }
+            if (support) {
+                supports.put(account.toString(), bareJid.toString(), resource, true);
+            } else if (supports.get(account.toString(), bareJid.toString(), resource) == null) {
                 // Disable only if there no information about support.
-                supports.put(account, bareAddress, resource, false);
+                supports.put(account.toString(), bareJid.toString(), resource, false);
+            }
         }
     }
 

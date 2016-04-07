@@ -35,15 +35,13 @@ import com.xabber.xmpp.vcard.EmailType;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
+import org.jxmpp.jid.Jid;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,7 +98,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             if (xml != null) {
                 try {
                     vCard = parseVCard(xml);
-                } catch (XmlPullParserException | IOException | SmackException e) {
+                } catch (Exception e) {
                     LogManager.exception(this, e);
                 }
             }
@@ -156,7 +154,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     public void requestVCard() {
         progressBar.setVisibility(View.VISIBLE);
-        VCardManager.getInstance().request(account, user);
+        VCardManager.getInstance().request(account, user.getJid());
     }
 
     @Override
@@ -184,7 +182,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onVCardReceived(AccountJid account, String bareAddress, VCard vCard) {
+    public void onVCardReceived(AccountJid account, Jid bareAddress, VCard vCard) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
         }
@@ -196,7 +194,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onVCardFailed(AccountJid account, String bareAddress) {
+    public void onVCardFailed(AccountJid account, Jid bareAddress) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
         }
@@ -216,21 +214,18 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             updateContact(account, user);
-            if (Jid.getBareAddress(account).equals(Jid.getBareAddress(user))) {
+            if (account.getFullJid().asBareJid().equals(user.getJid().asBareJid())) {
                 if (AccountManager.getInstance().getAccount(account).getFactualStatusMode().isOnline()) {
-                    VCardManager.getInstance().request(account, Jid.getBareAddress(account));
+                    VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
                 }
             }
         }
     }
 
     /**
-     * @param source
-     * @param value
-     * @param splitter
      * @return Concatenated source and value with splitter if necessary.
      */
     private String addString(String source, String value, String splitter) {
@@ -243,14 +238,14 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return source + splitter + value;
     }
 
-    public void updateContact(AccountJid account, String bareAddress) {
+    public void updateContact(AccountJid account, UserJid bareAddress) {
         this.account = account;
         this.user = bareAddress;
 
         xmppItems.removeAllViews();
 
         View jabberIdView = createItemView(xmppItems, getString(R.string.jabber_id),
-                bareAddress, R.drawable.ic_vcard_xmpp_24dp);
+                bareAddress.toString(), R.drawable.ic_vcard_xmpp_24dp);
 
         if (jabberIdView != null) {
             xmppItems.addView(jabberIdView);
@@ -258,17 +253,17 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         List<View> resourcesList = new ArrayList<>();
 
-        fillResourceList(account, bareAddress, resourcesList);
+        fillResourceList(account, bareAddress.getJid(), resourcesList);
 
         addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
     }
 
-    private void fillResourceList(AccountJid account, String bareAddress, List<View> resourcesList) {
+    private void fillResourceList(AccountJid account, Jid bareAddress, List<View> resourcesList) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
 
         for (Presence presence : allPresences) {
-            UserJid user = presence.getFrom();
-            ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
+            Jid user = presence.getFrom();
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user.asFullJidIfPossible());
 
             String client = "";
             if (clientInfo == null) {
@@ -306,7 +301,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
             label += priorityString;
 
-            String resource = getString(R.string.account_resource) + ": " + Jid.getResource(user);
+            String resource = getString(R.string.account_resource) + ": " + user.getResourceOrNull();
 
             final StatusMode statusMode = StatusMode.createStatusMode(presence);
 

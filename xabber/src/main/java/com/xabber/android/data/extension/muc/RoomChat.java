@@ -182,20 +182,20 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(EntityBareJid bareAddress, Stanza packet) {
-        if (!super.onPacket(bareAddress, packet)) {
+    protected boolean onPacket(UserJid bareAddress, Stanza stanza) {
+        if (!super.onPacket(bareAddress, stanza)) {
             return false;
         }
 
-        MUCUser mucUserExtension = MUCUser.from(packet);
+        MUCUser mucUserExtension = MUCUser.from(stanza);
         if (mucUserExtension != null && mucUserExtension.getInvite() != null) {
             return false;
         }
 
-        final org.jxmpp.jid.Jid from = packet.getFrom();
+        final org.jxmpp.jid.Jid from = stanza.getFrom();
         final Resourcepart resource = from.getResourceOrNull();
-        if (packet instanceof Message) {
-            final Message message = (Message) packet;
+        if (stanza instanceof Message) {
+            final Message message = (Message) stanza;
             if (message.getType() == Message.Type.error) {
                 UserJid invite = invites.remove(message.getStanzaId());
                 if (invite != null) {
@@ -203,7 +203,7 @@ public class RoomChat extends AbstractChat {
                 }
                 return true;
             }
-            MUCUser mucUser = MUCUser.from(packet);
+            MUCUser mucUser = MUCUser.from(stanza);
             if (mucUser != null && mucUser.getDecline() != null) {
                 onInvitationDeclined(mucUser.getDecline().getFrom(), mucUser.getDecline().getReason());
                 return true;
@@ -223,7 +223,7 @@ public class RoomChat extends AbstractChat {
                     return true;
                 }
                 this.subject = subject;
-                RosterManager.onContactChanged(account, UserJid.from(bareAddress));
+                RosterManager.onContactChanged(account, bareAddress);
                 newAction(resource, subject, ChatAction.subject);
             } else {
                 boolean notify = true;
@@ -263,8 +263,8 @@ public class RoomChat extends AbstractChat {
                 updateThreadId(message.getThread());
                 createAndSaveNewMessage(resource, text, null, delay, true, notify, false, false, message.getStanzaId());
             }
-        } else if (packet instanceof Presence) {
-            Presence presence = (Presence) packet;
+        } else if (stanza instanceof Presence) {
+            Presence presence = (Presence) stanza;
             if (presence.getType() == Presence.Type.available) {
                 Occupant oldOccupant = occupants.get(resource);
                 Occupant newOccupant = createOccupant(resource, presence);

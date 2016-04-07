@@ -31,7 +31,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private List<UserJid> blockedContacts;
     private OnBlockedContactClickListener listener;
 
-    private Set<String> checkedContacts;
+    private Set<UserJid> checkedContacts;
 
     public BlockedListAdapter(AccountJid account) {
         this.account = account;
@@ -48,7 +48,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final BlockListItemViewHolder viewHolder = (BlockListItemViewHolder) holder;
-        final String contact = blockedContacts.get(position);
+        final UserJid contact = blockedContacts.get(position);
 
         final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
 
@@ -106,9 +106,9 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             this.blockedContacts.addAll(blockedMucContacts);
         }
 
-        final Iterator<String> iterator = checkedContacts.iterator();
+        final Iterator<UserJid> iterator = checkedContacts.iterator();
         while (iterator.hasNext()) {
-            final String next = iterator.next();
+            final UserJid next = iterator.next();
             if (!this.blockedContacts.contains(next)) {
                 iterator.remove();
             }
@@ -140,11 +140,11 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-    public ArrayList<String> getCheckedContacts() {
+    public ArrayList<UserJid> getCheckedContacts() {
         return new ArrayList<>(checkedContacts);
     }
 
-    public void setCheckedContacts(List<String> checkedContacts) {
+    public void setCheckedContacts(List<UserJid> checkedContacts) {
         this.checkedContacts.clear();
         this.checkedContacts.addAll(checkedContacts);
     }

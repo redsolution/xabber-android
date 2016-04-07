@@ -41,6 +41,7 @@ import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.impl.JidCreate;
 
 import java.util.Collection;
 
@@ -137,17 +138,17 @@ public class OccupantList extends ManagedListActivity implements
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         com.xabber.android.data.extension.muc.Occupant occupant
                 = (com.xabber.android.data.extension.muc.Occupant) listAdapter.getItem(position);
-        LogManager.i(this, occupant.getNickname());
+        LogManager.i(this, occupant.getNickname().toString());
 
-        String occupantFullJid = room + "/" + occupant.getNickname();
+        UserJid occupantFullJid = UserJid.from(JidCreate.entityFullFrom(room, occupant.getNickname()));
 
         if (PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(occupantFullJid)) {
             Toast.makeText(this, R.string.contact_is_blocked, Toast.LENGTH_SHORT).show();
             return;
         }
 
-
-        final AbstractChat mucPrivateChat = MessageManager.getInstance().getOrCreatePrivateMucChat(account, occupantFullJid);
+        final AbstractChat mucPrivateChat = MessageManager.getInstance()
+                .getOrCreatePrivateMucChat(account, occupantFullJid.getJid().asFullJidIfPossible());
         mucPrivateChat.setIsPrivateMucChatAccepted(true);
 
         startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));

@@ -43,6 +43,8 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
 
+import org.jxmpp.jid.BareJid;
+
 import java.util.Collection;
 
 public class FingerprintViewer extends ManagedActivity implements
@@ -173,7 +175,7 @@ public class FingerprintViewer extends ManagedActivity implements
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        String thisBareAddress = Jid.getBareAddress(user);
+        BareJid thisBareAddress = user.getJid().asBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
                 update();
@@ -183,7 +185,7 @@ public class FingerprintViewer extends ManagedActivity implements
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             update();
         }

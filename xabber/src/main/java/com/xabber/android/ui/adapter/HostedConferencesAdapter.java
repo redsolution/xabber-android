@@ -10,7 +10,6 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import org.jivesoftware.smackx.muc.HostedRoom;
-import org.jxmpp.util.XmppStringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -121,7 +120,7 @@ public class HostedConferencesAdapter extends BaseAdapter implements Filterable 
 
             for (int i = 0; i < count; i++) {
                 HostedRoom room = list.get(i);
-                String filterableJidName = XmppStringUtils.parseLocalpart(room.getJid()).toLowerCase();
+                String filterableJidName = room.getJid().getLocalpart().toString().toLowerCase();
                 String filterableRoomName = room.getName().toLowerCase();
                 if (filterableJidName.contains(filterString) || filterableRoomName.contains(filterString)) {
                     newList.add(room);

@@ -32,7 +32,7 @@ public class AccountConfiguration extends GroupConfiguration {
 
     public AccountConfiguration(AccountJid account, UserJid user,
                                 GroupStateProvider groupStateProvider) {
-        super(account, user, groupStateProvider);
+        super(account, user.toString(), groupStateProvider);
         groups = new TreeMap<>();
     }
 

@@ -18,6 +18,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 
+import org.jxmpp.jid.Jid;
+
 /**
  * Information about discovery info request.
  *
@@ -29,8 +31,8 @@ class DiscoverInfoRequest extends BaseEntity {
 
     private final Capability capability;
 
-    public DiscoverInfoRequest(AccountJid account, UserJid user, String packetId, Capability capability) {
-        super(account, user);
+    public DiscoverInfoRequest(AccountJid account, Jid user, String packetId, Capability capability) {
+        super(account, UserJid.from(user));
         this.packetId = packetId;
         this.capability = capability;
     }

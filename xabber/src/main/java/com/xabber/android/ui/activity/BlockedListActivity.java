@@ -14,7 +14,9 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
@@ -23,7 +25,10 @@ import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
 
+import org.jxmpp.stringprep.XmppStringprepException;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class BlockedListActivity extends ManagedActivity implements BlockedListAdapter.OnBlockedContactClickListener,
         OnBlockedListChangedListener, BlockingManager.UnblockContactListener, Toolbar.OnMenuItemClickListener {
@@ -74,7 +79,16 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         if (savedInstanceState != null) {
             final ArrayList<String> checkedContacts = savedInstanceState.getStringArrayList(SAVED_CHECKED_CONTACTS);
             if (checkedContacts != null) {
-                adapter.setCheckedContacts(checkedContacts);
+                List<UserJid> checkedJids = new ArrayList<>();
+                for (String contactString : checkedContacts) {
+                    try {
+                        checkedJids.add(UserJid.from(contactString));
+                    } catch (XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
+                }
+
+                adapter.setCheckedContacts(checkedJids);
             }
         }
 
@@ -116,7 +130,13 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArrayList(SAVED_CHECKED_CONTACTS, adapter.getCheckedContacts());
+        ArrayList<UserJid> checkedContacts = adapter.getCheckedContacts();
+        ArrayList<String> checkedContactsStringList = new ArrayList<>();
+        for (UserJid jid : checkedContacts) {
+            checkedContactsStringList.add(jid.toString());
+        }
+
+        outState.putStringArrayList(SAVED_CHECKED_CONTACTS, checkedContactsStringList);
     }
 
     @Override
@@ -149,7 +169,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     private void updateToolbar() {
-        final ArrayList<String> checkedContacts = adapter.getCheckedContacts();
+        final ArrayList<UserJid> checkedContacts = adapter.getCheckedContacts();
 
         final int currentSize = checkedContacts.size();
 
@@ -175,7 +195,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    adapter.setCheckedContacts(new ArrayList<String>());
+                    adapter.setCheckedContacts(new ArrayList<UserJid>());
                     adapter.onChange();
                 }
             });

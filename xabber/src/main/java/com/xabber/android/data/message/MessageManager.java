@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.os.Environment;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -145,6 +146,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     /**
      * @return <code>null</code> if there is no such chat.
      */
+
+    @Nullable
     public AbstractChat getChat(AccountJid account, UserJid user) {
         return chats.get(account.toString(), user.toString());
     }
@@ -546,7 +549,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         final UserJid user = UserJid.from(stanza.getFrom());
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            if (chat.onPacket(contact, stanza)) {
+            if (chat.onPacket(user, stanza)) {
                 processed = true;
                 break;
             }
@@ -574,7 +577,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
 
             if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
-                createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(contact, stanza);
+                createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza);
                 if (!PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(user)) {
                     mucPrivateChatRequestProvider.add(new MucPrivateChatNotification(account, user), true);
                 }
@@ -587,7 +590,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
 
-            createChat(account, user).onPacket(contact, stanza);
+            createChat(account, user).onPacket(user, stanza);
         }
     }
 
@@ -629,7 +632,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         UserJid companion = UserJid.from(message.getFrom().asBareJid());
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            if (chat.onPacket(companion.getJid().asEntityBareJidIfPossible(), message)) {
+            if (chat.onPacket(companion, message)) {
                 processed = true;
                 break;
             }
@@ -644,7 +647,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (body == null) {
             return;
         }
-        createChat(account, companion).onPacket(companion.getJid().asEntityBareJidIfPossible(), message);
+        createChat(account, companion).onPacket(companion, message);
 
     }
     @Override

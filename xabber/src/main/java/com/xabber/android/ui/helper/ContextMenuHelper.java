@@ -95,7 +95,7 @@ public class ContextMenuHelper {
                 });
 
         menu.findItem(R.id.action_edit_conference).setIntent(
-                ConferenceAdd.createIntent(activity, account, user));
+                ConferenceAdd.createIntent(activity, account, user.getJid().asEntityBareJidIfPossible()));
 
         menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -111,7 +111,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        MUCManager.getInstance().joinRoom(account, user, true);
+                        MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
                         return true;
                     }
                 });
@@ -121,7 +121,7 @@ public class ContextMenuHelper {
 
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        MUCManager.getInstance().leaveRoom(account, user);
+                        MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
                         MessageManager.getInstance().closeChat(account, user);
                         NotificationManager.getInstance().removeMessageNotification(account, user);
                         adapter.onChange();
@@ -257,11 +257,11 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_close_chat).setVisible(false);
             menu.findItem(R.id.action_request_subscription).setVisible(false);
 
-            if (MUCManager.getInstance().inUse(account, user)) {
+            if (MUCManager.getInstance().inUse(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_edit_conference).setVisible(false);
             }
 
-            if (MUCManager.getInstance().isDisabled(account, user)) {
+            if (MUCManager.getInstance().isDisabled(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_leave_conference).setVisible(false);
             } else {
                 menu.findItem(R.id.action_join_conference).setVisible(false);

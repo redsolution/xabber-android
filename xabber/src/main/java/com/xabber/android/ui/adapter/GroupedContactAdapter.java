@@ -290,7 +290,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         final int level = AccountManager.getInstance().getColorLevel(account);
         view.setBackgroundDrawable(new ColorDrawable(accountGroupColors[level]));
 
-        viewHolder.name.setText(GroupManager.getInstance().getGroupName(account, configuration.getUser()));
+        viewHolder.name.setText(GroupManager.getInstance().getGroupName(account, configuration.getGroup()));
         viewHolder.smallRightText.setText(configuration.getOnline() + "/" + configuration.getTotal());
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
@@ -357,7 +357,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
 
         final String name = GroupManager.getInstance()
-                .getGroupName(configuration.getAccount(), configuration.getUser());
+                .getGroupName(configuration.getAccount(), configuration.getGroup());
 
 
         viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);
@@ -368,7 +368,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         viewHolder.groupOfflineIndicator.setVisibility(View.GONE);
         viewHolder.offlineShadow.setVisibility(View.GONE);
 
-        if (configuration.getUser().equals(GroupManager.ACTIVE_CHATS)) {
+        if (configuration.getGroup().equals(GroupManager.ACTIVE_CHATS)) {
             color = activeChatsColor;
             viewHolder.name.setText(name);
         } else {
@@ -399,10 +399,6 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
     /**
      * Gets or creates roster group in roster account.
-     *
-     * @param accountConfiguration
-     * @param name
-     * @return
      */
     protected GroupConfiguration getGroupConfiguration(AccountConfiguration accountConfiguration, String name) {
         GroupConfiguration groupConfiguration = accountConfiguration.getGroupConfiguration(name);
@@ -417,10 +413,6 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
     /**
      * Gets or creates roster group in tree map.
-     *
-     * @param groups
-     * @param name
-     * @return
      */
     protected GroupConfiguration getGroupConfiguration(Map<String, GroupConfiguration> groups, String name) {
         GroupConfiguration groupConfiguration = groups.get(name);
@@ -434,18 +426,9 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
     /**
      * Adds contact to specified group.
-     *
-     * @param abstractContact
-     * @param group
-     * @param online
-     * @param accounts
-     * @param groups
-     * @param contacts
-     * @param showAccounts
-     * @param showGroups
      */
     protected void addContact(AbstractContact abstractContact, String group, boolean online,
-        Map<String, AccountConfiguration> accounts, Map<String, GroupConfiguration> groups,
+        Map<AccountJid, AccountConfiguration> accounts, Map<String, GroupConfiguration> groups,
         List<AbstractContact> contacts, boolean showAccounts, boolean showGroups) {
         if (showAccounts) {
             final AccountJid account = abstractContact.getAccount();
@@ -486,19 +469,10 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
 
     /**
      * Adds contact to there groups.
-     *
-     * @param abstractContact
-     * @param online
-     * @param accounts
-     * @param groups
-     * @param contacts
-     * @param showAccounts
-     * @param showGroups
-     * @param showOffline
      * @return whether contact is visible.
      */
     protected boolean addContact(AbstractContact abstractContact,
-                                 boolean online, Map<String, AccountConfiguration> accounts,
+                                 boolean online, Map<AccountJid, AccountConfiguration> accounts,
                                  Map<String, GroupConfiguration> groups,
                                  List<AbstractContact> contacts, boolean showAccounts,
                                  boolean showGroups, boolean showOffline) {

@@ -1114,11 +1114,17 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * <li>Group by account is enabled.</li>
      * </ul>
      */
-    public String getSelectedAccount() {
+    public AccountJid getSelectedAccount() {
         if (SettingsManager.contactsShowAccounts()) {
             return null;
         }
-        String selected = SettingsManager.contactsSelectedAccount();
+        AccountJid selected;
+        try {
+            selected = AccountJid.from(SettingsManager.contactsSelectedAccount());
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return null;
+        }
         if (enabledAccounts.contains(selected)) {
             return selected;
         }

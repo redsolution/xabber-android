@@ -14,9 +14,9 @@
  */
 package com.xabber.android.ui.adapter;
 
-import java.util.Comparator;
-
 import com.xabber.android.data.roster.AbstractContact;
+
+import java.util.Comparator;
 
 public class ComparatorByName implements Comparator<AbstractContact> {
 
@@ -28,7 +28,7 @@ public class ComparatorByName implements Comparator<AbstractContact> {
         result = object1.getName().compareToIgnoreCase(object2.getName());
         if (result != 0)
             return result;
-        return object1.getAccount().compareToIgnoreCase(object2.getAccount());
+        return object1.getAccount().compareTo(object2.getAccount());
     }
 
 }

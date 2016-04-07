@@ -110,7 +110,7 @@ public class ContactViewer extends ManagedActivity implements
         }
 
         if (user != null && user.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
-            user = Jid.getBareAddress(AccountManager.getInstance().getAccount(account).getRealJid());
+            user = UserJid.from(AccountManager.getInstance().getAccount(account).getRealJid().asBareJid());
         }
 
         if (account == null || user == null) {
@@ -125,7 +125,7 @@ public class ContactViewer extends ManagedActivity implements
 
             Fragment fragment;
             if (MUCManager.getInstance().hasRoom(account, user)) {
-                fragment = ConferenceInfoFragment.newInstance(account, user);
+                fragment = ConferenceInfoFragment.newInstance(account, user.getJid().asEntityBareJidIfPossible());
             } else {
                 fragment = ContactVcardViewerFragment.newInstance(account, user);
             }
@@ -193,11 +193,11 @@ public class ContactViewer extends ManagedActivity implements
 
     private void updateName() {
         if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-            String vCardName = VCardManager.getInstance().getName(user);
+            String vCardName = VCardManager.getInstance().getName(user.getJid());
             if (!"".equals(vCardName)) {
                 collapsingToolbar.setTitle(vCardName);
             } else {
-                collapsingToolbar.setTitle(Jid.getResource(user));
+                collapsingToolbar.setTitle(user.getJid().getResourceOrNull().toString());
             }
 
         } else {
