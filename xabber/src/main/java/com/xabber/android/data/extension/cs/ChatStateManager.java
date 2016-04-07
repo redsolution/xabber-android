@@ -306,6 +306,10 @@ public class ChatStateManager implements OnDisconnectListener,
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
+        if (stanza.getFrom() == null) {
+            return;
+        }
+
         final Resourcepart resource = stanza.getFrom().getResourceOrNull();
         if (resource == null) {
             return;

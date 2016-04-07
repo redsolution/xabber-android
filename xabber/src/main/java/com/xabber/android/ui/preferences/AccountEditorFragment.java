@@ -146,10 +146,10 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         putValue(source, R.string.account_custom_key, connectionSettings.isCustomHostAndPort());
         putValue(source, R.string.account_host_key, connectionSettings.getHost());
         putValue(source, R.string.account_port_key, connectionSettings.getPort());
-        putValue(source, R.string.account_server_key, connectionSettings.getServerName());
-        putValue(source, R.string.account_username_key, connectionSettings.getUserName());
+        putValue(source, R.string.account_server_key, connectionSettings.getServerName().toString());
+        putValue(source, R.string.account_username_key, connectionSettings.getUserName().toString());
         putValue(source, R.string.account_password_key, connectionSettings.getPassword());
-        putValue(source, R.string.account_resource_key, connectionSettings.getResource());
+        putValue(source, R.string.account_resource_key, connectionSettings.getResource().toString());
         putValue(source, R.string.account_sasl_key, connectionSettings.isSaslEnabled());
         putValue(source, R.string.account_tls_mode_key, connectionSettings.getTlsMode().ordinal());
         putValue(source, R.string.account_compression_key, connectionSettings.useCompression());

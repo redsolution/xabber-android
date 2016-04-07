@@ -24,15 +24,11 @@ import com.xabber.android.data.entity.AccountJid;
 public interface GroupStateProvider {
 
     /**
-     * @param account
-     * @param group
      * @return Whether specified group in specified account is expanded.
      */
     boolean isExpanded(AccountJid account, String group);
 
     /**
-     * @param account
-     * @param group
      * @return Whether to show offline contacts for specified group in specified
      * account.
      */
@@ -41,9 +37,6 @@ public interface GroupStateProvider {
     /**
      * Sets whether group in specified account is expanded.
      *
-     * @param account
-     * @param group
-     * @param expanded
      */
     void setExpanded(AccountJid account, String group, boolean expanded);
 

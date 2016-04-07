@@ -35,7 +35,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.Group;
@@ -88,7 +87,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         NO_GROUP_LIST = Collections.unmodifiableCollection(groups);
     }
 
-    final ArrayList<BaseEntity> baseEntities = new ArrayList<>();
+    final ArrayList<Object> baseEntities = new ArrayList<>();
     /**
      * Layout inflater
      */
@@ -356,8 +355,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         final GroupConfiguration configuration = (GroupConfiguration) getItem(position);
         final int level = AccountManager.getInstance().getColorLevel(configuration.getAccount());
 
-        final String name = GroupManager.getInstance()
-                .getGroupName(configuration.getAccount(), configuration.getGroup());
+        final String name = GroupManager.getInstance().getGroupName(configuration.getAccount(), configuration.getGroup());
 
 
         viewHolder.indicator.setImageLevel(configuration.isExpanded() ? 1 : 0);

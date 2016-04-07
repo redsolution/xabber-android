@@ -37,7 +37,6 @@ import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -109,7 +108,7 @@ public class ContactViewer extends ManagedActivity implements
             user = getUser(getIntent());
         }
 
-        if (user != null && user.equalsIgnoreCase(GroupManager.IS_ACCOUNT)) {
+        if (user != null && user.getJid().asBareJid().equals(account.getFullJid().asBareJid())) {
             user = UserJid.from(AccountManager.getInstance().getAccount(account).getRealJid().asBareJid());
         }
 

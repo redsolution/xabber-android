@@ -56,7 +56,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
     /**
      * Account name used to store information that don't belong to any account.
      */
-    public static final String NO_ACCOUNT = "com.xabber.android.data.NO_ACCOUNT";
+    public static final AccountJid NO_ACCOUNT = null;
     private final static GroupManager instance;
 
     static {
@@ -70,7 +70,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
     private final NestedMap<GroupConfiguration> groupConfigurations;
 
     private GroupManager() {
-        groupConfigurations = new NestedMap<GroupConfiguration>();
+        groupConfigurations = new NestedMap<>();
     }
 
     public static GroupManager getInstance() {
@@ -79,7 +79,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     @Override
     public void onLoad() {
-        final NestedMap<GroupConfiguration> groupConfigurations = new NestedMap<GroupConfiguration>();
+        final NestedMap<GroupConfiguration> groupConfigurations = new NestedMap<>();
         Cursor cursor = GroupTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
@@ -119,20 +119,23 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * {@link #IS_ACCOUNT}, {@link #NO_ACCOUNT}.
      */
     public String getGroupName(AccountJid account, String group) {
-        if (GroupManager.NO_GROUP.equals(group))
+        if (GroupManager.NO_GROUP.equals(group)) {
             return Application.getInstance().getString(R.string.group_none);
-        else if (GroupManager.IS_ROOM.equals(group))
+        } else if (GroupManager.IS_ROOM.equals(group)) {
             return Application.getInstance().getString(R.string.group_room);
-        else if (GroupManager.ACTIVE_CHATS.equals(group))
-            return Application.getInstance().getString(
-                    R.string.group_active_chat);
-        else if (GroupManager.IS_ACCOUNT.equals(group))
+        } else if (GroupManager.ACTIVE_CHATS.equals(group)) {
+            return Application.getInstance().getString(R.string.group_active_chat);
+        } else if (GroupManager.IS_ACCOUNT.equals(group)) {
             return AccountManager.getInstance().getVerboseName(account);
+        }
         return group;
     }
 
     @Override
     public boolean isExpanded(AccountJid account, String group) {
+        if (account == null) {
+            return true;
+        }
         GroupConfiguration configuration = groupConfigurations.get(account.toString(), group);
         if (configuration == null) {
             return true;
@@ -142,6 +145,9 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     @Override
     public ShowOfflineMode getShowOfflineMode(AccountJid account, String group) {
+        if (account == null) {
+            return ShowOfflineMode.normal;
+        }
         GroupConfiguration configuration = groupConfigurations.get(account.toString(), group);
         if (configuration == null) {
             return ShowOfflineMode.normal;
@@ -178,7 +184,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
      * Reset all show offline modes.
      */
     public void resetShowOfflineModes() {
-        for (Entry<GroupConfiguration> entry : groupConfigurations)
+        for (Entry<GroupConfiguration> entry : groupConfigurations) {
             if (entry.getValue().getShowOfflineMode() != ShowOfflineMode.normal) {
                 try {
                     setShowOfflineMode(AccountJid.from(entry.getFirst()), entry.getSecond(),
@@ -187,6 +193,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
                     LogManager.exception(this, e);
                 }
             }
+        }
     }
 
     private void requestToWriteGroup(final AccountJid account, final String group,

@@ -27,6 +27,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.message.MessageManager;
@@ -204,9 +205,13 @@ public class SettingsManager implements OnInitializedListener,
         return getString(R.string.contacts_selected_account_key, "");
     }
 
-    public static void setContactsSelectedAccount(String value) {
-        if (value == null)
+    public static void setContactsSelectedAccount(AccountJid account) {
+        String value;
+        if (account == null) {
             value = "";
+        } else {
+            value = account.toString();
+        }
         setString(R.string.contacts_selected_account_key, value);
     }
 

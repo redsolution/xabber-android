@@ -28,7 +28,7 @@ public class BaseEntity extends AccountRelated implements
 
     protected final @NonNull UserJid user;
 
-    public BaseEntity(AccountJid account, @NonNull UserJid user) {
+    public BaseEntity(@NonNull AccountJid account, @NonNull UserJid user) {
         super(account);
         this.user = user;
     }

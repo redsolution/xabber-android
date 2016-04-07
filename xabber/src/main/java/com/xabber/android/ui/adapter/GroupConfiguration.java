@@ -87,8 +87,6 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
 
     /**
      * Adds new contact.
-     *
-     * @param abstractContact
      */
     public void addAbstractContact(AbstractContact abstractContact) {
         abstractContacts.add(abstractContact);

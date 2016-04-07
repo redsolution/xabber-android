@@ -400,7 +400,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
 
     private ArrayList<AbstractContact> getSearchResults(Collection<RosterContact> rosterContacts,
                                                         Comparator<AbstractContact> comparator,
-                                                        Map<String, Map<String, AbstractChat>> abstractChats) {
+                                                        Map<AccountJid, Map<UserJid, AbstractChat>> abstractChats) {
         final ArrayList<AbstractContact> baseEntities = new ArrayList<>();
 
         // Build structure.
@@ -409,7 +409,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                 continue;
             }
             final AccountJid account = rosterContact.getAccount();
-            final Map<String, AbstractChat> users = abstractChats.get(account);
+            final Map<UserJid, AbstractChat> users = abstractChats.get(account);
             if (users != null) {
                 users.remove(rosterContact.getUser());
             }
@@ -417,7 +417,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                 baseEntities.add(rosterContact);
             }
         }
-        for (Map<String, AbstractChat> users : abstractChats.values()) {
+        for (Map<UserJid, AbstractChat> users : abstractChats.values()) {
             for (AbstractChat abstractChat : users.values()) {
                 final AbstractContact abstractContact;
                 if (abstractChat instanceof RoomChat) {

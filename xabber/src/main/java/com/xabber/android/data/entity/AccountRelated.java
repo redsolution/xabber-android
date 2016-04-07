@@ -26,7 +26,6 @@ public abstract class AccountRelated {
     protected final @NonNull AccountJid account;
 
     public AccountRelated(@NonNull AccountJid account) {
-        super();
         this.account = account;
     }
 
@@ -52,7 +51,9 @@ public abstract class AccountRelated {
             return false;
         }
         AccountRelated other = (AccountRelated) obj;
-        return account.equals(other.account);
+        if (!account.equals(other.account))
+            return false;
+        return true;
     }
 
 }

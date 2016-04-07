@@ -15,7 +15,6 @@
 package com.xabber.android.ui.adapter;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.GroupStateProvider;
 
 import java.util.ArrayList;
@@ -30,16 +29,15 @@ public class AccountConfiguration extends GroupConfiguration {
 
     private final TreeMap<String, GroupConfiguration> groups;
 
-    public AccountConfiguration(AccountJid account, UserJid user,
+    public AccountConfiguration(AccountJid account, String group,
                                 GroupStateProvider groupStateProvider) {
-        super(account, user.toString(), groupStateProvider);
+        super(account, group, groupStateProvider);
         groups = new TreeMap<>();
     }
 
     /**
      * Gets group by name.
      *
-     * @param group
      * @return <code>null</code> will be returns if there is no such group.
      */
     public GroupConfiguration getGroupConfiguration(String group) {
@@ -48,8 +46,6 @@ public class AccountConfiguration extends GroupConfiguration {
 
     /**
      * Adds new group.
-     *
-     * @param groupConfiguration
      */
     public void addGroupConfiguration(GroupConfiguration groupConfiguration) {
         groups.put(groupConfiguration.getGroup(), groupConfiguration);
@@ -57,12 +53,9 @@ public class AccountConfiguration extends GroupConfiguration {
 
     /**
      * Returns sorted list of groups.
-     *
-     * @return
      */
     public Collection<GroupConfiguration> getSortedGroupConfigurations() {
-        ArrayList<GroupConfiguration> groups = new ArrayList<GroupConfiguration>(
-                this.groups.values());
+        ArrayList<GroupConfiguration> groups = new ArrayList<>(this.groups.values());
         Collections.sort(groups);
         return Collections.unmodifiableCollection(groups);
     }

@@ -400,8 +400,9 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         userCapabilities.clear(account.toString());
         Iterator<Capability> iterator = clientInformations.keySet().iterator();
         while (iterator.hasNext())
-            if (account.equals(iterator.next().getAccount()))
+            if (account.equals(iterator.next().getAccount())) {
                 iterator.remove();
+            }
     }
 
     @Override

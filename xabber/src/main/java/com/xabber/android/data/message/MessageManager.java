@@ -529,7 +529,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
-        if (!(connection instanceof AccountItem)) {
+        if (stanza.getFrom() == null) {
             return;
         }
         AccountJid account = ((AccountItem) connection).getAccount();
