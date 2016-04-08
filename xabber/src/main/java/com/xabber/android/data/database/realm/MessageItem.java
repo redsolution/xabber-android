@@ -202,7 +202,11 @@ public class MessageItem extends RealmObject {
     }
 
     public void setResource(Resourcepart resource) {
-        this.resource = resource.toString();
+        if (resource != null) {
+            this.resource = resource.toString();
+        } else {
+            this.resource = Resourcepart.EMPTY.toString();
+        }
     }
 
     public String getText() {
