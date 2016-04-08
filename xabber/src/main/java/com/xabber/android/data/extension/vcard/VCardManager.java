@@ -51,6 +51,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -320,14 +321,38 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager
                 = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(connectionThread.getXMPPConnection());
 
+
+        LogManager.i(this, "request vCard for " + srcUser);
+
         final Thread thread = new Thread("Get vCard user " + srcUser + " for account " + account) {
             @Override
             public void run() {
                 VCard vCard = null;
 
+                final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
+
+                if (entityBareJid != null) {
+                    vCard = getvCard(entityBareJid);
+                }
+
+                final VCard finalVCard = vCard;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalVCard == null) {
+                            onVCardFailed(account, srcUser);
+                        } else {
+                            onVCardReceived(account, srcUser, finalVCard);
+                        }
+                    }
+                });
+            }
+
+            public VCard getvCard(EntityBareJid entityBareJid) {
+                VCard vCard = null;
                 vCardRequests.add(srcUser);
                 try {
-                    vCard = vCardManager.loadVCard(srcUser.asEntityBareJidIfPossible());
+                    vCard = vCardManager.loadVCard(entityBareJid);
                 } catch (SmackException.NoResponseException | SmackException.NotConnectedException e) {
                     LogManager.exception(this, e);
                     LogManager.w(this, "Error getting vCard: " + e.getMessage());
@@ -348,18 +373,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                     LogManager.exception(this, e);
                 }
                 vCardRequests.remove(srcUser);
-
-                final VCard finalVCard = vCard;
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalVCard == null) {
-                            onVCardFailed(account, srcUser);
-                        } else {
-                            onVCardReceived(account, srcUser, finalVCard);
-                        }
-                    }
-                });
+                return vCard;
             }
         };
         thread.start();
