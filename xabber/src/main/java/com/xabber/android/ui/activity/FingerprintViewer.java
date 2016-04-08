@@ -175,7 +175,7 @@ public class FingerprintViewer extends ManagedActivity implements
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        BareJid thisBareAddress = user.getJid().asBareJid();
+        BareJid thisBareAddress = user.getBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
                 update();

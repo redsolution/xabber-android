@@ -84,8 +84,12 @@ public class RoomChat extends AbstractChat {
      */
     private MultiUserChat multiUserChat;
 
-    RoomChat(AccountJid account, EntityBareJid user, Resourcepart nickname, String password) {
-        super(account, UserJid.from(user), false);
+    public static RoomChat create(AccountJid account, EntityBareJid user, Resourcepart nickname, String password) throws UserJid.UserJidCreateException {
+        return new RoomChat(account, UserJid.from(user), nickname, password);
+    }
+
+    private RoomChat(AccountJid account, UserJid user, Resourcepart nickname, String password) {
+        super(account, user, false);
         this.nickname = nickname;
         this.password = password;
         requested = false;

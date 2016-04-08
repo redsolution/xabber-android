@@ -249,7 +249,11 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         if (vCard.getFrom() == null) { // account it self
             AccountManager.getInstance().onAccountChanged(account);
         } else {
-            RosterManager.onContactChanged(account, UserJid.from(bareAddress));
+            try {
+                RosterManager.onContactChanged(account, UserJid.from(bareAddress));
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+            }
         }
     }
 

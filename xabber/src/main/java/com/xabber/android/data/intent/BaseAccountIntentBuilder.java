@@ -52,11 +52,14 @@ class BaseAccountIntentBuilder<T extends BaseAccountIntentBuilder<?>> extends
     @Nullable
     public static AccountJid getAccount(Intent intent) {
         try {
-            return AccountJid.from(getSegment(intent, 0));
+            String segment = getSegment(intent, 0);
+            if (segment != null) {
+                return AccountJid.from(segment);
+            }
         } catch (XmppStringprepException e) {
             LogManager.exception(LOG_TAG, e);
-            return null;
         }
+        return null;
     }
 
 }

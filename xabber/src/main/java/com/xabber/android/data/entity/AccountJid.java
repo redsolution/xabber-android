@@ -18,7 +18,7 @@ public class AccountJid implements Comparable<AccountJid>, Serializable {
         return new AccountJid(JidCreate.fullFrom(localpart, domainBareJid, resource));
     }
 
-    public static AccountJid from(String string) throws XmppStringprepException {
+    public static AccountJid from(@NonNull String string) throws XmppStringprepException {
         return new AccountJid(JidCreate.fullFrom(string));
     }
 

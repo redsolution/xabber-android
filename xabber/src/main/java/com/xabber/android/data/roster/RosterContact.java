@@ -20,8 +20,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 
-import org.jivesoftware.smack.roster.RosterEntry;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,10 +65,6 @@ public class RosterContact extends AbstractContact {
      * Warning: not implemented yet.
      */
     private Long viewId;
-
-    public RosterContact(AccountJid account, RosterEntry rosterEntry) {
-        this(account, UserJid.from(rosterEntry.getJid()), rosterEntry.getName());
-    }
 
     public RosterContact(AccountJid account, UserJid user, String name) {
         super(account, user);

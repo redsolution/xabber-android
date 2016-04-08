@@ -138,7 +138,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         // Backward compatibility.
         try {
             return UserJid.from(intent.getStringExtra("com.xabber.android.data.user"));
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
         }

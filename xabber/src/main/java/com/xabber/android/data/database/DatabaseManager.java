@@ -30,6 +30,7 @@ import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.database.sqlite.AbstractAccountTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
 import com.xabber.android.data.database.sqlite.MessageTable;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.mam.SyncInfo;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -163,7 +164,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                             try {
                                 MessageItem messageItem = MessageTable.createMessageItem(cursor);
                                 realm.copyToRealm(messageItem);
-                            } catch (XmppStringprepException e) {
+                            } catch (XmppStringprepException | UserJid.UserJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
 

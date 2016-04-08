@@ -17,8 +17,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.activity.ChatViewer;
 import com.xabber.android.ui.activity.ConferenceAdd;
@@ -29,7 +31,6 @@ import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.muc.HostedRoom;
 import org.jxmpp.jid.DomainBareJid;
-import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -147,8 +148,12 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        startActivity(ConferenceAdd.createIntent(getActivity(), account,
-                hostedConferencesAdapter.getItem(position).getJid()));
+        try {
+            startActivity(ConferenceAdd.createIntent(getActivity(), account,
+                    UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override
@@ -259,9 +264,13 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             return;
         }
 
-        EntityBareJid roomJid = JidCreate.entityBareFrom(room, server);
-
-        startActivity(ConferenceAdd.createIntent(getActivity(), account, roomJid));
+        UserJid roomJid = null;
+        try {
+            roomJid = UserJid.from(JidCreate.entityBareFrom(room, server));
+            startActivity(ConferenceAdd.createIntent(getActivity(), account, roomJid));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     private void onRequestHostedRoomsClick() {

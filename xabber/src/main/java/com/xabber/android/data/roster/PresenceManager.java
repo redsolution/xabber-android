@@ -43,6 +43,7 @@ import com.xabber.xmpp.vcardupdate.VCardUpdate;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -176,9 +177,13 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      */
     @Nullable
     private Occupant getOccupant(AccountJid account, UserJid user) {
-        if (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+        EntityBareJid userEntityBareJid = user.getJid().asEntityBareJidIfPossible();
+        if (userEntityBareJid == null) {
+            return null;
+        }
+        if (MUCManager.getInstance().hasRoom(account, userEntityBareJid)) {
             final Collection<Occupant> occupants = MUCManager.getInstance().getOccupants(account,
-                    user.getJid().asEntityBareJidIfPossible());
+                    userEntityBareJid);
             for (Occupant occupant : occupants) {
                 if (occupant.getNickname().equals(user.getJid().getResourceOrNull())) {
                     return occupant;
@@ -203,7 +208,13 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public void onPresenceChanged(AccountJid account, Presence presence) {
-        UserJid from = UserJid.from(presence.getFrom());
+        UserJid from;
+        try {
+            from = UserJid.from(presence.getFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            return;
+        }
 
         CapabilitiesManager.getInstance().onPresenceChanged(account, presence);
         for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
@@ -264,17 +275,24 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
         Presence presence = (Presence) stanza;
 
-        UserJid from = UserJid.from(stanza.getFrom());
+        UserJid from;
+        try {
+            from = UserJid.from(stanza.getFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            return;
+        }
 
         if (presence.getType() == Presence.Type.subscribe) {
             AccountJid account = ((AccountItem) connection).getAccount();
 
             // Subscription request
             HashSet<BareJid> set = requestedSubscriptions.get(account);
-            if (set != null && set.contains(from)) {
+            if (set != null && set.contains(from.getBareJid())) {
                 try {
                     acceptSubscription(account, from);
                 } catch (NetworkException e) {
+                    LogManager.exception(this, e);
                 }
                 subscriptionRequestProvider.remove(account, from);
             } else {

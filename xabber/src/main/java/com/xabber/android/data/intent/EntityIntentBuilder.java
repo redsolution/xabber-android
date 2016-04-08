@@ -21,8 +21,6 @@ import android.support.annotation.Nullable;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.UserJid;
 
-import org.jxmpp.stringprep.XmppStringprepException;
-
 /**
  * Intent builder with account and user fields.
  *
@@ -64,7 +62,7 @@ public class EntityIntentBuilder extends
 
         try {
             return UserJid.from(segment);
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
         }

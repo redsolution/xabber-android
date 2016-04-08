@@ -891,7 +891,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_authorization_settings:
-                startActivity(ConferenceAdd.createIntent(getActivity(), account, user.getJid().asEntityBareJidIfPossible()));
+                startActivity(ConferenceAdd.createIntent(getActivity(), account, user.getBareUserJid()));
                 return true;
 
             case R.id.action_close_chat:
@@ -921,7 +921,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_invite_to_chat:
-                startActivity(ContactList.createRoomInviteIntent(getActivity(), account, user.getJid().asEntityBareJidIfPossible()));
+                startActivity(ContactList.createRoomInviteIntent(getActivity(), account, user.getBareUserJid()));
                 return true;
 
             case R.id.action_leave_conference:
@@ -929,7 +929,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_list_of_occupants:
-                startActivity(OccupantList.createIntent(getActivity(), account, user.getJid().asEntityBareJidIfPossible()));
+                startActivity(OccupantList.createIntent(getActivity(), account, user));
                 return true;
 
             /* message popup menu */
@@ -965,12 +965,18 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 return true;
 
             case R.id.action_message_open_muc_private_chat:
-                UserJid occupantFullJid = UserJid.from(
-                        JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
-                                clickedMessageItem.getResource()));
+                UserJid occupantFullJid = null;
+                try {
+                    occupantFullJid = UserJid.from(
+                            JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
+                                    clickedMessageItem.getResource()));
+                    MessageManager.getInstance().openChat(account, occupantFullJid);
+                    startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, occupantFullJid));
 
-                MessageManager.getInstance().openChat(account, occupantFullJid);
-                startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+                } catch (UserJid.UserJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
+
                 return true;
 
             default:

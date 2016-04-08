@@ -178,7 +178,7 @@ public class MessageItem extends RealmObject {
     public UserJid getUser() {
         try {
             return UserJid.from(user);
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }

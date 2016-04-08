@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
@@ -251,6 +252,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
                     continue;
                 }
                 hasContacts = true;
+                LogManager.v(this, "rosterContact.getStatusMode() " + rosterContact);
                 final boolean online = rosterContact.getStatusMode().isOnline();
                 final AccountJid account = rosterContact.getAccount();
                 final Map<UserJid, AbstractChat> users = abstractChats.get(account);

@@ -95,7 +95,7 @@ public abstract class AbstractChat extends BaseEntity {
     private RealmResults<SyncInfo> syncInfo;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
-        super(account, isPrivateMucChat ? user : UserJid.from(user.getJid().asBareJid()));
+        super(account, isPrivateMucChat ? user : user.getBareUserJid());
         LogManager.i("AbstractChat", "AbstractChat user: " + user);
         threadId = StringUtils.randomString(12);
         active = false;

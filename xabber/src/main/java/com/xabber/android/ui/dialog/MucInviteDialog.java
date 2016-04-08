@@ -14,8 +14,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ConferenceAdd;
 
-import org.jxmpp.jid.BareJid;
-
 
 public class MucInviteDialog extends BaseContactDialog {
 
@@ -54,7 +52,7 @@ public class MucInviteDialog extends BaseContactDialog {
 
     @Override
     protected void onPositiveButtonClick() {
-        startActivity(ConferenceAdd.createIntent(getActivity(), getAccount(), getContact().getJid().asEntityBareJidIfPossible()));
+        startActivity(ConferenceAdd.createIntent(getActivity(), getAccount(), getContact().getBareUserJid()));
     }
 
     @Override
@@ -70,13 +68,13 @@ public class MucInviteDialog extends BaseContactDialog {
     @Override
     protected void setUpContactTitleView(View view) {
         roomInvite = MUCManager.getInstance().getInvite(getAccount(), getContact().getJid().asEntityBareJidIfPossible());
-        final BareJid inviter = roomInvite.getInviter().getJid().asBareJid();
+        final UserJid inviter = roomInvite.getInviter().getBareUserJid();
 
-        final AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), UserJid.from(inviter));
+        final AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), inviter);
 
         ((ImageView)view.findViewById(R.id.avatar)).setImageDrawable(bestContact.getAvatar());
         ((TextView)view.findViewById(R.id.name)).setText(bestContact.getName());
-        ((TextView)view.findViewById(R.id.status_text)).setText(inviter);
+        ((TextView)view.findViewById(R.id.status_text)).setText(inviter.toString());
     }
 
 }

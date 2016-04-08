@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
@@ -165,8 +166,12 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        startActivity(ConferenceAdd.createIntent(this, account,
-                hostedConferencesAdapter.getItem(position).getJid()));
+        try {
+            startActivity(ConferenceAdd.createIntent(this, account,
+                    UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override

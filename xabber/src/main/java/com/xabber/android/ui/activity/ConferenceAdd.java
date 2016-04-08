@@ -40,8 +40,8 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
     private AccountJid account;
     private EntityBareJid room;
 
-    public static Intent createIntent(Context context, AccountJid account, EntityBareJid room) {
-        return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(UserJid.from(room)).build();
+    public static Intent createIntent(Context context, AccountJid account, UserJid room) {
+        return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(room).build();
     }
 
     private static AccountJid getAccount(Intent intent) {

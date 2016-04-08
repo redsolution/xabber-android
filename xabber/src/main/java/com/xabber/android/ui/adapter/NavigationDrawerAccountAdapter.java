@@ -18,8 +18,6 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
-import org.jxmpp.stringprep.XmppStringprepException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +48,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
 
         try {
             accountName.setText(RosterManager.getInstance().getBestContact(account, UserJid.from(accountManager.getVerboseName(account))).getName());
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }
         accountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));

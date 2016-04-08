@@ -139,8 +139,6 @@ public class ChatStateManager implements OnDisconnectListener,
     /**
      * Returns best information chat state for specified bare address.
      *
-     * @param account
-     * @param bareAddress
      * @return <code>null</code> if there is no available information.
      */
     public ChatState getChatState(AccountJid account, UserJid bareAddress) {
@@ -159,10 +157,6 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Whether sending chat notification for specified chat is supported.
-     *
-     * @param chat
-     * @param outgoingMessage
-     * @return
      */
     private boolean isSupported(AbstractChat chat, boolean outgoingMessage) {
         if (chat instanceof RoomChat)
@@ -172,7 +166,7 @@ public class ChatStateManager implements OnDisconnectListener,
         Resourcepart resource = to.getResourceOrNull();
         Map<Resourcepart, Boolean> map = supports.get(chat.getAccount().toString(), bareAddress.toString());
         if (map != null) {
-            if (!resource.equals(Resourcepart.EMPTY)) {
+            if (resource!= null && !resource.equals(Resourcepart.EMPTY)) {
                 Boolean value = map.get(resource);
                 if (value != null)
                     return value;
@@ -189,13 +183,11 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Update outgoing message before sending.
-     *
-     * @param chat
-     * @param message
      */
     public void updateOutgoingMessage(AbstractChat chat, Message message) {
-        if (!isSupported(chat, true))
+        if (!isSupported(chat, true)) {
             return;
+        }
         message.addExtension(new ChatStateExtension(ChatState.active));
         sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
         cancelPauseIntent(chat.getAccount(), chat.getUser());
@@ -203,19 +195,17 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Update chat state information and send message if necessary.
-     *
-     * @param account
-     * @param user
-     * @param chatState
      */
     private void updateChatState(AccountJid account, UserJid user,
                                  ChatState chatState) {
         if (!SettingsManager.chatsStateNotification()
-                || sent.get(account.toString(), user.toString()) == chatState)
+                || sent.get(account.toString(), user.toString()) == chatState) {
             return;
+        }
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-        if (chat == null || !isSupported(chat, false))
+        if (chat == null || !isSupported(chat, false)) {
             return;
+        }
         sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
         Message message = new Message();
         message.setType(chat.getType());
@@ -230,9 +220,6 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Cancel pause intent from the schedule.
-     *
-     * @param account
-     * @param user
      */
     private void cancelPauseIntent(AccountJid account, UserJid user) {
         PendingIntent pendingIntent = pauseIntents.remove(account.toString(), user.toString());
@@ -242,9 +229,6 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Must be call each time user change text message.
-     *
-     * @param account
-     * @param user
      */
     public void onComposing(AccountJid account, UserJid user, CharSequence text) {
         cancelPauseIntent(account, user);
@@ -316,39 +300,44 @@ public class ChatStateManager implements OnDisconnectListener,
         }
 
         final AccountJid account = ((AccountItem) connection).getAccount();
-        final BareJid bareJid = stanza.getFrom().asBareJid();
+        final UserJid bareUserJid;
+        try {
+            bareUserJid = UserJid.from(stanza.getFrom()).getBareUserJid();
+        } catch (UserJid.UserJidCreateException e) {
+            return;
+        }
 
         if (stanza instanceof Presence) {
             Presence presence = (Presence) stanza;
             if (presence.getType() != Type.unavailable) {
                 return;
             }
-            chatStates.remove(account.toString(), bareJid.toString(), resource);
-            removeCallback(account, bareJid, resource);
-            supports.remove(account.toString(), bareJid.toString(), resource);
+            chatStates.remove(account.toString(), bareUserJid.toString(), resource);
+            removeCallback(account, bareUserJid.getBareJid(), resource);
+            supports.remove(account.toString(), bareUserJid.toString(), resource);
         } else if (stanza instanceof Message) {
             boolean support = false;
             for (ExtensionElement extension : stanza.getExtensions())
                 if (extension instanceof ChatStateExtension) {
-                    removeCallback(account, bareJid, resource);
+                    removeCallback(account, bareUserJid.getBareJid(), resource);
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
-                    chatStates.put(account.toString(), bareJid.toString(), resource, chatState);
+                    chatStates.put(account.toString(), bareUserJid.toString(), resource, chatState);
                     if (chatState != ChatState.active) {
                         Runnable runnable = new Runnable() {
                             @Override
                             public void run() {
-                                if (this != stateCleaners.get(account.toString(), bareJid.toString(), resource)) {
+                                if (this != stateCleaners.get(account.toString(), bareUserJid.toString(), resource)) {
                                     return;
                                 }
-                                chatStates.remove(account.toString(), bareJid.toString(), resource);
-                                removeCallback(account, bareJid, resource);
-                                RosterManager.onContactChanged(account, UserJid.from(bareJid));
+                                chatStates.remove(account.toString(), bareUserJid.toString(), resource);
+                                removeCallback(account, bareUserJid.getBareJid(), resource);
+                                RosterManager.onContactChanged(account, bareUserJid);
                             }
                         };
                         handler.postDelayed(runnable, REMOVE_STATE_DELAY);
-                        stateCleaners.put(account.toString(), bareJid.toString(), resource, runnable);
+                        stateCleaners.put(account.toString(), bareUserJid.toString(), resource, runnable);
                     }
-                    RosterManager.onContactChanged(account, UserJid.from(bareJid));
+                    RosterManager.onContactChanged(account, bareUserJid);
                     support = true;
                     break;
                 }
@@ -358,18 +347,19 @@ public class ChatStateManager implements OnDisconnectListener,
                 return;
             }
             if (support) {
-                supports.put(account.toString(), bareJid.toString(), resource, true);
-            } else if (supports.get(account.toString(), bareJid.toString(), resource) == null) {
+                supports.put(account.toString(), bareUserJid.toString(), resource, true);
+            } else if (supports.get(account.toString(), bareUserJid.toString(), resource) == null) {
                 // Disable only if there no information about support.
-                supports.put(account.toString(), bareJid.toString(), resource, false);
+                supports.put(account.toString(), bareUserJid.toString(), resource, false);
             }
         }
     }
 
     @Override
     public void onClose() {
-        for (PendingIntent pendingIntent : pauseIntents.values())
+        for (PendingIntent pendingIntent : pauseIntents.values()) {
             alarmManager.cancel(pendingIntent);
+        }
         pauseIntents.clear();
     }
 

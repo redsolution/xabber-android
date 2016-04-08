@@ -77,10 +77,6 @@ import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.uri.XMPPUri;
 
-import org.jxmpp.jid.BareJid;
-import org.jxmpp.jid.EntityBareJid;
-import org.jxmpp.stringprep.XmppStringprepException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -138,9 +134,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
         return new Intent(context, ContactList.class);
     }
 
-    public static Intent createRoomInviteIntent(Context context, AccountJid account, EntityBareJid room) {
+    public static Intent createRoomInviteIntent(Context context, AccountJid account, UserJid room) {
         Intent intent = new EntityIntentBuilder(context, ContactList.class)
-                .setAccount(account).setUser(UserJid.from(room)).build();
+                .setAccount(account).setUser(room).build();
         intent.setAction(ACTION_ROOM_INVITE);
         return intent;
     }
@@ -244,7 +240,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
      * @param text can be <code>null</code>.
      */
     private void openChat(UserJid user, String text) {
-        BareJid bareAddress = user.getJid().asBareJid();
+        UserJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : MessageManager.getInstance().getChats()) {
             if (check.isActive() && check.getUser().equals(bareAddress)) {
@@ -270,10 +266,10 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             return;
         }
         if (accounts.size() == 1) {
-            openChat(new BaseEntity(accounts.iterator().next(), UserJid.from(bareAddress)), text);
+            openChat(new BaseEntity(accounts.iterator().next(), bareAddress), text);
             return;
         }
-        AccountChooseDialogFragment.newInstance(UserJid.from(bareAddress), text)
+        AccountChooseDialogFragment.newInstance(bareAddress, text)
                 .show(getFragmentManager(), "OPEN_WITH_ACCOUNT");
     }
 
@@ -331,8 +327,8 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                             UserJid user = null;
                             try {
                                 user = UserJid.from(xmppUri.getPath());
-                            } catch (XmppStringprepException e) {
-                                e.printStackTrace();
+                            } catch (UserJid.UserJidCreateException e) {
+                                LogManager.exception(this, e);
                             }
 
                             if (user != null) {
@@ -351,7 +347,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                             try {
                                 UserJid user = UserJid.from(path.substring(1));
                                 openChat(user, null);
-                            } catch (XmppStringprepException e) {
+                            } catch (UserJid.UserJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
                         }

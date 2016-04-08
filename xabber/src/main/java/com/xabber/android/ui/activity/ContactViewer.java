@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -108,8 +109,12 @@ public class ContactViewer extends ManagedActivity implements
             user = getUser(getIntent());
         }
 
-        if (user != null && user.getJid().asBareJid().equals(account.getFullJid().asBareJid())) {
-            user = UserJid.from(AccountManager.getInstance().getAccount(account).getRealJid().asBareJid());
+        if (user != null && user.getBareJid().equals(account.getFullJid().asBareJid())) {
+            try {
+                user = UserJid.from(AccountManager.getInstance().getAccount(account).getRealJid().asBareJid());
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+            }
         }
 
         if (account == null || user == null) {

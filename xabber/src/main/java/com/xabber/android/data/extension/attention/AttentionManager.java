@@ -159,18 +159,21 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         }
         final AccountJid account = ((AccountItem) connection).getAccount();
 
-        org.jxmpp.jid.Jid from = stanza.getFrom();
-
-        if (from == null) {
+        UserJid from;
+        try {
+            from = UserJid.from(stanza.getFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            e.printStackTrace();
             return;
         }
+
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
-                MessageManager.getInstance().openChat(account, UserJid.from(from));
+                MessageManager.getInstance().openChat(account, from);
                 MessageManager.getInstance()
-                        .getOrCreateChat(account, UserJid.from(from))
+                        .getOrCreateChat(account, from)
                         .newAction(null, null, ChatAction.attention_requested);
-                attentionRequestProvider.add(new AttentionRequest(account, UserJid.from(from)), true);
+                attentionRequestProvider.add(new AttentionRequest(account, from), true);
             }
         }
     }

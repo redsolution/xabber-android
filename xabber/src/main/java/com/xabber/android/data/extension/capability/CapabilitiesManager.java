@@ -45,8 +45,6 @@ import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.impl.JidCreate;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -219,7 +217,11 @@ public class CapabilitiesManager implements OnAuthorizedListener,
         } catch (NetworkException e) {
             return;
         }
-        requests.add(new DiscoverInfoRequest(account, user, packet.getStanzaId(), capability));
+        try {
+            requests.add(new DiscoverInfoRequest(account, UserJid.from(user), packet.getStanzaId(), capability));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     private boolean isValid(DiscoverInfo discoverInfo) {
@@ -520,8 +522,8 @@ public class CapabilitiesManager implements OnAuthorizedListener,
                 if (capability.equals(entry.getValue())) {
                     try {
                         entities.add(new BaseEntity(account,
-                                UserJid.from(JidCreate.bareFrom(entry.getSecond()))));
-                    } catch (XmppStringprepException e) {
+                                UserJid.from(entry.getSecond()).getBareUserJid()));
+                    } catch (UserJid.UserJidCreateException e) {
                         LogManager.exception(this, e);
                     }
                 }

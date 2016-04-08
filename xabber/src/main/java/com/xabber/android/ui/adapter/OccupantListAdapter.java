@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -97,9 +98,14 @@ public class OccupantListAdapter extends BaseAdapter implements
             @Override
             public void onClick(View v) {
                 Intent intent;
-                intent = ContactViewer.createIntent(activity, account,
-                        UserJid.from(JidCreate.domainFullFrom(room.asDomainBareJid(), occupant.getNickname())));
-                activity.startActivity(intent);
+                try {
+                    intent = ContactViewer.createIntent(activity, account,
+                            UserJid.from(JidCreate.domainFullFrom(room.asDomainBareJid(), occupant.getNickname())));
+                    activity.startActivity(intent);
+                } catch (UserJid.UserJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
+
             }
         });
 
@@ -114,8 +120,12 @@ public class OccupantListAdapter extends BaseAdapter implements
         if (MUCManager.getInstance().getNickname(account, room).equals(occupant.getNickname())) {
             avatarView.setImageDrawable(AvatarManager.getInstance() .getAccountAvatar(account));
         } else {
-            avatarView.setImageDrawable(AvatarManager.getInstance()
-                    .getUserAvatarForContactList(UserJid.from(occupant.getJid())));
+            try {
+                avatarView.setImageDrawable(AvatarManager.getInstance()
+                        .getUserAvatarForContactList(UserJid.from(occupant.getJid())));
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+            }
         }
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
         nameView.setText(occupant.getNickname());

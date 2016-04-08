@@ -25,8 +25,6 @@ import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
 
-import org.jxmpp.stringprep.XmppStringprepException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +81,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
                 for (String contactString : checkedContacts) {
                     try {
                         checkedJids.add(UserJid.from(contactString));
-                    } catch (XmppStringprepException e) {
+                    } catch (UserJid.UserJidCreateException e) {
                         LogManager.exception(this, e);
                     }
                 }

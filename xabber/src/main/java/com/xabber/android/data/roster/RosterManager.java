@@ -152,11 +152,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             final Set<RosterEntry> entries = roster.getEntries();
 
             for (RosterEntry rosterEntry : entries) {
-
-                final RosterContact contact = convertRosterEntryToRosterContact(account, roster, rosterEntry);
-
-                newRosterContacts.add(contact);
-
+                try {
+                    newRosterContacts.add(convertRosterEntryToRosterContact(account, roster, rosterEntry));
+                } catch (UserJid.UserJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
             }
         }
         allRosterContacts = newRosterContacts;
@@ -165,8 +165,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     @NonNull
-    private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry) {
-        final RosterContact contact = new RosterContact(account, rosterEntry);
+    private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry) throws UserJid.UserJidCreateException {
+        final RosterContact contact = new RosterContact(account, UserJid.from(rosterEntry.getJid()), rosterEntry.getName());
 
         final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
 
@@ -194,12 +194,16 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return null;
         }
 
-        final RosterEntry entry = roster.getEntry(user.getJid().asBareJid());
+        final RosterEntry entry = roster.getEntry(user.getBareJid());
 
         if (entry == null) {
             return null;
         } else {
-            return convertRosterEntryToRosterContact(account, roster, entry);
+            try {
+                return convertRosterEntryToRosterContact(account, roster, entry);
+            } catch (UserJid.UserJidCreateException e) {
+                return null;
+            }
         }
     }
 
@@ -289,7 +293,9 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return;
         }
 
-        roster.createEntry(user.getJid().asBareJid(), name, groups.toArray(new String[groups.size()]));
+        if (user.getBareJid() != null) {
+            roster.createEntry(user.getBareJid(), name, groups.toArray(new String[groups.size()]));
+        }
     }
 
     /**
@@ -343,7 +349,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
         RosterPacket packet = new RosterPacket();
         packet.setType(IQ.Type.set);
-        RosterPacket.Item item = new RosterPacket.Item(user.getJid().asBareJid(), entry.getName());
+        RosterPacket.Item item = new RosterPacket.Item(user.getBareJid(), entry.getName());
         for (String group : groups) {
             item.addGroupName(group);
         }

@@ -127,7 +127,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
                                 UserJid.from(PrivateChatTable.getUser(cursor))
                         ));
 
-                    } catch (XmppStringprepException e) {
+                    } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
                         LogManager.exception(this, e);
                     }
                 } while (cursor.moveToNext());

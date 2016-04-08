@@ -12,8 +12,6 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 
-import org.jxmpp.stringprep.XmppStringprepException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,7 +45,7 @@ public class PrivateMucChatBlockingManager {
         for (BlockedContact blockedContact : blockedContactsForAccount) {
             try {
                 contacts.add(UserJid.from(blockedContact.getFullJid()));
-            } catch (XmppStringprepException e) {
+            } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }

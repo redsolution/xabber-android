@@ -3,6 +3,7 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
 
@@ -96,9 +96,13 @@ public class ContactAddFragment extends GroupEditorFragment
         accountView.setAdapter(new AccountChooseAdapter(getActivity()));
         accountView.setOnItemSelectedListener(this);
 
-        if (getAccount() != null) {
+        AccountJid account = getAccount();
+
+        if (account != null) {
             for (int position = 0; position < accountView.getCount(); position++) {
-                if (getAccount().equals(accountView.getItemAtPosition(position))) {
+                AccountJid itemAtPosition = (AccountJid) accountView.getItemAtPosition(position);
+                LogManager.i(this, "itemAtPosition " + itemAtPosition + " account " + account);
+                if (account.equals(accountView.getItemAtPosition(position))) {
                     accountView.setSelection(position);
                     break;
                 }
@@ -183,14 +187,23 @@ public class ContactAddFragment extends GroupEditorFragment
             return;
         }
 
-        UserJid user;
-        try {
-            user = UserJid.from(userView.getText().toString());
-        } catch (XmppStringprepException e) {
+        String contactString = userView.getText().toString();
+
+        if (TextUtils.isEmpty(contactString)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
                     Toast.LENGTH_LONG).show();
+            return ;
+        }
+
+        UserJid user;
+        try {
+            user = UserJid.from(contactString);
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
             return;
         }
+
+        LogManager.i(this, "user: " + user);
 
         AccountJid account = (AccountJid) accountView.getSelectedItem();
         if (account == null) {

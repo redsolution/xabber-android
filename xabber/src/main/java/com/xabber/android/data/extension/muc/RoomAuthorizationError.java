@@ -32,7 +32,7 @@ public class RoomAuthorizationError extends BaseEntity implements EntityNotifica
 
     @Override
     public Intent getIntent() {
-        return ConferenceAdd.createIntent(Application.getInstance(), account, user.getJid().asEntityBareJidIfPossible());
+        return ConferenceAdd.createIntent(Application.getInstance(), account, user.getBareUserJid());
     }
 
     @Override

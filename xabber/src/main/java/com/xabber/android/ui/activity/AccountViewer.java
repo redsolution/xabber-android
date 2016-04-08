@@ -114,7 +114,14 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
-        bestContact = RosterManager.getInstance().getBestContact(account, UserJid.from(account.getFullJid().asBareJid()));
+        UserJid fakeAccountUser;
+        try {
+            fakeAccountUser = UserJid.from(account.getFullJid().asBareJid());
+        } catch (UserJid.UserJidCreateException e) {
+            throw new IllegalStateException();
+        }
+
+        bestContact = RosterManager.getInstance().getBestContact(account, fakeAccountUser);
 
         contactTitleView = findViewById(R.id.contact_title_expanded);
         contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(account));
@@ -127,7 +134,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.scrollable_container, ContactVcardViewerFragment.newInstance(account, UserJid.from(account.getFullJid().asBareJid())))
+                    .add(R.id.scrollable_container, ContactVcardViewerFragment.newInstance(account, fakeAccountUser))
                     .add(R.id.fragment_container, new AccountEditorFragment())
                     .commit();
         } else {

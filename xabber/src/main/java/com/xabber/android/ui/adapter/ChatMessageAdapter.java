@@ -516,8 +516,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                     if (resource.equals(Resourcepart.EMPTY)) {
                         message.avatar.setImageDrawable(AvatarManager.getInstance().getRoomAvatar(user));
                     } else {
-                        message.avatar.setImageDrawable(AvatarManager.getInstance()
-                                .getUserAvatar(UserJid.from(JidCreate.domainFullFrom(user.getJid().asDomainBareJid(), resource))));
+                        try {
+                            message.avatar.setImageDrawable(AvatarManager.getInstance()
+                                    .getUserAvatar(UserJid.from(JidCreate.domainFullFrom(user.getJid().asDomainBareJid(), resource))));
+                        } catch (UserJid.UserJidCreateException e) {
+                            LogManager.exception(this, e);
+                        }
                     }
                 } else {
                     message.avatar.setImageDrawable(AvatarManager.getInstance().getUserAvatar(user));

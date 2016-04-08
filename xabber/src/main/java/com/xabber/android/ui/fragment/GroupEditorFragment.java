@@ -163,7 +163,7 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
 
         selected = getSelected();
 
-        if (account != null && !"".equals(user)) {
+        if (account != null && user != null) {
             try {
                 RosterManager.getInstance().setGroups(account, user, selected);
             } catch (NetworkException e) {

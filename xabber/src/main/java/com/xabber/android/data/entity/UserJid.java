@@ -2,21 +2,45 @@ package com.xabber.android.data.entity;
 
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public class UserJid implements Comparable<UserJid>, Serializable {
-    private final @NonNull Jid jid;
 
-    public static UserJid from(@NonNull String string) throws XmppStringprepException {
-        return new UserJid(JidCreate.from(string));
+    public static class UserJidCreateException extends IOException {
+
     }
 
-    public static UserJid from(@NonNull Jid jid) {
+    private final @NonNull Jid jid;
+
+    public static @NonNull UserJid from(@Nullable String string) throws UserJidCreateException {
+        if (TextUtils.isEmpty(string)) {
+            throw new UserJidCreateException();
+        }
+
+        Jid jid;
+        try {
+            jid = JidCreate.from(string);
+        } catch (XmppStringprepException e) {
+            throw new UserJidCreateException();
+        }
+
+        return from(jid);
+    }
+
+    public static @NonNull UserJid from(@Nullable Jid jid) throws UserJidCreateException {
+        if (jid == null || jid.asBareJid() == null) {
+            throw new UserJidCreateException();
+        }
+
         return new UserJid(jid);
     }
 
@@ -26,6 +50,14 @@ public class UserJid implements Comparable<UserJid>, Serializable {
 
     public @NonNull Jid getJid() {
         return jid;
+    }
+
+    public @NonNull BareJid getBareJid() {
+        return jid.asBareJid();
+    }
+
+    public @NonNull UserJid getBareUserJid() {
+        return new UserJid(jid.asBareJid());
     }
 
     @Override

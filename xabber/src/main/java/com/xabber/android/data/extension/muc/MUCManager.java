@@ -106,15 +106,14 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 AccountJid account = AccountJid.from(RoomTable.getAccount(cursor));
                                 EntityBareJid room = JidCreate.entityBareFrom(RoomTable.getRoom(cursor));
 
-                                RoomChat roomChat = new RoomChat(account, room,
-                                        nickName, RoomTable.getPassword(cursor));
+                                RoomChat roomChat = RoomChat.create(account, room, nickName, RoomTable.getPassword(cursor));
                                 if (RoomTable.needJoin(cursor)) {
                                     needJoins.add(roomChat);
                                 }
                                 roomChats.add(roomChat);
 
 
-                            } catch (XmppStringprepException e) {
+                            } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
                                 e.printStackTrace();
                             }
 
@@ -148,7 +147,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
      * @return <code>null</code> if does not exists.
      */
     public RoomChat getRoomChat(AccountJid account, EntityBareJid room) {
-        AbstractChat chat = MessageManager.getInstance().getChat(account, UserJid.from(room));
+        AbstractChat chat;
+        try {
+            chat = MessageManager.getInstance().getChat(account, UserJid.from(room));
+        } catch (UserJid.UserJidCreateException e) {
+            return null;
+        }
         if (chat != null && chat instanceof RoomChat) {
             return (RoomChat) chat;
         }
@@ -156,6 +160,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public boolean hasRoom(AccountJid account, UserJid room) {
+        EntityBareJid entityBareJid = room.getJid().asEntityBareJidIfPossible();
+        if (entityBareJid == null) {
+            return false;
+        }
+
         return hasRoom(account, room.getJid().asEntityBareJidIfPossible());
     }
 
@@ -167,8 +176,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public boolean isMucPrivateChat(AccountJid account, UserJid user) {
-        return hasRoom(account, user.getJid().asEntityBareJidIfPossible())
-                && user.getJid().getResourceOrNull() != null;
+        EntityBareJid entityBareJid = user.getJid().asEntityBareJidIfPossible();
+        if (entityBareJid == null) {
+            return false;
+        }
+
+        return hasRoom(account, entityBareJid) && user.getJid().getResourceOrNull() != null;
     }
 
     public Resourcepart getNickname(AccountJid account, EntityBareJid room) {
@@ -207,7 +220,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
      * @return <code>null</code> if there is no such invite.
      */
     public RoomInvite getInvite(AccountJid account, EntityBareJid room) {
-        return inviteProvider.get(account, UserJid.from(room));
+        try {
+            return inviteProvider.get(account, UserJid.from(room));
+        } catch (UserJid.UserJidCreateException e) {
+            return null;
+        }
     }
 
     public void removeInvite(RoomInvite abstractRequest) {
@@ -222,7 +239,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         }
         leaveRoom(account, room);
         MessageManager.getInstance().removeChat(roomChat);
-        RosterManager.onContactChanged(account, UserJid.from(room));
+        try {
+            RosterManager.onContactChanged(account, UserJid.from(room));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -238,14 +259,24 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     public void createRoom(AccountJid account, EntityBareJid room, Resourcepart nickname,
                            String password, boolean join) {
         removeInvite(getInvite(account, room));
-        AbstractChat chat = MessageManager.getInstance().getChat(account, UserJid.from(room));
+        AbstractChat chat = null;
+        try {
+            chat = MessageManager.getInstance().getChat(account, UserJid.from(room));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
         RoomChat roomChat;
         if (chat == null || !(chat instanceof RoomChat)) {
             if (chat != null) {
                 MessageManager.getInstance().removeChat(chat);
             }
-            roomChat = new RoomChat(account, room, nickname, password);
-            MessageManager.getInstance().addChat(roomChat);
+            try {
+                roomChat = RoomChat.create(account, room, nickname, password);
+                MessageManager.getInstance().addChat(roomChat);
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+            }
+
         } else {
             roomChat = (RoomChat) chat;
             roomChat.setNickname(nickname);
@@ -347,7 +378,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 roomChat.setState(RoomState.occupation);
                             }
                             removeAuthorizationError(account, room);
-                            RosterManager.onContactChanged(account, UserJid.from(room));
+                            try {
+                                RosterManager.onContactChanged(account, UserJid.from(room));
+                            } catch (UserJid.UserJidCreateException e) {
+                                LogManager.exception(this, e);
+                            }
                         }
                     });
                     return;
@@ -370,7 +405,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                                 } else {
                                     Application.getInstance().onError(R.string.NOT_CONNECTED);
                                 }
-                            RosterManager.onContactChanged(account, UserJid.from(room));
+                            try {
+                                RosterManager.onContactChanged(account, UserJid.from(room));
+                            } catch (UserJid.UserJidCreateException e) {
+                                LogManager.exception(this, e);
+                            }
                         }
                     });
                     return;
@@ -386,7 +425,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
                         }
                         roomChat.setState(RoomState.waiting);
                         Application.getInstance().onError(R.string.NOT_CONNECTED);
-                        RosterManager.onContactChanged(account, UserJid.from(room));
+                        try {
+                            RosterManager.onContactChanged(account, UserJid.from(room));
+                        } catch (UserJid.UserJidCreateException e) {
+                            LogManager.exception(this, e);
+                        }
                     }
                 });
             }
@@ -420,7 +463,11 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             thread.setDaemon(true);
             thread.start();
         }
-        RosterManager.onContactChanged(account, UserJid.from(room));
+        try {
+            RosterManager.onContactChanged(account, UserJid.from(room));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override
@@ -447,14 +494,22 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             UserJid inviter = null;
             try {
                 inviter = UserJid.from(mucUser.getInvite().getFrom());
-            } catch (XmppStringprepException e) {
+            } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }
             if (inviter == null) {
-                inviter = UserJid.from(from);
+                try {
+                    inviter = UserJid.from(from);
+                } catch (UserJid.UserJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
             }
-            inviteProvider.add(new RoomInvite(account, UserJid.from(from), inviter,
-                            mucUser.getInvite().getReason(), mucUser.getPassword()), true);
+            try {
+                inviteProvider.add(new RoomInvite(account, UserJid.from(from), inviter,
+                                mucUser.getInvite().getReason(), mucUser.getPassword()), true);
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
+            }
         }
     }
 
@@ -482,11 +537,19 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public void removeAuthorizationError(AccountJid account, EntityBareJid room) {
-        authorizationErrorProvider.remove(account, UserJid.from(room));
+        try {
+            authorizationErrorProvider.remove(account, UserJid.from(room));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     public void addAuthorizationError(AccountJid account, EntityBareJid room) {
-        authorizationErrorProvider.add(new RoomAuthorizationError(account, UserJid.from(room)), null);
+        try {
+            authorizationErrorProvider.add(new RoomAuthorizationError(account, UserJid.from(room)), null);
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
 

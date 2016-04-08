@@ -115,7 +115,11 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                         List<Jid> items = ((BlockList) iq).getItems();
                         List<UserJid> userJids = new ArrayList<>();
                         for (Jid jid : items) {
-                            userJids.add(UserJid.from(jid));
+                            try {
+                                userJids.add(UserJid.from(jid));
+                            } catch (UserJid.UserJidCreateException e) {
+                                LogManager.exception(this, e);
+                            }
                         }
 
                         blockListsForAccounts.put(account, userJids);
@@ -161,7 +165,11 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             Block block = (Block) packet;
             for (Jid contact : block.getItems()) {
 
-                blockContactLocally(account, contact);
+                try {
+                    blockContactLocally(account, UserJid.from(contact));
+                } catch (UserJid.UserJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
             }
             requestBlockList(account);
         }
@@ -221,9 +229,9 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     }
 
-    private void blockContactLocally(AccountJid account, Jid contactJid) {
-        MessageManager.getInstance().closeChat(account, UserJid.from(contactJid));
-        NotificationManager.getInstance().removeMessageNotification(account, UserJid.from(contactJid));
+    private void blockContactLocally(AccountJid account, UserJid contactJid) {
+        MessageManager.getInstance().closeChat(account, contactJid);
+        NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
 
     public interface UnblockContactListener {

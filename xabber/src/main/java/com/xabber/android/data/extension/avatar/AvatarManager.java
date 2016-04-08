@@ -435,7 +435,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
             if (packetExtension instanceof VCardUpdate) {
                 VCardUpdate vCardUpdate = (VCardUpdate) packetExtension;
                 if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {
-                    onPhotoReady(account, UserJid.from(stanza.getFrom()), vCardUpdate);
+                    try {
+                        onPhotoReady(account, UserJid.from(stanza.getFrom()), vCardUpdate);
+                    } catch (UserJid.UserJidCreateException e) {
+                        LogManager.exception(this, e);
+                    }
                 }
             }
         }

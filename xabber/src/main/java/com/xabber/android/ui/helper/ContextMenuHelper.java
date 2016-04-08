@@ -95,7 +95,7 @@ public class ContextMenuHelper {
                 });
 
         menu.findItem(R.id.action_edit_conference).setIntent(
-                ConferenceAdd.createIntent(activity, account, user.getJid().asEntityBareJidIfPossible()));
+                ConferenceAdd.createIntent(activity, account, user.getBareUserJid()));
 
         menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {

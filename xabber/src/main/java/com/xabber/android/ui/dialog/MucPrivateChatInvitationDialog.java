@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
@@ -47,8 +48,13 @@ public class MucPrivateChatInvitationDialog extends BaseContactDialog {
 
     @Override
     protected void onPositiveButtonClick() {
-        MessageManager.getInstance().acceptMucPrivateChat(getAccount(), getContact());
-        startActivity(ChatViewer.createSpecificChatIntent(Application.getInstance(), getAccount(), getContact()));
+        try {
+            MessageManager.getInstance().acceptMucPrivateChat(getAccount(), getContact());
+            startActivity(ChatViewer.createSpecificChatIntent(Application.getInstance(), getAccount(), getContact()));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
+
     }
 
     @Override

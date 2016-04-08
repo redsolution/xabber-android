@@ -202,15 +202,17 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
         AbstractChat abstractChat = getChat(account, user);
-        SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.concede);
-        LogManager.i(this, "Ended session for " + user);
+        if (abstractChat != null) {
+            SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.concede);
+            LogManager.i(this, "Ended session for " + user);
+        }
     }
 
     @Nullable
     private AbstractChat getChat(String account, String user) {
         try {
             return MessageManager.getInstance().getChat(AccountJid.from(account), UserJid.from(user));
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
             return null;
         }
@@ -263,7 +265,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      */
     private void newAction(String account, String user, String text, ChatAction action) {
         LogManager.i(this, "newAction. text: " + text + " action " + action);
-        getChat(account, user).newAction(null, text, action);
+        AbstractChat chat = getChat(account, user);
+        if (chat != null) {
+            chat.newAction(null, text, action);
+        }
     }
 
     @Override
@@ -390,7 +395,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     public void onContactChanged(SessionID sessionID) {
         try {
             RosterManager.onContactChanged(AccountJid.from(sessionID.getAccountID()), UserJid.from(sessionID.getUserID()));
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -400,7 +405,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         try {
             smRequestProvider.add(new SMRequest(AccountJid.from(sessionID.getAccountID()),
                     UserJid.from(sessionID.getUserID()), question), true);
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -587,7 +592,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private void removeSMRequest(String account, String user) {
         try {
             smRequestProvider.remove(AccountJid.from(account), UserJid.from(user));
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }
@@ -599,7 +604,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private void removeSMProgress(String account, String user) {
         try {
             smProgressProvider.remove(AccountJid.from(account), UserJid.from(user));
-        } catch (XmppStringprepException e) {
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
     }

@@ -67,7 +67,11 @@ public class AbstractContact extends BaseEntity {
                 }
             }
 
-            return String.format("%s (%s)", name, user.getJid().asBareJid().toString());
+            if (user.getBareJid() == null) {
+                return String.format("%s (%s)", name, user.toString());
+            } else {
+                return String.format("%s (%s)", name, user.getBareJid().toString());
+            }
         }
 
         if (!"".equals(vCardName))

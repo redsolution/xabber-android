@@ -57,9 +57,9 @@ public class OccupantList extends ManagedListActivity implements
     private EntityBareJid room;
     private OccupantListAdapter listAdapter;
 
-    public static Intent createIntent(Context context, AccountJid account, EntityBareJid room) {
+    public static Intent createIntent(Context context, AccountJid account, UserJid room) {
         return new EntityIntentBuilder(context, OccupantList.class)
-                .setAccount(account).setUser(UserJid.from(room)).build();
+                .setAccount(account).setUser(room).build();
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -122,8 +122,12 @@ public class OccupantList extends ManagedListActivity implements
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        if (entities.contains(new BaseEntity(account, UserJid.from(room)))) {
-            listAdapter.onChange();
+        try {
+            if (entities.contains(new BaseEntity(account, UserJid.from(room)))) {
+                listAdapter.onChange();
+            }
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
         }
     }
 
@@ -140,15 +144,27 @@ public class OccupantList extends ManagedListActivity implements
                 = (com.xabber.android.data.extension.muc.Occupant) listAdapter.getItem(position);
         LogManager.i(this, occupant.getNickname().toString());
 
-        UserJid occupantFullJid = UserJid.from(JidCreate.entityFullFrom(room, occupant.getNickname()));
+        UserJid occupantFullJid = null;
+        try {
+            occupantFullJid = UserJid.from(JidCreate.entityFullFrom(room, occupant.getNickname()));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            return;
+        }
 
         if (PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(occupantFullJid)) {
             Toast.makeText(this, R.string.contact_is_blocked, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        final AbstractChat mucPrivateChat = MessageManager.getInstance()
-                .getOrCreatePrivateMucChat(account, occupantFullJid.getJid().asFullJidIfPossible());
+        final AbstractChat mucPrivateChat;
+        try {
+            mucPrivateChat = MessageManager.getInstance()
+                    .getOrCreatePrivateMucChat(account, occupantFullJid.getJid().asFullJidIfPossible());
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            return;
+        }
         mucPrivateChat.setIsPrivateMucChatAccepted(true);
 
         startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));

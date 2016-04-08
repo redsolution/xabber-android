@@ -284,7 +284,7 @@ public class MessageTable extends AbstractEntityTable {
         }
     }
 
-    public static MessageItem createMessageItem(Cursor cursor) throws XmppStringprepException {
+    public static MessageItem createMessageItem(Cursor cursor) throws XmppStringprepException, UserJid.UserJidCreateException {
         MessageItem messageItem = new MessageItem();
         messageItem.setAccount(AccountJid.from(getAccount(cursor)));
         messageItem.setUser(UserJid.from(getUser(cursor)));
