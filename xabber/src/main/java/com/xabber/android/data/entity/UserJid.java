@@ -35,8 +35,8 @@ public class UserJid implements Comparable<UserJid>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof AccountJid) {
-            return getJid().equals(((AccountJid) o).getFullJid());
+        if (o != null && o instanceof UserJid) {
+            return getJid().equals(((UserJid) o).getJid());
         } else {
             return false;
         }
