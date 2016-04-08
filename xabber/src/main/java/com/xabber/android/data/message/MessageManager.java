@@ -210,7 +210,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (getChat(chat.getAccount(), chat.getUser()) != null) {
             throw new IllegalStateException();
         }
-        LogManager.v(this, "addChat " + chat.getUser());
         chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
     }
 
@@ -221,7 +220,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void removeChat(AbstractChat chat) {
         chat.closeChat();
-        LogManager.v(this, "removeChat " + chat.getUser());
         chats.remove(chat.getAccount().toString(), chat.getUser().toString());
     }
 
