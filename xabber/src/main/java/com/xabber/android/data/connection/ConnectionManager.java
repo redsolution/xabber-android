@@ -160,7 +160,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     /**
-     * Send stanza to authenticated connection and and acknowledged listener if Stream Management is enabled on server.
+     * Send stanza to authenticated connection and acknowledged listener if Stream Management is enabled on server.
      */
     public void sendStanza(String account, Message stanza, StanzaListener acknowledgedListener) throws NetworkException {
         XMPPTCPConnection xmppConnection = getXmppTcpConnection(account);
