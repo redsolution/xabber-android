@@ -18,9 +18,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.connection.NetworkManager;
 
 /**
@@ -32,15 +30,11 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction()))
-            return;
-        NetworkInfo networkInfo = intent
-                .getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-        if (networkInfo == null) {
-            LogManager.e(this, "NO INFO");
+        if (!ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
             return;
         }
-        NetworkManager.getInstance().onNetworkChange(networkInfo);
+
+        NetworkManager.getInstance().onNetworkChange();
     }
 
 }
