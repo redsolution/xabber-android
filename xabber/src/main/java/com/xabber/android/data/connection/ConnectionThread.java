@@ -22,6 +22,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.roster.AccountRosterListener;
 
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -108,6 +109,10 @@ public class ConnectionThread {
 
         connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
         connection.addConnectionListener(connectionListener);
+
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        reconnectionManager.enableAutomaticReconnection();
+        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.RANDOM_INCREASING_DELAY);
     }
 
 
@@ -119,15 +124,30 @@ public class ConnectionThread {
             success = true;
         } catch (SmackException e) {
             // There is no connection listeners yet, so we call onClose.
-            LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
+
+            LogManager.exception(this, e);
+
+            if (e instanceof SmackException.ConnectionException) {
+                LogManager.w(this, "Connection failed. SmackException.ConnectionException " + e.getMessage());
+            } else {
+                LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
+            }
+
+            connectionListener.connectionClosedOnError(e);
         } catch (IOException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. IOException " + e.getMessage());
+            LogManager.exception(this, e);
+            connectionListener.connectionClosedOnError(e);
         } catch (XMPPException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
+            LogManager.exception(this, e);
+            connectionListener.connectionClosedOnError(e);
         } catch (InterruptedException e) {
             LogManager.w(this, "Connection failed. InterruptedException " + e.getMessage());
+            LogManager.exception(this, e);
+            connectionListener.connectionClosedOnError(e);
         }
         return success;
     }
@@ -213,7 +233,7 @@ public class ConnectionThread {
 
         @Override
         public void connectionClosedOnError(final Exception e) {
-            LogManager.d(this, "connectionClosedOnError " + getAccountItem().getRealJid() + " " + e.getMessage());
+            LogManager.d(this, "connectionClosedOnError " + getAccountItem().getAccount() + " " + e.getMessage());
 
             PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
             connectionClosed();
@@ -221,7 +241,7 @@ public class ConnectionThread {
 
         @Override
         public void reconnectionSuccessful() {
-            LogManager.d(this, "reconnectionSuccessful " + getAccountItem().getRealJid());
+            LogManager.d(this, "reconnectionSuccessful " + getAccountItem().getAccount());
         }
 
         @Override

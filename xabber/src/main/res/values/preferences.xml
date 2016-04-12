@@ -21,7 +21,6 @@
         <item>com.xabber.android.data.extension.otr.OTRManager</item>
         <item>com.xabber.android.data.connection.ConnectionManager</item>
         <item>com.xabber.android.data.account.ScreenManager</item>
-        <item>com.xabber.android.data.connection.ReconnectionManager</item>
         <item>com.xabber.android.data.account.AccountManager</item>
         <item>com.xabber.android.data.extension.muc.MUCManager</item>
         <item>com.xabber.android.data.message.MessageManager</item>
