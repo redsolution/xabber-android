@@ -43,6 +43,9 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
 
     private final ConnectivityManager connectivityManager;
 
+    // strange hidden action
+    public static final String INET_CONDITION_ACTION = "android.net.conn.INET_CONDITION_ACTION";
+
     /**
      * Type of last active network.
      */
@@ -126,6 +129,7 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     public void onInitialized() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(INET_CONDITION_ACTION);
         Application.getInstance().registerReceiver(connectivityReceiver, filter);
         onWakeLockSettingsChanged();
         onWifiLockSettingsChanged();
