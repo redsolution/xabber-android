@@ -100,3 +100,7 @@ dependencies {
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
 }
+
+configurations {
+    all*.exclude group: 'xpp3', module: 'xpp3'
+}
