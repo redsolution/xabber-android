@@ -18,6 +18,7 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -1118,6 +1119,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         if (SettingsManager.contactsShowAccounts()) {
             return null;
         }
+
+        if (TextUtils.isEmpty(SettingsManager.contactsSelectedAccount())) {
+            return null;
+        }
+
         AccountJid selected;
         try {
             selected = AccountJid.from(SettingsManager.contactsSelectedAccount());
