@@ -3,7 +3,6 @@ package com.xabber.android.data.extension.csi;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.entity.AccountJid;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -34,16 +33,12 @@ public class ClientStateManager {
     protected static void sendClientState(Nonza nonza) {
         AccountManager accountManager = AccountManager.getInstance();
         for (AccountJid accountName : accountManager.getAccounts()) {
-            AccountItem account = accountManager.getAccount(accountName);
-            if (account == null) {
-                continue;
-            }
-            ConnectionThread connectionThread = account.getConnectionThread();
-            if (connectionThread == null) {
+            AccountItem accountItem = accountManager.getAccount(accountName);
+            if (accountItem == null) {
                 continue;
             }
 
-            AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+            AbstractXMPPConnection xmppConnection = accountItem.getConnection();
 
             if (xmppConnection.hasFeature("csi", ClientStateIndication.NAMESPACE))
                 try {

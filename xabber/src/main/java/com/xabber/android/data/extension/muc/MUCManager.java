@@ -25,7 +25,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.entity.AccountJid;
@@ -343,16 +342,13 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         nickname = roomChat.getNickname();
         password = roomChat.getPassword();
         requestToWriteRoom(account, room, nickname, password, true);
-        ConnectionThread connectionThread = AccountManager.getInstance()
-                .getAccount(account).getConnectionThread();
-        if (connectionThread == null) {
-            Application.getInstance().onError(R.string.NOT_CONNECTED);
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
             return;
         }
-        xmppConnection = connectionThread.getXMPPConnection();
         final MultiUserChat multiUserChat;
         try {
-            multiUserChat = MultiUserChatManager.getInstanceFor(xmppConnection).getMultiUserChat(room);
+            multiUserChat = MultiUserChatManager.getInstanceFor(accountItem.getConnection()).getMultiUserChat(room);
         } catch (IllegalStateException e) {
             Application.getInstance().onError(R.string.NOT_CONNECTED);
             return;
@@ -558,12 +554,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public static void requestHostedRooms(final AccountJid account, final DomainBareJid serviceName, final HostedRoomsListener listener) {
-        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
-        if (connectionThread == null) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
             listener.onHostedRoomsReceived(null);
             return;
         }
-        final XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+        final XMPPConnection xmppConnection = accountItem.getConnection();
         if (!xmppConnection.isAuthenticated()) {
             listener.onHostedRoomsReceived(null);
             return;
@@ -600,12 +596,12 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public static void requestRoomInfo(final AccountJid account, final EntityBareJid roomJid, final RoomInfoListener listener) {
-        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
-        if (connectionThread == null) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
             listener.onRoomInfoReceived(null);
             return;
         }
-        final XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+        final XMPPConnection xmppConnection = accountItem.getConnection();
         if (!xmppConnection.isAuthenticated()) {
             listener.onRoomInfoReceived(null);
             return;

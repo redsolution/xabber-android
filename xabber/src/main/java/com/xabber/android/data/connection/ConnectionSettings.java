@@ -203,14 +203,6 @@ public class ConnectionSettings {
 
     /**
      * Updates options.
-     *
-     * @param custom
-     * @param host
-     * @param port
-     * @param password
-     * @param saslEnabled
-     * @param tlsMode
-     * @param compression
      */
     public void update(boolean custom, String host, int port, String password,
                        boolean saslEnabled, TLSMode tlsMode, boolean compression,
@@ -232,8 +224,6 @@ public class ConnectionSettings {
 
     /**
      * Sets password.
-     *
-     * @param password
      */
     public void setPassword(String password) {
         this.password = password;

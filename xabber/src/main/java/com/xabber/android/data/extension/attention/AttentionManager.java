@@ -26,7 +26,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -105,13 +104,11 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     public void onSettingsChanged() {
         synchronized (enabledLock) {
             for (AccountJid account : AccountManager.getInstance().getAccounts()) {
-                ConnectionThread connectionThread = AccountManager
-                        .getInstance().getAccount(account).getConnectionThread();
-                if (connectionThread == null) {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+                if (accountItem == null) {
                     continue;
                 }
-                XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-                ServiceDiscoveryManager manager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
+                ServiceDiscoveryManager manager = ServiceDiscoveryManager.getInstanceFor(accountItem.getConnection());
                 if (manager == null) {
                     continue;
                 }

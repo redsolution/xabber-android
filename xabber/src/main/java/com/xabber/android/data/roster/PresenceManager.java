@@ -308,7 +308,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
 
         try {
-            resendPresence(((AccountItem) connection).getAccount());
+            resendPresence(connection.getAccount());
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }

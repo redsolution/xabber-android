@@ -298,17 +298,13 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     @Override
     public void onAuthorized(final ConnectionItem connection) {
-        if (connection.getConnectionThread() == null) {
-            return;
-        }
-
-        final AccountJid account = ((AccountItem) connection).getAccount();
+        final AccountJid account = connection.getAccount();
 
         new Thread("Thread to check " + connection.getRealJid() + " for blocking command support") {
             @Override
             public void run() {
                 try {
-                    discoverSupport(account, connection.getConnectionThread().getXMPPConnection());
+                    discoverSupport(account, connection.getConnection());
                     requestBlockList(account);
                 } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
                         | SmackException.NoResponseException | InterruptedException e) {

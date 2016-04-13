@@ -7,7 +7,6 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -90,7 +89,7 @@ public class MamManager implements OnAuthorizedListener {
 
     private boolean updateIsSupported(AccountItem accountItem) {
         org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager
-                .getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+                .getInstanceFor(accountItem.getConnection());
 
         boolean isSupported;
         try {
@@ -127,11 +126,6 @@ public class MamManager implements OnAuthorizedListener {
         if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
             return;
         }
-        ConnectionThread connectionThread = accountItem.getConnectionThread();
-
-        if (connectionThread == null) {
-            return;
-        }
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -143,7 +137,7 @@ public class MamManager implements OnAuthorizedListener {
                 EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
 
                 org.jivesoftware.smackx.mam.MamManager mamManager
-                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnection());
 
                 String lastMessageMamId;
                 int receivedMessagesCount;
@@ -342,11 +336,6 @@ public class MamManager implements OnAuthorizedListener {
         if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
             return;
         }
-        ConnectionThread connectionThread = accountItem.getConnectionThread();
-
-        if (connectionThread == null) {
-            return;
-        }
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
@@ -373,7 +362,7 @@ public class MamManager implements OnAuthorizedListener {
                     return;
                 }
 
-                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnectionThread().getXMPPConnection());
+                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnection());
 
                 final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
                 try {

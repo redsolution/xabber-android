@@ -67,7 +67,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
     private void updateIsSupported(ConnectionItem connectionItem) {
         org.jivesoftware.smackx.carbons.CarbonManager carbonManager
                 = org.jivesoftware.smackx.carbons.CarbonManager
-                .getInstanceFor(connectionItem.getConnectionThread().getXMPPConnection());
+                .getInstanceFor(connectionItem.getConnection());
 
         try {
             if (carbonManager.isSupportedByServer()) {
@@ -83,7 +83,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
 
-        if (!(connection instanceof AccountItem)) {
+        if (!(packet instanceof Message)) {
             return;
         }
 
@@ -98,9 +98,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
         if (packet.getFrom() == null) {
             return;
         }
-        if (!(packet instanceof Message)) {
-            return;
-        }
+
 
         final Message message = (Message) packet;
         CarbonExtension carbonExtension = CarbonExtension.from(message);
@@ -119,7 +117,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
 
     public boolean isCarbonsEnabledForConnection(ConnectionItem connection) {
         return org.jivesoftware.smackx.carbons.CarbonManager
-                .getInstanceFor(connection.getConnectionThread().getXMPPConnection())
+                .getInstanceFor(connection.getConnection())
                 .getCarbonsEnabled();
     }
 

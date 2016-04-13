@@ -29,7 +29,6 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -40,7 +39,6 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
 
-import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
@@ -91,15 +89,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             return null;
         }
 
-        final ConnectionThread connectionThread = accountItem.getConnectionThread();
-
-        if (connectionThread == null) {
-            return null;
-        }
-
-        final AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
-
-        return Roster.getInstanceFor(xmppConnection);
+        return Roster.getInstanceFor(accountItem.getConnection());
     }
 
     @Nullable

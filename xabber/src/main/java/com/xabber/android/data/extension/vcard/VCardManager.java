@@ -26,7 +26,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.VCardTable;
 import com.xabber.android.data.entity.AccountJid;
@@ -311,15 +310,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        ConnectionThread connectionThread = accountItem.getConnectionThread();
-
-        if (!accountItem.getFactualStatusMode().isOnline() || connectionThread == null) {
+        if (!accountItem.getFactualStatusMode().isOnline()) {
             onVCardFailed(account, srcUser);
             return;
         }
 
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager
-                = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(connectionThread.getXMPPConnection());
+                = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(accountItem.getConnection());
 
 
         LogManager.i(this, "request vCard for " + srcUser);
@@ -380,13 +377,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     public void saveVCard(final AccountJid account, final VCard vCard) {
-        ConnectionThread connectionThread = AccountManager.getInstance().getAccount(account).getConnectionThread();
-        if (connectionThread == null) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
             onVCardSaveFailed(account);
             return;
         }
 
-        final AbstractXMPPConnection xmppConnection = connectionThread.getXMPPConnection();
+        final AbstractXMPPConnection xmppConnection = accountItem.getConnection();
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
 
         final Thread thread = new Thread("Save vCard for account " + account) {
