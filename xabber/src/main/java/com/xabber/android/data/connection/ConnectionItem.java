@@ -211,6 +211,7 @@ public abstract class ConnectionItem {
                 try {
                     xmppConnection.disconnect();
                 } catch (RuntimeException e) {
+                    LogManager.exception(this, e);
                     // connectionClose() in smack can fail.
                 }
             }
@@ -222,7 +223,6 @@ public abstract class ConnectionItem {
     }
 
     /**
-     * @param connectionThread
      * @return Whether thread is managed by connection.
      */
     boolean isManaged(ConnectionThread connectionThread) {
@@ -231,23 +231,9 @@ public abstract class ConnectionItem {
 
     /**
      * Update password.
-     *
-     * @param password
      */
     protected void onPasswordChanged(String password) {
         connectionSettings.setPassword(password);
-    }
-
-    /**
-     * SRV record has been resolved.
-     */
-    protected void onSRVResolved(ConnectionThread connectionThread) {
-    }
-
-    /**
-     * Invalid certificate has been received.
-     */
-    protected void onInvalidCertificate() {
     }
 
     /**
@@ -289,18 +275,13 @@ public abstract class ConnectionItem {
     /**
      * Called when disconnect should occur.
      *
-     * @param connectionThread
      * @return <code>true</code> if connection thread was managed.
      */
     private boolean onDisconnect(ConnectionThread connectionThread) {
         XMPPConnection xmppConnection = connectionThread.getXMPPConnection();
         boolean acceptable = isManaged(connectionThread);
-        if (xmppConnection == null) {
-            LogManager.i(this, "onClose " + acceptable);
-        } else {
-            LogManager.i(this, "onClose " + xmppConnection.hashCode() + " - "
-                            + xmppConnection.getConnectionCounter() + ", " + acceptable);
-        }
+        LogManager.i(this, "onClose " + xmppConnection.hashCode() + " - "
+                        + xmppConnection.getConnectionCounter() + ", " + acceptable);
 
         ConnectionManager.getInstance().onDisconnect(connectionThread);
         return acceptable;

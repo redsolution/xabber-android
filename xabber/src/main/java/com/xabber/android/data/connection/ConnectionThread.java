@@ -208,7 +208,7 @@ public class ConnectionThread {
     private ConnectionListener connectionListener = new ConnectionListener() {
         @Override
         public void connected(XMPPConnection connection) {
-            LogManager.d(this, "connected " + getAccountItem().getRealJid());
+            LogManager.d(this, "connected " + getAccountItem().getAccount());
 
             accountItem.onConnected(ConnectionThread.this);
             ConnectionManager.getInstance().onConnected(ConnectionThread.this);
@@ -216,7 +216,7 @@ public class ConnectionThread {
 
         @Override
         public void authenticated(XMPPConnection connection, boolean resumed) {
-            LogManager.d(this, "authenticated " + getAccountItem().getRealJid() + " resumed " + resumed);
+            LogManager.d(this, "authenticated " + getAccountItem().getAccount() + " resumed " + resumed);
 
             PingManager.getInstanceFor(ConnectionThread.this.connection).registerPingFailedListener(pingFailedListener);
 
@@ -226,7 +226,7 @@ public class ConnectionThread {
 
         @Override
         public void connectionClosed() {
-            LogManager.d(this, "connectionClosed " + getAccountItem().getRealJid());
+            LogManager.d(this, "connectionClosed " + getAccountItem().getAccount());
 
             accountItem.onClose(ConnectionThread.this);
         }
@@ -246,12 +246,12 @@ public class ConnectionThread {
 
         @Override
         public void reconnectingIn(int seconds) {
-            LogManager.d(this, "reconnectingIn " + getAccountItem().getRealJid() + " " + seconds + " seconds");
+            LogManager.d(this, "reconnectingIn " + getAccountItem().getAccount() + " " + seconds + " seconds");
         }
 
         @Override
         public void reconnectionFailed(Exception e) {
-            LogManager.d(this, "reconnectionFailed " + getAccountItem().getRealJid() + " " + e.getMessage());
+            LogManager.d(this, "reconnectionFailed " + getAccountItem().getAccount() + " " + e.getMessage());
         }
     };
 
@@ -271,7 +271,7 @@ public class ConnectionThread {
     private PingFailedListener pingFailedListener = new PingFailedListener() {
         @Override
         public void pingFailed() {
-            LogManager.i(this, "pingFailed for " + getAccountItem().getRealJid());
+            LogManager.i(this, "pingFailed for " + getAccountItem().getAccount());
             getAccountItem().forceReconnect();
         }
     };

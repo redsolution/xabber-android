@@ -133,7 +133,6 @@ public class AccountItem extends ConnectionItem {
     }
 
     /**
-     * @param priority
      * @return Valid priority value between -128 and 128.
      */
     static private int getValidPriority(int priority) {
@@ -151,8 +150,6 @@ public class AccountItem extends ConnectionItem {
      * Set id in db.
      * <p/>
      * MUST BE MANAGED FROM BACKGROUND THREAD ONLY.
-     *
-     * @param id
      */
     void setId(long id) {
         this.id = id;
@@ -383,19 +380,6 @@ public class AccountItem extends ConnectionItem {
     protected void onPasswordChanged(String password) {
         super.onPasswordChanged(password);
         AccountManager.getInstance().requestToWriteAccount(this);
-    }
-
-    @Override
-    protected void onSRVResolved(ConnectionThread connectionThread) {
-        super.onSRVResolved(connectionThread);
-        AccountManager.getInstance().onAccountChanged(account);
-    }
-
-    @Override
-    protected void onInvalidCertificate() {
-        super.onInvalidCertificate();
-        invalidCertificate = true;
-        updateConnection(false);
     }
 
     @Override
