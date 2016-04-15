@@ -32,3 +32,6 @@ script:
   # By default Travis-ci executes './gradlew build connectedCheck' if no 'script:' section found.
   - ./gradlew build
 
+
+env:
+- GRADLE_OPTS="-Xmx1024m -XX:MaxPermSize=1024m"
