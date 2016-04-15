@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.account;
 
-import java.util.Calendar;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -27,11 +25,12 @@ import com.xabber.android.data.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.extension.csi.ClientStateManager;
 import com.xabber.android.receiver.GoAwayReceiver;
 import com.xabber.android.receiver.GoXaReceiver;
 import com.xabber.android.receiver.ScreenReceiver;
+
+import java.util.Calendar;
 
 /**
  * Manage screen on / off.
@@ -100,7 +99,7 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
         int goAway = SettingsManager.connectionGoAway();
         int goXa = SettingsManager.connectionGoXa();
         if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
-            ConnectionManager.getInstance().updateConnections(false);
+//            ConnectionManager.getInstance().updateConnections(false);
             alarmManager.cancel(goAwayPendingIntent);
             alarmManager.cancel(goXaPendingIntent);
             AccountManager.getInstance().wakeUp();

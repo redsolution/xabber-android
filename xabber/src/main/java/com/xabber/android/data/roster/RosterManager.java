@@ -112,7 +112,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public Collection<RosterContact> getContacts() {
-        requestRosterReloadIfNeeded();
+//        requestRosterReloadIfNeeded();
 
         return Collections.unmodifiableCollection(allRosterContacts);
     }
@@ -123,6 +123,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
             if (roster != null && !roster.isLoaded()
                     && AccountManager.getInstance().getAccount(account).getState() == ConnectionState.connected) {
                 try {
+                    LogManager.d(this, "Load roster from requestRosterReloadIfNeeded!");
                     roster.reload();
                 } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException | InterruptedException e) {
                     LogManager.exception(this, e);

@@ -216,7 +216,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     public void onConnected(final ConnectionItem connectionItem) {
-        LogManager.i(this, "onConnected " + connectionItem.getAccount());
         if (!managedConnections.contains(connectionItem.getConnection())) {
             LogManager.i(this, "onConnected !managedConnections.contains(connectionThread)");
             onConnection(connectionItem.getConnection());
@@ -233,7 +232,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     }
 
     public void onAuthorized(final ConnectionItem connectionItem) {
-        LogManager.i(this, "onAuthorized " + connectionItem.getAccount());
         if (!managedConnections.contains(connectionItem.getConnection())) {
             LogManager.i(this, "onAuthorized !managedConnections.contains(connectionItem)");
             onConnection(connectionItem.getConnection());

@@ -176,9 +176,9 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
         state = NetworkState.available;
         LogManager.i(this, "Available");
         if (type == ConnectivityManager.TYPE_WIFI) {
-            ConnectionManager.getInstance().forceReconnect();
+//            ConnectionManager.getInstance().forceReconnect();
         } else {
-            ConnectionManager.getInstance().updateConnections(false);
+//            ConnectionManager.getInstance().updateConnections(false);
         }
     }
 
@@ -197,7 +197,7 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onResume() {
         state = NetworkState.available;
         LogManager.i(this, "Resume");
-        ConnectionManager.getInstance().updateConnections(false);
+//        ConnectionManager.getInstance().updateConnections(false);
         // TODO: ConnectionManager.getInstance().forceKeepAlive();
     }
 
@@ -207,7 +207,7 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onUnavailable() {
         state = NetworkState.unavailable;
         LogManager.i(this, "Unavailable");
-        ConnectionManager.getInstance().updateConnections(false);
+//        ConnectionManager.getInstance().updateConnections(false);
     }
 
     public void onWifiLockSettingsChanged() {

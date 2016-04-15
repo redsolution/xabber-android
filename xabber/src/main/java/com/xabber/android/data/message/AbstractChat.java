@@ -16,7 +16,6 @@ package com.xabber.android.data.message;
 
 import android.support.annotation.NonNull;
 
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionManager;
@@ -96,7 +95,6 @@ public abstract class AbstractChat extends BaseEntity {
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
-        LogManager.i("AbstractChat", "AbstractChat user: " + user);
         threadId = StringUtils.randomString(12);
         active = false;
         trackStatus = false;
@@ -163,7 +161,6 @@ public abstract class AbstractChat extends BaseEntity {
         }
 
         if (messageItems == null) {
-            LogManager.i(this, "Requesting message items...");
             messageItems = realm.where(MessageItem.class)
                     .equalTo(MessageItem.Fields.ACCOUNT, getAccountString())
                     .equalTo(MessageItem.Fields.USER, getUserString())
@@ -504,8 +501,6 @@ public abstract class AbstractChat extends BaseEntity {
 
 
     public void sendMessages() {
-        LogManager.i(this, "sendMessages. user: " + user);
-
         final Realm realm = Realm.getDefaultInstance();
 
         realm.executeTransactionAsync(new Realm.Transaction() {
@@ -521,8 +516,6 @@ public abstract class AbstractChat extends BaseEntity {
                 }
 
                 List<MessageItem> messageItemList = new ArrayList<>(messagesToSend);
-
-                LogManager.i(AbstractChat.this, "sendMessages " + messageItemList.size());
 
                 for (final MessageItem messageItem : messageItemList) {
                     if (!sendMessage(messageItem)) {
@@ -549,8 +542,6 @@ public abstract class AbstractChat extends BaseEntity {
 
         Message message = null;
         if (text != null) {
-
-            LogManager.i(AbstractChat.this, "Sending message user: " + messageItem.getUser() + " text: " + messageItem.getText());
             message = createMessagePacket(text);
         }
 

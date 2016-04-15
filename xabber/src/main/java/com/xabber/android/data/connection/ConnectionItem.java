@@ -360,7 +360,6 @@ public abstract class ConnectionItem implements ConnectionListener {
 
     @Override
     public void reconnectingIn(int seconds) {
-        LogManager.d(this, "reconnectingIn " + getAccount() + " " + seconds + " seconds");
     }
 
     @Override
@@ -385,7 +384,7 @@ public abstract class ConnectionItem implements ConnectionListener {
         @Override
         public void pingFailed() {
             LogManager.i(this, "pingFailed for " + getAccount());
-            forceReconnect();
+//            forceReconnect();
         }
     };
 

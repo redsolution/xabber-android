@@ -28,7 +28,6 @@ import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
-import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -42,13 +41,13 @@ import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Process contact's presence information.
@@ -56,7 +55,7 @@ import java.util.HashSet;
  * @author alexander.ivanov
  */
 public class PresenceManager implements OnLoadListener, OnAccountDisabledListener,
-        OnDisconnectListener, OnPacketListener, OnAuthorizedListener {
+        OnPacketListener, OnAuthorizedListener {
 
     private final static PresenceManager instance;
 
@@ -70,16 +69,11 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      * List of account with requested subscriptions for auto accept incoming
      * subscription request.
      */
-    private final HashMap<AccountJid, HashSet<BareJid>> requestedSubscriptions;
-    /**
-     * Account ready to send / update its presence information.
-     */
-    private final ArrayList<AccountJid> readyAccounts;
+    private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
 
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_add_circle);
         requestedSubscriptions = new HashMap<>();
-        readyAccounts = new ArrayList<>();
     }
 
     public static PresenceManager getInstance() {
@@ -101,8 +95,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     /**
-     * @param account
-     * @param user
      * @return <code>null</code> can be returned.
      */
     public SubscriptionRequest getSubscriptionRequest(AccountJid account, UserJid user) {
@@ -112,27 +104,24 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Requests subscription to the contact.
      *
-     * @param account
-     * @param user
      * @throws NetworkException
      */
-    public void requestSubscription(AccountJid account, UserJid user)
-            throws NetworkException {
+    public void requestSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(user.getJid());
         ConnectionManager.getInstance().sendStanza(account, packet);
-        HashSet<BareJid> set = requestedSubscriptions.get(account);
+        Set<UserJid> set = requestedSubscriptions.get(account);
         if (set == null) {
             set = new HashSet<>();
             requestedSubscriptions.put(account, set);
         }
-        set.add(user.getJid().asBareJid());
+        set.add(user);
     }
 
     private void removeRequestedSubscription(AccountJid account, UserJid user) {
-        HashSet<BareJid> set = requestedSubscriptions.get(account);
+        Set<UserJid> set = requestedSubscriptions.get(account);
         if (set != null) {
-            set.remove(user.getJid().asBareJid());
+            set.remove(user);
         }
     }
 
@@ -235,11 +224,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     @Override
-    public void onDisconnect(ConnectionItem connection) {
-        readyAccounts.remove(((AccountItem) connection).getAccount());
-    }
-
-    @Override
     public void onAccountDisabled(AccountItem accountItem) {
         requestedSubscriptions.remove(accountItem.getAccount());
     }
@@ -247,7 +231,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     /**
      * Sends new presence information.
      *
-     * @param account
      * @throws NetworkException
      */
     public void resendPresence(AccountJid account) throws NetworkException {
@@ -255,6 +238,8 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     }
 
     public void sendVCardUpdatePresence(AccountJid account, String hash) throws NetworkException {
+        LogManager.i(this, "sendVCardUpdatePresence: " + account);
+
         final Presence presence = AccountManager.getInstance().getAccount(account).getPresence();
 
         final VCardUpdate vCardUpdate = new VCardUpdate();
@@ -284,11 +269,11 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
 
         if (presence.getType() == Presence.Type.subscribe) {
-            AccountJid account = ((AccountItem) connection).getAccount();
+            AccountJid account = connection.getAccount();
 
             // Subscription request
-            HashSet<BareJid> set = requestedSubscriptions.get(account);
-            if (set != null && set.contains(from.getBareJid())) {
+            Set<UserJid> set = requestedSubscriptions.get(account);
+            if (set != null && set.contains(from)) {
                 try {
                     acceptSubscription(account, from);
                 } catch (NetworkException e) {
