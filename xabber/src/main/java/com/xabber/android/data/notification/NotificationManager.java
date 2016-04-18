@@ -46,7 +46,6 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ClearNotifications;
 import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.activity.ReconnectionActivity;
@@ -365,6 +364,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             return;
         }
 
+
+
         int waiting = 0;
         int connecting = 0;
         int connected = 0;
@@ -373,12 +374,25 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         for (AccountJid account : accountList) {
             ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
 
-            if (RosterManager.getInstance().isRosterReceived(account)) {
-                connected++;
-            } else if (state == ConnectionState.connecting || state == ConnectionState.authentication) {
-                connecting++;
-            } else if (state == ConnectionState.waiting) {
-                waiting++;
+            LogManager.i(this, "updatePersistentNotification account " + account + " state " + state );
+
+            switch (state) {
+
+                case offline:
+                    break;
+                case waiting:
+                    waiting++;
+                    break;
+
+                case connecting:
+                case registration:
+                case authentication:
+                    connecting++;
+                    break;
+
+                case connected:
+                    connected++;
+                    break;
             }
         }
 

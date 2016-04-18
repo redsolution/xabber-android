@@ -88,21 +88,21 @@ class ConnectionThread {
                 LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
             }
 
-            connectionItem.connectionClosedOnError(e);
+            connectionItem.connectionClosed();
         } catch (IOException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. IOException " + e.getMessage());
             LogManager.exception(this, e);
-            connectionItem.connectionClosedOnError(e);
+            connectionItem.connectionClosed();
         } catch (XMPPException e) {
             // There is no connection listeners yet, so we call onClose.
             LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
             LogManager.exception(this, e);
-            connectionItem.connectionClosedOnError(e);
+            connectionItem.connectionClosed();
         } catch (InterruptedException e) {
             LogManager.w(this, "Connection failed. InterruptedException " + e.getMessage());
             LogManager.exception(this, e);
-            connectionItem.connectionClosedOnError(e);
+            connectionItem.connectionClosed();
         }
         return success;
     }
@@ -119,15 +119,10 @@ class ConnectionThread {
         }
 
         if (success) {
-            onAccountCreated();
+            connectionItem.onAccountRegistered();
         }
 
         return success;
-    }
-
-    private void onAccountCreated() {
-        LogManager.i(this, "Account created");
-        connectionItem.onAccountRegistered(this);
     }
 
     private boolean login() {
@@ -152,7 +147,7 @@ class ConnectionThread {
             connectionItem.connectionClosed();
         } catch (XMPPException e) {
             LogManager.exception(this, e);
-            connectionItem.connectionClosedOnError(e);
+            connectionItem.connectionClosed();
         } catch (SmackException | IOException | InterruptedException e) {
             LogManager.exception(this, e);
         }

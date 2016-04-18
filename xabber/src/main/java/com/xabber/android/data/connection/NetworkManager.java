@@ -141,45 +141,49 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     }
 
     public void onNetworkChange() {
-        NetworkInfo active = connectivityManager.getActiveNetworkInfo();
-        LogManager.i(this, "Active network info: " + active);
-        Integer type = getType(active);
-        boolean suspended = isSuspended(active);
-
-        if (this.type != null && this.type.equals(type)) {
-            if (this.suspended == suspended) {
-                LogManager.i(this, "State does not changed.");
-            } else if (suspended) {
-                onSuspend();
-            } else {
-                onResume();
-            }
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        LogManager.i(this, "Active network info: " + networkInfo);
+        if (networkInfo != null && networkInfo.getState() == State.CONNECTED) {
+            onAvailable(getType(networkInfo));
+            state = NetworkState.available;
         } else {
-            if (suspended) {
-                type = null;
-                suspended = false;
-            }
-            if (type == null) {
-                onUnavailable();
-            } else {
-                onAvailable(type);
-            }
+            state = NetworkState.unavailable;
         }
-        this.type = type;
-        this.suspended = suspended;
+//
+//        if (this.type != null && this.type.equals(type)) {
+//            if (this.suspended == suspended) {
+//                LogManager.i(this, "State does not changed.");
+//            } else if (suspended) {
+//                onSuspend();
+//            } else {
+//                onResume();
+//            }
+//        } else {
+//            if (suspended) {
+//                type = null;
+//                suspended = false;
+//            }
+//            if (type == null) {
+//                onUnavailable();
+//            } else {
+//                onAvailable(type);
+//            }
+//        }
+//        this.type = type;
+//        this.suspended = suspended;
     }
 
     /**
      * New network is available. Start connection.
      */
-    private void onAvailable(int type) {
+    private void onAvailable(Integer type) {
         state = NetworkState.available;
         LogManager.i(this, "Available");
-        if (type == ConnectivityManager.TYPE_WIFI) {
+//        if (type == ConnectivityManager.TYPE_WIFI) {
 //            ConnectionManager.getInstance().forceReconnect();
-        } else {
-//            ConnectionManager.getInstance().updateConnections(false);
-        }
+//        } else {
+//            ConnectionManager.getInstance().reconnect();
+//        }
     }
 
     /**

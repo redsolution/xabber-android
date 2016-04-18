@@ -30,6 +30,7 @@ import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
@@ -41,6 +42,8 @@ import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.jid.parts.Resourcepart;
+
+import java.io.IOException;
 
 /**
  * Abstract connection.
@@ -123,7 +126,7 @@ public abstract class ConnectionItem implements ConnectionListener {
      * Report if this connection is to register a new account on XMPP server.
      */
     public boolean isRegisterAccount() {
-        return(registerNewAccount);
+        return registerNewAccount;
     }
 
     @NonNull
@@ -156,9 +159,7 @@ public abstract class ConnectionItem implements ConnectionListener {
      * @param userRequest action was requested by user.
      * @return Whether connection is available.
      */
-    protected boolean isConnectionAvailable(boolean userRequest) {
-        return true;
-    }
+    protected abstract boolean isConnectionAvailable(boolean userRequest);
 
     /**
      * Connect or disconnect from server depending on internal flags.
@@ -247,28 +248,53 @@ public abstract class ConnectionItem implements ConnectionListener {
         if (!getState().isConnectable()) {
             return;
         }
-        disconnectionRequested = true;
-        boolean request = isConnectionRequestedByUser;
-        isConnectionRequestedByUser = false;
-        updateConnection(false);
-        isConnectionRequestedByUser = request;
-        disconnectionRequested = false;
-        updateConnection(false);
+
+        Thread thread = new Thread("Force reconnection thread for " + connection) {
+            @Override
+            public void run() {
+                if (connection.isConnected()) {
+                    connection.disconnect();
+                    try {
+                        connection.connect().login();
+                    } catch (XMPPException | SmackException | InterruptedException | IOException e) {
+                        LogManager.exception(this, e);
+                    }
+                }
+            }
+
+        };
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public void reconnect() {
+        if (state == ConnectionState.waiting) {
+            Thread thread = new Thread("Reconnection thread for " + connection) {
+                @Override
+                public void run() {
+                    try {
+                        connection.connect().login();
+                    } catch (XMPPException | SmackException | InterruptedException | IOException e) {
+                        LogManager.exception(this, e);
+                    }
+                }
+
+            };
+            thread.setPriority(Thread.MIN_PRIORITY);
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     /**
      * Starts disconnection in another thread.
      */
-    protected static void disconnect(final XMPPConnection xmppConnection) {
+    protected static void disconnect(final AbstractXMPPConnection xmppConnection) {
         Thread thread = new Thread("Disconnection thread for " + xmppConnection) {
             @Override
             public void run() {
-                try {
-                    ((AbstractXMPPConnection)xmppConnection).disconnect();
-                } catch (RuntimeException e) {
-                    LogManager.exception(this, e);
-                    // connectionClose() in smack can fail.
-                }
+                xmppConnection.disconnect();
             }
 
         };
@@ -289,24 +315,13 @@ public abstract class ConnectionItem implements ConnectionListener {
     /**
      * New account has been registered on XMPP server.
      */
-    protected void onAccountRegistered(ConnectionThread connectionThread) {
+    protected void onAccountRegistered() {
         registerNewAccount = false;
         state = ConnectionState.authentication;
     }
 
-    /**
-     * Called when disconnect should occur.
-     */
-    private void onDisconnect() {
-        LogManager.i(this, "onClose " + connection.hashCode() + " - "
-                        + connection.getConnectionCounter());
-
-        ConnectionManager.getInstance().onDisconnect(this);
-    }
-
     @Override
     public void connected(XMPPConnection connection) {
-        LogManager.d(this, "connected " + getAccount());
 
         if (isRegisterAccount()) {
             state = ConnectionState.registration;
@@ -315,28 +330,21 @@ public abstract class ConnectionItem implements ConnectionListener {
         }
 
         ConnectionManager.getInstance().onConnected(this);
-        AccountManager.getInstance().onAccountChanged(getAccount());
     }
 
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
-        LogManager.d(this, "authenticated " + getAccount() + " resumed " + resumed);
-
         PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
-
         state = ConnectionState.connected;
-
-        AccountManager.getInstance().onAccountChanged(getAccount());
-        ConnectionManager.getInstance().onAuthorized(this);
+        ConnectionManager.getInstance().onAuthorized(this, resumed);
     }
 
     @Override
     public void connectionClosed() {
-        LogManager.d(this, "connectionClosed " + getAccount());
+        state = ConnectionState.offline;
 
-        onDisconnect();
+        ConnectionManager.getInstance().onDisconnect(this);
 
-        state = ConnectionState.waiting;
         if (isConnectionRequestedByUser) {
             Application.getInstance().onError(R.string.CONNECTION_FAILED);
         }
@@ -345,26 +353,30 @@ public abstract class ConnectionItem implements ConnectionListener {
         AccountManager.getInstance().onAccountChanged(getAccount());
     }
 
+    // going to reconnect with Smack Reconnection manager
     @Override
     public void connectionClosedOnError(final Exception e) {
-        LogManager.d(this, "connectionClosedOnError " + getAccount() + " " + e.getMessage());
+        state = ConnectionState.waiting;
+        AccountManager.getInstance().onAccountChanged(getAccount());
 
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
-        connectionClosed();
+//        connectionClosed();
     }
 
     @Override
     public void reconnectionSuccessful() {
-        LogManager.d(this, "reconnectionSuccessful " + getAccount());
     }
 
     @Override
     public void reconnectingIn(int seconds) {
+        if (state != ConnectionState.waiting) {
+            state = ConnectionState.waiting;
+            AccountManager.getInstance().onAccountChanged(getAccount());
+        }
     }
 
     @Override
     public void reconnectionFailed(Exception e) {
-        LogManager.d(this, "reconnectionFailed " + getAccount() + " " + e.getMessage());
     }
 
     private StanzaListener everyStanzaListener = new StanzaListener() {

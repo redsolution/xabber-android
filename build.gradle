@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.0-beta1'
+        classpath "io.realm:realm-gradle-plugin:0.88.3"
     }
 }
 
@@ -12,5 +13,6 @@ allprojects {
     repositories {
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
 }

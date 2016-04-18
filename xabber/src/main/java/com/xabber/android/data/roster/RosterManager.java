@@ -98,7 +98,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         if (roster == null) {
             return null;
         } else {
-            return roster.getPresence(user.getJid().asBareJid());
+            Presence presence = roster.getPresence(user.getJid().asBareJid());
+            return presence;
         }
     }
 
@@ -132,7 +133,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
-    void updateContacts() {
+    public void updateContacts() {
         Collection<RosterContact> newRosterContacts = new ArrayList<>();
         for (AccountJid account : AccountManager.getInstance().getAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);

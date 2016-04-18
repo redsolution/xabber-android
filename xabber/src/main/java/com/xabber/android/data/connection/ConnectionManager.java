@@ -31,7 +31,9 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.connection.listeners.OnResponseListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.roster.RosterManager;
 
+import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
@@ -83,7 +85,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
      * List of managed connection. Only managed connections can notify
      * registered listeners.
      */
-    private final Collection<XMPPConnection> managedConnections;
+    private final Collection<AbstractXMPPConnection> managedConnections;
     /**
      * Request holders for its packet id in accounts.
      */
@@ -110,9 +112,9 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     @Override
     public void onClose() {
         LogManager.i(this, "onClose");
-        ArrayList<XMPPConnection> connections = new ArrayList<>(managedConnections);
+        ArrayList<AbstractXMPPConnection> connections = new ArrayList<AbstractXMPPConnection>(managedConnections);
         managedConnections.clear();
-        for (XMPPConnection connection : connections) {
+        for (AbstractXMPPConnection connection : connections) {
             ConnectionItem.disconnect(connection);
         }
     }
@@ -127,11 +129,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
         AccountManager accountManager = AccountManager.getInstance();
         for (AccountJid account : accountManager.getAccounts()) {
-            final ConnectionItem connectionItem = accountManager.getAccount(account);
-
-            if (connectionItem.updateConnection(userRequest)) {
-                AccountManager.getInstance().onAccountChanged(account);
-            }
+            accountManager.getAccount(account).updateConnection(userRequest);
         }
     }
 
@@ -143,7 +141,14 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         AccountManager accountManager = AccountManager.getInstance();
         for (AccountJid account : accountManager.getAccounts()) {
             accountManager.getAccount(account).forceReconnect();
-            AccountManager.getInstance().onAccountChanged(account);
+        }
+    }
+
+    public void reconnect() {
+        LogManager.i(this, "reconnect");
+        AccountManager accountManager = AccountManager.getInstance();
+        for (AccountJid account : accountManager.getAccounts()) {
+            accountManager.getAccount(account).reconnect();
         }
     }
 
@@ -210,7 +215,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         requests.put(account.toString(), stanzaId, holder);
     }
 
-    public void onConnection(XMPPConnection connection) {
+    public void onConnection(AbstractXMPPConnection connection) {
         LogManager.i(this, "onConnection " + connection.getUser());
         managedConnections.add(connection);
     }
@@ -220,6 +225,8 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             LogManager.i(this, "onConnected !managedConnections.contains(connectionThread)");
             onConnection(connectionItem.getConnection());
         }
+
+        AccountManager.getInstance().onAccountChanged(connectionItem.getAccount());
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -231,19 +238,26 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         });
     }
 
-    public void onAuthorized(final ConnectionItem connectionItem) {
+    public void onAuthorized(final ConnectionItem connectionItem, boolean resumed) {
         if (!managedConnections.contains(connectionItem.getConnection())) {
             LogManager.i(this, "onAuthorized !managedConnections.contains(connectionItem)");
             onConnection(connectionItem.getConnection());
             return;
         }
+
+        AccountManager.getInstance().onAccountChanged(connectionItem.getAccount());
+
+        if (resumed) {
+            RosterManager.getInstance().updateContacts();
+        }
+
+
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
                     listener.onAuthorized(connectionItem);
                 }
-
                 AccountManager.getInstance().removeAuthorizationError(connectionItem.getAccount());
 
             }
