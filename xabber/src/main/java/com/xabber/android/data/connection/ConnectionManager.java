@@ -37,7 +37,6 @@ import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.Message;
@@ -112,7 +111,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     @Override
     public void onClose() {
         LogManager.i(this, "onClose");
-        ArrayList<AbstractXMPPConnection> connections = new ArrayList<AbstractXMPPConnection>(managedConnections);
+        ArrayList<AbstractXMPPConnection> connections = new ArrayList<>(managedConnections);
         managedConnections.clear();
         for (AbstractXMPPConnection connection : connections) {
             ConnectionItem.disconnect(connection);
@@ -173,7 +172,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
      * Send stanza to authenticated connection.
      */
     public void sendStanza(AccountJid account, Stanza stanza) throws NetworkException {
-        sendStanza( getXmppTcpConnection(account), stanza);
+        sendStanza(getXmppTcpConnection(account), stanza);
     }
 
     private void sendStanza(@NonNull XMPPTCPConnection xmppConnection, @NonNull Stanza stanza) throws NetworkException {
@@ -188,16 +187,9 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         }
     }
 
-    public @NonNull XMPPTCPConnection getXmppTcpConnection(AccountJid account) throws NetworkException {
-        XMPPTCPConnection returnConnection = null;
-        for (XMPPConnection connection : managedConnections) {
-            if (connection.getUser() != null && connection.getUser().equals(account.getFullJid())) {
-                returnConnection = (XMPPTCPConnection) connection;
-                break;
-            }
-        }
-
-        if (returnConnection == null || !returnConnection.isAuthenticated()) {
+    private @NonNull XMPPTCPConnection getXmppTcpConnection(AccountJid account) throws NetworkException {
+        XMPPTCPConnection returnConnection = AccountManager.getInstance().getAccount(account).getConnection();
+        if (!returnConnection.isAuthenticated()) {
             throw new NetworkException(R.string.NOT_CONNECTED);
         }
         return returnConnection;
