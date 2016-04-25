@@ -71,7 +71,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
     public static final int MESSAGE_NOTIFICATION_ID = 2;
-    public static final int CURRENT_CHAT_MESSAGE_NOTIFICATION_ID = 3;
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
@@ -511,12 +510,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
 
         updateMessageNotification(messageItem);
-    }
-
-    public void onCurrentChatMessageNotification(MessageItem messageItem) {
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
-        addEffects(notificationBuilder, messageItem);
-        notify(CURRENT_CHAT_MESSAGE_NOTIFICATION_ID, notificationBuilder.build());
     }
 
     /**
