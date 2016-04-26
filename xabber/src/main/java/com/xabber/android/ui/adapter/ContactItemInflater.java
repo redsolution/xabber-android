@@ -136,10 +136,14 @@ public class ContactItemInflater {
             view.setBackgroundColor(ColorManager.getInstance().getActiveChatBackgroundColor());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getActiveChatSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getActiveChatLargeClientIconColor());
+            viewHolder.smallRightIcon.setColorFilter(ColorManager.getInstance().getActiveChatLargeClientIconColor());
+            viewHolder.smallRightText.setTextColor(ColorManager.getInstance().getActiveChatLargeClientIconColor());
         } else {
             view.setBackgroundColor(ColorManager.getInstance().getContactBackground());
             viewHolder.separator.setBackgroundColor(ColorManager.getInstance().getContactSeparatorColor());
             viewHolder.largeClientIcon.setColorFilter(ColorManager.getInstance().getContactLargeClientIconColor());
+            viewHolder.smallRightIcon.setColorFilter(ColorManager.getInstance().getContactLargeClientIconColor());
+            viewHolder.smallRightText.setTextColor(ColorManager.getInstance().getContactLargeClientIconColor());
         }
 
         if (statusText.isEmpty()) {
