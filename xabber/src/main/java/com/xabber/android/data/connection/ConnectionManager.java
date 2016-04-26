@@ -43,6 +43,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.sm.StreamManagementException;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.caps.EntityCapsManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -78,6 +79,8 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
         ServiceDiscoveryManager.setDefaultIdentity(new DiscoverInfo.Identity("client", Application.getInstance()
                 .getString(R.string.client_name), "handheld"));
+        EntityCapsManager.setDefaultEntityNode(Application.getInstance()
+                .getString(R.string.caps_entity_node));
     }
 
     /**
