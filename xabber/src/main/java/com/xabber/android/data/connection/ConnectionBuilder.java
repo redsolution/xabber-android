@@ -6,6 +6,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;
@@ -61,6 +62,8 @@ public class ConnectionBuilder {
 
         setUpSasl();
 
+
+        LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
         return new XMPPTCPConnection(builder.build());
     }
 

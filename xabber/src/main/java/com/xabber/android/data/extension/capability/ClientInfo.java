@@ -38,8 +38,7 @@ public class ClientInfo {
         super();
         this.type = type;
         this.name = name;
-        this.features = Collections
-                .unmodifiableCollection(new ArrayList<String>(features));
+        this.features = Collections.unmodifiableCollection(new ArrayList<>(features));
         this.clientSoftware = ClientSoftware.getByName(name, node);
     }
 

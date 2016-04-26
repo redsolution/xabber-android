@@ -32,7 +32,6 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.data.notification.EntityNotificationProvider;
@@ -205,7 +204,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
             return;
         }
 
-        CapabilitiesManager.getInstance().onPresenceChanged(account, presence);
         for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
                 listener.onStatusChanged(account, from,
                         StatusMode.createStatusMode(presence), presence.getStatus());

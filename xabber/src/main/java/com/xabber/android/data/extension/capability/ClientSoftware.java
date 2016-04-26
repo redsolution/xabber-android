@@ -52,20 +52,21 @@ public enum ClientSoftware {
     }
 
     /**
-     * @param name
-     * @param node
      * @return Client software for given identity name.
      */
     public static ClientSoftware getByName(String name, String node) {
         if (name == null) {
-            if (node != null && GTALK_NODE.matcher(node).matches())
+            if (node != null && GTALK_NODE.matcher(node).matches()) {
                 return gtalk;
-            else
+            } else {
                 return unknown;
+            }
         }
-        for (ClientSoftware clientSoftware : values())
-            if (clientSoftware.regularExpression.matcher(name).matches())
+        for (ClientSoftware clientSoftware : values()) {
+            if (clientSoftware.regularExpression.matcher(name).matches()) {
                 return clientSoftware;
+            }
+        }
         throw new IllegalStateException();
     }
 }

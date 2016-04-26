@@ -28,7 +28,6 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 
 import org.jivesoftware.smack.packet.Presence;
-import org.jxmpp.jid.FullJid;
 import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Collection;
@@ -48,7 +47,7 @@ public class AbstractContact extends BaseEntity {
     }
 
     /**
-     * vCard and roster can be used for name resolving.
+     * vCard and roster can be  used for name resolving.
      *
      * @return Verbose name.
      */
@@ -100,13 +99,12 @@ public class AbstractContact extends BaseEntity {
             return ClientSoftware.unknown;
         }
 
-        FullJid fullJid = presence.getFrom().asFullJidIfPossible();
-        ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, fullJid);
+        ClientInfo clientInfo = CapabilitiesManager.getClientInfo(account, presence.getFrom());
         if (clientInfo == null) {
-
             return ClientSoftware.unknown;
+        } else {
+            return clientInfo.getClientSoftware();
         }
-        return clientInfo.getClientSoftware();
     }
 
     public Collection<? extends Group> getGroups() {

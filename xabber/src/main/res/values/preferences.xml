@@ -56,7 +56,6 @@
         <item>com.xabber.android.data.database.sqlite.SoundTable</item>
         <item>com.xabber.android.data.database.sqlite.VCardTable</item>
         <item>com.xabber.android.data.database.sqlite.AvatarTable</item>
-        <item>com.xabber.android.data.database.sqlite.CapabilitiesTable</item>
         <item>com.xabber.android.data.database.sqlite.StatusTable</item>
         <item>com.xabber.android.data.database.sqlite.OTRTable</item>
         <item>com.xabber.android.data.database.sqlite.VibroTable</item>

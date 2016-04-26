@@ -263,11 +263,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         for (Presence presence : allPresences) {
             Jid user = presence.getFrom();
-            ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user.asFullJidIfPossible());
+            ClientInfo clientInfo = CapabilitiesManager.getClientInfo(account, user);
 
             String client = "";
             if (clientInfo == null) {
-                CapabilitiesManager.getInstance().request(account, user);
                 client = getString(R.string.please_wait);
             } else if (clientInfo == CapabilitiesManager.INVALID_CLIENT_INFO) {
                 client = getString(R.string.unknown);
