@@ -347,7 +347,7 @@ public abstract class AbstractChat extends BaseEntity {
         if (notify && notifyAboutMessage()) {
             if (visible) {
                 if (ChatManager.getInstance().isNotifyVisible(account, user)) {
-                    NotificationManager.getInstance().onCurrentChatMessageNotification(messageItem);
+                    NotificationManager.getInstance().onMessageNotification(messageItem);
                 }
             } else {
                 NotificationManager.getInstance().onMessageNotification(messageItem);
