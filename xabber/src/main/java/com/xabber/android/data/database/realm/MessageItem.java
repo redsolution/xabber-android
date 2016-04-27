@@ -16,6 +16,7 @@ package com.xabber.android.data.database.realm;
 
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.entity.AccountJid;
@@ -189,7 +190,7 @@ public class MessageItem extends RealmObject {
     }
 
     public Resourcepart getResource() {
-        if (resource == null) {
+        if (TextUtils.isEmpty(resource)) {
             return Resourcepart.EMPTY;
         }
 
