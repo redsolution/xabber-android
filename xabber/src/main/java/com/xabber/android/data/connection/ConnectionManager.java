@@ -14,7 +14,9 @@
  */
 package com.xabber.android.data.connection;
 
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -77,8 +79,25 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
         SmackConfiguration.setDefaultPacketReplyTimeout(PACKET_REPLY_TIMEOUT);
 
-        ServiceDiscoveryManager.setDefaultIdentity(new DiscoverInfo.Identity("client", Application.getInstance()
-                .getString(R.string.client_name), "handheld"));
+        String applicationFullTitle = Application.getInstance().getString(R.string.application_title_full);
+
+        String versionName = null;
+        try {
+            versionName = Application.getInstance().getPackageManager().getPackageInfo(
+                    Application.getInstance().getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String clientIdentity;
+
+        if (!TextUtils.isEmpty(versionName)) {
+            clientIdentity = applicationFullTitle + " " + versionName;
+        } else {
+            clientIdentity = applicationFullTitle;
+        }
+
+        ServiceDiscoveryManager.setDefaultIdentity(new DiscoverInfo.Identity("client", clientIdentity, "handheld"));
         EntityCapsManager.setDefaultEntityNode(Application.getInstance()
                 .getString(R.string.caps_entity_node));
     }

@@ -371,7 +371,7 @@
     <string name="account_port_key">account_port</string>
     <string name="account_server_key">account_server</string>
     <string name="account_resource_key">account_resource</string>
-    <string name="account_resource_default">@string/client_name</string>
+    <string name="account_resource_default">@string/application_title_short</string>
     <string name="account_priority_key">account_priority</string>
     <string name="account_sasl_key">account_sasl</string>
     <string name="account_tls_mode_key">account_tls_mode</string>
