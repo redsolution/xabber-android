@@ -56,12 +56,20 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
     /**
      * Account name used to store information that don't belong to any account.
      */
-    public static final AccountJid NO_ACCOUNT = null;
+    public static AccountJid NO_ACCOUNT;
     private final static GroupManager instance;
 
     static {
         instance = new GroupManager();
         Application.getInstance().addManager(instance);
+
+        try {
+            // TODO: looks ugly, comes from times, when account was string.
+            NO_ACCOUNT = AccountJid.from("com.xabber.android@data/NO_ACCOUNT");
+        } catch (XmppStringprepException e) {
+            LogManager.exception(GroupManager.class.getSimpleName(), e);
+            NO_ACCOUNT = null;
+        }
     }
 
     /**
