@@ -40,6 +40,8 @@ public enum ClientSoftware {
 
     xabber("(?iu).*Xabber.*"),
 
+    conversations("(?iu).*Conversations.*"),
+
     unknown(".*");
 
     private Pattern regularExpression;
