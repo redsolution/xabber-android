@@ -18,6 +18,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.roster.OnContactChangedListener;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -61,10 +64,31 @@ public class CapabilitiesManager {
             Application.getInstance().runInBackground(new Runnable() {
                 @Override
                 public void run() {
+                    DiscoverInfo discoverInfo = null;
                     try {
-                        ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection()).discoverInfo(jid);
+                        discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
+                                .discoverInfo(jid);
                     } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
                         LogManager.exception(this, e);
+                    }
+
+                    if (discoverInfo != null) {
+                        Application.getInstance().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Collection<OnContactChangedListener> uiListeners = Application.getInstance().getUIListeners(OnContactChangedListener.class);
+                                for (OnContactChangedListener listener : uiListeners) {
+                                    try {
+                                        Collection<BaseEntity> changedContacts = new ArrayList<>();
+                                        changedContacts.add(new BaseEntity(account, UserJid.from(jid)));
+                                        listener.onContactsChanged(changedContacts);
+                                    } catch (UserJid.UserJidCreateException e) {
+                                        LogManager.exception(this, e);
+                                    }
+
+                                }
+                            }
+                        });
                     }
                 }
             });
