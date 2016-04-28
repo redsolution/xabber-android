@@ -103,7 +103,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
     public void onSettingsChanged() {
         synchronized (enabledLock) {
-            for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(account);
                 if (accountItem == null) {
                     continue;

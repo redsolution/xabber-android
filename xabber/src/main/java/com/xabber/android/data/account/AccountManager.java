@@ -62,7 +62,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -97,10 +97,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * List of accounts.
      */
     private final Map<AccountJid, AccountItem> accountItems;
-    /**
-     * List of enabled account.
-     */
-    private final Collection<AccountJid> enabledAccounts;
     private final BaseAccountNotificationProvider<AccountAuthorizationError> authorizationErrorProvider;
 
     private final BaseAccountNotificationProvider<PasswordRequest> passwordRequestProvider;
@@ -118,7 +114,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     private AccountManager() {
         this.application = Application.getInstance();
         accountItems = new HashMap<>();
-        enabledAccounts = new HashSet<>();
         savedStatuses = new ArrayList<>();
         authorizationErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
         passwordRequestProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_add_circle);
@@ -227,9 +222,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     private void addAccount(AccountItem accountItem) {
         accountItems.put(accountItem.getAccount(), accountItem);
-        if (accountItem.isEnabled()) {
-            enabledAccounts.add(accountItem.getAccount());
-        }
         for (OnAccountAddedListener listener : application.getManagers(OnAccountAddedListener.class)) {
             listener.onAccountAdded(accountItem);
         }
@@ -416,7 +408,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
         });
         accountItems.remove(account);
-        enabledAccounts.remove(account);
         for (OnAccountRemovedListener listener : application.getManagers(OnAccountRemovedListener.class)) {
             listener.onAccountRemoved(accountItem);
         }
@@ -504,7 +495,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 }
             }
             if (changed && enabled) {
-                enabledAccounts.add(account);
                 onAccountEnabled(result);
                 if (result.getRawStatusMode().isOnline()) {
                     onAccountOnline(result);
@@ -514,7 +504,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 result.updateConnection(true);
             }
             if (changed && !enabled) {
-                enabledAccounts.remove(account);
                 if (result.getRawStatusMode().isOnline()) {
                     onAccountOffline(result);
                 }
@@ -639,7 +628,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     /**
      * @return List of enabled accounts.
      */
-    public Collection<AccountJid> getAccounts() {
+    public Collection<AccountJid> getEnabledAccounts() {
+        List<AccountJid> enabledAccounts = new ArrayList<>();
+        for (AccountItem accountItem : accountItems.values()) {
+            if (accountItem.isEnabled()) {
+                enabledAccounts.add(accountItem.getAccount());
+            }
+        }
+
         return Collections.unmodifiableCollection(enabledAccounts);
     }
 
@@ -972,9 +968,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             LogManager.exception(this, e);
             return null;
         }
-        if (enabledAccounts.contains(selected)) {
+
+        AccountItem selectedAccountItem = accountItems.get(selected);
+        if (selectedAccountItem != null && selectedAccountItem.isEnabled()) {
             return selected;
         }
+
         return null;
     }
 

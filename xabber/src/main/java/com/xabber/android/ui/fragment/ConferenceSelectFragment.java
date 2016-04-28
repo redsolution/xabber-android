@@ -94,7 +94,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         accountView.setAdapter(new AccountChooseAdapter(getActivity()));
         accountView.setOnItemSelectedListener(this);
 
-        if (AccountManager.getInstance().getAccounts().size() == 1) {
+        if (AccountManager.getInstance().getEnabledAccounts().size() == 1) {
             accountView.setSelection(0);
         }
 

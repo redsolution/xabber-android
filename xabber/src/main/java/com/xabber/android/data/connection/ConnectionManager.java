@@ -149,7 +149,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         LogManager.i(this, "updateConnections");
 
         AccountManager accountManager = AccountManager.getInstance();
-        for (AccountJid account : accountManager.getAccounts()) {
+        for (AccountJid account : accountManager.getEnabledAccounts()) {
             accountManager.getAccount(account).updateConnection(userRequest);
         }
     }
@@ -160,7 +160,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     public void forceReconnect() {
         LogManager.i(this, "forceReconnect");
         AccountManager accountManager = AccountManager.getInstance();
-        for (AccountJid account : accountManager.getAccounts()) {
+        for (AccountJid account : accountManager.getEnabledAccounts()) {
             accountManager.getAccount(account).forceReconnect();
         }
     }
@@ -168,7 +168,7 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     public void reconnect() {
         LogManager.i(this, "reconnect");
         AccountManager accountManager = AccountManager.getInstance();
-        for (AccountJid account : accountManager.getAccounts()) {
+        for (AccountJid account : accountManager.getEnabledAccounts()) {
             accountManager.getAccount(account).reconnect();
         }
     }

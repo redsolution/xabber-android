@@ -369,7 +369,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         int connecting = 0;
         int connected = 0;
 
-        Collection<AccountJid> accountList = AccountManager.getInstance().getAccounts();
+        Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
         for (AccountJid account : accountList) {
             ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
 

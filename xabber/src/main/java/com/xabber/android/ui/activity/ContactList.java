@@ -261,7 +261,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             openChat(entities.get(0), text);
             return;
         }
-        Collection<AccountJid> accounts = AccountManager.getInstance().getAccounts();
+        Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
         if (accounts.isEmpty()) {
             return;
         }

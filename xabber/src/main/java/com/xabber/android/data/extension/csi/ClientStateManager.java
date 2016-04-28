@@ -32,7 +32,7 @@ public class ClientStateManager {
 
     protected static void sendClientState(Nonza nonza) {
         AccountManager accountManager = AccountManager.getInstance();
-        for (AccountJid accountName : accountManager.getAccounts()) {
+        for (AccountJid accountName : accountManager.getEnabledAccounts()) {
             AccountItem accountItem = accountManager.getAccount(accountName);
             if (accountItem == null) {
                 continue;

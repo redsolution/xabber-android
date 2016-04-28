@@ -78,7 +78,7 @@ public class ContactAddFragment extends GroupEditorFragment
             }
         }
         if (getAccount() == null) {
-            Collection<AccountJid> accounts = AccountManager.getInstance().getAccounts();
+            Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
             if (accounts.size() == 1) {
                 setAccount(accounts.iterator().next());
             }

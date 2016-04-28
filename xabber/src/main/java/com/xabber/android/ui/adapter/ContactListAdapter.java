@@ -147,7 +147,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
         final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getContacts();
 
         Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             blockedContacts.put(account, BlockingManager.getInstance().getBlockedContacts(account));
         }
 
@@ -198,7 +198,7 @@ public class ContactListAdapter extends GroupedContactAdapter implements Runnabl
 
         final Map<AccountJid, AccountConfiguration> accounts = new TreeMap<>();
 
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             accounts.put(account, null);
         }
 

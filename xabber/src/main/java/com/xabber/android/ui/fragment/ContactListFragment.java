@@ -443,7 +443,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             return;
         }
         if (!SettingsManager.contactsShowAccounts()) {
-            if (AccountManager.getInstance().getAccounts().size() < 2) {
+            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
                 scrollUp();
             } else {
                 setSelectedAccount(account);

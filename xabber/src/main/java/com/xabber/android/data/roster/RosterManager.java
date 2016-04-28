@@ -119,7 +119,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     private void requestRosterReloadIfNeeded() {
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);
             if (roster != null && !roster.isLoaded()
                     && AccountManager.getInstance().getAccount(account).getState() == ConnectionState.connected) {
@@ -135,7 +135,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     public void updateContacts() {
         Collection<RosterContact> newRosterContacts = new ArrayList<>();
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             final Roster roster = RosterManager.getInstance().getRoster(account);
             if (roster == null) {
                 continue;
@@ -418,7 +418,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      *
      */
     public void removeGroup(String group) throws NetworkException {
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             removeGroup(account, group);
         }
     }
@@ -499,7 +499,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * @param oldGroup can be <code>null</code> for "no group".
      */
     public void renameGroup(String oldGroup, String newGroup) {
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             renameGroup(account, oldGroup, newGroup);
         }
     }

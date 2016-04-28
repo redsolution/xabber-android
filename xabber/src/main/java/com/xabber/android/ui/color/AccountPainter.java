@@ -47,7 +47,7 @@ public class AccountPainter {
 
     private static AccountJid getFirstAccount() {
         List<AccountJid> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getAccounts());
+        list.addAll(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(list);
         if (list.isEmpty()) {
             return null;

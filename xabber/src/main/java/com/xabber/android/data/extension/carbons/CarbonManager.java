@@ -129,7 +129,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                Collection<AccountJid> accounts = AccountManager.getInstance().getAccounts();
+                Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
                 for (AccountJid account : accounts) {
                     updateIsSupported(AccountManager.getInstance().getAccount(account));
                 }

@@ -55,7 +55,7 @@ public class AccountActionButtonsAdapter implements UpdatableAdapter {
      */
     public void rebuild() {
         accounts.clear();
-        accounts.addAll(AccountManager.getInstance().getAccounts());
+        accounts.addAll(AccountManager.getInstance().getEnabledAccounts());
 
         Collections.sort(accounts);
         final int size = accounts.size();

@@ -100,7 +100,7 @@ public class PrivateMucChatBlockingManager {
     public Map<AccountJid, Collection<UserJid>> getBlockedContacts() {
         Map<AccountJid, Collection<UserJid>> blockedContacts = new HashMap<>();
 
-        for (AccountJid account : AccountManager.getInstance().getAccounts()) {
+        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
             blockedContacts.put(account, getBlockedContacts(account));
         }
 

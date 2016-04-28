@@ -69,7 +69,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
     @Override
     protected Collection<AccountJid> getTags() {
         List<AccountJid> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getAccounts());
+        list.addAll(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(list);
         return list;
     }
