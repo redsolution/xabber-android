@@ -6,7 +6,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.SettingsManager;
 
-import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.provided.SASLPlainMechanism;

@@ -96,7 +96,7 @@ public class AccountItem extends ConnectionItem {
 
     private ArchiveMode archiveMode;
 
-    public AccountItem(AccountProtocol protocol, boolean custom, String host,
+    public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, int colorIndex,
                        int priority, StatusMode statusMode, String statusText,
@@ -105,7 +105,7 @@ public class AccountItem extends ConnectionItem {
                        int proxyPort, String proxyUser, String proxyPassword,
                        boolean syncable, KeyPair keyPair, Date lastSync,
                        ArchiveMode archiveMode) {
-        super(protocol, custom, host, port, serverName, userName, resource,
+        super(custom, host, port, serverName, userName, resource,
                 storePassword, password, saslEnabled, tlsMode, compression,
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         this.id = null;

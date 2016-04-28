@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.connection;
 
-import com.xabber.android.data.account.AccountProtocol;
-
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -26,12 +24,6 @@ import org.jxmpp.jid.parts.Resourcepart;
  * @author alexander.ivanov
  */
 public class ConnectionSettings {
-
-    /**
-     * Protocol.
-     */
-    private final AccountProtocol protocol;
-
     /**
      * User part of jid.
      */
@@ -92,13 +84,12 @@ public class ConnectionSettings {
 
     private String proxyPassword;
 
-    public ConnectionSettings(AccountProtocol protocol, Localpart userName,
+    public ConnectionSettings(Localpart userName,
                               DomainBareJid serverName, Resourcepart resource, boolean custom, String host,
                               int port, String password, boolean saslEnabled, TLSMode tlsMode,
                               boolean compression, ProxyType proxyType, String proxyHost,
                               int proxyPort, String proxyUser, String proxyPassword) {
         super();
-        this.protocol = protocol;
         this.userName = userName;
         this.serverName = serverName;
         this.resource = resource;
@@ -114,10 +105,6 @@ public class ConnectionSettings {
         this.proxyPort = proxyPort;
         this.proxyUser = proxyUser;
         this.proxyPassword = proxyPassword;
-    }
-
-    public AccountProtocol getProtocol() {
-        return protocol;
     }
 
     /**

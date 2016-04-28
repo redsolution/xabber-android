@@ -32,11 +32,6 @@ public class AccountType {
     final private int id;
 
     /**
-     * Protocol.
-     */
-    final private AccountProtocol protocol;
-
-    /**
      * Name of account type.
      */
     final private String name;
@@ -81,11 +76,10 @@ public class AccountType {
      */
     final private boolean tlsRequired;
 
-    public AccountType(int id, AccountProtocol protocol, String name,
+    public AccountType(int id, String name,
                        String hint, String help, Drawable icon, boolean allowServer,
                        String host, int port, boolean tlsRequired, List<String> servers) {
         this.id = id;
-        this.protocol = protocol;
         this.name = name;
         this.hint = hint;
         this.help = help;
@@ -99,10 +93,6 @@ public class AccountType {
 
     public int getId() {
         return id;
-    }
-
-    public AccountProtocol getProtocol() {
-        return protocol;
     }
 
     public String getName() {

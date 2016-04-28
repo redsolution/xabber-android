@@ -20,7 +20,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AccountRosterListener;
 
@@ -36,7 +35,6 @@ import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.jivesoftware.smackx.caps.EntityCapsManager;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.jid.DomainBareJid;
@@ -91,7 +89,7 @@ public abstract class ConnectionItem implements ConnectionListener {
     @NonNull
     private final AccountRosterListener rosterListener;
 
-    public ConnectionItem(AccountProtocol protocol, boolean custom,
+    public ConnectionItem(boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
                           Resourcepart resource, boolean storePassword, String password,
                           boolean saslEnabled, TLSMode tlsMode, boolean compression,
@@ -100,7 +98,7 @@ public abstract class ConnectionItem implements ConnectionListener {
         this.account = AccountJid.from(userName, serverName, resource);
         rosterListener = new AccountRosterListener(getAccount());
 
-        connectionSettings = new ConnectionSettings(protocol, userName,
+        connectionSettings = new ConnectionSettings(userName,
                 serverName, resource, custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
@@ -170,6 +168,9 @@ public abstract class ConnectionItem implements ConnectionListener {
      */
     public boolean updateConnection(boolean userRequest) {
         boolean available = isConnectionAvailable(userRequest);
+
+        LogManager.i(this, "updateConnection userRequest: " + userRequest + " isConnectionAvailable " + available);
+
         if (NetworkManager.getInstance().getState() != NetworkState.available
                 || !available || disconnectionRequested) {
             ConnectionState target = available ? ConnectionState.waiting : ConnectionState.offline;

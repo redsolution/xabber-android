@@ -28,7 +28,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionManager;
@@ -231,7 +230,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
         LogManager.i(this, "Creating new session for " + user);
 
-        session = new Session(new SessionID(account, user, AccountProtocol.xmpp.toString()), this);
+        session = new Session(new SessionID(account, user, "xmpp"), this);
         session.addOtrEngineListener(this);
         sessions.put(account, user, session);
         return session;

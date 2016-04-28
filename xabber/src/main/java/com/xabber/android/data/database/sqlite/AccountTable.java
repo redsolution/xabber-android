@@ -24,7 +24,6 @@ import android.provider.BaseColumns;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionSettings;
@@ -79,10 +78,6 @@ public class AccountTable extends AbstractTable {
 
     public static long getId(Cursor cursor) {
         return cursor.getLong(cursor.getColumnIndex(Fields._ID));
-    }
-
-    public static AccountProtocol getProtocol(Cursor cursor) {
-        return AccountProtocol.valueOf(cursor.getString(cursor.getColumnIndex(Fields.PROTOCOL)));
     }
 
     public static String getHost(Cursor cursor) {
@@ -411,7 +406,6 @@ public class AccountTable extends AbstractTable {
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
 
         ContentValues values = new ContentValues();
-        values.put(Fields.PROTOCOL, connectionSettings.getProtocol().name());
         values.put(Fields.CUSTOM, connectionSettings.isCustomHostAndPort() ? 1 : 0);
         values.put(Fields.HOST, connectionSettings.getHost());
         values.put(Fields.PORT, connectionSettings.getPort());

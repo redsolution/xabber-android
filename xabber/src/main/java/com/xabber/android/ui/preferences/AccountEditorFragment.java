@@ -10,7 +10,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
@@ -33,20 +32,11 @@ public class AccountEditorFragment extends BaseSettingsFragment {
 
     @Override
     protected void onInflate(Bundle savedInstanceState) {
-        AccountProtocol protocol;
         if (listener == null) {
             return;
         }
 
-        protocol = listener.getAccountItem().getConnectionSettings().getProtocol();
-        if (protocol == AccountProtocol.xmpp) {
-            addPreferencesFromResource(R.xml.account_editor_xmpp);
-        } else if (protocol == AccountProtocol.gtalk) {
-            addPreferencesFromResource(R.xml.account_editor_xmpp);
-        } else {
-            throw new IllegalStateException();
-        }
-
+        addPreferencesFromResource(R.xml.account_editor_xmpp);
         getPreferenceScreen().removePreference(findPreference(getString(R.string.account_sasl_key)));
 
         AccountManager.getInstance().removeAuthorizationError(listener.getAccount());

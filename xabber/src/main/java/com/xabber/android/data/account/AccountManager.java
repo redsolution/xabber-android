@@ -138,17 +138,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         for (int index = 0; index < types.length(); index++) {
             int id = types.getResourceId(index, 0);
             TypedArray values = application.getResources().obtainTypedArray(id);
-            AccountProtocol protocol = AccountProtocol.valueOf(values.getString(0));
-            if (Build.VERSION.SDK_INT < 8 && protocol == AccountProtocol.wlm) {
-                values.recycle();
-                continue;
-            }
             ArrayList<String> servers = new ArrayList<>();
             servers.add(values.getString(9));
             for (int i = 10; i < values.length(); i++) {
                 servers.add(values.getString(i));
             }
-            accountTypes.add(new AccountType(id, protocol, values.getString(1),
+            accountTypes.add(new AccountType(id, values.getString(1),
                     values.getString(2), values.getString(3), values.getDrawable(4),
                     values.getBoolean(5, false), values.getString(6), values.getInt(7, 5222),
                     values.getBoolean(8, false), servers));
@@ -205,7 +200,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                     }
 
                     AccountItem accountItem = new AccountItem(
-                            AccountTable.getProtocol(cursor),
                             AccountTable.isCustom(cursor),
                             AccountTable.getHost(cursor),
                             AccountTable.getPort(cursor),
@@ -323,7 +317,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     /**
      * Creates new account and starts connection.
      */
-    private AccountItem addAccount(AccountProtocol protocol, boolean custom, String host, int port,
+    private AccountItem addAccount(boolean custom, String host, int port,
                                    DomainBareJid serverName, Localpart userName, boolean storePassword,
                                    String password, Resourcepart resource, int color, int priority,
                                    StatusMode statusMode, String statusText, boolean enabled,
@@ -333,7 +327,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                                    KeyPair keyPair, Date lastSync, ArchiveMode archiveMode,
                                    boolean registerNewAccount) {
 
-        AccountItem accountItem = new AccountItem(protocol, custom, host, port, serverName, userName,
+        AccountItem accountItem = new AccountItem(custom, host, port, serverName, userName,
                 resource, storePassword, password, color, priority, statusMode, statusText, enabled,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                 proxyPassword, syncable, keyPair, lastSync, archiveMode);
@@ -432,15 +426,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
 
         boolean useCustomHost = application.getResources().getBoolean(R.bool.account_use_custom_host_default);
-        if (accountType.getProtocol() == AccountProtocol.gtalk) {
-            useCustomHost = true;
-        }
 
         boolean useCompression = application.getResources().getBoolean(R.bool.account_use_compression_default);
 
         ArchiveMode archiveMode = ArchiveMode.valueOf(application.getString(R.string.account_archive_mode_default_value));
 
-        accountItem = addAccount(accountType.getProtocol(), useCustomHost, host, port, serverName, userName,
+        accountItem = addAccount(useCustomHost, host, port, serverName, userName,
                 storePassword, password, resource, getNextColorIndex(), 0, StatusMode.available,
                 SettingsManager.statusText(), true, true, tlsRequired ? TLSMode.required : TLSMode.enabled,
                 useCompression, useOrbot ? ProxyType.orbot : ProxyType.none, "localhost", 8080,
@@ -612,11 +603,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         } else {
             StatusMode statusMode = accountItem.getRawStatusMode();
             String statusText = accountItem.getStatusText();
-            AccountProtocol protocol = accountItem.getConnectionSettings().getProtocol();
             KeyPair keyPair = accountItem.getKeyPair();
             Date lastSync = accountItem.getLastSync();
             removeAccountWithoutCallback(account);
-            result = addAccount(protocol, custom, host, port, serverName, userName, storePassword,
+            result = addAccount(custom, host, port, serverName, userName, storePassword,
                     password, resource, colorIndex, priority, statusMode, statusText, enabled,
                     saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                     proxyPassword, syncable, keyPair, lastSync, archiveMode, false);
@@ -859,17 +849,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         return false;
     }
 
-    private boolean hasSameProtocol(AccountJid account) {
-        AccountProtocol protocol = getAccount(account).getConnectionSettings().getProtocol();
-        for (AccountItem check : accountItems.values()) {
-            if (!check.getAccount().equals(account)
-                    && check.getConnectionSettings().getProtocol() == protocol) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * @param account
      * @return Verbose account name.
@@ -879,21 +858,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         if (accountItem == null) {
             return account.toString();
         }
-        if (accountItem.getConnectionSettings().getProtocol().isOAuth()) {
-            AccountProtocol accountProtocol = accountItem.getConnectionSettings().getProtocol();
-            String name;
-            if (hasSameProtocol(account)) {
-                name = accountItem.getConnectionSettings().getUserName().toString();
-            } else {
-                return application.getString(accountProtocol.getNameResource());
-            }
-            return application.getString(accountProtocol.getShortResource()) + " - " + name;
+
+        if (hasSameBareAddress(account)) {
+            return account.toString();
         } else {
-            if (hasSameBareAddress(account)) {
-                return account.toString();
-            } else {
-                return account.getFullJid().asBareJid().toString();
-            }
+            return account.getFullJid().asBareJid().toString();
         }
     }
 
