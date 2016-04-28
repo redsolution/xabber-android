@@ -99,8 +99,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     private final Map<AccountJid, AccountItem> accountItems;
     private final BaseAccountNotificationProvider<AccountAuthorizationError> authorizationErrorProvider;
 
-    private final BaseAccountNotificationProvider<PasswordRequest> passwordRequestProvider;
-
     private final Application application;
     /**
      * Whether away status mode is enabled.
@@ -116,7 +114,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         accountItems = new HashMap<>();
         savedStatuses = new ArrayList<>();
         authorizationErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
-        passwordRequestProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_add_circle);
 
         colors = application.getResources().getIntArray(R.array.account_color_names).length;
 
@@ -217,7 +214,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             addAccount(accountItem);
         }
         NotificationManager.getInstance().registerNotificationProvider(authorizationErrorProvider);
-        NotificationManager.getInstance().registerNotificationProvider(passwordRequestProvider);
     }
 
     private void addAccount(AccountItem accountItem) {
@@ -528,35 +524,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         AccountItem accountItem = getAccount(account);
         accountItem.setKeyPair(keyPair);
         requestToWriteAccount(accountItem);
-    }
-
-    public void setPassword(AccountJid account, boolean storePassword, String password) {
-        AccountItem accountItem = getAccount(account);
-        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
-        updateAccount(
-                account,
-                connectionSettings.isCustomHostAndPort(),
-                connectionSettings.getHost(),
-                connectionSettings.getPort(),
-                connectionSettings.getServerName(),
-                connectionSettings.getUserName(),
-                storePassword,
-                password,
-                connectionSettings.getResource(),
-                accountItem.getPriority(),
-                accountItem.isEnabled(),
-                connectionSettings.isSaslEnabled(),
-                connectionSettings.getTlsMode(),
-                connectionSettings.useCompression(),
-                connectionSettings.getProxyType(),
-                connectionSettings.getProxyHost(),
-                connectionSettings.getProxyPort(),
-                connectionSettings.getProxyUser(),
-                connectionSettings.getProxyPassword(),
-                accountItem.isSyncable(),
-                accountItem.getArchiveMode(),
-                accountItem.getColorIndex()
-        );
     }
 
     public void setEnabled(AccountJid account, boolean enabled) {
@@ -957,11 +924,11 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     public void removePasswordRequest(AccountJid account) {
-        passwordRequestProvider.remove(account);
+        authorizationErrorProvider.remove(account);
     }
 
     public void addPasswordRequest(AccountJid account) {
-        passwordRequestProvider.add(new PasswordRequest(account), true);
+        authorizationErrorProvider.add(new AccountAuthorizationError(account), true);
     }
 
     public void onAccountChanged(AccountJid account) {

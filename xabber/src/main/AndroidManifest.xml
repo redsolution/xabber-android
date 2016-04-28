@@ -275,7 +275,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.ChatViewer" />
         </activity>
-        <activity android:name=".ui.activity.PasswordRequest" />
         <activity
             android:name=".ui.preferences.PhraseList"
             android:parentActivityName=".ui.preferences.NotificationsSettings">
