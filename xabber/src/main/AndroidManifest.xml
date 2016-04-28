@@ -276,7 +276,6 @@
                 android:value=".ui.activity.ChatViewer" />
         </activity>
         <activity android:name=".ui.activity.PasswordRequest" />
-        <activity android:name=".ui.activity.ArchiveRequest" />
         <activity
             android:name=".ui.preferences.PhraseList"
             android:parentActivityName=".ui.preferences.NotificationsSettings">

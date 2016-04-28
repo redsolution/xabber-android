@@ -559,35 +559,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         );
     }
 
-    public void setArchiveMode(AccountJid account, ArchiveMode archiveMode) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
-        AccountManager.getInstance().updateAccount(
-                account,
-                connectionSettings.isCustomHostAndPort(),
-                connectionSettings.getHost(),
-                connectionSettings.getPort(),
-                connectionSettings.getServerName(),
-                connectionSettings.getUserName(),
-                accountItem.isStorePassword(),
-                connectionSettings.getPassword(),
-                connectionSettings.getResource(),
-                accountItem.getPriority(),
-                accountItem.isEnabled(),
-                connectionSettings.isSaslEnabled(),
-                connectionSettings.getTlsMode(),
-                connectionSettings.useCompression(),
-                connectionSettings.getProxyType(),
-                connectionSettings.getProxyHost(),
-                connectionSettings.getProxyPort(),
-                connectionSettings.getProxyUser(),
-                connectionSettings.getProxyPassword(),
-                accountItem.isSyncable(),
-                archiveMode,
-                accountItem.getColorIndex()
-        );
-    }
-
     public void setEnabled(AccountJid account, boolean enabled) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
