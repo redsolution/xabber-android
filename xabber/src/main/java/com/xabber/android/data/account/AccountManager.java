@@ -89,10 +89,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     /**
-     * List of account presets.
-     */
-    private final List<AccountType> accountTypes;
-    /**
      * List of saved statuses.
      */
     private final Collection<SavedStatus> savedStatuses;
@@ -133,23 +129,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
         colors = application.getResources().getIntArray(R.array.account_color_names).length;
 
-        TypedArray types = application.getResources().obtainTypedArray(R.array.account_types);
-        accountTypes = new ArrayList<>();
-        for (int index = 0; index < types.length(); index++) {
-            int id = types.getResourceId(index, 0);
-            TypedArray values = application.getResources().obtainTypedArray(id);
-            ArrayList<String> servers = new ArrayList<>();
-            servers.add(values.getString(9));
-            for (int i = 10; i < values.length(); i++) {
-                servers.add(values.getString(i));
-            }
-            accountTypes.add(new AccountType(id, values.getString(1),
-                    values.getString(2), values.getString(3), values.getDrawable(4),
-                    values.getBoolean(5, false), values.getString(6), values.getInt(7, 5222),
-                    values.getBoolean(8, false), servers));
-            values.recycle();
-        }
-        types.recycle();
         away = false;
         xa = false;
     }
@@ -268,13 +247,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     /**
-     * @return List of supported account types.
-     */
-    public List<AccountType> getAccountTypes() {
-        return accountTypes;
-    }
-
-    /**
      * @return Next color index for the next account.
      */
     int getNextColorIndex() {
@@ -347,27 +319,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * Creates new account.
      *
      * @param user          full or bare jid.
-     * @param password
-     * @param accountType   xmpp account type can be replaced depend on server part.
-     * @param syncable
-     * @param storePassword
-     * @param useOrbot
      * @return assigned account name.
      * @throws NetworkException if user or server part are invalid.
      */
-    public AccountJid addAccount(String user, String password, AccountType accountType, boolean syncable,
+    public AccountJid addAccount(String user, String password, boolean syncable,
                                  boolean storePassword, boolean useOrbot, boolean registerNewAccount)
             throws NetworkException {
         if (user == null) {
             throw new NetworkException(R.string.EMPTY_USER_NAME);
-        }
-
-        if (!user.contains("@")) {
-            if ("".equals(accountType.getFirstServer())) {
-                throw new NetworkException(R.string.EMPTY_SERVER_NAME);
-            } else {
-                user += "@" + accountType.getFirstServer();
-            }
         }
 
         DomainBareJid serverName;
@@ -388,9 +347,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
         }
-        String host = accountType.getHost();
-        int port = accountType.getPort();
-        boolean tlsRequired = accountType.isTLSRequired();
+        String host = serverName.getDomain().toString();
+        int port = 5222;
+        boolean tlsRequired = false;
         if (useOrbot) {
             tlsRequired = true;
         }
@@ -400,19 +359,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         }
         if (resource == null) {
             resource = generateResource();
-        }
-
-        if (accountType.getId() == R.array.account_type_xmpp) {
-            host = serverName.getDomain().toString();
-            for (AccountType check : accountTypes) {
-                if (check.getServers().contains(serverName.getDomain().toString())) {
-                    accountType = check;
-                    host = check.getHost();
-                    port = check.getPort();
-                    tlsRequired = check.isTLSRequired();
-                    break;
-                }
-            }
         }
 
         AccountItem accountItem;
