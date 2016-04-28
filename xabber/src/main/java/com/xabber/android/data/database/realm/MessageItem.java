@@ -32,6 +32,7 @@ import java.util.UUID;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class MessageItem extends RealmObject {
 
@@ -65,6 +66,7 @@ public class MessageItem extends RealmObject {
      */
 
     @PrimaryKey
+    @Required
     private String uniqueId;
 
     @Index
