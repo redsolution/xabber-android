@@ -34,8 +34,7 @@ import com.xabber.android.ui.helper.SingleActivity;
 
 import java.util.Collection;
 
-public class LoadActivity extends SingleActivity implements
-        OnAccountChangedListener {
+public class LoadActivity extends SingleActivity implements OnAccountChangedListener {
 
     private Animation animation;
     private View disconnectedView;
@@ -55,11 +54,12 @@ public class LoadActivity extends SingleActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         if (Application.getInstance().isClosing()) {
-            ((TextView) findViewById(R.id.text))
-                    .setText(R.string.application_state_closing);
+            TextView textView = (TextView) findViewById(R.id.text);
+            if (textView != null) {
+                textView.setText(R.string.application_state_closing);
+            }
         } else {
             startService(XabberService.createIntent(this));
             disconnectedView.startAnimation(animation);
@@ -70,8 +70,7 @@ public class LoadActivity extends SingleActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         disconnectedView.clearAnimation();
     }
 

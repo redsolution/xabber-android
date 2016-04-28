@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.ui.activity.AboutViewer;
 import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.activity.LoadActivity;
 
@@ -80,9 +81,11 @@ public class ActivityManager implements OnUnloadListener {
      */
     private void rebuildStack() {
         Iterator<Activity> iterator = activities.iterator();
-        while (iterator.hasNext())
-            if (iterator.next().isFinishing())
+        while (iterator.hasNext()) {
+            if (iterator.next().isFinishing()) {
                 iterator.remove();
+            }
+        }
     }
 
     /**
@@ -139,7 +142,7 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onCreate: " + activity.getIntent());
         }
-        if (!activity.getClass().getSimpleName().equals("AboutViewer")) {
+        if (!(activity instanceof AboutViewer)) {
             applyTheme(activity);
         }
         if (application.isClosing() && !(activity instanceof LoadActivity)) {
@@ -188,11 +191,13 @@ public class ActivityManager implements OnUnloadListener {
      * @param activity
      */
     public void onResume(final Activity activity) {
-        if (LOG)
+        if (LOG) {
             LogManager.i(activity, "onResume");
+        }
         if (!application.isInitialized() && !(activity instanceof LoadActivity)) {
-            if (LOG)
+            if (LOG) {
                 LogManager.i(this, "Wait for loading");
+            }
             activity.startActivity(LoadActivity.createIntent(activity));
         }
         if (onErrorListener != null) {
@@ -277,9 +282,11 @@ public class ActivityManager implements OnUnloadListener {
         if (index == null) {
             activity.moveTaskToBack(true);
         } else {
-            for (Entry<Activity, Integer> entry : taskIndexes.entrySet())
-                if (entry.getValue() == index)
+            for (Entry<Activity, Integer> entry : taskIndexes.entrySet()) {
+                if (entry.getValue().equals(index)) {
                     entry.getKey().finish();
+                }
+            }
         }
     }
 

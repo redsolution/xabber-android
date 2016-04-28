@@ -17,6 +17,7 @@ package com.xabber.android.data;
 import android.app.Activity;
 import android.content.res.TypedArray;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.R;
@@ -81,14 +82,17 @@ public class Application extends android.app.Application {
      * Whether {@link #onServiceDestroy()} has been called.
      */
     private boolean closed;
+
     private final Runnable timerRunnable = new Runnable() {
 
         @Override
         public void run() {
-            for (OnTimerListener listener : getManagers(OnTimerListener.class))
+            for (OnTimerListener listener : getManagers(OnTimerListener.class)) {
                 listener.onTimer();
-            if (!closing)
+            }
+            if (!closing) {
                 startTimer();
+            }
         }
 
     };
@@ -111,7 +115,7 @@ public class Application extends android.app.Application {
         handler = new Handler();
         backgroundExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
-            public Thread newThread(Runnable runnable) {
+            public Thread newThread(@NonNull Runnable runnable) {
                 Thread thread = new Thread(runnable, "Background executor service");
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.setDaemon(true);
@@ -187,8 +191,6 @@ public class Application extends android.app.Application {
 
     /**
      * Starts data loading in background if not started yet.
-     *
-     * @return
      */
     public void onServiceStarted() {
         if (serviceStarted) {
@@ -238,6 +240,7 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        LogManager.i(this, "onCreate started...");
 
         LeakCanary.install(this);
 
@@ -262,6 +265,8 @@ public class Application extends android.app.Application {
             }
         }
         tableClasses.recycle();
+
+        LogManager.i(this, "onCreate finished...");
     }
 
     @Override

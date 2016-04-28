@@ -31,13 +31,14 @@ import com.xabber.android.ui.activity.ManagedActivity;
  */
 public abstract class SingleActivity extends ManagedActivity {
 
-    private static Map<Class<? extends Activity>, Activity> launched = new HashMap<Class<? extends Activity>, Activity>();
+    private static Map<Class<? extends Activity>, Activity> launched = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Activity activity = launched.get(this.getClass());
-        if (activity != null)
+        if (activity != null) {
             activity.finish();
+        }
         launched.put(this.getClass(), this);
         super.onCreate(savedInstanceState);
     }
@@ -45,8 +46,9 @@ public abstract class SingleActivity extends ManagedActivity {
     @Override
     protected void onDestroy() {
         Activity activity = launched.get(this.getClass());
-        if (activity == this)
+        if (activity == this) {
             launched.remove(this.getClass());
+        }
         super.onDestroy();
     }
 
