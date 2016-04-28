@@ -528,31 +528,23 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     public void setEnabled(AccountJid account, boolean enabled) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
-        AccountManager.getInstance().updateAccount(
-                account,
-                connectionSettings.isCustomHostAndPort(),
-                connectionSettings.getHost(),
-                connectionSettings.getPort(),
-                connectionSettings.getServerName(),
-                connectionSettings.getUserName(),
-                accountItem.isStorePassword(),
-                connectionSettings.getPassword(),
-                connectionSettings.getResource(),
-                accountItem.getPriority(),
-                enabled,
-                connectionSettings.isSaslEnabled(),
-                connectionSettings.getTlsMode(),
-                connectionSettings.useCompression(),
-                connectionSettings.getProxyType(),
-                connectionSettings.getProxyHost(),
-                connectionSettings.getProxyPort(),
-                connectionSettings.getProxyUser(),
-                connectionSettings.getProxyPassword(),
-                accountItem.isSyncable(),
-                accountItem.getArchiveMode(),
-                accountItem.getColorIndex()
-        );
+
+        accountItem.setEnabled(enabled);
+        accountItem.updateConnection(true);
+        requestToWriteAccount(accountItem);
+
+        if (enabled) {
+            onAccountEnabled(accountItem);
+            if (accountItem.getRawStatusMode().isOnline()) {
+                onAccountOnline(accountItem);
+            }
+        } else {
+            if (accountItem.getRawStatusMode().isOnline()) {
+                onAccountOffline(accountItem);
+            }
+            onAccountDisabled(accountItem);
+        }
+
     }
 
     public ArchiveMode getArchiveMode(AccountJid account) {
