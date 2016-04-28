@@ -14,9 +14,7 @@
  */
 package com.xabber.android.data.account;
 
-import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -65,7 +63,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -118,7 +115,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     private boolean xa;
 
-    @SuppressWarnings("ResourceType")
     private AccountManager() {
         this.application = Application.getInstance();
         accountItems = new HashMap<>();
@@ -274,8 +270,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Save account item to database.
-     *
-     * @param accountItem
      */
     void requestToWriteAccount(final AccountItem accountItem) {
         Application.getInstance().runInBackground(new Runnable() {
@@ -305,9 +299,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 proxyPassword, syncable, keyPair, lastSync, archiveMode);
 
         if (registerNewAccount) {
-              // TODO: attempt to register account, if that fails return null;
-               accountItem.registerAccount();
-              // return(null);
+            accountItem.registerAccount();
         }
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
@@ -318,7 +310,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     /**
      * Creates new account.
      *
-     * @param user          full or bare jid.
+     * @param user full or bare jid.
      * @return assigned account name.
      * @throws NetworkException if user or server part are invalid.
      */
@@ -405,8 +397,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Remove user`s account. Don't call any callbacks.
-     *
-     * @param account
      */
     private void removeAccountWithoutCallback(final AccountJid account) {
         final AccountItem accountItem = getAccount(account);
@@ -435,8 +425,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Remove user`s account.
-     *
-     * @param account
      */
     public void removeAccount(AccountJid account) {
         removeAccountWithoutCallback(account);
@@ -451,20 +439,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * It will remove old account and create new one if full jid was changed.
      *
      * @param account       full source jid
-     * @param host
-     * @param port
-     * @param serverName
-     * @param userName
-     * @param storePassword
-     * @param password
-     * @param resource
-     * @param priority
-     * @param enabled
-     * @param saslEnabled
-     * @param tlsMode
-     * @param compression
-     * @param syncable
-     * @param archiveMode
      */
     public void updateAccount(AccountJid account, boolean custom, String host, int port, DomainBareJid serverName,
                               Localpart userName, boolean storePassword, String password, Resourcepart resource,
@@ -518,6 +492,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 try {
                     PresenceManager.getInstance().resendPresence(account);
                 } catch (NetworkException e) {
+                    LogManager.exception(this, e);
                 }
             }
             if (result.getArchiveMode() != archiveMode) {
@@ -564,41 +539,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         AccountItem accountItem = getAccount(account);
         accountItem.setKeyPair(keyPair);
         requestToWriteAccount(accountItem);
-    }
-
-    public void setLastSync(AccountJid account, Date lastSync) {
-        AccountItem accountItem = getAccount(account);
-        accountItem.setLastSync(lastSync);
-        requestToWriteAccount(accountItem);
-    }
-
-    public void setSyncable(AccountJid account, boolean syncable) {
-        AccountItem accountItem = getAccount(account);
-        ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
-        updateAccount(
-                account,
-                connectionSettings.isCustomHostAndPort(),
-                connectionSettings.getHost(),
-                connectionSettings.getPort(),
-                connectionSettings.getServerName(),
-                connectionSettings.getUserName(),
-                accountItem.isStorePassword(),
-                connectionSettings.getPassword(),
-                connectionSettings.getResource(),
-                accountItem.getPriority(),
-                accountItem.isEnabled(),
-                connectionSettings.isSaslEnabled(),
-                connectionSettings.getTlsMode(),
-                connectionSettings.useCompression(),
-                connectionSettings.getProxyType(),
-                connectionSettings.getProxyHost(),
-                connectionSettings.getProxyPort(),
-                connectionSettings.getProxyUser(),
-                connectionSettings.getProxyPassword(),
-                syncable,
-                accountItem.getArchiveMode(),
-                accountItem.getColorIndex()
-        );
     }
 
     public void setPassword(AccountJid account, boolean storePassword, String password) {
@@ -758,7 +698,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     /**
-     * @param account
      * @return Color drawable level or default colors if account was not found.
      */
     public int getColorLevel(AccountJid account) {
@@ -777,13 +716,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         return colorIndex;
     }
 
-    /**
-     * @return Number of different account colors.
-     */
-    public int getColorCount() {
-        return colors;
-    }
-
     private boolean hasSameBareAddress(AccountJid account) {
         BareJid bareJid = account.getFullJid().asBareJid();
         for (AccountItem check : accountItems.values()) {
@@ -796,7 +728,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     /**
-     * @param account
      * @return Verbose account name.
      */
     public String getVerboseName(AccountJid account) {
@@ -813,7 +744,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     }
 
     /**
-     * @param account
      * @return Account vCard based nick name or verbose name if nick is not
      * specified.
      */
@@ -828,10 +758,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Sets status for account.
-     *
-     * @param account
-     * @param statusMode
-     * @param statusText
      */
     public void setStatus(AccountJid account, StatusMode statusMode, String statusText) {
         if (statusText != null && !statusText.trim().isEmpty()) {
@@ -843,6 +769,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         try {
             PresenceManager.getInstance().resendPresence(account);
         } catch (NetworkException e) {
+            LogManager.exception(this, e);
         }
         boolean found = false;
         for (AccountItem check : accountItems.values()) {
@@ -923,6 +850,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             try {
                 PresenceManager.getInstance().resendPresence(accountItem.getAccount());
             } catch (NetworkException e) {
+                LogManager.exception(this, e);
             }
         }
     }
@@ -969,9 +897,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     /**
      * Save status in presets.
-     *
-     * @param statusMode
-     * @param statusText
      */
     private void addSavedStatus(final StatusMode statusMode, final String statusText) {
         SavedStatus savedStatus = new SavedStatus(statusMode, statusText);
