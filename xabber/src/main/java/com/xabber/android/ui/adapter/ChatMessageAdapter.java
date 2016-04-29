@@ -105,6 +105,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         this.listener = chatViewerFragment;
 
+        prevItemCount = getItemCount();
     }
 
     public interface Listener {
