@@ -415,7 +415,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     }
 
                     if (remove) {
-                        unreadMessages.clear();
+                        unreadMessages.deleteAllFromRealm();
                     }
                 }
             });
@@ -454,7 +454,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                         .equalTo(MessageItem.Fields.USER, user.toString())
-                        .findAll().clear();
+                        .findAll().deleteAllFromRealm();
             }
         });
         realm.close();
@@ -472,7 +472,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             public void execute(Realm realm) {
                 MessageItem first = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.UNIQUE_ID, messageItemId).findFirst();
-                first.removeFromRealm();
+                first.deleteFromRealm();
             }
         });
 

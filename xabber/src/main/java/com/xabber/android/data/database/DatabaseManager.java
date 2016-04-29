@@ -375,8 +375,8 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.where(MessageItem.class).equalTo(MessageItem.Fields.ACCOUNT, account).findAll().clear();
-                realm.where(BlockedContactsForAccount.class).equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account).findAll().clear();
+                realm.where(MessageItem.class).equalTo(MessageItem.Fields.ACCOUNT, account).findAll().deleteAllFromRealm();
+                realm.where(BlockedContactsForAccount.class).equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account).findAll().deleteAllFromRealm();
             }
         }, null);
         realm.close();
