@@ -168,7 +168,7 @@ public class RegularChat extends AbstractChat {
             // System message received.
             if (text == null || text.trim().equals(""))
                 return true;
-            if (!resource.equals(Resourcepart.EMPTY)) {
+            if (resource != null && !resource.equals(Resourcepart.EMPTY)) {
                 this.resource = resource;
             }
             createAndSaveNewMessage(
