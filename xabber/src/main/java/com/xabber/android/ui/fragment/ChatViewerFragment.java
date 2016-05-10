@@ -231,7 +231,13 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
+        AbstractChat abstractChat = getChat();
+
+        // TODO strange situation: there are chat null pointer issues
+        // TODO There should be no chat viewer on null chat
+        if (abstractChat == null) {
+            return view;
+        }
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
 
@@ -253,8 +259,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         layoutManager.setStackFromEnd(true);
 
-        messageItems = getChat().getMessages();
-        syncInfoResults = getChat().getSyncInfo();
+        messageItems = abstractChat.getMessages();
+        syncInfoResults = abstractChat.getSyncInfo();
 
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
