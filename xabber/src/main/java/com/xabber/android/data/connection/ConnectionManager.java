@@ -240,8 +240,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             onConnection(connectionItem.getConnection());
         }
 
-        AccountManager.getInstance().onAccountChanged(connectionItem.getAccount());
-
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -258,8 +256,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
             onConnection(connectionItem.getConnection());
             return;
         }
-
-        AccountManager.getInstance().onAccountChanged(connectionItem.getAccount());
 
         if (resumed) {
             RosterManager.getInstance().updateContacts();
