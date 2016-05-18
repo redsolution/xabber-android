@@ -179,11 +179,11 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onAvailable(Integer type) {
         state = NetworkState.available;
         LogManager.i(this, "Available");
-//        if (type == ConnectivityManager.TYPE_WIFI) {
-//            ConnectionManager.getInstance().forceReconnect();
-//        } else {
-//            ConnectionManager.getInstance().reconnect();
-//        }
+        if (type == ConnectivityManager.TYPE_WIFI) {
+            ConnectionManager.getInstance().forceReconnect();
+        } else {
+            ConnectionManager.getInstance().reconnect();
+        }
     }
 
     /**
