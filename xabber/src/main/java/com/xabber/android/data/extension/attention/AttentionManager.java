@@ -193,7 +193,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         if (to == null) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
         }
-        ClientInfo clientInfo = CapabilitiesManager.getClientInfo(account, to);
+        ClientInfo clientInfo = CapabilitiesManager.getClientInfo(account, to, null);
         if (clientInfo == null) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
         }

@@ -14,6 +14,9 @@
  */
 package com.xabber.android.data.extension.capability;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
@@ -58,44 +61,44 @@ public class CapabilitiesManager {
         return features;
     }
 
-    public static ClientInfo getClientInfo(final AccountJid account, final Jid jid) {
-        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
-        if (discoverInfoByUser == null) {
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    DiscoverInfo discoverInfo = null;
-                    try {
-                        discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
-                                .discoverInfo(jid);
-                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-                        LogManager.exception(this, e);
-                    }
+    public interface ClientInfoLoadedListener {
+        void onClientInfoReceived(Jid jid, @Nullable ClientInfo clientInfo);
+    }
 
-                    if (discoverInfo != null) {
-                        Application.getInstance().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Collection<OnContactChangedListener> uiListeners = Application.getInstance().getUIListeners(OnContactChangedListener.class);
-                                for (OnContactChangedListener listener : uiListeners) {
-                                    try {
-                                        Collection<BaseEntity> changedContacts = new ArrayList<>();
-                                        changedContacts.add(new BaseEntity(account, UserJid.from(jid)));
-                                        listener.onContactsChanged(changedContacts);
-                                    } catch (UserJid.UserJidCreateException e) {
-                                        LogManager.exception(this, e);
-                                    }
+    public static ClientInfo getClientInfo(final AccountJid account, final Jid jid, @Nullable final ClientInfoLoadedListener clientInfoLoadedListener) {
+        final DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
 
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-            return null;
-        } else {
+        if (discoverInfoByUser != null) {
             return getClientInfo(discoverInfoByUser);
         }
+
+
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                DiscoverInfo discoverInfo = null;
+                try {
+                    discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
+                            .discoverInfo(jid);
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+                    LogManager.exception(this, e);
+                }
+
+                LogManager.i(CapabilitiesManager.class.getSimpleName(), "getClientInfo " + discoverInfo);
+
+                if (clientInfoLoadedListener != null && discoverInfo != null) {
+                    final DiscoverInfo finalDiscoverInfo = discoverInfo;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            clientInfoLoadedListener.onClientInfoReceived(jid, getClientInfo(finalDiscoverInfo));
+                        }
+                    });
+                }
+            }
+        });
+        return null;
     }
 
     private static ClientInfo getClientInfo(DiscoverInfo discoverInfo) {
