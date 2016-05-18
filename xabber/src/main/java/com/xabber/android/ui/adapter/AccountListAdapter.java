@@ -69,14 +69,6 @@ public class AccountListAdapter extends BaseListEditorAdapter<AccountJid> {
 
         final AccountItem accountItem = accountManager.getAccount(account);
 
-        accountSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                AccountManager.getInstance().setEnabled(account, isChecked);
-            }
-        });
-
-
         ConnectionState state;
         if (accountItem == null) {
             state = ConnectionState.offline;
@@ -85,6 +77,14 @@ public class AccountListAdapter extends BaseListEditorAdapter<AccountJid> {
             state = accountItem.getState();
             accountSwitch.setChecked(accountItem.isEnabled());
         }
+
+        accountSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                AccountManager.getInstance().setEnabled(account, isChecked);
+            }
+        });
+
         ((TextView) view.findViewById(R.id.status)).setText(getActivity().getString(state.getStringId()));
         return view;
     }
