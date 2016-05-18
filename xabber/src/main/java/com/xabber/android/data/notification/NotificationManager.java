@@ -397,11 +397,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         final Intent persistentIntent;
 
-        if (waiting > 0 && application.isInitialized()) {
-            persistentIntent = ReconnectionActivity.createIntent(application);
-        } else {
-            persistentIntent = ContactList.createPersistentIntent(application);
-        }
+        persistentIntent = ContactList.createPersistentIntent(application);
 
         if (connected > 0) {
             persistentNotificationBuilder.setColor(persistentNotificationColor);
