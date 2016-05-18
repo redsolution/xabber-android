@@ -6,11 +6,6 @@
         android:defaultValue="@bool/security_check_certificate_default"
         />
 
-    <com.xabber.android.ui.preferences.SecurityClearCertificateDialog
-        android:title="@string/security_clear_certificate"
-        android:key="@string/security_clear_certificate_key"
-        android:dialogMessage="@string/security_clear_certificate_warning"/>
-
     <ListPreference
         android:title="@string/security_otr_mode"
         android:key="@string/security_otr_mode_key"
