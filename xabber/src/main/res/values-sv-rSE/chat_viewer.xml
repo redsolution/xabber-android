@@ -61,7 +61,7 @@
   <string name="export_chat_send">Skicka efter export</string>
   <string name="export_chat_title">Ange filnamn</string>
   <string name="muc_invite">Bjud in till chatt</string>
-  <string name="muc_is_unavailable">Dina meddelanden kunde inte levereras. Vänligen anslut till charr</string>
+  <string name="muc_is_unavailable">Dina meddelanden kunde inte levereras. Vänligen anslut till chatten</string>
   <string name="occupant_list">Lista på deltagare</string>
   <string name="otr_encryption">OTR-kryptering</string>
   <string name="otr_end">Avsluta kryptering</string>
