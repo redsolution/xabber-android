@@ -468,7 +468,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
             }
 
             if (imageFile != null) {
-                photoFileUri = Uri.fromFile(imageFile);
+                photoFileUri = FileManager.getFileUri(imageFile);
 
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFileUri);
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
