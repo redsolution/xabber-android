@@ -12,11 +12,6 @@ android {
         versionName '1.0.117'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
     lintOptions {
         // problems with generated "applicationId" string resource
         disable 'MissingTranslation'
