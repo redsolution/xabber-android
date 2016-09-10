@@ -153,7 +153,7 @@ public class FileManager {
                                     first.setFileSize(Long.parseLong(contentLength));
                                 }
                             }
-                        }, null);
+                        });
                         realm.close();
                     }
                 }

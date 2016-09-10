@@ -558,7 +558,7 @@ public abstract class AbstractChat extends BaseEntity {
                     @Override
                     public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
                         Realm localRealm = Realm.getDefaultInstance();
-                        localRealm.executeTransactionAsync(new Realm.Transaction() {
+                        localRealm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {
                                     MessageItem acknowledgedMessage = realm

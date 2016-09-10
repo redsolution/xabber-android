@@ -301,7 +301,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     messageItem.setError(true);
                 }
             }
-        }, null);
+        });
 
         realm.close();
     }

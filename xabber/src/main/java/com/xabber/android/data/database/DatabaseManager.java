@@ -154,7 +154,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             @Override
             public void run() {
                 Realm realm = Realm.getDefaultInstance();
-                realm.executeTransaction(new Realm.Transaction() {
+                realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
                         LogManager.i("DatabaseManager", "copying from sqlite to Reaml");
@@ -173,21 +173,18 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                         cursor.close();
                         LogManager.i("DatabaseManager", counter + " messages copied to Realm");
                     }
-                }, new Realm.Transaction.Callback() {
-
+                }, new Realm.Transaction.OnSuccess() {
                     @Override
                     public void onSuccess() {
-                        super.onSuccess();
                         LogManager.i("DatabaseManager", "onSuccess. removing messages from sqlite:");
                         int removedMessages = MessageTable.getInstance().removeAllMessages();
                         LogManager.i("DatabaseManager", removedMessages + " messages removed from sqlite");
                     }
-
+                }, new Realm.Transaction.OnError() {
                     @Override
-                    public void onError(Exception e) {
-                        super.onError(e);
-                        LogManager.exception(this, e);
-                        LogManager.i("DatabaseManager", "onError " + e.getMessage());
+                    public void onError(Throwable error) {
+                        LogManager.i("DatabaseManager", "onError " + error.getMessage());
+
                     }
                 });
                 realm.close();
@@ -372,13 +369,13 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         }
 
         Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(new Realm.Transaction() {
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class).equalTo(MessageItem.Fields.ACCOUNT, account).findAll().deleteAllFromRealm();
                 realm.where(BlockedContactsForAccount.class).equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account).findAll().deleteAllFromRealm();
             }
-        }, null);
+        });
         realm.close();
     }
 

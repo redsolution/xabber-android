@@ -289,7 +289,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                                 .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId).findFirst();
                         first.setError(true);
                     }
-                }, null);
+                });
 
                 realm.close();
             }

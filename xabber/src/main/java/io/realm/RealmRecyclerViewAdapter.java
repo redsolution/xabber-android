@@ -20,7 +20,7 @@ public abstract class RealmRecyclerViewAdapter<T extends RealmObject, VH extends
         this.inflater = LayoutInflater.from(context);
         this.listener = (!automaticUpdate) ? null : new RealmChangeListener() {
             @Override
-            public void onChange() {
+            public void onChange(Object element) {
                 RealmRecyclerViewAdapter.this.onChange();
             }
         };
@@ -92,7 +92,7 @@ public abstract class RealmRecyclerViewAdapter<T extends RealmObject, VH extends
                 this.realmResults.realm.removeChangeListener(listener);
             }
             if (queryResults != null) {
-                queryResults.realm.addChangeListener(listener);
+                queryResults.realm.addListener(listener);
             }
         }
 
