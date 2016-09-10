@@ -1017,7 +1017,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getActivity(), R.string.file_saved_successfully, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Application.getInstance(), R.string.file_saved_successfully, Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (IOException e) {
@@ -1025,7 +1025,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                     Application.getInstance().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getActivity(), R.string.could_not_save_file, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Application.getInstance(), R.string.could_not_save_file, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
