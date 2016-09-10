@@ -66,39 +66,42 @@ public class CapabilitiesManager {
     }
 
     public static ClientInfo getClientInfo(final AccountJid account, final Jid jid, @Nullable final ClientInfoLoadedListener clientInfoLoadedListener) {
-        final DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
-
-        if (discoverInfoByUser != null) {
-            return getClientInfo(discoverInfoByUser);
-        }
-
-
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                DiscoverInfo discoverInfo = null;
-                try {
-                    discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
-                            .discoverInfo(jid);
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-                    LogManager.exception(this, e);
-                }
-
-                LogManager.i(CapabilitiesManager.class.getSimpleName(), "getClientInfo " + discoverInfo);
-
-                if (clientInfoLoadedListener != null && discoverInfo != null) {
-                    final DiscoverInfo finalDiscoverInfo = discoverInfo;
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            clientInfoLoadedListener.onClientInfoReceived(jid, getClientInfo(finalDiscoverInfo));
-                        }
-                    });
-                }
-            }
-        });
         return null;
+
+        // TODO: temp problem with a lot of time outed requests
+//        final DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
+//
+//        if (discoverInfoByUser != null) {
+//            return getClientInfo(discoverInfoByUser);
+//        }
+//
+//
+//
+//        Application.getInstance().runInBackground(new Runnable() {
+//            @Override
+//            public void run() {
+//                DiscoverInfo discoverInfo = null;
+//                try {
+//                    discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
+//                            .discoverInfo(jid);
+//                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+//                    LogManager.exception(this, e);
+//                }
+//
+//                LogManager.i(CapabilitiesManager.class.getSimpleName(), "getClientInfo " + discoverInfo);
+//
+//                if (clientInfoLoadedListener != null && discoverInfo != null) {
+//                    final DiscoverInfo finalDiscoverInfo = discoverInfo;
+//                    Application.getInstance().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            clientInfoLoadedListener.onClientInfoReceived(jid, getClientInfo(finalDiscoverInfo));
+//                        }
+//                    });
+//                }
+//            }
+//        });
+//        return null;
     }
 
     private static ClientInfo getClientInfo(DiscoverInfo discoverInfo) {
