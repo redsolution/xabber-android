@@ -19,7 +19,6 @@ import android.content.res.TypedArray;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
-import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.R;
 import com.xabber.android.service.XabberService;
 
@@ -241,8 +240,6 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         LogManager.i(this, "onCreate started...");
-
-        LeakCanary.install(this);
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 

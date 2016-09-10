@@ -62,7 +62,6 @@ android {
 
 ext {
     smackVersion = '4.2.0-beta2'
-    leakCanaryVersion = '1.4-beta2'
     supportVersion = '24.2.0'
 }
 
@@ -84,10 +83,6 @@ dependencies {
     compile project('otr4j')
     compile project('MemorizingTrustManager')
     compile project('emojicon')
-
-    debugCompile "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
-    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
 }
 
 configurations {
