@@ -5,8 +5,10 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnResponseListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -15,10 +17,13 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
 
+import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jxmpp.jid.DomainBareJid;
 
@@ -74,18 +79,16 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         httpFileUpload.setSize(String.valueOf(file.length()));
         httpFileUpload.setTo(uploadServerUrl);
 
-
         try {
-            ConnectionManager.getInstance().sendRequest(account, httpFileUpload, new OnResponseListener() {
+            AccountManager.getInstance().getAccount(account).getConnection().sendIqWithResponseCallback(httpFileUpload, new StanzaListener() {
                 @Override
-                public void onReceived(final AccountJid account, String packetId, IQ iq) {
-                    if (!httpFileUpload.getStanzaId().equals(packetId) || !(iq instanceof Slot)) {
+                public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                    if (!(packet instanceof Slot)) {
                         return;
                     }
 
-                    uploadFileToSlot(account, (Slot) iq);
+                    uploadFileToSlot(account, (Slot) packet);
                 }
-
 
                 private void uploadFileToSlot(final AccountJid account, final Slot slot) {
                     OkHttpClient client = new OkHttpClient().newBuilder()
@@ -128,23 +131,15 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
                 }
 
+            }, new ExceptionCallback() {
                 @Override
-                public void onError(AccountJid account, String packetId, IQ iq) {
+                public void processException(Exception exception) {
                     LogManager.i(this, "On HTTP file upload slot error");
+                    LogManager.exception(this, exception);
                     Application.getInstance().onError(R.string.http_file_upload_slot_error);
                 }
-
-                @Override
-                public void onTimeout(AccountJid account, String packetId) {
-
-                }
-
-                @Override
-                public void onDisconnect(AccountJid account, String packetId) {
-
-                }
             });
-        } catch (NetworkException e) {
+        } catch (SmackException.NotConnectedException | InterruptedException e) {
             LogManager.exception(this, e);
         }
     }

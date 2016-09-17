@@ -31,6 +31,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.sqlite.OTRTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
@@ -246,8 +247,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         AbstractChat abstractChat = getChat(account, user);
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
         try {
-            ConnectionManager.getInstance()
-                    .sendStanza(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
+            StanzaSender.sendStanza(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
         } catch (NetworkException e) {
             throw new OtrException(e);
         }

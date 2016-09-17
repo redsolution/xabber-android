@@ -100,6 +100,13 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
         suspended = isSuspended(active);
     }
 
+    public boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) Application.getInstance().
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return connectivityManager.getActiveNetworkInfo() != null;
+    }
+
     /**
      * @return Type of network. <code>null</code> if network is
      * <code>null</code> or it is not connected and is not suspended.
@@ -129,7 +136,8 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     public void onInitialized() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        filter.addAction(INET_CONDITION_ACTION);
+// TODO do we need this or not
+//        filter.addAction(INET_CONDITION_ACTION);
         Application.getInstance().registerReceiver(connectivityReceiver, filter);
         onWakeLockSettingsChanged();
         onWifiLockSettingsChanged();
@@ -143,6 +151,13 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     public void onNetworkChange() {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         LogManager.i(this, "Active network info: " + networkInfo);
+
+        if (networkInfo != null) {
+            LogManager.i(this, "onNetworkChange state " + networkInfo.getState() + " " + networkInfo.getType());
+        } else {
+            LogManager.i(this, "onNetworkChange state networkInfo null");
+        }
+
         if (networkInfo != null && networkInfo.getState() == State.CONNECTED) {
             onAvailable(getType(networkInfo));
             state = NetworkState.available;
@@ -179,11 +194,7 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onAvailable(Integer type) {
         state = NetworkState.available;
         LogManager.i(this, "Available");
-        if (type == ConnectivityManager.TYPE_WIFI) {
-            ConnectionManager.getInstance().forceReconnect();
-        } else {
-            ConnectionManager.getInstance().reconnect();
-        }
+        ConnectionManager.getInstance().connectAll();
     }
 
     /**

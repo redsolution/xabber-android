@@ -38,73 +38,57 @@ class ConnectionThread {
     private final XMPPTCPConnection connection;
     @NonNull
     private final ConnectionItem connectionItem;
+    private Thread thread;
 
     ConnectionThread(@NonNull XMPPTCPConnection connection, @NonNull ConnectionItem connectionItem) {
         this.connection = connection;
         this.connectionItem = connectionItem;
+        createNewThread();
     }
 
-    void start(final boolean registerNewAccount) {
-        LogManager.i(this, "start. registerNewAccount " + registerNewAccount);
-
-        Thread thread = new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        boolean success = connect();
-                        if (success && registerNewAccount) {
-                            success = createAccount();
-                        }
-
-                        if (success) {
-                            success = login();
-                        }
-
-                        if (!success) {
-                            connection.disconnect();
-                        }
-                    }
-                },
-                "Connection thread for " + connectionItem.getRealJid());
+    private void createNewThread() {
+        LogManager.i(this, "Creating new connection thread");
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                connectAndLogin();
+            }
+        }, "Connection thread for " + connectionItem.getAccount());
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
-        thread.start();
     }
 
-    private boolean connect() {
-        boolean success = false;
-
-        try {
-            connection.connect();
-            success = true;
-        } catch (SmackException e) {
-            // There is no connection listeners yet, so we call onClose.
-
-            LogManager.exception(this, e);
-
-            if (e instanceof SmackException.ConnectionException) {
-                LogManager.w(this, "Connection failed. SmackException.ConnectionException " + e.getMessage());
-            } else {
-                LogManager.w(this, "Connection failed. SmackException " + e.getMessage());
-            }
-
-            connectionItem.connectionClosed();
-        } catch (IOException e) {
-            // There is no connection listeners yet, so we call onClose.
-            LogManager.w(this, "Connection failed. IOException " + e.getMessage());
-            LogManager.exception(this, e);
-            connectionItem.connectionClosed();
-        } catch (XMPPException e) {
-            // There is no connection listeners yet, so we call onClose.
-            LogManager.w(this, "Connection failed. XMPPException " + e.getMessage());
-            LogManager.exception(this, e);
-            connectionItem.connectionClosed();
-        } catch (InterruptedException e) {
-            LogManager.w(this, "Connection failed. InterruptedException " + e.getMessage());
-            LogManager.exception(this, e);
-            connectionItem.connectionClosed();
+    void start() {
+        if (thread.getState() == Thread.State.TERMINATED) {
+            LogManager.i(this, "Connection thread is finished, creating new one...");
+            createNewThread();
         }
-        return success;
+
+        if (thread.getState() == Thread.State.NEW) {
+            LogManager.i(this, "Connection thread is new, starting...");
+            thread.start();
+        } else {
+            LogManager.i(this, "Connection thread is running already");
+        }
+    }
+
+    private void connectAndLogin() {
+        try {
+            LogManager.i(this, "Trying to connect and login...");
+            connection.connect().login();
+        } catch (SASLErrorException e)  {
+            LogManager.exception(this, e);
+            LogManager.i(this, "Error. " + e.getMessage() + " Exception class: " + e.getClass().getSimpleName());
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectionItem.showDebugToast("Auth error!");
+                    com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+                }
+            });
+        } catch (XMPPException | SmackException | IOException | InterruptedException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     private boolean createAccount() {
@@ -119,41 +103,9 @@ class ConnectionThread {
         }
 
         if (success) {
-            connectionItem.onAccountRegistered();
+//            connectionItem.onAccountRegistered();
         }
 
         return success;
     }
-
-    private boolean login() {
-        boolean success = false;
-
-        try {
-            connection.login();
-            success = true;
-        } catch (SASLErrorException saslErrorException) {
-            LogManager.w(this, "Login failed. SASLErrorException."
-                    + " SASLError: " + saslErrorException.getSASLFailure().getSASLError()
-                    + " Mechanism: " + saslErrorException.getMechanism());
-            LogManager.exception(this, saslErrorException);
-
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // Login failed. We don`t want to reconnect.
-                    connectionItem.onAuthFailed();
-                }
-            });
-            connectionItem.connectionClosed();
-        } catch (XMPPException e) {
-            LogManager.exception(this, e);
-            connectionItem.connectionClosed();
-        } catch (SmackException | IOException | InterruptedException e) {
-            LogManager.exception(this, e);
-        }
-
-        return success;
-    }
-
-
 }

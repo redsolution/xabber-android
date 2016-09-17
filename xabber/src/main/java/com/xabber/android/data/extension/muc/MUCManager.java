@@ -25,6 +25,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.sqlite.RoomTable;
 import com.xabber.android.data.entity.AccountJid;
@@ -527,7 +528,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         invite.setReason("");
         mucUser.setInvite(invite);
         message.addExtension(mucUser);
-        ConnectionManager.getInstance().sendStanza(account, message);
+        StanzaSender.sendStanza(account, message);
         roomChat.putInvite(message.getStanzaId(), user);
         roomChat.newAction(roomChat.getNickname(), user.toString(), ChatAction.invite_sent);
     }

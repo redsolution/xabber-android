@@ -29,6 +29,7 @@ import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -347,7 +348,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
         packet.addRosterItem(item);
 
-        ConnectionManager.getInstance().sendStanza(account, packet);
+        StanzaSender.sendStanza(account, packet);
     }
 
     public void setName(AccountJid account, UserJid user, final String name) {

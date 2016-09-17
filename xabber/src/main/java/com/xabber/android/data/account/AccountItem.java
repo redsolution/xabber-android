@@ -374,7 +374,7 @@ public class AccountItem extends ConnectionItem {
     public void onAuthFailed() {
         // Login failed. We don`t want to reconnect.
         authFailed = true;
-        updateConnection(false);
+//        updateConnection(false);
         AccountManager.getInstance().addAuthenticationError(getAccount());
     }
 

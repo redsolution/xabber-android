@@ -21,6 +21,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AccountRosterListener;
 
@@ -50,7 +51,9 @@ import java.io.IOException;
  *
  * @author alexander.ivanov
  */
-public abstract class ConnectionItem implements ConnectionListener {
+public abstract class ConnectionItem {
+
+    private static final String LOG_TAG = ConnectionItem.class.getSimpleName();
 
     @NonNull
     private final AccountJid account;
@@ -60,6 +63,9 @@ public abstract class ConnectionItem implements ConnectionListener {
      */
     @NonNull
     private final ConnectionSettings connectionSettings;
+
+    @NonNull
+    private final com.xabber.android.data.connection.ConnectionListener connectionListener;
 
     /**
      * XMPP connection.
@@ -91,6 +97,8 @@ public abstract class ConnectionItem implements ConnectionListener {
     private final AccountRosterListener rosterListener;
     private Toast toast;
 
+    private ConnectionThread connectionThread;
+
     public ConnectionItem(boolean custom,
                           String host, int port, DomainBareJid serverName, Localpart userName,
                           Resourcepart resource, boolean storePassword, String password,
@@ -99,17 +107,29 @@ public abstract class ConnectionItem implements ConnectionListener {
                           String proxyUser, String proxyPassword) {
         this.account = AccountJid.from(userName, serverName, resource);
         rosterListener = new AccountRosterListener(getAccount());
+        connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
         connectionSettings = new ConnectionSettings(userName,
                 serverName, resource, custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
-        connection = ConnectionBuilder.build(connectionSettings);
+        createConnection();
 
         isConnectionRequestedByUser = false;
         disconnectionRequested = false;
         updateState(ConnectionState.offline);
     }
+
+    private void createConnection() {
+        showDebugToast("createConnection...");
+
+        connection = ConnectionBuilder.build(connectionSettings);
+        connectionThread = new ConnectionThread(connection, this);
+
+        addConnectionListeners();
+        configureConnection();
+    }
+
 
     @NonNull
     public AccountJid getAccount() {
@@ -162,63 +182,13 @@ public abstract class ConnectionItem implements ConnectionListener {
      */
     protected abstract boolean isConnectionAvailable(boolean userRequest);
 
-    /**
-     * Connect or disconnect from server depending on internal flags.
-     *
-     * @param userRequest action was requested by user.
-     * @return Whether state has been changed.
-     */
-    public boolean updateConnection(boolean userRequest) {
-        boolean available = isConnectionAvailable(userRequest);
-
-        LogManager.i(this, "updateConnection userRequest: " + userRequest + " isConnectionAvailable " + available);
-
-        if (NetworkManager.getInstance().getState() != NetworkState.available
-                || !available || disconnectionRequested) {
-            ConnectionState target = available ? ConnectionState.waiting : ConnectionState.offline;
-            if (state == ConnectionState.connected || state == ConnectionState.authentication
-                    || state == ConnectionState.connecting) {
-                if (userRequest) {
-                    isConnectionRequestedByUser = false;
-                }
-                disconnect(connection);
-                connectionClosed();
-            } else if (state == target) {
-                return false;
-            }
-            updateState(target);
-            return true;
-        } else {
-            if (state == ConnectionState.offline || state == ConnectionState.waiting) {
-                if (userRequest) {
-                    isConnectionRequestedByUser = true;
-                }
-                restartConnection();
-
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    private void restartConnection() {
-        removeConnectionListeners();
-
-        connection = ConnectionBuilder.build(connectionSettings);
-        configureConnection();
-        addConnectionListeners();
+    public void connect() {
         updateState(ConnectionState.connecting);
-        ConnectionManager.getInstance().onConnection(connection);
-        new ConnectionThread(connection, this).start(registerNewAccount);
-    }
+        if (connectionThread == null) {
+            connectionThread = new ConnectionThread(connection, this);
+        };
 
-    private void removeConnectionListeners() {
-        connection.removeConnectionListener(this);
-
-        final Roster roster = Roster.getInstanceFor(connection);
-        roster.removeRosterListener(rosterListener);
-        roster.removeRosterLoadedListener(rosterListener);
+        connectionThread.start();
     }
 
     private void configureConnection() {
@@ -229,9 +199,6 @@ public abstract class ConnectionItem implements ConnectionListener {
         // by default Smack disconnects in case of parsing errors
         connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
 
-        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
-        reconnectionManager.enableAutomaticReconnection();
-        reconnectionManager.setReconnectionPolicy(ReconnectionManager.ReconnectionPolicy.RANDOM_INCREASING_DELAY);
     }
 
     private void addConnectionListeners() {
@@ -242,52 +209,11 @@ public abstract class ConnectionItem implements ConnectionListener {
         roster.setRosterLoadedAtLogin(true);
 
         connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
-        connection.addConnectionListener(this);
+        connection.addConnectionListener(connectionListener);
+
+        PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
     }
 
-    /**
-     * Disconnect and connect using new connection.
-     */
-    public void forceReconnect() {
-        LogManager.i(this, "forceReconnect for " + getAccount());
-
-        Thread thread = new Thread("Force reconnection thread for " + connection) {
-            @Override
-            public void run() {
-                showDebugToast("forceReconnect " + connection.getUser());
-                connection.disconnect();
-                try {
-                    connection.connect().login();
-                } catch (XMPPException | SmackException | InterruptedException | IOException e) {
-                    LogManager.exception(this, e);
-                }
-            }
-
-        };
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    public void reconnect() {
-        if (state == ConnectionState.waiting || state == ConnectionState.offline) {
-            Thread thread = new Thread("Reconnection thread for " + connection) {
-                @Override
-                public void run() {
-                    try {
-                        showDebugToast("reconnect " + connection.getUser());
-                        connection.connect().login();
-                    } catch (XMPPException | SmackException | InterruptedException | IOException e) {
-                        LogManager.exception(this, e);
-                    }
-                }
-
-            };
-            thread.setPriority(Thread.MIN_PRIORITY);
-            thread.setDaemon(true);
-            thread.start();
-        }
-    }
 
     /**
      * Starts disconnection in another thread.
@@ -314,42 +240,34 @@ public abstract class ConnectionItem implements ConnectionListener {
         connectionSettings.setPassword(password);
     }
 
-    /**
-     * New account has been registered on XMPP server.
-     */
-    protected void onAccountRegistered() {
-        registerNewAccount = false;
-        updateState(ConnectionState.authentication);
+    public void disconnect() {
+        Thread thread = new Thread("Disconnection thread for " + connection) {
+            @Override
+            public void run() {
+                connection.disconnect();
+            }
+
+        };
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
     }
 
-    @Override
-    public void connected(XMPPConnection connection) {
-        showDebugToast("connected: " + connection.getServiceName());
+    void recreateConnection() {
+        showDebugToast("recreateConnection...");
 
-        if (isRegisterAccount()) {
-            updateState(ConnectionState.registration);
-        } else {
-            updateState(ConnectionState.authentication);
-        }
+        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
 
-        ConnectionManager.getInstance().onConnected(this);
+        connection.removeConnectionListener(connectionListener);
+        connection.removeAsyncStanzaListener(everyStanzaListener);
+        final Roster roster = Roster.getInstanceFor(connection);
+        roster.removeRosterLoadedListener(rosterListener);
+        roster.removeRosterListener(rosterListener);
+
+        createConnection();
     }
 
-    @Override
-    public void authenticated(XMPPConnection connection, boolean resumed) {
-        if (resumed) {
-            showDebugToast("authenticated (resumed): " + connection.getUser());
-        } else {
-            showDebugToast("authenticated: " + connection.getUser());
-        }
-
-
-        PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
-        updateState(ConnectionState.connected);
-        ConnectionManager.getInstance().onAuthorized(this, resumed);
-    }
-
-    private void updateState(ConnectionState newState) {
+    void updateState(ConnectionState newState) {
         ConnectionState prevState = this.state;
 
         if (connection.isAuthenticated()) {
@@ -373,50 +291,6 @@ public abstract class ConnectionItem implements ConnectionListener {
         }
     }
 
-    @Override
-    public void connectionClosed() {
-        showDebugToast("connectionClosed: " + connection.getUser());
-
-        updateState(ConnectionState.offline);
-
-        ConnectionManager.getInstance().onDisconnect(this);
-
-        if (isConnectionRequestedByUser) {
-            Application.getInstance().onError(R.string.CONNECTION_FAILED);
-        }
-        isConnectionRequestedByUser = false;
-    }
-
-    // going to reconnect with Smack Reconnection manager
-    @Override
-    public void connectionClosedOnError(final Exception e) {
-        showDebugToast("connectionClosedOnError: " + connection.getUser() + " " + e.getMessage());
-
-        updateState(ConnectionState.waiting);
-
-        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
-//        connectionClosed();
-    }
-
-    @Override
-    public void reconnectionSuccessful() {
-        showDebugToast("reconnectionSuccessful: " + connection.getUser());
-    }
-
-    @Override
-    public void reconnectingIn(int seconds) {
-        showDebugToast("reconnecting in " + seconds + " seconds: " + connection.getUser(), Toast.LENGTH_SHORT);
-
-        if (state != ConnectionState.waiting && !connection.isAuthenticated() && !connection.isConnected()) {
-            updateState(ConnectionState.waiting);
-        }
-    }
-
-    @Override
-    public void reconnectionFailed(Exception e) {
-        showDebugToast("reconnectionFailed: " + connection.getUser() + " " + e.getMessage());
-        updateState(ConnectionState.offline);
-    }
 
     private StanzaListener everyStanzaListener = new StanzaListener() {
         @Override
@@ -424,27 +298,29 @@ public abstract class ConnectionItem implements ConnectionListener {
             Application.getInstance().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ConnectionManager.getInstance().processPacket(ConnectionItem.this, stanza);
+                    for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
+                        listener.onStanza(ConnectionItem.this, stanza);
+                    }
                 }
             });
-
         }
     };
 
     private PingFailedListener pingFailedListener = new PingFailedListener() {
         @Override
         public void pingFailed() {
-            showDebugToast("pingFailed: " + connection.getUser());
+            showDebugToast("ping failed");
             LogManager.i(this, "pingFailed for " + getAccount());
-            forceReconnect();
+            updateState(ConnectionState.offline);
+            disconnect();
         }
     };
 
-    private void showDebugToast(final String message) {
+    void showDebugToast(final String message) {
         showDebugToast(message, Toast.LENGTH_LONG);
     }
 
-    private void showDebugToast(final String message, final int duration) {
+    void showDebugToast(final String message, final int duration) {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {

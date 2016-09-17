@@ -27,6 +27,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -212,7 +213,7 @@ public class ChatStateManager implements OnDisconnectListener,
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState));
         try {
-            ConnectionManager.getInstance().sendStanza(account, message);
+            StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
             // Just ignore it.
         }

@@ -335,8 +335,8 @@ public class ContextMenuHelper {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            if (accountItem.updateConnection(true))
-                                AccountManager.getInstance().onAccountChanged(account);
+                            accountItem.disconnect();
+                            AccountManager.getInstance().onAccountChanged(account);
                             return true;
                         }
 

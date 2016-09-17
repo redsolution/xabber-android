@@ -27,6 +27,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -108,7 +109,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void requestSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
         packet.setTo(user.getJid());
-        ConnectionManager.getInstance().sendStanza(account, packet);
+        StanzaSender.sendStanza(account, packet);
         Set<UserJid> set = requestedSubscriptions.get(account);
         if (set == null) {
             set = new HashSet<>();
@@ -130,7 +131,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void acceptSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribed);
         packet.setTo(user.getJid());
-        ConnectionManager.getInstance().sendStanza(account, packet);
+        StanzaSender.sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, user);
         removeRequestedSubscription(account, user);
     }
@@ -142,7 +143,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void discardSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.unsubscribed);
         packet.setTo(user.getJid());
-        ConnectionManager.getInstance().sendStanza(account, packet);
+        StanzaSender.sendStanza(account, packet);
         subscriptionRequestProvider.remove(account, user);
         removeRequestedSubscription(account, user);
     }
@@ -243,7 +244,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         final VCardUpdate vCardUpdate = new VCardUpdate();
         vCardUpdate.setPhotoHash(hash);
         presence.addExtension(vCardUpdate);
-        ConnectionManager.getInstance().sendStanza(account, presence);
+        StanzaSender.sendStanza(account, presence);
     }
 
     @Override

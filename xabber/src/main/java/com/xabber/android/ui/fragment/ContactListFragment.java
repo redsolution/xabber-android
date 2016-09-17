@@ -297,7 +297,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ConnectionManager.getInstance().updateConnections(true);
+                    ConnectionManager.getInstance().connectAll();
                 }
             };
         } else if (commonState == CommonState.offline) {

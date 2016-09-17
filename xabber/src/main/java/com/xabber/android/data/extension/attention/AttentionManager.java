@@ -26,6 +26,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -204,7 +205,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         message.setTo(to);
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
-        ConnectionManager.getInstance().sendStanza(account, message);
+        StanzaSender.sendStanza(account, message);
         chat.newAction(null, null, ChatAction.attention_called);
     }
 

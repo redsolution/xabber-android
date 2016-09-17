@@ -33,7 +33,7 @@ public class ReconnectionActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogManager.i(this, "onReconnect");
-        ConnectionManager.getInstance().updateConnections(false);
+        ConnectionManager.getInstance().connectAll();
         Intent intent = ContactList.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);

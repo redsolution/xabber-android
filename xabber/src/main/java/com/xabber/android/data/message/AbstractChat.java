@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -554,7 +555,7 @@ public abstract class AbstractChat extends BaseEntity {
 
             final String messageId = messageItem.getUniqueId();
             try {
-                ConnectionManager.getInstance().sendStanza(account, message, new StanzaListener() {
+                StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
                     public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
                         Realm localRealm = Realm.getDefaultInstance();

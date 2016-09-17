@@ -20,6 +20,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -101,7 +102,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                     // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
                     try {
-                        ConnectionManager.getInstance().sendStanza(account, receipt);
+                        StanzaSender.sendStanza(account, receipt);
                     } catch (NetworkException e) {
                         LogManager.exception(this, e);
                     }

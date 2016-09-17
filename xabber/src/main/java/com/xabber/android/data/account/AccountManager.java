@@ -37,6 +37,7 @@ import com.xabber.android.data.account.listeners.OnAccountSyncableChangedListene
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
+import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.database.sqlite.StatusTable;
@@ -291,7 +292,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         }
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
-        accountItem.updateConnection(true);
+        ReconnectionManager.getInstance().requestReconnect(accountItem.getAccount());
         return accountItem;
     }
 
@@ -390,7 +391,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         final AccountItem accountItem = getAccount(account);
         boolean wasEnabled = accountItem.isEnabled();
         accountItem.setEnabled(false);
-        accountItem.updateConnection(true);
+        accountItem.disconnect();
         if (wasEnabled) {
             if (accountItem.getRawStatusMode().isOnline()) {
                 onAccountOffline(accountItem);
@@ -497,7 +498,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 }
             }
             if (changed || reconnect) {
-                result.updateConnection(true);
+                result.disconnect();
             }
             if (changed && !enabled) {
                 if (result.getRawStatusMode().isOnline()) {
@@ -530,7 +531,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
 
         accountItem.setEnabled(enabled);
-        accountItem.updateConnection(true);
+        accountItem.connect();
         requestToWriteAccount(accountItem);
 
         if (enabled) {
@@ -791,7 +792,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         if (changed && statusMode.isOnline()) {
             onAccountOnline(accountItem);
         }
-        accountItem.updateConnection(true);
+        accountItem.disconnect();
         if (changed && !statusMode.isOnline()) {
             onAccountOffline(accountItem);
         }

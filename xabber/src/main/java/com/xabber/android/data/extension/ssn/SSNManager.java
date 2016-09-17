@@ -22,6 +22,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -282,7 +283,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         message.setThread(session);
         message.addExtension(feature);
         try {
-            ConnectionManager.getInstance().sendStanza(account, message);
+            StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
