@@ -239,7 +239,6 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogManager.i(this, "onCreate started...");
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 

@@ -16,4 +16,12 @@
         android:defaultValue="@bool/debug_connection_errors_default"
         />
 
+    <Preference
+        android:key="@string/debug_log_activity_key"
+        android:title="@string/debug_log_title">
+        <intent
+            android:targetClass="com.xabber.android.ui.activity.LogActivity"
+            android:targetPackage="@string/application_package" />
+    </Preference>
+
 </PreferenceScreen>

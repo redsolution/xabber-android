@@ -71,6 +71,8 @@ dependencies {
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
 
     compile "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
     compile "org.igniterealtime.smack:smack-experimental:$smackVersion"

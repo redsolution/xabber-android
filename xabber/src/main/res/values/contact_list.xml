@@ -73,4 +73,6 @@
     <string name="dark_theme_suggest_dialog_message">New dark theme is now available for Xabber. Can you resist the temptation to use it?</string>
     <string name="dark_theme_suggest_dialog_join_dark_side">Join the Dark Side</string>
     <string name="dark_theme_suggest_dialog_stay_on_light_side">"Stay on the Light Side"</string>
+    <string name="save_log_to_file">Save to file</string>
+    <string name="clear_log">Clear</string>
 </resources>

@@ -22,6 +22,10 @@ import org.jivesoftware.smack.SmackConfiguration;
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
+import com.xabber.android.data.database.realm.LogMessage;
+
+import io.realm.Realm;
+
 /**
  * Manager to write to the log.
  *
@@ -69,6 +73,8 @@ public class LogManager implements OnLoadListener {
     }
 
     static public int dString(String tag, String msg) {
+        writeLogToDataBase(Log.DEBUG, tag, msg);
+
         if (log)
             return Log.d(tag, msg);
         else
@@ -76,6 +82,8 @@ public class LogManager implements OnLoadListener {
     }
 
     static public int eString(String tag, String msg) {
+        writeLogToDataBase(Log.ERROR, tag, msg);
+
         if (log)
             return Log.e(tag, msg);
         else
@@ -83,6 +91,8 @@ public class LogManager implements OnLoadListener {
     }
 
     static public int iString(String tag, String msg) {
+        writeLogToDataBase(Log.INFO, tag, msg);
+
         if (log)
             return Log.i(tag, msg);
         else
@@ -90,6 +100,8 @@ public class LogManager implements OnLoadListener {
     }
 
     static public int wString(String tag, String msg) {
+        writeLogToDataBase(Log.WARN, tag, msg);
+
         if (log)
             return Log.w(tag, msg);
         else
@@ -97,6 +109,8 @@ public class LogManager implements OnLoadListener {
     }
 
     static public int vString(String tag, String msg) {
+        writeLogToDataBase(Log.VERBOSE, tag, msg);
+
         if (log)
             return Log.v(tag, msg);
         else
@@ -130,6 +144,8 @@ public class LogManager implements OnLoadListener {
      * @param exception
      */
     public static void exception(Object obj, Exception exception) {
+        writeLogToDataBase(Log.ERROR, obj.toString(), exception.getClass().getSimpleName() + exception.getMessage());
+
         if (!log)
             return;
         forceException(obj, exception);
@@ -161,4 +177,20 @@ public class LogManager implements OnLoadListener {
         return debugable;
     }
 
+    private static void writeLogToDataBase(final int level, final String tag, final String message) {
+        if (!SettingsManager.debugLog()) {
+            return;
+        }
+
+        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                LogMessage logMessage = new LogMessage(level, tag, message);
+                realm.copyToRealm(logMessage);
+            }
+        });
+
+    }
+
 }
+

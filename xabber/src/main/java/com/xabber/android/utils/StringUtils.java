@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.webkit.MimeTypeMap;
 
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -26,6 +27,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Helper class to get plural forms.
@@ -36,12 +38,15 @@ public class StringUtils {
 
     private static final DateFormat DATE_TIME;
     private static final DateFormat TIME;
+    private static final String LOG_DATE_TIME_FORMAT = "HH:mm:ss yyyy-MM-dd";
 
     static {
         DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                 DateFormat.SHORT);
         TIME = new SimpleDateFormat("H:mm");
     }
+
+    private static SimpleDateFormat logDateTimeFormat;
 
     private StringUtils() {
     }
@@ -153,4 +158,11 @@ public class StringUtils {
         }
     }
 
+    public static SimpleDateFormat getLogDateTimeFormat() {
+        if (logDateTimeFormat == null) {
+            logDateTimeFormat = new SimpleDateFormat(LOG_DATE_TIME_FORMAT, Locale.ENGLISH);
+        }
+
+        return logDateTimeFormat;
+    }
 }

@@ -311,16 +311,15 @@
             android:noHistory="true"
             android:stateNotNeeded="true"
             android:taskAffinity="" />
-
         <activity
-            android:name="com.xabber.android.ui.preferences.ThemeSettings"
-            android:parentActivityName="com.xabber.android.ui.preferences.PreferenceEditor">
+            android:name=".ui.preferences.ThemeSettings"
+            android:parentActivityName=".ui.preferences.PreferenceEditor">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
-
         <activity
             android:name=".ui.preferences.ContactListSettings"
             android:parentActivityName=".ui.preferences.PreferenceEditor">
@@ -384,7 +383,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.ContactList" />
         </activity>
-        <activity android:name=".ui.activity.ConferenceFilterActivity"></activity>
+        <activity android:name=".ui.activity.ConferenceFilterActivity" />
         <activity
             android:name=".ui.activity.BlockedListActivity"
             android:parentActivityName=".ui.activity.AccountViewer">
@@ -423,9 +422,18 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
+        <activity android:name=".ui.activity.LogActivity"
+            android:parentActivityName=".ui.preferences.DebugSettings">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.preferences.DebugSettings" />
+
+        </activity>
     </application>
 
 </manifest>

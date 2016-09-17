@@ -26,6 +26,7 @@ import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnMigrationListener;
 import com.xabber.android.data.database.realm.BlockedContactsForAccount;
+import com.xabber.android.data.database.realm.LogMessage;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.database.sqlite.AbstractAccountTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 
 import io.realm.DynamicRealm;
@@ -61,7 +63,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 70;
-    private static final int REALM_DATABASE_VERSION = 6;
+    private static final int REALM_DATABASE_VERSION = 7;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -73,11 +75,14 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     }
 
     private final ArrayList<DatabaseTable> registeredTables;
+    private final Realm realm;
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<>();
         configureRealm();
+
+        realm = Realm.getDefaultInstance();
     }
 
     private void configureRealm() {
@@ -143,6 +148,16 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                                     .addField(MessageItem.Fields.ACKNOWLEDGED, boolean.class);
                             oldVersion++;
                         }
+
+                        if (oldVersion == 6) {
+                            schema.create(LogMessage.class.getSimpleName())
+                                    .addField(LogMessage.Fields.LEVEL, int.class)
+                                    .addField(LogMessage.Fields.DATETIME, Date.class)
+                                    .addField(LogMessage.Fields.TAG, String.class)
+                                    .addField(LogMessage.Fields.MESSAGE, String.class);
+
+                            oldVersion++;
+                        }
                     }
                 })
                 .build();
@@ -197,6 +212,10 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     public static DatabaseManager getInstance() {
         return instance;
+    }
+
+    public Realm getRealm() {
+        return realm;
     }
 
     /**

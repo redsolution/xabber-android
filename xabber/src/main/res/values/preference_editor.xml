@@ -16,6 +16,7 @@
     <string name="contacts_show_panel">Show accounts panel\nShow action buttons with avatars in the bottom right corner of contact list</string>
     <string name="contacts_stay_active_chats">Duplicate active chats\nActive chats appear both on top of contact list and in groups</string>
     <string name="debug_log">Debug log\nWrite messages to debug log (please restart application to apply changes)</string>
+    <string name="debug_log_title">Debug log</string>
     <string name="events_lightning">Light indication\nBlink LED on notification</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>
     <string name="events_sound">Audio alert\nChoose notification sound</string>

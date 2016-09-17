@@ -353,6 +353,8 @@
     <string name="debug_connection_errors_key">connection_errors</string>
     <bool name="debug_connection_errors_default">false</bool>
 
+    <string name="debug_log_activity_key">debug_log_activity</string>
+
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
     <string name="preference_about_key">preference_about</string>
