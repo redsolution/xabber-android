@@ -22,6 +22,7 @@ import org.jivesoftware.smack.SmackConfiguration;
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realm.LogMessage;
 
 import io.realm.Realm;
@@ -182,14 +183,15 @@ public class LogManager implements OnLoadListener {
             return;
         }
 
-        Realm.getDefaultInstance().executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 LogMessage logMessage = new LogMessage(level, tag, message);
                 realm.copyToRealm(logMessage);
             }
         });
-
+        realm.close();
     }
 
 }
