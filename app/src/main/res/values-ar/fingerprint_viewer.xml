@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_fingerprint_description">يمكن للطرف الآخر توفير بصمته لمقارنتها مع البصمة المحددة هنا للتأكد من هويته. يجب عدم استخدام XMPP دردشة لهذا الغرض.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_is_verified">الطرف الآخر موثوق به</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_local_fingerprint">بصمتك:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_remote_fingerprint">بصمة الطرف الآخر:</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_scan_fingerprint">مسح رمز QR لبصمة الطرف الآخر</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_show_fingerprint">إظهار رمز QR لبصمتك</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_play.png -->
+    <string name="zxing_install_fail">لم يتمكن تثبيت تطبيق Barcode Scanner. برجاء تثبيته بمعرفتك.</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint_scanner.png -->
+    <string name="zxing_install_message">هذا التطبيق يتطلب تطبيق Barcode Scanner. هل تحب أن تثبته؟</string>
+    <!-- http://dl.dropbox.com/u/1029995/com.xabber.android/otr_fingerprint.png -->
+    <string name="otr_copy_fingerprint">نسخ بصمتك للحافظة</string>
+</resources>

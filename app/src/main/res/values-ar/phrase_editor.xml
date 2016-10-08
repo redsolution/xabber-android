@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="events_phrases_title">Key phrases</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_add">أضف عبارة</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete">حذف عبارة</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_remove.png -->
+    <string name="phrase_delete_confirm">هل حقاً تريد حذف عبارة: %s؟</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases.png -->
+    <string name="phrase_empty">&lt; أي نص &gt;</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_group">Part of the contact group</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_regexp">Regular expression</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_sound">Sound\nChoose notification sound</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_text">Text to search for</string>
+    <!-- https://dl.dropboxusercontent.com/u/1029995/com.xabber.android/preference_editor_notifications_phrases_detail.png -->
+    <string name="phrase_user">Contact\'s Jabber ID part</string>
+</resources>
