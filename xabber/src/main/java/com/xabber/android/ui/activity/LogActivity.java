@@ -10,19 +10,16 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realm.LogMessage;
 import com.xabber.android.ui.adapter.LogAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -47,6 +44,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     public static final int LOG_MENU = R.menu.activity_log;
     @BindView(R.id.activity_log_recycler_view)
     RecyclerView recyclerView;
+    private Realm realm;
 
 
     public static Intent createIntent(Context context) {
@@ -67,8 +65,8 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         toolbar.inflateMenu(LOG_MENU);
         toolbar.setOnMenuItemClickListener(this);
 
-        DatabaseManager.getInstance().getRealm()
-                .where(LogMessage.class)
+        realm = Realm.getDefaultInstance();
+        realm.where(LogMessage.class)
                 // older than week ago 7 * 24 * 60 * 60 * 1000
                 .lessThan(LogMessage.Fields.DATETIME, new Date(System.currentTimeMillis() - 604800000L))
                 .findAllAsync().addChangeListener(new RealmChangeListener<RealmResults<LogMessage>>() {
@@ -81,7 +79,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
                     }
                 });
 
-        RealmResults<LogMessage> all = DatabaseManager.getInstance().getRealm()
+        RealmResults<LogMessage> all = realm
                 .where(LogMessage.class)
                 .findAllSortedAsync(LogMessage.Fields.DATETIME, Sort.DESCENDING);
 
@@ -89,6 +87,12 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         recyclerView.setAdapter(logAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+    }
+
+    @Override
+    protected void onDestroy() {
+        realm.close();
+        super.onDestroy();
     }
 
     @Override
@@ -124,7 +128,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     }
 
     private void clearLog() {
-        DatabaseManager.getInstance().getRealm().executeTransaction(new Realm.Transaction() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(LogMessage.class).findAll().deleteAllFromRealm();
@@ -138,14 +142,13 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     }
 
     public void saveLogToFile() {
-        DatabaseManager.getInstance().getRealm()
-                .where(LogMessage.class)
+        realm.where(LogMessage.class)
                 .findAllSortedAsync(LogMessage.Fields.DATETIME, Sort.ASCENDING)
                 .addChangeListener(new RealmChangeListener<RealmResults<LogMessage>>() {
                     @Override
                     public void onChange(final RealmResults<LogMessage> messages) {
                         if (messages.isValid() && messages.isLoaded()) {
-                            final List<LogMessage> logMessages = DatabaseManager.getInstance().getRealm().copyFromRealm(messages);
+                            final List<LogMessage> logMessages = realm.copyFromRealm(messages);
 
                             Application.getInstance().runInBackground(new Runnable() {
                                 @Override

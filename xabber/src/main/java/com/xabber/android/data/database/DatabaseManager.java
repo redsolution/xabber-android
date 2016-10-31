@@ -75,7 +75,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     }
 
     private final ArrayList<DatabaseTable> registeredTables;
-    private final Realm realm;
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
@@ -86,7 +85,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         System.out.println("Realm compact database file result: " + success);
 
         Realm.setDefaultConfiguration(realmConfiguration);
-        realm = Realm.getDefaultInstance();
     }
 
     private RealmConfiguration createRealmConfiguration() {
@@ -215,10 +213,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     public static DatabaseManager getInstance() {
         return instance;
-    }
-
-    public Realm getRealm() {
-        return realm;
     }
 
     /**
