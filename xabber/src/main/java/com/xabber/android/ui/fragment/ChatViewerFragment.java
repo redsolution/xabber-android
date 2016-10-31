@@ -828,7 +828,10 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     private void updateSecurityButton() {
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
-        securityButton.setImageLevel(securityLevel.getImageLevel());
+        if (securityButton != null) {
+            // strange null ptr happens
+            securityButton.setImageLevel(securityLevel.getImageLevel());
+        }
     }
 
     public boolean isEqual(BaseEntity chat) {
