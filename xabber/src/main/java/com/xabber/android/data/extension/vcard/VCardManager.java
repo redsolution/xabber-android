@@ -212,8 +212,15 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 listener.onVCardReceived(account, bareAddress, vCard);
             }
 
-            String hash = vCard.getAvatarHash();
-            AvatarManager.getInstance().onAvatarReceived(bareAddress, hash, vCard.getAvatar());
+            try {
+                String hash = vCard.getAvatarHash();
+                byte[] avatar = vCard.getAvatar();
+                AvatarManager.getInstance().onAvatarReceived(bareAddress, hash, avatar);
+                // "bad base-64" error happen sometimes
+            } catch (IllegalArgumentException e) {
+                LogManager.exception(this, e);
+            }
+
             name = new StructuredName(vCard.getNickName(), vCard.getField(VCardProperty.FN.name()),
                     vCard.getFirstName(), vCard.getMiddleName(), vCard.getLastName());
 
@@ -397,7 +404,14 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 vCardSaveRequests.add(account);
                 try {
                     vCardManager.saveVCard(vCard);
-                    String avatarHash = vCard.getAvatarHash();
+                    String avatarHash = null;
+
+                    try {
+                        avatarHash = vCard.getAvatarHash();
+                        // "bad base-64" error happen sometimes
+                    } catch (IllegalArgumentException e) {
+                        LogManager.exception(this, e);
+                    }
                     if (avatarHash == null) {
                         avatarHash = AvatarManager.EMPTY_HASH;
                     }
