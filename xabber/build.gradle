@@ -18,10 +18,6 @@ android {
         disable 'InvalidPackage'
     }
 
-    dexOptions {
-        incremental true
-    }
-
     productFlavors {
 
         dev {
