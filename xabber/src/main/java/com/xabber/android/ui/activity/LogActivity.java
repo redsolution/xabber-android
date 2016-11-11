@@ -66,18 +66,17 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         toolbar.setOnMenuItemClickListener(this);
 
         realm = Realm.getDefaultInstance();
-        realm.where(LogMessage.class)
-                // older than week ago 7 * 24 * 60 * 60 * 1000
-                .lessThan(LogMessage.Fields.DATETIME, new Date(System.currentTimeMillis() - 604800000L))
-                .findAllAsync().addChangeListener(new RealmChangeListener<RealmResults<LogMessage>>() {
-                    @Override
-                    public void onChange(RealmResults<LogMessage> element) {
-                        if (element.isValid() && element.isLoaded()) {
-                            element.deleteAllFromRealm();
-                        }
-                        element.removeChangeListeners();
-                    }
-                });
+
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<LogMessage> results = realm.where(LogMessage.class)
+                        // older than week ago 7 * 24 * 60 * 60 * 1000
+                        .lessThan(LogMessage.Fields.DATETIME, new Date(System.currentTimeMillis() - 604800000L))
+                        .findAll();
+                results.deleteAllFromRealm();
+            }
+        });
 
         RealmResults<LogMessage> all = realm
                 .where(LogMessage.class)
