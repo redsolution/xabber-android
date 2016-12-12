@@ -522,9 +522,8 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         }
         Message message = new Message(room);
         MUCUser mucUser = new MUCUser();
-        MUCUser.Invite invite = new MUCUser.Invite();
-        invite.setTo(user.toString());
-        invite.setReason("");
+        MUCUser.Invite invite = new MUCUser.Invite("", null, user.getBareJid().asEntityBareJidIfPossible());
+
         mucUser.setInvite(invite);
         message.addExtension(mucUser);
         StanzaSender.sendStanza(account, message);

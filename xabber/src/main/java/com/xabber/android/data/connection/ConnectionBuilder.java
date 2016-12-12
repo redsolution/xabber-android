@@ -1,6 +1,7 @@
 package com.xabber.android.data.connection;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.log.LogManager;
@@ -53,7 +54,8 @@ public class ConnectionBuilder {
                         mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()));
             } else {
                 TLSUtils.acceptAllCertificates(builder);
-                TLSUtils.disableHostnameVerificationForTlsCertificicates(builder);
+                // since Smack 4.2.0-beta3
+                // TLSUtils.disableHostnameVerificationForTlsCertificicates(builder);
             }
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             LogManager.exception(LOG_TAG, e);

@@ -341,7 +341,7 @@ public class RoomChat extends AbstractChat {
     /**
      * Informs that the invitee has declined the invitation.
      */
-    private void onInvitationDeclined(String from, String reason) {
+    private void onInvitationDeclined(EntityBareJid from, String reason) {
         // TODO
     }
 
