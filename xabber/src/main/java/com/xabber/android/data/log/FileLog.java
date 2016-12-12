@@ -41,7 +41,7 @@ class FileLog {
     }
 
     public FileLog() {
-        dateFormat = FastDateFormat.getInstance("dd_MM_yyyy_HH_mm_ss", Locale.US);
+        dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss", Locale.US);
         try {
             File sdCard = Application.getInstance().getApplicationContext().getExternalFilesDir(null);
             if (sdCard == null) {
