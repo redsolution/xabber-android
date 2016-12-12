@@ -29,6 +29,7 @@ android {
         beta {
             applicationId "com.xabber.android.beta"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
         prod {
