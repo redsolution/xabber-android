@@ -22,6 +22,7 @@ import com.xabber.android.data.SettingsManager;
 
 import org.jivesoftware.smack.SmackConfiguration;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -155,6 +156,16 @@ public class LogManager implements OnLoadListener {
 
     public static void clearLogs() {
         FileLog.cleanupLogs();
+    }
+
+    public static File[] getLogFiles() {
+        File sdCard = Application.getInstance().getApplicationContext().getExternalFilesDir(null);
+        if (sdCard == null) {
+            return new File[0];
+        }
+        File dir = new File(sdCard.getAbsolutePath() + "/logs");
+        return dir.listFiles();
+
     }
 }
 

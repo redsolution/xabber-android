@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.xabber.android.R;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.adapter.LogFilesAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
@@ -25,6 +26,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     public static final int LOG_MENU = R.menu.activity_log;
     @BindView(R.id.activity_log_recycler_view)
     RecyclerView recyclerView;
+    private LogFilesAdapter logFilesAdapter;
 
 
     public static Intent createIntent(Context context) {
@@ -45,8 +47,17 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         toolbar.inflateMenu(LOG_MENU);
         toolbar.setOnMenuItemClickListener(this);
 
+        logFilesAdapter = new LogFilesAdapter();
+        recyclerView.setAdapter(logFilesAdapter);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        updateFileList(logFilesAdapter);
+    }
+
+    private void updateFileList(LogFilesAdapter logFilesAdapter) {
+        logFilesAdapter.setFiles(LogManager.getLogFiles());
     }
 
 
@@ -67,6 +78,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
                         .setPositiveButton("Clear", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 clearLog();
+                                updateFileList(logFilesAdapter);
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
