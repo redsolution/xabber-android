@@ -153,5 +153,8 @@ public class LogManager implements OnLoadListener {
         return debuggable;
     }
 
+    public static void clearLogs() {
+        FileLog.cleanupLogs();
+    }
 }
 
