@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.csi;
 
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;

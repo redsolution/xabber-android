@@ -3,7 +3,7 @@ package com.xabber.android.data.connection;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 
 import org.jivesoftware.smack.SASLAuthentication;

@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;

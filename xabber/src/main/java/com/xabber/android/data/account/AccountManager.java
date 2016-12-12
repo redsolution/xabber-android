@@ -20,7 +20,7 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnWipeListener;
@@ -34,7 +34,6 @@ import com.xabber.android.data.account.listeners.OnAccountOfflineListener;
 import com.xabber.android.data.account.listeners.OnAccountOnlineListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.account.listeners.OnAccountSyncableChangedListener;
-import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.ReconnectionManager;

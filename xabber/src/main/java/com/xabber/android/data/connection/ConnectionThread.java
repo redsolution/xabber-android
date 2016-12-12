@@ -17,7 +17,7 @@ package com.xabber.android.data.connection;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;

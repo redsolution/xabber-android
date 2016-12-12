@@ -17,7 +17,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

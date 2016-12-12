@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data;
+package com.xabber.android.data.log;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,7 +22,9 @@ import org.jivesoftware.smack.SmackConfiguration;
 import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
-import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.LogMessage;
 
 import io.realm.Realm;

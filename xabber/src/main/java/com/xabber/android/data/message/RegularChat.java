@@ -17,7 +17,7 @@ package com.xabber.android.data.message;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

@@ -3,8 +3,7 @@ package com.xabber.android.data.connection;
 import android.widget.Toast;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;

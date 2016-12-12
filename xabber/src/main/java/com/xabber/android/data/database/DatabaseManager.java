@@ -21,7 +21,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnMigrationListener;

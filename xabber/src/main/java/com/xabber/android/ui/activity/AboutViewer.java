@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 
 public class AboutViewer extends ManagedActivity implements View.OnClickListener {
 

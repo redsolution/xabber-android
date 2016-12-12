@@ -29,7 +29,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.soundcloud.android.crop.Crop;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;

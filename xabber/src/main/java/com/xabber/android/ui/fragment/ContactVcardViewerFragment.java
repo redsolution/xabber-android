@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;

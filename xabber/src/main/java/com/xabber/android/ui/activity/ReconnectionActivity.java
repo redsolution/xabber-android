@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.connection.ConnectionManager;
 
 /**

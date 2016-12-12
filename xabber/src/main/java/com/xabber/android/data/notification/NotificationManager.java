@@ -27,7 +27,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.OnLoadListener;
@@ -48,7 +48,6 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.activity.ClearNotifications;
 import com.xabber.android.ui.activity.ContactList;
-import com.xabber.android.ui.activity.ReconnectionActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 

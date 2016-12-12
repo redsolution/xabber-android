@@ -17,7 +17,7 @@ package com.xabber.android.data.extension.vcard;
 import android.database.Cursor;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;

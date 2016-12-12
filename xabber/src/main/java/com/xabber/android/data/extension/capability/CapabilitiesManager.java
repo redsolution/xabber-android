@@ -14,22 +14,12 @@
  */
 package com.xabber.android.data.extension.capability;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.roster.OnContactChangedListener;
 
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.caps.EntityCapsManager;
-import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jxmpp.jid.Jid;
 

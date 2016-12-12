@@ -30,7 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;

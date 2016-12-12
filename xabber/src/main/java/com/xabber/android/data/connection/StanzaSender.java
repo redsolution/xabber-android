@@ -3,7 +3,7 @@ package com.xabber.android.data.connection;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;

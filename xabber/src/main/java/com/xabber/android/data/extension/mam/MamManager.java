@@ -3,7 +3,7 @@ package com.xabber.android.data.extension.mam;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;

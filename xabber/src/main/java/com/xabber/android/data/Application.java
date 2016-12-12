@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.service.XabberService;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;

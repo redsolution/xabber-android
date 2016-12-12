@@ -18,7 +18,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.ChatAction;

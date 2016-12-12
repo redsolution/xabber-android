@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.blocking;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.realm.BlockedContact;
 import com.xabber.android.data.database.realm.BlockedContactsForAccount;

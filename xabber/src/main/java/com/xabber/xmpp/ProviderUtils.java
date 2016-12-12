@@ -14,7 +14,7 @@
  */
 package com.xabber.xmpp;
 
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.util.XmppDateTime;
 import org.xmlpull.v1.XmlPullParser;

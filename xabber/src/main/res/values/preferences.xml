@@ -15,7 +15,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string-array name="managers">
         <item>com.xabber.android.data.SettingsManager</item>
-        <item>com.xabber.android.data.LogManager</item>
+        <item>com.xabber.android.data.log.LogManager</item>
         <item>com.xabber.android.data.database.DatabaseManager</item>
         <item>com.xabber.android.data.extension.avatar.AvatarStorage</item>
         <item>com.xabber.android.data.extension.otr.OTRManager</item>

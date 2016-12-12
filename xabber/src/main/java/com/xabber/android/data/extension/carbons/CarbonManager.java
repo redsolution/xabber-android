@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.carbons;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountItem;

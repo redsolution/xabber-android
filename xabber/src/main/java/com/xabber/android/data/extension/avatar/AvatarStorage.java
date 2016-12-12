@@ -15,7 +15,7 @@
 package com.xabber.android.data.extension.avatar;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 

@@ -3,7 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelper;
 
 public class DebugSettingsFragment extends android.preference.PreferenceFragment {

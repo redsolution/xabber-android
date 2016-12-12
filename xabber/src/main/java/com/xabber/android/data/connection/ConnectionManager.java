@@ -15,7 +15,7 @@
 package com.xabber.android.data.connection;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.account.AccountManager;

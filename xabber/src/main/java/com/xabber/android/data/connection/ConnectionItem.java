@@ -17,21 +17,16 @@ package com.xabber.android.data.connection;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AccountRosterListener;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
@@ -43,8 +38,6 @@ import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.EntityFullJid;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.jid.parts.Resourcepart;
-
-import java.io.IOException;
 
 /**
  * Abstract connection.

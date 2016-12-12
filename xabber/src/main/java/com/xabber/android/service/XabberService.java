@@ -20,7 +20,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.notification.NotificationManager;
 

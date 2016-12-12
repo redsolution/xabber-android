@@ -18,7 +18,7 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -26,7 +26,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;

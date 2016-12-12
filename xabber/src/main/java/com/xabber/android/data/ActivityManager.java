@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AboutViewer;
 import com.xabber.android.ui.activity.ContactList;
 import com.xabber.android.ui.activity.LoadActivity;

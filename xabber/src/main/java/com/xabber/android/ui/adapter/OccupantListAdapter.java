@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
