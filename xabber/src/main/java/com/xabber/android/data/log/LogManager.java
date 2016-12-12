@@ -14,20 +14,17 @@
  */
 package com.xabber.android.data.log;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import org.jivesoftware.smack.SmackConfiguration;
-
 import android.content.pm.ApplicationInfo;
-import android.util.Log;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realm.LogMessage;
 
-import io.realm.Realm;
+import org.jivesoftware.smack.SmackConfiguration;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 
 /**
  * Manager to write to the log.
@@ -37,11 +34,11 @@ import io.realm.Realm;
 public class LogManager implements OnLoadListener {
 
     private static final boolean log;
-    private static final boolean debugable;
+    private static final boolean debuggable;
 
     static {
-        debugable = (Application.getInstance().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        log = debugable && SettingsManager.debugLog();
+        debuggable = (Application.getInstance().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        log = debuggable && SettingsManager.debugLog();
     }
 
     private final static LogManager instance;
@@ -75,100 +72,76 @@ public class LogManager implements OnLoadListener {
         }
     }
 
-    static public int dString(String tag, String msg) {
-        writeLogToDataBase(Log.DEBUG, tag, msg);
-
-        if (log)
-            return Log.d(tag, msg);
-        else
-            return 0;
+    private static void dString(String tag, String msg) {
+        if (log) {
+            FileLog.d(tag, msg);
+        }
     }
 
-    static public int eString(String tag, String msg) {
-        writeLogToDataBase(Log.ERROR, tag, msg);
-
-        if (log)
-            return Log.e(tag, msg);
-        else
-            return 0;
+    private static void eString(String tag, String msg) {
+        if (log) {
+            FileLog.e(tag, msg);
+        }
     }
 
-    static public int iString(String tag, String msg) {
-        writeLogToDataBase(Log.INFO, tag, msg);
-
-        if (log)
-            return Log.i(tag, msg);
-        else
-            return 0;
+    public static void iString(String tag, String msg) {
+        if (log) {
+            FileLog.d(tag, msg);
+        }
     }
 
-    static public int wString(String tag, String msg) {
-        writeLogToDataBase(Log.WARN, tag, msg);
-
-        if (log)
-            return Log.w(tag, msg);
-        else
-            return 0;
+    private static void wString(String tag, String msg) {
+        if (log) {
+            FileLog.w(tag, msg);
+        }
     }
 
-    static public int vString(String tag, String msg) {
-        writeLogToDataBase(Log.VERBOSE, tag, msg);
-
-        if (log)
-            return Log.v(tag, msg);
-        else
-            return 0;
+    private static void vString(String tag, String msg) {
+        if (log) {
+            FileLog.d(tag, msg);
+        }
     }
 
-    static public int d(Object obj, String msg) {
-        return dString(obj.toString(), msg);
+    static public void d(Object obj, String msg) {
+        dString(obj.toString(), msg);
     }
 
-    static public int e(Object obj, String msg) {
-        return eString(obj.toString(), msg);
+    static public void e(Object obj, String msg) {
+        eString(obj.toString(), msg);
     }
 
-    static public int i(Object obj, String msg) {
-        return iString(obj.toString(), msg);
+    static public void i(Object obj, String msg) {
+        iString(obj.toString(), msg);
     }
 
-    static public int w(Object obj, String msg) {
-        return wString(obj.toString(), msg);
+    static public void w(Object obj, String msg) {
+        wString(obj.toString(), msg);
     }
 
-    static public int v(Object obj, String msg) {
-        return vString(obj.toString(), msg);
+    static public void v(Object obj, String msg) {
+        vString(obj.toString(), msg);
     }
 
     /**
      * Print stack trace if log is enabled.
-     *
-     * @param obj
-     * @param exception
      */
     public static void exception(Object obj, Exception exception) {
-        writeLogToDataBase(Log.ERROR, obj.toString(), exception.getClass().getSimpleName() + exception.getMessage());
+        FileLog.e(obj.toString(), exception);
 
-        if (!log)
+        if (!log) {
             return;
+        }
         forceException(obj, exception);
     }
 
     /**
      * Print stack trace even if log is disabled.
-     *
-     * @param obj
-     * @param exception
      */
-    public static void forceException(Object obj, Exception exception) {
+    private static void forceException(Object obj, Exception exception) {
         System.err.println(obj.toString());
         System.err.println(getStackTrace(exception));
     }
 
-    /**
-     * @param exception
-     * @return stack trace.
-     */
     private static String getStackTrace(Exception exception) {
         final StringWriter result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
@@ -176,24 +149,8 @@ public class LogManager implements OnLoadListener {
         return result.toString();
     }
 
-    public static boolean isDebugable() {
-        return debugable;
-    }
-
-    private static void writeLogToDataBase(final int level, final String tag, final String message) {
-        if (!SettingsManager.debugLog()) {
-            return;
-        }
-
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                LogMessage logMessage = new LogMessage(level, tag, message);
-                realm.copyToRealm(logMessage);
-            }
-        });
-        realm.close();
+    public static boolean isDebuggable() {
+        return debuggable;
     }
 
 }
