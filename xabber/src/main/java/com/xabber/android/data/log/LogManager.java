@@ -39,7 +39,8 @@ public class LogManager implements OnLoadListener {
 
     static {
         debuggable = (Application.getInstance().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        log = debuggable && SettingsManager.debugLog();
+//        log = debuggable && SettingsManager.debugLog();
+        log = SettingsManager.debugLog();
     }
 
     private final static LogManager instance;
