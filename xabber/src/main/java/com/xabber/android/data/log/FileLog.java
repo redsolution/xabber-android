@@ -8,9 +8,12 @@
 
 package com.xabber.android.data.log;
 
+import android.os.Build;
 import android.util.Log;
 
 
+import com.xabber.android.BuildConfig;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.time.FastDateFormat;
 
@@ -58,7 +61,12 @@ class FileLog {
             currentFile.createNewFile();
             FileOutputStream stream = new FileOutputStream(currentFile);
             streamWriter = new OutputStreamWriter(stream);
-            streamWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis()) + "-----\n");
+            streamWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis())
+                    + " " + Application.getInstance().getString(R.string.application_title_full)
+                    + " " + BuildConfig.VERSION_NAME
+                    + " Android " + Build.VERSION.RELEASE
+                    + " SDK " + Build.VERSION.SDK_INT
+                    +  "-----\n");
             streamWriter.flush();
         } catch (Exception e) {
             e.printStackTrace();
