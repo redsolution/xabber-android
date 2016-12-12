@@ -78,6 +78,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<>();
+        Realm.init(Application.getInstance());
         RealmConfiguration realmConfiguration = createRealmConfiguration();
 
         boolean success = Realm.compactRealm(realmConfiguration);
@@ -87,7 +88,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     }
 
     private RealmConfiguration createRealmConfiguration() {
-        return new RealmConfiguration.Builder(Application.getInstance())
+        return new RealmConfiguration.Builder()
                 .name(REALM_DATABASE_NAME)
                 .schemaVersion(REALM_DATABASE_VERSION)
                 .migration(new RealmMigration() {
