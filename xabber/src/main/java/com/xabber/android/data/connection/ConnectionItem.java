@@ -188,6 +188,7 @@ public abstract class ConnectionItem {
         // enable Stream Management support. SMACK will only enable SM if supported by the server,
         // so no additional checks are required.
         connection.setUseStreamManagement(true);
+        connection.setUseStreamManagementResumption(false);
 
         // by default Smack disconnects in case of parsing errors
         connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
