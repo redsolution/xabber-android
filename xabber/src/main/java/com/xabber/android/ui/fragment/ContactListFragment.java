@@ -112,7 +112,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contact_list_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());

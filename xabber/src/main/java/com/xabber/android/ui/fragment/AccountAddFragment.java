@@ -37,7 +37,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.account_add_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_account_add, container, false);
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);

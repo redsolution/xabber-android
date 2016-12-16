@@ -71,7 +71,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.conference_select_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_conference_select, container, false);
 
         accountView = (Spinner) view.findViewById(R.id.contact_account);
         serverView = (EditText) view.findViewById(R.id.muc_server);

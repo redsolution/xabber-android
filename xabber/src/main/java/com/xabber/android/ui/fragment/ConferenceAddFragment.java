@@ -57,7 +57,7 @@ public class ConferenceAddFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.conference_add_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_conference_add, container, false);
 
         ((TextView) view.findViewById(R.id.muc_conference_jid)).setText(conferenceJid);
         ((TextView) view.findViewById(R.id.muc_account_jid)).setText(account.getFullJid().asBareJid().toString());

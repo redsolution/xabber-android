@@ -196,7 +196,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.account_info_editor_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_account_info_editor, container, false);
 
         fields = (LinearLayout)view.findViewById(R.id.vcard_fields_layout);
 

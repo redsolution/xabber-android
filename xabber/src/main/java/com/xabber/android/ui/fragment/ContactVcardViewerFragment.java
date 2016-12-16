@@ -138,7 +138,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.contact_vcard_viewer_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_contact_vcard, container, false);
 
         xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);

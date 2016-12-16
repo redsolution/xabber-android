@@ -61,7 +61,7 @@ public class ContactListDrawerFragment extends Fragment implements View.OnClickL
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contact_list_drawer, container, false);
+        View view = inflater.inflate(R.layout.fragment_drawer, container, false);
 
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getNavigationDrawerBackgroundColor());
