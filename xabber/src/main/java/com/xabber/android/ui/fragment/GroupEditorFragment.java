@@ -91,7 +91,7 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         setUpFooter();
 
         groupEditorAdapter = new GroupEditorAdapter((ManagedActivity) getActivity(),
-                R.layout.group_list_item, new ArrayList<GroupEditorAdapter.Group>());
+                R.layout.item_group, new ArrayList<GroupEditorAdapter.Group>());
 
         setListAdapter(groupEditorAdapter);
 

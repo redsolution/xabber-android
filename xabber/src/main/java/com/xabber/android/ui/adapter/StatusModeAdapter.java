@@ -72,7 +72,7 @@ public class StatusModeAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(R.layout.status_mode_item, parent, false);
+            view = activity.getLayoutInflater().inflate(R.layout.item_status_mode, parent, false);
         } else {
             view = convertView;
         }

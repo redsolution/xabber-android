@@ -88,7 +88,7 @@ public class OccupantListAdapter extends BaseAdapter implements
         final View view;
         if (convertView == null) {
             view = activity.getLayoutInflater().inflate(
-                    R.layout.occupant_list_item, parent, false);
+                    R.layout.item_occupant, parent, false);
         } else {
             view = convertView;
         }

@@ -69,7 +69,7 @@ public class AccountChooseAdapter extends BaseAdapter {
         final AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
             view = activity.getLayoutInflater().inflate(
-                    R.layout.account_choose_item, parent, false);
+                    R.layout.item_account_choose, parent, false);
         } else {
             view = convertView;
         }

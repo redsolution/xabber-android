@@ -53,7 +53,7 @@ public class AccountListAdapter extends BaseListEditorAdapter<AccountJid> {
         View view;
         AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
-            view = getActivity().getLayoutInflater().inflate(R.layout.account_list_item, parent, false);
+            view = getActivity().getLayoutInflater().inflate(R.layout.item_account, parent, false);
         } else {
             view = convertView;
         }

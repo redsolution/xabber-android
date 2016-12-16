@@ -92,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/top_panel"
-            tools:listitem="@layout/status_editor_item"
+            tools:listitem="@layout/item_status_editor"
             tools:listfooter="@layout/status_history_footer" />
 
     </RelativeLayout>

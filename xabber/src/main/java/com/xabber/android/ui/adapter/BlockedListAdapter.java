@@ -42,7 +42,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new BlockListItemViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.block_list_item, parent, false));
+                .inflate(R.layout.item_block, parent, false));
     }
 
     @Override

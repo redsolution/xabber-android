@@ -37,7 +37,7 @@ public class ContactItemInflater {
         final View view;
         final ContactListItemViewHolder viewHolder;
         if (convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.contact_list_item, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.item_contact, parent, false);
             viewHolder = new ContactListItemViewHolder(view);
             view.setTag(viewHolder);
         } else {

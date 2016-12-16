@@ -63,7 +63,7 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
-                tools:showIn="@layout/contact_list_item">
+                tools:showIn="@layout/item_contact">
 
                 <github.ankushsachdeva.emojicon.EmojiconTextView
                     android:id="@+id/second_line_message"

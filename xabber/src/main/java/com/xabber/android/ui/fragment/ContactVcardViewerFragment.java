@@ -331,7 +331,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
             LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-            View resourceView = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
+            View resourceView = inflater.inflate(R.layout.item_contact_info, xmppItems, false);
 
             ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary)).setText(label);
             ((TextView)resourceView.findViewById(R.id.contact_info_item_main)).setText(status);
@@ -507,7 +507,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        View contactInfoItem = inflater.inflate(R.layout.contact_info_item, rootView, false);
+        View contactInfoItem = inflater.inflate(R.layout.item_contact_info, rootView, false);
 
         if (label == null || label.trim().isEmpty()) {
             contactInfoItem.findViewById(R.id.contact_info_item_secondary).setVisibility(View.GONE);

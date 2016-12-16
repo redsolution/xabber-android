@@ -344,7 +344,7 @@ public abstract class GroupedContactAdapter extends BaseAdapter implements Updat
         final View view;
         final GroupViewHolder viewHolder;
         if (convertView == null) {
-            view = layoutInflater.inflate(R.layout.base_group_item, parent, false);
+            view = layoutInflater.inflate(R.layout.item_base_group, parent, false);
             viewHolder = new GroupViewHolder(view);
             view.setTag(viewHolder);
         } else {
