@@ -128,7 +128,7 @@ public class QuestionViewer extends ManagedActivity implements
         showQuestion = intent.getBooleanExtra(EXTRA_FIELD_SHOW_QUESTION, true);
         answerRequest = intent.getBooleanExtra(EXTRA_FIELD_ANSWER_REQUEST, false);
         if (showQuestion) {
-            setContentView(R.layout.question_viewer);
+            setContentView(R.layout.activity_question);
             questionView = (EditText) findViewById(R.id.question);
             questionView.setEnabled(!answerRequest);
             if (answerRequest) {

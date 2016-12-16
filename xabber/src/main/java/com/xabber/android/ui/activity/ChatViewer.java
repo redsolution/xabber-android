@@ -205,7 +205,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
             return;
         }
 
-        setContentView(R.layout.chat_viewer);
+        setContentView(R.layout.activity_chat);
         statusBarPainter = new StatusBarPainter(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 

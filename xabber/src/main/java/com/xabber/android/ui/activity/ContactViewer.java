@@ -123,7 +123,7 @@ public class ContactViewer extends ManagedActivity implements
             return;
         }
 
-        setContentView(R.layout.contact_viewer);
+        setContentView(R.layout.activity_contact);
 
         if (savedInstanceState == null) {
 

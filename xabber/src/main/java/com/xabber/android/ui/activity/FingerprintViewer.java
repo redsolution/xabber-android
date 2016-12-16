@@ -91,7 +91,7 @@ public class FingerprintViewer extends ManagedActivity implements
             return;
         }
 
-        setContentView(R.layout.fingerprint_viewer);
+        setContentView(R.layout.activity_fingerprint);
 
         integrator = new IntentIntegrator(this);
         Intent intent = getIntent();

@@ -42,7 +42,7 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.about_viewer);
+        setContentView(R.layout.activity_about);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

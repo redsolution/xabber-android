@@ -46,7 +46,7 @@ public class LoadActivity extends SingleActivity implements OnAccountChangedList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.load);
+        setContentView(R.layout.activity_load);
         animation = AnimationUtils.loadAnimation(this, R.anim.connection);
         disconnectedView = findViewById(R.id.disconnected);
     }

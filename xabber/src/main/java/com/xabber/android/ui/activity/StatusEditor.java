@@ -80,7 +80,7 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
 
         actionWithItem = null;
 
-        setContentView(R.layout.status_editor);
+        setContentView(R.layout.activity_status);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
         toolbar.inflateMenu(R.menu.set_status);

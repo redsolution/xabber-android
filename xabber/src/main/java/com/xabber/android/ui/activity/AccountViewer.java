@@ -100,7 +100,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
             showAccountInfo = false;
         }
 
-        setContentView(R.layout.account_viewer);
+        setContentView(R.layout.activity_account);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.inflateMenu(ACCOUNT_VIEWER_MENU);
