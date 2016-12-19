@@ -29,10 +29,13 @@ public class BaseEntity extends AccountRelated implements
         Comparable<BaseEntity> {
 
     protected final @NonNull UserJid user;
+    private static int counter = 0;
 
     protected BaseEntity(@NonNull AccountJid account, @NonNull UserJid user) {
         super(account);
         this.user = user;
+        counter++;
+        LogManager.i(this, "BaseEntity created " + counter + " " + this.getClass().getSimpleName());
     }
 
     public BaseEntity(BaseEntity baseEntity) {

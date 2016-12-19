@@ -18,8 +18,10 @@ import android.text.TextUtils;
 
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,12 +44,7 @@ public class RosterContact extends AbstractContact {
     /**
      * Used groups with its names.
      */
-    protected final Map<String, RosterGroupReference> groupReferences;
-
-    /**
-     * Whether there is subscription of type "both" or "to".
-     */
-    protected boolean subscribed;
+    private final Map<String, RosterGroupReference> groupReferences;
 
     /**
      * Whether contact`s account is connected.
@@ -59,14 +56,20 @@ public class RosterContact extends AbstractContact {
      */
     protected boolean enabled;
 
-    /**
-     * Data id to view contact information from system contact list.
-     * <p/>
-     * Warning: not implemented yet.
-     */
-    private Long viewId;
+    private static final  NestedMap<WeakReference<RosterContact>> instances = new NestedMap<>();
 
-    public RosterContact(AccountJid account, UserJid user, String name) {
+    static RosterContact getRosterContact(AccountJid account, UserJid user, String name) {
+        WeakReference<RosterContact> contactWeakReference = instances.get(account.toString(), user.toString());
+        if (contactWeakReference != null && contactWeakReference.get() != null) {
+            return contactWeakReference.get();
+        }
+
+        RosterContact rosterContact = new RosterContact(account, user, name);
+        instances.put(account.toString(), user.toString(), new WeakReference<>(rosterContact));
+        return rosterContact;
+    }
+
+    private RosterContact(AccountJid account, UserJid user, String name) {
         super(account, user);
 
         if (name == null) {
@@ -76,10 +79,8 @@ public class RosterContact extends AbstractContact {
         }
 
         groupReferences = new HashMap<>();
-        subscribed = true;
         connected = true;
         enabled = true;
-        viewId = null;
     }
 
     void setName(String name) {
@@ -97,10 +98,6 @@ public class RosterContact extends AbstractContact {
 
     void addGroupReference(RosterGroupReference groupReference) {
         groupReferences.put(groupReference.getName(), groupReference);
-    }
-
-    void setSubscribed(boolean subscribed) {
-        this.subscribed = subscribed;
     }
 
     @Override
@@ -133,9 +130,4 @@ public class RosterContact extends AbstractContact {
     void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
-    public Long getViewId() {
-        return viewId;
-    }
-
 }

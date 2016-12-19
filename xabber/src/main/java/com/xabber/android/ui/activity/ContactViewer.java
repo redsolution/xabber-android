@@ -82,32 +82,8 @@ public class ContactViewer extends ManagedActivity implements
         super.onCreate(savedInstanceState);
 
 
-        if (Intent.ACTION_VIEW.equals(getIntent().getAction())) {
-            // View information about contact from system contact list
-            Uri data = getIntent().getData();
-            if (data != null && "content".equals(data.getScheme())) {
-                List<String> segments = data.getPathSegments();
-                if (segments.size() == 2 && "data".equals(segments.get(0))) {
-                    Long id;
-                    try {
-                        id = Long.valueOf(segments.get(1));
-                    } catch (NumberFormatException e) {
-                        id = null;
-                    }
-                    if (id != null)
-                        // FIXME: Will be empty while application is loading
-                        for (RosterContact rosterContact : RosterManager.getInstance().getContacts())
-                            if (id.equals(rosterContact.getViewId())) {
-                                account = rosterContact.getAccount();
-                                user = rosterContact.getUser();
-                                break;
-                            }
-                }
-            }
-        } else {
-            account = getAccount(getIntent());
-            user = getUser(getIntent());
-        }
+        account = getAccount(getIntent());
+        user = getUser(getIntent());
 
         if (user != null && user.getBareJid().equals(account.getFullJid().asBareJid())) {
             try {

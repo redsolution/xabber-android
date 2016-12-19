@@ -102,8 +102,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         if (roster == null) {
             return null;
         } else {
-            Presence presence = roster.getPresence(user.getJid().asBareJid());
-            return presence;
+            return roster.getPresence(user.getJid().asBareJid());
         }
     }
 
@@ -162,7 +161,8 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     @NonNull
     private RosterContact convertRosterEntryToRosterContact(AccountJid account, Roster roster, RosterEntry rosterEntry) throws UserJid.UserJidCreateException {
-        final RosterContact contact = new RosterContact(account, UserJid.from(rosterEntry.getJid()), rosterEntry.getName());
+        final RosterContact contact = RosterContact
+                .getRosterContact(account, UserJid.from(rosterEntry.getJid()), rosterEntry.getName());
 
         final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
 
@@ -171,9 +171,10 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                 contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getName())));
             }
         }
+        contact.setEnabled(true);
+        contact.setConnected(true);
 
-        final RosterPacket.ItemType type = rosterEntry.getType();
-        contact.setSubscribed(type == RosterPacket.ItemType.both || type == RosterPacket.ItemType.to);
+
         return contact;
     }
 
@@ -533,7 +534,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     public void onDisconnect(ConnectionItem connection) {
         if (!(connection instanceof AccountItem))
             return;
-        AccountJid account = ((AccountItem) connection).getAccount();
+        AccountJid account = connection.getAccount();
         for (RosterContact contact : allRosterContacts) {
             if (contact.getAccount().equals(account)) {
                 contact.setConnected(false);

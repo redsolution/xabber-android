@@ -42,7 +42,7 @@ import java.util.Collections;
 public class AbstractContact extends BaseEntity {
 
 
-    public AbstractContact(AccountJid account, UserJid user) {
+    protected AbstractContact(AccountJid account, UserJid user) {
         super(account, user);
     }
 

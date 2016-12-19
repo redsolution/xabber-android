@@ -231,10 +231,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * @param text
      */
     public void sendMessage(AccountJid account, UserJid user, String text) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            chat = createChat(account, user);
-        }
+        AbstractChat chat = getOrCreateChat(account, user);
         sendMessage(text, chat);
     }
 
@@ -252,10 +249,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public String createFileMessage(AccountJid account, UserJid user, File file) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            chat = createChat(account, user);
-        }
+        AbstractChat chat = getOrCreateChat(account, user);
 
         chat.openChat();
         return chat.newFileMessage(file);
@@ -616,7 +610,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (!(connection instanceof AccountItem)) {
             return;
         }
-        AccountJid account = ((AccountItem) connection).getAccount();
+        AccountJid account = connection.getAccount();
 
         if (direction == CarbonExtension.Direction.sent) {
             UserJid companion;
