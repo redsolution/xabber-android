@@ -16,6 +16,8 @@ package com.xabber.android.data.entity;
 
 import android.support.annotation.NonNull;
 
+import com.xabber.android.data.log.LogManager;
+
 /**
  * Object with relation to the account.
  *
@@ -24,9 +26,13 @@ import android.support.annotation.NonNull;
 public abstract class AccountRelated {
 
     protected final @NonNull AccountJid account;
+    private static int counter = 0;
 
-    public AccountRelated(@NonNull AccountJid account) {
+    protected AccountRelated(@NonNull AccountJid account) {
         this.account = account;
+        counter++;
+        LogManager.i(this, "AccountRelated created " + counter + " " + this.getClass().getSimpleName());
+
     }
 
     @NonNull

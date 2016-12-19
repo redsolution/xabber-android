@@ -257,7 +257,8 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         AccountJid account = getAccount(intent);
         UserJid user = getUser(intent);
         if (account != null && user != null) {
-            initialChat = new BaseEntity(account, user);
+            initialChat = MessageManager.getInstance()
+                    .getOrCreateChat(getAccount(intent), getUser(intent));
         }
     }
 
@@ -279,7 +280,8 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
             case Intent.ACTION_SEND:
             case ACTION_SHORTCUT:
                 isRecentChatsSelected = false;
-                selectedChat = new BaseEntity(getAccount(intent), getUser(intent));
+                selectedChat = MessageManager.getInstance()
+                        .getOrCreateChat(getAccount(intent), getUser(intent));
                 break;
         }
     }
@@ -306,7 +308,8 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         if (isRecentChatsSelected) {
             selectedChat = null;
         } else {
-            selectedChat = new BaseEntity((AccountJid) savedInstanceState.getSerializable(SAVED_SELECTED_ACCOUNT),
+            selectedChat = MessageManager.getInstance().getOrCreateChat(
+                    (AccountJid) savedInstanceState.getSerializable(SAVED_SELECTED_ACCOUNT),
                     (UserJid) savedInstanceState.getSerializable(SAVED_SELECTED_USER));
         }
         exitOnSend = savedInstanceState.getBoolean(SAVED_EXIT_ON_SEND);
@@ -315,7 +318,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         UserJid initialUser = (UserJid) savedInstanceState.getSerializable(SAVED_INITIAL_USER);
 
         if (initialAccount != null && initialUser != null) {
-            initialChat = new BaseEntity(initialAccount, initialUser);
+            initialChat = MessageManager.getInstance().getOrCreateChat(initialAccount, initialUser);
         }
     }
 

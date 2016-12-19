@@ -16,6 +16,8 @@ package com.xabber.android.data.entity;
 
 import android.support.annotation.NonNull;
 
+import com.xabber.android.data.log.LogManager;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -28,7 +30,7 @@ public class BaseEntity extends AccountRelated implements
 
     protected final @NonNull UserJid user;
 
-    public BaseEntity(@NonNull AccountJid account, @NonNull UserJid user) {
+    protected BaseEntity(@NonNull AccountJid account, @NonNull UserJid user) {
         super(account);
         this.user = user;
     }

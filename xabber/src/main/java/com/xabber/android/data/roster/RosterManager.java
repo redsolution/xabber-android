@@ -20,6 +20,7 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
@@ -48,6 +49,7 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
 import org.jxmpp.jid.Jid;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,9 +74,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     private Collection<RosterContact> allRosterContacts;
+    private final NestedMap<WeakReference<AbstractContact>> contactsCache;
 
     private RosterManager() {
         allRosterContacts = new ArrayList<>();
+        contactsCache = new NestedMap<>();
     }
 
     public static RosterManager getInstance() {
@@ -172,6 +176,18 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         contact.setSubscribed(type == RosterPacket.ItemType.both || type == RosterPacket.ItemType.to);
         return contact;
     }
+
+    public AbstractContact getAbstractContact(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
+        WeakReference<AbstractContact> contactWeakReference = contactsCache.get(accountJid.toString(), userJid.toString());
+        if (contactWeakReference != null && contactWeakReference.get() != null) {
+            return contactWeakReference.get();
+        }
+
+        AbstractContact newContact = new AbstractContact(accountJid, userJid);
+        contactsCache.put(accountJid.toString(), userJid.toString(), new WeakReference<>(newContact));
+        return newContact;
+    }
+
 
     /**
      * @param account
@@ -568,7 +584,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      */
     public static void onContactChanged(AccountJid account, UserJid bareAddress) {
         final ArrayList<BaseEntity> entities = new ArrayList<>();
-        entities.add(new BaseEntity(account, bareAddress));
+        entities.add(getInstance().getAbstractContact(account, bareAddress));
         onContactsChanged(entities);
     }
 }

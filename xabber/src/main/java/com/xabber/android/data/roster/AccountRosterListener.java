@@ -56,7 +56,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
         for (Jid address : addresses) {
             try {
-                entities.add(new BaseEntity(account, UserJid.from(address)));
+                entities.add(RosterManager.getInstance().getBestContact(account, UserJid.from(address)));
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }

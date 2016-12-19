@@ -72,6 +72,7 @@ public class MamManager implements OnAuthorizedListener {
             @Override
             public void run() {
                 updateIsSupported(accountItem);
+
             }
         });
     }

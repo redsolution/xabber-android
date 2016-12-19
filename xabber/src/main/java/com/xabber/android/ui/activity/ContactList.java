@@ -266,7 +266,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             return;
         }
         if (accounts.size() == 1) {
-            openChat(new BaseEntity(accounts.iterator().next(), bareAddress), text);
+            openChat(RosterManager.getInstance().getBestContact(accounts.iterator().next(), bareAddress), text);
             return;
         }
         AccountChooseDialogFragment.newInstance(bareAddress, text)
@@ -276,18 +276,19 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     /**
      * Open chat with specified contact and enter text to be sent.
      *
-     * @param baseEntity
      * @param text       can be <code>null</code>.
      */
-    private void openChat(BaseEntity baseEntity, String text) {
+    private void openChat(AccountJid account, UserJid user, String text) {
         if (text == null) {
-            startActivity(ChatViewer.createSendIntent(this,
-                    baseEntity.getAccount(), baseEntity.getUser(), null));
+            startActivity(ChatViewer.createSendIntent(this, account, user, null));
         } else {
-            startActivity(ChatViewer.createSendIntent(this,
-                    baseEntity.getAccount(), baseEntity.getUser(), text));
+            startActivity(ChatViewer.createSendIntent(this, account, user, text));
         }
         finish();
+    }
+
+    private void openChat(BaseEntity entity, String text) {
+        openChat(entity.getAccount(), entity.getUser(), text);
     }
 
     @Override
@@ -697,7 +698,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     @Override
     public void onChoose(AccountJid account, UserJid user, String text) {
-        openChat(new BaseEntity(account, user), text);
+        openChat(account, user, text);
     }
 
     private void rebuildAccountToggle() {

@@ -34,6 +34,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.roster.RosterManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -110,19 +111,19 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     @Override
     public void onLoad() {
-        final Set<BaseEntity> privateChats = new HashSet<BaseEntity>();
-        final NestedMap<Boolean> notifyVisible = new NestedMap<Boolean>();
+        final Set<BaseEntity> privateChats = new HashSet<>();
+        final NestedMap<Boolean> notifyVisible = new NestedMap<>();
         final NestedMap<ShowMessageTextInNotification> showText = new NestedMap<>();
-        final NestedMap<Boolean> makeVibro = new NestedMap<Boolean>();
-        final NestedMap<Uri> sounds = new NestedMap<Uri>();
-        final NestedMap<Boolean> suppress100 = new NestedMap<Boolean>();
+        final NestedMap<Boolean> makeVibro = new NestedMap<>();
+        final NestedMap<Uri> sounds = new NestedMap<>();
+        final NestedMap<Boolean> suppress100 = new NestedMap<>();
         Cursor cursor;
         cursor = PrivateChatTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
                 do {
                     try {
-                        privateChats.add(new BaseEntity(
+                        privateChats.add(RosterManager.getInstance().getAbstractContact(
                                 AccountJid.from(PrivateChatTable.getAccount(cursor)),
                                 UserJid.from(PrivateChatTable.getUser(cursor))
                         ));
@@ -213,9 +214,10 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     private void onLoaded(Set<BaseEntity> privateChats,
                           NestedMap<Boolean> notifyVisible, NestedMap<ShowMessageTextInNotification> showText,
                           NestedMap<Boolean> vibro, NestedMap<Uri> sounds, NestedMap<Boolean> suppress100) {
-        for (BaseEntity baseEntity : privateChats)
+        for (BaseEntity baseEntity : privateChats) {
             this.privateChats.put(baseEntity.getAccount().toString(),
                     baseEntity.getUser().toString(), PRIVATE_CHAT);
+        }
         this.notifyVisible.addAll(notifyVisible);
         this.showText.addAll(showText);
         this.makeVibro.addAll(vibro);

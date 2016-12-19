@@ -37,6 +37,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
@@ -123,7 +124,7 @@ public class OccupantList extends ManagedListActivity implements
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
         try {
-            if (entities.contains(new BaseEntity(account, UserJid.from(room)))) {
+            if (entities.contains(RosterManager.getInstance().getAbstractContact(account, UserJid.from(room)))) {
                 listAdapter.onChange();
             }
         } catch (UserJid.UserJidCreateException e) {
