@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.xabber.android.data.log.LogManager;
+
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -12,14 +14,22 @@ import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class UserJid implements Comparable<UserJid>, Serializable {
+
+    private static final String LOG_TAG = UserJid.class.getSimpleName();
 
     public static class UserJidCreateException extends IOException {
 
     }
 
     private final @NonNull Jid jid;
+    private static int counter = 0;
+    private static Map<Jid, WeakReference<UserJid>> instances = new ConcurrentHashMap<>();
+
 
     public static @NonNull UserJid from(@Nullable String string) throws UserJidCreateException {
         if (TextUtils.isEmpty(string)) {
@@ -41,11 +51,25 @@ public class UserJid implements Comparable<UserJid>, Serializable {
             throw new UserJidCreateException();
         }
 
-        return new UserJid(jid);
+        return getUserJid(jid);
+    }
+
+    private static UserJid getUserJid(@NonNull Jid jid) {
+        WeakReference<UserJid> userJidWeakReference = instances.get(jid);
+
+        if (userJidWeakReference != null && userJidWeakReference.get() != null) {
+            return userJidWeakReference.get();
+        } else {
+            UserJid newUserJid = new UserJid(jid);
+            instances.put(jid, new WeakReference<>(newUserJid));
+            LogManager.i(LOG_TAG, "UserJid created " + counter + " / " + instances.size() + " " + jid);
+            return newUserJid;
+        }
     }
 
     private UserJid(@NonNull Jid jid) {
         this.jid = jid;
+        counter++;
     }
 
     public @NonNull Jid getJid() {
@@ -57,7 +81,7 @@ public class UserJid implements Comparable<UserJid>, Serializable {
     }
 
     public @NonNull UserJid getBareUserJid() {
-        return new UserJid(jid.asBareJid());
+        return getUserJid(jid.asBareJid());
     }
 
     @Override
