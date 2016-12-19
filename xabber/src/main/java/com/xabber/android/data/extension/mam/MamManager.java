@@ -3,7 +3,6 @@ package com.xabber.android.data.extension.mam;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -13,7 +12,12 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.roster.OnRosterReceivedListener;
+import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.data.roster.RosterManager;
 
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.PlainTextMessage;
@@ -39,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MamManager implements OnAuthorizedListener {
+public class MamManager implements OnAuthorizedListener, OnRosterReceivedListener {
     private final static MamManager instance;
     public static final int SYNC_INTERVAL_MINUTES = 5;
 
@@ -75,6 +79,17 @@ public class MamManager implements OnAuthorizedListener {
 
             }
         });
+    }
+
+
+    @Override
+    public void onRosterReceived(AccountItem accountItem) {
+        Collection<RosterContact> contacts = RosterManager.getInstance().getContacts();
+        for (RosterContact contact : contacts) {
+            if (contact.getAccount().equals(accountItem.getAccount())) {
+                requestLastHistory(MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser()));
+            }
+        }
     }
 
     private boolean checkSupport(AccountItem accountItem) {
