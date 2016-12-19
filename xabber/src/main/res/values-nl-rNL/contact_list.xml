@@ -55,6 +55,7 @@
   <string name="show_offline_never">Nooit tonen</string>
   <string name="show_offline_normal">Gebruik globale instellingen</string>
   <string name="show_offline_settings">Toon offline contacten</string>
+  <string name="start_at_boot">Xabber starten bij opstarten apparaat</string>
   <string name="start_at_boot_suggest">Moet Xabber automatisch starten wanneer het toestel opstart?\nDit kan gewijzigd worden in \"Instellingen\" → \"Verbindingsinstellingen\" → \"Starten wanneer Android opstart\"</string>
   <string name="contact_search_hint">Contacten zoeken</string>
   <string name="sender_is_you">Jij</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Weet u zeker dat u alle contacten van account %1$s wilt deblokkeren?</string>
   <string name="unblock_all">Alle deblokkeren</string>
   <string name="unblock_selected">Deblokkeer geselecteerde(n)</string>
+  <string name="dark_theme_suggest_dialog_title">Kies je lotsbestemming</string>
+  <string name="dark_theme_suggest_dialog_message">Het donkere thema voor Xabber is nu beschikbaar. Kan je de verleiding weerstaan?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Loop over naar de Duistere Zijde</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Blijf aan de Lichte Zijde"</string>
 </resources>

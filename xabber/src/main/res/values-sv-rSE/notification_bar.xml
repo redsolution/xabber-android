@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Lösenord krävs</string>
   <string name="pay_attention">Observera</string>
   <string name="subscription_request_message">Begäran om auktorisering</string>
+  <string name="conference_private_chat">Privat chatt konferens</string>
 </resources>

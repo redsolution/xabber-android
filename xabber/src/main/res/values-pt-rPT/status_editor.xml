@@ -6,11 +6,11 @@
   <string name="chat">Disponível para conversar!</string>
   <string name="dnd">Não perturbar</string>
   <string name="edit_status">Editar estado</string>
-  <string name="empty_status">&lt;Estado vazio&gt;</string>
+  <string name="empty_status">&lt;Estado sem dados&gt;</string>
   <string name="invisible">Invisível</string>
   <string name="remove_status">Eliminar estado</string>
   <string name="status_editor">Definir estado</string>
-  <string name="status_text_hint">Insira a mensagem de estado</string>
+  <string name="status_text_hint">Inserir mensagem de estado</string>
   <string name="unavailable">Off-line</string>
   <string name="unsubscribed">Não autorizado</string>
   <string name="xa">Ausente por um longo período</string>

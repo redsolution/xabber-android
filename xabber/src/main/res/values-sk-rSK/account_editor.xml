@@ -34,7 +34,7 @@
   <string name="account_oauth">Autorizácia</string>
   <string name="account_oauth_invalidated">Neautorizovaný</string>
   <string name="account_oauth_summary">Nastavenia OAuth</string>
-  <string name="account_proxy_host">Hostiteľ proxy</string>
+  <string name="account_proxy_host">Proxy server</string>
   <string name="account_proxy_invalid_port_range">Port servera proxy musí byť v rozsahu od 1 do 65535 (predvolené: 8080)</string>
   <string name="account_proxy_invalid_port">Port servera proxy musí byť číslo (predvolené: 8080)</string>
   <string name="account_proxy_password">Heslo proxy</string>

@@ -14,4 +14,9 @@
   <string name="add_new_group">Додати нову групу...</string>
   <string name="accept_contact">Авторизувати</string>
   <string name="decline_contact">Відхилити</string>
+  <string name="error_during_image_processing">Error during image processing</string>
+  <string name="account_settings">Налаштування облікового запису</string>
+  <string name="account_user_info">Інформація облікового запису</string>
+  <string name="accept_muc_private_chat">Прийняти</string>
+  <string name="block_muc_private_chat">Заблокувати</string>
 </resources>

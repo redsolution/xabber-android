@@ -76,7 +76,9 @@
   <string name="chats_attention">Uppmärksamhet\nReagera på inkommande begäran om uppmärksamhet</string>
   <string name="chats_attention_sound">Uppmärksamhet ljud\nVälj ringsignal</string>
   <string name="connection_load_vcard">Ladda in vCard \nHämta och uppdatera kontaktens information och profilbild. Avmarkera för att minska datatrafik.</string>
+  <string name="connection_load_images">Läs in bilder\nLäs n bilder från fil URL: er automatiskt. Inaktivera för att minska trafikmängden.</string>
   <string name="connection_use_carbons">Kopieringsläge\nKan vara instabilt! Kommer att dela sessioner för samma konto på den här klienten. Inaktivera för att minska trafikanvändning.</string>
+  <string name="connection_use_plain_text_auth">Klartextsautentisfiering\nAnvänd klartextautentifiering för alla konton. Rekommenderas ej.</string>
   <string name="events_phrases">Nyckelfraser\nSkapa anpassade notifikationer för mottagna meddelanden som innehåller särskilda fraser</string>
   <string name="security_clear_certificate_warning">Vill du verkligen ta bort alla ignorerade certifikat?</string>
   <string name="debug_connection_errors_title">Visa anslutningsfel\nVisa pop-ups om anslutningsundantag</string>

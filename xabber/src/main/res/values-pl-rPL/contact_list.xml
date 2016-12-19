@@ -55,6 +55,7 @@
   <string name="show_offline_never">Ukryj kontakty niepołączone</string>
   <string name="show_offline_normal">Użyj głównych ustawień</string>
   <string name="show_offline_settings">Pokaż kontakty niepołączone</string>
+  <string name="start_at_boot">Uruchamiaj przy starcie systemu</string>
   <string name="start_at_boot_suggest">Czy chcesz uruchomiać Xabbera przy starcie systemu?\nTo ustawienie możesz zmienić w menu Ustawienia → Ustawienia połączeń → Włącz przy uruchamianiu systemu</string>
   <string name="contact_search_hint">Szukaj kontaktów</string>
   <string name="sender_is_you">Ty</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Czy na pewno chcesz odblokować wszystkie kontakty z konta %1$s?</string>
   <string name="unblock_all">Odblokuj wszystkie</string>
   <string name="unblock_selected">Odblokuj zaznaczone</string>
+  <string name="dark_theme_suggest_dialog_title">Wybierz swoje przeznaczenie</string>
+  <string name="dark_theme_suggest_dialog_message">Nowy motyw w ciemnych kolorach jest już dostępny dla Xabbera. Czy oprzesz się pokusie by go użyć?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Wstąp na Ciemną Stronę</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Pozostań na Jasnej Stronie"</string>
 </resources>

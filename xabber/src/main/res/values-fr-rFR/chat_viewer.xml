@@ -3,7 +3,7 @@
 <resources>
   <string name="action_status_text">%1$s a changé de statut : %2$s</string>
   <string name="action_status_text_none">%1$s a supprimé le message de statut</string>
-  <string name="action_join">%1$s a rejoint le salon</string>
+  <string name="action_join">%1$s a rejoint la conférence</string>
   <string name="action_kick">%1$s a été éjecté</string>
   <string name="account_is_offline">Vous êtes hors-ligne. Vos messages seront envoyés lorsque vous serez connecté à nouveau.</string>
   <string name="chat_delay">Envoi : %s</string>
@@ -90,7 +90,7 @@
   <string name="received_by">Reçu par %s</string>
   <string name="could_not_get_path_to_file">Impossible de trouver le chemin du fichier</string>
   <string name="message_open_private_chat">Ouvrir une conversation privée</string>
-  <string name="http_file_upload_slot_error">L\'upload du fichier a échoué. Est-il trop gros?</string>
+  <string name="http_file_upload_slot_error">L\'upload du fichier a échoué. Est-il trop volumineux ?</string>
   <string name="no_permission_to_read_files">Permission de lire les fichiers refusée</string>
   <string name="no_permission_to_write_files">Permission d\'écrire les fichiers refusée</string>
 </resources>

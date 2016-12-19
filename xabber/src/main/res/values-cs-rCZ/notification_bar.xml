@@ -3,31 +3,38 @@
 <resources>
   <string name="account_quantity_1">účet</string>
   <string name="account_quantity_2">účty</string>
+  <!-- Used for plural form in russian.-->
   <string name="account_quantity_5">-</string>
   <string name="account_quantity_offline_1">účet</string>
   <string name="account_quantity_offline_2">účty</string>
+  <!-- Used for plural form in russian. -->
   <string name="account_quantity_offline_5">-</string>
   <string name="AUTHENTICATION_FAILED">Chyba autorizace</string>
   <string name="chat_contact_quantity_1">kontakt</string>
   <string name="chat_contact_quantity_2">kontakty</string>
+  <!-- Used for plural form in russian. -->
   <string name="chat_contact_quantity_5">-</string>
   <string name="chat_message_quantity_1">zpráva</string>
   <string name="chat_message_quantity_2">zprávy</string>
+  <!-- Used for plural form in russian. -->
   <string name="chat_message_quantity_5">-</string>
   <string name="chat_status">%1$d %2$s od %3$d %4$s</string>
   <string name="chat_messages_from_contact">%1$d %2$s od %3$s</string>
   <string name="chat_contact_and_message">%1$s: %2$s</string>
   <string name="connection_state_connected_1">%1$d z %2$d %3$s online</string>
   <string name="connection_state_connected_2">%1$d z %2$d %3$s online</string>
+  <!-- Used for plural form in russian. -->
   <string name="connection_state_connected_5">-</string>
   <string name="connection_state_connecting_1">%1$d %2$d %3$s připojení</string>
-  <string name="connection_state_connecting_2">%1$d %2$d %3$s připojení</string>
+  <string name="connection_state_connecting_2">%1$d z %2$d %3$s se připojuje</string>
+  <!-- Used for plural form in russian. -->
   <string name="connection_state_connecting_5">-</string>
-  <string name="connection_state_waiting_1">%1$d %2$d %3$s čekání na připojení</string>
+  <string name="connection_state_waiting_1">%1$d z %2$d %3$s čeká na připojení</string>
   <string name="connection_state_waiting_2">%1$d %2$d %3$s čekání na připojení</string>
+  <!-- Used for plural form in russian. -->
   <string name="connection_state_waiting_5">-</string>
-  <string name="connection_state_offline">%1$d %2$s vypnuto</string>
-  <string name="archive_available_request_message">Přejete si uložit historii zpráv na serveru? \nXabber umožňuje načíst historii ze všech zařízení, které používají tento účet. \n Tyto vlastnosti budou mít nějaké dopad na provoz a mírně sníží rychlost připojení. \nUpozornění: Všechna lokální historie bude odstraněna.</string>
+  <string name="connection_state_offline">%1$d %2$s offline</string>
+  <string name="archive_available_request_message">Přejete si uložit historii zpráv na serveru? \nXabber umožňuje načíst historii ze všech zařízení, které používají tento účet. \n Tato nastavení budou mít dopad na provoz a mírně sníží rychlost připojení. \nUpozornění: Všechna lokální historie bude odstraněna.</string>
   <string name="archive_available_request_title">Povolit archiv zpráv?</string>
   <string name="INVALID_CERTIFICATE">Neplatný certifikát</string>
   <string name="muc_invite_message">Chcete vstoupit do konference?</string>

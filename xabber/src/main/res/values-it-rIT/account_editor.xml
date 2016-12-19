@@ -16,14 +16,14 @@
   <string name="account_type_helps_xmpp">Se vuoi saperne di più su XMPP (Jabber) visita https://xmpp.org</string>
   <string name="account_user_name">Nome utente</string>
   <string name="EMPTY_SERVER_NAME">Il nome del server non è stato specificato</string>
-  <string name="EMPTY_USER_NAME">Nome utente mancante</string>
+  <string name="EMPTY_USER_NAME">Username mancante</string>
   <string name="CONFIRM_PASSWORD">Le password non coincidono</string>
   <string name="account_archive_mode">Memorizza la cronologia dei messaggi</string>
   <string name="account_archive_mode_available">Sul server se disponibile</string>
   <string name="account_archive_mode_dont_store">Non memorizzare</string>
   <string name="account_archive_mode_local">Localmente sul dispositivo</string>
   <string name="account_archive_mode_server">Sul server</string>
-  <string name="account_archive_mode_unread">Localmente solo per non inviati o non letti</string>
+  <string name="account_archive_mode_unread">Localmente solo per non inviati e non letti</string>
   <string name="account_compression_summary">Seleziona per abilitare la compressione dei dati</string>
   <string name="account_custom">Host personalizzato</string>
   <string name="account_custom_summary">Utilizza impostazioni host personalizzate invece del record SRV</string>

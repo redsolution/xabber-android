@@ -88,6 +88,7 @@
   <string name="could_not_save_file">Kan bestand niet opslaan</string>
   <string name="file_saved_successfully">Bestand succesvol opgeslagen</string>
   <string name="received_by">Ontvangen door %s</string>
+  <string name="could_not_get_path_to_file">Kon pad naar bestand niet opvragen</string>
   <string name="message_open_private_chat">Privé chat openen</string>
   <string name="http_file_upload_slot_error">Kan het bestand niet uploaden. Te groot?</string>
   <string name="no_permission_to_read_files">Geen toestemming om bestanden te lezen</string>

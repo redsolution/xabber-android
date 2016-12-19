@@ -50,7 +50,7 @@
   <string name="account_syncable_summary">Kontakte dieses Kontos im Telefonbuch anzeigen</string>
   <string name="account_tls_enable">TLS verwenden</string>
   <string name="account_tls_enable_summary">TLS Verschlüsselung für die Serververbindung verwenden (falls möglich)</string>
-  <string name="account_tls_legacy">Herkömmliches SSL</string>
+  <string name="account_tls_legacy">Veraltetes SSL</string>
   <string name="account_tls_legacy_summary">Herkömmliche SSL-Verschlüsselung für die Serververbindung verwenden</string>
   <string name="account_tls_mode">TLS/SSL-Verschlüsselung</string>
   <string name="account_tls_require">TLS benötigt</string>

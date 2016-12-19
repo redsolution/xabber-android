@@ -55,6 +55,7 @@
   <string name="show_offline_never">Asla gösterme</string>
   <string name="show_offline_normal">Genel ayarları kullan</string>
   <string name="show_offline_settings">Bağlı olmayan kişileri göster</string>
+  <string name="start_at_boot">Başlangıçta Çalıştır</string>
   <string name="start_at_boot_suggest">Xabber\'in açılışta çalışmasını istiyor musunuz?\nDeğiştirmek için:  \"Settings\" → \"Connection settings\" → \"Run at boot\"</string>
   <string name="contact_search_hint">Kişileri ara</string>
   <string name="sender_is_you">Siz</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">%1$s kullanıcısının engelini gerçekten kaldırmak istiyor musunuz?</string>
   <string name="unblock_all">Tüm engelileri kaldır</string>
   <string name="unblock_selected">Seçili olanı kaldır</string>
+  <string name="dark_theme_suggest_dialog_title">Tercihinizi belirleyin</string>
+  <string name="dark_theme_suggest_dialog_message">Xabber için yeni karanlık tema artık kullanılabilir. Yeni temayivkulllakmak ostermisiniz?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Karanlık Tarafa Katılın</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Aydınlık Tarafta Kalın"</string>
 </resources>

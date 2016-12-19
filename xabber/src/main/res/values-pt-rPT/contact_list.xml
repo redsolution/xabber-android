@@ -3,11 +3,11 @@
 <resources>
   <string name="accept_subscription">Aceitar contacto</string>
   <string name="account_reconnect">Religar</string>
-  <string name="application_action_disabled">Gerir contas</string>
-  <string name="application_action_empty">Adicionar conta</string>
-  <string name="application_action_no_contacts">Adicionar contacto</string>
+  <string name="application_action_disabled">Gerir Contas</string>
+  <string name="application_action_empty">Adicionar Conta</string>
+  <string name="application_action_no_contacts">Adicionar Contacto</string>
   <string name="application_action_no_online">Mostrar contactos off-line</string>
-  <string name="application_action_offline">Ir on-line</string>
+  <string name="application_action_offline">Ir On-line</string>
   <string name="application_action_waiting">Religar</string>
   <string name="application_state_connecting">A ligar&#8230;</string>
   <string name="application_state_disabled">Contas desativadas</string>
@@ -17,12 +17,12 @@
   <string name="application_state_offline">Não tem contas on-line</string>
   <string name="application_state_roster">Ligado.</string>
   <string name="application_state_starting">A iniciar a aplicação&#8230;</string>
-  <string name="application_state_waiting">A aguardar para ligar&#8230;</string>
+  <string name="application_state_waiting">A aguardar ligação&#8230;</string>
   <string name="chat_list">Lista de conversações</string>
   <string name="chat_list_is_empty">Nenhumas conversações ativas</string>
   <string name="chat_viewer">Conversação</string>
   <string name="close_chat">Fechar conversação</string>
-  <string name="CONNECTION_FAILED">Erro na ligação</string>
+  <string name="CONNECTION_FAILED">Erro de ligação</string>
   <string name="contact_add">Adicionar contacto</string>
   <string name="contact_delete">Eliminar</string>
   <string name="contact_block">Bloquear contacto</string>
@@ -55,6 +55,7 @@
   <string name="show_offline_never">Nunca mostrar</string>
   <string name="show_offline_normal">Usar definições gerais</string>
   <string name="show_offline_settings">Mostrar contactos off-line</string>
+  <string name="start_at_boot">Executar no arranque</string>
   <string name="start_at_boot_suggest">Deseja executar Xabber no arranque?\nIsto pode ser alterado em \"Definições\" → \"Definições de Ligação\" → \"Iniciar no arranque do dispositivo\"</string>
   <string name="contact_search_hint">Procurar contactos</string>
   <string name="sender_is_you">Eu</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Deseja desbloquear todos os contactos da conta %1$s?</string>
   <string name="unblock_all">Desbloquear todos</string>
   <string name="unblock_selected">Desbloquear selecionados</string>
+  <string name="dark_theme_suggest_dialog_title">Escolha o seu destino</string>
+  <string name="dark_theme_suggest_dialog_message">Novo tema escuro está agora disponível para o Xabber. Consegue resistir à tentação para usá-lo?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Junte-se ao Lado Negro</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Ficar no Lado da Luz"</string>
 </resources>

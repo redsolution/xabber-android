@@ -17,6 +17,8 @@
   <string name="message_quote">Цитувати</string>
   <string name="message_remove">Вилучити з історії</string>
   <string name="message_repeat">Повторити надсилання</string>
+  <string name="message_open_file">Відкрити</string>
+  <string name="message_save_file">Зберегти</string>
   <string name="save_history">Зберегти локальну історію\nЗберігати історію повідомлень локально</string>
   <string name="show_history">Показати історію</string>
   <string name="action_attention_called">Виклик уваги було відправлено</string>
@@ -80,4 +82,6 @@
   <string name="chat_events_show_text_global">Використовувати глобальні параметри</string>
   <string name="chat_events_show_text_always">Показати текст повідомлення</string>
   <string name="chat_events_show_text_never">Приховати текст повідомлення</string>
+  <string name="could_not_save_file">Не вдалося зберегти файл</string>
+  <string name="file_saved_successfully">Файл успішно збережений</string>
 </resources>

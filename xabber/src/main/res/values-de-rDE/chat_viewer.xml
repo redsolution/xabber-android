@@ -17,7 +17,7 @@
   <string name="message_quote">Zitieren</string>
   <string name="message_remove">Nachrichten aus dem Verlauf entfernen</string>
   <string name="message_repeat">Erneut senden</string>
-  <string name="message_open_file">öffnen</string>
+  <string name="message_open_file">Öffnen</string>
   <string name="message_save_file">Speichern</string>
   <string name="save_history">Gesprächsverlauf speichern\nDen Gesprächsverlauf lokal speichern</string>
   <string name="show_history">Gesprächsverlauf anzeigen</string>
@@ -63,7 +63,7 @@
   <string name="export_chat_send">Nach dem Export senden</string>
   <string name="export_chat_title">Dateiname eingeben</string>
   <string name="muc_invite">Zu Gespräch einladen</string>
-  <string name="muc_is_unavailable">Deine Nachricht kann nicht zugestellt werden. Bitte tritt dem Gespräch bei.</string>
+  <string name="muc_is_unavailable">Ihre Nachricht kann nicht zugestellt werden. Bitte treten Sie dem Gespräch bei</string>
   <string name="occupant_list">Liste der Teilnehmer</string>
   <string name="otr_encryption">OTR Verschlüsselung</string>
   <string name="otr_end">Verschlüsselung beenden</string>

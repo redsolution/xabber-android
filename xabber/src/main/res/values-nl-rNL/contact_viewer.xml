@@ -13,6 +13,7 @@
   <string name="vcard_birth_date">Verjaardag</string>
   <string name="vcard_url">Website</string>
   <string name="vcard_organization">Organisatie</string>
+  <string name="vcard_organization_unit">Eenheid binnen organisatie</string>
   <string name="vcard_title">Werktitel, functie</string>
   <string name="vcard_role">Rol</string>
   <string name="vcard_other">Overige informatie</string>
@@ -49,7 +50,9 @@
   <string name="edit_alias">Bijnaam bewerken</string>
   <string name="edit_contact_groups">Bewerk groepen</string>
   <string name="remove_contact">Contactpersoon verwijderen</string>
+  <string name="edit_account_user_info">Gebruikersinfo bewerken</string>
   <string name="account_user_info_save_success">Opslaan gebruikersinfo geslaagd</string>
+  <string name="account_user_info_save_fail">Kon gebruikersinfo niet opslaan</string>
   <string name="saving">Bezig met opslaan&#8230;</string>
   <string name="choose_from_gallery">Uit galerij kiezen</string>
   <string name="take_photo">Neem foto</string>

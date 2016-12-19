@@ -55,6 +55,7 @@
   <string name="show_offline_never">总不显示</string>
   <string name="show_offline_normal">使用一般设置</string>
   <string name="show_offline_settings">显示离线联系人</string>
+  <string name="start_at_boot">开机启动</string>
   <string name="start_at_boot_suggest">希望在系统启动时运行Xabber？\n可在“设置”→“连接设置”→“于Android启动时运行”处修改</string>
   <string name="contact_search_hint">搜索联系人</string>
   <string name="sender_is_you">你</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">确实要取消屏蔽帐户 %1$s 中的所有联系人吗？</string>
   <string name="unblock_all">取消屏幕所有</string>
   <string name="unblock_selected">取消屏蔽选定</string>
+  <string name="dark_theme_suggest_dialog_title">选择你的命运</string>
+  <string name="dark_theme_suggest_dialog_message">Xabber 有新黑暗主题可用。你能抗拒使用它的诱惑吗？</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">加入黑暗的一面</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"留在光明的一面"</string>
 </resources>

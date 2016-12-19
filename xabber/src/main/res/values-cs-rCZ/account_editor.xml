@@ -26,7 +26,7 @@
   <string name="account_archive_mode_unread">Lokálně pouze neodeslané a nepřečtené</string>
   <string name="account_compression_summary">Zaškrtnutím povolíte kompresi dat</string>
   <string name="account_custom">Vlastní hostitel</string>
-  <string name="account_custom_summary">Použít nastavení vlastní hostitele namísto SRV záznam</string>
+  <string name="account_custom_summary">Namísto SRV záznamu použít vlastní nastavení hostitele</string>
   <string name="account_enabled_summary">Přepnout pro povolení účtu</string>
   <string name="account_invalid_port">Port musí být číslo (výchozí: 5222)</string>
   <string name="account_invalid_port_range">Port musí být mezi 1 a 65535 (výchozí: 5222)</string>
@@ -57,7 +57,7 @@
   <string name="account_tls_require_summary">Vyžadovat šifrování TLS při připojení k serveru</string>
   <string name="account_use_orbot">Chat ptřednictvím sítě TOR Anonymita a přímé TLS šifrování protocol\nNedoporučujeme pro Google Talk</string>
   <string name="confirm_cancellation">Jste si jisti, že chcete zrušit všechny změny?</string>
-  <string name="INCORRECT_USER_NAME">Špatné uživ. jméno. Zobrazte nápovědu níže podrobnosti.</string>
+  <string name="INCORRECT_USER_NAME">Špatné uživ. jméno. Pro podrobnosti zobrazte nápovědu níže.</string>
   <string name="orbot_required_message">K možnosti komunikace přes TOR musíte mít nainstalovaný Orbot a aktivované proxy pro tuto aplikaci. Chcete ho nainstalovat z Google Play?</string>
   <string name="orbot_required_title">Nainstalovat Orbot?</string>
   <string name="install_orbot">Nainstalovat Orbot</string>

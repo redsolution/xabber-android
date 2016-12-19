@@ -46,7 +46,7 @@
   <string name="chats_receipt">Accusés de réception\nEnvoyer et recevoir des accusés de réception</string>
   <string name="chats_show_avatars">Avatars dans les messages\nAffiche les avatars dans chaque message</string>
   <string name="chats_show_status_change">Afficher les changements de statut\nAfficher les messages de changement de statut</string>
-  <string name="chats_show_status_change_muc">Dans les salons</string>
+  <string name="chats_show_status_change_muc">Dans les conférences</string>
   <string name="chats_state_notification">Envoyer notifications d\'écriture\nNotifie vos interlocuteurs lorsque vous écrivez</string>
   <string name="connection_adjust_priority">Ajuster la priorité\nModifie la priorité selon le statut sélectionné. Ce paramètre l\'emporte sur la priorité globale du compte.</string>
   <string name="connection_go_away_immediately">Dès le verrouillage de l\'écran</string>
@@ -61,7 +61,7 @@
   <string name="events_ignore_system_vibro">Ignorer les paramètres système du vibreur\nUtilisez cette option si le vibreur ne fonctionne pas</string>
   <string name="events_message">Paramètres de notification\nConfigurer les notifications des messages entrants</string>
   <string name="events_message_chat">Conversations seulement</string>
-  <string name="events_message_chat_and_muc">Conversations et salons</string>
+  <string name="events_message_chat_and_muc">Conversations et conférences</string>
   <string name="events_message_none">Ne pas notifier</string>
   <string name="events_show_text">Afficher les messages dans la barre des tâches\nAffiche le texte des messages dans la zone de notification</string>
   <string name="events_visible_chat">Notifier pour la conversation affichée\nNotifier lorsqu\'un message est reçu dans la conversation affichée</string>

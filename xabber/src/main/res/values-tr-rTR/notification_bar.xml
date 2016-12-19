@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Parola gerekli</string>
   <string name="pay_attention">Dikkat edin</string>
   <string name="subscription_request_message">Yetkilendirme isteği</string>
+  <string name="conference_private_chat">Özel konferans sohbeti</string>
 </resources>

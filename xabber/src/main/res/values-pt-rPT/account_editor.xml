@@ -60,6 +60,7 @@
   <string name="INCORRECT_USER_NAME">Nome de utilizador incorreto. Selecione em baixo o texto de ajuda para detalhes.</string>
   <string name="orbot_required_message">Para poder processar usando o TOR, deve instalar o Orbot e ativar o tráfego de proxy. Gostaria de instalá-lo a partir do Google Play?</string>
   <string name="orbot_required_title">Instalar Orbot?</string>
+  <string name="install_orbot">Instalar Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Não foi possível registar a conta no servidor.</string>
   <string name="account_color">Cor da conta</string>
   <string name="account_color_name_green">Verde</string>

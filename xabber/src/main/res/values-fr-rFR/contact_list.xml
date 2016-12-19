@@ -48,7 +48,7 @@
   <string name="certificate_show_details">Détails...</string>
   <string name="close_chats">Fermer toutes les conversations</string>
   <string name="contact_integration_suggest">Voulez-vous que Xabber soit intégré dans le gestionnaire de contacts du système ?\nCeci peut être changé dans \"Paramètres\" → \"Comptes XMPP\" → Votre compte → \"Intégration des contacts\".\nNote : La liste des contacts peut être ralentie pendant quelques minutes.</string>
-  <string name="group_room">Salons</string>
+  <string name="group_room">Conférences</string>
   <string name="OTR_ERROR">Erreur OTR</string>
   <string name="select_contact">Appuyez pour sélectionner le contact</string>
   <string name="show_offline_always">Toujours afficher</string>

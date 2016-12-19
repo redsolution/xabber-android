@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">Obter conferências hospedadas</string>
   <string name="muc_error_getting_conferences">Erro ao obter a lista de conferências</string>
   <string name="muc_type_conference_name">Escreva o nome da conferência</string>
+  <string name="contact_is_blocked">O contacto está bloqueado!</string>
+  <string name="conference_invitation">Convite de conferência</string>
 </resources>

@@ -9,21 +9,23 @@
   <string name="muc_password">Lösenord</string>
   <string name="muc_password_hint">lösenord behövs inte</string>
   <string name="muc_room">Konferens</string>
-  <string name="muc_server">Multiuser Chattserver</string>
+  <string name="muc_server">Fleranvändar-chattserver</string>
   <string name="NICK_ALREADY_USED">Smeknamnet är upptaget</string>
   <string name="ALREADY_IN_PROGRESS">Pågår redan</string>
   <string name="ALREADY_JOINED">Redan ansluten</string>
   <string name="muc_add">Lägg till konferens</string>
   <string name="muc_delete">Ta bort konferens</string>
   <string name="muc_delete_confirm">Vill du verkligen ta bort konferensen %1$s från %2$s?</string>
-  <string name="muc_edit">Inställningar för autenticering</string>
+  <string name="muc_edit">Inställningar för autentisering</string>
   <string name="muc_invite_confirm">%2$s bjuder in dig att ansluta till konferens %3$s. Anslut med konto %1$s?</string>
   <string name="muc_invite_confirm_reason">%2$s bjuder in dig att ansluta till konferens %3$s: %4$s. Anslut med konto %1$s?</string>
   <string name="muc_leave">Lämna konferens</string>
   <string name="muc_save">Spara konferens</string>
   <string name="muc_choose_conference">Välj konferens</string>
   <string name="muc_next">Nästa</string>
-  <string name="muc_get_hosted_conferences">Få hostade konferenser</string>
-  <string name="muc_error_getting_conferences">Fel vid hämtning av kenferenser</string>
+  <string name="muc_get_hosted_conferences">Hämta hostade konferenser</string>
+  <string name="muc_error_getting_conferences">Fel vid hämtning av konferenser</string>
   <string name="muc_type_conference_name">Ange namn på konferens</string>
+  <string name="contact_is_blocked">Kontakten är blockerad!</string>
+  <string name="conference_invitation">Konferensinbjudan</string>
 </resources>

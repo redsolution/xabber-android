@@ -17,8 +17,8 @@
   <string name="account_user_name">Gebruikersnaam</string>
   <string name="EMPTY_SERVER_NAME">Naam server niet gespecifieerd</string>
   <string name="EMPTY_USER_NAME">Gebruikersnaam niet gespecifieerd</string>
-  <string name="CONFIRM_PASSWORD">Wachtwoord komt niet overneen</string>
-  <string name="account_archive_mode">Sla geschiedenis op</string>
+  <string name="CONFIRM_PASSWORD">Wachtwoord komt niet overeen</string>
+  <string name="account_archive_mode">Sla berichtengeschiedenis op</string>
   <string name="account_archive_mode_available">Op server indien beschikbaar</string>
   <string name="account_archive_mode_dont_store">Sla niet op</string>
   <string name="account_archive_mode_local">Lokaal op apparaat</string>
@@ -29,13 +29,13 @@
   <string name="account_custom_summary">Gebruik aangepaste hostinstellingen in plaats van SRV record</string>
   <string name="account_enabled_summary">Schakel account aan of uit</string>
   <string name="account_invalid_port">Poort moet een nummer zijn (standaard: 5222)</string>
-  <string name="account_invalid_port_range">Poort moet tussen de 1 en 65535 zijn (standaard: 5222)</string>
+  <string name="account_invalid_port_range">Poortnummer moet tussen de 1 en 65535 liggen (standaard: 5222)</string>
   <string name="account_invalid_priority">Waarde prioriteit moet een nummer zijn tussen -128 en 128 (standaard: 10)</string>
   <string name="account_oauth">Autorisatie</string>
   <string name="account_oauth_invalidated">Niet geautoriseerd</string>
   <string name="account_oauth_summary">OAuth instellingen</string>
   <string name="account_proxy_host">Proxy-host</string>
-  <string name="account_proxy_invalid_port_range">Proxy poort moet tussen de 1 en 65535 zijn (standaard: 8080)</string>
+  <string name="account_proxy_invalid_port_range">Proxy poort moet tussen de 1 en 65535 liggen (standaard: 8080)</string>
   <string name="account_proxy_invalid_port">Proxy poort moet een nummer zijn (standaard: 8080)</string>
   <string name="account_proxy_password">Proxy-wachtwoord</string>
   <string name="account_proxy_port">Proxy-poort</string>

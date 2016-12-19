@@ -14,7 +14,7 @@
   <string name="vcard_url">Site Web</string>
   <string name="vcard_organization">Organisation</string>
   <string name="vcard_organization_unit">Unité organisationnelle</string>
-  <string name="vcard_title">Titre de l\'emploi, de la fonction</string>
+  <string name="vcard_title">Titre de l\'emploi, fonction</string>
   <string name="vcard_role">Rôle</string>
   <string name="vcard_other">Autres informations</string>
   <string name="vcard_categories">Catégories</string>
@@ -38,7 +38,7 @@
   <string name="vcard_type_intl">International</string>
   <string name="vcard_type_pref">Préféré</string>
   <string name="vcard_type_voice">Voix</string>
-  <string name="vcard_type_fax">Fax</string>
+  <string name="vcard_type_fax">Télécopieur</string>
   <string name="vcard_type_pager">Bipeur</string>
   <string name="vcard_type_cell">Mobile</string>
   <string name="vcard_type_video">Vidéo</string>
@@ -57,8 +57,8 @@
   <string name="choose_from_gallery">Choisir dans la galerie</string>
   <string name="take_photo">Prendre une photo</string>
   <string name="remove_avatar">Retirer l\'avatar</string>
-  <string name="change">Changer</string>
-  <string name="could_not_get_room_info">Impossible de récupérer les détails du salon</string>
+  <string name="change">Modifier</string>
+  <string name="could_not_get_room_info">Impossible de récupérer les détails de la conférence</string>
   <string name="conference_name">Nom</string>
   <string name="conference_description">Description</string>
   <string name="conference_subject">Sujet</string>

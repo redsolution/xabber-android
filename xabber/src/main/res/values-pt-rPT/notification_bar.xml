@@ -35,4 +35,5 @@
   <string name="PASSWORD_REQUIRED">Senha obrigatória</string>
   <string name="pay_attention">Prestar atenção</string>
   <string name="subscription_request_message">Pedido de autorização</string>
+  <string name="conference_private_chat">Conversação de conferência privada</string>
 </resources>

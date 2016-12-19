@@ -60,6 +60,7 @@
   <string name="INCORRECT_USER_NAME">Yanlış kullanıcı adı. Ayrıntılar için aşağıdaki yardım metnine bakın.</string>
   <string name="orbot_required_message">TOR ile işlem yapmak için Orbot kurulmuş ve vekil sunucu trafiğini üzerinden geçiriyor olmalı. Google Play\'den kurmak ister misiniz?</string>
   <string name="orbot_required_title">Orbot kur?</string>
+  <string name="install_orbot">Orbot Kur</string>
   <string name="ACCOUNT_REGISTER_FAILED">Sunucu üzerinde hesap kaydedilemedi.</string>
   <string name="account_color">Hesap rengi</string>
   <string name="account_color_name_green">Yeşil</string>

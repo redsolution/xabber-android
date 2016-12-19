@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Anslutningsfel</string>
   <string name="contact_add">Lägg till kontakt</string>
   <string name="contact_delete">Radera</string>
+  <string name="contact_block">Blockera kontakt</string>
   <string name="contact_delete_confirm">Vill du verkligen radera kontakt %1$s från konto %2$s?</string>
   <string name="contact_list">Kontaktlista</string>
   <string name="discard_subscription">Avvisa kontakt</string>
@@ -54,8 +55,23 @@
   <string name="show_offline_never">Visa aldrig</string>
   <string name="show_offline_normal">Använd allmänna inställningar</string>
   <string name="show_offline_settings">Visa offlinekontakter</string>
+  <string name="start_at_boot">Kör vid start</string>
   <string name="start_at_boot_suggest">Vill du starta Xabber när telefonen startar?  \nDu kan ändra i \"Inställningar\" → \"Anslutningsinställningar\" → \"Starta\"</string>
   <string name="contact_search_hint">Sök efter kontakter</string>
   <string name="sender_is_you">Du</string>
   <string name="xmpp_accounts">XMPP konton</string>
+  <string name="block_list">Blockeringslistan</string>
+  <string name="contact_blocked_successfully">Kontakten är nu blockerad</string>
+  <string name="error_blocking_contact">Det gick inte att blockera kontakten</string>
+  <string name="unblock_contact">Avblockera kontakt</string>
+  <string name="contacts_unblocked_successfully">Kontakten är nu blockerad</string>
+  <string name="error_unblocking_contacts">Det gick inte att avblockera kontakten</string>
+  <string name="block_contact_confirm">Vill du verkligen blockera kontakt %1$s från konto %2$s?</string>
+  <string name="unblock_all_contacts_confirm">Vill du avblockera alla kontakter från konto %1$s?</string>
+  <string name="unblock_all">Avblockera alla</string>
+  <string name="unblock_selected">Avblockera valda</string>
+  <string name="dark_theme_suggest_dialog_title">Välj ditt öde</string>
+  <string name="dark_theme_suggest_dialog_message">Ett nytt mörkt tema är nu tillgängligt för Xabber. Kan du motstå frestelsen att använda det?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Anslut dig till den mörka sidan</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Bli kvar på den ljusa sidan"</string>
 </resources>
