@@ -84,6 +84,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
     @Override
     public void onRosterReceived(AccountItem accountItem) {
+        LogManager.i(this, "onRosterReceived " + accountItem.getAccount());
         Collection<RosterContact> contacts = RosterManager.getInstance().getContacts();
         for (RosterContact contact : contacts) {
             if (contact.getAccount().equals(accountItem.getAccount())) {

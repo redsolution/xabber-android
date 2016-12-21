@@ -16,6 +16,7 @@ package com.xabber.android.data.message;
 
 import android.support.annotation.NonNull;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -58,7 +60,7 @@ import io.realm.Sort;
  *
  * @author alexander.ivanov
  */
-public abstract class AbstractChat extends BaseEntity {
+public abstract class AbstractChat extends BaseEntity implements RealmChangeListener<RealmResults<MessageItem>> {
 
     /**
      * Number of messages from history to be shown for context purpose.
@@ -104,6 +106,12 @@ public abstract class AbstractChat extends BaseEntity {
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
         updateCreationTime();
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getMessages();
+            }
+        });
     }
 
     public boolean isRemotePreviousHistoryCompletelyLoaded() {
@@ -168,6 +176,7 @@ public abstract class AbstractChat extends BaseEntity {
                     .equalTo(MessageItem.Fields.ACCOUNT, getAccountString())
                     .equalTo(MessageItem.Fields.USER, getUserString())
                     .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+            messageItems.addChangeListener(this);
         }
 
         return messageItems;
@@ -381,10 +390,9 @@ public abstract class AbstractChat extends BaseEntity {
         MessageItem lastNotEmptyTextMessage = null;
 
         if (messagesWithNotEmptyText == null) {
-            RealmResults<MessageItem> messages = getMessages();
-            if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
+            if (messageItems.isValid() && messageItems.isLoaded() && !messageItems.isEmpty()) {
                 LogManager.i(this, "getLastMessage quert last message");
-                messagesWithNotEmptyText = messages.where()
+                messagesWithNotEmptyText = messageItems.where()
                         .not().isEmpty(MessageItem.Fields.TEXT)
                         .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
             }
@@ -588,5 +596,10 @@ public abstract class AbstractChat extends BaseEntity {
 
     boolean isPrivateMucChatAccepted() {
         return isPrivateMucChatAccepted;
+    }
+
+    @Override
+    public void onChange(RealmResults<MessageItem> messageItems) {
+        getLastMessage();
     }
 }
