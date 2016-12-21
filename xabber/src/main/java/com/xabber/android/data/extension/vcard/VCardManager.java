@@ -328,10 +328,17 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
         LogManager.i(this, "request vCard for " + srcUser);
 
-        final Thread thread = new Thread("Get vCard user " + srcUser + " for account " + account) {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 VCard vCard = null;
+
+                Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+                for (UserJid blockedContact : blockedContacts) {
+                    if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
+                        return;
+                    }
+                }
 
                 final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
 
@@ -352,7 +359,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 });
             }
 
-            public VCard getvCard(EntityBareJid entityBareJid) {
+            VCard getvCard(EntityBareJid entityBareJid) {
                 VCard vCard = null;
                 vCardRequests.add(srcUser);
                 try {
@@ -379,8 +386,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 vCardRequests.remove(srcUser);
                 return vCard;
             }
-        };
-        thread.start();
+        });
     }
 
     public void saveVCard(final AccountJid account, final VCard vCard) {
