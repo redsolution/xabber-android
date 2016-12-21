@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -99,29 +100,39 @@ public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemCl
     }
 
     public void updateChats() {
-        Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
 
-        List<AbstractChat> recentChats = new ArrayList<>();
+                List<AbstractChat> recentChats = new ArrayList<>();
 
-        for (AbstractChat abstractChat : chats) {
-            MessageItem lastMessage = abstractChat.getLastMessage();
+                for (AbstractChat abstractChat : chats) {
+                    MessageItem lastMessage = abstractChat.getLastMessage();
 
-            if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
-                recentChats.add(abstractChat);
+                    if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+                        recentChats.add(abstractChat);
+                    }
+                }
+
+                Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
+
+
+                final List<AbstractContact> newContacts = new ArrayList<>();
+
+                for (AbstractChat chat : recentChats) {
+                    newContacts.add(RosterManager.getInstance()
+                            .getBestContact(chat.getAccount(), chat.getUser()));
+                }
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.updateContacts(newContacts);
+                    }
+                });
             }
-        }
-
-        Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
-
-
-        List<AbstractContact> newContacts = new ArrayList<>();
-
-        for (AbstractChat chat : recentChats) {
-            newContacts.add(RosterManager.getInstance()
-                    .getBestContact(chat.getAccount(), chat.getUser()));
-        }
-
-        adapter.updateContacts(newContacts);
+        });
     }
 
 }
