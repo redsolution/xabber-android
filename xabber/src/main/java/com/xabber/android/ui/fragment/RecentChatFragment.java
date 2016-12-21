@@ -1,28 +1,37 @@
 package com.xabber.android.ui.fragment;
 
-import android.app.Activity;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.roster.AbstractContact;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatViewer;
-import com.xabber.android.ui.adapter.ChatListAdapter;
+import com.xabber.android.ui.adapter.ChatComparator;
+import com.xabber.android.ui.adapter.contactlist.ChatListAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuItemClickListener {
-    private RecentChatFragmentInteractionListener listener;
+public class RecentChatFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
+
+    private ChatListAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,38 +45,18 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setListAdapter(new ChatListAdapter(getActivity()));
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        try {
-            listener = (RecentChatFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement RecentChatFragmentInteractionListener");
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_recent_chats, container, false);
 
-        ArrayList<AbstractChat> activeChats = ((ChatViewer) getActivity()).getChatViewerAdapter().getActiveChats();
-        ((ChatListAdapter) getListAdapter()).updateChats(activeChats);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recent_chats_recycler_view);
 
-        if (getListAdapter().isEmpty()) {
-            Activity activity = getActivity();
-            Toast.makeText(activity, R.string.chat_list_is_empty, Toast.LENGTH_LONG).show();
-            activity.finish();
-        }
+        adapter = new ChatListAdapter(getActivity());
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        updateChats();
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_default);
         toolbar.setTitle(R.string.recent_chats);
@@ -101,22 +90,6 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
     }
 
     @Override
-    public void onDetach() {
-        listener = null;
-        super.onDetach();
-    }
-
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        if (null != listener) {
-            listener.onChatSelected((AbstractChat) getListAdapter().getItem(position));
-        }
-    }
-
-    @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_under_construction) {
             Toast.makeText(getActivity(), getActivity().getString(R.string.under_construction_message), Toast.LENGTH_SHORT).show();
@@ -125,11 +98,30 @@ public class RecentChatFragment extends ListFragment implements Toolbar.OnMenuIt
         return false;
     }
 
-    public void updateChats(List<AbstractChat> chats) {
-        ((ChatListAdapter) getListAdapter()).updateChats(chats);
+    public void updateChats() {
+        Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
+
+        List<AbstractChat> recentChats = new ArrayList<>();
+
+        for (AbstractChat abstractChat : chats) {
+            MessageItem lastMessage = abstractChat.getLastMessage();
+
+            if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
+                recentChats.add(abstractChat);
+            }
+        }
+
+        Collections.sort(recentChats, ChatComparator.CHAT_COMPARATOR);
+
+
+        List<AbstractContact> newContacts = new ArrayList<>();
+
+        for (AbstractChat chat : recentChats) {
+            newContacts.add(RosterManager.getInstance()
+                    .getBestContact(chat.getAccount(), chat.getUser()));
+        }
+
+        adapter.updateContacts(newContacts);
     }
 
-    public interface RecentChatFragmentInteractionListener {
-        void onChatSelected(AbstractChat chat);
-    }
 }

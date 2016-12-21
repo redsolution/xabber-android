@@ -3,22 +3,19 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -40,13 +37,12 @@ import com.xabber.android.ui.activity.AccountAdd;
 import com.xabber.android.ui.activity.ContactAdd;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
-import com.xabber.android.ui.adapter.AccountConfiguration;
-import com.xabber.android.ui.adapter.ContactListAdapter;
-import com.xabber.android.ui.adapter.ContactListAdapter.OnContactListChangedListener;
-import com.xabber.android.ui.adapter.ContactListState;
-import com.xabber.android.ui.adapter.GroupConfiguration;
-import com.xabber.android.ui.adapter.GroupedContactAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
+import com.xabber.android.ui.adapter.contactlist.ContactListState;
+import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
@@ -59,12 +55,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, OnItemClickListener,
-        OnContactListChangedListener, View.OnClickListener, GroupedContactAdapter.OnClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener {
 
     private ContactListAdapter adapter;
 
-    private ListView listView;
+    private RecyclerView recyclerView;
 
     /**
      * View with information shown on empty contact list.
@@ -117,12 +112,11 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());
 
-        listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-        listView.setItemsCanFocus(true);
-        registerForContextMenu(listView);
-        adapter = new ContactListAdapter(getActivity(), this, this);
-        listView.setAdapter(adapter);
+        recyclerView = (RecyclerView) view.findViewById(R.id.contact_list_recycler_view);
+        registerForContextMenu(recyclerView);
+        adapter = new ContactListAdapter(getActivity(), this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
@@ -181,7 +175,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        Object itemAtPosition = listView.getItemAtPosition(info.position);
+        Object itemAtPosition = adapter.getItem(info.position);
         if (itemAtPosition instanceof AbstractContact) {
             ContextMenuHelper.createContactContextMenu(
                     (ManagedActivity) getActivity(), adapter, (AbstractContact) itemAtPosition, menu);
@@ -196,23 +190,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         } else {
             throw new IllegalStateException();
         }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Object object = parent.getAdapter().getItem(position);
-        if (object instanceof AbstractContact) {
-            contactListFragmentListener.onContactClick((AbstractContact) object);
-        } else if (object instanceof GroupConfiguration) {
-            GroupConfiguration groupConfiguration = (GroupConfiguration) object;
-            adapter.setExpanded(groupConfiguration.getAccount(), groupConfiguration.getGroup(),
-                    !groupConfiguration.isExpanded());
-        }
-    }
-
-    @Override
-    public void onContactsChanged(Collection<BaseEntity> addresses) {
-        adapter.refreshRequest();
     }
 
     @Override
@@ -383,13 +360,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * @param account
      */
     void scrollTo(AccountJid account) {
-        long count = listView.getCount();
+        long count = adapter.getItemCount();
         for (int position = 0; position < (int) count; position++) {
-            Object itemAtPosition = listView.getItemAtPosition(position);
+            Object itemAtPosition = adapter.getItem(position);
             if (itemAtPosition != null && itemAtPosition instanceof AccountConfiguration
                     && ((AccountConfiguration)itemAtPosition).getAccount().equals(account)) {
-                stopMovement();
-                listView.setSelection(position);
+                recyclerView.scrollToPosition(position);
                 break;
             }
         }
@@ -406,7 +382,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         } else {
             SettingsManager.setContactsSelectedAccount(account);
         }
-        stopMovement();
         adapter.onChange();
     }
 
@@ -414,21 +389,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Scroll to the top of contact list.
      */
     public void scrollUp() {
-        if (listView.getCount() > 0) {
-            listView.setSelection(0);
-        }
-        stopMovement();
+        recyclerView.scrollToPosition(0);
     }
 
-    /**
-     * Stop fling scrolling.
-     */
-    private void stopMovement() {
-        MotionEvent event = MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0);
-        listView.onTouchEvent(event);
-        event.recycle();
-    }
 
     @Override
     public void onClick(View view) {
@@ -462,18 +425,29 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         accountActionButtonsAdapter.rebuild();
     }
 
-    @Override
-    public void onAccountMenuClick(View view, final AccountJid account) {
-        PopupMenu popup = new PopupMenu(getActivity(), view);
-        popup.inflate(R.menu.account);
-        ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, account, popup.getMenu());
-        popup.show();
-    }
-
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
         void onContactListChange(CommonState commonState);
     }
+
+    @Override
+    public void onContactClick(AbstractContact contact) {
+        contactListFragmentListener.onContactClick(contact);
+    }
+
+    @Override
+    public void onAccountMenuClick(AccountJid accountJid, View view) {
+        PopupMenu popup = new PopupMenu(getActivity(), view);
+        popup.inflate(R.menu.account);
+        ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, accountJid, popup.getMenu());
+        popup.show();
+    }
+
+    @Override
+    public void onContactsChanged(Collection<BaseEntity> addresses) {
+        adapter.refreshRequest();
+    }
+
 
 
 

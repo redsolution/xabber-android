@@ -1,4 +1,4 @@
-package com.xabber.android.ui.adapter;
+package com.xabber.android.ui.adapter.contactlist;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 
-class ContactListItemViewHolder extends RecyclerView.ViewHolder {
+class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     final ImageView color;
     final ImageView avatar;
@@ -21,12 +21,22 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder {
     final ImageView offlineShadow;
     final ImageView mucIndicator;
     final View separator;
+    private final ContactClickListener listener;
 
-    public ContactListItemViewHolder(View view) {
+    interface ContactClickListener {
+        void onContactClick(int adapterPosition);
+        void onContactAvatarClick(int adapterPosition);
+    }
+
+    ContactListItemViewHolder(View view, ContactClickListener listener) {
         super(view);
+        this.listener = listener;
+
+        itemView.setOnClickListener(this);
 
         color = (ImageView) view.findViewById(R.id.account_color_indicator);
         avatar = (ImageView) view.findViewById(R.id.avatar);
+        avatar.setOnClickListener(this);
         name = (TextView) view.findViewById(R.id.contact_list_item_name);
         outgoingMessageIndicator = (TextView) view.findViewById(R.id.outgoing_message_indicator);
         secondLineMessage = (TextView) view.findViewById(R.id.second_line_message);
@@ -37,5 +47,14 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder {
         offlineShadow = (ImageView) view.findViewById(R.id.offline_shadow);
         mucIndicator = (ImageView) view.findViewById(R.id.contact_list_item_muc_indicator);
         separator = view.findViewById(R.id.contact_list_item_separator);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.avatar) {
+            listener.onContactAvatarClick(getAdapterPosition());
+        } else {
+            listener.onContactClick(getAdapterPosition());
+        }
     }
 }

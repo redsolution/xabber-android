@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.ui.adapter;
+package com.xabber.android.ui.adapter.contactlist;
 
 import android.support.annotation.NonNull;
 
@@ -65,8 +65,8 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
      */
     private final ShowOfflineMode showOfflineMode;
 
-    public GroupConfiguration(AccountJid account, String group,
-                              GroupStateProvider groupStateProvider) {
+    GroupConfiguration(AccountJid account, String group,
+                       GroupStateProvider groupStateProvider) {
         this.account = account;
         this.group = group;
         abstractContacts = new ArrayList<>();
@@ -88,25 +88,22 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * Adds new contact.
      */
-    public void addAbstractContact(AbstractContact abstractContact) {
+    void addAbstractContact(AbstractContact abstractContact) {
         abstractContacts.add(abstractContact);
     }
 
     /**
      * Gets list of contacts.
      *
-     * @return
      */
-    public Collection<AbstractContact> getAbstractContacts() {
+    Collection<AbstractContact> getAbstractContacts() {
         return abstractContacts;
     }
 
     /**
      * Sorts list of abstract contacts.
-     *
-     * @param comparator
      */
-    public void sortAbstractContacts(Comparator<AbstractContact> comparator) {
+    void sortAbstractContacts(Comparator<AbstractContact> comparator) {
         Collections.sort(abstractContacts, comparator);
     }
 
@@ -115,7 +112,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
      *
      * @param online whether contact is online.
      */
-    public void increment(boolean online) {
+    void increment(boolean online) {
         this.total++;
         if (online) {
             this.online++;
@@ -132,7 +129,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * Set that there is at least one contact to be displayed in expanded mode.
      */
-    public void setNotEmpty() {
+    void setNotEmpty() {
         empty = false;
     }
 
@@ -146,7 +143,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * @return Total number of contacts in group.
      */
-    public int getTotal() {
+    int getTotal() {
         return total;
     }
 
@@ -160,7 +157,7 @@ public class GroupConfiguration implements Comparable<GroupConfiguration> {
     /**
      * @return Mode of showing offline contacts.
      */
-    public ShowOfflineMode getShowOfflineMode() {
+    ShowOfflineMode getShowOfflineMode() {
         return showOfflineMode;
     }
 

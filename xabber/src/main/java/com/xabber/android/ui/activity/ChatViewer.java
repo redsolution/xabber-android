@@ -70,7 +70,7 @@ import java.util.List;
  */
 public class ChatViewer extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener, RecentChatFragment.RecentChatFragmentInteractionListener,
+        ChatViewerAdapter.FinishUpdateListener,
         ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener {
 
     private static final String LOG_TAG = ChatViewer.class.getSimpleName();
@@ -474,7 +474,7 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
 
     private void updateRegisteredRecentChatsFragments() {
         for (RecentChatFragment recentChatFragment : recentChatFragments) {
-            recentChatFragment.updateChats(chatViewerAdapter.getActiveChats());
+            recentChatFragment.updateChats();
         }
     }
 
@@ -515,10 +515,10 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         }
     }
 
-    @Override
-    public void onChatSelected(AbstractChat chat) {
-        selectChatPage(chat, true);
-    }
+//    @Override
+//    public void onChatSelected(AbstractChat chat) {
+//        selectChatPage(chat, true);
+//    }
 
     public ChatViewerAdapter getChatViewerAdapter() {
         return chatViewerAdapter;

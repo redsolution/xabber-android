@@ -19,7 +19,6 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -42,6 +41,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.MucPrivateChatNotification;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
@@ -478,56 +478,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * Called on action settings change.
      */
     public void onSettingsChanged() {
-//        ChatsShowStatusChange showStatusChange = SettingsManager.chatsShowStatusChange();
-//        Collection<BaseEntity> changedEntities = new ArrayList<>();
-//        for (AbstractChat chat : chats.values()) {
-//            if ((chat instanceof RegularChat && showStatusChange != ChatsShowStatusChange.always)
-//                    || (chat instanceof RoomChat && showStatusChange == ChatsShowStatusChange.never)) {
-//                // Remove actions with status change.
-//                ArrayList<MessageItem> remove = new ArrayList<>();
-//                for (MessageItem messageItem : chat.getMessages()) {
-//                    if (messageItem.getAction() != null && ChatAction.valueOf(messageItem.getAction()).isStatusChage()) {
-//                        remove.add(messageItem);
-//                    }
-//                }
-//                if (remove.isEmpty()) {
-//                    continue;
-//                }
-//                for (MessageItem messageItem : remove) {
-//                    chat.removeMessage(messageItem);
-//                }
-//                changedEntities.add(chat);
-//            }
-//        }
-//        RosterManager.getInstance().onContactsChanged(changedEntities);
+
     }
 
     @Override
     public void onAccountArchiveModeChanged(AccountItem accountItem) {
-        // TODO:
-//        final ArchiveMode archiveMode = AccountManager.getInstance().getArchiveMode(accountItem.getAccount());
-//        if (archiveMode.saveLocally()) {
-//            return;
-//        }
-//        final AccountJid account = accountItem.getAccount();
-//        Realm realm = DatabaseManager.getInstance().getRealm();
-//        realm.beginTransaction();
-//        for (AbstractChat chat : chats.getNested(account).values()) {
-//            for (MessageItem messageItem : chat.getMessages()) {
-//                if (archiveMode == ArchiveMode.dontStore || ((messageItem.isRead()
-//                        || archiveMode != ArchiveMode.unreadOnly) && messageItem.isSent())) {
-//                    messageItem.removeFromRealm();
-//                }
-//            }
-//        }
-//        realm.commitTransaction();
-//        // If message was read or received after removeMessageItems
-//        // was created then it's ID will be not null. DB actions with
-//        // such message will have no effect as if it was removed.
-//        // History ids becomes invalid and will be cleared on next
-//        // history load.
-//
-//        AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
+
     }
 
     @Override
@@ -535,18 +491,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (stanza.getFrom() == null) {
             return;
         }
-        AccountJid account = ((AccountItem) connection).getAccount();
-
-//        UserJid contact;
-//
-//        if (stanza instanceof Message) {
-//            Message message = (Message) stanza;
-//            if (MUCManager.getInstance().hasRoom(account, stanza.getFrom().asEntityBareJidIfPossible())
-//                    && message.getType() != Message.Type.groupchat ) {
-//                contact = UserJid.from(stanza.getFrom());
-//            }
-//        }
-
+        AccountJid account = connection.getAccount();
 
         final UserJid user;
         try {
@@ -683,7 +628,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (!(connection instanceof AccountItem)) {
             return;
         }
-        AccountJid account = ((AccountItem) connection).getAccount();
+        AccountJid account = connection.getAccount();
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
             chat.onDisconnect();
         }

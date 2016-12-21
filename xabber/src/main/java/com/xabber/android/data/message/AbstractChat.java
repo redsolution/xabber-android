@@ -18,7 +18,6 @@ import android.support.annotation.NonNull;
 
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -29,6 +28,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.mam.SyncInfo;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 
@@ -72,13 +72,13 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Whether changes in status should be record.
      */
-    protected boolean trackStatus;
+    private boolean trackStatus;
     /**
      * Whether user never received notifications from this chat.
      */
-    protected boolean firstNotification;
+    private boolean firstNotification;
 
-    protected Date creationTime = new Date();
+    private Date creationTime = new Date();
     /**
      * Current thread id.
      */
@@ -93,6 +93,7 @@ public abstract class AbstractChat extends BaseEntity {
     private RealmResults<MessageItem> messageItems;
     private Realm realm;
     private RealmResults<SyncInfo> syncInfo;
+    private RealmResults<MessageItem> messagesWithNotEmptyText;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
@@ -162,6 +163,7 @@ public abstract class AbstractChat extends BaseEntity {
         }
 
         if (messageItems == null) {
+            LogManager.i(this, "getMessages new messages query");
             messageItems = realm.where(MessageItem.class)
                     .equalTo(MessageItem.Fields.ACCOUNT, getAccountString())
                     .equalTo(MessageItem.Fields.USER, getUserString())
@@ -218,30 +220,12 @@ public abstract class AbstractChat extends BaseEntity {
         return SettingsManager.eventsMessage() != SettingsManager.EventsMessage.none;
     }
 
-    /**
-     *
-     * @param resource
-     * @param s
-     *@param action
-     * @param delay
-     * @param incoming
-     * @param notify
-     * @param unencrypted
-     * @param offline
-     * @param text  @return New message instance.
-     */
-    protected void createAndSaveNewMessage(Resourcepart resource, String s, Object action, Date delay, boolean incoming, boolean notify, boolean unencrypted, boolean offline, String text) {
-        MessageItem newMessageItem = createNewMessageItem(text);
-        saveMessageItem(newMessageItem);
-    }
-
     abstract protected MessageItem createNewMessageItem(String text);
 
     /**
      * Creates new action.
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
-     * @param action
      */
     public void newAction(Resourcepart resource, String text, ChatAction action) {
         createAndSaveNewMessage(resource, text, action, null, true, false, false, false, null);
@@ -358,7 +342,7 @@ public abstract class AbstractChat extends BaseEntity {
         return messageItem;
     }
 
-    protected String newFileMessage(final File file) {
+    String newFileMessage(final File file) {
         Realm realm = Realm.getDefaultInstance();
 
         final String messageId = UUID.randomUUID().toString();
@@ -386,77 +370,30 @@ public abstract class AbstractChat extends BaseEntity {
         return messageId;
     }
 
-    private void updateSyncInfo() {
-//        LogManager.i(this, "updateSyncInfo messages size");
-//
-//        final String firstMamMessageStanzaId = syncInfo.getFirstMamMessageStanzaId();
-//
-//        Integer firstLocalMessagePosition = null;
-//        Integer firstMamMessagePosition = null;
-//        Date firstLocalMessageTimestamp = null;
-//
-//        for (int i = 0; i < messages.size(); i++) {
-//            MessageItem messageItem = messages.get(i);
-//            String stanzaId = messageItem.getStanzaId();
-//
-//            if (firstLocalMessagePosition == null && messageItem.getId() != null) {
-//                firstLocalMessagePosition = i;
-//                firstLocalMessageTimestamp = messageItem.getTimestamp();
-//                LogManager.i(this, "firstLocalMessagePosition " + firstLocalMessagePosition + " firstLocalMessageTimestamp " + firstLocalMessageTimestamp);
-//            }
-//
-//
-//            if (firstMamMessagePosition == null && firstMamMessageStanzaId != null && stanzaId != null
-//                    && firstMamMessageStanzaId.equals(stanzaId)) {
-//                firstMamMessagePosition = i;
-//
-//                LogManager.i(this, "firstMamMessagePosition " + i);
-//            }
-//
-//
-//            if (firstLocalMessagePosition != null) {
-//                if (firstMamMessagePosition != null) {
-//                    break;
-//                }
-//                if (firstMamMessageStanzaId == null) {
-//                    break;
-//                }
-//            }
-//
-//        }
-//
-//        syncCache.setFirstLocalMessagePosition(firstLocalMessagePosition);
-//        syncCache.setFirstLocalMessageTimeStamp(firstLocalMessageTimestamp);
-//        syncCache.setFirstMamMessagePosition(firstMamMessagePosition);
-
-    }
-
     /**
      * @return Whether chat accepts packets from specified user.
      */
-    boolean accept(UserJid jid) {
+    private boolean accept(UserJid jid) {
         return this.user.equals(jid);
     }
 
     public MessageItem getLastMessage() {
         MessageItem lastNotEmptyTextMessage = null;
 
-        RealmResults<MessageItem> messages = getMessages();
-
-        if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
-            RealmResults<MessageItem> messagesWithNotEmptyText = messages.where()
-                    .not().isEmpty(MessageItem.Fields.TEXT)
-                    .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
-
-            if (!messagesWithNotEmptyText.isEmpty()) {
+        if (messagesWithNotEmptyText == null) {
+            RealmResults<MessageItem> messages = getMessages();
+            if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
+                LogManager.i(this, "getLastMessage quert last message");
+                messagesWithNotEmptyText = messages.where()
+                        .not().isEmpty(MessageItem.Fields.TEXT)
+                        .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+            }
+        } else {
+            if (messagesWithNotEmptyText.isValid() && messagesWithNotEmptyText.isLoaded() &&
+                    !messagesWithNotEmptyText.isEmpty()) {
                 lastNotEmptyTextMessage = messagesWithNotEmptyText.last();
             }
         }
-
-        if (lastNotEmptyTextMessage != null) {
-            lastNotEmptyTextMessage = realm.copyFromRealm(lastNotEmptyTextMessage);
-        }
-
         return lastNotEmptyTextMessage;
     }
 
@@ -478,7 +415,6 @@ public abstract class AbstractChat extends BaseEntity {
     }
 
     /**
-     * @param body
      * @return New message packet to be sent.
      */
     public Message createMessagePacket(String body) {
@@ -493,7 +429,6 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Prepare text to be send.
      *
-     * @param text
      * @return <code>null</code> if text shouldn't be send.
      */
     protected String prepareText(String text) {
@@ -528,7 +463,7 @@ public abstract class AbstractChat extends BaseEntity {
         realm.close();
     }
 
-    public boolean sendMessage(MessageItem messageItem) {
+    private boolean sendMessage(MessageItem messageItem) {
         String text = prepareText(messageItem.getText());
         Long timestamp = messageItem.getTimestamp();
 
@@ -639,7 +574,7 @@ public abstract class AbstractChat extends BaseEntity {
         return creationTime;
     }
 
-    public void updateCreationTime() {
+    private void updateCreationTime() {
         creationTime.setTime(System.currentTimeMillis());
     }
 
@@ -647,11 +582,11 @@ public abstract class AbstractChat extends BaseEntity {
         this.isPrivateMucChatAccepted = isPrivateMucChatAccepted;
     }
 
-    public boolean isPrivateMucChat() {
+    boolean isPrivateMucChat() {
         return isPrivateMucChat;
     }
 
-    public boolean isPrivateMucChatAccepted() {
+    boolean isPrivateMucChatAccepted() {
         return isPrivateMucChatAccepted;
     }
 }
