@@ -141,7 +141,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return active;
     }
 
-    void openChat() {
+    public void openChat() {
         if (!active) {
             updateCreationTime();
         }

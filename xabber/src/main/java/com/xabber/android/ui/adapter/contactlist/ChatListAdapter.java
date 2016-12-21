@@ -6,9 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.xabber.android.R;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.RosterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +15,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<AbstractContact> contacts;
     private final ContactItemInflater contactItemInflater;
+    private final Listener listener;
 
-    public ChatListAdapter(Context context) {
+    public interface Listener {
+        void onRecentChatClick(AbstractContact contact);
+    }
+
+    public ChatListAdapter(Context context, Listener listener) {
+        this.listener = listener;
         contacts = new ArrayList<>();
         contactItemInflater = new ContactItemInflater(context);
     }
@@ -51,7 +55,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onContactClick(int adapterPosition) {
-
+        listener.onRecentChatClick(contacts.get(adapterPosition));
     }
 
     @Override

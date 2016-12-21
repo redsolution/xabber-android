@@ -71,7 +71,8 @@ import java.util.List;
 public class ChatViewer extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatViewerAdapter.FinishUpdateListener,
-        ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener {
+        ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
+        RecentChatFragment.Listener {
 
     private static final String LOG_TAG = ChatViewer.class.getSimpleName();
 
@@ -515,10 +516,17 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
         }
     }
 
-//    @Override
-//    public void onChatSelected(AbstractChat chat) {
-//        selectChatPage(chat, true);
-//    }
+    @Override
+    public void onChatSelected(BaseEntity chat) {
+        AbstractChat chat1 = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
+
+        if (!chat1.isActive()) {
+            chat1.openChat();
+            onNewMessageEvent(null);
+        }
+
+        selectChatPage(chat, true);
+    }
 
     public ChatViewerAdapter getChatViewerAdapter() {
         return chatViewerAdapter;
