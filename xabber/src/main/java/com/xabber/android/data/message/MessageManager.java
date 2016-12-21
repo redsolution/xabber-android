@@ -158,28 +158,11 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public Collection<AbstractChat> getChats() {
-        final Map<AccountJid, List<UserJid>> blockedContacts = BlockingManager.getInstance().getBlockedContacts();
-        final Map<AccountJid, Collection<UserJid>> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts();
-        List<AbstractChat> unblockedChats = new ArrayList<>();
-        for (AbstractChat chat : chats.values()) {
-            final List<UserJid> blockedContactsForAccount = blockedContacts.get(chat.getAccount());
-            if (blockedContactsForAccount != null) {
-                if (blockedContactsForAccount.contains(chat.getUser())) {
-                    continue;
-                }
-            }
-
-            final Collection<UserJid> blockedMucContactsForAccount = blockedMucContacts.get(chat.getAccount());
-            if (blockedMucContactsForAccount != null) {
-                if (blockedMucContactsForAccount.contains(chat.getUser())) {
-                    continue;
-                }
-            }
-
-            unblockedChats.add(chat);
+        List<AbstractChat> chats = new ArrayList<>();
+        for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
+            chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
-
-        return Collections.unmodifiableCollection(unblockedChats);
+        return chats;
     }
 
     /**
