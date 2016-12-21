@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -96,6 +97,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private Realm realm;
     private RealmResults<SyncInfo> syncInfo;
     private RealmResults<MessageItem> messagesWithNotEmptyText;
+    private MessageItem lastNotEmptyTextMessage;
 
     protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
         super(account, isPrivateMucChat ? user : user.getBareUserJid());
@@ -386,37 +388,37 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return this.user.equals(jid);
     }
 
-    public MessageItem getLastMessage() {
-        MessageItem lastNotEmptyTextMessage = null;
+    @Nullable
+    public synchronized MessageItem getLastMessage() {
+        return lastNotEmptyTextMessage;
+    }
 
+    private void updateLastMessage() {
         if (messagesWithNotEmptyText == null) {
             if (messageItems.isValid() && messageItems.isLoaded() && !messageItems.isEmpty()) {
                 LogManager.i(this, "getLastMessage quert last message");
                 messagesWithNotEmptyText = messageItems.where()
                         .not().isEmpty(MessageItem.Fields.TEXT)
                         .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+                messagesWithNotEmptyText.addChangeListener(this);
             }
         } else {
             if (messagesWithNotEmptyText.isValid() && messagesWithNotEmptyText.isLoaded() &&
                     !messagesWithNotEmptyText.isEmpty()) {
-                lastNotEmptyTextMessage = messagesWithNotEmptyText.last();
+                synchronized (this) {
+                    lastNotEmptyTextMessage = realm.copyFromRealm(messagesWithNotEmptyText.last());
+                }
             }
         }
-        return lastNotEmptyTextMessage;
     }
 
     /**
      * @return Time of last message in chat. Can be <code>null</code>.
      */
     public Date getLastTime() {
-        RealmResults<MessageItem> messages = getMessages();
-        Number max = null;
-        if (messages.isValid() && messages.isLoaded()) {
-            max = messages.where().max(MessageItem.Fields.TIMESTAMP);
-        }
-
-        if (max != null) {
-            return new Date(max.longValue());
+        MessageItem lastMessage = getLastMessage();
+        if (lastMessage != null) {
+            return new Date(lastMessage.getTimestamp());
         } else {
             return null;
         }
@@ -600,6 +602,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     @Override
     public void onChange(RealmResults<MessageItem> messageItems) {
-        getLastMessage();
+        updateLastMessage();
     }
 }
