@@ -23,12 +23,10 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
@@ -39,13 +37,13 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.ui.adapter.ChatScrollIndicatorAdapter;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
@@ -92,7 +90,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String SAVED_SELECTED_USER = "com.xabber.android.ui.activity.ChatViewer.SAVED_SELECTED_USER";
 
     private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatViewer.EXIT_ON_SEND";
-    ChatScrollIndicatorAdapter chatScrollIndicatorAdapter;
     ChatViewerAdapter chatViewerAdapter;
     ViewPager viewPager;
     Collection<ChatViewerFragment> registeredChats = new HashSet<>();
@@ -248,9 +245,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             viewPager.setBackgroundColor(ColorManager.getInstance().getChatBackgroundColor());
         }
 
-        chatScrollIndicatorAdapter = new ChatScrollIndicatorAdapter(this,
-                (LinearLayout)findViewById(R.id.chat_scroll_indicator));
-        chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
     }
 
     private void getInitialChatFromIntent() {
@@ -334,7 +328,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
 
         chatViewerAdapter.updateChats();
-        chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
         selectPage();
 
         Intent intent = getIntent();
@@ -404,7 +397,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
         if (chatViewerAdapter.updateChats()) {
-            chatScrollIndicatorAdapter.update(chatViewerAdapter.getActiveChats());
             selectPage();
         } else {
             updateRegisteredRecentChatsFragments();
@@ -441,7 +433,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onPageSelected(int position) {
         hideKeyboard(this);
-        chatScrollIndicatorAdapter.select(chatViewerAdapter.getRealPagePosition(position));
 
         selectedChat = chatViewerAdapter.getChatByPageNumber(position);
         isRecentChatsSelected = selectedChat == null;
