@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
+apply plugin: 'com.frogermcs.androiddevmetrics'
 
 android {
     compileSdkVersion 25

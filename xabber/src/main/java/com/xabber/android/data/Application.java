@@ -19,6 +19,8 @@ import android.content.res.TypedArray;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
+import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.service.XabberService;
@@ -240,6 +242,10 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            AndroidDevMetrics.initWith(this);
+        }
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
