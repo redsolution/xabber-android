@@ -71,7 +71,7 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceAdd;
 import com.xabber.android.ui.activity.ContactEditor;
 import com.xabber.android.ui.activity.ContactList;
@@ -757,7 +757,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.always
                 || (getActivity().getResources().getBoolean(R.bool.landscape)
                 && SettingsManager.chatsHideKeyboard() == SettingsManager.ChatsHideKeyboard.landscape)) {
-            ChatViewer.hideKeyboard(getActivity());
+            ChatActivity.hideKeyboard(getActivity());
         }
     }
 
@@ -980,7 +980,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                             JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
                                     clickedMessageItem.getResource()));
                     MessageManager.getInstance().openChat(account, occupantFullJid);
-                    startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+                    startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
 
                 } catch (UserJid.UserJidCreateException e) {
                     LogManager.exception(this, e);

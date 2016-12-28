@@ -280,9 +280,9 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
      */
     private void openChat(AccountJid account, UserJid user, String text) {
         if (text == null) {
-            startActivity(ChatViewer.createSendIntent(this, account, user, null));
+            startActivity(ChatActivity.createSendIntent(this, account, user, null));
         } else {
-            startActivity(ChatViewer.createSendIntent(this, account, user, text));
+            startActivity(ChatActivity.createSendIntent(this, account, user, text));
         }
         finish();
     }
@@ -520,7 +520,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 startActivity(ConferenceSelectActivity.createIntent(this));
                 return true;
             case R.id.action_chat_list:
-                startActivity(ChatViewer.createRecentChatsIntent(this));
+                startActivity(ChatActivity.createRecentChatsIntent(this));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -611,7 +611,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            startActivity(ChatViewer.createSpecificChatIntent(this,
+            startActivity(ChatActivity.createSpecificChatIntent(this,
                     abstractContact.getAccount(), abstractContact.getUser()));
             return;
         }
@@ -633,7 +633,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
             }
             case Intent.ACTION_SEND:
                 action = null;
-                startActivity(ChatViewer.createSendIntent(this,
+                startActivity(ChatActivity.createSendIntent(this,
                         abstractContact.getAccount(), abstractContact.getUser(), sendText));
                 finish();
                 break;
@@ -643,7 +643,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
                 break;
             }
             default:
-                startActivity(ChatViewer.createSpecificChatIntent(this,
+                startActivity(ChatActivity.createSpecificChatIntent(this,
                         abstractContact.getAccount(), abstractContact.getUser()));
                 break;
         }
@@ -675,7 +675,7 @@ public class ContactList extends ManagedActivity implements OnAccountChangedList
 
     private void createShortcut(AbstractContact abstractContact) {
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatViewer.createShortCutIntent(this,
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createShortCutIntent(this,
                 abstractContact.getAccount(), abstractContact.getUser()));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, abstractContact.getName());
         Bitmap bitmap;

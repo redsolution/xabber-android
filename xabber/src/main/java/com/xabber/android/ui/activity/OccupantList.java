@@ -168,6 +168,6 @@ public class OccupantList extends ManagedListActivity implements
         }
         mucPrivateChat.setIsPrivateMucChatAccepted(true);
 
-        startActivity(ChatViewer.createSpecificChatIntent(this, account, occupantFullJid));
+        startActivity(ChatActivity.createSpecificChatIntent(this, account, occupantFullJid));
     }
 }

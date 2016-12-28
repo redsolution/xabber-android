@@ -68,13 +68,13 @@ import java.util.List;
  *
  * @author alexander.ivanov
  */
-public class ChatViewer extends ManagedActivity implements OnContactChangedListener,
+public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatViewerAdapter.FinishUpdateListener,
         ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener {
 
-    private static final String LOG_TAG = ChatViewer.class.getSimpleName();
+    private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
     /**
      * Attention request.
@@ -150,13 +150,13 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
     }
 
     public static Intent createSpecificChatIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).setAccount(account).setUser(user).build();
+        Intent intent = new EntityIntentBuilder(context, ChatActivity.class).setAccount(account).setUser(user).build();
         intent.setAction(ACTION_SPECIFIC_CHAT);
         return intent;
     }
 
     public static Intent createRecentChatsIntent(Context context) {
-        Intent intent = new EntityIntentBuilder(context, ChatViewer.class).build();
+        Intent intent = new EntityIntentBuilder(context, ChatActivity.class).build();
         intent.setAction(ACTION_RECENT_CHATS);
         return intent;
     }
@@ -186,14 +186,14 @@ public class ChatViewer extends ManagedActivity implements OnContactChangedListe
      * @return
      */
     public static Intent createSendIntent(Context context, AccountJid account, UserJid user, String text) {
-        Intent intent = ChatViewer.createSpecificChatIntent(context, account, user);
+        Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
         intent.setAction(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, text);
         return intent;
     }
 
     public static Intent createAttentionRequestIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = ChatViewer.createClearTopIntent(context, account, user);
+        Intent intent = ChatActivity.createClearTopIntent(context, account, user);
         intent.setAction(ACTION_ATTENTION);
         return intent;
     }

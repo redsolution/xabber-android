@@ -18,7 +18,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -123,7 +123,7 @@ public class ConferenceAddFragment extends Fragment {
         final boolean join = true;
         MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
         try {
-            startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, UserJid.from(conferenceJid)));
+            startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, UserJid.from(conferenceJid)));
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }

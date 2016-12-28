@@ -21,7 +21,7 @@ import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.adapter.ChatComparator;
 import com.xabber.android.ui.adapter.contactlist.ChatListAdapter;
 import com.xabber.android.ui.color.ColorManager;
@@ -92,14 +92,14 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     public void onResume() {
         super.onResume();
 
-        ((ChatViewer)getActivity()).registerRecentChatsList(this);
+        ((ChatActivity)getActivity()).registerRecentChatsList(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        ((ChatViewer)getActivity()).unregisterRecentChatsList(this);
+        ((ChatActivity)getActivity()).unregisterRecentChatsList(this);
     }
 
     @Override

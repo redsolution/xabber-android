@@ -36,7 +36,7 @@ import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.TelephoneType;
@@ -689,7 +689,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     public void saveVCard() {
-        ChatViewer.hideKeyboard(getActivity());
+        ChatActivity.hideKeyboard(getActivity());
         updateVCardFromFields();
         enableProgressMode(getString(R.string.saving));
         VCardManager.getInstance().saveVCard(account, vCard);

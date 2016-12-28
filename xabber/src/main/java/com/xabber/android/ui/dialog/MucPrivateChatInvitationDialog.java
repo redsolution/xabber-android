@@ -10,7 +10,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 
 public class MucPrivateChatInvitationDialog extends BaseContactDialog {
 
@@ -50,7 +50,7 @@ public class MucPrivateChatInvitationDialog extends BaseContactDialog {
     protected void onPositiveButtonClick() {
         try {
             MessageManager.getInstance().acceptMucPrivateChat(getAccount(), getContact());
-            startActivity(ChatViewer.createSpecificChatIntent(Application.getInstance(), getAccount(), getContact()));
+            startActivity(ChatActivity.createSpecificChatIntent(Application.getInstance(), getAccount(), getContact()));
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }

@@ -42,7 +42,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountViewer;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceAdd;
 import com.xabber.android.ui.activity.ContactAdd;
 import com.xabber.android.ui.activity.ContactEditor;
@@ -88,7 +88,7 @@ public class ContextMenuHelper {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         MessageManager.getInstance().openChat(account, user);
-                        activity.startActivity(ChatViewer.createSpecificChatIntent(
+                        activity.startActivity(ChatActivity.createSpecificChatIntent(
                                 activity, account, user));
                         return true;
                     }

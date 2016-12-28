@@ -116,15 +116,15 @@
         <activity
             android:name=".ui.activity.OccupantList"
             android:label="@string/occupant_list"
-            android:parentActivityName=".ui.activity.ChatViewer">
+            android:parentActivityName=".ui.activity.ChatActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatViewer" />
+                android:value=".ui.activity.ChatActivity" />
         </activity>
         <activity
-            android:name=".ui.activity.ChatViewer"
+            android:name=".ui.activity.ChatActivity"
             android:label="@string/chat_viewer"
             android:launchMode="singleTop"
             android:parentActivityName=".ui.activity.ContactList"
@@ -200,22 +200,22 @@
         <activity
             android:name=".ui.preferences.ChatContactSettings"
             android:label="@string/chat_settings"
-            android:parentActivityName=".ui.activity.ChatViewer">
+            android:parentActivityName=".ui.activity.ChatActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatViewer" />
+                android:value=".ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactViewer"
             android:label="@string/contact_viewer"
-            android:parentActivityName=".ui.activity.ChatViewer">
+            android:parentActivityName=".ui.activity.ChatActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatViewer" />
+                android:value=".ui.activity.ChatActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -230,12 +230,12 @@
         <activity
             android:name=".ui.activity.ContactEditor"
             android:label="@string/contact_viewer"
-            android:parentActivityName=".ui.activity.ChatViewer">
+            android:parentActivityName=".ui.activity.ChatActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatViewer" />
+                android:value=".ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.AccountViewer"
@@ -258,22 +258,22 @@
         <activity
             android:name=".ui.activity.FingerprintViewer"
             android:label="@string/otr_verify_fingerprint"
-            android:parentActivityName=".ui.activity.ChatViewer">
+            android:parentActivityName=".ui.activity.ChatActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatViewer" />
+                android:value=".ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.QuestionViewer"
             android:label="@string/otr_verify_fingerprint"
-            android:parentActivityName=".ui.activity.ChatViewer">
+            android:parentActivityName=".ui.activity.ChatActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatViewer" />
+                android:value=".ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.preferences.PhraseList"

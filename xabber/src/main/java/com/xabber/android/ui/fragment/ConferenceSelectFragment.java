@@ -22,7 +22,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceAdd;
 import com.xabber.android.ui.activity.ConferenceFilterActivity;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
@@ -286,7 +286,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             return;
         }
 
-        ChatViewer.hideKeyboard(getActivity());
+        ChatActivity.hideKeyboard(getActivity());
 
         hostedConferencesAdapter.clear();
         roomsProgressBar.setVisibility(View.VISIBLE);
