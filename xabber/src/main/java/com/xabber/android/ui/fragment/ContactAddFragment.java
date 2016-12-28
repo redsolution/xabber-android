@@ -46,8 +46,8 @@ public class ContactAddFragment extends GroupEditorFragment
     public static ContactAddFragment newInstance(AccountJid account, UserJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_ACCOUNT, account);
-        args.putSerializable(ARG_USER, user);
+        args.putParcelable(ARG_ACCOUNT, account);
+        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,8 +65,8 @@ public class ContactAddFragment extends GroupEditorFragment
 
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
-            setAccount((AccountJid) savedInstanceState.getSerializable(SAVED_ACCOUNT));
-            setUser((UserJid) savedInstanceState.getSerializable(SAVED_USER));
+            setAccount((AccountJid) savedInstanceState.getParcelable(SAVED_ACCOUNT));
+            setUser((UserJid) savedInstanceState.getParcelable(SAVED_USER));
         } else {
             if (getAccount() == null || getUser() == null) {
                 name = null;
@@ -140,7 +140,7 @@ public class ContactAddFragment extends GroupEditorFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(SAVED_ACCOUNT, getAccount());
+        outState.putParcelable(SAVED_ACCOUNT, getAccount());
         outState.putString(SAVED_USER, userView.getText().toString());
         outState.putString(SAVED_NAME, nameView.getText().toString());
 

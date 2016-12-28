@@ -54,8 +54,8 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
         ChatExportDialogFragment fragment = new ChatExportDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
-        arguments.putSerializable(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -63,8 +63,8 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
-        user = (UserJid) args.getSerializable(ARGUMENT_USER);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
         View layout = getActivity().getLayoutInflater().inflate(R.layout.export_chat, null);
         nameView = (EditText) layout.findViewById(R.id.name);

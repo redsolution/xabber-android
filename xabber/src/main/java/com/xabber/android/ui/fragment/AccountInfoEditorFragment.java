@@ -147,7 +147,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         AccountInfoEditorFragment fragment = new AccountInfoEditorFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putString(ARGUMENT_VCARD, vCard);
         fragment.setArguments(arguments);
         return fragment;
@@ -167,7 +167,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
         String vCardString = args.getString(ARGUMENT_VCARD, null);
         if (vCardString != null) {
             try {

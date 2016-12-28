@@ -39,7 +39,7 @@ public class ConferenceAddFragment extends Fragment {
     public static ConferenceAddFragment newInstance(AccountJid account, EntityBareJid conference) {
         ConferenceAddFragment fragment = new ConferenceAddFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_ACCOUNT, account);
+        args.putParcelable(ARG_ACCOUNT, account);
         args.putSerializable(ARG_CONFERENCE_JID, conference);
         fragment.setArguments(args);
         return fragment;
@@ -50,7 +50,7 @@ public class ConferenceAddFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            account = (AccountJid) getArguments().getSerializable(ARG_ACCOUNT);
+            account = getArguments().getParcelable(ARG_ACCOUNT);
             conferenceJid = (EntityBareJid) getArguments().getSerializable(ARG_CONFERENCE_JID);
         }
     }

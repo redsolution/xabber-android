@@ -45,7 +45,7 @@ public class GroupRenameDialogFragment extends DialogFragment implements DialogI
         GroupRenameDialogFragment fragment = new GroupRenameDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putString(ARGUMENT_GROUP, group);
         fragment.setArguments(arguments);
         return fragment;
@@ -54,7 +54,7 @@ public class GroupRenameDialogFragment extends DialogFragment implements DialogI
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
         group = args.getString(ARGUMENT_GROUP, null);
 
         View layout = getActivity().getLayoutInflater().inflate(R.layout.group_name, null);

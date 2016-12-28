@@ -1,5 +1,7 @@
 package com.xabber.android.data.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.data.log.LogManager;
@@ -16,7 +18,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AccountJid implements Comparable<AccountJid>, Serializable {
+public class AccountJid implements Comparable<AccountJid>, Parcelable {
     private static final String LOG_TAG = AccountJid.class.getSimpleName();
 
     private final @NonNull FullJid fullJid;
@@ -78,4 +80,31 @@ public class AccountJid implements Comparable<AccountJid>, Serializable {
     public String toString() {
         return getFullJid().toString();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(fullJid.toString());
+    }
+
+    public static final Parcelable.Creator<AccountJid> CREATOR = new Parcelable.Creator<AccountJid>() {
+        @Override
+        public AccountJid createFromParcel(Parcel parcel) {
+            try {
+                return AccountJid.from(parcel.readString());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+                return null;
+            }
+        }
+
+        @Override
+        public AccountJid[] newArray(int size) {
+            return new AccountJid[size];
+        }
+    };
 }

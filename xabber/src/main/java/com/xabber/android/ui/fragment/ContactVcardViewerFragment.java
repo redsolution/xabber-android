@@ -80,8 +80,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
-        arguments.putSerializable(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -98,8 +98,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
-        user = (UserJid) args.getSerializable(ARGUMENT_USER);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
         vCard = null;
         vCardError = false;

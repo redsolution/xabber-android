@@ -29,8 +29,8 @@ public class BlockContactDialog extends DialogFragment implements DialogInterfac
         BlockContactDialog fragment = new BlockContactDialog();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
-        arguments.putSerializable(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -38,8 +38,8 @@ public class BlockContactDialog extends DialogFragment implements DialogInterfac
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
-        user = (UserJid) args.getSerializable(ARGUMENT_USER);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.block_contact_confirm),

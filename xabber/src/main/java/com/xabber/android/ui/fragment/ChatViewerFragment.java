@@ -150,8 +150,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         ChatViewerFragment fragment = new ChatViewerFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
-        arguments.putSerializable(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -173,8 +173,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
-        user = (UserJid) args.getSerializable(ARGUMENT_USER);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
     }
 
@@ -646,7 +646,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     @Override
     public void onResume() {
         super.onResume();
-        listener.registerChat(this);
         updateContact();
         restoreInputState();
         restoreScrollState();
@@ -733,7 +732,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         saveInputState();
         saveScrollState();
-        listener.unregisterChat(this);
     }
 
     public void saveInputState() {
@@ -1204,11 +1202,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     public interface ChatViewerFragmentListener {
         void onCloseChat();
-
         void onMessageSent();
-
-        void registerChat(ChatViewerFragment chat);
-
-        void unregisterChat(ChatViewerFragment chat);
     }
 }

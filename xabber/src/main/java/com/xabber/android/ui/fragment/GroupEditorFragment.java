@@ -58,8 +58,8 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     public static GroupEditorFragment newInstance(AccountJid account, UserJid user) {
         GroupEditorFragment fragment = new GroupEditorFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_ACCOUNT, account);
-        args.putSerializable(ARG_USER, user);
+        args.putParcelable(ARG_ACCOUNT, account);
+        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,8 +78,8 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            account = (AccountJid) getArguments().getSerializable(ARG_ACCOUNT);
-            user = (UserJid) getArguments().getSerializable(ARG_USER);
+            account = getArguments().getParcelable(ARG_ACCOUNT);
+            user = getArguments().getParcelable(ARG_USER);
         }
     }
 

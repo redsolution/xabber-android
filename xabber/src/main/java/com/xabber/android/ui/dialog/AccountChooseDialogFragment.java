@@ -30,7 +30,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
         AccountChooseDialogFragment fragment = new AccountChooseDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_USER, user);
         arguments.putString(ARGUMENT_TEXT, text);
         fragment.setArguments(arguments);
         return fragment;
@@ -39,7 +39,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        user = (UserJid) args.getSerializable(ARGUMENT_USER);
+        user = args.getParcelable(ARGUMENT_USER);
         text = args.getString(ARGUMENT_TEXT, null);
 
         adapter = new Adapter(getActivity());

@@ -24,7 +24,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
         UnblockAllContactsDialog fragment = new UnblockAllContactsDialog();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -32,7 +32,7 @@ public class UnblockAllContactsDialog extends DialogFragment implements DialogIn
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.unblock_all_contacts_confirm),

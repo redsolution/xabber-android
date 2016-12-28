@@ -89,27 +89,13 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        ((ChatActivity)getActivity()).registerRecentChatsList(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        ((ChatActivity)getActivity()).unregisterRecentChatsList(this);
-    }
-
-    @Override
     public void onDetach() {
         listener = null;
         super.onDetach();
     }
 
     public void updateChats() {
-        Application.getInstance().runInBackground(new Runnable() {
+        Thread thread = new Thread("Recent chats") {
             @Override
             public void run() {
                 Collection<AbstractChat> chats = MessageManager.getInstance().getChats();
@@ -141,7 +127,10 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                     }
                 });
             }
-        });
+        };
+        thread.setDaemon(true);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
     }
 
     @Override

@@ -38,7 +38,6 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -56,7 +55,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 
@@ -68,42 +66,35 @@ import java.util.List;
  */
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerAdapter.FinishUpdateListener,
         ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
-    /**
-     * Attention request.
-     */
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
     private static final String ACTION_RECENT_CHATS = "com.xabber.android.data.RECENT_CHATS";
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
     private static final String ACTION_SHORTCUT = "com.xabber.android.data.ACTION_SHORTCUT";
 
-    private static final String SAVED_INITIAL_ACCOUNT = "com.xabber.android.ui.activity.ChatViewer.SAVED_INITIAL_ACCOUNT";
-    private static final String SAVED_INITIAL_USER = "com.xabber.android.ui.activity.ChatViewer.SAVED_INITIAL_USER";
+    private static final String SAVE_SELECTED_PAGE = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_PAGE";
+    private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
+    private static final String SAVE_SELECTED_USER = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_USER";
+    private static final String SAVE_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatActivity.SAVE_EXIT_ON_SEND";
 
-    private static final String SAVED_IS_RECENT_CHATS_SELECTED = "com.xabber.android.ui.activity.ChatViewer.SAVED_IS_RECENT_CHATS_SELECTED";
-    private static final String SAVED_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatViewer.SAVED_SELECTED_ACCOUNT";
-    private static final String SAVED_SELECTED_USER = "com.xabber.android.ui.activity.ChatViewer.SAVED_SELECTED_USER";
-
-    private static final String SAVED_EXIT_ON_SEND = "com.xabber.android.ui.activity.ChatViewer.EXIT_ON_SEND";
     ChatViewerAdapter chatViewerAdapter;
     ViewPager viewPager;
-    Collection<ChatViewerFragment> registeredChats = new HashSet<>();
-    Collection<RecentChatFragment> recentChatFragments = new HashSet<>();
-    private boolean exitOnSend;
+
     private String extraText = null;
-    private BaseEntity initialChat = null;
-    private BaseEntity selectedChat = null;
 
     private StatusBarPainter statusBarPainter;
 
-    private boolean isRecentChatsSelected;
-
     private boolean isVisible;
+
+    private AccountJid account;
+    private UserJid user;
+    private int selectedPagePosition;
+    private boolean exitOnSend;
+
 
     public static void hideKeyboard(Activity activity) {
         // Check if no view has focus:
@@ -174,13 +165,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
      * Create intent to send message.
      * <p/>
      * Contact list will not be shown on when chat will be closed.
-     *
-     * @param context
-     * @param account
-     * @param user
      * @param text    if <code>null</code> then user will be able to send a number
      *                of messages. Else only one message can be send.
-     * @return
      */
     public static Intent createSendIntent(Context context, AccountJid account, UserJid user, String text) {
         Intent intent = ChatActivity.createSpecificChatIntent(context, account, user);
@@ -225,15 +211,15 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
 
     private void initChats() {
-        if (initialChat != null) {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), initialChat, this);
+        if (account != null && user != null) {
+            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), account, user);
         } else {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this);
+            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager());
         }
 
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(chatViewerAdapter);
-        viewPager.setOnPageChangeListener(this);
+        viewPager.addOnPageChangeListener(this);
 
         if (SettingsManager.chatsShowBackground()) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
@@ -249,12 +235,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void getInitialChatFromIntent() {
         Intent intent = getIntent();
-        AccountJid account = getAccount(intent);
-        UserJid user = getUser(intent);
-        if (account != null && user != null) {
-            initialChat = MessageManager.getInstance()
-                    .getOrCreateChat(getAccount(intent), getUser(intent));
-        }
+        account = getAccount(intent);
+        user = getUser(intent);
     }
 
     private void getSelectedPageDataFromIntent() {
@@ -266,17 +248,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         switch (intent.getAction()) {
             case ACTION_RECENT_CHATS:
-                isRecentChatsSelected = true;
-                selectedChat = null;
+                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS;
                 break;
 
             case ACTION_SPECIFIC_CHAT:
             case ACTION_ATTENTION:
             case Intent.ACTION_SEND:
             case ACTION_SHORTCUT:
-                isRecentChatsSelected = false;
-                selectedChat = MessageManager.getInstance()
-                        .getOrCreateChat(getAccount(intent), getUser(intent));
+                selectedPagePosition = ChatViewerAdapter.PAGE_POSITION_CHAT;
                 break;
         }
     }
@@ -299,22 +278,10 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void restoreInstanceState(Bundle savedInstanceState) {
-        isRecentChatsSelected = savedInstanceState.getBoolean(SAVED_IS_RECENT_CHATS_SELECTED);
-        if (isRecentChatsSelected) {
-            selectedChat = null;
-        } else {
-            selectedChat = MessageManager.getInstance().getOrCreateChat(
-                    (AccountJid) savedInstanceState.getSerializable(SAVED_SELECTED_ACCOUNT),
-                    (UserJid) savedInstanceState.getSerializable(SAVED_SELECTED_USER));
-        }
-        exitOnSend = savedInstanceState.getBoolean(SAVED_EXIT_ON_SEND);
-
-        AccountJid initialAccount = (AccountJid) savedInstanceState.getSerializable(SAVED_INITIAL_ACCOUNT);
-        UserJid initialUser = (UserJid) savedInstanceState.getSerializable(SAVED_INITIAL_USER);
-
-        if (initialAccount != null && initialUser != null) {
-            initialChat = MessageManager.getInstance().getOrCreateChat(initialAccount, initialUser);
-        }
+        account = savedInstanceState.getParcelable(SAVE_SELECTED_ACCOUNT);
+        user = savedInstanceState.getParcelable(SAVE_SELECTED_USER);
+        selectedPagePosition = savedInstanceState.getInt(SAVE_SELECTED_PAGE);
+        exitOnSend = savedInstanceState.getBoolean(SAVE_EXIT_ON_SEND);
     }
 
     @Override
@@ -327,13 +294,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
 
-        chatViewerAdapter.updateChats();
         selectPage();
 
         Intent intent = getIntent();
 
         if (hasAttention(intent)) {
-            AttentionManager.getInstance().removeAccountNotifications(selectedChat);
+            AttentionManager.getInstance().removeAccountNotifications(account, user);
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -347,27 +313,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void selectPage() {
-        if (isRecentChatsSelected) {
-            selectRecentChatsPage();
-        } else {
-            selectChatPage(selectedChat, false);
-        }
+        selectPage(selectedPagePosition, false);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SAVED_IS_RECENT_CHATS_SELECTED, isRecentChatsSelected);
-        if (!isRecentChatsSelected && selectedChat != null) {
-            outState.putSerializable(SAVED_SELECTED_ACCOUNT, selectedChat.getAccount());
-            outState.putSerializable(SAVED_SELECTED_USER, selectedChat.getUser());
-        }
-        outState.putBoolean(SAVED_EXIT_ON_SEND, exitOnSend);
-
-        if (initialChat != null) {
-            outState.putSerializable(SAVED_INITIAL_ACCOUNT, initialChat.getAccount());
-            outState.putSerializable(SAVED_INITIAL_USER, initialChat.getUser());
-        }
+        outState.putInt(SAVE_SELECTED_PAGE, selectedPagePosition);
+        outState.putParcelable(SAVE_SELECTED_ACCOUNT, account);
+        outState.putParcelable(SAVE_SELECTED_USER, user);
+        outState.putBoolean(SAVE_EXIT_ON_SEND, exitOnSend);
     }
 
     @Override
@@ -382,11 +337,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void selectChatPage(BaseEntity chat, boolean smoothScroll) {
-        selectPage(chatViewerAdapter.getPageNumber(chat), smoothScroll);
-    }
-
-    private void selectRecentChatsPage() {
-        selectPage(chatViewerAdapter.getPageNumber(null), false);
+        chatViewerAdapter.selectChat(chat.getAccount(), chat.getUser());
+        selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
     }
 
     private void selectPage(int position, boolean smoothScroll) {
@@ -396,76 +348,63 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMessageEvent(NewMessageEvent event) {
-        if (chatViewerAdapter.updateChats()) {
-            selectPage();
-        } else {
-            updateRegisteredRecentChatsFragments();
-            updateStatusBar();
-        }
+        updateRecentChats();
     }
 
     @Override
     public void onContactsChanged(Collection<BaseEntity> entities) {
-        for (BaseEntity contact : entities) {
-            for (ChatViewerFragment chat : registeredChats) {
-                if (chat.isEqual(contact)) {
-                    chat.updateContact();
-                }
-            }
-        }
-
-        updateRegisteredRecentChatsFragments();
-        updateStatusBar();
+        updateChat();
+        updateRecentChats();
     }
 
     @Override
     public void onAccountsChanged(Collection<AccountJid> accounts) {
-        updateRegisteredChats();
-        updateRegisteredRecentChatsFragments();
+        updateChat();
+        updateRecentChats();
         updateStatusBar();
     }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        hideKeyboard(this);
     }
 
     @Override
     public void onPageSelected(int position) {
-        hideKeyboard(this);
+        selectedPagePosition = position;
 
-        selectedChat = chatViewerAdapter.getChatByPageNumber(position);
-        isRecentChatsSelected = selectedChat == null;
-
-        if (isRecentChatsSelected) {
+        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS) {
             MessageManager.getInstance().removeVisibleChat();
         } else {
             if (isVisible) {
-                MessageManager.getInstance().setVisibleChat(selectedChat);
+                MessageManager.getInstance()
+                        .setVisibleChat(MessageManager.getInstance().getOrCreateChat(account, user));
+                NotificationManager.getInstance().removeMessageNotification(account, user);
             }
-
-            NotificationManager.getInstance().removeMessageNotification(selectedChat.getAccount(), selectedChat.getUser());
         }
 
         updateStatusBar();
     }
 
     private void updateStatusBar() {
-        if (isRecentChatsSelected) {
+        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS
+                || account == null) {
             statusBarPainter.updateWithDefaultColor();
         } else {
-            statusBarPainter.updateWithAccountName(selectedChat.getAccount());
+            statusBarPainter.updateWithAccountName(account);
         }
     }
 
-    private void updateRegisteredChats() {
-        for (ChatViewerFragment chat : registeredChats) {
-            chat.updateContact();
+    private void updateChat() {
+        ChatViewerFragment chatFragment = chatViewerAdapter.getChatFragment();
+        if (chatFragment != null) {
+            chatFragment.updateContact();
         }
     }
 
-    private void updateRegisteredRecentChatsFragments() {
-        for (RecentChatFragment recentChatFragment : recentChatFragments) {
+    private void updateRecentChats() {
+        RecentChatFragment recentChatFragment = chatViewerAdapter.getRecentChatFragment();
+        if (recentChatFragment != null) {
             recentChatFragment.updateChats();
         }
     }
@@ -474,53 +413,35 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public void onPageScrollStateChanged(int state) {
     }
 
-    public void registerRecentChatsList(RecentChatFragment recentChatFragment) {
-        recentChatFragments.add(recentChatFragment);
-    }
-
-    public void unregisterRecentChatsList(RecentChatFragment recentChatFragment) {
-        recentChatFragments.remove(recentChatFragment);
-    }
-
-    @Override
-    public void onChatViewAdapterFinishUpdate() {
-        insertExtraText();
-    }
+//    @Override
+//    public void onChatViewAdapterFinishUpdate() {
+//        insertExtraText();
+//    }
 
     private void insertExtraText() {
-
-        if (extraText == null) {
-            return;
-        }
-
-        boolean isExtraTextInserted = false;
-
-        for (ChatViewerFragment chat : registeredChats) {
-            if (chat.isEqual(selectedChat)) {
-                chat.setInputText(extraText);
-                isExtraTextInserted = true;
-            }
-        }
-
-        if (isExtraTextInserted) {
-            extraText = null;
-        }
+//
+//        if (extraText == null) {
+//            return;
+//        }
+//
+//        boolean isExtraTextInserted = false;
+//
+//        for (ChatViewerFragment chat : registeredChats) {
+//            if (chat.isEqual(currentChat)) {
+//                chat.setInputText(extraText);
+//                isExtraTextInserted = true;
+//            }
+//        }
+//
+//        if (isExtraTextInserted) {
+//            extraText = null;
+//        }
     }
 
     @Override
     public void onChatSelected(BaseEntity chat) {
-        AbstractChat chat1 = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
-
-        if (!chat1.isActive()) {
-            chat1.openChat();
-            onNewMessageEvent(null);
-        }
-
+        MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
         selectChatPage(chat, true);
-    }
-
-    public ChatViewerAdapter getChatViewerAdapter() {
-        return chatViewerAdapter;
     }
 
     @Override
@@ -533,16 +454,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (exitOnSend) {
             close();
         }
-    }
-
-    @Override
-    public void registerChat(ChatViewerFragment chat) {
-        registeredChats.add(chat);
-    }
-
-    @Override
-    public void unregisterChat(ChatViewerFragment chat) {
-        registeredChats.remove(chat);
     }
 
     private void close() {
@@ -558,16 +469,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     public void onBlockedListChanged(AccountJid account) {
         // if chat of blocked contact is currently opened, it should be closed
-        if (selectedChat != null) {
-            final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
-            if (blockedContacts.contains(selectedChat.getUser())) {
-                close();
-            }
+        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        if (blockedContacts.contains(user)) {
+            close();
+        }
 
-            final List<UserJid> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
-            if (blockedMucContacts.contains(selectedChat.getUser())) {
-                close();
-            }
+        final List<UserJid> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
+        if (blockedMucContacts.contains(user)) {
+            close();
         }
     }
 }

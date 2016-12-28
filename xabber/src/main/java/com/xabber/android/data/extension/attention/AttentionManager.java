@@ -213,4 +213,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         attentionRequestProvider.remove(chat.getAccount(), chat.getUser());
     }
 
+    public void removeAccountNotifications(AccountJid accountJid, UserJid userJid) {
+        attentionRequestProvider.remove(accountJid, userJid);
+    }
+
 }

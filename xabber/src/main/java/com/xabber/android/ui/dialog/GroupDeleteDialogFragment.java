@@ -27,7 +27,7 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
         GroupDeleteDialogFragment fragment = new GroupDeleteDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putString(ARGUMENT_GROUP, group);
         fragment.setArguments(arguments);
         return fragment;
@@ -36,7 +36,7 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
         group = args.getString(ARGUMENT_GROUP, null);
 
         return new AlertDialog.Builder(getActivity())

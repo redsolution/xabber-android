@@ -40,7 +40,7 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
     public static ConferenceInfoFragment newInstance(AccountJid account, EntityBareJid room) {
         ConferenceInfoFragment fragment = new ConferenceInfoFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARGUMENT_ACCOUNT, account);
+        args.putParcelable(ARGUMENT_ACCOUNT, account);
         args.putSerializable(ARGUMENT_ROOM, room);
         fragment.setArguments(args);
         return fragment;
@@ -54,7 +54,7 @@ public class ConferenceInfoFragment extends Fragment implements MUCManager.RoomI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            account = (AccountJid) getArguments().getSerializable(ARGUMENT_ACCOUNT);
+            account = getArguments().getParcelable(ARGUMENT_ACCOUNT);
             room = (EntityBareJid) getArguments().getSerializable(ARGUMENT_ROOM);
         }
 

@@ -1,6 +1,8 @@
 package com.xabber.android.data.entity;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -13,12 +15,11 @@ import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UserJid implements Comparable<UserJid>, Serializable {
+public class UserJid implements Comparable<UserJid>, Parcelable {
 
     private static final String LOG_TAG = UserJid.class.getSimpleName();
 
@@ -111,4 +112,31 @@ public class UserJid implements Comparable<UserJid>, Serializable {
     public String toString() {
         return getJid().toString();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(jid.toString());
+    }
+
+    public static final Parcelable.Creator<UserJid> CREATOR = new Parcelable.Creator<UserJid>() {
+        @Override
+        public UserJid createFromParcel(Parcel parcel) {
+            try {
+                return UserJid.from(parcel.readString());
+            } catch (UserJidCreateException e) {
+                LogManager.exception(this, e);
+                return null;
+            }
+        }
+
+        @Override
+        public UserJid[] newArray(int size) {
+            return new UserJid[size];
+        }
+    };
 }

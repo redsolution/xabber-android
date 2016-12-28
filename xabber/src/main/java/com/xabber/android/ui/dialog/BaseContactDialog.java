@@ -41,8 +41,8 @@ public abstract class BaseContactDialog extends DialogFragment
 
     protected static void setArguments(AccountJid account, UserJid contact, DialogFragment fragment) {
         Bundle arguments = new Bundle();
-        arguments.putSerializable(ARGUMENT_ACCOUNT, account);
-        arguments.putSerializable(ARGUMENT_CONTACT, contact);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_CONTACT, contact);
         fragment.setArguments(arguments);
     }
 
@@ -65,8 +65,8 @@ public abstract class BaseContactDialog extends DialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = (AccountJid) args.getSerializable(ARGUMENT_ACCOUNT);
-        contact = (UserJid) args.getSerializable(ARGUMENT_CONTACT);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        contact = args.getParcelable(ARGUMENT_CONTACT);
 
         accountPainter = ColorManager.getInstance().getAccountPainter();
 

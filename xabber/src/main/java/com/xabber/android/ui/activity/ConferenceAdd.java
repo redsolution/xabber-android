@@ -78,7 +78,7 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
         Intent intent = getIntent();
 
         if (savedInstanceState != null) {
-            account = (AccountJid) savedInstanceState.getSerializable(SAVED_ACCOUNT);
+            account = savedInstanceState.getParcelable(SAVED_ACCOUNT);
             room = (EntityBareJid) savedInstanceState.getSerializable(SAVED_ROOM);
         } else {
             account = getAccount(intent);
@@ -100,7 +100,7 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(SAVED_ACCOUNT, account);
+        outState.putParcelable(SAVED_ACCOUNT, account);
         outState.putSerializable(SAVED_ROOM, room);
     }
 
