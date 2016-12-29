@@ -102,7 +102,7 @@ import github.ankushsachdeva.emojicon.emoji.Emojicon;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
+public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
         ChatMessageAdapter.Listener {
@@ -151,8 +151,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
 
-    public static ChatViewerFragment newInstance(AccountJid account, UserJid user) {
-        ChatViewerFragment fragment = new ChatViewerFragment();
+    public static ChatFragment newInstance(AccountJid account, UserJid user) {
+        ChatFragment fragment = new ChatFragment();
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARGUMENT_ACCOUNT, account);
@@ -376,7 +376,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void afterTextChanged(Editable text) {
-                ChatViewerFragment.this.afterTextChanged(text);
+                ChatFragment.this.afterTextChanged(text);
             }
 
         });

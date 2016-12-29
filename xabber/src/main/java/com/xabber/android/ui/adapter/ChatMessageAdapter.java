@@ -46,7 +46,7 @@ import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
@@ -88,11 +88,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private int prevItemCount;
     private long lastUpdateTimeMillis;
 
-    public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatViewerFragment chatViewerFragment) {
+    public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatFragment chatFragment) {
         super(context, messageItems, true);
 
         this.context = context;
-        this.messageClickListener = chatViewerFragment;
+        this.messageClickListener = chatFragment;
 
         account = chat.getAccount();
         user = chat.getUser();
@@ -103,7 +103,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
         appearanceStyle = SettingsManager.chatsAppearanceStyle();
 
-        this.listener = chatViewerFragment;
+        this.listener = chatFragment;
 
         prevItemCount = getItemCount();
     }

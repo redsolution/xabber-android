@@ -9,7 +9,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
 public class ChatViewerAdapter extends FragmentPagerAdapter {
@@ -22,7 +22,7 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
     @Nullable
     private RecentChatFragment recentChatFragment;
     @Nullable
-    private ChatViewerFragment chatViewerFragment;
+    private ChatFragment chatFragment;
 
     private AccountJid accountJid;
     private UserJid userJid;
@@ -49,9 +49,9 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
 
         setChat(accountJid, userJid);
 
-        if (chatViewerFragment != null) {
-            fragmentManager.beginTransaction().remove(chatViewerFragment).commit();
-            chatViewerFragment = null;
+        if (chatFragment != null) {
+            fragmentManager.beginTransaction().remove(chatFragment).commit();
+            chatFragment = null;
         }
 
         notifyDataSetChanged();
@@ -79,7 +79,7 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getItemPosition(Object object) {
-        if (object instanceof ChatViewerFragment) {
+        if (object instanceof ChatFragment) {
             return POSITION_NONE;
         }
 
@@ -94,12 +94,12 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
         return recentChatFragment;
     }
 
-    private ChatViewerFragment getOrCreateChatFragment() {
-        if (chatViewerFragment == null) {
-            chatViewerFragment = ChatViewerFragment.newInstance(accountJid, userJid);
+    private ChatFragment getOrCreateChatFragment() {
+        if (chatFragment == null) {
+            chatFragment = ChatFragment.newInstance(accountJid, userJid);
         }
 
-        return chatViewerFragment;
+        return chatFragment;
     }
 
     @Nullable
@@ -108,7 +108,7 @@ public class ChatViewerAdapter extends FragmentPagerAdapter {
     }
 
     @Nullable
-    public ChatViewerFragment getChatFragment() {
-        return chatViewerFragment;
+    public ChatFragment getChatFragment() {
+        return chatFragment;
     }
 }

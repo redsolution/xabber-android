@@ -46,7 +46,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
-import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -66,7 +66,7 @@ import java.util.List;
  */
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
-        ChatViewerFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
+        ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
         RecentChatFragment.Listener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
@@ -396,7 +396,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateChat() {
-        ChatViewerFragment chatFragment = chatViewerAdapter.getChatFragment();
+        ChatFragment chatFragment = chatViewerAdapter.getChatFragment();
         if (chatFragment != null) {
             chatFragment.updateContact();
         }
