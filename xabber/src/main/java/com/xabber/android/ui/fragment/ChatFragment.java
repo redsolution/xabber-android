@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.MessageItem;
@@ -62,6 +61,7 @@ import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.MessageUpdateEvent;
@@ -109,6 +109,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
+
+    private static final String SAVE_ACCOUNT = "com.xabber.android.ui.fragment.ARGUMENT_ACCOUNT";
+    private static final String SAVE_USER = "com.xabber.android.ui.fragment.ARGUMENT_USER";
 
     private final long STOP_TYPING_DELAY = 4000; // in ms
 
@@ -167,6 +170,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
         try {
             listener = (ChatViewerFragmentListener) activity;
+            listener.registerChatFragment(this);
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement ChatViewerFragmentListener");
@@ -180,6 +184,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         Bundle args = getArguments();
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
+
+        if (savedInstanceState != null) {
+            account = savedInstanceState.getParcelable(SAVE_ACCOUNT);
+            user = savedInstanceState.getParcelable(SAVE_USER);
+        }
 
         LogManager.i(this, "onCreate " + user);
     }
@@ -290,6 +299,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
         realmRecyclerView.setAdapter(chatMessageAdapter);
 
+        restoreInputState();
+
         updateContact();
     }
 
@@ -332,6 +343,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(SAVE_ACCOUNT, account);
+        outState.putParcelable(SAVE_USER, user);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         chatMessageAdapter.release();
@@ -340,7 +359,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
+        if (listener != null) {
+            listener.unregisterChatFragment();
+            listener = null;
+        }
     }
 
 
@@ -1223,5 +1245,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public interface ChatViewerFragmentListener {
         void onCloseChat();
         void onMessageSent();
+
+        void registerChatFragment(ChatFragment chatFragment);
+
+        void unregisterChatFragment();
     }
 }

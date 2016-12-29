@@ -67,7 +67,7 @@ import java.util.List;
 public class ChatActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener, ViewPager.OnPageChangeListener,
         ChatFragment.ChatViewerFragmentListener, OnBlockedListChangedListener,
-        RecentChatFragment.Listener {
+        RecentChatFragment.Listener, ChatViewerAdapter.FinishUpdateListener {
 
     private static final String LOG_TAG = ChatActivity.class.getSimpleName();
 
@@ -94,6 +94,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private UserJid user;
     private int selectedPagePosition;
     private boolean exitOnSend;
+
+    @Nullable
+    private ChatFragment chatFragment;
+    @Nullable
+    private RecentChatFragment recentChatFragment;
 
 
     public static void hideKeyboard(Activity activity) {
@@ -212,9 +217,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     private void initChats() {
         if (account != null && user != null) {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), account, user);
+            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this, account, user);
         } else {
-            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager());
+            chatViewerAdapter = new ChatViewerAdapter(getFragmentManager(), this);
         }
 
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -299,7 +304,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent intent = getIntent();
 
         if (hasAttention(intent)) {
-            AttentionManager.getInstance().removeAccountNotifications(account, user);
+            AttentionManager.getInstance().removeAccountNotifications(chatFragment.getAccount(), chatFragment.getUser());
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -337,7 +342,15 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void selectChatPage(BaseEntity chat, boolean smoothScroll) {
-        chatViewerAdapter.selectChat(chat.getAccount(), chat.getUser());
+        account = chat.getAccount();
+        user = chat.getUser();
+
+        if (chatFragment == null) {
+            chatViewerAdapter.selectChat(chat.getAccount(), chat.getUser());
+        } else {
+            chatFragment.saveInputState();
+            chatFragment.setChat(chat.getAccount(), chat.getUser());
+        }
         selectPage(ChatViewerAdapter.PAGE_POSITION_CHAT, smoothScroll);
     }
 
@@ -377,9 +390,9 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
             MessageManager.getInstance().removeVisibleChat();
         } else {
             if (isVisible) {
-                MessageManager.getInstance()
-                        .setVisibleChat(MessageManager.getInstance().getOrCreateChat(account, user));
-                NotificationManager.getInstance().removeMessageNotification(account, user);
+                MessageManager.getInstance().setVisibleChat(MessageManager.getInstance().getOrCreateChat(account, user));
+                NotificationManager.getInstance()
+                        .removeMessageNotification(account, user);
             }
         }
 
@@ -387,8 +400,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateStatusBar() {
-        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS
-                || account == null) {
+        if (selectedPagePosition == ChatViewerAdapter.PAGE_POSITION_RECENT_CHATS || account == null) {
             statusBarPainter.updateWithDefaultColor();
         } else {
             statusBarPainter.updateWithAccountName(account);
@@ -396,14 +408,12 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     private void updateChat() {
-        ChatFragment chatFragment = chatViewerAdapter.getChatFragment();
         if (chatFragment != null) {
             chatFragment.updateContact();
         }
     }
 
     private void updateRecentChats() {
-        RecentChatFragment recentChatFragment = chatViewerAdapter.getRecentChatFragment();
         if (recentChatFragment != null) {
             recentChatFragment.updateChats();
         }
@@ -413,35 +423,36 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     public void onPageScrollStateChanged(int state) {
     }
 
-//    @Override
-//    public void onChatViewAdapterFinishUpdate() {
-//        insertExtraText();
-//    }
+    @Override
+    public void onChatViewAdapterFinishUpdate() {
+        insertExtraText();
+    }
 
     private void insertExtraText() {
-//
-//        if (extraText == null) {
-//            return;
-//        }
-//
-//        boolean isExtraTextInserted = false;
-//
-//        for (ChatViewerFragment chat : registeredChats) {
-//            if (chat.isEqual(currentChat)) {
-//                chat.setInputText(extraText);
-//                isExtraTextInserted = true;
-//            }
-//        }
-//
-//        if (isExtraTextInserted) {
-//            extraText = null;
-//        }
+        if (extraText == null) {
+            return;
+        }
+
+        if (chatFragment != null) {
+            chatFragment.setInputText(extraText);
+            extraText = null;
+        }
     }
 
     @Override
     public void onChatSelected(BaseEntity chat) {
         MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
         selectChatPage(chat, true);
+    }
+
+    @Override
+    public void registerRecentChatFragment(RecentChatFragment recentChatFragment) {
+        this.recentChatFragment = recentChatFragment;
+    }
+
+    @Override
+    public void unregisterRecentChatFragment() {
+        this.recentChatFragment = null;
     }
 
     @Override
@@ -454,6 +465,16 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (exitOnSend) {
             close();
         }
+    }
+
+    @Override
+    public void registerChatFragment(ChatFragment chatFragment) {
+        this.chatFragment = chatFragment;
+    }
+
+    @Override
+    public void unregisterChatFragment() {
+        this.chatFragment = null;
     }
 
     private void close() {

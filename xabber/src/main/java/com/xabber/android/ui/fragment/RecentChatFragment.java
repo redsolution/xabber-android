@@ -39,6 +39,8 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
 
     public interface Listener {
         void onChatSelected(BaseEntity entity);
+        void registerRecentChatFragment(RecentChatFragment recentChatFragment);
+        void unregisterRecentChatFragment();
     }
 
     /**
@@ -57,6 +59,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
         super.onAttach(activity);
 
         listener = (Listener) activity;
+        listener.registerRecentChatFragment(this);
     }
 
     @Override
@@ -90,7 +93,10 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
 
     @Override
     public void onDetach() {
-        listener = null;
+        if (listener != null) {
+            listener.unregisterRecentChatFragment();
+            listener = null;
+        }
         super.onDetach();
     }
 
