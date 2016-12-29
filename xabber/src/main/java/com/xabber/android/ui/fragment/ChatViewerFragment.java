@@ -69,7 +69,6 @@ import com.xabber.android.data.message.NewIncomingMessageEvent;
 import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceAdd;
@@ -111,34 +110,40 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
 
+    private final long STOP_TYPING_DELAY = 4000; // in ms
+
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
     private static final int PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS = 25;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 26;
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
-    boolean isInputEmpty = true;
-    private EditText inputView;
-    private ChatMessageAdapter chatMessageAdapter;
-    private boolean skipOnTextChanges = false;
+
     private AccountJid account;
     private UserJid user;
+
+    private Toolbar toolbar;
+    private View contactTitleView;
+    private EditText inputView;
     private ImageButton sendButton;
     private ImageButton securityButton;
-    private Toolbar toolbar;
-
-    private ChatViewerFragmentListener listener;
-    private Animation shakeAnimation = null;
-    private RecyclerView realmRecyclerView;
-    private View contactTitleView;
-    private AbstractContact abstractContact;
-    private LinearLayoutManager layoutManager;
-    private MessageItem clickedMessageItem;
-
-    private Timer stopTypingTimer = new Timer();
-    private final long STOP_TYPING_DELAY = 4000; // in ms
     private ImageButton attachButton;
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
+
+    private RecyclerView realmRecyclerView;
+    private ChatMessageAdapter chatMessageAdapter;
+    private LinearLayoutManager layoutManager;
+
+    boolean isInputEmpty = true;
+    private boolean skipOnTextChanges = false;
+
+
+    private ChatViewerFragmentListener listener;
+    private Animation shakeAnimation = null;
+
+    private MessageItem clickedMessageItem;
+
+    private Timer stopTypingTimer = new Timer();
 
     private boolean isRemoteHistoryRequested = false;
     private int firstRemoteSyncedItemPosition = RecyclerView.NO_POSITION;
@@ -176,30 +181,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-
-        if (!isRemoteHistoryRequested) {
-            MamManager.getInstance().requestLastHistory(abstractChat);
-        }
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        chatMessageAdapter.release();
+        LogManager.i(this, "onCreate " + user);
     }
 
     @Override
@@ -208,10 +190,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-
         contactTitleView = view.findViewById(R.id.contact_title);
-
-        abstractContact = RosterManager.getInstance().getBestContact(account, user);
         contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
@@ -231,26 +210,41 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         sendButton = (ImageButton) view.findViewById(R.id.button_send_message);
         sendButton.setColorFilter(ColorManager.getInstance().getAccountPainter().getGreyMain());
 
-        AbstractChat abstractChat = getChat();
+        attachButton = (ImageButton) view.findViewById(R.id.button_attach);
+        attachButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAttachButtonPressed();
+            }
+        });
 
-        // TODO strange situation: there are chat null pointer issues
-        // TODO There should be no chat viewer on null chat
-        if (abstractChat == null) {
-            return view;
-        }
+
+        lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
+        previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
+
 
         securityButton = (ImageButton) view.findViewById(R.id.button_security);
+        securityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSecurityMenu();
+            }
+        });
 
-        if (abstractChat instanceof RegularChat) {
-            securityButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showSecurityMenu();
+        // to avoid strange bug on some 4.x androids
+        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
+
+        view.findViewById(R.id.button_send_message).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        sendMessage();
+                    }
                 }
-            });
-        } else {
-            securityButton.setVisibility(View.GONE);
-        }
+        );
+
+        setUpInputView(view);
+        setUpEmoji(view);
 
         realmRecyclerView = (RecyclerView) view.findViewById(R.id.chat_messages_recycler_view);
 
@@ -259,11 +253,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
         layoutManager.setStackFromEnd(true);
 
-        messageItems = abstractChat.getMessages();
-        syncInfoResults = abstractChat.getSyncInfo();
-
-        chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, getChat(), this);
-        realmRecyclerView.setAdapter(chatMessageAdapter);
 
         realmRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -280,20 +269,84 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
             }
         });
 
-        // to avoid strange bug on some 4.x androids
-        view.findViewById(R.id.input_layout).setBackgroundColor(ColorManager.getInstance().getChatInputBackgroundColor());
+        setChat(account, user);
 
+        return view;
+    }
+
+    public void setChat(AccountJid accountJid, UserJid userJid) {
+        this.account = accountJid;
+        this.user = userJid;
+
+        AbstractChat abstractChat = getChat();
+
+        if (!(abstractChat instanceof RegularChat)) {
+            securityButton.setVisibility(View.GONE);
+        }
+
+        messageItems = abstractChat.getMessages();
+        syncInfoResults = abstractChat.getSyncInfo();
+
+        chatMessageAdapter = new ChatMessageAdapter(getActivity(), messageItems, abstractChat, this);
+        realmRecyclerView.setAdapter(chatMessageAdapter);
+
+        updateContact();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+
+        if (!isRemoteHistoryRequested) {
+            MamManager.getInstance().requestLastHistory(getChat());
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LogManager.i(this, "onResume");
+
+        updateContact();
+        restoreInputState();
+        restoreScrollState();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        ChatStateManager.getInstance().onPaused(account, user);
+
+        saveInputState();
+        saveScrollState();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        chatMessageAdapter.release();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
+
+
+    private void setUpInputView(View view) {
         inputView = (EditText) view.findViewById(R.id.chat_input);
-
-        view.findViewById(R.id.button_send_message).setOnClickListener(
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        sendMessage();
-                    }
-
-                });
 
         inputView.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -323,32 +376,37 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
             @Override
             public void afterTextChanged(Editable text) {
-                setUpInputViewButtons();
-
-                if (skipOnTextChanges) {
-                    return;
-                }
-
-                ChatStateManager.getInstance().onComposing(account, user, text);
-
-                stopTypingTimer = new Timer();
-                stopTypingTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Application.getInstance().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ChatStateManager.getInstance().onPaused(account, user);
-                            }
-                        });
-                    }
-
-                }, STOP_TYPING_DELAY);
+                ChatViewerFragment.this.afterTextChanged(text);
             }
 
         });
+    }
 
+    private void afterTextChanged(Editable text) {
+        setUpInputViewButtons();
 
+        if (skipOnTextChanges) {
+            return;
+        }
+
+        ChatStateManager.getInstance().onComposing(account, user, text);
+
+        stopTypingTimer = new Timer();
+        stopTypingTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChatStateManager.getInstance().onPaused(account, user);
+                    }
+                });
+            }
+
+        }, STOP_TYPING_DELAY);
+    }
+
+    private void setUpEmoji(View view) {
         final ImageButton emojiButton = (ImageButton) view.findViewById(R.id.button_emoticon);
         final View rootView = view.findViewById(R.id.root_view);
 
@@ -447,20 +505,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
                 }
             }
         });
-
-        attachButton = (ImageButton) view.findViewById(R.id.button_attach);
-        attachButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onAttachButtonPressed();
-            }
-        });
-
-
-        lastHistoryProgressBar = view.findViewById(R.id.chat_last_history_progress_bar);
-        previousHistoryProgressBar = view.findViewById(R.id.chat_previous_history_progress_bar);
-
-        return view;
     }
 
     public void saveScrollState() {
@@ -508,7 +552,7 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
 
     @Nullable
     private AbstractChat getChat() {
-        return MessageManager.getInstance().getChat(account, user);
+        return MessageManager.getInstance().getOrCreateChat(account, user);
     }
 
 
@@ -643,21 +687,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         iconToBeChanged.setImageResource(drawableResourceId);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateContact();
-        restoreInputState();
-        restoreScrollState();
-    }
-
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
-
     private void showSecurityMenu() {
         PopupMenu popup = new PopupMenu(getActivity(), securityButton);
         popup.inflate(R.menu.security);
@@ -722,16 +751,6 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
         if (!inputView.getText().toString().isEmpty()) {
             inputView.requestFocus();
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        ChatStateManager.getInstance().onPaused(account, user);
-
-        saveInputState();
-        saveScrollState();
     }
 
     public void saveInputState() {
@@ -813,7 +832,8 @@ public class ChatViewerFragment extends Fragment implements PopupMenu.OnMenuItem
     }
 
     public void updateContact() {
-        ContactTitleInflater.updateTitle(contactTitleView, getActivity(), abstractContact);
+        ContactTitleInflater.updateTitle(contactTitleView, getActivity(),
+                RosterManager.getInstance().getBestContact(account, user));
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
