@@ -83,14 +83,19 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
 
     @Override
-    public void onRosterReceived(AccountItem accountItem) {
+    public void onRosterReceived(final AccountItem accountItem) {
         LogManager.i(this, "onRosterReceived " + accountItem.getAccount());
-        Collection<RosterContact> contacts = RosterManager.getInstance().getContacts();
-        for (RosterContact contact : contacts) {
-            if (contact.getAccount().equals(accountItem.getAccount())) {
-                requestLastHistory(MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser()));
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Collection<RosterContact> contacts = RosterManager.getInstance().getContacts();
+                for (RosterContact contact : contacts) {
+                    if (contact.getAccount().equals(accountItem.getAccount())) {
+                        requestLastHistory(MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser()));
+                    }
+                }
             }
-        }
+        });
     }
 
     private boolean checkSupport(AccountItem accountItem) {
