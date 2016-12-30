@@ -38,6 +38,7 @@ import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -242,6 +243,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent intent = getIntent();
         account = getAccount(intent);
         user = getUser(intent);
+
+        LogManager.i(LOG_TAG, "getInitialChatFromIntent " + user);
     }
 
     private void getSelectedPageDataFromIntent() {
@@ -275,6 +278,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         setIntent(intent);
 
         getSelectedPageDataFromIntent();
+        getInitialChatFromIntent();
+        selectChat(account, user);
 
         if (intent.getAction() != null && intent.getAction().equals(ACTION_SHORTCUT)) {
             getInitialChatFromIntent();
@@ -441,7 +446,11 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
     @Override
     public void onChatSelected(BaseEntity chat) {
-        MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
+        selectChat(chat.getAccount(), chat.getUser());
+    }
+
+    private void selectChat(AccountJid accountJid, UserJid userJid) {
+        AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
         selectChatPage(chat, true);
     }
 
