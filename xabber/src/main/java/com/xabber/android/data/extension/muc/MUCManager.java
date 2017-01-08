@@ -522,9 +522,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         }
         Message message = new Message(room);
         MUCUser mucUser = new MUCUser();
-        MUCUser.Invite invite = new MUCUser.Invite();
-        invite.setReason("");
-        invite.setTo(user.getBareJid().toString());
+        MUCUser.Invite invite = new MUCUser.Invite("", null, user.getBareJid().asEntityBareJidIfPossible());
 
         mucUser.setInvite(invite);
         message.addExtension(mucUser);

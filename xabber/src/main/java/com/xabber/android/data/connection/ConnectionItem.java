@@ -288,7 +288,7 @@ public abstract class ConnectionItem {
 
     private StanzaListener everyStanzaListener = new StanzaListener() {
         @Override
-        public void processPacket(final Stanza stanza) throws SmackException.NotConnectedException {
+        public void processStanza(final Stanza stanza) throws SmackException.NotConnectedException {
             Application.getInstance().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

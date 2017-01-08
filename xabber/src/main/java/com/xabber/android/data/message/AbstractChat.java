@@ -502,7 +502,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             try {
                 StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
-                    public void processPacket(Stanza packet) throws SmackException.NotConnectedException {
+                    public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
                         Realm localRealm = Realm.getDefaultInstance();
                         localRealm.executeTransaction(new Realm.Transaction() {
                                 @Override

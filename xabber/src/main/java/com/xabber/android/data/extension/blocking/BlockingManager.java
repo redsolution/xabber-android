@@ -104,7 +104,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         try {
             AccountManager.getInstance().getAccount(account).getConnection().sendIqWithResponseCallback(blockListRequest, new StanzaListener() {
                 @Override
-                public void processPacket(Stanza stanza) throws SmackException.NotConnectedException, InterruptedException {
+                public void processStanza(Stanza stanza) throws SmackException.NotConnectedException, InterruptedException {
                     if (!(stanza instanceof BlockList)) {
                         return;
                     }
@@ -189,7 +189,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             AccountManager.getInstance().getAccount(account).getConnection()
                     .sendIqWithResponseCallback(blockRequest, new StanzaListener() {
                         @Override
-                        public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                        public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                             if (!(packet instanceof IQ)) {
                                 return;
                             }
@@ -268,7 +268,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
             AccountManager.getInstance().getAccount(account).getConnection()
                     .sendIqWithResponseCallback(unblockRequest, new StanzaListener() {
                         @Override
-                        public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                        public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                             if (!(packet instanceof IQ)) {
                                 return;
                             }

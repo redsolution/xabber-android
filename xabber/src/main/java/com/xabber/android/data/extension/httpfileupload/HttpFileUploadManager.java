@@ -77,7 +77,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         try {
             AccountManager.getInstance().getAccount(account).getConnection().sendIqWithResponseCallback(httpFileUpload, new StanzaListener() {
                 @Override
-                public void processPacket(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                     if (!(packet instanceof Slot)) {
                         return;
                     }
