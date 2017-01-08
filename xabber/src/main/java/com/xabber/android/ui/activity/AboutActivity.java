@@ -33,10 +33,10 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.log.LogManager;
 
-public class AboutViewer extends ManagedActivity implements View.OnClickListener {
+public class AboutActivity extends ManagedActivity implements View.OnClickListener {
 
     public static Intent createIntent(Context context) {
-        return new Intent(context, AboutViewer.class);
+        return new Intent(context, AboutActivity.class);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AboutViewer extends ManagedActivity implements View.OnClickListener
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(AboutViewer.this);
+                NavUtils.navigateUpFromSameTask(AboutActivity.this);
             }
         });
 

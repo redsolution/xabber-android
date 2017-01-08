@@ -18,7 +18,7 @@ import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
 
-public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditorFragment.Listener {
+public class AccountInfoEditorActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditorFragment.Listener {
 
     public static final String ARG_VCARD = "com.xabber.android.ui.activity.AccountInfoEditor.ARG_VCARD";
     public static final int SAVE_MENU = R.menu.save;
@@ -28,7 +28,7 @@ public class AccountInfoEditor extends ManagedActivity implements Toolbar.OnMenu
 
 
     public static Intent createIntent(Context context, AccountJid account, String vCard) {
-        Intent intent = new EntityIntentBuilder(context, AccountInfoEditor.class).setAccount(account).build();
+        Intent intent = new EntityIntentBuilder(context, AccountInfoEditorActivity.class).setAccount(account).build();
         intent.putExtra(ARG_VCARD, vCard);
         return intent;
     }

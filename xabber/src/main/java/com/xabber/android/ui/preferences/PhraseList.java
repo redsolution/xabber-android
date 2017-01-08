@@ -21,7 +21,7 @@ import android.os.Bundle;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 import com.xabber.android.ui.adapter.PhraseListAdapter;
 
@@ -87,7 +87,7 @@ public class PhraseList extends BaseListEditor<Integer> {
 
     @Override
     protected CharSequence getToolbarTitle() {
-        return PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.events_phrases));
+        return PreferenceSummaryHelperActivity.getPreferenceTitle(getString(R.string.events_phrases));
     }
 
 }

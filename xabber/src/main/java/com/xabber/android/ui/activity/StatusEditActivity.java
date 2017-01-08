@@ -46,7 +46,7 @@ import com.xabber.android.ui.adapter.StatusModeAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
-public class StatusEditor extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
+public class StatusEditActivity extends ManagedListActivity implements OnItemClickListener, Toolbar.OnMenuItemClickListener, View.OnClickListener {
 
     private static final String SAVED_TEXT = "com.xabber.android.ui.activity.StatusEditor.SAVED_TEXT";
     private static final String SAVED_MODE = "com.xabber.android.ui.activity.StatusEditor.SAVED_MODE";
@@ -60,11 +60,11 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
     private View savedStatusesTextView;
 
     public static Intent createIntent(Context context) {
-        return StatusEditor.createIntent(context, null);
+        return StatusEditActivity.createIntent(context, null);
     }
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, StatusEditor.class).setAccount(account).build();
+        return new AccountIntentBuilder(context, StatusEditActivity.class).setAccount(account).build();
     }
 
     private static AccountJid getAccount(Intent intent) {
@@ -92,7 +92,7 @@ public class StatusEditor extends ManagedListActivity implements OnItemClickList
         });
 
         Intent intent = getIntent();
-        account = StatusEditor.getAccount(intent);
+        account = StatusEditActivity.getAccount(intent);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
 

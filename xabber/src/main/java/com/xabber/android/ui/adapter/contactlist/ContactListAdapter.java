@@ -51,7 +51,7 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.adapter.ComparatorByChat;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 
@@ -715,7 +715,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onAccountAvatarClick(int adapterPosition) {
-        activity.startActivity(AccountViewer.createAccountInfoIntent(activity,
+        activity.startActivity(AccountActivity.createAccountInfoIntent(activity,
                 ((AccountConfiguration)getItem(adapterPosition)).getAccount()));
     }
 

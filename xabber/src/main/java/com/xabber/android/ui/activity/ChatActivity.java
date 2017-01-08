@@ -491,7 +491,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (!Intent.ACTION_SEND.equals(getIntent().getAction())) {
             ActivityManager.getInstance().clearStack(false);
             if (!ActivityManager.getInstance().hasContactList(this)) {
-                startActivity(ContactList.createIntent(this));
+                startActivity(ContactListActivity.createIntent(this));
             }
         }
     }

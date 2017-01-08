@@ -32,7 +32,7 @@ import com.xabber.android.ui.fragment.ConferenceAddFragment;
 
 import org.jxmpp.jid.EntityBareJid;
 
-public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
+public class ConferenceAddActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     private static final String SAVED_ACCOUNT = "com.xabber.android.ui.activity.ConferenceAdd.SAVED_ACCOUNT";
     private static final String SAVED_ROOM = "com.xabber.android.ui.activity.ConferenceAdd.SAVED_ROOM";
@@ -41,7 +41,7 @@ public class ConferenceAdd extends ManagedActivity implements Toolbar.OnMenuItem
     private EntityBareJid room;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid room) {
-        return new EntityIntentBuilder(context, ConferenceAdd.class).setAccount(account).setUser(room).build();
+        return new EntityIntentBuilder(context, ConferenceAddActivity.class).setAccount(account).setUser(room).build();
     }
 
     private static AccountJid getAccount(Intent intent) {

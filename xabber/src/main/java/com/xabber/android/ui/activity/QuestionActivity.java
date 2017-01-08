@@ -47,7 +47,7 @@ import java.util.Collection;
  *
  * @author alexander.ivanov
  */
-public class QuestionViewer extends ManagedActivity implements
+public class QuestionActivity extends ManagedActivity implements
         OnAccountChangedListener, OnContactChangedListener, OnClickListener {
 
     private static final String EXTRA_FIELD_SHOW_QUESTION = "com.xabber.android.data.ui.QuestionViewer.SHOW_QUESTION";
@@ -67,7 +67,7 @@ public class QuestionViewer extends ManagedActivity implements
      * @return Intent to cancel negotiation.
      */
     public static Intent createCancelIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
+        Intent intent = new EntityIntentBuilder(context, QuestionActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.putExtra(EXTRA_FIELD_CANCEL, true);
         return intent;
@@ -85,7 +85,7 @@ public class QuestionViewer extends ManagedActivity implements
      */
     public static Intent createIntent(Context context, AccountJid account, UserJid user,
                                       boolean showQuestion, boolean answerRequest, String question) {
-        Intent intent = new EntityIntentBuilder(context, QuestionViewer.class)
+        Intent intent = new EntityIntentBuilder(context, QuestionActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.putExtra(EXTRA_FIELD_SHOW_QUESTION, showQuestion);
         intent.putExtra(EXTRA_FIELD_ANSWER_REQUEST, answerRequest);
@@ -109,8 +109,8 @@ public class QuestionViewer extends ManagedActivity implements
         }
 
         Intent intent = getIntent();
-        account = QuestionViewer.getAccount(intent);
-        user = QuestionViewer.getUser(intent);
+        account = QuestionActivity.getAccount(intent);
+        user = QuestionActivity.getUser(intent);
         if (AccountManager.getInstance().getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();

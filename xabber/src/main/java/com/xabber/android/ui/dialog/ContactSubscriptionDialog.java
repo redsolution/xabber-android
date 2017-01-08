@@ -8,7 +8,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.ui.activity.ContactAdd;
+import com.xabber.android.ui.activity.ContactAddActivity;
 
 public class ContactSubscriptionDialog extends BaseContactDialog {
 
@@ -64,7 +64,7 @@ public class ContactSubscriptionDialog extends BaseContactDialog {
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }
-        startActivity(ContactAdd.createIntent(getActivity(), getAccount(), getContact()));
+        startActivity(ContactAddActivity.createIntent(getActivity(), getAccount(), getContact()));
     }
 
     public void onDecline() {

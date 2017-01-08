@@ -28,7 +28,7 @@ import com.xabber.android.data.notification.NotificationManager;
  *
  * @author alexander.ivanov
  */
-public class ClearNotifications extends Activity {
+public class ClearNotificationsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class ClearNotifications extends Activity {
     }
 
     public static Intent createIntent(Context context) {
-        Intent intent = new Intent(context, ClearNotifications.class);
+        Intent intent = new Intent(context, ClearNotificationsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION
                 | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK);

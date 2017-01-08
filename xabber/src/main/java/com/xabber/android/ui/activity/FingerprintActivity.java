@@ -47,7 +47,7 @@ import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
-public class FingerprintViewer extends ManagedActivity implements
+public class FingerprintActivity extends ManagedActivity implements
         OnCheckedChangeListener, OnAccountChangedListener,
         OnContactChangedListener, OnClickListener {
 
@@ -72,7 +72,7 @@ public class FingerprintViewer extends ManagedActivity implements
     private IntentIntegrator integrator;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        return new EntityIntentBuilder(context, FingerprintViewer.class)
+        return new EntityIntentBuilder(context, FingerprintActivity.class)
                 .setAccount(account).setUser(user).build();
     }
 

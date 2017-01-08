@@ -31,7 +31,7 @@ import com.xabber.android.ui.fragment.ContactAddFragment;
 import com.xabber.android.ui.helper.ContactAdder;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
-public class ContactAdd extends ManagedActivity implements ContactAddFragment.Listener {
+public class ContactAddActivity extends ManagedActivity implements ContactAddFragment.Listener {
 
     BarPainter barPainter;
 
@@ -44,7 +44,7 @@ public class ContactAdd extends ManagedActivity implements ContactAddFragment.Li
     }
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        return new EntityIntentBuilder(context, ContactAdd.class).setAccount(account).setUser(user).build();
+        return new EntityIntentBuilder(context, ContactAddActivity.class).setAccount(account).setUser(user).build();
     }
 
     private static AccountJid getAccount(Intent intent) {

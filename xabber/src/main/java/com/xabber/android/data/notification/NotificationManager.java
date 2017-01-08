@@ -46,8 +46,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.android.ui.activity.ClearNotifications;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ClearNotificationsActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -118,7 +118,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         providers = new ArrayList<>();
         messageNotifications = new ArrayList<>();
         clearNotifications = PendingIntent.getActivity(
-                application, 0, ClearNotifications.createIntent(application), 0);
+                application, 0, ClearNotificationsActivity.createIntent(application), 0);
 
         stopVibration = new Runnable() {
             @Override
@@ -396,7 +396,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         final Intent persistentIntent;
 
-        persistentIntent = ContactList.createPersistentIntent(application);
+        persistentIntent = ContactListActivity.createPersistentIntent(application);
 
         if (connected > 0) {
             persistentNotificationBuilder.setColor(persistentNotificationColor);

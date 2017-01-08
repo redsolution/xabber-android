@@ -41,14 +41,14 @@ import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ConferenceAdd;
-import com.xabber.android.ui.activity.ContactAdd;
-import com.xabber.android.ui.activity.ContactEditor;
-import com.xabber.android.ui.activity.GroupEditor;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.GroupEditActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.activity.StatusEditor;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
@@ -95,7 +95,7 @@ public class ContextMenuHelper {
                 });
 
         menu.findItem(R.id.action_edit_conference).setIntent(
-                ConferenceAdd.createIntent(activity, account, user.getBareUserJid()));
+                ConferenceAddActivity.createIntent(activity, account, user.getBareUserJid()));
 
         menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -131,9 +131,9 @@ public class ContextMenuHelper {
                 });
 
         menu.findItem(R.id.action_contact_info).setIntent(
-                ContactEditor.createIntent(activity, account, user));
+                ContactEditActivity.createIntent(activity, account, user));
         menu.findItem(R.id.action_edit_contact_groups).setIntent(
-                GroupEditor.createIntent(activity, account, user));
+                GroupEditActivity.createIntent(activity, account, user));
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -200,7 +200,7 @@ public class ContextMenuHelper {
                         } catch (NetworkException e) {
                             Application.getInstance().onError(e);
                         }
-                        activity.startActivity(GroupEditor.createIntent(activity, account, user));
+                        activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
                         return true;
                     }
                 });
@@ -343,19 +343,19 @@ public class ContextMenuHelper {
                     });
         }
 
-        menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditor.createIntent(activity, account));
-        menu.findItem(R.id.action_edit_account).setIntent(AccountViewer.createAccountPreferencesIntent(activity, account));
+        menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditActivity.createIntent(activity, account));
+        menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createAccountPreferencesIntent(activity, account));
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountViewer.createAccountInfoIntent(activity, account));
+                            activity.startActivity(AccountActivity.createAccountInfoIntent(activity, account));
                             return true;
                         }
                     });
-            menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAdd.createIntent(activity, account));
+            menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));
         }
 
         if (SettingsManager.contactsShowAccounts()) {

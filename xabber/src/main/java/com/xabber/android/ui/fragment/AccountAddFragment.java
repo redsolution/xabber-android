@@ -16,8 +16,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.ui.activity.AccountAdd;
-import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OrbotHelper;
 
@@ -93,8 +93,8 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             return;
         }
 
-        getActivity().setResult(Activity.RESULT_OK, AccountAdd.createAuthenticatorResult(account));
-        startActivity(AccountViewer.createAccountPreferencesIntent(getActivity(), account));
+        getActivity().setResult(Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account));
+        startActivity(AccountActivity.createAccountPreferencesIntent(getActivity(), account));
         getActivity().finish();
     }
 }

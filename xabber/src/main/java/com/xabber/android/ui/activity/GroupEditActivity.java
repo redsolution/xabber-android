@@ -36,7 +36,7 @@ import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
 
-public class GroupEditor extends ManagedActivity implements OnContactChangedListener,
+public class GroupEditActivity extends ManagedActivity implements OnContactChangedListener,
         OnAccountChangedListener {
 
     ContactTitleActionBarInflater contactTitleActionBarInflater;
@@ -44,7 +44,7 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
     private UserJid user;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        Intent intent = new EntityIntentBuilder(context, GroupEditor.class)
+        Intent intent = new EntityIntentBuilder(context, GroupEditActivity.class)
                 .setAccount(account).setUser(user).build();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
@@ -67,8 +67,8 @@ public class GroupEditor extends ManagedActivity implements OnContactChangedList
         contactTitleActionBarInflater.setUpActionBarView();
 
         Intent intent = getIntent();
-        account = GroupEditor.getAccount(intent);
-        user = GroupEditor.getUser(intent);
+        account = GroupEditActivity.getAccount(intent);
+        user = GroupEditActivity.getUser(intent);
 
         if (AccountManager.getInstance().getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);

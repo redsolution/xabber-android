@@ -51,7 +51,7 @@ import java.util.Collection;
  *
  * @author alexander.ivanov
  */
-public class OccupantList extends ManagedListActivity implements
+public class OccupantListActivity extends ManagedListActivity implements
         OnAccountChangedListener, OnContactChangedListener, AdapterView.OnItemClickListener {
 
     private AccountJid account;
@@ -59,7 +59,7 @@ public class OccupantList extends ManagedListActivity implements
     private OccupantListAdapter listAdapter;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid room) {
-        return new EntityIntentBuilder(context, OccupantList.class)
+        return new EntityIntentBuilder(context, OccupantListActivity.class)
                 .setAccount(account).setUser(room).build();
     }
 
@@ -91,7 +91,7 @@ public class OccupantList extends ManagedListActivity implements
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(OccupantList.this);
+                NavUtils.navigateUpFromSameTask(OccupantListActivity.this);
             }
         });
         toolbar.setTitle(room);

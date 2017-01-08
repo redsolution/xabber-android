@@ -17,7 +17,6 @@ package com.xabber.android.ui.activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
@@ -39,7 +38,6 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
@@ -48,9 +46,8 @@ import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import java.util.Collection;
-import java.util.List;
 
-public class ContactViewer extends ManagedActivity implements
+public class ContactActivity extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener {
 
     private AccountJid account;
@@ -61,7 +58,7 @@ public class ContactViewer extends ManagedActivity implements
     private CollapsingToolbarLayout collapsingToolbar;
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        return new EntityIntentBuilder(context, ContactViewer.class)
+        return new EntityIntentBuilder(context, ContactActivity.class)
                 .setAccount(account).setUser(user).build();
     }
 
@@ -122,7 +119,7 @@ public class ContactViewer extends ManagedActivity implements
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(ContactViewer.this);
+                NavUtils.navigateUpFromSameTask(ContactActivity.this);
             }
         });
 

@@ -33,7 +33,7 @@ import com.xabber.xmpp.vcard.VCardProperty;
 
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
-public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItemClickListener,
+public class AccountActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener,
         ContactVcardViewerFragment.Listener, AccountEditorFragment.AccountEditorFragmentInteractionListener {
 
     public static final int ACCOUNT_VIEWER_MENU = R.menu.account_viewer;
@@ -68,7 +68,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
 
     @NonNull
     private static Intent createIntent(Context context, AccountJid account, boolean showAccountInfo) {
-        final Intent intent = new AccountIntentBuilder(context, AccountViewer.class).setAccount(account).build();
+        final Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
         intent.putExtra(INTENT_SHOW_ACCOUNT_INFO, showAccountInfo);
         return intent;
     }
@@ -109,7 +109,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(AccountViewer.this);
+                NavUtils.navigateUpFromSameTask(AccountActivity.this);
             }
         });
 
@@ -233,7 +233,7 @@ public class AccountViewer extends ManagedActivity implements Toolbar.OnMenuItem
     private void editAccountInfo() {
         VCard vCard = ((ContactVcardViewerFragment) getFragmentManager().findFragmentById(R.id.scrollable_container)).getvCard();
         if (vCard != null) {
-            Intent intent = AccountInfoEditor.createIntent(this, account, vCard.getChildElementXML().toString());
+            Intent intent = AccountInfoEditorActivity.createIntent(this, account, vCard.getChildElementXML().toString());
             startActivityForResult(intent, ACCOUNT_INFO_EDITOR_REQUEST_CODE);
         }
     }

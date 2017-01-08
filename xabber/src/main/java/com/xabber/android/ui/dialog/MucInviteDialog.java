@@ -12,7 +12,7 @@ import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
 
 
 public class MucInviteDialog extends BaseContactDialog {
@@ -52,7 +52,7 @@ public class MucInviteDialog extends BaseContactDialog {
 
     @Override
     protected void onPositiveButtonClick() {
-        startActivity(ConferenceAdd.createIntent(getActivity(), getAccount(), getContact().getBareUserJid()));
+        startActivity(ConferenceAddActivity.createIntent(getActivity(), getAccount(), getContact().getBareUserJid()));
     }
 
     @Override

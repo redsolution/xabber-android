@@ -167,7 +167,7 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            startActivity(ConferenceAdd.createIntent(this, account,
+            startActivity(ConferenceAddActivity.createIntent(this, account,
                     UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);

@@ -22,7 +22,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
 
 public class RoomAuthorizationError extends BaseEntity implements EntityNotificationItem {
 
@@ -32,7 +32,7 @@ public class RoomAuthorizationError extends BaseEntity implements EntityNotifica
 
     @Override
     public Intent getIntent() {
-        return ConferenceAdd.createIntent(Application.getInstance(), account, user.getBareUserJid());
+        return ConferenceAddActivity.createIntent(Application.getInstance(), account, user.getBareUserJid());
     }
 
     @Override

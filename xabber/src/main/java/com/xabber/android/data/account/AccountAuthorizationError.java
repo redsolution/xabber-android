@@ -21,7 +21,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
-import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.ui.activity.AccountActivity;
 
 public class AccountAuthorizationError extends AccountRelated implements
         AccountNotificationItem {
@@ -32,7 +32,7 @@ public class AccountAuthorizationError extends AccountRelated implements
 
     @Override
     public Intent getIntent() {
-        return AccountViewer.createAccountPreferencesIntent(
+        return AccountActivity.createAccountPreferencesIntent(
                 Application.getInstance(), account);
     }
 

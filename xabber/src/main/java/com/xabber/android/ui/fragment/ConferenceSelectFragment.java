@@ -23,7 +23,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ConferenceFilterActivity;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
@@ -149,7 +149,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         try {
-            startActivity(ConferenceAdd.createIntent(getActivity(), account,
+            startActivity(ConferenceAddActivity.createIntent(getActivity(), account,
                     UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
@@ -267,7 +267,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         UserJid roomJid = null;
         try {
             roomJid = UserJid.from(JidCreate.entityBareFrom(room, server));
-            startActivity(ConferenceAdd.createIntent(getActivity(), account, roomJid));
+            startActivity(ConferenceAddActivity.createIntent(getActivity(), account, roomJid));
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }

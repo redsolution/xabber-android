@@ -33,8 +33,8 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.ui.activity.AccountAdd;
-import com.xabber.android.ui.activity.ContactAdd;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
@@ -254,7 +254,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(ContactAdd.createIntent(getActivity()));
+                    startActivity(ContactAddActivity.createIntent(getActivity()));
                 }
             };
         } else if (commonState == CommonState.roster) {
@@ -305,7 +305,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(AccountAdd.createIntent(getActivity()));
+                    startActivity(AccountAddActivity.createIntent(getActivity()));
                 }
             };
         } else {

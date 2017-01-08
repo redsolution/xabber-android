@@ -13,8 +13,8 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.ui.activity.ContactEditor;
-import com.xabber.android.ui.activity.ContactViewer;
+import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -145,9 +145,9 @@ class ContactItemInflater {
     void onAvatarClick(BaseEntity contact) {
         Intent intent;
         if (MUCManager.getInstance().hasRoom(contact.getAccount(), contact.getUser())) {
-            intent = ContactViewer.createIntent(context, contact.getAccount(), contact.getUser());
+            intent = ContactActivity.createIntent(context, contact.getAccount(), contact.getUser());
         } else {
-            intent = ContactEditor.createIntent(context, contact.getAccount(), contact.getUser());
+            intent = ContactEditActivity.createIntent(context, contact.getAccount(), contact.getUser());
         }
         context.startActivity(intent);
     }

@@ -29,10 +29,10 @@ import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountAddFragment;
 
-public class AccountAdd extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
+public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     public static Intent createIntent(Context context) {
-        return new Intent(context, AccountAdd.class);
+        return new Intent(context, AccountAddActivity.class);
     }
 
     public static Intent createAuthenticatorResult(AccountJid account) {

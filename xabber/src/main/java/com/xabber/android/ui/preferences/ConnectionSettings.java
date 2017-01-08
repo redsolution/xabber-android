@@ -5,7 +5,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
@@ -19,7 +19,7 @@ public class ConnectionSettings extends ManagedActivity {
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        String title = PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_connection));
+        String title = PreferenceSummaryHelperActivity.getPreferenceTitle(getString(R.string.preference_connection));
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
 
         BarPainter barPainter = new BarPainter(this, toolbar);

@@ -71,13 +71,13 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
-import com.xabber.android.ui.activity.ConferenceAdd;
-import com.xabber.android.ui.activity.ContactEditor;
-import com.xabber.android.ui.activity.ContactList;
-import com.xabber.android.ui.activity.ContactViewer;
-import com.xabber.android.ui.activity.FingerprintViewer;
-import com.xabber.android.ui.activity.OccupantList;
-import com.xabber.android.ui.activity.QuestionViewer;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactActivity;
+import com.xabber.android.ui.activity.FingerprintActivity;
+import com.xabber.android.ui.activity.OccupantListActivity;
+import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
@@ -918,15 +918,15 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 return true;
 
             case R.id.action_verify_with_fingerprint:
-                startActivity(FingerprintViewer.createIntent(getActivity(), account, user));
+                startActivity(FingerprintActivity.createIntent(getActivity(), account, user));
                 return true;
 
             case R.id.action_verify_with_question:
-                startActivity(QuestionViewer.createIntent(getActivity(), account, user, true, false, null));
+                startActivity(QuestionActivity.createIntent(getActivity(), account, user, true, false, null));
                 return true;
 
             case R.id.action_verify_with_shared_secret:
-                startActivity(QuestionViewer.createIntent(getActivity(), account, user, false, false, null));
+                startActivity(QuestionActivity.createIntent(getActivity(), account, user, false, false, null));
                 return true;
 
             /* regular chat options menu */
@@ -940,7 +940,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 return true;
 
             case R.id.action_authorization_settings:
-                startActivity(ConferenceAdd.createIntent(getActivity(), account, user.getBareUserJid()));
+                startActivity(ConferenceAddActivity.createIntent(getActivity(), account, user.getBareUserJid()));
                 return true;
 
             case R.id.action_close_chat:
@@ -970,7 +970,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 return true;
 
             case R.id.action_invite_to_chat:
-                startActivity(ContactList.createRoomInviteIntent(getActivity(), account, user.getBareUserJid()));
+                startActivity(ContactListActivity.createRoomInviteIntent(getActivity(), account, user.getBareUserJid()));
                 return true;
 
             case R.id.action_leave_conference:
@@ -978,7 +978,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 return true;
 
             case R.id.action_list_of_occupants:
-                startActivity(OccupantList.createIntent(getActivity(), account, user));
+                startActivity(OccupantListActivity.createIntent(getActivity(), account, user));
                 return true;
 
             /* message popup menu */
@@ -1110,9 +1110,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private void showContactInfo() {
         Intent intent;
         if (MUCManager.getInstance().hasRoom(account, user)) {
-            intent = ContactViewer.createIntent(getActivity(), account, user);
+            intent = ContactActivity.createIntent(getActivity(), account, user);
         } else {
-            intent = ContactEditor.createIntent(getActivity(), account, user);
+            intent = ContactEditActivity.createIntent(getActivity(), account, user);
         }
         startActivity(intent);
     }

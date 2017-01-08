@@ -27,10 +27,10 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.ui.activity.AccountAdd;
-import com.xabber.android.ui.activity.AccountViewer;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
-import com.xabber.android.ui.activity.StatusEditor;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.BaseListEditorAdapter;
 
@@ -59,12 +59,12 @@ public class AccountList extends BaseListEditor<AccountJid> implements OnAccount
 
     @Override
     protected Intent getAddIntent() {
-        return AccountAdd.createIntent(this);
+        return AccountAddActivity.createIntent(this);
     }
 
     @Override
     protected Intent getEditIntent(AccountJid actionWith) {
-        return AccountViewer.createAccountPreferencesIntent(this, actionWith);
+        return AccountActivity.createAccountPreferencesIntent(this, actionWith);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class AccountList extends BaseListEditor<AccountJid> implements OnAccount
             startActivity(getEditIntent(getActionWith()));
             return true;
         } else if (item.getItemId() == CONTEXT_MENU_STATUS_EDITOR_ID) {
-            startActivity(StatusEditor.createIntent(this, getActionWith()));
+            startActivity(StatusEditActivity.createIntent(this, getActionWith()));
             return true;
         }
         return false;
@@ -147,7 +147,7 @@ public class AccountList extends BaseListEditor<AccountJid> implements OnAccount
 
     @Override
     protected CharSequence getToolbarTitle() {
-        return PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_accounts));
+        return PreferenceSummaryHelperActivity.getPreferenceTitle(getString(R.string.preference_accounts));
     }
 
 }

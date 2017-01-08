@@ -23,9 +23,9 @@ import android.preference.PreferenceGroup;
  *
  * @author alexander.ivanov
  */
-public final class PreferenceSummaryHelper {
+public final class PreferenceSummaryHelperActivity {
 
-    private PreferenceSummaryHelper() {
+    private PreferenceSummaryHelperActivity() {
     }
 
     public static void updateSummary(PreferenceGroup group) {

@@ -23,7 +23,7 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.QuestionViewer;
+import com.xabber.android.ui.activity.QuestionActivity;
 
 public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
@@ -33,7 +33,7 @@ public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return QuestionViewer.createCancelIntent(Application.getInstance(), account, user);
+        return QuestionActivity.createCancelIntent(Application.getInstance(), account, user);
     }
 
     @Override

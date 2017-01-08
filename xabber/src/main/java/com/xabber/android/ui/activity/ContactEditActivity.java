@@ -19,10 +19,10 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
 
-public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemClickListener {
+public class ContactEditActivity extends ContactActivity implements Toolbar.OnMenuItemClickListener {
 
     public static Intent createIntent(Context context, AccountJid account, UserJid user) {
-        return new EntityIntentBuilder(context, ContactEditor.class)
+        return new EntityIntentBuilder(context, ContactEditActivity.class)
                 .setAccount(account).setUser(user).build();
     }
 
@@ -63,7 +63,7 @@ public class ContactEditor extends ContactViewer implements Toolbar.OnMenuItemCl
                 return true;
 
             case R.id.action_edit_groups:
-                startActivity(GroupEditor.createIntent(this, getAccount(), getUser()));
+                startActivity(GroupEditActivity.createIntent(this, getAccount(), getUser()));
                 return true;
 
             case R.id.action_remove_contact:

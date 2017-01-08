@@ -29,8 +29,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
-import com.xabber.android.ui.activity.ContactViewer;
-import com.xabber.android.ui.activity.OccupantList;
+import com.xabber.android.ui.activity.ContactActivity;
+import com.xabber.android.ui.activity.OccupantListActivity;
 
 import org.jivesoftware.smackx.muc.MUCRole;
 import org.jxmpp.jid.EntityBareJid;
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Adapter for {@link OccupantList}.
+ * Adapter for {@link OccupantListActivity}.
  *
  * @author alexander.ivanov
  */
@@ -99,7 +99,7 @@ public class OccupantListAdapter extends BaseAdapter implements
             public void onClick(View v) {
                 Intent intent;
                 try {
-                    intent = ContactViewer.createIntent(activity, account,
+                    intent = ContactActivity.createIntent(activity, account,
                             UserJid.from(JidCreate.domainFullFrom(room.asDomainBareJid(), occupant.getNickname())));
                     activity.startActivity(intent);
                 } catch (UserJid.UserJidCreateException e) {

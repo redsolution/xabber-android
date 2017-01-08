@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 public class ThemeSettingsFragment extends android.preference.PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -20,7 +20,7 @@ public class ThemeSettingsFragment extends android.preference.PreferenceFragment
 
         addPreferencesFromResource(R.xml.preference_theme);
 
-        PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
+        PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
     }
 
     @Override

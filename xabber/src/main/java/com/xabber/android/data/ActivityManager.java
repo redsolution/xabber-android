@@ -22,8 +22,8 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.activity.AboutViewer;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.AboutActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.LoadActivity;
 
 import java.util.ArrayList;
@@ -95,11 +95,11 @@ public class ActivityManager implements OnUnloadListener {
      * @param finishRoot also finish root contact list.
      */
     public void clearStack(boolean finishRoot) {
-        ContactList root = null;
+        ContactListActivity root = null;
         rebuildStack();
         for (Activity activity : activities) {
-            if (!finishRoot && root == null && activity instanceof ContactList)
-                root = (ContactList) activity;
+            if (!finishRoot && root == null && activity instanceof ContactListActivity)
+                root = (ContactListActivity) activity;
             else
                 activity.finish();
         }
@@ -112,7 +112,7 @@ public class ActivityManager implements OnUnloadListener {
     public boolean hasContactList(Context context) {
         rebuildStack();
         for (Activity activity : activities)
-            if (activity instanceof ContactList)
+            if (activity instanceof ContactListActivity)
                 return true;
         return false;
     }
@@ -143,7 +143,7 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onCreate: " + activity.getIntent());
         }
-        if (!(activity instanceof AboutViewer)) {
+        if (!(activity instanceof AboutActivity)) {
             applyTheme(activity);
         }
         if (application.isClosing() && !(activity instanceof LoadActivity)) {

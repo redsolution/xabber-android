@@ -3,7 +3,7 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 public class SecuritySettingsFragment extends android.preference.PreferenceFragment {
     @Override
@@ -12,6 +12,6 @@ public class SecuritySettingsFragment extends android.preference.PreferenceFragm
 
         addPreferencesFromResource(R.xml.preference_security);
 
-        PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
+        PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
     }
 }

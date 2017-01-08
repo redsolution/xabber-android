@@ -15,8 +15,8 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ContactList;
-import com.xabber.android.ui.activity.ContactViewer;
+import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactActivity;
 
 public class ContactDeleteDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
@@ -63,8 +63,8 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
 
             RosterManager.getInstance().removeContact(account, user);
 
-            if (getActivity() instanceof ContactViewer) {
-                startActivity(ContactList.createIntent(getActivity()));
+            if (getActivity() instanceof ContactActivity) {
+                startActivity(ContactListActivity.createIntent(getActivity()));
             }
         }
     }

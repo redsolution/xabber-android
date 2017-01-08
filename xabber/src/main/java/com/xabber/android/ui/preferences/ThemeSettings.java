@@ -5,9 +5,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
@@ -21,7 +21,7 @@ public class ThemeSettings extends ManagedActivity
             return;
 
         setContentView(R.layout.activity_with_toolbar_and_container);
-        String title = PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_interface));
+        String title = PreferenceSummaryHelperActivity.getPreferenceTitle(getString(R.string.preference_interface));
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
@@ -36,6 +36,6 @@ public class ThemeSettings extends ManagedActivity
     @Override
     public void onThemeChanged() {
         ActivityManager.getInstance().clearStack(true);
-        startActivity(ContactList.createIntent(this));
+        startActivity(ContactListActivity.createIntent(this));
     }
 }

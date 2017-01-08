@@ -33,7 +33,7 @@ import com.xabber.android.ui.helper.ToolbarHelper;
  *
  * @author alexander.ivanov
  */
-public abstract class ManagedDialog extends SingleActivity {
+public abstract class ManagedDialogActivity extends SingleActivity {
 
     private Toolbar toolbar;
 
