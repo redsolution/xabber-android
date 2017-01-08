@@ -497,7 +497,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 }
             }
             if (changed || reconnect) {
-                result.disconnect();
+                result.recreateConnection();
             }
             if (changed && !enabled) {
                 if (result.getRawStatusMode().isOnline()) {

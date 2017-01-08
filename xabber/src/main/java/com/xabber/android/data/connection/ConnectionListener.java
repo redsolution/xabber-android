@@ -95,7 +95,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
         if (e instanceof XMPPException.StreamErrorException) {
             LogManager.i(this, "Stream error.");
-            connectionItem.recreateConnection();
+            connectionItem.createNewConnection();
         }
     }
 

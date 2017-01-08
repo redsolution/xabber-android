@@ -24,9 +24,7 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AccountRosterListener;
 
-import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
@@ -247,8 +245,29 @@ public abstract class ConnectionItem {
         thread.start();
     }
 
-    void recreateConnection() {
-        showDebugToast("recreateConnection...");
+    public void recreateConnection() {
+        Thread thread = new Thread("Disconnection thread for " + connection) {
+            @Override
+            public void run() {
+                connection.disconnect();
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        createNewConnection();
+                    }
+                });
+
+            }
+
+        };
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    void createNewConnection() {
+        showDebugToast("createNewConnection...");
 
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
 
@@ -259,6 +278,7 @@ public abstract class ConnectionItem {
         roster.removeRosterListener(rosterListener);
 
         createConnection();
+        ReconnectionManager.getInstance().resetReconnectionInfo(account);
     }
 
     void updateState(ConnectionState newState) {

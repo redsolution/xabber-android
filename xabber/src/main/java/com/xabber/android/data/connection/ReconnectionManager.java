@@ -96,11 +96,15 @@ public class ReconnectionManager implements OnConnectedListener,
         return reconnectionInfo;
     }
 
+    void resetReconnectionInfo(AccountJid accountJid) {
+        ReconnectionInfo info = connections.get(accountJid);
+        info.reset();
+    }
+
     @Override
     public void onConnected(ConnectionItem connection) {
         LogManager.i(this, "onConnected " + connection.getAccount());
-        ReconnectionInfo info = connections.get(connection.getAccount());
-        info.reset();
+        resetReconnectionInfo(connection.getAccount());
     }
 
     @Override
