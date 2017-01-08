@@ -121,7 +121,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ChatActivity"
@@ -136,7 +136,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.ContactListActivity" />
         </activity>
         <activity
             android:name=".ui.activity.GroupEditActivity"
@@ -145,7 +145,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ContactActivity" />
+                android:value="com.xabber.android.ui.activity.ContactActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactAddActivity"
@@ -175,7 +175,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ConferenceSelectActivity" />
+                android:value="com.xabber.android.ui.activity.ConferenceSelectActivity" />
         </activity>
         <activity
             android:name=".ui.activity.StatusEditActivity"
@@ -185,7 +185,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.ContactListActivity" />
         </activity>
         <activity
             android:name=".ui.preferences.PreferenceEditor"
@@ -195,7 +195,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.ContactListActivity" />
         </activity>
         <activity
             android:name=".ui.preferences.ChatContactSettings"
@@ -205,7 +205,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ContactActivity"
@@ -215,7 +215,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -235,7 +235,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.AccountActivity"
@@ -253,7 +253,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.AccountActivity" />
+                android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
         <activity
             android:name=".ui.activity.FingerprintActivity"
@@ -263,7 +263,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.activity.QuestionActivity"
@@ -273,7 +273,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ChatActivity" />
+                android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
         <activity
             android:name=".ui.preferences.PhraseList"
@@ -381,7 +381,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.ContactListActivity" />
+                android:value="com.xabber.android.ui.activity.ContactListActivity" />
         </activity>
         <activity android:name=".ui.activity.ConferenceFilterActivity" />
         <activity
@@ -391,7 +391,7 @@
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.AccountActivity" />
+                android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
 
         <service android:name=".service.XabberService" />
