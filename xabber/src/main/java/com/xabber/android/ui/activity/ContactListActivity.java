@@ -675,7 +675,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
 
     private void createShortcut(AbstractContact abstractContact) {
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createShortCutIntent(this,
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createClearTopIntent(this,
                 abstractContact.getAccount(), abstractContact.getUser()));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, abstractContact.getName());
         Bitmap bitmap;
