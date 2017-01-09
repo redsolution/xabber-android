@@ -7,13 +7,13 @@ Being both free (as in freedom!) and ad-free, [Xabber](https://www.xabber.com/) 
 
 ## Build instructions [![Build Status](https://travis-ci.org/redsolution/xabber-android.svg?branch=develop)](https://travis-ci.org/redsolution/xabber-android)
 
-Xabber uses Gradle build system. The only specific thing is git submodule for otr4j library. To make it work use following commands:
+Xabber uses Gradle build system. The only specific thing is git submodule for ge0rg/MemorizingTrustManager library. To make it work use following commands:
 
  ```
  git submodule init
  git submodule update
  ```
- And otr4j would be cloned to your local repository. 
+ And MemorizingTrustManager would be cloned to your local repository.
 
 ## Translations [![Crowdin](https://d322cqt584bo4o.cloudfront.net/xabber/localized.svg)](https://crowdin.com/project/xabber)
 
