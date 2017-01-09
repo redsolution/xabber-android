@@ -70,25 +70,29 @@ ext {
 }
 
 dependencies {
-    compile "com.android.support:design:$supportVersion"
-    compile "com.android.support:appcompat-v7:$supportVersion"
-    compile "com.android.support:support-v13:$supportVersion"
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.melnykov:floatingactionbutton:1.3.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.google.zxing:android-integration:3.3.0'
-    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-    compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.jakewharton:butterknife:8.4.0'
-    apt 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile 'org.jitsi:org.otr4j:0.22'
+    compile project('MemorizingTrustManager')
+    compile project('emojicon')
 
     compile "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
     compile "org.igniterealtime.smack:smack-experimental:$smackVersion"
     compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
-    compile project('MemorizingTrustManager')
-    compile project('emojicon')
+
+    compile "com.android.support:design:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:support-v13:$supportVersion"
+
+    compile 'org.jitsi:org.otr4j:0.22'
+    compile 'com.google.zxing:android-integration:3.3.0'
+
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+
+    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.melnykov:floatingactionbutton:1.3.0'
 }
 
 configurations {
