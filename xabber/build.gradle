@@ -18,6 +18,8 @@ android {
         // problems with generated "applicationId" string resource
         disable 'MissingTranslation'
         disable 'InvalidPackage'
+
+        abortOnError false
     }
 
     subprojects {
