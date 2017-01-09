@@ -20,6 +20,19 @@ android {
         disable 'InvalidPackage'
     }
 
+    subprojects {
+        afterEvaluate {
+            if (getPlugins().hasPlugin('android') ||
+                    getPlugins().hasPlugin('android-library')) {
+
+                configure(android.lintOptions) {
+                    abortOnError false
+
+                }
+            }
+        }
+    }
+
     productFlavors {
 
         dev {
