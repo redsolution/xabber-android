@@ -1,9 +1,8 @@
 language: android
 android:
   components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    # - platform-tools
+    - tools
+    - platform-tools
     - tools
 
     # The BuildTools version used by your project
@@ -14,10 +13,11 @@ android:
 
     # Additional components
     #- extra-google-google_play_services
-    #- extra-google-m2repository
+    - extra-google-m2repository
     - extra-android-m2repository
 
   licenses:
+    - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 
