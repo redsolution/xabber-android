@@ -50,12 +50,16 @@ import net.java.otr4j.OtrEngineHost;
 import net.java.otr4j.OtrEngineListener;
 import net.java.otr4j.OtrException;
 import net.java.otr4j.OtrPolicy;
+import net.java.otr4j.OtrPolicyImpl;
 import net.java.otr4j.crypto.OtrCryptoEngine;
+import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.crypto.OtrCryptoException;
 import net.java.otr4j.io.SerializationUtils;
+import net.java.otr4j.session.FragmenterInstructions;
 import net.java.otr4j.session.InstanceTag;
 import net.java.otr4j.session.Session;
 import net.java.otr4j.session.SessionID;
+import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -85,10 +89,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     static {
         POLICIES = new HashMap<>();
-        POLICIES.put(SecurityOtrMode.disabled, new OtrPolicy(OtrPolicy.NEVER));
-        POLICIES.put(SecurityOtrMode.manual, new OtrPolicy(OtrPolicy.OTRL_POLICY_MANUAL & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.auto, new OtrPolicy(OtrPolicy.OPPORTUNISTIC & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.required, new OtrPolicy(OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
+        POLICIES.put(SecurityOtrMode.disabled, new OtrPolicyImpl(OtrPolicy.NEVER));
+        POLICIES.put(SecurityOtrMode.manual, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_MANUAL & ~OtrPolicy.ALLOW_V1));
+        POLICIES.put(SecurityOtrMode.auto, new OtrPolicyImpl(OtrPolicy.OPPORTUNISTIC & ~OtrPolicy.ALLOW_V1));
+        POLICIES.put(SecurityOtrMode.required, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
     }
 
     static {
@@ -230,7 +234,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
         LogManager.i(this, "Creating new session for " + user);
 
-        session = new Session(new SessionID(account, user, "xmpp"), this);
+        session = new SessionImpl(new SessionID(account, user, "xmpp"), this);
         session.addOtrEngineListener(this);
         sessions.put(account, user, session);
         return session;
@@ -319,6 +323,11 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         return POLICIES.get(SettingsManager.securityOtrMode());
     }
 
+    @Override
+    public FragmenterInstructions getFragmenterInstructions(SessionID sessionID) {
+        return null;
+    }
+
     private KeyPair getLocalKeyPair(String account) throws OtrException {
         KeyPair keyPair = null;
         try {
@@ -351,7 +360,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             PublicKey remotePublicKey = session.getRemotePublicKey();
             String value;
             try {
-                value = OtrCryptoEngine.getFingerprint(remotePublicKey);
+                OtrCryptoEngine otrCryptoEngine = new OtrCryptoEngineImpl();
+                value = otrCryptoEngine.getFingerprint(remotePublicKey);
             } catch (OtrCryptoException e) {
                 LogManager.exception(this, e);
                 value = null;
@@ -518,7 +528,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     @Nullable
     public String getLocalFingerprint(AccountJid account) {
         try {
-            return OtrCryptoEngine.getFingerprint(getLocalKeyPair(account.toString()).getPublic());
+            OtrCryptoEngine otrCryptoEngine = new OtrCryptoEngineImpl();
+            return otrCryptoEngine.getFingerprint(getLocalKeyPair(account.toString()).getPublic());
         } catch (OtrException e) {
             LogManager.exception(this, e);
         }
@@ -684,12 +695,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         if (SettingsManager.securityOtrMode() == SecurityOtrMode.disabled) {
             endAllSessions();
         }
-    }
-
-    @Override
-    public int getMaxFragmentSize(SessionID sessionID) {
-        // we do not want fragmentation
-        return Integer.MAX_VALUE;
     }
 
     @Override

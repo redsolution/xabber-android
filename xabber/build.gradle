@@ -72,11 +72,11 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'org.jitsi:org.otr4j:0.22'
 
     compile "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
     compile "org.igniterealtime.smack:smack-experimental:$smackVersion"
     compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
-    compile project('otr4j')
     compile project('MemorizingTrustManager')
     compile project('emojicon')
 }
