@@ -23,6 +23,10 @@ android:
     #- sys-img-armeabi-v7a-android-19
     #- sys-img-x86-android-17
 
+  licenses:
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+
+
 install:
   # Check install section: http://docs.travis-ci.com/user/build-configuration/#install
   # If you'd like to skip the install stage entirely, set it to true and nothing will be run.
