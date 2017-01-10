@@ -88,9 +88,6 @@ class ConnectionThread {
             });
         } catch (XMPPException | SmackException | IOException | InterruptedException e) {
             LogManager.exception(this, e);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            // TODO - should be fixed either in Smack or Xabber
-            LogManager.exception(this, e);
         }
     }
 
