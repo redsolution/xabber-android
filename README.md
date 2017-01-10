@@ -1,5 +1,5 @@
-<a href="https://play.google.com/store/apps/details?id=com.xabber.android.beta"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="48"></a>
-<a href="https://f-droid.org/repository/browse/?fdfilter=xabber&fdid=com.xabber.androiddev"><img src="https://www.xabber.com/static/img/logo-f-droid.fw.png" height="48"></a>
+<a href="https://play.google.com/store/apps/details?id=com.xabber.android.beta"><img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="72"></a>
+<a href="https://f-droid.org/repository/browse/?fdfilter=xabber&fdid=com.xabber.androiddev"><img src="https://f-droid.org/badge/get-it-on.png" height="72"></a>
 ## Xabber - XMPP client for Android
 
 Open source Jabber (XMPP) client with multi-account support, clean and simple interface.
