@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -38,7 +39,7 @@ class ContactItemInflater {
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
         }
 
-        viewHolder.color.setColorFilter(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
+        viewHolder.color.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(contact.getAccount()));
         viewHolder.color.setVisibility(View.VISIBLE);
 
         if (SettingsManager.contactsShowAvatars()) {
