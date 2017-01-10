@@ -22,14 +22,8 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.realm.MessageItem;
-import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.message.MessageUpdateEvent;
-
-import org.greenrobot.eventbus.EventBus;
+import com.xabber.android.data.log.LogManager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -43,9 +37,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import okhttp3.Call;
@@ -58,14 +49,11 @@ public class FileManager {
 
     public static final String LOG_TAG = FileManager.class.getSimpleName();
 
-    public static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe", "gif"};
-    public static final String[] VALID_CRYPTO_EXTENSIONS = {"pgp", "gpg", "otr"};
+    private static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe", "gif"};
 
     private static final String CACHE_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()
             + "/"  +  Application.getInstance().getString(R.string.application_title_short) + "/Cache/";
 
-
-    private Set<String> startedDownloads;
 
     private final static FileManager instance;
 
@@ -78,42 +66,9 @@ public class FileManager {
         return instance;
     }
 
-    public FileManager() {
-        this.startedDownloads = new ConcurrentSkipListSet<>();
-    }
-
     public static void processFileMessage (final MessageItem messageItem, final boolean download) {
         if (!treatAsDownloadable(messageItem.getText())) {
             return;
-        }
-
-        final URL url;
-        try {
-            url = new URL(messageItem.getText());
-        } catch (MalformedURLException e) {
-            LogManager.exception(LOG_TAG, e);
-            return;
-        }
-
-        final File file;
-        if (messageItem.getFilePath() == null) {
-            file = new File(getCachePath(url));
-            messageItem.setFilePath(file.getPath());
-        } else {
-            file = new File(messageItem.getFilePath());
-        }
-
-        if (!file.exists()) {
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (download && SettingsManager.connectionLoadImages() && FileManager.fileIsImage(file)) {
-                        FileManager.getInstance().downloadFile(messageItem, null);
-                    } else {
-                        getFileUrlSize(messageItem);
-                    }
-                }
-            });
         }
     }
 
@@ -159,146 +114,6 @@ public class FileManager {
                         realm.close();
                     }
                 }
-            }
-        });
-    }
-
-
-    public interface ProgressListener {
-        void onProgress(long bytesWritten, long totalSize);
-        void onFinish(long totalSize);
-        void onError();
-    }
-
-
-    public void downloadFile(final MessageItem messageItem, @Nullable final ProgressListener progressListener) {
-        final String downloadUrl = messageItem.getText();
-        if (startedDownloads.contains(downloadUrl)) {
-            LogManager.i(FileManager.class, "Downloading of file " + downloadUrl + " already started");
-            return;
-        }
-        LogManager.i(FileManager.class, "Downloading file " + downloadUrl);
-        startedDownloads.add(downloadUrl);
-
-
-        final AccountJid account = messageItem.getAccount();
-        final UserJid user = messageItem.getUser();
-        final String uniqueId = messageItem.getUniqueId();
-        final String filePath = messageItem.getFilePath();
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                LogManager.i(FileManager.class, "Starting background Downloading file " + downloadUrl);
-
-                OkHttpClient client = new OkHttpClient().newBuilder()
-                        .readTimeout(2, TimeUnit.MINUTES)
-                        .connectTimeout(2, TimeUnit.MINUTES)
-                        .writeTimeout(2, TimeUnit.MINUTES)
-                        .build();
-
-
-                Request request = new Request.Builder()
-                        .get()
-                        .url(downloadUrl)
-                        .build();
-
-
-                Call call = client.newCall(request);
-
-                boolean success = false;
-                try {
-                    success = downloadFile(call, progressListener, filePath);
-                } catch (IOException e) {
-                    LogManager.exception(this, e);
-                }
-
-                startedDownloads.remove(downloadUrl);
-                EventBus.getDefault().post(new MessageUpdateEvent(account, user, uniqueId));
-
-                if (progressListener != null && !success) {
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressListener.onError();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    public boolean downloadFile(Call call, @Nullable final ProgressListener progressListener, String filePath) throws IOException {
-        boolean success = false;
-
-        Response response = call.execute();
-
-        if (response.isSuccessful()) {
-
-            byte[] buff = new byte[1024 * 4];
-            long downloaded = 0;
-            final long target = response.body().contentLength();
-            File file = new File(filePath);
-            new File(file.getParent()).mkdirs();
-            OutputStream output = new FileOutputStream(file);
-            InputStream inputStream = response.body().byteStream();
-            int bytesRead;
-            try {
-                while ((bytesRead = inputStream.read(buff)) != -1) {
-                    output.write(buff, 0, bytesRead);
-                    downloaded += bytesRead;
-
-                    final long finalDownloaded = downloaded;
-                    if (progressListener != null) {
-                         Application.getInstance().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressListener.onProgress(finalDownloaded, target);
-                            }
-                        });
-                    }
-                }
-                output.flush();
-            } finally {
-                inputStream.close();
-                output.close();
-                if (downloaded == target) {
-                    success = true;
-                } else {
-                    file.delete();
-                }
-            }
-        }
-
-        return success;
-    }
-
-    private static void saveFile(final byte[] responseBody, final File file, final ProgressListener progressListener) {
-        LogManager.i(FileManager.class, "Saving file " + file.getPath());
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                new File(file.getParent()).mkdirs();
-                try {
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                    bos.write(responseBody);
-                    bos.flush();
-                    bos.close();
-                } catch (IOException e) {
-                    LogManager.exception(this, e);
-                    file.delete();
-                }
-
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (progressListener != null) {
-                            progressListener.onFinish(responseBody.length);
-                        }
-                    }
-                });
-
             }
         });
     }
@@ -368,10 +183,6 @@ public class FileManager {
                 return false;
             }
 
-            if (Arrays.asList(WebExtensions.WEB_EXTENSIONS).contains(extension)) {
-                return false;
-            }
-
             String ref = url.getRef();
             boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
 
@@ -404,13 +215,7 @@ public class FileManager {
         int dotPosition = filename.lastIndexOf(".");
 
         if (dotPosition != -1) {
-            String extension = filename.substring(dotPosition + 1).toLowerCase();
-            // we want the real file extension, not the crypto one
-            if (Arrays.asList(VALID_CRYPTO_EXTENSIONS).contains(extension)) {
-                return extractRelevantExtension(path.substring(0,dotPosition));
-            } else {
-                return extension;
-            }
+            return filename.substring(dotPosition + 1).toLowerCase();
         }
         return null;
     }
@@ -487,11 +292,6 @@ public class FileManager {
                 String.format(Application.getInstance().getString(R.string.received_by),
                         Application.getInstance().getString(R.string.application_title_short)),
                 true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
-    }
-
-    public static void saveFileToCache(File srcFile, URL url) throws IOException {
-        LogManager.i(FileManager.class, "Saving file to cache");
-        copyFile(srcFile, getCachePath(url));
     }
 
     public static File copyFile(File srcFile, String dstPath) throws IOException {

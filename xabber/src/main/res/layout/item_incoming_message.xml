@@ -59,33 +59,6 @@
 
         android:paddingTop="8dp">
 
-        <ImageButton
-            android:id="@+id/message_download_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_download_grey600_24dp"
-            android:background="@drawable/ripple_background"
-            android:padding="12dp"
-            android:layout_gravity="bottom"
-            />
-
-        <ImageButton
-            android:id="@+id/message_attachment_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_attachment_grey600_24dp"
-            android:background="@drawable/ripple_background"
-            android:padding="12dp"
-            android:layout_gravity="bottom"
-            />
-
-        <ProgressBar
-            android:id="@+id/message_download_progress_bar"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_margin="12dp"
-            android:layout_gravity="bottom" />
-
 
         <include layout="@layout/item_message"
             />
@@ -117,23 +90,6 @@
 
         android:src="@drawable/ic_message_synced_14dp"
         android:layout_marginLeft="4dp"
-        />
-
-
-    <TextView
-        android:id="@+id/message_file_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_below="@+id/message_balloon"
-        android:layout_toEndOf="@+id/message_time"
-        android:layout_toRightOf="@+id/message_status_icon"
-
-        android:paddingLeft="4dp"
-
-        android:text="231KB"
-
-        android:textSize="10sp"
         />
 
 </RelativeLayout>

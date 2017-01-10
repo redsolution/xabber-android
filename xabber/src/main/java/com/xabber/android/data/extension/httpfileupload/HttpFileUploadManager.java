@@ -114,10 +114,6 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
                             LogManager.i(HttpFileUploadManager.this, "onResponse " + response.isSuccessful() + " " + response.body().string());
                             if (response.isSuccessful()) {
                                 MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, slot.getGetUrl());
-
-                                if (FileManager.fileIsImage(file)) {
-                                    saveImageToCache(slot.getGetUrl(), file);
-                                }
                             } else {
                                 MessageManager.getInstance().updateMessageWithError(fileMessageId);
                             }
@@ -137,28 +133,6 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         } catch (SmackException.NotConnectedException | InterruptedException e) {
             LogManager.exception(this, e);
         }
-    }
-
-    private void saveImageToCache(String getUrl, final File file) {
-        final URL url;
-        try {
-            url = new URL(getUrl);
-        } catch (MalformedURLException e) {
-            LogManager.exception(this, e);
-            return;
-        }
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    FileManager.saveFileToCache(file, url);
-                } catch (IOException e) {
-                    LogManager.exception(this, e);
-                }
-            }
-        });
     }
 
     private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,

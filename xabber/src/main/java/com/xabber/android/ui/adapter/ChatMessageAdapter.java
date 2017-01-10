@@ -24,13 +24,11 @@ import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -38,26 +36,23 @@ import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
-import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
-import java.io.File;
 import java.util.Date;
 
-import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -117,7 +112,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
         setUpMessage(messageItem, holder);
         setStatusIcon(messageItem, (OutgoingMessage) holder);
-        setUpFileMessage(holder, messageItem);
 
         setUpMessageBalloonBackground(holder.messageBalloon,
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
@@ -136,7 +130,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
 
         setUpAvatar(messageItem, incomingMessage);
-        setUpFileMessage(incomingMessage, messageItem);
 
         if (messageItem.getText().trim().isEmpty()) {
             incomingMessage.messageBalloon.setVisibility(View.GONE);
@@ -183,138 +176,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             messageBalloon.getBackground().setLevel(AccountManager.getInstance().getColorLevel(account));
             messageBalloon.setPadding(pL, pT, pR, pB);
         }
-    }
-
-
-    private void setUpFileMessage(final Message messageView, final MessageItem messageItem) {
-        messageView.downloadProgressBar.setVisibility(View.GONE);
-        messageView.attachmentButton.setVisibility(View.GONE);
-        messageView.downloadButton.setVisibility(View.GONE);
-        messageView.messageImage.setVisibility(View.GONE);
-        messageView.messageFileInfo.setVisibility(View.GONE);
-        messageView.messageTextForFileName.setVisibility(View.GONE);
-
-        if (messageItem.isError()) {
-            return;
-        }
-
-        String filePath = messageItem.getFilePath();
-
-        if (filePath == null) {
-            return;
-        }
-
-        final File file = new File(filePath);
-
-        messageView.messageText.setVisibility(View.GONE);
-        messageView.messageTextForFileName.setText(FileManager.getFileName(file.getPath()));
-        messageView.messageTextForFileName.setVisibility(View.VISIBLE);
-
-        messageView.attachmentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FileManager.openFile(context, file);
-            }
-        });
-
-        final Long fileSize = messageItem.getFileSize();
-        if (fileSize != null) {
-            messageView.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, fileSize));
-            messageView.messageFileInfo.setVisibility(View.VISIBLE);
-        }
-
-        if (file.exists()) {
-            onFileExists(messageView, file);
-        } else {
-            if (SettingsManager.connectionLoadImages()
-                    && FileManager.fileIsImage(file)
-                    && PermissionsRequester.hasFileWritePermission()) {
-                LogManager.i(this, "Downloading file from message adapter");
-                downloadFile(messageView, messageItem);
-            } else {
-                messageView.downloadButton.setVisibility(View.VISIBLE);
-                messageView.downloadButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        downloadFile(messageView, messageItem);
-                    }
-                });
-            }
-        }
-    }
-
-    private void downloadFile(final Message messageView, final MessageItem messageItem) {
-        if (!PermissionsRequester.hasFileWritePermission()) {
-            if (listener != null) {
-                listener.onNoDownloadFilePermission();
-            }
-            return;
-        }
-
-        final String uniqueId = messageItem.getUniqueId();
-
-        messageView.downloadButton.setVisibility(View.GONE);
-        messageView.downloadProgressBar.setVisibility(View.VISIBLE);
-        FileManager.getInstance().downloadFile(messageItem, new FileManager.ProgressListener() {
-            @Override
-            public void onProgress(long bytesWritten, long totalSize) {
-                String progress = android.text.format.Formatter.formatShortFileSize(context, bytesWritten);
-                // in some cases total size set to 1 (should be fixed in future version of com.loopj.android:android-async-http)
-                if (bytesWritten <= totalSize) {
-                    progress += " / " + android.text.format.Formatter.formatShortFileSize(context, totalSize);
-                }
-
-                if (!progress.equals(messageView.messageFileInfo.getText())) {
-                    messageView.messageFileInfo.setText(progress);
-                }
-
-                if (messageView.messageFileInfo.getVisibility() != View.VISIBLE) {
-                    messageView.messageFileInfo.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onFinish(long totalSize) {
-                setUpFileMessage(messageView, messageItem);
-            }
-
-            @Override
-            public void onError() {
-                Realm realm = Realm.getDefaultInstance();
-
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        MessageItem first = realm.where(MessageItem.class)
-                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId).findFirst();
-                        first.setError(true);
-                    }
-                });
-
-                realm.close();
-            }
-
-        });
-    }
-
-    private void onFileExists(Message message, final File file) {
-        if (FileManager.fileIsImage(file) && PermissionsRequester.hasFileReadPermission()) {
-            message.messageTextForFileName.setVisibility(View.GONE);
-            message.messageImage.setVisibility(View.VISIBLE);
-            FileManager.loadImageFromFile(file, message.messageImage);
-            message.messageImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FileManager.openFile(context, file);
-                }
-            });
-
-        } else {
-            message.attachmentButton.setVisibility(View.VISIBLE);
-        }
-
-        message.messageFileInfo.setText(android.text.format.Formatter.formatShortFileSize(context, file.length()));
-        message.messageFileInfo.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -453,7 +314,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         message.messageText.setTextAppearance(context, appearanceStyle);
-        message.messageTextForFileName.setTextAppearance(context, appearanceStyle);
 
         final Spannable spannable = MessageItem.getSpannable(messageItem);
         Emoticons.getSmiledText(context, spannable, message.messageText);
@@ -566,11 +426,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         return null;
     }
 
-    public static class BasicMessage extends RecyclerView.ViewHolder {
+    static class BasicMessage extends RecyclerView.ViewHolder {
 
-        public TextView messageText;
+        TextView messageText;
 
-        public BasicMessage(View itemView) {
+        BasicMessage(View itemView) {
             super(itemView);
 
             messageText = (TextView) itemView.findViewById(R.id.message_text);
@@ -579,39 +439,27 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     public static abstract class Message extends BasicMessage implements View.OnClickListener {
 
-        public TextView messageTime;
-        public TextView messageHeader;
-        public TextView messageUnencrypted;
-        public View messageBalloon;
+        TextView messageTime;
+        TextView messageHeader;
+        TextView messageUnencrypted;
+        View messageBalloon;
 
         MessageClickListener onClickListener;
 
-        public ImageButton downloadButton;
-        public ImageButton attachmentButton;
-        public ProgressBar downloadProgressBar;
-        public ImageView messageImage;
-        public TextView messageFileInfo;
-        public TextView messageTextForFileName;
-
-        public ImageView statusIcon;
+        ImageView messageImage;
+        ImageView statusIcon;
 
 
         public Message(View itemView, MessageClickListener onClickListener) {
             super(itemView);
             this.onClickListener = onClickListener;
 
-
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
             messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
 
-            downloadButton = (ImageButton) itemView.findViewById(R.id.message_download_button);
-            attachmentButton = (ImageButton) itemView.findViewById(R.id.message_attachment_button);
-            downloadProgressBar = (ProgressBar) itemView.findViewById(R.id.message_download_progress_bar);
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
-            messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
-            messageTextForFileName = (TextView) itemView.findViewById(R.id.message_text_for_filenames);
 
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
 
@@ -629,24 +477,25 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     }
 
-    public static class IncomingMessage extends Message {
+    private static class IncomingMessage extends Message {
 
         public ImageView avatar;
 
-        public IncomingMessage(View itemView, MessageClickListener listener) {
+        IncomingMessage(View itemView, MessageClickListener listener) {
             super(itemView, listener);
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
         }
     }
 
-    public static class OutgoingMessage extends Message {
+    private static class OutgoingMessage extends Message {
 
+        TextView messageFileInfo;
+        ProgressBar progressBar;
 
-        public ProgressBar progressBar;
-
-        public OutgoingMessage(View itemView, MessageClickListener listener) {
+        OutgoingMessage(View itemView, MessageClickListener listener) {
             super(itemView, listener);
             progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
+            messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
         }
     }
 }
