@@ -352,19 +352,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         switch (viewType) {
             case VIEW_TYPE_HINT:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_info, parent, false));
+                        .inflate(R.layout.item_message_info, parent, false));
 
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_action_message, parent, false));
+                        .inflate(R.layout.item_action_message, parent, false));
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_incoming_message, parent, false), messageClickListener);
+                        .inflate(R.layout.item_incoming_message, parent, false), messageClickListener);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.chat_viewer_outgoing_message, parent, false), messageClickListener);
+                        .inflate(R.layout.item_outgoing_message, parent, false), messageClickListener);
             default:
                 return null;
         }

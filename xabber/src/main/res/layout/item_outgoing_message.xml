@@ -44,7 +44,7 @@
         android:gravity="center_vertical"
         >
 
-        <include layout="@layout/chat_viewer_message"
+        <include layout="@layout/item_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

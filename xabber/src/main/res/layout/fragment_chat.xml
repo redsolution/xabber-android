@@ -50,7 +50,7 @@
         android:dividerHeight="0dp"
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
-        tools:listitem="@layout/chat_viewer_outgoing_message"
+        tools:listitem="@layout/item_outgoing_message"
         />
 
     <LinearLayout

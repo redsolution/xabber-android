@@ -87,7 +87,7 @@
             android:layout_gravity="bottom" />
 
 
-        <include layout="@layout/chat_viewer_message"
+        <include layout="@layout/item_message"
             />
 
     </LinearLayout>

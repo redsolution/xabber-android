@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:showIn="@layout/chat_viewer_outgoing_message"
+    tools:showIn="@layout/item_outgoing_message"
     android:layout_gravity="center_vertical"
     android:gravity="center_vertical"
     >
