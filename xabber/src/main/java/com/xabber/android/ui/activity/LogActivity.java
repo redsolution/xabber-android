@@ -18,13 +18,10 @@ import com.xabber.android.ui.adapter.LogFilesAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
     public static final int LOG_MENU = R.menu.activity_log;
-    @BindView(R.id.activity_log_recycler_view)
     RecyclerView recyclerView;
     private LogFilesAdapter logFilesAdapter;
 
@@ -37,7 +34,6 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
-        ButterKnife.bind(this);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.debug_log_title));
 
@@ -47,6 +43,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         toolbar.inflateMenu(LOG_MENU);
         toolbar.setOnMenuItemClickListener(this);
 
+        recyclerView = (RecyclerView) findViewById(R.id.activity_log_recycler_view);
         logFilesAdapter = new LogFilesAdapter();
         recyclerView.setAdapter(logFilesAdapter);
 
