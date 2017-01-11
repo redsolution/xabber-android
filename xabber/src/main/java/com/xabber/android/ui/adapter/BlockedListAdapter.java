@@ -14,7 +14,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -99,11 +98,6 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
         if (blockedContacts != null) {
             this.blockedContacts.addAll(blockedContacts);
-        }
-
-        final Collection<UserJid> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
-        if (blockedMucContacts != null) {
-            this.blockedContacts.addAll(blockedMucContacts);
         }
 
         final Iterator<UserJid> iterator = checkedContacts.iterator();

@@ -25,7 +25,6 @@ import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
@@ -310,8 +309,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         if (isPrivateMucChat) {
-            if (!isPrivateMucChatAccepted
-                    || PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(user)) {
+            if (!isPrivateMucChatAccepted) {
                 notify = false;
             }
         }

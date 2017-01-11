@@ -13,7 +13,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -53,13 +52,7 @@ public class BlockContactDialog extends DialogFragment implements DialogInterfac
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
-
-            if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-                PrivateMucChatBlockingManager.getInstance().blockContact(account, user);
-                onSuccess();
-            } else {
-                BlockingManager.getInstance().blockContact(account, user, this);
-            }
+            BlockingManager.getInstance().blockContact(account, user, this);
         }
     }
 

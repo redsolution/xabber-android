@@ -25,7 +25,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnMigrationListener;
-import com.xabber.android.data.database.realm.BlockedContactsForAccount;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.database.sqlite.AbstractAccountTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
@@ -62,7 +61,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 70;
-    private static final int REALM_DATABASE_VERSION = 9;
+    private static final int REALM_DATABASE_VERSION = 10;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -169,6 +168,12 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                         if (oldVersion == 8) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.FILE_URL, String.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 9) {
+                            schema.remove("BlockedContactsForAccount");
+                            schema.remove("BlockedContact");
                             oldVersion++;
                         }
                     }
@@ -400,7 +405,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class).equalTo(MessageItem.Fields.ACCOUNT, account).findAll().deleteAllFromRealm();
-                realm.where(BlockedContactsForAccount.class).equalTo(BlockedContactsForAccount.Fields.ACCOUNT, account).findAll().deleteAllFromRealm();
             }
         });
         realm.close();

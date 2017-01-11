@@ -19,7 +19,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -150,7 +149,6 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
                 return true;
             case R.id.action_unblock_selected:
                 BlockingManager.getInstance().unblockContacts(account, adapter.getCheckedContacts(), this);
-                PrivateMucChatBlockingManager.getInstance().unblockContacts(account, adapter.getCheckedContacts());
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -30,7 +30,6 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
@@ -150,11 +149,6 @@ public class OccupantListActivity extends ManagedListActivity implements
             occupantFullJid = UserJid.from(JidCreate.entityFullFrom(room, occupant.getNickname()));
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
-            return;
-        }
-
-        if (PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(occupantFullJid)) {
-            Toast.makeText(this, R.string.contact_is_blocked, Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -35,7 +35,6 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
@@ -491,11 +490,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         // if chat of blocked contact is currently opened, it should be closed
         final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
         if (blockedContacts.contains(user)) {
-            close();
-        }
-
-        final List<UserJid> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
-        if (blockedMucContacts.contains(user)) {
             close();
         }
     }
