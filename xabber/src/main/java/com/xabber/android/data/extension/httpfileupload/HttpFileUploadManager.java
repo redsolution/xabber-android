@@ -3,13 +3,12 @@ package com.xabber.android.data.extension.httpfileupload;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.xmpp.httpfileupload.Slot;
 
@@ -21,11 +20,10 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.Jid;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,14 +53,14 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         return instance;
     }
 
-    private Map<AccountJid, String> uploadServers = new ConcurrentHashMap<>();
+    private Map<AccountJid, Jid> uploadServers = new ConcurrentHashMap<>();
 
     public boolean isFileUploadSupported(AccountJid account) {
         return uploadServers.containsKey(account);
     }
 
     public void uploadFile(final AccountJid account, final UserJid user, final String filePath) {
-        final String uploadServerUrl = uploadServers.get(account);
+        final Jid uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             return;
         }
@@ -147,7 +145,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         if (!services.isEmpty()) {
             final DomainBareJid uploadServerUrl = services.get(0);
             LogManager.i(this, "Http file upload server: " + uploadServerUrl);
-            uploadServers.put(account, uploadServerUrl.toString());
+            uploadServers.put(account, uploadServerUrl);
         }
     }
 
