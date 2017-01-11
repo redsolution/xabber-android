@@ -17,6 +17,7 @@ import org.jivesoftware.smack.sasl.SASLErrorException;
 class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     private ConnectionItem connectionItem;
+    private String LOG_TAG = ConnectionListener.class.getSimpleName();
 
     ConnectionListener(ConnectionItem connectionItem) {
         this.connectionItem = connectionItem;
@@ -24,6 +25,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void connected(XMPPConnection connection) {
+        LogManager.i(LOG_TAG, "connected");
+
         connectionItem.showDebugToast("connected");
 
         connectionItem.updateState(ConnectionState.authentication);
@@ -40,6 +43,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
+        LogManager.i(LOG_TAG, "authenticated " + resumed);
+
         if (resumed) {
             connectionItem.showDebugToast("authenticated resumed");
         } else {
@@ -67,6 +72,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void connectionClosed() {
+        LogManager.i(LOG_TAG, "connectionClosed");
+
         connectionItem.showDebugToast("connection closed");
 
         connectionItem.updateState(ConnectionState.offline);
@@ -79,6 +86,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     // going to reconnect with Smack Reconnection manager
     @Override
     public void connectionClosedOnError(final Exception e) {
+        LogManager.i(LOG_TAG, "connectionClosedOnError " + e + " " + e.getMessage());
+
         connectionItem.showDebugToast("connection closed on error: " + e.getMessage() + ". Exception: " + e.getClass().getSimpleName());
         connectionItem.updateState(ConnectionState.waiting);
 
@@ -101,11 +110,15 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void reconnectionSuccessful() {
+        LogManager.i(LOG_TAG, "reconnectionSuccessful");
+
         connectionItem.showDebugToast("reconnection successful");
     }
 
     @Override
     public void reconnectingIn(int seconds) {
+        LogManager.i(LOG_TAG, "reconnectionSuccessful");
+
         connectionItem.showDebugToast("reconnecting in " + seconds + " seconds", Toast.LENGTH_SHORT);
 
         if (connectionItem.getState() != ConnectionState.waiting && !connectionItem.getConnection().isAuthenticated()
@@ -116,6 +129,8 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void reconnectionFailed(Exception e) {
+        LogManager.i(LOG_TAG, "reconnectionFailed " + e + " " + e.getMessage());
+
         connectionItem.showDebugToast("reconnection failed: " + e.getMessage() + ". Exception: " + e.getClass().getSimpleName());
         connectionItem.updateState(ConnectionState.offline);
     }
