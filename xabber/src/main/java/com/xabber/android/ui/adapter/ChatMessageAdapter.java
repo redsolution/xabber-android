@@ -36,6 +36,7 @@ import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
 import com.xabber.android.data.log.LogManager;
@@ -117,9 +118,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         outgoingMessage.progressBar.setVisibility(View.GONE);
 
+        outgoingMessage.messageImage.setVisibility(View.GONE);
+        outgoingMessage.messageText.setVisibility(View.VISIBLE);
+
         if (messageItem.getFilePath() != null) {
             if (messageItem.isInProgress()) {
                 outgoingMessage.progressBar.setVisibility(View.VISIBLE);
+            }
+
+            if (FileManager.fileIsImage(messageItem.getFilePath())) {
+                FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
+
+                outgoingMessage.messageImage.setVisibility(View.VISIBLE);
+                outgoingMessage.messageText.setVisibility(View.GONE);
             }
         }
 
