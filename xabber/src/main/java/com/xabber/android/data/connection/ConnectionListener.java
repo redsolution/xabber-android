@@ -43,7 +43,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void authenticated(XMPPConnection connection, boolean resumed) {
-        LogManager.i(LOG_TAG, "authenticated " + resumed);
+        LogManager.i(LOG_TAG, "authenticated. resumed: " + resumed);
 
         if (resumed) {
             connectionItem.showDebugToast("authenticated resumed");
