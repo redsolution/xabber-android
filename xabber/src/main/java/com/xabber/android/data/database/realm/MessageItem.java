@@ -58,6 +58,7 @@ public class MessageItem extends RealmObject {
         public static final String FILE_URL = "fileUrl";
         public static final String FILE_SIZE = "fileSize";
         public static final String ACKNOWLEDGED = "acknowledged";
+        public static final String IS_IN_PROGRESS = "isInProgress";
 
     }
 
@@ -155,6 +156,11 @@ public class MessageItem extends RealmObject {
      * If message was acknowledged by server (XEP-0198: Stream Management)
      */
     private boolean acknowledged;
+
+    /**
+     * If message is currently in progress (i.e. file is uploading/downloading)
+     */
+    private boolean isInProgress;
 
 
     public MessageItem(String uniqueId) {
@@ -340,6 +346,14 @@ public class MessageItem extends RealmObject {
         this.filePath = filePath;
     }
 
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
     public Long getFileSize() {
         return fileSize;
     }
@@ -366,5 +380,13 @@ public class MessageItem extends RealmObject {
 
     public void setAcknowledged(boolean acknowledged) {
         this.acknowledged = acknowledged;
+    }
+
+    public boolean isInProgress() {
+        return isInProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        isInProgress = inProgress;
     }
 }

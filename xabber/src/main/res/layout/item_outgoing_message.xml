@@ -80,9 +80,10 @@
 
     <ProgressBar
         style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
         android:id="@+id/message_progress_bar"
+        android:layout_marginRight="4dp"
         android:layout_alignBottom="@+id/message_time"
         android:layout_toLeftOf="@+id/message_status_icon"
         android:layout_toStartOf="@+id/message_status_icon" />

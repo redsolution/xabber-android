@@ -113,6 +113,16 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         setUpMessage(messageItem, holder);
         setStatusIcon(messageItem, (OutgoingMessage) holder);
 
+        OutgoingMessage outgoingMessage = (OutgoingMessage) holder;
+
+        outgoingMessage.progressBar.setVisibility(View.GONE);
+
+        if (messageItem.getFilePath() != null) {
+            if (messageItem.isInProgress()) {
+                outgoingMessage.progressBar.setVisibility(View.VISIBLE);
+            }
+        }
+
         setUpMessageBalloonBackground(holder.messageBalloon,
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
     }
@@ -356,7 +366,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             if (messageItem.isAcknowledged()) {
                 messageIcon = R.drawable.ic_message_acknowledged_14dp;
             } else {
-                message.statusIcon.setVisibility(View.INVISIBLE);
+                message.statusIcon.setVisibility(View.GONE);
             }
         }
 

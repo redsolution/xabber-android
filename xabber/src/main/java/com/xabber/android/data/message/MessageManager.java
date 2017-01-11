@@ -238,7 +238,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         return chat.newFileMessage(file);
     }
 
-    public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final String text) {
+    public void updateFileMessage(AccountJid account, UserJid user, final String messageId, final String url) {
         final AbstractChat chat = getChat(account, user);
         if (chat == null) {
             return;
@@ -254,8 +254,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                         .findFirst();
 
                 if (messageItem != null) {
-                    messageItem.setText(text);
+                    messageItem.setText(url);
                     messageItem.setSent(false);
+                    messageItem.setInProgress(false);
                 }
             }
         });
@@ -276,6 +277,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     messageItem.setError(true);
+                    messageItem.setInProgress(false);
                 }
             }
         });

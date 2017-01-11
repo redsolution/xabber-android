@@ -369,6 +369,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 messageItem.setSent(true);
                 messageItem.setError(false);
                 messageItem.setIncoming(false);
+                messageItem.setInProgress(true);
                 realm.copyToRealm(messageItem);
             }
         });
