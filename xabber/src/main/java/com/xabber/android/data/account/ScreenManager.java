@@ -39,6 +39,7 @@ import java.util.Calendar;
  */
 public class ScreenManager implements OnInitializedListener, OnCloseListener {
 
+    private static final String LOG_TAG = ScreenManager.class.getSimpleName();
     private final ScreenReceiver screenReceiver;
     private final AlarmManager alarmManager;
     private final PendingIntent goAwayPendingIntent;
@@ -99,6 +100,8 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
         int goAway = SettingsManager.connectionGoAway();
         int goXa = SettingsManager.connectionGoXa();
         if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_ON");
+
 //            ConnectionManager.getInstance().updateConnections(false);
             alarmManager.cancel(goAwayPendingIntent);
             alarmManager.cancel(goXaPendingIntent);
@@ -107,6 +110,8 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
             // notify server(s) that client is now active
             ClientStateManager.setActive();
         } else if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_OFF");
+
             if (goAway >= 0)
                 alarmManager.set(AlarmManager.RTC_WAKEUP, getTime(goAway),
                         goAwayPendingIntent);
