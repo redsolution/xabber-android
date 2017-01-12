@@ -61,7 +61,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private static final String DATABASE_NAME = "xabber.db";
     private static final String REALM_DATABASE_NAME = "xabber.realm";
     private static final int DATABASE_VERSION = 70;
-    private static final int REALM_DATABASE_VERSION = 11;
+    private static final int REALM_DATABASE_VERSION = 12;
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
@@ -180,6 +180,12 @@ public class DatabaseManager extends SQLiteOpenHelper implements
                         if (oldVersion == 10) {
                             schema.get(MessageItem.class.getSimpleName())
                                     .addField(MessageItem.Fields.IS_IN_PROGRESS, boolean.class);
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 11) {
+                            schema.get(MessageItem.class.getSimpleName())
+                                    .addField(MessageItem.Fields.IS_IMAGE, boolean.class);
                             oldVersion++;
                         }
 

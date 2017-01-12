@@ -57,6 +57,7 @@ public class MessageItem extends RealmObject {
         public static final String FILE_PATH = "filePath";
         public static final String FILE_URL = "fileUrl";
         public static final String FILE_SIZE = "fileSize";
+        public static final String IS_IMAGE = "isImage";
         public static final String ACKNOWLEDGED = "acknowledged";
         public static final String IS_IN_PROGRESS = "isInProgress";
 
@@ -149,6 +150,11 @@ public class MessageItem extends RealmObject {
      * If message "contains" file with local file path
      */
     private String filePath;
+
+    /**
+     * If message contains URL to image (and may be drawn as image)
+     */
+    private boolean isImage;
 
     private Long fileSize;
 
@@ -344,6 +350,14 @@ public class MessageItem extends RealmObject {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public boolean isImage() {
+        return isImage;
+    }
+
+    public void setIsImage(boolean isImage) {
+        this.isImage = isImage;
     }
 
     public String getFileUrl() {

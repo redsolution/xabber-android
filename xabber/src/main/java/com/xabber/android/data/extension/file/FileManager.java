@@ -75,9 +75,7 @@ public class FileManager {
     }
 
     public static void processFileMessage (final MessageItem messageItem, final boolean download) {
-        if (!treatAsDownloadable(messageItem.getText())) {
-            return;
-        }
+        messageItem.setIsImage(isImageUrl(messageItem.getText()));
     }
 
     @NonNull
@@ -187,7 +185,41 @@ public class FileManager {
         return true;
     }
 
-    public static boolean treatAsDownloadable(String text) {
+    @Nullable
+    public static URL getDownloadableUrl(String text) {
+        if (text.trim().contains(" ")) {
+            return null;
+        }
+        try {
+            URL url = new URL(text);
+            if (!url.getProtocol().equalsIgnoreCase("http") && !url.getProtocol().equalsIgnoreCase("https")) {
+                return null;
+            }
+            String extension = extractRelevantExtension(url);
+            if (extension == null) {
+                return null;
+            }
+
+            String ref = url.getRef();
+            boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
+
+            if (encrypted) {
+                if (getExtensionMimeType(extension) != null) {
+                    return url;
+                } else {
+                    return null;
+                }
+            }
+
+            return url;
+
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static boolean isImageUrl(String text) {
         if (text.trim().contains(" ")) {
             return false;
         }
@@ -201,19 +233,7 @@ public class FileManager {
                 return false;
             }
 
-            String ref = url.getRef();
-            boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
-
-            if (encrypted) {
-                if (getExtensionMimeType(extension) != null) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            return true;
-
+            return extensionIsImage(extension);
         } catch (MalformedURLException e) {
             return false;
         }

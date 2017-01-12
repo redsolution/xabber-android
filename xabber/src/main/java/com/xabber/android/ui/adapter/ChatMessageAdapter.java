@@ -116,51 +116,57 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         OutgoingMessage outgoingMessage = (OutgoingMessage) holder;
 
-        outgoingMessage.progressBar.setVisibility(View.GONE);
-
-        outgoingMessage.messageImage.setVisibility(View.GONE);
-
-        if (messageItem.getFilePath() != null) {
-            if (messageItem.isInProgress()) {
-                outgoingMessage.progressBar.setVisibility(View.VISIBLE);
-            }
-
-            if (SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFilePath())) {
-                boolean result = FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
-
-                if (result) {
-                    outgoingMessage.messageImage.setVisibility(View.VISIBLE);
-                    outgoingMessage.messageText.setVisibility(View.GONE);
-                } else {
-                    final String uniqueId = messageItem.getUniqueId();
-                    final Realm realm = Realm.getDefaultInstance();
-                    realm.executeTransactionAsync(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            MessageItem first = realm.where(MessageItem.class)
-                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                    .findFirst();
-                            if (first != null) {
-                                first.setFilePath(null);
-                            }
-                        }
-                    }, new Realm.Transaction.OnSuccess() {
-                        @Override
-                        public void onSuccess() {
-                            realm.close();
-                        }
-                    }, new Realm.Transaction.OnError() {
-                        @Override
-                        public void onError(Throwable error) {
-                            realm.close();
-                        }
-                    });
-                }
-            }
+        if (messageItem.isInProgress()) {
+            outgoingMessage.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            outgoingMessage.progressBar.setVisibility(View.GONE);
         }
+
+        setUpImage(messageItem, outgoingMessage);
 
         setUpMessageBalloonBackground(holder.messageBalloon,
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
+    }
+
+    private void setUpImage(MessageItem messageItem, OutgoingMessage outgoingMessage) {
+        outgoingMessage.messageImage.setVisibility(View.GONE);
+
+        if (!messageItem.isImage() || !SettingsManager.connectionLoadImages()) {
+            return;
+        }
+
+        if (messageItem.getFilePath() != null) {
+            boolean result = FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
+
+            if (result) {
+                outgoingMessage.messageImage.setVisibility(View.VISIBLE);
+                outgoingMessage.messageText.setVisibility(View.GONE);
+            } else {
+                final String uniqueId = messageItem.getUniqueId();
+                final Realm realm = Realm.getDefaultInstance();
+                realm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        MessageItem first = realm.where(MessageItem.class)
+                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                .findFirst();
+                        if (first != null) {
+                            first.setFilePath(null);
+                        }
+                    }
+                }, new Realm.Transaction.OnSuccess() {
+                    @Override
+                    public void onSuccess() {
+                        realm.close();
+                    }
+                }, new Realm.Transaction.OnError() {
+                    @Override
+                    public void onError(Throwable error) {
+                        realm.close();
+                    }
+                });
+            }
+        }
     }
 
     private void setUpIncomingMessage(final IncomingMessage incomingMessage, final MessageItem messageItem) {
