@@ -1,7 +1,5 @@
 package com.xabber.android.ui.fragment;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ClipData;
@@ -9,7 +7,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
@@ -46,7 +43,6 @@ import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
@@ -72,9 +68,9 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ConferenceAddActivity;
+import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
-import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.FingerprintActivity;
 import com.xabber.android.ui.activity.OccupantListActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
@@ -91,8 +87,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.jid.impl.JidCreate;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -117,7 +111,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 23;
     private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 24;
-    private static final int PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS = 25;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 26;
     private static final int PERMISSIONS_REQUEST_EXPORT_CHAT = 27;
 
@@ -648,22 +641,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     onNoReadPermissionError();
                 }
                 break;
-            case PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS :
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    saveFileToDownloads();
-                } else {
-                    onNoWritePermissionError();
-                }
-                break;
             case PERMISSIONS_REQUEST_EXPORT_CHAT :
                 if (PermissionsRequester.isPermissionGranted(grantResults)) {
                     showExportChatDialog();
                 } else {
-                    onNoWritePermissionError();
-                }
-                break;
-            case PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE :
-                if (!PermissionsRequester.isPermissionGranted(grantResults)) {
                     onNoWritePermissionError();
                 }
                 break;
@@ -1036,38 +1017,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         ChatExportDialogFragment.newInstance(account, user).show(getFragmentManager(), "CHAT_EXPORT");
     }
 
-    private void OnSaveFileToDownloadsClick() {
-        if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_SAVE_TO_DOWNLOADS)) {
-            saveFileToDownloads();
-        }
-    }
-
-    private void saveFileToDownloads() {
-        final String filePath = clickedMessageItem.getFilePath();
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    FileManager.saveFileToDownloads(new File(filePath));
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(Application.getInstance(), R.string.file_saved_successfully, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } catch (IOException e) {
-                    LogManager.exception(this, e);
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(Application.getInstance(), R.string.could_not_save_file, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
     private void stopEncryption(AccountJid account, UserJid user) {
         try {
             OTRManager.getInstance().endSession(account, user);
@@ -1184,12 +1133,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     @Override
     public void onSuccessfullUpload(String getUrl) {
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @Override
-    public void onNoDownloadFilePermission() {
-        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
     }
 
     @Override

@@ -1,22 +1,14 @@
 package com.xabber.android.data.extension.file;
 
-import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.xabber.android.BuildConfig;
@@ -31,29 +23,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
-
-import io.realm.Realm;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class FileManager {
 
     public static final String LOG_TAG = FileManager.class.getSimpleName();
 
     private static final String[] VALID_IMAGE_EXTENSIONS = {"webp", "jpeg", "jpg", "png", "jpe", "gif"};
-
-    private static final String CACHE_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()
-            + "/"  +  Application.getInstance().getString(R.string.application_title_short) + "/Cache/";
-
 
     private final static FileManager instance;
 
@@ -81,89 +59,12 @@ public class FileManager {
         messageItem.setIsImage(isImage);
     }
 
-    @NonNull
-    private static String getCachePath(URL url) {
-        return CACHE_DIRECTORY + url.getHost() + "/" + url.getPath();
-    }
-
-    private static void getFileUrlSize(final MessageItem messageItem) {
-        LogManager.i(FileManager.class, "Requesting file size");
-
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(messageItem.getText())
-                .head()
-                .build();
-
-        final String uniqueId = messageItem.getUniqueId();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    final String contentLength = response.header("Content-Length");
-                    if (contentLength != null) {
-                        Realm realm = Realm.getDefaultInstance();
-                        realm.executeTransaction(new Realm.Transaction() {
-                            @Override
-                            public void execute(Realm realm) {
-                                MessageItem first = realm.where(MessageItem.class)
-                                        .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
-                                        .findFirst();
-                                if (first != null) {
-                                    first.setFileSize(Long.parseLong(contentLength));
-                                }
-                            }
-                        });
-                        realm.close();
-                    }
-                }
-            }
-        });
-    }
-
-    public static boolean fileIsImage(String path) {
-        return extensionIsImage(extractRelevantExtension(path));
-    }
-
-
     public static boolean fileIsImage(File file) {
         return extensionIsImage(extractRelevantExtension(file.getPath()));
     }
 
-    public static boolean extensionIsImage(String extension) {
+    private static boolean extensionIsImage(String extension) {
         return Arrays.asList(VALID_IMAGE_EXTENSIONS).contains(extension);
-    }
-
-
-    public static String getFileName(String path) {
-        return path.substring(path.lastIndexOf('/') + 1).toLowerCase();
-    }
-    public static void openFile(Context context, File file) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(FileManager.getFileUri(file), getFileMimeType(file));
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-        PackageManager manager = context.getPackageManager();
-        List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
-        if (infos.size() > 0) {
-            context.startActivity(intent);
-        } else {
-            Toast.makeText(context, R.string.no_application_to_open_file, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private static String getFileMimeType(File file) {
-        return getExtensionMimeType(MimeTypeMap.getFileExtensionFromUrl(file.toURI().toString()));
-    }
-
-    private static String getExtensionMimeType(String extension) {
-        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
     }
 
     public static boolean loadImageFromFile(Context context, String path, ImageView imageView) {
@@ -188,41 +89,7 @@ public class FileManager {
         return true;
     }
 
-    @Nullable
-    public static URL getDownloadableUrl(String text) {
-        if (text.trim().contains(" ")) {
-            return null;
-        }
-        try {
-            URL url = new URL(text);
-            if (!url.getProtocol().equalsIgnoreCase("http") && !url.getProtocol().equalsIgnoreCase("https")) {
-                return null;
-            }
-            String extension = extractRelevantExtension(url);
-            if (extension == null) {
-                return null;
-            }
-
-            String ref = url.getRef();
-            boolean encrypted = ref != null && ref.matches("([A-Fa-f0-9]{2}){48}");
-
-            if (encrypted) {
-                if (getExtensionMimeType(extension) != null) {
-                    return url;
-                } else {
-                    return null;
-                }
-            }
-
-            return url;
-
-        } catch (MalformedURLException e) {
-            return null;
-        }
-    }
-
-    @Nullable
-    public static boolean isImageUrl(String text) {
+    private static boolean isImageUrl(String text) {
         if (text.trim().contains(" ")) {
             return false;
         }
@@ -242,7 +109,7 @@ public class FileManager {
         }
     }
 
-    public static String extractRelevantExtension(URL url) {
+    private static String extractRelevantExtension(URL url) {
         String path = url.getPath();
         return extractRelevantExtension(path);
     }
@@ -299,41 +166,6 @@ public class FileManager {
         layoutParams.width = scaledWidth;
         layoutParams.height = scaledHeight;
 
-    }
-
-    public static void saveFileToDownloads(File srcFile) throws IOException {
-        LogManager.i(FileManager.class, "Saving file to downloads");
-        final File dstFile = copyFile(srcFile, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + srcFile.getName());
-
-        String mimeTypeFromExtension = getFileMimeType(dstFile);
-        if (mimeTypeFromExtension == null) {
-            mimeTypeFromExtension = "application/octet-stream";
-        }
-        final DownloadManager downloadManager = (DownloadManager) Application.getInstance().getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.addCompletedDownload(dstFile.getName(),
-                String.format(Application.getInstance().getString(R.string.received_by),
-                        Application.getInstance().getString(R.string.application_title_short)),
-                true, mimeTypeFromExtension, dstFile.getPath(), dstFile.length(), true);
-    }
-
-    public static File copyFile(File srcFile, String dstPath) throws IOException {
-        File dstFile = new File(dstPath);
-
-        new File(dstFile.getParent()).mkdirs();
-
-        InputStream in = new FileInputStream(srcFile);
-        OutputStream out = new FileOutputStream(dstFile);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
-
-        return dstFile;
     }
 
     public static boolean isImageSizeGreater(Uri srcUri, int maxSize) {

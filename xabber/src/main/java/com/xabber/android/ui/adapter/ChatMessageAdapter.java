@@ -112,7 +112,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     }
 
     public interface Listener {
-        void onNoDownloadFilePermission();
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
     }
