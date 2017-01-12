@@ -473,7 +473,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
             messageItem.setRead(true);
             messageItem.setSent(true);
 
-            FileManager.processFileMessage(messageItem, false);
+            FileManager.processFileMessage(messageItem);
 
             messageItems.add(messageItem);
         }

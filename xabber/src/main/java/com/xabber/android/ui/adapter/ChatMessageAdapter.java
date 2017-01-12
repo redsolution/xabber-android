@@ -16,6 +16,7 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.StyleRes;
@@ -28,6 +29,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
@@ -128,19 +135,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 context.getResources().getColorStateList(R.color.outgoing_message_color_state_dark), R.drawable.message_outgoing_states);
     }
 
-    private void setUpImage(MessageItem messageItem, OutgoingMessage outgoingMessage) {
-        outgoingMessage.messageImage.setVisibility(View.GONE);
+    private void setUpImage(MessageItem messageItem, final Message messageHolder) {
+        messageHolder.messageImage.setVisibility(View.GONE);
 
         if (!messageItem.isImage() || !SettingsManager.connectionLoadImages()) {
             return;
         }
 
         if (messageItem.getFilePath() != null) {
-            boolean result = FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
+            boolean result = FileManager.loadImageFromFile(context, messageItem.getFilePath(), messageHolder.messageImage);
 
             if (result) {
-                outgoingMessage.messageImage.setVisibility(View.VISIBLE);
-                outgoingMessage.messageText.setVisibility(View.GONE);
+                messageHolder.messageImage.setVisibility(View.VISIBLE);
+                messageHolder.messageText.setVisibility(View.GONE);
             } else {
                 final String uniqueId = messageItem.getUniqueId();
                 final Realm realm = Realm.getDefaultInstance();
@@ -166,6 +173,85 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                     }
                 });
             }
+        } else {
+            final ViewGroup.LayoutParams layoutParams = messageHolder.messageImage.getLayoutParams();
+
+            Integer imageWidth = messageItem.getImageWidth();
+            Integer imageHeight = messageItem.getImageHeight();
+
+            if (imageWidth != null && imageHeight != null) {
+                FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
+                Glide.with(context)
+                        .load(messageItem.getText())
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                messageHolder.messageImage.setVisibility(View.GONE);
+                                messageHolder.messageText.setVisibility(View.VISIBLE);
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
+                        .into(messageHolder.messageImage);
+
+                messageHolder.messageImage.setVisibility(View.VISIBLE);
+                messageHolder.messageText.setVisibility(View.GONE);
+            } else {
+                final String uniqueId = messageItem.getUniqueId();
+
+                Glide.with(context)
+                        .load(messageItem.getText())
+                        .asBitmap()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                final int width = resource.getWidth();
+                                final int height = resource.getHeight();
+
+                                if (width <= 0 || height <= 0) {
+                                    messageHolder.messageImage.setVisibility(View.GONE);
+                                    messageHolder.messageText.setVisibility(View.VISIBLE);
+                                    return;
+                                }
+
+                                final Realm realm = Realm.getDefaultInstance();
+                                realm.executeTransactionAsync(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        MessageItem first = realm.where(MessageItem.class)
+                                                .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                                .findFirst();
+                                        if (first != null) {
+                                            first.setImageWidth(width);
+                                            first.setImageHeight(height);
+                                        }
+                                    }
+                                }, new Realm.Transaction.OnSuccess() {
+                                    @Override
+                                    public void onSuccess() {
+                                        realm.close();
+                                    }
+                                }, new Realm.Transaction.OnError() {
+                                    @Override
+                                    public void onError(Throwable error) {
+                                        realm.close();
+                                    }
+                                });
+
+
+                                FileManager.scaleImage(layoutParams, height, width);
+
+                                messageHolder.messageImage.setImageBitmap(resource);
+
+                                messageHolder.messageImage.setVisibility(View.VISIBLE);
+                                messageHolder.messageText.setVisibility(View.GONE);
+                            }
+                        });
+            }
         }
     }
 
@@ -182,6 +268,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 ColorManager.getInstance().getChatIncomingBalloonColorsStateList(account), R.drawable.message_incoming);
 
         setUpAvatar(messageItem, incomingMessage);
+
+        setUpImage(messageItem, incomingMessage);
 
         if (messageItem.getText().trim().isEmpty()) {
             incomingMessage.messageBalloon.setVisibility(View.GONE);

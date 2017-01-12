@@ -336,7 +336,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setUnencrypted(unencrypted);
         messageItem.setOffline(offline);
         messageItem.setStanzaId(stanzaId);
-        FileManager.processFileMessage(messageItem, true);
+        FileManager.processFileMessage(messageItem);
 
         if (notify && notifyAboutMessage()) {
             if (visible) {

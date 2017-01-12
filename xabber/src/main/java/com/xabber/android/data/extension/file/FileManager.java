@@ -74,8 +74,11 @@ public class FileManager {
         return instance;
     }
 
-    public static void processFileMessage (final MessageItem messageItem, final boolean download) {
-        messageItem.setIsImage(isImageUrl(messageItem.getText()));
+    public static void processFileMessage (final MessageItem messageItem) {
+        boolean isImage = isImageUrl(messageItem.getText());
+        LogManager.i(LOG_TAG, "processFileMessage is image " + isImage + " " + messageItem.getText());
+
+        messageItem.setIsImage(isImage);
     }
 
     @NonNull
@@ -163,7 +166,7 @@ public class FileManager {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
     }
 
-    public static boolean loadImageFromFile(String path, ImageView imageView) {
+    public static boolean loadImageFromFile(Context context, String path, ImageView imageView) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
@@ -178,7 +181,7 @@ public class FileManager {
         }
 
         imageView.setLayoutParams(layoutParams);
-        Glide.with(imageView.getContext())
+        Glide.with(context)
                 .load(path)
                 .into(imageView);
 
@@ -259,7 +262,7 @@ public class FileManager {
     }
 
 
-    private static void scaleImage(ViewGroup.LayoutParams layoutParams, int height, int width) {
+    public static void scaleImage(ViewGroup.LayoutParams layoutParams, int height, int width) {
         int scaledWidth;
         int scaledHeight;
 

@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.database.realm;
 
+import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -58,6 +59,8 @@ public class MessageItem extends RealmObject {
         public static final String FILE_URL = "fileUrl";
         public static final String FILE_SIZE = "fileSize";
         public static final String IS_IMAGE = "isImage";
+        public static final String IMAGE_WIDTH = "imageWidth";
+        public static final String IMAGE_HEIGHT = "imageHeight";
         public static final String ACKNOWLEDGED = "acknowledged";
         public static final String IS_IN_PROGRESS = "isInProgress";
 
@@ -155,6 +158,12 @@ public class MessageItem extends RealmObject {
      * If message contains URL to image (and may be drawn as image)
      */
     private boolean isImage;
+
+    @Nullable
+    private Integer imageWidth;
+
+    @Nullable
+    private Integer imageHeight;
 
     private Long fileSize;
 
@@ -358,6 +367,24 @@ public class MessageItem extends RealmObject {
 
     public void setIsImage(boolean isImage) {
         this.isImage = isImage;
+    }
+
+    @Nullable
+    public Integer getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(@Nullable Integer imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    @Nullable
+    public Integer getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(@Nullable Integer imageHeight) {
+        this.imageHeight = imageHeight;
     }
 
     public String getFileUrl() {
