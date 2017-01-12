@@ -57,8 +57,8 @@ public class FileManager {
 
     private final static FileManager instance;
 
-    static int maxImageSize;
-    static int minImageSize;
+    private static int maxImageSize;
+    private static int minImageSize;
 
 
     static {
@@ -165,7 +165,7 @@ public class FileManager {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
     }
 
-    public static void loadImageFromFile(String path, ImageView imageView) {
+    public static boolean loadImageFromFile(String path, ImageView imageView) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
 
@@ -175,10 +175,16 @@ public class FileManager {
         ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
         scaleImage(layoutParams, options.outHeight, options.outWidth);
 
+        if (options.outHeight == 0 || options.outWidth == 0) {
+            return false;
+        }
+
         imageView.setLayoutParams(layoutParams);
         Glide.with(imageView.getContext())
                 .load(path)
                 .into(imageView);
+
+        return true;
     }
 
     public static boolean treatAsDownloadable(String text) {

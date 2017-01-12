@@ -18,9 +18,9 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +46,6 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.fragment.ChatFragment;
-import com.xabber.android.utils.Emoticons;
 import com.xabber.android.utils.StringUtils;
 
 import org.jxmpp.jid.impl.JidCreate;
@@ -54,6 +53,7 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Date;
 
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -110,7 +110,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         void onMessagesUpdated();
     }
 
-    private void setUpOutgoingMessage(Message holder, MessageItem messageItem) {
+    private void setUpOutgoingMessage(Message holder, final MessageItem messageItem) {
         setUpMessage(messageItem, holder);
         setStatusIcon(messageItem, (OutgoingMessage) holder);
 
@@ -119,7 +119,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         outgoingMessage.progressBar.setVisibility(View.GONE);
 
         outgoingMessage.messageImage.setVisibility(View.GONE);
-        outgoingMessage.messageText.setVisibility(View.VISIBLE);
 
         if (messageItem.getFilePath() != null) {
             if (messageItem.isInProgress()) {
@@ -127,10 +126,36 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             }
 
             if (FileManager.fileIsImage(messageItem.getFilePath())) {
-                FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
+                boolean result = FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
 
-                outgoingMessage.messageImage.setVisibility(View.VISIBLE);
-                outgoingMessage.messageText.setVisibility(View.GONE);
+                if (result) {
+                    outgoingMessage.messageImage.setVisibility(View.VISIBLE);
+                    outgoingMessage.messageText.setVisibility(View.GONE);
+                } else {
+                    final String uniqueId = messageItem.getUniqueId();
+                    final Realm realm = Realm.getDefaultInstance();
+                    realm.executeTransactionAsync(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+                            MessageItem first = realm.where(MessageItem.class)
+                                    .equalTo(MessageItem.Fields.UNIQUE_ID, uniqueId)
+                                    .findFirst();
+                            if (first != null) {
+                                first.setFilePath(null);
+                            }
+                        }
+                    }, new Realm.Transaction.OnSuccess() {
+                        @Override
+                        public void onSuccess() {
+                            realm.close();
+                        }
+                    }, new Realm.Transaction.OnError() {
+                        @Override
+                        public void onError(Throwable error) {
+                            realm.close();
+                        }
+                    });
+                }
             }
         }
 
@@ -234,19 +259,21 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         switch (viewType) {
             case VIEW_TYPE_HINT:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_message_info, parent, false));
+                        .inflate(R.layout.item_message_info, parent, false), appearanceStyle);
 
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_action_message, parent, false));
+                        .inflate(R.layout.item_action_message, parent, false), appearanceStyle);
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_incoming_message, parent, false), messageClickListener);
+                        .inflate(R.layout.item_incoming_message, parent, false),
+                        messageClickListener, appearanceStyle);
 
             case VIEW_TYPE_OUTGOING_MESSAGE:
                 return new OutgoingMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_outgoing_message, parent, false), messageClickListener);
+                        .inflate(R.layout.item_outgoing_message, parent, false),
+                        messageClickListener, appearanceStyle);
             default:
                 return null;
         }
@@ -334,11 +361,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             message.messageUnencrypted.setVisibility(View.GONE);
         }
 
-        message.messageText.setTextAppearance(context, appearanceStyle);
-
-        final Spannable spannable = MessageItem.getSpannable(messageItem);
-        Emoticons.getSmiledText(context, spannable, message.messageText);
-        message.messageText.setText(spannable);
+        message.messageText.setText(messageItem.getText());
         message.messageText.setVisibility(View.VISIBLE);
 
         String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
@@ -451,10 +474,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         TextView messageText;
 
-        BasicMessage(View itemView) {
+        BasicMessage(View itemView, @StyleRes int appearance) {
             super(itemView);
 
             messageText = (TextView) itemView.findViewById(R.id.message_text);
+            messageText.setTextAppearance(itemView.getContext(), appearance);
         }
     }
 
@@ -471,8 +495,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         ImageView statusIcon;
 
 
-        public Message(View itemView, MessageClickListener onClickListener) {
-            super(itemView);
+        public Message(View itemView, MessageClickListener onClickListener, @StyleRes int appearance) {
+            super(itemView, appearance);
             this.onClickListener = onClickListener;
 
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
@@ -489,7 +513,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         @Override
         public void onClick(View v) {
-            onClickListener.onMessageClick(messageBalloon, getPosition());
+            onClickListener.onMessageClick(messageBalloon, getAdapterPosition());
         }
 
         public interface MessageClickListener {
@@ -502,8 +526,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         public ImageView avatar;
 
-        IncomingMessage(View itemView, MessageClickListener listener) {
-            super(itemView, listener);
+        IncomingMessage(View itemView, MessageClickListener listener, @StyleRes int appearance) {
+            super(itemView, listener, appearance);
             avatar = (ImageView) itemView.findViewById(R.id.avatar);
         }
     }
@@ -513,8 +537,8 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         TextView messageFileInfo;
         ProgressBar progressBar;
 
-        OutgoingMessage(View itemView, MessageClickListener listener) {
-            super(itemView, listener);
+        OutgoingMessage(View itemView, MessageClickListener listener, @StyleRes int appearance) {
+            super(itemView, listener, appearance);
             progressBar = (ProgressBar) itemView.findViewById(R.id.message_progress_bar);
             messageFileInfo = (TextView) itemView.findViewById(R.id.message_file_info);
         }
