@@ -125,7 +125,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 outgoingMessage.progressBar.setVisibility(View.VISIBLE);
             }
 
-            if (FileManager.fileIsImage(messageItem.getFilePath())) {
+            if (SettingsManager.connectionLoadImages() && FileManager.fileIsImage(messageItem.getFilePath())) {
                 boolean result = FileManager.loadImageFromFile(messageItem.getFilePath(), outgoingMessage.messageImage);
 
                 if (result) {
@@ -509,15 +509,21 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
 
             itemView.setOnClickListener(this);
+            messageImage.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            onClickListener.onMessageClick(messageBalloon, getAdapterPosition());
+            if (v.getId() == R.id.message_image) {
+                onClickListener.onMessageImageClick(itemView, getAdapterPosition());
+            } else {
+                onClickListener.onMessageClick(messageBalloon, getAdapterPosition());
+            }
         }
 
         public interface MessageClickListener {
             void onMessageClick(View caller, int position);
+            void onMessageImageClick(View caller, int position);
         }
 
     }

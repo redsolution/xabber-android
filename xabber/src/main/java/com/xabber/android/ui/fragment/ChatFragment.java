@@ -1005,14 +1005,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
                 return true;
 
-            case R.id.action_message_open_file:
-                FileManager.openFile(getActivity(), new File(clickedMessageItem.getFilePath()));
-                return true;
-
-            case R.id.action_message_save_file:
-                OnSaveFileToDownloadsClick();
-                return true;
-
             case R.id.action_message_open_muc_private_chat:
                 UserJid occupantFullJid = null;
                 try {
@@ -1165,13 +1157,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 menu.findItem(R.id.action_message_remove).setVisible(false);
             }
 
-            String filePath = clickedMessageItem.getFilePath();
-
-            if (filePath != null && new File(filePath).exists()) {
-                menu.findItem(R.id.action_message_open_file).setVisible(true);
-                menu.findItem(R.id.action_message_save_file).setVisible(true);
-            }
-
             if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
                     .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_message_open_muc_private_chat).setVisible(true);
@@ -1179,6 +1164,15 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
             popup.show();
         }
+    }
+
+    @Override
+    public void onMessageImageClick(View caller, int position) {
+        MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(messageItem.getText()));
+        startActivity(i);
     }
 
     public void playIncomingAnimation() {

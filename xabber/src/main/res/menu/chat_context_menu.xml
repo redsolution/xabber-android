@@ -13,19 +13,8 @@
     <item android:id="@+id/action_message_remove"
         android:title="@string/message_remove" />
 
-    <item android:id="@+id/action_message_open_file"
-        android:title="@string/message_open_file"
-        android:visible="false"
-        />
-
-    <item android:id="@+id/action_message_save_file"
-        android:title="@string/message_save_file"
-        android:visible="false"
-        />
-
     <item android:id="@+id/action_message_open_muc_private_chat"
         android:title="@string/message_open_private_chat"
         android:visible="false"
         />
-
 </menu>
