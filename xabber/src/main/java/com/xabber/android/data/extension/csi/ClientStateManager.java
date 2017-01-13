@@ -39,6 +39,9 @@ public class ClientStateManager {
             }
 
             AbstractXMPPConnection xmppConnection = accountItem.getConnection();
+            if (!xmppConnection.isAuthenticated()) {
+                continue;
+            }
 
             if (xmppConnection.hasFeature("csi", ClientStateIndication.NAMESPACE))
                 try {
