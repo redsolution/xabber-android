@@ -48,6 +48,11 @@ public class LogManager implements OnLoadListener {
     static {
         instance = new LogManager(Application.getInstance());
         Application.getInstance().addManager(instance);
+
+        System.setProperty("smack.debuggerClass", "com.xabber.android.data.log.SmackDebugger");
+        System.setProperty("smack.debugEnabled", "true");
+        SmackConfiguration.DEBUG = true;
+
     }
 
     public static LogManager getInstance() {
@@ -60,11 +65,6 @@ public class LogManager implements OnLoadListener {
     @Override
     public void onLoad() {
         if (log) {
-            System.setProperty("smack.debuggerClass",
-                    "org.jivesoftware.smack.debugger.ConsoleDebugger");
-            // "com.xabber.android.data.FileLogDebugger");
-            System.setProperty("smack.debugEnabled", "true");
-            SmackConfiguration.DEBUG = true;
             // TODO: unknown Options
 //            Options.set("verbose");
 //            Options.set("verbosemsg");
@@ -134,6 +134,10 @@ public class LogManager implements OnLoadListener {
             return;
         }
         forceException(obj, exception);
+    }
+
+    public static void exception(Object obj, Throwable throwable) {
+        FileLog.e(obj.toString(), throwable);
     }
 
     /**
