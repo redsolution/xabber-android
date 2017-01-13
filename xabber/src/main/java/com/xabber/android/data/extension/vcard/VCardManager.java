@@ -312,7 +312,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     private void requestVCard(final AccountJid account, final Jid srcUser) {
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             return;
         }
@@ -331,6 +331,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
+                if (!accountItem.getConnection().isAuthenticated()) {
+                    return;
+                }
+
                 VCard vCard = null;
 
                 Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);

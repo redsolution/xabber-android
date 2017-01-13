@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -152,6 +153,11 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
+                XMPPTCPConnection connection = accountItem.getConnection();
+                if (!connection.isAuthenticated()) {
+                    return;
+                }
+
                 if (!checkSupport(accountItem)) {
                     return;
                 }
@@ -159,7 +165,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
                 EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
 
                 org.jivesoftware.smackx.mam.MamManager mamManager
-                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(accountItem.getConnection());
+                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(connection);
 
                 String lastMessageMamId;
                 int receivedMessagesCount;
