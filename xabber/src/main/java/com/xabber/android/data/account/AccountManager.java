@@ -773,6 +773,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     public void resendPresence() {
         for (AccountItem accountItem : accountItems.values()) {
+            if (accountItem.isEnabled()) {
+                continue;
+            }
+
             try {
                 PresenceManager.getInstance().resendPresence(accountItem.getAccount());
             } catch (NetworkException e) {
