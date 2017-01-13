@@ -43,6 +43,11 @@ public class StanzaSender {
     }
 
     private static void sendStanza(@NonNull XMPPTCPConnection xmppConnection, @NonNull Stanza stanza) throws NetworkException {
+        if (!xmppConnection.isAuthenticated()) {
+            LogManager.e(LOG_TAG, "sendStanza. Not connected! could not send stanza " + stanza);
+            return;
+        }
+
         try {
             xmppConnection.sendStanza(stanza);
         } catch (SmackException.NotConnectedException e) {
