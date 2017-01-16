@@ -19,6 +19,13 @@ public class AndroidLoggingHandler extends Handler {
         java.util.logging.LogManager.getLogManager().getLogger("").addHandler(rootHandler);
     }
 
+    private static final Formatter FORMATTER = new Formatter() {
+        @Override
+        public String format(LogRecord logRecord) {
+            return formatMessage(logRecord);
+        }
+    };
+
     @Override
     public void close() {
     }
@@ -33,22 +40,23 @@ public class AndroidLoggingHandler extends Handler {
             return;
 
         String tag = record.getLoggerName();
+        final String msg = FORMATTER.format(record);
 
         try {
             int level = getAndroidLevel(record.getLevel());
 
             switch (level) {
                 case Log.ERROR:
-                    LogManager.e(tag, record.getMessage());
+                    LogManager.e(tag, msg);
                     break;
                 case Log.WARN:
-                    LogManager.w(tag, record.getMessage());
+                    LogManager.w(tag, msg);
                     break;
                 case Log.INFO:
-                    LogManager.i(tag, record.getMessage());
+                    LogManager.i(tag, msg);
                     break;
                 case Log.DEBUG:
-                    LogManager.d(tag, record.getMessage());
+                    LogManager.d(tag, msg);
                     break;
             }
 
