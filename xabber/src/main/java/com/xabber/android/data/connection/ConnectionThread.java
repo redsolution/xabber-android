@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import de.measite.minidns.AbstractDNSClient;
+import de.measite.minidns.DNSClient;
 
 /**
  * Provides connection workflow.
@@ -84,6 +85,10 @@ class ConnectionThread {
         java.util.logging.Logger.getLogger(AbstractDNSClient.class.getName()).setLevel(Level.FINEST);
         java.util.logging.Logger.getLogger(AbstractXMPPConnection.class.getName()).setLevel(Level.FINEST);
         java.util.logging.Logger.getLogger(DNSUtil.class.getName()).setLevel(Level.FINEST);
+
+        // TODO: temp solution until MiniDnsClient and Smack will be updated
+        DNSClient.removeDNSServerLookupMechanism(de.measite.minidns.dnsserverlookup.AndroidUsingExec.INSTANCE);
+        DNSClient.addDnsServerLookupMechanism(AndroidUsingExec.INSTANCE);
 
         try {
             LogManager.i(this, "Trying to connect and login...");
