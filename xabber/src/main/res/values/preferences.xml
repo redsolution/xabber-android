@@ -507,6 +507,7 @@
     <string name="contact_integration_suggested_key">contact_integration_suggested</string>
     <string name="translation_suggested_key">translation_suggested</string>
     <string name="dark_theme_suggested_key">dark_theme_suggested</string>
+    <string name="battery_optimization_disable_suggested_key">battery_optimization_disable_suggested</string>
     <string name="sync_account_type">@string/application_package</string>
     <string name="contact_viewer_mime_type">vnd.android.cursor.item/vnd.com.xabber.view</string>
 </resources>

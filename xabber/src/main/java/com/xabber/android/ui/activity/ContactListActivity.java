@@ -64,6 +64,7 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
+import com.xabber.android.ui.dialog.BatteryOptimizationDisableDialog;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
 import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
@@ -73,6 +74,7 @@ import com.xabber.android.ui.dialog.TranslationDialog;
 import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
+import com.xabber.android.ui.helper.BatteryHelper;
 import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.uri.XMPPUri;
@@ -375,6 +377,12 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         }
 
         if (Application.getInstance().doNotify()) {
+            if (BatteryHelper.isOptimizingBattery()
+                    && !SettingsManager.isBatteryOptimizationDisableSuggested()) {
+                BatteryOptimizationDisableDialog.newInstance().show(getFragmentManager(),
+                        BatteryOptimizationDisableDialog.class.getSimpleName());
+            }
+
             if (!SettingsManager.isTranslationSuggested()) {
                 Locale currentLocale = getResources().getConfiguration().locale;
                 if (!currentLocale.getLanguage().equals("en") && !getResources().getBoolean(R.bool.is_translated)) {
@@ -391,7 +399,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
                 if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 0) {
                     new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
-                    SettingsManager.setDarkThemeSuggested();
                 }
             } else {
                 SettingsManager.setDarkThemeSuggested();

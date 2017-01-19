@@ -16,6 +16,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.time.FastDateFormat;
+import com.xabber.android.ui.helper.BatteryHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +67,7 @@ class FileLog {
                     + " " + BuildConfig.VERSION_NAME
                     + " Android " + Build.VERSION.RELEASE
                     + " SDK " + Build.VERSION.SDK_INT
+                    + " Battery optimization: " + BatteryHelper.isOptimizingBattery()
                     +  "-----\n");
             streamWriter.flush();
         } catch (Exception e) {

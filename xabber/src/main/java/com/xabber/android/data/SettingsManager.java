@@ -577,6 +577,14 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.interface_theme_dark_value));
     }
 
+    public static boolean isBatteryOptimizationDisableSuggested() {
+        return getBoolean(R.string.battery_optimization_disable_suggested_key, false);
+    }
+
+    public static void setBatteryOptimizationDisableSuggested() {
+        setBoolean(R.string.battery_optimization_disable_suggested_key, true);
+    }
+
     /**
      * @return Common status mode for all accounts or
      * {@link StatusMode#available} if mode was not set.
