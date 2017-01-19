@@ -29,6 +29,7 @@ import com.xabber.android.data.extension.csi.ClientStateManager;
 import com.xabber.android.receiver.GoAwayReceiver;
 import com.xabber.android.receiver.GoXaReceiver;
 import com.xabber.android.receiver.ScreenReceiver;
+import com.xabber.android.ui.helper.BatteryHelper;
 
 import java.util.Calendar;
 
@@ -100,7 +101,7 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
         int goAway = SettingsManager.connectionGoAway();
         int goXa = SettingsManager.connectionGoXa();
         if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
-            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_ON");
+            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_ON isOptimizingBattery: " + BatteryHelper.isOptimizingBattery());
 
 //            ConnectionManager.getInstance().updateConnections(false);
             alarmManager.cancel(goAwayPendingIntent);
@@ -110,7 +111,7 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
             // notify server(s) that client is now active
             ClientStateManager.setActive();
         } else if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
-            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_OFF");
+            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_OFF isOptimizingBattery: " + BatteryHelper.isOptimizingBattery());
 
             if (goAway >= 0)
                 alarmManager.set(AlarmManager.RTC_WAKEUP, getTime(goAway),
