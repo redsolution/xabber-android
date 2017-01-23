@@ -50,7 +50,6 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
 
     static {
         instance = new ScreenManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static ScreenManager getInstance() {

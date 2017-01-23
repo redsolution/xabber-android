@@ -60,7 +60,6 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
 
     static {
         instance = new PresenceManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final EntityNotificationProvider<SubscriptionRequest> subscriptionRequestProvider;

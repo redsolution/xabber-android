@@ -47,7 +47,6 @@ public class LogManager implements OnLoadListener {
 
     static {
         instance = new LogManager(Application.getInstance());
-        Application.getInstance().addManager(instance);
 
         System.setProperty("smack.debuggerClass", "com.xabber.android.data.log.SmackDebugger");
         System.setProperty("smack.debugEnabled", "true");

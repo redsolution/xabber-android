@@ -29,7 +29,7 @@ import java.io.IOException;
  *
  * @author alexander.ivanov
  */
-class AvatarStorage implements OnLoadListener, OnClearListener {
+public class AvatarStorage implements OnLoadListener, OnClearListener {
 
     private final File folder;
 
@@ -37,7 +37,6 @@ class AvatarStorage implements OnLoadListener, OnClearListener {
 
     static {
         instance = new AvatarStorage(Application.getInstance());
-        Application.getInstance().addManager(instance);
     }
 
     public static AvatarStorage getInstance() {

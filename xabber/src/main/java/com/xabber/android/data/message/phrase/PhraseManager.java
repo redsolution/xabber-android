@@ -45,7 +45,6 @@ public class PhraseManager implements OnLoadListener {
 
     static {
         instance = new PhraseManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static PhraseManager getInstance() {

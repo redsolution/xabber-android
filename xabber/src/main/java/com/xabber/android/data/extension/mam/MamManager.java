@@ -54,7 +54,6 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
     static {
         instance = new MamManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static MamManager getInstance() {

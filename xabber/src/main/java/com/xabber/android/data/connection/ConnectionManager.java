@@ -45,9 +45,8 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     static {
         instance = new ConnectionManager();
-        Application.getInstance().addManager(instance);
 
-        SmackConfiguration.setDefaultPacketReplyTimeout(PACKET_REPLY_TIMEOUT);
+        SmackConfiguration.setDefaultReplyTimeout(PACKET_REPLY_TIMEOUT);
     }
 
     private ConnectionManager() {

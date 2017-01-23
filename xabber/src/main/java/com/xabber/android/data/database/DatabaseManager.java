@@ -69,7 +69,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     static {
         instance = new DatabaseManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final ArrayList<DatabaseTable> registeredTables;

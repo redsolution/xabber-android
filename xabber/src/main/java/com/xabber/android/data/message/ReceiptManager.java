@@ -50,7 +50,6 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
 
     static {
         instance = new ReceiptManager();
-        Application.getInstance().addManager(instance);
 
         // TODO: change to ifSubscribed when isSubscribedToMyPresence will work and problem with thread element will be solved
         DeliveryReceiptManager.setDefaultAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.disabled);

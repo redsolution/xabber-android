@@ -66,7 +66,6 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
     static {
         instance = new AttentionManager();
-        Application.getInstance().addManager(instance);
 
         enabledLock = new Object();
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {

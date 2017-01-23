@@ -46,7 +46,6 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
     static {
         instance = new HttpFileUploadManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static HttpFileUploadManager getInstance() {

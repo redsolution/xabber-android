@@ -72,7 +72,6 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     static {
         instance = new MUCManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final EntityNotificationProvider<RoomInvite> inviteProvider;

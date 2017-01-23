@@ -41,7 +41,6 @@ public class FileManager {
 
     static {
         instance = new FileManager();
-        Application.getInstance().addManager(instance);
 
         Resources resources = Application.getInstance().getResources();
         maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);

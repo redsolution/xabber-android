@@ -39,7 +39,6 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
 
     static {
         instance = new CarbonManager();
-        Application.getInstance().addManager(instance);
     }
 
     private CarbonManager() {

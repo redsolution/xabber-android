@@ -74,7 +74,6 @@ public class ChatStateManager implements OnDisconnectListener,
 
     static {
         instance = new ChatStateManager();
-        Application.getInstance().addManager(instance);
 
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
                     @Override

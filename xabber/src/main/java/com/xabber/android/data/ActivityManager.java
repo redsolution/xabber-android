@@ -45,7 +45,6 @@ public class ActivityManager implements OnUnloadListener {
 
     static {
         instance = new ActivityManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final Application application;

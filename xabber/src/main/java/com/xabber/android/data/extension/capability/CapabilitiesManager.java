@@ -40,7 +40,10 @@ public class CapabilitiesManager {
 
     static {
         instance = new CapabilitiesManager();
-        Application.getInstance().addManager(instance);
+    }
+
+    public static CapabilitiesManager getInstance() {
+        return instance;
     }
 
     private static Collection<String> getFeatures(DiscoverInfo discoverInfo) {

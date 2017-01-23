@@ -97,7 +97,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     static {
         instance = new OTRManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final EntityNotificationProvider<SMRequest> smRequestProvider;

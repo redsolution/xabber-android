@@ -44,7 +44,6 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
     static {
         instance = new BlockingManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static BlockingManager getInstance() {

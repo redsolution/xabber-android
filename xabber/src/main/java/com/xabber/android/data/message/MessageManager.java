@@ -87,7 +87,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     static {
         instance = new MessageManager();
-        Application.getInstance().addManager(instance);
     }
 
     /**

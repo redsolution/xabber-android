@@ -56,7 +56,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     static {
         instance = new ChatManager();
-        Application.getInstance().addManager(instance);
     }
 
     /**

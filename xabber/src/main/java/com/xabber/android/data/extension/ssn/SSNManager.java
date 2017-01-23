@@ -65,7 +65,6 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
 
     static {
         instance = new SSNManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static SSNManager getInstance() {

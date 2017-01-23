@@ -70,7 +70,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     static {
         instance = new RosterManager();
-        Application.getInstance().addManager(instance);
     }
 
     private Collection<RosterContact> allRosterContacts;

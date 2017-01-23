@@ -77,7 +77,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     static {
         instance = new NotificationManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final Application application;

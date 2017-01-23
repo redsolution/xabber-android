@@ -81,7 +81,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     static {
         instance = new AvatarManager();
-        Application.getInstance().addManager(instance);
     }
 
     private final Application application;

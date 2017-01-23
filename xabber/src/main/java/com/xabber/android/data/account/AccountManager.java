@@ -82,7 +82,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     static {
         instance = new AccountManager();
-        Application.getInstance().addManager(instance);
     }
 
     /**

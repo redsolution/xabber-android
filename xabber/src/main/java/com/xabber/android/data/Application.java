@@ -22,7 +22,34 @@ import android.support.annotation.NonNull;
 import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.ScreenManager;
+import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.connection.ReconnectionManager;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.avatar.AvatarStorage;
+import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.ssn.SSNManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.ReceiptManager;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
@@ -249,15 +276,7 @@ public class Application extends android.app.Application {
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-        TypedArray managerClasses = getResources().obtainTypedArray(R.array.managers);
-        for (int index = 0; index < managerClasses.length(); index++) {
-            try {
-                Class.forName(managerClasses.getString(index));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        managerClasses.recycle();
+        addManagers();
 
         TypedArray tableClasses = getResources().obtainTypedArray(R.array.tables);
         for (int index = 0; index < tableClasses.length(); index++) {
@@ -270,6 +289,46 @@ public class Application extends android.app.Application {
         tableClasses.recycle();
 
         LogManager.i(this, "onCreate finished...");
+    }
+
+    private void addManagers() {
+        addManager(SettingsManager.getInstance());
+        addManager(LogManager.getInstance());
+        addManager(DatabaseManager.getInstance());
+        addManager(AvatarStorage.getInstance());
+        addManager(OTRManager.getInstance());
+        addManager(ConnectionManager.getInstance());
+        addManager(ScreenManager.getInstance());
+        addManager(AccountManager.getInstance());
+        addManager(MUCManager.getInstance());
+        addManager(MessageManager.getInstance());
+        addManager(ChatManager.getInstance());
+        addManager(VCardManager.getInstance());
+        addManager(AvatarManager.getInstance());
+        addManager(PresenceManager.getInstance());
+        addManager(RosterManager.getInstance());
+        addManager(GroupManager.getInstance());
+        addManager(PhraseManager.getInstance());
+        addManager(NotificationManager.getInstance());
+        addManager(ActivityManager.getInstance());
+        addManager(CapabilitiesManager.getInstance());
+        addManager(ChatStateManager.getInstance());
+        addManager(NetworkManager.getInstance());
+        addManager(ReconnectionManager.getInstance());
+        addManager(ReceiptManager.getInstance());
+        addManager(SSNManager.getInstance());
+        addManager(AttentionManager.getInstance());
+        addManager(CarbonManager.getInstance());
+        addManager(HttpFileUploadManager.getInstance());
+        addManager(BlockingManager.getInstance());
+        addManager(MamManager.getInstance());
+    }
+
+    /**
+     * Register new manager.
+     */
+    private void addManager(Object manager) {
+        registeredManagers.add(manager);
     }
 
     @Override
@@ -307,13 +366,6 @@ public class Application extends android.app.Application {
      */
     private void startTimer() {
         runOnUiThreadDelay(timerRunnable, OnTimerListener.DELAY);
-    }
-
-    /**
-     * Register new manager.
-     */
-    public void addManager(Object manager) {
-        registeredManagers.add(manager);
     }
 
     /**

@@ -61,7 +61,6 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     static {
         instance = new GroupManager();
-        Application.getInstance().addManager(instance);
 
         try {
             // TODO: looks ugly, comes from times, when account was string.

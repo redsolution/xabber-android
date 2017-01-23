@@ -34,7 +34,6 @@ public class ReconnectionManager implements OnConnectedListener,
 
     static {
         instance = new ReconnectionManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static ReconnectionManager getInstance() {

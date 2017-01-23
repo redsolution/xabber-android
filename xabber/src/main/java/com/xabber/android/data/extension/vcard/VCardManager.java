@@ -91,7 +91,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     static {
         instance = new VCardManager();
-        Application.getInstance().addManager(instance);
     }
 
     public static VCardManager getInstance() {

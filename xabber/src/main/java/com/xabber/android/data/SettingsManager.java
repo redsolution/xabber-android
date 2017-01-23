@@ -57,7 +57,6 @@ public class SettingsManager implements OnInitializedListener,
 
     static {
         instance = new SettingsManager();
-        Application.getInstance().addManager(instance);
     }
 
     private SettingsManager() {
