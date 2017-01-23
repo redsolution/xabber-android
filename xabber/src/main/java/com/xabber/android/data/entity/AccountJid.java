@@ -47,7 +47,6 @@ public class AccountJid implements Comparable<AccountJid>, Parcelable {
         } else {
             AccountJid newAccountJid = new AccountJid(fullJid);
             instances.put(fullJid, newAccountJid);
-            LogManager.i(LOG_TAG, "AccountJid created " + counter + " / " + instances.size() + " " + fullJid);
             return newAccountJid;
         }
     }

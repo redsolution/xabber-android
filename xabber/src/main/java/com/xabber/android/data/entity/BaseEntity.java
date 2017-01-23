@@ -35,7 +35,6 @@ public class BaseEntity extends AccountRelated implements
         super(account);
         this.user = user;
         counter++;
-        LogManager.i(this, "BaseEntity created " + counter + " " + this.getClass().getSimpleName());
     }
 
     public BaseEntity(BaseEntity baseEntity) {

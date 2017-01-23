@@ -172,7 +172,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         }
 
         if (messageItems == null) {
-            LogManager.i(this, "getMessages new messages query");
             messageItems = realm.where(MessageItem.class)
                     .equalTo(MessageItem.Fields.ACCOUNT, getAccountString())
                     .equalTo(MessageItem.Fields.USER, getUserString())
@@ -396,7 +395,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     private void updateLastMessage() {
         if (messagesWithNotEmptyText == null) {
             if (messageItems.isValid() && messageItems.isLoaded() && !messageItems.isEmpty()) {
-                LogManager.i(this, "getLastMessage quert last message");
                 messagesWithNotEmptyText = messageItems.where()
                         .not().isEmpty(MessageItem.Fields.TEXT)
                         .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);

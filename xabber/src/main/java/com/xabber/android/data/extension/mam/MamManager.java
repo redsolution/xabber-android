@@ -205,8 +205,6 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
     public int requestLastHistoryPage(org.jivesoftware.smackx.mam.MamManager mamManager,
                                       AbstractChat chat, String lastMessageMamId) {
-        LogManager.i(this, "requestLastHistoryPage " + chat.getUser());
-
         final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
         try {
             if (lastMessageMamId == null) {

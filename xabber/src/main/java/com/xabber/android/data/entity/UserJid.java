@@ -63,7 +63,6 @@ public class UserJid implements Comparable<UserJid>, Parcelable {
         } else {
             UserJid newUserJid = new UserJid(jid);
             instances.put(jid, new WeakReference<>(newUserJid));
-            LogManager.i(LOG_TAG, "UserJid created " + counter + " / " + instances.size() + " " + jid);
             return newUserJid;
         }
     }

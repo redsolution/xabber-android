@@ -326,8 +326,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(accountItem.getConnection());
 
 
-        LogManager.i(this, "request vCard for " + srcUser);
-
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
