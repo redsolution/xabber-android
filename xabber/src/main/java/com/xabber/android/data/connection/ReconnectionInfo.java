@@ -34,7 +34,7 @@ class ReconnectionInfo {
         resetReconnectionTime();
     }
 
-    private void resetReconnectionTime() {
+    void resetReconnectionTime() {
         lastReconnectionTimeMillis = System.currentTimeMillis();
     }
 

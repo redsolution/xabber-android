@@ -65,7 +65,11 @@ class ConnectionThread {
         thread.setDaemon(true);
     }
 
-    void start() {
+    /**
+     *
+     * @return true if connection thread started, false if already running - nothing changed
+     */
+    boolean start() {
         if (thread.getState() == Thread.State.TERMINATED) {
             LogManager.i(this, "Connection thread is finished, creating new one...");
             createNewThread();
@@ -74,8 +78,10 @@ class ConnectionThread {
         if (thread.getState() == Thread.State.NEW) {
             LogManager.i(this, "Connection thread is new, starting...");
             thread.start();
+            return true;
         } else {
             LogManager.i(this, "Connection thread is running already");
+            return false;
         }
     }
 
@@ -107,8 +113,7 @@ class ConnectionThread {
             LogManager.exception(this, e);
         }
 
-        LogManager.i(this, "Connection thread finished - reset reconnection info");
-        ReconnectionManager.getInstance().resetReconnectionInfo(connectionItem.getAccount());
+        LogManager.i(this, "Connection thread finished");
     }
 
     private boolean createAccount() {

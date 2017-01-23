@@ -173,13 +173,13 @@ public abstract class ConnectionItem {
      */
     protected abstract boolean isConnectionAvailable(boolean userRequest);
 
-    public void connect() {
+    public boolean connect() {
         updateState(ConnectionState.connecting);
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
         };
 
-        connectionThread.start();
+        return connectionThread.start();
     }
 
     private void configureConnection() {

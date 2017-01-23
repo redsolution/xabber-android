@@ -68,9 +68,14 @@ public class ReconnectionManager implements OnConnectedListener,
                 }
 
                 if (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - reconnectionInfo.getLastReconnectionTimeMillis()) >= reconnectAfter) {
-                    reconnectionInfo.nextAttempt();
-                    LogManager.i(this, "not authenticated. trying to connect... attempt " + reconnectionInfo.getReconnectAttempts());
-                    accountItem.connect();
+                    boolean newThreadStarted = accountItem.connect();
+                    if (newThreadStarted) {
+                        reconnectionInfo.nextAttempt();
+                        LogManager.i(this, "not authenticated. new thread started. next attempt " + reconnectionInfo.getReconnectAttempts());
+                    } else {
+                        reconnectionInfo.resetReconnectionTime();
+                        LogManager.i(this, "not authenticated. already in progress. reset time. attempt  " + reconnectionInfo.getReconnectAttempts());
+                    }
                 } else {
                     LogManager.i(this,
                             "not authenticated. waiting... seconds from last reconnection " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - reconnectionInfo.getLastReconnectionTimeMillis()));
