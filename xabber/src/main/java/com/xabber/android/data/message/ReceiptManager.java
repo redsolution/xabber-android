@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.message;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -23,6 +21,7 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
@@ -46,17 +45,19 @@ import io.realm.Realm;
  */
 public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener {
 
-    private final static ReceiptManager instance;
+    private static ReceiptManager instance;
 
     static {
-        instance = new ReceiptManager();
-
         // TODO: change to ifSubscribed when isSubscribedToMyPresence will work and problem with thread element will be solved
         DeliveryReceiptManager.setDefaultAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.disabled);
 
     }
 
     public static ReceiptManager getInstance() {
+        if (instance == null) {
+            instance = new ReceiptManager();
+        }
+
         return instance;
     }
 

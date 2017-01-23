@@ -41,11 +41,7 @@ public class ActivityManager implements OnUnloadListener {
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
 
     private static final boolean LOG = true;
-    private final static ActivityManager instance;
-
-    static {
-        instance = new ActivityManager();
-    }
+    private static ActivityManager instance;
 
     private final Application application;
     /**
@@ -65,15 +61,19 @@ public class ActivityManager implements OnUnloadListener {
      */
     private OnErrorListener onErrorListener;
 
-    private ActivityManager() {
-        this.application = Application.getInstance();
-        activities = new ArrayList<Activity>();
-        nextTaskIndex = 0;
-        taskIndexes = new WeakHashMap<Activity, Integer>();
+    public static ActivityManager getInstance() {
+        if (instance == null) {
+            instance = new ActivityManager();
+        }
+
+        return instance;
     }
 
-    public static ActivityManager getInstance() {
-        return instance;
+    private ActivityManager() {
+        this.application = Application.getInstance();
+        activities = new ArrayList<>();
+        nextTaskIndex = 0;
+        taskIndexes = new WeakHashMap<>();
     }
 
     /**

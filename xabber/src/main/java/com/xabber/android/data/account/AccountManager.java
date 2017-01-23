@@ -78,11 +78,7 @@ import java.util.Map;
  */
 public class AccountManager implements OnLoadListener, OnWipeListener {
 
-    private final static AccountManager instance;
-
-    static {
-        instance = new AccountManager();
-    }
+    private static AccountManager instance;
 
     /**
      * List of saved statuses.
@@ -108,6 +104,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     private boolean xa;
 
+    public static AccountManager getInstance() {
+        if (instance == null) {
+            instance = new AccountManager();
+        }
+
+        return instance;
+    }
+
     private AccountManager() {
         this.application = Application.getInstance();
         accountItems = new HashMap<>();
@@ -118,10 +122,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
         away = false;
         xa = false;
-    }
-
-    public static AccountManager getInstance() {
-        return instance;
     }
 
     @Override

@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.extension.ssn;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -26,6 +24,7 @@ import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.xmpp.archive.OtrMode;
 import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
@@ -61,13 +60,13 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
      */
     private final NestedMap<OtrMode> sessionOtrs;
 
-    private final static SSNManager instance;
-
-    static {
-        instance = new SSNManager();
-    }
+    private static SSNManager instance;
 
     public static SSNManager getInstance() {
+        if (instance == null) {
+            instance = new SSNManager();
+        }
+
         return instance;
     }
 

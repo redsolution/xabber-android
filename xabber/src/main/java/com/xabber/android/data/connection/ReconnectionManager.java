@@ -30,13 +30,13 @@ public class ReconnectionManager implements OnConnectedListener,
      */
     private final HashMap<AccountJid, ReconnectionInfo> connections;
 
-    private final static ReconnectionManager instance;
-
-    static {
-        instance = new ReconnectionManager();
-    }
+    private static ReconnectionManager instance;
 
     public static ReconnectionManager getInstance() {
+        if (instance == null) {
+            instance = new ReconnectionManager();
+        }
+
         return instance;
     }
 

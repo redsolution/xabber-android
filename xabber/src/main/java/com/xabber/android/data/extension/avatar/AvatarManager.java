@@ -77,11 +77,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     public static final String EMPTY_HASH = "";
     private static final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
-    private final static AvatarManager instance;
-
-    static {
-        instance = new AvatarManager();
-    }
+    private static AvatarManager instance;
 
     private final Application application;
     /**
@@ -109,6 +105,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      */
     private final BaseAvatarSet roomAvatarSet;
 
+    public static AvatarManager getInstance() {
+        if (instance == null) {
+            instance = new AvatarManager();
+        }
+
+        return instance;
+    }
+
     private AvatarManager() {
         this.application = Application.getInstance();
         userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars_icons, R.array.default_avatars_colors);
@@ -117,10 +121,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
-    }
-
-    public static AvatarManager getInstance() {
-        return instance;
     }
 
     /**

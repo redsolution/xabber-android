@@ -35,19 +35,18 @@ import java.util.Collection;
  * @author Georg Lukas, Semyon Baranov
  */
 public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
-    private final static CarbonManager instance;
+    private static CarbonManager instance;
 
-    static {
-        instance = new CarbonManager();
+    public static CarbonManager getInstance() {
+        if (instance == null) {
+            instance = new CarbonManager();
+        }
+
+        return instance;
     }
 
     private CarbonManager() {
     }
-
-    public static CarbonManager getInstance() {
-        return instance;
-    }
-
 
     @Override
     public void onAuthorized(final ConnectionItem connection) {

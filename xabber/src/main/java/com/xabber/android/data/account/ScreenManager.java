@@ -46,13 +46,13 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
     private final PendingIntent goAwayPendingIntent;
     private final PendingIntent goXaPendingIntent;
 
-    private final static ScreenManager instance;
-
-    static {
-        instance = new ScreenManager();
-    }
+    private static ScreenManager instance;
 
     public static ScreenManager getInstance() {
+        if (instance == null) {
+            instance = new ScreenManager();
+        }
+
         return instance;
     }
 

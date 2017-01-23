@@ -65,13 +65,18 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     private static final SQLiteException DOWNGRAD_EXCEPTION = new SQLiteException(
             "Database file was deleted");
-    private final static DatabaseManager instance;
-
-    static {
-        instance = new DatabaseManager();
-    }
+    private static DatabaseManager instance;
 
     private final ArrayList<DatabaseTable> registeredTables;
+
+
+    public static DatabaseManager getInstance() {
+        if (instance == null) {
+            instance = new DatabaseManager();
+        }
+
+        return instance;
+    }
 
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
@@ -246,9 +251,6 @@ public class DatabaseManager extends SQLiteOpenHelper implements
 
     }
 
-    public static DatabaseManager getInstance() {
-        return instance;
-    }
 
     /**
      * Builds IN statement for specified collection of values.

@@ -36,13 +36,13 @@ public class CapabilitiesManager {
     public static final ClientInfo INVALID_CLIENT_INFO = new ClientInfo(null,
             null, null, new ArrayList<String>());
 
-    private final static CapabilitiesManager instance;
-
-    static {
-        instance = new CapabilitiesManager();
-    }
+    private static CapabilitiesManager instance;
 
     public static CapabilitiesManager getInstance() {
+        if (instance == null) {
+            instance = new CapabilitiesManager();
+        }
+
         return instance;
     }
 

@@ -68,22 +68,22 @@ import java.util.Collections;
  */
 public class MUCManager implements OnLoadListener, OnPacketListener {
 
-    private final static MUCManager instance;
-
-    static {
-        instance = new MUCManager();
-    }
+    private static MUCManager instance;
 
     private final EntityNotificationProvider<RoomInvite> inviteProvider;
     private final EntityNotificationProvider<RoomAuthorizationError> authorizationErrorProvider;
 
+    public static MUCManager getInstance() {
+        if (instance == null) {
+            instance = new MUCManager();
+        }
+
+        return instance;
+    }
+
     private MUCManager() {
         inviteProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_add_circle);
         authorizationErrorProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_error);
-    }
-
-    public static MUCManager getInstance() {
-        return instance;
     }
 
     @Override

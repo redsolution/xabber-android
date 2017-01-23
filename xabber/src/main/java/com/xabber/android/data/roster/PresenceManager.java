@@ -56,11 +56,7 @@ import java.util.Set;
 public class PresenceManager implements OnLoadListener, OnAccountDisabledListener,
         OnPacketListener, OnAuthorizedListener {
 
-    private final static PresenceManager instance;
-
-    static {
-        instance = new PresenceManager();
-    }
+    private static PresenceManager instance;
 
     private final EntityNotificationProvider<SubscriptionRequest> subscriptionRequestProvider;
     /**
@@ -69,13 +65,17 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
      */
     private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
 
+    public static PresenceManager getInstance() {
+        if (instance == null) {
+            instance = new PresenceManager();
+        }
+
+        return instance;
+    }
+
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_add_circle);
         requestedSubscriptions = new HashMap<>();
-    }
-
-    public static PresenceManager getInstance() {
-        return instance;
     }
 
     @Override

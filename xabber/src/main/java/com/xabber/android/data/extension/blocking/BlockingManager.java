@@ -37,16 +37,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
 
-    private final static BlockingManager instance;
+    private static BlockingManager instance;
 
     private Map<AccountJid, Boolean> supportForAccounts;
     private Map<AccountJid, List<UserJid>> blockListsForAccounts;
 
-    static {
-        instance = new BlockingManager();
-    }
-
     public static BlockingManager getInstance() {
+        if (instance == null) {
+            instance = new BlockingManager();
+        }
+
         return instance;
     }
 

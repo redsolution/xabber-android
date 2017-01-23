@@ -66,11 +66,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     private static final String LOG_TAG = RosterManager.class.getSimpleName();
 
-    private final static RosterManager instance;
-
-    static {
-        instance = new RosterManager();
-    }
+    private static RosterManager instance;
 
     private Collection<RosterContact> allRosterContacts;
     private final NestedMap<WeakReference<AbstractContact>> contactsCache;
@@ -81,6 +77,10 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
     }
 
     public static RosterManager getInstance() {
+        if (instance == null) {
+            instance = new RosterManager();
+        }
+
         return instance;
     }
 

@@ -66,15 +66,13 @@ import java.util.Map;
 public class ChatStateManager implements OnDisconnectListener,
         OnPacketListener, OnCloseListener {
 
-    private final static ChatStateManager instance;
+    private static ChatStateManager instance;
 
     private static final int PAUSE_TIMEOUT = 30 * 1000;
 
     private static final long REMOVE_STATE_DELAY = 10 * 1000;
 
     static {
-        instance = new ChatStateManager();
-
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
                     @Override
                     public void connectionCreated(final XMPPConnection connection) {
@@ -85,6 +83,10 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     public static ChatStateManager getInstance() {
+        if (instance == null) {
+            instance = new ChatStateManager();
+        }
+
         return instance;
     }
 

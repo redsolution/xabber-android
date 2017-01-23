@@ -53,17 +53,16 @@ import java.util.regex.Pattern;
 public class SettingsManager implements OnInitializedListener,
         OnMigrationListener, OnSharedPreferenceChangeListener {
 
-    private static final SettingsManager instance;
-
-    static {
-        instance = new SettingsManager();
-    }
+    private static SettingsManager instance;
 
     private SettingsManager() {
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     public static SettingsManager getInstance() {
+        if (instance == null) {
+            instance = new SettingsManager();
+        }
         return instance;
     }
 

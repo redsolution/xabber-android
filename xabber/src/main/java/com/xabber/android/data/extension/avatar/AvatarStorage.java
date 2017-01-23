@@ -35,16 +35,16 @@ public class AvatarStorage implements OnLoadListener, OnClearListener {
 
     private static AvatarStorage instance;
 
-    static {
-        instance = new AvatarStorage(Application.getInstance());
-    }
-
     public static AvatarStorage getInstance() {
+        if (instance == null) {
+            instance = new AvatarStorage();
+        }
+
         return instance;
     }
 
-    private AvatarStorage(Application application) {
-        folder = new File(application.getFilesDir(), "avatars");
+    private AvatarStorage() {
+        folder = new File(Application.getInstance().getFilesDir(), "avatars");
     }
 
     @Override

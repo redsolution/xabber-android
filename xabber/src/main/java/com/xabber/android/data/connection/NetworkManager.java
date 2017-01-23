@@ -65,17 +65,19 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
      */
     private NetworkState state;
 
-    private static final NetworkManager instance;
-
-    static {
-        instance = new NetworkManager(Application.getInstance());
-    }
+    private static NetworkManager instance;
 
     public static NetworkManager getInstance() {
+        if (instance == null) {
+            instance = new NetworkManager();
+        }
+
         return instance;
     }
 
-    private NetworkManager(Application application) {
+    private NetworkManager() {
+        Application application = Application.getInstance();
+
         connectivityReceiver = new ConnectivityReceiver();
         connectivityManager = (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
         updateNetworkInfo();

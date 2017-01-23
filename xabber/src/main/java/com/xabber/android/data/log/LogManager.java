@@ -34,31 +34,26 @@ import java.io.StringWriter;
  */
 public class LogManager implements OnLoadListener {
 
-    private static final boolean log;
-    private static final boolean debuggable;
+    private static boolean log;
+    private static boolean debuggable;
 
-    static {
+    private static LogManager instance;
+
+    public static LogManager getInstance() {
+        if (instance == null) {
+            instance = new LogManager();
+        }
+        return instance;
+    }
+
+    private LogManager() {
         debuggable = (Application.getInstance().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
 //        log = debuggable && SettingsManager.debugLog();
         log = SettingsManager.debugLog();
-    }
-
-    private final static LogManager instance;
-
-    static {
-        instance = new LogManager(Application.getInstance());
 
         System.setProperty("smack.debuggerClass", "com.xabber.android.data.log.SmackDebugger");
         System.setProperty("smack.debugEnabled", "true");
         SmackConfiguration.DEBUG = true;
-
-    }
-
-    public static LogManager getInstance() {
-        return instance;
-    }
-
-    private LogManager(Application application) {
     }
 
     @Override

@@ -84,16 +84,16 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
      */
     private final ArrayList<AccountJid> accountRequested;
 
-    private final static VCardManager instance;
+    private static VCardManager instance;
 
     private Set<Jid> vCardRequests = new ConcurrentSkipListSet<>();
     private Set<AccountJid> vCardSaveRequests = new ConcurrentSkipListSet<>();
 
-    static {
-        instance = new VCardManager();
-    }
-
     public static VCardManager getInstance() {
+        if (instance == null) {
+            instance = new VCardManager();
+        }
+
         return instance;
     }
 

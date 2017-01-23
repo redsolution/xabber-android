@@ -45,18 +45,18 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class MamManager implements OnAuthorizedListener, OnRosterReceivedListener {
-    private final static MamManager instance;
+    private static MamManager instance;
     public static final int SYNC_INTERVAL_MINUTES = 5;
 
     public static int PAGE_SIZE = AbstractChat.PRELOADED_MESSAGES;
 
     private Map<AccountJid, Boolean> supportedByAccount;
 
-    static {
-        instance = new MamManager();
-    }
-
     public static MamManager getInstance() {
+        if (instance == null) {
+            instance = new MamManager();
+        }
+
         return instance;
     }
 

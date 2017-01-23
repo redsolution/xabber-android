@@ -73,11 +73,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
-    private final static NotificationManager instance;
-
-    static {
-        instance = new NotificationManager();
-    }
+    private static NotificationManager instance;
 
     private final Application application;
     private final android.app.NotificationManager notificationManager;
@@ -105,6 +101,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     private NotificationCompat.Builder persistentNotificationBuilder;
     private MessageNotificationCreator messageNotificationCreator;
     private int persistentNotificationColor;
+
+    public static NotificationManager getInstance() {
+        if (instance == null) {
+            instance = new NotificationManager();
+        }
+
+        return instance;
+    }
 
     private NotificationManager() {
         this.application = Application.getInstance();
@@ -150,10 +154,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         messageNotificationCreator = new MessageNotificationCreator();
 
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
-    }
-
-    public static NotificationManager getInstance() {
-        return instance;
     }
 
     public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem) {

@@ -41,23 +41,23 @@ public class PhraseManager implements OnLoadListener {
      */
     private final List<Phrase> phrases;
 
-    private final static PhraseManager instance;
-
-    static {
-        instance = new PhraseManager();
-    }
+    private static PhraseManager instance;
 
     public static PhraseManager getInstance() {
+        if (instance == null) {
+            instance = new PhraseManager();
+        }
+
         return instance;
     }
 
     private PhraseManager() {
-        phrases = new ArrayList<Phrase>();
+        phrases = new ArrayList<>();
     }
 
     @Override
     public void onLoad() {
-        final Collection<Phrase> phrases = new ArrayList<Phrase>();
+        final Collection<Phrase> phrases = new ArrayList<>();
         Cursor cursor;
         cursor = PhraseTable.getInstance().list();
         try {

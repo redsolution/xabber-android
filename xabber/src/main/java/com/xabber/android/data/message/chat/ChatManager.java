@@ -52,11 +52,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
             .parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
     private static final Object PRIVATE_CHAT = new Object();
-    private final static ChatManager instance;
-
-    static {
-        instance = new ChatManager();
-    }
+    private static ChatManager instance;
 
     /**
      * Stored input for user in account.
@@ -93,6 +89,14 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
      */
     private final NestedMap<Parcelable> scrollStates;
 
+    public static ChatManager getInstance() {
+        if (instance == null) {
+            instance = new ChatManager();
+        }
+
+        return instance;
+    }
+
     private ChatManager() {
         chatInputs = new NestedMap<>();
         privateChats = new NestedMap<>();
@@ -102,10 +106,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         notifyVisible = new NestedMap<>();
         suppress100 = new NestedMap<>();
         scrollStates = new NestedMap<>();
-    }
-
-    public static ChatManager getInstance() {
-        return instance;
     }
 
     @Override
