@@ -26,7 +26,7 @@ import javax.net.ssl.X509TrustManager;
 
 import de.duenndns.ssl.MemorizingTrustManager;
 
-public class ConnectionBuilder {
+class ConnectionBuilder {
     private static final String LOG_TAG = ConnectionBuilder.class.getSimpleName();
 
     public static @NonNull XMPPTCPConnection build(@NonNull final ConnectionSettings connectionSettings) {
@@ -67,12 +67,14 @@ public class ConnectionBuilder {
 
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
-        return new XMPPTCPConnection(builder.build());
+        return new CustomXmppTcpConnection(builder.build());
     }
 
     private static void setCustomHost(@NonNull ConnectionSettings connectionSettings, XMPPTCPConnectionConfiguration.Builder builder) {
         String host = connectionSettings.getHost();
         InetAddress ipAddressOrNull = getIpAddressOrNull(host);
+
+        LogManager.i(LOG_TAG, "setCustomHost. host: " + host + " ip address: " + ipAddressOrNull);
 
         if (ipAddressOrNull != null) {
             LogManager.i(LOG_TAG, "Using custom IP address " + ipAddressOrNull);
