@@ -101,6 +101,7 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
     }
 
     public void updateChats() {
+        // TODO do not use simple new Thread but need priority
         Thread thread = new Thread("Recent chats") {
             @Override
             public void run() {

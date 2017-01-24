@@ -40,7 +40,8 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
     private static BlockingManager instance;
 
     private Map<AccountJid, Boolean> supportForAccounts;
-    private Map<AccountJid, List<UserJid>> blockListsForAccounts;
+    @SuppressWarnings("WeakerAccess")
+    Map<AccountJid, List<UserJid>> blockListsForAccounts;
 
     public static BlockingManager getInstance() {
         if (instance == null) {
@@ -55,7 +56,8 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         blockListsForAccounts = new ConcurrentHashMap<>();
     }
 
-    private void discoverSupport(AccountJid account, XMPPConnection xmppConnection)
+    @SuppressWarnings("WeakerAccess")
+    void discoverSupport(AccountJid account, XMPPConnection xmppConnection)
             throws XMPPException.XMPPErrorException, SmackException.NotConnectedException,
             InterruptedException, SmackException.NoResponseException {
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
@@ -92,7 +94,8 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         return blockListsForAccounts.get(account);
     }
 
-    private void requestBlockList(final AccountJid account) {
+    @SuppressWarnings("WeakerAccess")
+    void requestBlockList(final AccountJid account) {
         if (!isSupported(account)) {
             return;
         }
@@ -320,7 +323,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
     public void onAuthorized(final ConnectionItem connection) {
         final AccountJid account = connection.getAccount();
 
-        new Thread("Thread to check " + connection.getRealJid() + " for blocking command support") {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -331,6 +334,6 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
                     LogManager.exception(this, e);
                 }
             }
-        }.start();
+        });
     }
 }

@@ -86,8 +86,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     private static VCardManager instance;
 
-    private Set<Jid> vCardRequests = new ConcurrentSkipListSet<>();
-    private Set<AccountJid> vCardSaveRequests = new ConcurrentSkipListSet<>();
+    @SuppressWarnings("WeakerAccess")
+    Set<Jid> vCardRequests = new ConcurrentSkipListSet<>();
+    @SuppressWarnings("WeakerAccess")
+    Set<AccountJid> vCardSaveRequests = new ConcurrentSkipListSet<>();
 
     public static VCardManager getInstance() {
         if (instance == null) {
@@ -133,7 +135,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         });
     }
 
-    private void onLoaded(Map<Jid, StructuredName> names) {
+    @SuppressWarnings("WeakerAccess")
+    void onLoaded(Map<Jid, StructuredName> names) {
         this.names.putAll(names);
     }
 
@@ -198,7 +201,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         return names.get(jid);
     }
 
-    private void onVCardReceived(final AccountJid account, final Jid bareAddress, final VCard vCard) {
+    @SuppressWarnings("WeakerAccess")
+    void onVCardReceived(final AccountJid account, final Jid bareAddress, final VCard vCard) {
         final StructuredName name;
         if (vCard.getType() == Type.error) {
             onVCardFailed(account, bareAddress);
@@ -263,19 +267,22 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    private void onVCardFailed(final AccountJid account, final Jid bareAddress) {
+    @SuppressWarnings("WeakerAccess")
+    void onVCardFailed(final AccountJid account, final Jid bareAddress) {
         for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
             listener.onVCardFailed(account, bareAddress);
         }
     }
 
-    private void onVCardSaveSuccess(AccountJid account) {
+    @SuppressWarnings("WeakerAccess")
+    void onVCardSaveSuccess(AccountJid account) {
         for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
             listener.onVCardSaveSuccess(account);
         }
     }
 
-    private void onVCardSaveFailed(AccountJid account) {
+    @SuppressWarnings("WeakerAccess")
+    void onVCardSaveFailed(AccountJid account) {
         for (OnVCardSaveListener listener : Application.getInstance().getUIListeners(OnVCardSaveListener.class)) {
             listener.onVCardSaveFailed(account);
         }
@@ -286,7 +293,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         if (!(connection instanceof AccountItem)) {
             return;
         }
-        AccountJid account = ((AccountItem) connection).getAccount();
+        AccountJid account = connection.getAccount();
         if (stanza instanceof Presence && ((Presence) stanza).getType() != Presence.Type.error) {
             Jid from = stanza.getFrom();
 
@@ -400,7 +407,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final AbstractXMPPConnection xmppConnection = accountItem.getConnection();
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
 
-        final Thread thread = new Thread("Save vCard for account " + account) {
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
 
@@ -443,10 +450,8 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                         }
                     }
                 });
-
             }
-        };
-        thread.start();
+        });
     }
 
     public boolean isVCardRequested(Jid user) {
