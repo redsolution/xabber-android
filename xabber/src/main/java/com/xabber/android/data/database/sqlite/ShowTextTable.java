@@ -31,19 +31,18 @@ public class ShowTextTable extends AbstractChatPropertyTable<ShowMessageTextInNo
 
     static final String NAME = "chat_show_text";
 
-    private final static ShowTextTable instance;
+    private static ShowTextTable instance;
 
-    static {
-        instance = new ShowTextTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
+    public static ShowTextTable getInstance() {
+        if (instance == null) {
+            instance = new ShowTextTable(DatabaseManager.getInstance());
+        }
+
+        return instance;
     }
 
     private ShowTextTable(DatabaseManager databaseManager) {
         super(databaseManager);
-    }
-
-    public static ShowTextTable getInstance() {
-        return instance;
     }
 
     public static ShowMessageTextInNotification getValue(Cursor cursor) {

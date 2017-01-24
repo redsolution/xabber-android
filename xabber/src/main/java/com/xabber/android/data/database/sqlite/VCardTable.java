@@ -52,14 +52,13 @@ public class VCardTable extends AbstractTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static VCardTable instance;
-
-    static {
-        instance = new VCardTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static VCardTable instance;
 
     public static VCardTable getInstance() {
+        if (instance == null) {
+            instance = new VCardTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

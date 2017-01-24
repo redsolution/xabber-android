@@ -29,14 +29,13 @@ public class NotifyVisibleTable extends AbstractChatPropertyTable<Boolean> {
 
     static final String NAME = "chat_notify_visible";
 
-    private final static NotifyVisibleTable instance;
-
-    static {
-        instance = new NotifyVisibleTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static NotifyVisibleTable instance;
 
     public static NotifyVisibleTable getInstance() {
+        if (instance == null) {
+            instance = new NotifyVisibleTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

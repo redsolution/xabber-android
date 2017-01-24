@@ -46,14 +46,13 @@ public class OTRTable extends AbstractEntityTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static OTRTable instance;
-
-    static {
-        instance = new OTRTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static OTRTable instance;
 
     public static OTRTable getInstance() {
+        if (instance == null) {
+            instance = new OTRTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

@@ -45,14 +45,13 @@ public class StatusTable extends AbstractTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static StatusTable instance;
-
-    static {
-        instance = new StatusTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static StatusTable instance;
 
     public static StatusTable getInstance() {
+        if (instance == null) {
+            instance = new StatusTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

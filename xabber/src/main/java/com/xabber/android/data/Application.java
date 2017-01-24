@@ -15,7 +15,6 @@
 package com.xabber.android.data;
 
 import android.app.Activity;
-import android.content.res.TypedArray;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
@@ -278,15 +277,7 @@ public class Application extends android.app.Application {
 
         addManagers();
 
-        TypedArray tableClasses = getResources().obtainTypedArray(R.array.tables);
-        for (int index = 0; index < tableClasses.length(); index++) {
-            try {
-                Class.forName(tableClasses.getString(index));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        tableClasses.recycle();
+        DatabaseManager.getInstance().addTables();
 
         LogManager.i(this, "onCreate finished...");
     }

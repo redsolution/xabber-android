@@ -59,21 +59,21 @@ public class AccountTable extends AbstractTable {
             Fields.PRIVATE_KEY, Fields.LAST_SYNC, Fields.ARCHIVE_MODE,
             Fields.PROXY_TYPE, Fields.PROXY_HOST, Fields.PROXY_PORT,
             Fields.PROXY_USER, Fields.PROXY_PASSWORD};
-    private final static AccountTable instance;
 
-    static {
-        instance = new AccountTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static AccountTable instance;
 
     private final DatabaseManager databaseManager;
 
-    private AccountTable(DatabaseManager databaseManager) {
-        this.databaseManager = databaseManager;
+    public static AccountTable getInstance() {
+        if (instance == null) {
+            instance = new AccountTable(DatabaseManager.getInstance());
+        }
+
+        return instance;
     }
 
-    public static AccountTable getInstance() {
-        return instance;
+    private AccountTable(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
     public static long getId(Cursor cursor) {

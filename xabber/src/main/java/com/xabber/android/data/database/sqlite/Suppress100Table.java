@@ -13,14 +13,13 @@ public class Suppress100Table extends AbstractChatPropertyTable<Boolean> {
 
     static final String NAME = "chat_suppress_100";
 
-    private final static Suppress100Table instance;
-
-    static {
-        instance = new Suppress100Table(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static Suppress100Table instance;
 
     public static Suppress100Table getInstance() {
+        if (instance == null) {
+            instance = new Suppress100Table(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

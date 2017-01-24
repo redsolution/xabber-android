@@ -68,14 +68,13 @@ public class PhraseTable extends AbstractTable {
 
     private final DatabaseManager databaseManager;
 
-    private final static PhraseTable instance;
-
-    static {
-        instance = new PhraseTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static PhraseTable instance;
 
     public static PhraseTable getInstance() {
+        if (instance == null) {
+            instance = new PhraseTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

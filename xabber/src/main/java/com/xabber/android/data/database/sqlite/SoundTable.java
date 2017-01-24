@@ -30,14 +30,13 @@ public class SoundTable extends AbstractChatPropertyTable<Uri> {
 
     static final String NAME = "chat_sound";
 
-    private final static SoundTable instance;
-
-    static {
-        instance = new SoundTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static SoundTable instance;
 
     public static SoundTable getInstance() {
+        if (instance == null) {
+            instance = new SoundTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

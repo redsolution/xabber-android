@@ -119,14 +119,13 @@ public class MessageTable extends AbstractEntityTable {
 
     private final DatabaseManager databaseManager;
 
-    private final static MessageTable instance;
-
-    static {
-        instance = new MessageTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static MessageTable instance;
 
     public static MessageTable getInstance() {
+        if (instance == null) {
+            instance = new MessageTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

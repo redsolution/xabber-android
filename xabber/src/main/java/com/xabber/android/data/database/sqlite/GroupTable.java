@@ -56,14 +56,13 @@ public class GroupTable extends AbstractAccountTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static GroupTable instance;
-
-    static {
-        instance = new GroupTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static GroupTable instance;
 
     public static GroupTable getInstance() {
+        if (instance == null) {
+            instance = new GroupTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

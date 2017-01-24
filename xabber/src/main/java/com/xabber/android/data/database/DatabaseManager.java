@@ -21,16 +21,31 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnClearListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnMigrationListener;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.database.sqlite.AbstractAccountTable;
+import com.xabber.android.data.database.sqlite.AccountTable;
+import com.xabber.android.data.database.sqlite.AvatarTable;
 import com.xabber.android.data.database.sqlite.DatabaseTable;
+import com.xabber.android.data.database.sqlite.GroupTable;
 import com.xabber.android.data.database.sqlite.MessageTable;
+import com.xabber.android.data.database.sqlite.NotificationTable;
+import com.xabber.android.data.database.sqlite.NotifyVisibleTable;
+import com.xabber.android.data.database.sqlite.OTRTable;
+import com.xabber.android.data.database.sqlite.PhraseTable;
+import com.xabber.android.data.database.sqlite.PrivateChatTable;
+import com.xabber.android.data.database.sqlite.RoomTable;
+import com.xabber.android.data.database.sqlite.ShowTextTable;
+import com.xabber.android.data.database.sqlite.SoundTable;
+import com.xabber.android.data.database.sqlite.StatusTable;
+import com.xabber.android.data.database.sqlite.Suppress100Table;
+import com.xabber.android.data.database.sqlite.VCardTable;
+import com.xabber.android.data.database.sqlite.VibroTable;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.mam.SyncInfo;
+import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
@@ -81,6 +96,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     private DatabaseManager() {
         super(Application.getInstance(), DATABASE_NAME, null, DATABASE_VERSION);
         registeredTables = new ArrayList<>();
+
         Realm.init(Application.getInstance());
         RealmConfiguration realmConfiguration = createRealmConfiguration();
 
@@ -88,6 +104,25 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         System.out.println("Realm compact database file result: " + success);
 
         Realm.setDefaultConfiguration(realmConfiguration);
+    }
+
+    public void addTables() {
+        addTable(AccountTable.getInstance());
+        addTable(RoomTable.getInstance());
+        addTable(MessageTable.getInstance());
+        addTable(GroupTable.getInstance());
+        addTable(PrivateChatTable.getInstance());
+        addTable(NotifyVisibleTable.getInstance());
+        addTable(ShowTextTable.getInstance());
+        addTable(SoundTable.getInstance());
+        addTable(VCardTable.getInstance());
+        addTable(AvatarTable.getInstance());
+        addTable(StatusTable.getInstance());
+        addTable(OTRTable.getInstance());
+        addTable(VibroTable.getInstance());
+        addTable(NotificationTable.getInstance());
+        addTable(Suppress100Table.getInstance());
+        addTable(PhraseTable.getInstance());
     }
 
     private RealmConfiguration createRealmConfiguration() {
@@ -334,7 +369,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
      *
      * @param table
      */
-    public void addTable(DatabaseTable table) {
+    private void addTable(DatabaseTable table) {
         registeredTables.add(table);
     }
 

@@ -41,14 +41,13 @@ public class PrivateChatTable extends AbstractEntityTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static PrivateChatTable instance;
-
-    static {
-        instance = new PrivateChatTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static PrivateChatTable instance;
 
     public static PrivateChatTable getInstance() {
+        if (instance == null) {
+            instance = new PrivateChatTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

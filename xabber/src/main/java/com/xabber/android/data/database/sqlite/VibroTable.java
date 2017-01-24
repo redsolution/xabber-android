@@ -29,14 +29,13 @@ public class VibroTable extends AbstractChatPropertyTable<Boolean> {
 
     static final String NAME = "chat_vibro";
 
-    private final static VibroTable instance;
-
-    static {
-        instance = new VibroTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static VibroTable instance;
 
     public static VibroTable getInstance() {
+        if (instance == null) {
+            instance = new VibroTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

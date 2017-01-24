@@ -44,14 +44,13 @@ public class AvatarTable extends AbstractTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static AvatarTable instance;
-
-    static {
-        instance = new AvatarTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static AvatarTable instance;
 
     public static AvatarTable getInstance() {
+        if (instance == null) {
+            instance = new AvatarTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

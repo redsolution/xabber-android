@@ -59,14 +59,13 @@ public class NotificationTable extends AbstractEntityTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static NotificationTable instance;
-
-    static {
-        instance = new NotificationTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static NotificationTable instance;
 
     public static NotificationTable getInstance() {
+        if (instance == null) {
+            instance = new NotificationTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 

@@ -62,14 +62,13 @@ public class RoomTable extends AbstractAccountTable {
     private SQLiteStatement writeStatement;
     private final Object writeLock;
 
-    private final static RoomTable instance;
-
-    static {
-        instance = new RoomTable(DatabaseManager.getInstance());
-        DatabaseManager.getInstance().addTable(instance);
-    }
+    private static RoomTable instance;
 
     public static RoomTable getInstance() {
+        if (instance == null) {
+            instance = new RoomTable(DatabaseManager.getInstance());
+        }
+
         return instance;
     }
 
