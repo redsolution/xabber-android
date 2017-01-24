@@ -16,6 +16,7 @@ package com.xabber.android.data.account;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.xabber.android.R;
@@ -251,6 +252,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * @param account full jid.
      * @return Specified account or <code>null</code> if account doesn't exists.
      */
+    @Nullable
     public AccountItem getAccount(AccountJid account) {
         return accountItems.get(account);
     }
@@ -527,6 +529,9 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     public void setEnabled(AccountJid account, boolean enabled) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
 
         accountItem.setEnabled(enabled);
         accountItem.connect();
