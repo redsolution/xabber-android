@@ -112,8 +112,6 @@ public abstract class ConnectionItem {
     }
 
     private void createConnection() {
-        showDebugToast("createConnection...");
-
         connection = ConnectionBuilder.build(connectionSettings);
         connectionThread = new ConnectionThread(connection, this);
 
@@ -331,21 +329,11 @@ public abstract class ConnectionItem {
     };
 
     void showDebugToast(final String message) {
-        showDebugToast(message, Toast.LENGTH_LONG);
+        if (toast != null) {
+            toast.cancel();
+        }
+        toast = Toast.makeText(Application.getInstance(), message, Toast.LENGTH_LONG);
+        toast.show();
     }
-
-    void showDebugToast(final String message, final int duration) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (toast != null) {
-                    toast.cancel();
-                }
-                toast = Toast.makeText(Application.getInstance(), message, Toast.LENGTH_LONG);
-                toast.show();
-            }
-        });
-    }
-
 
 }
