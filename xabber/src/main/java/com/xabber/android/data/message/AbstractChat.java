@@ -16,6 +16,7 @@ package com.xabber.android.data.message;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -403,8 +404,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         } else {
             if (messagesWithNotEmptyText.isValid() && messagesWithNotEmptyText.isLoaded() &&
                     !messagesWithNotEmptyText.isEmpty()) {
-                synchronized (this) {
-                    lastNotEmptyTextMessage = realm.copyFromRealm(messagesWithNotEmptyText.last());
+                if (!TextUtils.isEmpty(messagesWithNotEmptyText.last().getText())) {
+                    synchronized (this) {
+                        lastNotEmptyTextMessage = realm.copyFromRealm(messagesWithNotEmptyText.last());
+                    }
                 }
             }
         }
