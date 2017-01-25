@@ -2,14 +2,13 @@ package com.xabber.android.data.connection;
 
 import android.support.annotation.NonNull;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnTimerListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,14 +50,22 @@ public class ReconnectionManager implements OnConnectedListener,
         for (AccountJid accountJid : allAccounts) {
             AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
 
-            if (!accountItem.isEnabled() && accountItem.getConnection().isConnected()) {
+            if (!accountItem.isEnabled()) {
+                if (accountItem.getState() != ConnectionState.offline) {
+                    ((ConnectionItem)accountItem).updateState(ConnectionState.offline);
+                }
+            }
+
+            if ((!accountItem.isEnabled() || !accountItem.getRawStatusMode().isOnline())
+                    && accountItem.getConnection().isConnected()) {
                 accountItem.disconnect();
                 continue;
             }
 
             ReconnectionInfo reconnectionInfo = getReconnectionInfo(accountJid);
 
-            if (accountItem.isEnabled() && !accountItem.getConnection().isAuthenticated()) {
+            if (accountItem.isEnabled() && accountItem.getRawStatusMode().isOnline()
+                    && !accountItem.getConnection().isAuthenticated()) {
                 int reconnectAfter;
                 if (reconnectionInfo.getReconnectAttempts() < RECONNECT_AFTER.length) {
                     reconnectAfter = RECONNECT_AFTER[reconnectionInfo.getReconnectAttempts()];

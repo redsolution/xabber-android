@@ -536,19 +536,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         accountItem.setEnabled(enabled);
         accountItem.connect();
         requestToWriteAccount(accountItem);
-
-        if (enabled) {
-            onAccountEnabled(accountItem);
-            if (accountItem.getRawStatusMode().isOnline()) {
-                onAccountOnline(accountItem);
-            }
-        } else {
-            if (accountItem.getRawStatusMode().isOnline()) {
-                onAccountOffline(accountItem);
-            }
-            onAccountDisabled(accountItem);
-        }
-
     }
 
     public ArchiveMode getArchiveMode(AccountJid account) {
@@ -793,16 +780,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * Sets status for account.
      */
     private void setStatus(AccountItem accountItem, StatusMode statusMode, String statusText) {
-        boolean changed = accountItem.isEnabled()
-                && accountItem.getRawStatusMode().isOnline() != statusMode.isOnline();
         accountItem.setStatus(statusMode, statusText);
-        if (changed && statusMode.isOnline()) {
-            onAccountOnline(accountItem);
-        }
-        accountItem.disconnect();
-        if (changed && !statusMode.isOnline()) {
-            onAccountOffline(accountItem);
-        }
         requestToWriteAccount(accountItem);
     }
 
