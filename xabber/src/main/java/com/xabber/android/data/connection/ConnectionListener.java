@@ -9,7 +9,6 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.sasl.SASLErrorException;
 
 class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
@@ -99,14 +98,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
                 if (e instanceof SASLErrorException) {
                     connectionItem.showDebugToast("Auth error!");
                     AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
-                    return;
                 }
-
-                if (e instanceof XMPPException.StreamErrorException) {
-                    LogManager.i(this, "Stream error.");
-                    connectionItem.createNewConnection();
-                }
-
             }
         });
     }
