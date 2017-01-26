@@ -115,8 +115,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (value != null)
             return value;
         // Backward compatibility.
+
+        String stringExtra = intent.getStringExtra("com.xabber.android.data.account");
+        if (stringExtra == null) {
+            return null;
+        }
+
         try {
-            return AccountJid.from(intent.getStringExtra("com.xabber.android.data.account"));
+            return AccountJid.from(stringExtra);
         } catch (XmppStringprepException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
@@ -129,8 +135,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         if (value != null)
             return value;
         // Backward compatibility.
+
+        String stringExtra = intent.getStringExtra("com.xabber.android.data.user");
+        if (stringExtra == null) {
+            return null;
+        }
+
         try {
-            return UserJid.from(intent.getStringExtra("com.xabber.android.data.user"));
+            return UserJid.from(stringExtra);
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
