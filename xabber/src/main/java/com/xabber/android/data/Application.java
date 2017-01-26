@@ -79,6 +79,7 @@ public class Application extends android.app.Application {
      * Thread to execute tasks in background..
      */
     private final ExecutorService backgroundExecutor;
+    private final ExecutorService backgroundExecutorForUserActions;
     /**
      * Handler to execute runnable in UI thread.
      */
@@ -141,10 +142,16 @@ public class Application extends android.app.Application {
         registeredManagers = new ArrayList<>();
 
         handler = new Handler();
-        backgroundExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        backgroundExecutor = createSingleThreadExecutor("Background executor service");
+        backgroundExecutorForUserActions = createSingleThreadExecutor("Background executor service for user actions");
+    }
+
+    @NonNull
+    private ExecutorService createSingleThreadExecutor(final String threadName) {
+        return Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(@NonNull Runnable runnable) {
-                Thread thread = new Thread(runnable, "Background executor service");
+                Thread thread = new Thread(runnable, threadName);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.setDaemon(true);
                 return thread;
@@ -338,7 +345,7 @@ public class Application extends android.app.Application {
             return;
         }
         onClose();
-        runInBackground(new Runnable() {
+        runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 onUnload();
@@ -483,6 +490,19 @@ public class Application extends android.app.Application {
      */
     public void runInBackground(final Runnable runnable) {
         backgroundExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    runnable.run();
+                } catch (Exception e) {
+                    LogManager.exception(runnable, e);
+                }
+            }
+        });
+    }
+
+    public void runInBackgroundUserRequest(final Runnable runnable) {
+        backgroundExecutorForUserActions.submit(new Runnable() {
             @Override
             public void run() {
                 try {

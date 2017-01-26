@@ -260,7 +260,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
         } else {
             privateChats.put(account.toString(), user.toString(), PRIVATE_CHAT);
         }
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 if (save) {
@@ -346,7 +346,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void setNotifyVisible(final AccountJid account, final UserJid user, final boolean value) {
         notifyVisible.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 NotifyVisibleTable.getInstance().write(account.toString(), user.toString(), value);
@@ -383,7 +383,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void setShowText(final AccountJid account, final UserJid user, final ShowMessageTextInNotification value) {
         showText.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 ShowTextTable.getInstance().write(account.toString(), user.toString(), value);
@@ -407,7 +407,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void setMakeVibro(final AccountJid account, final UserJid user, final boolean value) {
         makeVibro.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 VibroTable.getInstance().write(account.toString(), user.toString(), value);
@@ -434,7 +434,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
 
     public void setSound(final AccountJid account, final UserJid user, final Uri value) {
         sounds.put(account.toString(), user.toString(), value == null ? EMPTY_SOUND : value);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 SoundTable.getInstance().write(account.toString(), user.toString(),
@@ -458,7 +458,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener {
     public void setSuppress100(final AccountJid account, final UserJid user,
                              final boolean value) {
         suppress100.put(account.toString(), user.toString(), value);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 Suppress100Table.getInstance().write(account.toString(), user.toString(), value);

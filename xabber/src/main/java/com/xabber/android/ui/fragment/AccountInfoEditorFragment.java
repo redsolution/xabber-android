@@ -520,7 +520,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     private void beginCrop(final Uri source) {
         newAvatarImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), TEMP_FILE_NAME));
 
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, MAX_IMAGE_SIZE)
@@ -545,7 +545,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         Glide.with(this).load(source).asBitmap().toBytes().override(MAX_IMAGE_SIZE, MAX_IMAGE_SIZE).into(new SimpleTarget<byte[]>() {
             @Override
             public void onResourceReady(final byte[] data, GlideAnimation anim) {
-                Application.getInstance().runInBackground(new Runnable() {
+                Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                     @Override
                     public void run() {
                         final Uri rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);

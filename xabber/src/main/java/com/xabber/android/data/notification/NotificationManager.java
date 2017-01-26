@@ -495,7 +495,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         final int count = messageNotification.getCount();
 
         if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore) {
-            Application.getInstance().runInBackground(new Runnable() {
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
                     NotificationTable.getInstance().write(account.toString(), user.toString(), text, timestamp, count);
@@ -526,7 +526,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         if (messageNotification == null)
             return;
         messageNotifications.remove(messageNotification);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 NotificationTable.getInstance().remove(account.toString(), user.toString());
@@ -543,7 +543,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             if (provider.canClearNotifications())
                 provider.clearNotifications();
         messageNotifications.clear();
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 NotificationTable.getInstance().clear();
@@ -557,7 +557,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         final AccountJid account = accountItem.getAccount();
         if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore)
             return;
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 NotificationTable.getInstance().removeAccount(account.toString());

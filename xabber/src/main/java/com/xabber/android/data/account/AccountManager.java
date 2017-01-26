@@ -261,7 +261,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      * Save account item to database.
      */
     void requestToWriteAccount(final AccountItem accountItem) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 accountItem.setId(AccountTable.getInstance().write(accountItem.getId(), accountItem));
@@ -398,7 +398,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
             onAccountDisabled(accountItem);
         }
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 AccountTable.getInstance().remove(account.toString(), accountItem.getId());
@@ -816,7 +816,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             return;
         }
         savedStatuses.add(savedStatus);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 StatusTable.getInstance().write(statusMode, statusText);
@@ -831,7 +831,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         if (!savedStatuses.remove(savedStatus)) {
             return;
         }
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 StatusTable.getInstance().remove(savedStatus.getStatusMode(),
@@ -845,7 +845,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
      */
     public void clearSavedStatuses() {
         savedStatuses.clear();
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 StatusTable.getInstance().clear();

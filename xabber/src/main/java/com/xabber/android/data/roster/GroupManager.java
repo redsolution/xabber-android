@@ -207,7 +207,7 @@ public class GroupManager implements OnLoadListener, OnAccountRemovedListener,
 
     private void requestToWriteGroup(final AccountJid account, final String group,
                                      final boolean expanded, final ShowOfflineMode showOfflineMode) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 GroupTable.getInstance().write(account.toString(), group, expanded, showOfflineMode);

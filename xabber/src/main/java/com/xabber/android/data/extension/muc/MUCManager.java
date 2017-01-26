@@ -242,7 +242,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
         }
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 RoomTable.getInstance().remove(account.toString(), room.toString());
@@ -288,7 +288,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
 
     private void requestToWriteRoom(final AccountJid account, final EntityBareJid room,
                                     final Resourcepart nickname, final String password, final boolean join) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 RoomTable.getInstance().write(account.toString(), room.toString(), nickname.toString(),
@@ -353,7 +353,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         roomChat.setState(RoomState.joining);
         roomChat.setMultiUserChat(multiUserChat);
         roomChat.setRequested(requested);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -440,7 +440,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
         roomChat.newAction(roomChat.getNickname(), null, ChatAction.leave);
         requestToWriteRoom(account, room, roomChat.getNickname(), roomChat.getPassword(), false);
         if (multiUserChat != null) {
-            Application.getInstance().runInBackground(new Runnable() {
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -556,7 +556,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             return;
         }
 
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 Collection<HostedRoom> hostedRooms = null;
@@ -596,7 +596,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
             return;
         }
 
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 RoomInfo roomInfo = null;

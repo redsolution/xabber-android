@@ -227,18 +227,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             name = new StructuredName(vCard.getNickName(), vCard.getField(VCardProperty.FN.name()),
                     vCard.getFirstName(), vCard.getMiddleName(), vCard.getLastName());
 
-            Application.getInstance().runInBackground(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-                            PresenceManager.getInstance().resendPresence(account);
-                        }
-                    } catch (NetworkException e) {
-                        LogManager.exception(this, e);
-                    }
+            try {
+                if (account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
+                    PresenceManager.getInstance().resendPresence(account);
                 }
-            });
+            } catch (NetworkException e) {
+                LogManager.exception(this, e);
+            }
 
         }
         names.put(bareAddress, name);
@@ -407,7 +402,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         final AbstractXMPPConnection xmppConnection = accountItem.getConnection();
         final org.jivesoftware.smackx.vcardtemp.VCardManager vCardManager = org.jivesoftware.smackx.vcardtemp.VCardManager.getInstanceFor(xmppConnection);
 
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
 

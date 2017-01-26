@@ -153,7 +153,7 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
 
     @Override
     public void onAuthorized(final ConnectionItem connectionItem) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 try {

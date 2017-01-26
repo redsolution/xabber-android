@@ -664,7 +664,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      */
     private void requestToWrite(final String account, final String user,
                                 final String fingerprint, final boolean verified) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 OTRTable.getInstance().write(account, user, fingerprint, verified);

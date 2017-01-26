@@ -135,7 +135,7 @@ public class PhraseManager implements OnLoadListener {
     private void writePhrase(final Phrase phrase, final String value,
                              final String user, final String group, final boolean regexp,
                              final Uri sound) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 phrase.setId(PhraseTable.getInstance().write(phrase.getId(),
