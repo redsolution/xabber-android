@@ -96,6 +96,10 @@ public class RosterContact extends AbstractContact {
         return Collections.unmodifiableCollection(groupReferences.keySet());
     }
 
+    void clearGroupReferences() {
+        groupReferences.clear();
+    }
+
     void addGroupReference(RosterGroupReference groupReference) {
         groupReferences.put(groupReference.getName(), groupReference);
     }

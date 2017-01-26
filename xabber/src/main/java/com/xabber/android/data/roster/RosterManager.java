@@ -20,8 +20,6 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
@@ -33,9 +31,11 @@ import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -165,6 +165,7 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
         final Collection<org.jivesoftware.smack.roster.RosterGroup> groups = roster.getGroups();
 
+        contact.clearGroupReferences();
         for (org.jivesoftware.smack.roster.RosterGroup group : groups) {
             if (group.contains(rosterEntry)) {
                 contact.addGroupReference(new RosterGroupReference(new RosterGroup(account, group.getName())));
