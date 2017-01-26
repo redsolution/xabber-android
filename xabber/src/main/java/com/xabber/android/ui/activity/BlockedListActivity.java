@@ -31,7 +31,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         OnBlockedListChangedListener, BlockingManager.UnblockContactListener, Toolbar.OnMenuItemClickListener {
 
     public static final String SAVED_CHECKED_CONTACTS = "com.xabber.android.ui.activity.BlockedListActivity.SAVED_CHECKED_CONTACTS";
-    private BlockedListAdapter adapter;
+    BlockedListAdapter adapter;
     private AccountJid account;
     private Toolbar toolbar;
     private BarPainter barPainter;
@@ -174,7 +174,8 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         }
 
         if (currentSize == 0) {
-            toolbar.setTitle(R.string.block_list);
+            toolbar.setTitle(getString(R.string.block_list));
+            LogManager.i(this, "toolbar.setTitle " + toolbar.getTitle());
             barPainter.updateWithAccountName(account);
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -186,6 +187,8 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
+            LogManager.i(this, "toolbar.setTitle " + toolbar.getTitle());
+
             barPainter.setGrey();
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -193,6 +196,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
                 public void onClick(View v) {
                     adapter.setCheckedContacts(new ArrayList<UserJid>());
                     adapter.onChange();
+                    update();
                 }
             });
         }
@@ -205,7 +209,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         update();
     }
 
-    private void update() {
+    void update() {
         adapter.onChange();
         updateToolbar();
         updateMenu();
