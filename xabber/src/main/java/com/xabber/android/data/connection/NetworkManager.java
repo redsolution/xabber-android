@@ -19,15 +19,10 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiManager.WifiLock;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
-import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.receiver.ConnectivityReceiver;
 
@@ -43,9 +38,7 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
 
     private final ConnectivityManager connectivityManager;
 
-    private final WifiLock wifiLock;
 
-    private final WakeLock wakeLock;
 
     private static NetworkManager instance;
 
@@ -62,16 +55,6 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
 
         connectivityReceiver = new ConnectivityReceiver();
         connectivityManager = (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        wifiLock = ((WifiManager) application
-                .getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "Xabber Wifi Lock");
-        wifiLock.setReferenceCounted(false);
-
-        wakeLock = ((PowerManager) application
-                .getSystemService(Context.POWER_SERVICE))
-                .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Xabber Wake Lock");
-        wakeLock.setReferenceCounted(false);
     }
 
     @Override
@@ -79,8 +62,8 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         Application.getInstance().registerReceiver(connectivityReceiver, filter);
-        onWakeLockSettingsChanged();
-        onWifiLockSettingsChanged();
+        WakeLockManager.onWakeLockSettingsChanged();
+        WakeLockManager.onWifiLockSettingsChanged();
     }
 
     @Override
@@ -103,22 +86,6 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onAvailable() {
         LogManager.i(LOG_TAG, "onAvailable");
         ConnectionManager.getInstance().connectAll();
-    }
-
-    public void onWifiLockSettingsChanged() {
-        if (SettingsManager.connectionWifiLock()) {
-            wifiLock.acquire();
-        } else {
-            wifiLock.release();
-        }
-    }
-
-    public void onWakeLockSettingsChanged() {
-        if (SettingsManager.connectionWakeLock()) {
-            wakeLock.acquire();
-        } else {
-            wakeLock.release();
-        }
     }
 
 }

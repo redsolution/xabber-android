@@ -27,6 +27,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.connection.WakeLockManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.otr.OTRManager;
@@ -665,10 +666,10 @@ public class SettingsManager implements OnInitializedListener,
             XabberService.getInstance().changeForeground();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_wake_lock_key))) {
-            NetworkManager.getInstance().onWakeLockSettingsChanged();
+            WakeLockManager.onWakeLockSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_wifi_lock_key))) {
-            NetworkManager.getInstance().onWifiLockSettingsChanged();
+            WakeLockManager.onWifiLockSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_use_carbons_key))) {
             CarbonManager.getInstance().onUseCarbonsSettingsChanged();
