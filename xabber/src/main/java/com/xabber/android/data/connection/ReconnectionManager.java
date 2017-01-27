@@ -89,7 +89,7 @@ public class ReconnectionManager implements OnConnectedListener,
         } else {
             reconnectionInfo.resetReconnectionTime();
             LogManager.i(LOG_TAG, accountItem.getAccount()
-                    + "not authenticated. already in progress. reset time. attempt "
+                    + " not authenticated. already in progress. reset time. attempt "
                     + reconnectionInfo.getReconnectAttempts());
         }
     }

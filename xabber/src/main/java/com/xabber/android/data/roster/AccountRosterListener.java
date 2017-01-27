@@ -29,6 +29,17 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
         this.account = account;
     }
 
+    private String getLogTag() {
+        StringBuilder logTag = new StringBuilder();
+        logTag.append(getClass().getSimpleName());
+
+        if (account != null) {
+            logTag.append(": ");
+            logTag.append(account);
+        }
+        return logTag.toString();
+    }
+
     @Override
     public void entriesAdded(Collection<Jid> collection) {
         update(collection);
@@ -50,6 +61,8 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
     }
 
     private void update(Collection<Jid> addresses) {
+        LogManager.i(getLogTag(), "update");
+
         RosterManager.getInstance().updateContacts();
 
         Collection<BaseEntity> entities = new ArrayList<>();
@@ -58,7 +71,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
             try {
                 entities.add(RosterManager.getInstance().getBestContact(account, UserJid.from(address)));
             } catch (UserJid.UserJidCreateException e) {
-                LogManager.exception(this, e);
+                LogManager.exception(getLogTag(), e);
             }
         }
 
@@ -67,7 +80,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
     @Override
     public void onRosterLoaded(Roster roster) {
-        LogManager.i(this, "onRosterLoaded " + account);
+        LogManager.i(getLogTag(), "onRosterLoaded");
 
         RosterManager.getInstance().updateContacts();
 
@@ -81,6 +94,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
     @Override
     public void onRosterLoadingFailed(Exception e) {
-        LogManager.exception(this, e);
+        LogManager.e(getLogTag(), "onRosterLoadingFailed");
+        LogManager.exception(getLogTag(), e);
     }
 }
