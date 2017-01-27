@@ -63,21 +63,6 @@ public class AccountItem extends ConnectionItem {
      */
     private boolean storePassword;
 
-    /**
-     * Whether authorization was failed.
-     */
-    private boolean authFailed;
-
-    /**
-     * Whether certificate is invalid.
-     */
-    private boolean invalidCertificate;
-
-    /**
-     * Whether password was requested.
-     */
-    private boolean passwordRequested;
-
     private int priority;
 
     private StatusMode statusMode;
@@ -120,9 +105,6 @@ public class AccountItem extends ConnectionItem {
         this.keyPair = keyPair;
         this.lastSync = lastSync;
         this.archiveMode = archiveMode;
-        authFailed = false;
-        invalidCertificate = false;
-        passwordRequested = false;
     }
 
     /**
@@ -199,10 +181,6 @@ public class AccountItem extends ConnectionItem {
 
     public Date getLastSync() {
         return lastSync;
-    }
-
-    void setLastSync(Date lastSync) {
-        this.lastSync = lastSync;
     }
 
     public ArchiveMode getArchiveMode() {
@@ -328,27 +306,7 @@ public class AccountItem extends ConnectionItem {
         getConnectionSettings().update(custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
-        passwordRequested = false;
         AccountManager.getInstance().removePasswordRequest(getAccount());
-    }
-
-    @Override
-    protected boolean isConnectionAvailable(boolean userRequest) {
-        // Check password before go online.
-        if (statusMode.isOnline()
-                && enabled
-                && !passwordRequested
-                && UNDEFINED_PASSWORD.equals(getConnectionSettings()
-                .getPassword())) {
-            passwordRequested = true;
-            AccountManager.getInstance().addPasswordRequest(getAccount());
-        }
-        if (userRequest) {
-            authFailed = false;
-            invalidCertificate = false;
-        }
-        return statusMode.isOnline() && enabled && !authFailed
-                && !invalidCertificate && !passwordRequested;
     }
 
     /**
@@ -359,7 +317,6 @@ public class AccountItem extends ConnectionItem {
         if (storePassword) {
             return;
         }
-        passwordRequested = false;
         AccountManager.getInstance().removePasswordRequest(getAccount());
         getConnectionSettings().setPassword(UNDEFINED_PASSWORD);
     }
@@ -368,14 +325,6 @@ public class AccountItem extends ConnectionItem {
     protected void onPasswordChanged(String password) {
         super.onPasswordChanged(password);
         AccountManager.getInstance().requestToWriteAccount(this);
-    }
-
-    @Override
-    public void onAuthFailed() {
-        // Login failed. We don`t want to reconnect.
-        authFailed = true;
-//        updateConnection(false);
-        AccountManager.getInstance().addAuthenticationError(getAccount());
     }
 
     @Override

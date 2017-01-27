@@ -287,9 +287,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                 saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser,
                 proxyPassword, syncable, keyPair, lastSync, archiveMode);
 
-        if (registerNewAccount) {
-            accountItem.registerAccount();
-        }
         requestToWriteAccount(accountItem);
         addAccount(accountItem);
         ReconnectionManager.getInstance().requestReconnect(accountItem.getAccount());

@@ -65,24 +65,9 @@ public abstract class ConnectionItem {
     XMPPTCPConnection connection;
 
     /**
-     * Connection was requested by user.
-     */
-    private boolean isConnectionRequestedByUser;
-
-    /**
      * Current state.
      */
     private ConnectionState state;
-
-    /**
-     * Whether force reconnection is in progress.
-     */
-    private boolean disconnectionRequested;
-
-    /**
-     * Need to register account on XMPP server.
-     */
-    private boolean registerNewAccount;
 
     @NonNull
     private final AccountRosterListener rosterListener;
@@ -105,14 +90,12 @@ public abstract class ConnectionItem {
                 serverName, resource, custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
-        createConnection();
+        connection = createConnection();
 
-        isConnectionRequestedByUser = false;
-        disconnectionRequested = false;
         updateState(ConnectionState.offline);
     }
 
-    private void createConnection() {
+    private XMPPTCPConnection createConnection() {
         connection = ConnectionBuilder.build(connectionSettings);
         LogManager.i(logTag, "Connection created");
 
@@ -120,26 +103,14 @@ public abstract class ConnectionItem {
 
         addConnectionListeners();
         configureConnection();
+
+        return connection;
     }
 
 
     @NonNull
     public AccountJid getAccount() {
         return account;
-    }
-
-    /**
-     * Register new account on server.
-     */
-    public void registerAccount() {
-        registerNewAccount = true;
-    }
-
-    /**
-     * Report if this connection is to register a new account on XMPP server.
-     */
-    public boolean isRegisterAccount() {
-        return registerNewAccount;
     }
 
     @NonNull
@@ -167,12 +138,6 @@ public abstract class ConnectionItem {
     public EntityFullJid getRealJid() {
         return connection.getUser();
     }
-
-    /**
-     * @param userRequest action was requested by user.
-     * @return Whether connection is available.
-     */
-    protected abstract boolean isConnectionAvailable(boolean userRequest);
 
     public boolean connect() {
         LogManager.i(logTag, "connect");
@@ -208,25 +173,6 @@ public abstract class ConnectionItem {
 
         PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
     }
-
-
-    /**
-     * Starts disconnection in another thread.
-     */
-    protected static void disconnect(final AbstractXMPPConnection xmppConnection) {
-        Thread thread = new Thread("Disconnection thread for " + xmppConnection) {
-            @Override
-            public void run() {
-                xmppConnection.disconnect();
-            }
-
-        };
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    public abstract void onAuthFailed();
 
     /**
      * Update password.
