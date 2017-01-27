@@ -16,8 +16,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
-    android:paddingTop="@dimen/contact_list_item_padding_top"
-    android:paddingBottom="@dimen/contact_list_item_padding_bottom"
     android:gravity="center_vertical"
     >
     <ImageView
