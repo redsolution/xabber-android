@@ -40,6 +40,7 @@ class ConnectionBuilder {
             builder.setPort(connectionSettings.getPort());
         }
 
+        builder.setDebuggerEnabled(true);
         builder.setSecurityMode(connectionSettings.getTlsMode().getSecurityMode());
         builder.setCompressionEnabled(connectionSettings.useCompression());
         builder.setSendPresence(false);
