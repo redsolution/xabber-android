@@ -23,6 +23,7 @@ public class ReconnectionManager implements OnConnectedListener,
      * fails. Last value will be used if there is no more values in array.
      */
     private final static int RECONNECT_AFTER[] = new int[]{0, 2, 10, 30, 60};
+    private static final String LOG_TAG = ReconnectionManager.class.getSimpleName();
 
     /**
      * Managed connections.
@@ -48,48 +49,70 @@ public class ReconnectionManager implements OnConnectedListener,
         Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
 
         for (AccountJid accountJid : allAccounts) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            checkConnection(AccountManager.getInstance().getAccount(accountJid),
+                    getReconnectionInfo(accountJid));
+        }
+    }
 
-            if (!accountItem.isEnabled()) {
-                if (accountItem.getState() != ConnectionState.offline) {
-                    ((ConnectionItem)accountItem).updateState(ConnectionState.offline);
-                }
-            }
-
-            if ((!accountItem.isEnabled() || !accountItem.getRawStatusMode().isOnline())
-                    && accountItem.getConnection().isConnected()) {
-                accountItem.disconnect();
-                continue;
-            }
-
-            ReconnectionInfo reconnectionInfo = getReconnectionInfo(accountJid);
-
-            if (accountItem.isEnabled() && accountItem.getRawStatusMode().isOnline()
-                    && !accountItem.getConnection().isAuthenticated()) {
-                int reconnectAfter;
-                if (reconnectionInfo.getReconnectAttempts() < RECONNECT_AFTER.length) {
-                    reconnectAfter = RECONNECT_AFTER[reconnectionInfo.getReconnectAttempts()];
-                } else {
-                    reconnectAfter = RECONNECT_AFTER[RECONNECT_AFTER.length - 1];
-                }
-
-                if (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - reconnectionInfo.getLastReconnectionTimeMillis()) >= reconnectAfter) {
-                    boolean newThreadStarted = accountItem.connect();
-                    if (newThreadStarted) {
-                        reconnectionInfo.nextAttempt();
-                        LogManager.i(this, "not authenticated. new thread started. next attempt " + reconnectionInfo.getReconnectAttempts());
-                    } else {
-                        reconnectionInfo.resetReconnectionTime();
-                        LogManager.i(this, "not authenticated. already in progress. reset time. attempt  " + reconnectionInfo.getReconnectAttempts());
-                    }
-                } else {
-                    LogManager.i(this,
-                            "not authenticated. waiting... seconds from last reconnection " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - reconnectionInfo.getLastReconnectionTimeMillis()));
-                }
-            } else {
-                reconnectionInfo.reset();
+    private void checkConnection(AccountItem accountItem, ReconnectionInfo reconnectionInfo) {
+        if (!accountItem.isEnabled()) {
+            if (accountItem.getState() != ConnectionState.offline) {
+                ((ConnectionItem)accountItem).updateState(ConnectionState.offline);
             }
         }
+
+        if ((!accountItem.isEnabled() || !accountItem.getRawStatusMode().isOnline())
+                && accountItem.getConnection().isConnected()) {
+            accountItem.disconnect();
+            return;
+        }
+
+        if (!isAccountNeedConnection(accountItem)) {
+            reconnectionInfo.reset();
+            return;
+        }
+
+        if (!isTimeToReconnect(reconnectionInfo)) {
+            LogManager.i(LOG_TAG, accountItem.getAccount()
+                    + " not authenticated. State: " + accountItem.getState()
+                    + " waiting... seconds from last reconnection "
+                    + getTimeSinceLastReconnectionSeconds(reconnectionInfo));
+            return;
+        }
+
+        boolean newThreadStarted = accountItem.connect();
+        if (newThreadStarted) {
+            reconnectionInfo.nextAttempt();
+            LogManager.i(LOG_TAG, accountItem.getAccount()
+                    + " not authenticated. new thread started. next attempt "
+                    + reconnectionInfo.getReconnectAttempts());
+        } else {
+            reconnectionInfo.resetReconnectionTime();
+            LogManager.i(LOG_TAG, accountItem.getAccount()
+                    + "not authenticated. already in progress. reset time. attempt "
+                    + reconnectionInfo.getReconnectAttempts());
+        }
+    }
+
+    private boolean isAccountNeedConnection(AccountItem accountItem) {
+        return accountItem.isEnabled() && accountItem.getRawStatusMode().isOnline()
+                && !accountItem.getConnection().isAuthenticated();
+    }
+
+    private boolean isTimeToReconnect(ReconnectionInfo reconnectionInfo) {
+        int reconnectAfter;
+        if (reconnectionInfo.getReconnectAttempts() < RECONNECT_AFTER.length) {
+            reconnectAfter = RECONNECT_AFTER[reconnectionInfo.getReconnectAttempts()];
+        } else {
+            reconnectAfter = RECONNECT_AFTER[RECONNECT_AFTER.length - 1];
+        }
+
+        return getTimeSinceLastReconnectionSeconds(reconnectionInfo) >= reconnectAfter;
+    }
+
+    private long getTimeSinceLastReconnectionSeconds(ReconnectionInfo reconnectionInfo) {
+        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()
+                - reconnectionInfo.getLastReconnectionTimeMillis());
     }
 
     public void requestReconnect(AccountJid accountJid) {
@@ -100,7 +123,7 @@ public class ReconnectionManager implements OnConnectedListener,
     private ReconnectionInfo getReconnectionInfo(AccountJid accountJid) {
         ReconnectionInfo reconnectionInfo = connections.get(accountJid);
         if (reconnectionInfo == null) {
-            LogManager.i(this, "getReconnectionInfo new reconnection info for  " + accountJid);
+            LogManager.i(LOG_TAG, "getReconnectionInfo new reconnection info for  " + accountJid);
             reconnectionInfo = new ReconnectionInfo();
             connections.put(accountJid, reconnectionInfo);
         }
@@ -114,7 +137,7 @@ public class ReconnectionManager implements OnConnectedListener,
 
     @Override
     public void onConnected(ConnectionItem connection) {
-        LogManager.i(this, "onConnected " + connection.getAccount());
+        LogManager.i(LOG_TAG, "onConnected " + connection.getAccount());
         resetReconnectionInfo(connection.getAccount());
     }
 
