@@ -44,10 +44,10 @@ import org.jxmpp.jid.parts.Resourcepart;
  */
 public abstract class ConnectionItem {
 
-    private static final String LOG_TAG = ConnectionItem.class.getSimpleName();
-
     @NonNull
     private final AccountJid account;
+
+    private final String logTag;
 
     /**
      * Connection options.
@@ -62,7 +62,7 @@ public abstract class ConnectionItem {
      * XMPP connection.
      */
     @NonNull
-    private XMPPTCPConnection connection;
+    XMPPTCPConnection connection;
 
     /**
      * Connection was requested by user.
@@ -97,6 +97,7 @@ public abstract class ConnectionItem {
                           ProxyType proxyType, String proxyHost, int proxyPort,
                           String proxyUser, String proxyPassword) {
         this.account = AccountJid.from(userName, serverName, resource);
+        this.logTag = getClass().getSimpleName() + ": " + account;
         rosterListener = new AccountRosterListener(getAccount());
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
@@ -113,6 +114,8 @@ public abstract class ConnectionItem {
 
     private void createConnection() {
         connection = ConnectionBuilder.build(connectionSettings);
+        LogManager.i(logTag, "Connection created");
+
         connectionThread = new ConnectionThread(connection, this);
 
         addConnectionListeners();
@@ -172,6 +175,8 @@ public abstract class ConnectionItem {
     protected abstract boolean isConnectionAvailable(boolean userRequest);
 
     public boolean connect() {
+        LogManager.i(logTag, "connect");
+
         updateState(ConnectionState.connecting);
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
@@ -231,6 +236,8 @@ public abstract class ConnectionItem {
     }
 
     public void disconnect() {
+        LogManager.i(logTag, "disconnect");
+
         Thread thread = new Thread("Disconnection thread for " + connection) {
             @Override
             public void run() {
@@ -244,6 +251,8 @@ public abstract class ConnectionItem {
     }
 
     public void recreateConnection() {
+        LogManager.i(logTag, "recreateConnection");
+
         Thread thread = new Thread("Disconnection thread for " + connection) {
             @Override
             public void run() {
@@ -264,7 +273,10 @@ public abstract class ConnectionItem {
         thread.start();
     }
 
+    @SuppressWarnings("WeakerAccess")
     void createNewConnection() {
+        LogManager.i(logTag, "createNewConnection");
+
         showDebugToast("createNewConnection...");
 
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
@@ -280,6 +292,8 @@ public abstract class ConnectionItem {
     }
 
     void updateState(ConnectionState newState) {
+        LogManager.i(logTag, "updateState " + newState);
+
         ConnectionState prevState = this.state;
 
         if (connection.isAuthenticated()) {

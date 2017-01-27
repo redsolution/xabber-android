@@ -43,8 +43,9 @@ class ConnectionThread {
 
     @NonNull
     private final XMPPTCPConnection connection;
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    private final ConnectionItem connectionItem;
+    final ConnectionItem connectionItem;
     private Thread thread;
 
     ConnectionThread(@NonNull XMPPTCPConnection connection, @NonNull ConnectionItem connectionItem) {
@@ -85,7 +86,8 @@ class ConnectionThread {
         }
     }
 
-    private void connectAndLogin() {
+    @SuppressWarnings("WeakerAccess")
+    void connectAndLogin() {
         AndroidLoggingHandler.reset(new AndroidLoggingHandler());
         java.util.logging.Logger.getLogger(XMPPTCPConnection.class.getName()).setLevel(Level.FINEST);
         java.util.logging.Logger.getLogger(AbstractDNSClient.class.getName()).setLevel(Level.FINEST);
@@ -132,5 +134,10 @@ class ConnectionThread {
         }
 
         return success;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + ": " + connectionItem.getAccount();
     }
 }

@@ -15,15 +15,25 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @SuppressWarnings("WeakerAccess")
     ConnectionItem connectionItem;
-    private String LOG_TAG = ConnectionListener.class.getSimpleName();
 
     ConnectionListener(ConnectionItem connectionItem) {
         this.connectionItem = connectionItem;
     }
 
+    private String getLogTag() {
+        StringBuilder logTag = new StringBuilder();
+        logTag.append(getClass().getSimpleName());
+
+        if (connectionItem != null) {
+            logTag.append(": ");
+            logTag.append(connectionItem.getAccount());
+        }
+        return logTag.toString();
+    }
+
     @Override
     public void connected(XMPPConnection connection) {
-        LogManager.i(LOG_TAG, "connected");
+        LogManager.i(getLogTag(), "connected");
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -40,7 +50,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void authenticated(XMPPConnection connection, final boolean resumed) {
-        LogManager.i(LOG_TAG, "authenticated. resumed: " + resumed);
+        LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -67,7 +77,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void connectionClosed() {
-        LogManager.i(LOG_TAG, "connectionClosed");
+        LogManager.i(getLogTag(), "connectionClosed");
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -87,7 +97,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     // going to reconnect with Smack Reconnection manager
     @Override
     public void connectionClosedOnError(final Exception e) {
-        LogManager.i(LOG_TAG, "connectionClosedOnError " + e + " " + e.getMessage());
+        LogManager.i(getLogTag(), "connectionClosedOnError " + e + " " + e.getMessage());
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -105,7 +115,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void reconnectionSuccessful() {
-        LogManager.i(LOG_TAG, "reconnectionSuccessful");
+        LogManager.i(getLogTag(), "reconnectionSuccessful");
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -117,7 +127,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void reconnectingIn(final int seconds) {
-        LogManager.i(LOG_TAG, "reconnectionSuccessful");
+        LogManager.i(getLogTag(), "reconnectionSuccessful");
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
@@ -134,7 +144,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
 
     @Override
     public void reconnectionFailed(final Exception e) {
-        LogManager.i(LOG_TAG, "reconnectionFailed " + e + " " + e.getMessage());
+        LogManager.i(getLogTag(), "reconnectionFailed " + e + " " + e.getMessage());
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override

@@ -74,7 +74,6 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         LogManager.i(LOG_TAG, "connectAll");
         AccountManager accountManager = AccountManager.getInstance();
         for (AccountJid account : accountManager.getEnabledAccounts()) {
-            LogManager.i(LOG_TAG, "request connect all!");
             ReconnectionManager.getInstance().requestReconnect(account);
         }
     }
