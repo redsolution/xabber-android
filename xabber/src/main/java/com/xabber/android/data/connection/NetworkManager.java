@@ -68,7 +68,11 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
 
     @Override
     public void onClose() {
-        Application.getInstance().unregisterReceiver(connectivityReceiver);
+        try {
+            Application.getInstance().unregisterReceiver(connectivityReceiver);
+        } catch (IllegalArgumentException e) {
+            LogManager.exception(LOG_TAG, e);
+        }
     }
 
     public void onNetworkChange() {
