@@ -68,7 +68,7 @@ class ConnectionBuilder {
 
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
-        return new CustomXmppTcpConnection(builder.build());
+        return new XMPPTCPConnection(builder.build());
     }
 
     private static void setCustomHost(@NonNull ConnectionSettings connectionSettings, XMPPTCPConnectionConfiguration.Builder builder) {
