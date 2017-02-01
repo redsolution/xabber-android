@@ -29,10 +29,10 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
@@ -444,7 +444,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
-    public void onContactsChanged(Collection<BaseEntity> addresses) {
+    public void onContactsChanged(Collection<RosterContact> addresses) {
         adapter.refreshRequest();
     }
 

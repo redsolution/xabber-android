@@ -15,7 +15,6 @@
 package com.xabber.android.data.roster;
 
 import com.xabber.android.data.BaseUIListener;
-import com.xabber.android.data.entity.BaseEntity;
 
 import java.util.Collection;
 
@@ -29,6 +28,6 @@ public interface OnContactChangedListener extends BaseUIListener {
     /**
      * Contacts changed.
      */
-    void onContactsChanged(Collection<BaseEntity> entities);
+    void onContactsChanged(Collection<RosterContact> entities);
 
 }

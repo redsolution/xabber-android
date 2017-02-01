@@ -6,7 +6,6 @@ import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.roster.RosterManager;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.sasl.SASLErrorException;
@@ -62,10 +61,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
                 }
 
                 connectionItem.updateState(ConnectionState.connected);
-
-                if (resumed) {
-                    RosterManager.getInstance().updateContacts();
-                }
 
                 for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
                     listener.onAuthorized(connectionItem);

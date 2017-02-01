@@ -254,21 +254,27 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
         entities.clear();
-        for (RosterContact check : RosterManager.getInstance().getContacts()) {
-            if (check.isEnabled() && check.getUser().equals(bareAddress)) {
-                entities.add(check);
+
+        Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
+        RosterManager rosterManager = RosterManager.getInstance();
+
+        for (AccountJid accountJid : enabledAccounts) {
+            RosterContact rosterContact = rosterManager.getRosterContact(accountJid, user);
+            if (rosterContact != null && rosterContact.isEnabled()) {
+                entities.add(rosterContact);
             }
         }
+
         if (entities.size() == 1) {
             openChat(entities.get(0), text);
             return;
         }
-        Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
-        if (accounts.isEmpty()) {
+
+        if (enabledAccounts.isEmpty()) {
             return;
         }
-        if (accounts.size() == 1) {
-            openChat(RosterManager.getInstance().getBestContact(accounts.iterator().next(), bareAddress), text);
+        if (enabledAccounts.size() == 1) {
+            openChat(rosterManager.getBestContact(enabledAccounts.iterator().next(), bareAddress), text);
             return;
         }
         AccountChooseDialogFragment.newInstance(bareAddress, text)

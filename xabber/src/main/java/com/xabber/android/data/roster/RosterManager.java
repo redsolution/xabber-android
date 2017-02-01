@@ -26,11 +26,9 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.RoomChat;
@@ -47,6 +45,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.Jid;
 
 import java.lang.ref.WeakReference;
@@ -68,11 +67,12 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     private static RosterManager instance;
 
-    private Collection<RosterContact> allRosterContacts;
+    private NestedMap<RosterContact> rosterContacts;
+
     private final NestedMap<WeakReference<AbstractContact>> contactsCache;
 
     private RosterManager() {
-        allRosterContacts = new ArrayList<>();
+        rosterContacts = new NestedMap<>();
         contactsCache = new NestedMap<>();
     }
 
@@ -114,48 +114,50 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         }
     }
 
-    public Collection<RosterContact> getContacts() {
-//        requestRosterReloadIfNeeded();
-
-        return Collections.unmodifiableCollection(allRosterContacts);
+    public Collection<RosterContact> getAccountRosterContacts(final AccountJid accountJid) {
+        return Collections.unmodifiableCollection(rosterContacts.getNested(accountJid.toString()).values());
     }
 
-    private void requestRosterReloadIfNeeded() {
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            final Roster roster = RosterManager.getInstance().getRoster(account);
-            if (roster != null && !roster.isLoaded()
-                    && AccountManager.getInstance().getAccount(account).getState() == ConnectionState.connected) {
-                try {
-                    LogManager.d(this, "Load roster from requestRosterReloadIfNeeded!");
-                    roster.reload();
-                } catch (SmackException.NotLoggedInException | SmackException.NotConnectedException | InterruptedException e) {
-                    LogManager.exception(this, e);
-                }
-            }
-        }
+    public Collection<RosterContact> getAllContacts() {
+        return Collections.unmodifiableCollection(rosterContacts.values());
     }
 
-    public void updateContacts() {
-        Collection<RosterContact> newRosterContacts = new ArrayList<>();
-        for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-            final Roster roster = RosterManager.getInstance().getRoster(account);
-            if (roster == null) {
-                continue;
-            }
+    void onContactsAdded(AccountJid account, Collection<Jid> addresses) {
+        final Roster roster = RosterManager.getInstance().getRoster(account);
 
-            final Set<RosterEntry> entries = roster.getEntries();
+        Collection<RosterContact> newContacts = new ArrayList<>(addresses.size());
 
-            for (RosterEntry rosterEntry : entries) {
-                try {
-                    newRosterContacts.add(convertRosterEntryToRosterContact(account, roster, rosterEntry));
-                } catch (UserJid.UserJidCreateException e) {
-                    LogManager.exception(this, e);
-                }
+
+        for (Jid jid : addresses) {
+            RosterEntry entry = roster.getEntry(jid.asBareJid());
+            try {
+                RosterContact contact = convertRosterEntryToRosterContact(account, roster, entry);
+                rosterContacts.put(account.toString(),
+                        contact.getUser().getBareJid().toString(), contact);
+                newContacts.add(contact);
+            } catch (UserJid.UserJidCreateException e) {
+                LogManager.exception(LOG_TAG, e);
             }
         }
-        allRosterContacts = newRosterContacts;
 
-        LogManager.i(this, "updateContacts: " + allRosterContacts.size());
+        onContactsChanged(newContacts);
+    }
+
+    void onContactsUpdated(AccountJid account, Collection<Jid> addresses) {
+        onContactsAdded(account, addresses);
+    }
+
+    void onContactsDeleted(AccountJid account, Collection<Jid> addresses) {
+        Collection<RosterContact> removedContacts = new ArrayList<>(addresses.size());
+
+        for (Jid jid : addresses) {
+            RosterContact contact = rosterContacts.remove(account.toString(), jid.asBareJid().toString());
+            if (contact != null) {
+                removedContacts.add(contact);
+            }
+        }
+
+        onContactsChanged(removedContacts);
     }
 
     @NonNull
@@ -189,31 +191,14 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
         return newContact;
     }
 
+    @Nullable
+    public RosterContact getRosterContact(AccountJid accountJid, BareJid bareJid) {
+        return rosterContacts.get(accountJid.toString(), bareJid.toString());
+    }
 
-    /**
-     * @param account
-     * @param user
-     * @return <code>null</code> can be returned.
-     */
-    public RosterContact getRosterContact(AccountJid account, UserJid user) {
-
-        final Roster roster = getRoster(account);
-
-        if (roster == null) {
-            return null;
-        }
-
-        final RosterEntry entry = roster.getEntry(user.getBareJid());
-
-        if (entry == null) {
-            return null;
-        } else {
-            try {
-                return convertRosterEntryToRosterContact(account, roster, entry);
-            } catch (UserJid.UserJidCreateException e) {
-                return null;
-            }
-        }
+    @Nullable
+    public RosterContact getRosterContact(AccountJid accountJid, UserJid userJid) {
+        return getRosterContact(accountJid, userJid.getBareJid());
     }
 
     /**
@@ -532,13 +517,15 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
 
     @Override
     public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
+        if (!(connection instanceof AccountItem)) {
             return;
-        AccountJid account = connection.getAccount();
-        for (RosterContact contact : allRosterContacts) {
-            if (contact.getAccount().equals(account)) {
-                contact.setConnected(false);
-            }
+        }
+
+        Collection<RosterContact> accountContacts
+                = rosterContacts.getNested(connection.getAccount().toString()).values();
+
+        for (RosterContact contact : accountContacts) {
+            contact.setConnected(false);
         }
     }
 
@@ -556,10 +543,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * Sets whether contacts in accounts are enabled.
      */
     private void setEnabled(AccountJid account, boolean enabled) {
-        for (RosterContact contact : allRosterContacts) {
-            if (contact.getAccount().equals(account)) {
-                contact.setEnabled(enabled);
-            }
+        Collection<RosterContact> accountContacts
+                = rosterContacts.getNested(account.toString()).values();
+
+        for (RosterContact contact : accountContacts) {
+            contact.setEnabled(enabled);
         }
     }
 
@@ -568,14 +556,14 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      *
      * @param entities
      */
-    public static void onContactsChanged(final Collection<BaseEntity> entities) {
+    public static void onContactsChanged(final Collection<RosterContact> entities) {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 for (OnContactChangedListener onContactChangedListener : Application
-                        .getInstance().getUIListeners(
-                                OnContactChangedListener.class))
+                        .getInstance().getUIListeners(OnContactChangedListener.class)) {
                     onContactChangedListener.onContactsChanged(entities);
+                }
             }
         });
     }
@@ -584,8 +572,11 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
      * Notifies registered {@link OnContactChangedListener}.
      */
     public static void onContactChanged(AccountJid account, UserJid bareAddress) {
-        final ArrayList<BaseEntity> entities = new ArrayList<>();
-        entities.add(getInstance().getAbstractContact(account, bareAddress));
+        final Collection<RosterContact> entities = new ArrayList<>();
+        RosterContact rosterContact = getInstance().getRosterContact(account, bareAddress);
+        if (rosterContact != null) {
+            entities.add(rosterContact);
+        }
         onContactsChanged(entities);
     }
 }

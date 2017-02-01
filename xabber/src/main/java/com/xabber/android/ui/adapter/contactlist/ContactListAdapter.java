@@ -210,7 +210,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             handler.removeCallbacks(this);
         }
 
-        final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getContacts();
+        final Collection<RosterContact> allRosterContacts = RosterManager.getInstance().getAllContacts();
 
         Map<AccountJid, Collection<UserJid>> blockedContacts = new TreeMap<>();
         for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {

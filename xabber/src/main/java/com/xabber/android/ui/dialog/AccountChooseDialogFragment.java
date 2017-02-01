@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterContact;
@@ -16,13 +17,14 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class AccountChooseDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.AccountChooseDialogFragment.ARGUMENT_USER";
     public static final String ARGUMENT_TEXT = "com.xabber.android.ui.dialog.AccountChooseDialogFragment.ARGUMENT_TEXT";
 
-    private UserJid user;
+    UserJid user;
     private String text;
     private Adapter adapter;
 
@@ -61,11 +63,17 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
         public Adapter(Activity activity) {
             super(activity);
             ArrayList<AccountJid> available = new ArrayList<>();
-            for (RosterContact check : RosterManager.getInstance().getContacts()) {
-                if (check.isEnabled() && check.getUser().equals(user)) {
-                    available.add(check.getAccount());
+            Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
+
+            RosterManager rosterManager = RosterManager.getInstance();
+
+            for (AccountJid accountJid : enabledAccounts) {
+                RosterContact rosterContact = rosterManager.getRosterContact(accountJid, user);
+                if (rosterContact != null && rosterContact.isEnabled()) {
+                    available.add(accountJid);
                 }
             }
+
             if (!available.isEmpty()) {
                 accounts.clear();
                 accounts.addAll(available);

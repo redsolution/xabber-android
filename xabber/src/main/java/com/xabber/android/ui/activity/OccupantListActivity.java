@@ -21,21 +21,20 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.adapter.OccupantListAdapter;
 import com.xabber.android.ui.color.BarPainter;
@@ -121,7 +120,7 @@ public class OccupantListActivity extends ManagedListActivity implements
     }
 
     @Override
-    public void onContactsChanged(Collection<BaseEntity> entities) {
+    public void onContactsChanged(Collection<RosterContact> entities) {
         try {
             if (entities.contains(RosterManager.getInstance().getAbstractContact(account, UserJid.from(room)))) {
                 listAdapter.onChange();

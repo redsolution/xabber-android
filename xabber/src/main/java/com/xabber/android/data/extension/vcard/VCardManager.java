@@ -153,9 +153,11 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
         Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
 
+        Collection<RosterContact> accountRosterContacts = RosterManager.getInstance().getAccountRosterContacts(account);
+
         // Request vCards for new contacts.
-        for (RosterContact contact : RosterManager.getInstance().getContacts()) {
-            if (account.equals(contact.getAccount()) && !names.containsKey(contact.getUser().getJid())) {
+        for (RosterContact contact : accountRosterContacts) {
+            if (!names.containsKey(contact.getUser().getJid())) {
                 if (!blockedContacts.contains(contact.getUser())) {
                     request(account, contact.getUser().getJid());
                 }
@@ -251,13 +253,13 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
         }
         names.put(bareAddress, name);
-        for (RosterContact rosterContact : RosterManager.getInstance().getContacts()) {
-            if (rosterContact.getUser().equals(bareAddress)) {
-                for (OnRosterChangedListener listener : Application.getInstance()
-                        .getManagers(OnRosterChangedListener.class)) {
-                    listener.onContactStructuredInfoChanged(rosterContact, name);
-                }
-            }
+
+        RosterContact rosterContact = RosterManager.getInstance()
+                .getRosterContact(account, bareAddress.asBareJid());
+
+        for (OnRosterChangedListener listener : Application.getInstance()
+                .getManagers(OnRosterChangedListener.class)) {
+            listener.onContactStructuredInfoChanged(rosterContact, name);
         }
         Application.getInstance().runInBackground(new Runnable() {
             @Override

@@ -208,7 +208,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                         StatusMode.createStatusMode(presence), presence.getStatus());
         }
 
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, from);
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, from.getBareJid());
         if (rosterContact != null) {
             ArrayList<RosterContact> rosterContacts = new ArrayList<>();
             rosterContacts.add(rosterContact);

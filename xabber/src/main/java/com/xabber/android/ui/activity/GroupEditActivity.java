@@ -28,6 +28,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.fragment.GroupEditorFragment;
 import com.xabber.android.ui.helper.ContactTitleActionBarInflater;
@@ -105,7 +106,7 @@ public class GroupEditActivity extends ManagedActivity implements OnContactChang
     }
 
     @Override
-    public void onContactsChanged(Collection<BaseEntity> entities) {
+    public void onContactsChanged(Collection<RosterContact> entities) {
         BareJid thisBareAddress = user.getBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {

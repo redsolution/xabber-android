@@ -88,11 +88,11 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Collection<RosterContact> contacts = RosterManager.getInstance().getContacts();
+                Collection<RosterContact> contacts = RosterManager.getInstance()
+                        .getAccountRosterContacts(accountItem.getAccount());
                 for (RosterContact contact : contacts) {
-                    if (contact.getAccount().equals(accountItem.getAccount())) {
-                        requestLastHistory(MessageManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser()));
-                    }
+                    requestLastHistory(MessageManager.getInstance()
+                            .getOrCreateChat(contact.getAccount(), contact.getUser()));
                 }
             }
         });

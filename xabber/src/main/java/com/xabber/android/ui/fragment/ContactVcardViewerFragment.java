@@ -28,6 +28,7 @@ import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
@@ -215,7 +216,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onContactsChanged(Collection<BaseEntity> entities) {
+    public void onContactsChanged(Collection<RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
                 updateContact(account, user);

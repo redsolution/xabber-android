@@ -43,6 +43,7 @@ import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.adapter.ChatViewerAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
@@ -55,7 +56,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
-import java.util.List;
 
 
 /**
@@ -371,7 +371,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     }
 
     @Override
-    public void onContactsChanged(Collection<BaseEntity> entities) {
+    public void onContactsChanged(Collection<RosterContact> entities) {
         updateChat();
         updateRecentChats();
     }

@@ -1,17 +1,17 @@
 package com.xabber.android.data.extension.blocking;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.xmpp.blocking.Block;
 import com.xabber.xmpp.blocking.BlockList;
 import com.xabber.xmpp.blocking.Unblock;
@@ -135,7 +135,7 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
 
                                 for (OnContactChangedListener onContactChangedListener
                                         : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
-                                    onContactChangedListener.onContactsChanged(new ArrayList<BaseEntity>());
+                                    onContactChangedListener.onContactsChanged(new ArrayList<RosterContact>());
                                 }
                             }
                         });
