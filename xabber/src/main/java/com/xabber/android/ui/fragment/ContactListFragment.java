@@ -97,6 +97,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private AccountPainter accountPainter;
 
     private ContactListFragmentListener contactListFragmentListener;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public void onAttach(Activity activity) {
@@ -115,7 +116,8 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         recyclerView = (RecyclerView) view.findViewById(R.id.contact_list_recycler_view);
         registerForContextMenu(recyclerView);
         adapter = new ContactListAdapter(getActivity(), this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
@@ -365,7 +367,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             Object itemAtPosition = adapter.getItem(position);
             if (itemAtPosition != null && itemAtPosition instanceof AccountConfiguration
                     && ((AccountConfiguration)itemAtPosition).getAccount().equals(account)) {
-                recyclerView.scrollToPosition(position);
+                linearLayoutManager.scrollToPositionWithOffset(position, 0);
                 break;
             }
         }
