@@ -62,7 +62,7 @@
     <bool name="contacts_show_avatars_default">true</bool>
 
     <string name="contacts_show_offline_key">contacts_show_offline</string>
-    <bool name="contacts_show_offline_default">false</bool>
+    <bool name="contacts_show_offline_default">true</bool>
 
     <string name="contacts_show_groups_key">contacts_show_groups</string>
     <bool name="contacts_show_groups_default">true</bool>
