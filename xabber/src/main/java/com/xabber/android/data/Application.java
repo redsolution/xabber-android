@@ -202,7 +202,7 @@ public class Application extends android.app.Application {
         closed = true;
     }
 
-    private void onUnload() {
+    void onUnload() {
         LogManager.i(this, "onUnload");
         for (Object manager : registeredManagers) {
             if (manager instanceof OnUnloadListener) {
@@ -345,12 +345,18 @@ public class Application extends android.app.Application {
             return;
         }
         onClose();
-        runInBackgroundUserRequest(new Runnable() {
+
+        // use new thread instead of run in background to exit immediately
+        // without waiting for possible other threads in executor
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 onUnload();
             }
         });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override
