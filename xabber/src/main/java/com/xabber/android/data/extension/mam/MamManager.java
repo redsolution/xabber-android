@@ -134,61 +134,80 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         return isSupported;
     }
 
-    public void requestLastHistory(final AbstractChat chat) {
+    public void requestLastHistoryByUser(final AbstractChat chat) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                getLastHistory(chat);
+            }
+        });
+    }
+
+    private void requestLastHistory(final AbstractChat chat) {
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                getLastHistory(chat);
+            }
+        });
+    }
+
+    private boolean isTimeToRefreshHistory(AbstractChat chat) {
+        return chat.getLastSyncedTime() != null
+                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - chat.getLastSyncedTime().getTime())
+                < SYNC_INTERVAL_MINUTES;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    void getLastHistory(AbstractChat chat) {
         if (chat == null) {
             return;
         }
 
-        if (chat.getLastSyncedTime() != null
-                && TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - chat.getLastSyncedTime().getTime()) < SYNC_INTERVAL_MINUTES) {
+        if (isTimeToRefreshHistory(chat)) {
             return;
         }
 
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
-        if (accountItem == null || !accountItem.getFactualStatusMode().isOnline()) {
+        if (accountItem == null) {
             return;
         }
 
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                XMPPTCPConnection connection = accountItem.getConnection();
-                if (!connection.isAuthenticated()) {
-                    return;
-                }
+        XMPPTCPConnection connection = accountItem.getConnection();
+        if (!connection.isAuthenticated()) {
+            return;
+        }
 
-                if (!checkSupport(accountItem)) {
-                    return;
-                }
+        if (!checkSupport(accountItem)) {
+            return;
+        }
 
-                EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
+        EventBus.getDefault().post(new LastHistoryLoadStartedEvent(chat));
 
-                org.jivesoftware.smackx.mam.MamManager mamManager
-                        = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(connection);
+        org.jivesoftware.smackx.mam.MamManager mamManager
+                = org.jivesoftware.smackx.mam.MamManager.getInstanceFor(connection);
 
-                String lastMessageMamId;
-                int receivedMessagesCount;
-                do {
-                    Realm realm = Realm.getDefaultInstance();
-                    lastMessageMamId = getSyncInfo(realm, chat.getAccount(), chat.getUser()).getLastMessageMamId();
-                    realm.close();
+        String lastMessageMamId;
+        int receivedMessagesCount;
+        do {
+            Realm realm = Realm.getDefaultInstance();
+            lastMessageMamId = getSyncInfo(realm, chat.getAccount(), chat.getUser()).getLastMessageMamId();
+            realm.close();
 
-                    receivedMessagesCount = requestLastHistoryPage(mamManager, chat, lastMessageMamId);
+            receivedMessagesCount = requestLastHistoryPage(mamManager, chat, lastMessageMamId);
 
-                    // if it was NOT the first time, and we got exactly one page,
-                    // it means that there should be more unloaded recent history
-                } while (lastMessageMamId != null && receivedMessagesCount == PAGE_SIZE);
+            // if it was NOT the first time, and we got exactly one page,
+            // it means that there should be more unloaded recent history
+        } while (lastMessageMamId != null && receivedMessagesCount == PAGE_SIZE);
 
-                // if it was first time receiving history, and we got less than a page
-                // it mean that all previous history loaded
-                if (lastMessageMamId == null
-                        && receivedMessagesCount >= 0 && receivedMessagesCount < PAGE_SIZE) {
-                    setRemoteHistoryCompletelyLoaded(chat);
-                }
+        // if it was first time receiving history, and we got less than a page
+        // it mean that all previous history loaded
+        if (lastMessageMamId == null
+                && receivedMessagesCount >= 0 && receivedMessagesCount < PAGE_SIZE) {
+            setRemoteHistoryCompletelyLoaded(chat);
+        }
 
-                EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
-            }
-        });
+        EventBus.getDefault().post(new LastHistoryLoadFinishedEvent(chat));
     }
 
     public void setRemoteHistoryCompletelyLoaded(AbstractChat chat) {

@@ -303,7 +303,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         EventBus.getDefault().register(this);
 
         if (!isRemoteHistoryRequested) {
-            MamManager.getInstance().requestLastHistory(getChat());
+            MamManager.getInstance().requestLastHistoryByUser(getChat());
         }
 
     }
