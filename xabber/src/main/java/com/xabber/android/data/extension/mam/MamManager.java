@@ -382,7 +382,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
             return;
         }
 
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 if (!checkSupport(accountItem)) {

@@ -124,7 +124,7 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
      * when this setting has been changed
      */
     public void onUseCarbonsSettingsChanged() {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
