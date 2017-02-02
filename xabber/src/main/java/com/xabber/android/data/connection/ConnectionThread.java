@@ -100,7 +100,17 @@ class ConnectionThread {
 
         try {
             LogManager.i(this, "Trying to connect and login...");
-            connection.connect().login();
+            if (!connection.isConnected()) {
+                connection.connect();
+            } else {
+                LogManager.i(this, "Already connected");
+            }
+
+            if (!connection.isAuthenticated()) {
+                connection.login();
+            } else {
+                LogManager.i(this, "Already authenticated");
+            }
         } catch (SASLErrorException e)  {
             LogManager.exception(this, e);
             LogManager.i(this, "Error. " + e.getMessage() + " Exception class: " + e.getClass().getSimpleName());
