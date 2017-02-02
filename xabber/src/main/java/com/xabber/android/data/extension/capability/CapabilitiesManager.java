@@ -14,12 +14,17 @@
  */
 package com.xabber.android.data.extension.capability;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.xabber.android.BuildConfig;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.caps.EntityCapsManager;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jxmpp.jid.Jid;
 
@@ -44,6 +49,25 @@ public class CapabilitiesManager {
         }
 
         return instance;
+    }
+
+    private CapabilitiesManager() {
+        Context applicationContext = Application.getInstance().getApplicationContext();
+
+        EntityCapsManager.setDefaultEntityNode(applicationContext.getString(R.string.caps_entity_node));
+
+        setServiceDiscoveryClientIdentity(applicationContext);
+    }
+
+    private void setServiceDiscoveryClientIdentity(Context applicationContext) {
+        String identityName = applicationContext.getString(R.string.application_title_full)
+                + " Android "
+                + BuildConfig.VERSION_NAME;
+        String identityCategory = "client";
+        String identityType = "phone";
+
+        ServiceDiscoveryManager.setDefaultIdentity(
+                new DiscoverInfo.Identity(identityCategory, identityName, identityType));
     }
 
     private static Collection<String> getFeatures(DiscoverInfo discoverInfo) {
