@@ -2,7 +2,6 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.view.View;
 
 import com.xabber.android.R;
@@ -11,11 +10,12 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.realm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -79,14 +79,13 @@ class ContactItemInflater {
         viewHolder.smallRightText.setVisibility(View.GONE);
         viewHolder.smallRightIcon.setVisibility(View.GONE);
 
-        // TODO!
-//        ClientSoftware clientSoftware = contact.getClientSoftware();
-//        if (clientSoftware == ClientSoftware.unknown) {
-//            viewHolder.largeClientIcon.setVisibility(View.GONE);
-//        } else {
-//            viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
-//            viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
-//        }
+        ClientSoftware clientSoftware = contact.getClientSoftware();
+        if (clientSoftware == ClientSoftware.unknown) {
+            viewHolder.largeClientIcon.setVisibility(View.GONE);
+        } else {
+            viewHolder.largeClientIcon.setVisibility(View.VISIBLE);
+            viewHolder.largeClientIcon.setImageLevel(clientSoftware.ordinal());
+        }
 
         MessageItem lastMessage = messageManager.getOrCreateChat(contact.getAccount(), contact.getUser()).getLastMessage();
 
@@ -110,8 +109,8 @@ class ContactItemInflater {
             }
             viewHolder.smallRightIcon.setImageResource(R.drawable.ic_client_small);
             viewHolder.smallRightIcon.setVisibility(View.VISIBLE);
-            // TODO!
-//            viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
+
+            viewHolder.smallRightIcon.setImageLevel(clientSoftware.ordinal());
             viewHolder.largeClientIcon.setVisibility(View.GONE);
         }
 
@@ -136,9 +135,6 @@ class ContactItemInflater {
             viewHolder.secondLineMessage.setVisibility(View.VISIBLE);
             viewHolder.secondLineMessage.setText(statusText);
         }
-
-        viewHolder.smallRightIcon.setVisibility(View.GONE);
-        viewHolder.largeClientIcon.setVisibility(View.GONE);
 
         viewHolder.statusIcon.setImageLevel(contact.getStatusMode().getStatusLevel());
     }

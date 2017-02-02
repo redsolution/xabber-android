@@ -99,7 +99,7 @@ public class AbstractContact extends BaseEntity {
             return ClientSoftware.unknown;
         }
 
-        ClientInfo clientInfo = CapabilitiesManager.getClientInfo(account, presence.getFrom(), null);
+        ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(presence.getFrom());
         if (clientInfo == null) {
             return ClientSoftware.unknown;
         } else {

@@ -18,6 +18,7 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -201,6 +202,10 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         } catch (UserJid.UserJidCreateException e) {
             LogManager.exception(this, e);
             return;
+        }
+
+        if (presence.isAvailable()) {
+            CapabilitiesManager.getInstance().updateClientInfo(account, presence);
         }
 
         for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {

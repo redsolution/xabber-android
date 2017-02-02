@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
@@ -27,6 +26,7 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -46,11 +46,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class ContactVcardViewerFragment extends Fragment implements OnContactChangedListener, OnAccountChangedListener, OnVCardListener, CapabilitiesManager.ClientInfoLoadedListener {
+public class ContactVcardViewerFragment extends Fragment implements OnContactChangedListener, OnAccountChangedListener, OnVCardListener {
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_USER";
     private static final String SAVED_VCARD = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD";
@@ -63,15 +61,6 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private boolean vCardError;
     private View progressBar;
     private Listener listener;
-    private Map<Jid, ClientInfo> clientInfoByJid = new HashMap<>();
-
-    @Override
-    public void onClientInfoReceived(Jid jid, @Nullable ClientInfo clientInfo) {
-        if (clientInfo != null) {
-            this.clientInfoByJid.put(jid, clientInfo);
-        }
-        updateContact(account, user);
-    }
 
     public interface Listener {
         void onVCardReceived();
@@ -155,13 +144,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
 
-        updateContact(account, user);
-
         if (vCard == null && !vCardError) {
             requestVCard();
         } else {
             updateVCard();
         }
+
+        updateContact(account, user);
     }
 
     public void requestVCard() {
@@ -280,11 +269,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         for (Presence presence : allPresences) {
             Jid user = presence.getFrom();
 
-            ClientInfo clientInfo = clientInfoByJid.get(user);
-
-            if (clientInfo == null) {
-                clientInfo = CapabilitiesManager.getClientInfo(account, user, this);
-            }
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
 
             String client = "";
             if (clientInfo == null) {

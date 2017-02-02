@@ -20,8 +20,16 @@ import android.support.annotation.Nullable;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.data.roster.RosterManager;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.caps.EntityCapsManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
@@ -30,6 +38,8 @@ import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provide information about entity capabilities.
@@ -40,8 +50,13 @@ public class CapabilitiesManager {
 
     public static final ClientInfo INVALID_CLIENT_INFO = new ClientInfo(null,
             null, null, new ArrayList<String>());
+    @SuppressWarnings("WeakerAccess")
+    static final String LOG_TAG = CapabilitiesManager.class.getSimpleName();
 
     private static CapabilitiesManager instance;
+
+    @SuppressWarnings("WeakerAccess")
+    Map<Jid, DiscoverInfo> discoverInfoCache;
 
     public static CapabilitiesManager getInstance() {
         if (instance == null) {
@@ -56,7 +71,10 @@ public class CapabilitiesManager {
 
         EntityCapsManager.setDefaultEntityNode(applicationContext.getString(R.string.caps_entity_node));
 
+
         setServiceDiscoveryClientIdentity(applicationContext);
+
+        discoverInfoCache = new ConcurrentHashMap<>();
     }
 
     private void setServiceDiscoveryClientIdentity(Context applicationContext) {
@@ -78,48 +96,101 @@ public class CapabilitiesManager {
         return features;
     }
 
-    public interface ClientInfoLoadedListener {
-        void onClientInfoReceived(Jid jid, @Nullable ClientInfo clientInfo);
+    public void updateClientInfo(final AccountJid accountJid, final Presence presence) {
+        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(presence.getFrom());
+        if (discoverInfoByUser != null) {
+            return;
+        }
+
+        discoverInfoCache.remove(presence.getFrom());
+
+        Application.getInstance().runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                updateClientInfo(accountJid, presence.getFrom());
+            }
+        });
     }
 
-    public static ClientInfo getClientInfo(final AccountJid account, final Jid jid, @Nullable final ClientInfoLoadedListener clientInfoLoadedListener) {
+    @Nullable
+    public ClientInfo getCachedClientInfo(final Jid jid) {
+        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
+
+        if (discoverInfoByUser == null) {
+            discoverInfoByUser = discoverInfoCache.get(jid);
+        }
+
+        if (discoverInfoByUser != null) {
+            return getClientInfo(discoverInfoByUser);
+        }
+
         return null;
-
-        // TODO: temp problem with a lot of time outed requests
-//        final DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
-//
-//        if (discoverInfoByUser != null) {
-//            return getClientInfo(discoverInfoByUser);
-//        }
-//
-//
-//
-//        Application.getInstance().runInBackground(new Runnable() {
-//            @Override
-//            public void run() {
-//                DiscoverInfo discoverInfo = null;
-//                try {
-//                    discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
-//                            .discoverInfo(jid);
-//                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
-//                    LogManager.exception(this, e);
-//                }
-//
-//                LogManager.i(CapabilitiesManager.class.getSimpleName(), "getClientInfo " + discoverInfo);
-//
-//                if (clientInfoLoadedListener != null && discoverInfo != null) {
-//                    final DiscoverInfo finalDiscoverInfo = discoverInfo;
-//                    Application.getInstance().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            clientInfoLoadedListener.onClientInfoReceived(jid, getClientInfo(finalDiscoverInfo));
-//                        }
-//                    });
-//                }
-//            }
-//        });
-//        return null;
     }
+
+    public ClientInfo getClientInfo(final AccountJid account, final Jid jid) {
+        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
+
+        if (discoverInfoByUser == null) {
+            discoverInfoByUser = discoverInfoCache.get(jid);
+            if (discoverInfoByUser != null) {
+                LogManager.i(LOG_TAG, "found discover info for user in local cache : " + jid);
+            }
+        }
+
+        if (discoverInfoByUser != null) {
+            return getClientInfo(discoverInfoByUser);
+        }
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                updateClientInfo(account, jid);
+            }
+        });
+
+        return null;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    void updateClientInfo(final AccountJid account, final Jid jid) {
+        DiscoverInfo discoverInfo = EntityCapsManager.getDiscoverInfoByUser(jid);
+
+        if (discoverInfo != null) {
+            return;
+        }
+
+        try {
+            discoverInfo = ServiceDiscoveryManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection())
+                    .discoverInfo(jid);
+
+            EntityCapsManager.NodeVerHash nodeVerHashByJid = EntityCapsManager.getNodeVerHashByJid(jid);
+            if (nodeVerHashByJid == null) {
+                discoverInfoCache.put(jid, discoverInfo);
+            }
+
+            RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, jid.asBareJid());
+
+            if (rosterContact != null) {
+                final ArrayList<RosterContact> rosterContacts = new ArrayList<>();
+                rosterContacts.add(rosterContact);
+
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (OnContactChangedListener onContactChangedListener
+                                : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
+                            onContactChangedListener.onContactsChanged(rosterContacts);
+                        }
+                    }
+                });
+            }
+
+
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+            LogManager.exception(this, e);
+        }
+    }
+
 
     private static ClientInfo getClientInfo(DiscoverInfo discoverInfo) {
         if (discoverInfo == null) {
