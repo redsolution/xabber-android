@@ -18,7 +18,6 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
@@ -32,7 +31,8 @@ import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
@@ -65,7 +65,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -114,7 +113,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
     @Override
     public void onLoad() {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -216,7 +215,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     private void sendMessage(final String text, final AbstractChat chat) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -241,7 +240,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             return;
         }
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -263,7 +262,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
     }
 
     public void updateMessageWithError(final String messageId) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -374,7 +373,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             final AccountJid account = chat.getAccount();
             final UserJid user = chat.getUser();
 
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = MessageDatabaseManager.getInstance().getRealm();
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -423,7 +422,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      */
     public void clearHistory(final AccountJid account, final UserJid user) {
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -441,7 +440,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      *
      */
     public void removeMessage(final String messageItemId) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -551,7 +550,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 return;
             }
 
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = MessageDatabaseManager.getInstance().getRealm();
             final AbstractChat finalChat = chat;
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -644,7 +643,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 final String accountName = AccountManager.getInstance().getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = MessageDatabaseManager.getInstance().getRealm();
                 RealmResults<MessageItem> messageItems = realm.where(MessageItem.class)
                         .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
                         .equalTo(MessageItem.Fields.USER, user.toString())

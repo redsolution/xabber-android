@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;

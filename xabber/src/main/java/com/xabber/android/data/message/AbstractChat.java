@@ -22,14 +22,15 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.mam.SyncInfo;
+import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 
@@ -168,7 +169,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public RealmResults<MessageItem> getMessages() {
         if (realm == null || realm.isClosed()) {
-            realm = Realm.getDefaultInstance();
+            realm = MessageDatabaseManager.getInstance().getRealm();
         }
 
         if (messageItems == null) {
@@ -186,7 +187,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     public RealmResults<SyncInfo> getSyncInfo() {
         if (realm == null || realm.isClosed()) {
-            realm = Realm.getDefaultInstance();
+            realm = MessageDatabaseManager.getInstance().getRealm();
         }
 
         if (syncInfo == null) {
@@ -267,7 +268,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     public void saveMessageItem(final MessageItem messageItem) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -353,7 +354,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     }
 
     String newFileMessage(final File file) {
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         final String messageId = UUID.randomUUID().toString();
 
@@ -450,7 +451,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
 
     public void sendMessages() {
-        final Realm realm = Realm.getDefaultInstance();
+        final Realm realm = MessageDatabaseManager.getInstance().getRealm();
 
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -506,7 +507,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 StanzaSender.sendStanza(account, message, new StanzaListener() {
                     @Override
                     public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
-                        Realm localRealm = Realm.getDefaultInstance();
+                        Realm localRealm = MessageDatabaseManager.getInstance().getRealm();
                         localRealm.executeTransaction(new Realm.Transaction() {
                                 @Override
                                 public void execute(Realm realm) {

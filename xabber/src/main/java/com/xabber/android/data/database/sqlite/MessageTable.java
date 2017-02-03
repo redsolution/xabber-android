@@ -18,7 +18,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.ChatAction;

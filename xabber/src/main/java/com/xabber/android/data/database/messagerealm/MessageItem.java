@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.data.database.realm;
+package com.xabber.android.data.database.messagerealm;
 
 import android.support.annotation.Nullable;
 import android.text.Spannable;

@@ -39,7 +39,7 @@ import com.xabber.android.data.account.listeners.OnAccountArchiveModeChangedList
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.sqlite.NotificationTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

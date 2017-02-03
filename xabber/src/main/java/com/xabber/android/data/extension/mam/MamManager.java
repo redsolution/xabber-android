@@ -7,7 +7,9 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
@@ -190,7 +192,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         String lastMessageMamId;
         int receivedMessagesCount;
         do {
-            Realm realm = Realm.getDefaultInstance();
+            Realm realm = MessageDatabaseManager.getInstance().getRealm();
             lastMessageMamId = getSyncInfo(realm, chat.getAccount(), chat.getUser()).getLastMessageMamId();
             realm.close();
 
@@ -213,7 +215,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
     public void setRemoteHistoryCompletelyLoaded(AbstractChat chat) {
         LogManager.i(this, "setRemoteHistoryCompletelyLoaded " + chat.getUser());
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
         SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
         realm.beginTransaction();
         syncInfo.setRemoteHistoryCompletelyLoaded(true);
@@ -242,7 +244,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
         chat.setLastSyncedTime(new Date(System.currentTimeMillis()));
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = MessageDatabaseManager.getInstance().getRealm();
         updateLastHistorySyncInfo(realm, chat, mamQueryResult);
         syncMessages(realm, chat, getMessageItems(mamQueryResult, chat));
         realm.close();
@@ -392,7 +394,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
                 String firstMamMessageMamId;
                 boolean remoteHistoryCompletelyLoaded;
                 {
-                    Realm realm = Realm.getDefaultInstance();
+                    Realm realm = MessageDatabaseManager.getInstance().getRealm();
                     SyncInfo syncInfo = getSyncInfo(realm, chat.getAccount(), chat.getUser());
                     firstMamMessageMamId = syncInfo.getFirstMamMessageMamId();
                     remoteHistoryCompletelyLoaded = syncInfo.isRemoteHistoryCompletelyLoaded();
@@ -424,7 +426,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
                 LogManager.i("MAM", "queryArchive finished. fin count expected: " + mamQueryResult.mamFin.getRSMSet().getCount() + " real: " + mamQueryResult.forwardedMessages.size());
 
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = MessageDatabaseManager.getInstance().getRealm();
                 List<MessageItem> messageItems = getMessageItems(mamQueryResult, chat);
                 syncMessages(realm, chat, messageItems);
                 updatePreviousHistorySyncInfo(realm, chat, mamQueryResult, messageItems);

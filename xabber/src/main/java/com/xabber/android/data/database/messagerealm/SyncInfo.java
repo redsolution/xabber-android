@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.mam;
+package com.xabber.android.data.database.messagerealm;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;

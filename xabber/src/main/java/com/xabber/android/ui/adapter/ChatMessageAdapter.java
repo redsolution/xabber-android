@@ -39,7 +39,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
@@ -149,7 +150,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 messageHolder.messageText.setVisibility(View.GONE);
             } else {
                 final String uniqueId = messageItem.getUniqueId();
-                final Realm realm = Realm.getDefaultInstance();
+                final Realm realm = MessageDatabaseManager.getInstance().getRealm();
                 realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -217,7 +218,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                                     return;
                                 }
 
-                                final Realm realm = Realm.getDefaultInstance();
+                                final Realm realm = MessageDatabaseManager.getInstance().getRealm();
                                 realm.executeTransactionAsync(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {

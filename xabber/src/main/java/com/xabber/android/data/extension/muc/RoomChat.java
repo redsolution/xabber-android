@@ -21,7 +21,8 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.AbstractChat;
@@ -242,7 +243,7 @@ public class RoomChat extends AbstractChat {
                     notify = false;
                 }
 
-                Realm realm = Realm.getDefaultInstance();
+                Realm realm = MessageDatabaseManager.getInstance().getRealm();
                 final MessageItem sameMessage = realm
                         .where(MessageItem.class)
                         .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)

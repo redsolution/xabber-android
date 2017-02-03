@@ -18,7 +18,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;

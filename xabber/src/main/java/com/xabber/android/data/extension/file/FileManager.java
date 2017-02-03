@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realm.MessageItem;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.BufferedOutputStream;
