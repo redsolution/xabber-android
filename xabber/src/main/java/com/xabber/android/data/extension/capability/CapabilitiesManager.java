@@ -70,7 +70,7 @@ public class CapabilitiesManager {
         Context applicationContext = Application.getInstance().getApplicationContext();
 
         EntityCapsManager.setDefaultEntityNode(applicationContext.getString(R.string.caps_entity_node));
-
+        EntityCapsManager.setPersistentCache(new EntityCapsCache());
 
         setServiceDiscoveryClientIdentity(applicationContext);
 

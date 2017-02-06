@@ -82,6 +82,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         registeredTables = new ArrayList<>();
 
         MessageDatabaseManager.getInstance();
+        RealmManager.getInstance();
     }
 
     public void addTables() {
@@ -262,6 +263,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         }
 
         MessageDatabaseManager.getInstance().deleteRealm();
+        RealmManager.getInstance().deleteRealm();
     }
 
     public void removeAccount(final String account) {

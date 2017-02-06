@@ -5,9 +5,9 @@ import android.database.Cursor;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.database.sqlite.MessageTable;
 import com.xabber.android.data.entity.UserJid;
-import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -20,10 +20,11 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
 import io.realm.RealmSchema;
+import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
     private static final String REALM_MESSAGE_DATABASE_NAME = "xabber.realm";
-    private static final int REALM_MESSAGE_DATABASE_VERSION = 13;
+    static final int REALM_MESSAGE_DATABASE_VERSION = 13;
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
@@ -41,7 +42,7 @@ public class MessageDatabaseManager {
         realmConfiguration = createRealmConfiguration();
 
         boolean success = Realm.compactRealm(realmConfiguration);
-        System.out.println("Realm compact database file result: " + success);
+        System.out.println("Realm message compact database file result: " + success);
     }
 
     public Realm getRealm() {
@@ -69,10 +70,15 @@ public class MessageDatabaseManager {
     }
 
 
+    @RealmModule(classes = {MessageItem.class, SyncInfo.class})
+    static class MessageRealmDatabaseModule {
+    }
+
     private RealmConfiguration createRealmConfiguration() {
         return new RealmConfiguration.Builder()
                 .name(REALM_MESSAGE_DATABASE_NAME)
                 .schemaVersion(REALM_MESSAGE_DATABASE_VERSION)
+                .modules(new MessageRealmDatabaseModule())
                 .migration(new RealmMigration() {
                     @Override
                     public void migrate(DynamicRealm realm1, long oldVersion, long newVersion) {
