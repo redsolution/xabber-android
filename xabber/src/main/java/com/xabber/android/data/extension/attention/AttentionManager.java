@@ -31,7 +31,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
-import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
@@ -194,13 +193,11 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         if (to == null) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
         }
-        ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, to);
-        if (clientInfo == null) {
-            throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
-        }
-        if (!clientInfo.getFeatures().contains(AttentionExtension.NAMESPACE)) {
+
+        if (!CapabilitiesManager.getInstance().isFeatureSupported(to, AttentionExtension.NAMESPACE)) {
             throw new NetworkException(R.string.ATTENTION_IS_NOT_SUPPORTED);
         }
+
         Message message = new Message();
         message.setTo(to);
         message.setType(Message.Type.headline);

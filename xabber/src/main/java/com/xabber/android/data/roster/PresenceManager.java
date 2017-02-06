@@ -205,7 +205,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
 
         if (presence.isAvailable()) {
-            CapabilitiesManager.getInstance().updateClientInfo(account, presence);
+            CapabilitiesManager.getInstance().onPresence(account, presence);
         }
 
         for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {

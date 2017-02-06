@@ -14,9 +14,10 @@
  */
 package com.xabber.android.data.extension.capability;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import android.support.annotation.Nullable;
+
+import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * Represent information about client.
@@ -25,20 +26,39 @@ import java.util.Collections;
  */
 public class ClientInfo {
 
+    public static final ClientInfo INVALID_CLIENT_INFO = new ClientInfo(null, null, null);
+
     private final String type;
-
     private final String name;
-
-    private final Collection<String> features;
-
     private final ClientSoftware clientSoftware;
 
-    public ClientInfo(String type, String name, String node,
-                      Collection<String> features) {
-        super();
+    static ClientInfo fromDiscoveryInfo(@Nullable DiscoverInfo discoverInfo) {
+        if (discoverInfo == null) {
+            return null;
+        }
+
+        for (int useClient = 1; useClient >= 0; useClient--) {
+            for (int useLanguage = 2; useLanguage >= 0; useLanguage--) {
+                for (DiscoverInfo.Identity identity : discoverInfo.getIdentities()) {
+                    if (useClient == 1 && !"client".equals(identity.getCategory())) {
+                        continue;
+                    }
+                    if (useLanguage == 2 && !Stanza.getDefaultLanguage().equals(identity.getLanguage())) {
+                        continue;
+                    }
+                    if (useLanguage == 1 && identity.getLanguage() != null) {
+                        continue;
+                    }
+                    return new ClientInfo(identity.getType(), identity.getName(), discoverInfo.getNode());
+                }
+            }
+        }
+        return new ClientInfo(null, null, null);
+    }
+
+    private ClientInfo(String type, String name, String node) {
         this.type = type;
         this.name = name;
-        this.features = Collections.unmodifiableCollection(new ArrayList<>(features));
         this.clientSoftware = ClientSoftware.getByName(name, node);
     }
 
@@ -53,9 +73,4 @@ public class ClientInfo {
     public ClientSoftware getClientSoftware() {
         return clientSoftware;
     }
-
-    public Collection<String> getFeatures() {
-        return features;
-    }
-
 }
