@@ -28,9 +28,9 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
@@ -58,7 +58,8 @@ import org.jxmpp.jid.parts.Resourcepart;
  */
 public class AttentionManager implements OnPacketListener, OnLoadListener {
 
-    private final static Object enabledLock;
+    @SuppressWarnings("WeakerAccess")
+    final static Object enabledLock;
 
     private static AttentionManager instance;
 
@@ -141,7 +142,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         });
     }
 
-    private void onLoaded() {
+    @SuppressWarnings("WeakerAccess")
+    void onLoaded() {
         NotificationManager.getInstance().registerNotificationProvider(
                 attentionRequestProvider);
     }
@@ -154,7 +156,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         if (!SettingsManager.chatsAttention()) {
             return;
         }
-        final AccountJid account = ((AccountItem) connection).getAccount();
+        final AccountJid account = connection.getAccount();
 
         UserJid from;
         try {
@@ -170,7 +172,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 MessageManager.getInstance()
                         .getOrCreateChat(account, from)
                         .newAction(null, null, ChatAction.attention_requested);
-                attentionRequestProvider.add(new AttentionRequest(account, from), true);
+                attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
     }
@@ -206,12 +208,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         chat.newAction(null, null, ChatAction.attention_called);
     }
 
-    public void removeAccountNotifications(BaseEntity chat) {
-        attentionRequestProvider.remove(chat.getAccount(), chat.getUser());
-    }
-
     public void removeAccountNotifications(AccountJid accountJid, UserJid userJid) {
-        attentionRequestProvider.remove(accountJid, userJid);
+        LogManager.i(this, "removeAccountNotifications " + userJid);
+        attentionRequestProvider.remove(accountJid, userJid.getBareUserJid());
     }
-
 }

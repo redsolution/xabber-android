@@ -240,7 +240,7 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
         Intent intent = getIntent();
 
         if (hasAttention(intent)) {
-            AttentionManager.getInstance().removeAccountNotifications(chatFragment.getAccount(), chatFragment.getUser());
+            AttentionManager.getInstance().removeAccountNotifications(account, user);
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
