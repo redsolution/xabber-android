@@ -180,9 +180,11 @@ public class AccountActivity extends ManagedActivity implements Toolbar.OnMenuIt
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_account_settings).setVisible(showAccountInfo);
         menu.findItem(R.id.action_edit_account_user_info).setVisible(showAccountInfo);
-        menu.findItem(R.id.action_account_user_info).setVisible(!showAccountInfo);
         boolean showBlockListAction = BlockingManager.getInstance().isSupported(account) && showAccountInfo;
         menu.findItem(R.id.action_block_list).setVisible(showBlockListAction);
+
+        menu.findItem(R.id.action_account_user_info).setVisible(!showAccountInfo);
+        menu.findItem(R.id.action_account_server_info).setVisible(!showAccountInfo);
         return true;
     }
 
@@ -207,6 +209,11 @@ public class AccountActivity extends ManagedActivity implements Toolbar.OnMenuIt
 
             case R.id.action_block_list:
                 startActivity(BlockedListActivity.createIntent(this, account));
+                return true;
+
+            case R.id.action_account_server_info:
+                startActivity(ServerInfoActivity.createIntent(this, account));
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

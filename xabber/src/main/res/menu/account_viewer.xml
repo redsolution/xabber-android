@@ -30,4 +30,11 @@
         android:icon="@drawable/ic_account_box_outline_white_24dp"
         />
 
+    <item android:id="@+id/action_account_server_info"
+        android:title="@string/account_server_info"
+        app:showAsAction="always"
+        android:orderInCategory="80"
+        android:icon="@drawable/ic_info_outline_white_24dp"
+        />
+
 </menu>

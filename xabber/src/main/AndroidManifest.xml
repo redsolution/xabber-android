@@ -426,13 +426,24 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".ui.activity.LogActivity"
+        <activity
+            android:name=".ui.activity.LogActivity"
             android:parentActivityName=".ui.preferences.DebugSettings">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.preferences.DebugSettings" />
+        </activity>
+
+        <activity android:name=".ui.activity.ServerInfoActivity"
+            android:parentActivityName=".ui.activity.AccountInfoEditorActivity"
+            >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xabber.android.ui.activity.AccountInfoEditorActivity" />
 
         </activity>
     </application>
