@@ -143,7 +143,17 @@ public class Application extends android.app.Application {
 
         handler = new Handler();
         backgroundExecutor = createSingleThreadExecutor("Background executor service");
-        backgroundExecutorForUserActions = createSingleThreadExecutor("Background executor service for user actions");
+        backgroundExecutorForUserActions = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(),
+                new ThreadFactory() {
+            @Override
+            public Thread newThread(@NonNull Runnable runnable) {
+                Thread thread = new Thread(runnable);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
     }
 
     @NonNull
