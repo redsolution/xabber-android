@@ -105,7 +105,7 @@
                 android:value="com.xabber.android.ui.preferences.PreferenceEditor" />
         </activity>
         <activity
-            android:name=".ui.preferences.AccountList"
+            android:name=".ui.activity.AccountListActivity"
             android:label="@string/preference_accounts"
             android:parentActivityName=".ui.preferences.PreferenceEditor">
 
@@ -151,22 +151,22 @@
         <activity
             android:name=".ui.activity.ContactAddActivity"
             android:label="@string/contact_add"
-            android:parentActivityName=".ui.preferences.AccountList">
+            android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.AccountList" />
+                android:value="com.xabber.android.ui.activity.AccountListActivity" />
         </activity>
         <activity
             android:name=".ui.activity.AccountAddActivity"
             android:label="@string/account_add"
-            android:parentActivityName=".ui.preferences.AccountList">
+            android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.AccountList" />
+                android:value="com.xabber.android.ui.activity.AccountListActivity" />
         </activity>
         <activity
             android:name=".ui.activity.ConferenceAddActivity"
@@ -240,12 +240,12 @@
         </activity>
         <activity
             android:name=".ui.activity.AccountActivity"
-            android:parentActivityName=".ui.preferences.AccountList">
+            android:parentActivityName=".ui.activity.AccountListActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.xabber.android.ui.preferences.AccountList" />
+                android:value="com.xabber.android.ui.activity.AccountListActivity" />
         </activity>
         <activity
             android:name=".ui.activity.AccountInfoEditorActivity"

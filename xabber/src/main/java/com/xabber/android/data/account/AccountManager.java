@@ -564,6 +564,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         return Collections.unmodifiableCollection(accountItems.keySet());
     }
 
+    public Collection<AccountItem> getAllAccountItems() {
+        return Collections.unmodifiableCollection(accountItems.values());
+    }
+
     public CommonState getCommonState() {
         boolean disabled = false;
         boolean offline = false;

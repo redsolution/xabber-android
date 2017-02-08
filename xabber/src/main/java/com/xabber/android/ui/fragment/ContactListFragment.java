@@ -46,7 +46,7 @@ import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
-import com.xabber.android.ui.preferences.AccountList;
+import com.xabber.android.ui.activity.AccountListActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -297,7 +297,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(AccountList.createIntent(getActivity()));
+                    startActivity(AccountListActivity.createIntent(getActivity()));
                 }
             };
         } else if (commonState == CommonState.empty) {

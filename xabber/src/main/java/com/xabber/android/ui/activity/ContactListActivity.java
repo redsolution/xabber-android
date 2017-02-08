@@ -75,7 +75,6 @@ import com.xabber.android.ui.fragment.ContactListDrawerFragment;
 import com.xabber.android.ui.fragment.ContactListFragment;
 import com.xabber.android.ui.fragment.ContactListFragment.ContactListFragmentListener;
 import com.xabber.android.ui.helper.BatteryHelper;
-import com.xabber.android.ui.preferences.AccountList;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.xmpp.uri.XMPPUri;
 
@@ -732,7 +731,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 exit();
                 break;
             case R.id.drawer_header_action_xmpp_accounts:
-                startActivity(AccountList.createIntent(this));
+                startActivity(AccountListActivity.createIntent(this));
                 break;
         }
     }

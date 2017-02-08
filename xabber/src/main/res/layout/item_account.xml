@@ -17,16 +17,16 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/contact_list_item_height"
     android:gravity="center_vertical"
+    android:background="@drawable/ripple_background"
     >
     <ImageView
-        android:id="@+id/color"
+        android:id="@+id/item_account_color"
         android:layout_width="4dp"
         android:layout_height="@dimen/avatar_size_toolbar"
         android:layout_marginRight="2dp"
         android:layout_marginEnd="2dp"
         android:layout_marginLeft="2dp"
         android:layout_marginStart="2dp"
-        android:src="@color/green_500"
         />
 
     <include layout="@layout/avatar_account" />
@@ -40,7 +40,7 @@
         android:paddingRight="4dip"
         >
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/item_account_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -52,7 +52,7 @@
             android:text="test"
             />
         <TextView
-            android:id="@+id/status"
+            android:id="@+id/item_account_status"
             android:text="@android:string/cancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
     <android.support.v7.widget.SwitchCompat
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/account_switch"
+        android:id="@+id/item_account_switch"
         android:paddingRight="12dp"
         android:paddingLeft="12dp"
         android:focusable="false"

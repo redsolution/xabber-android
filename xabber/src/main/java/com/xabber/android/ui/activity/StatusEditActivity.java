@@ -83,6 +83,12 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
         setContentView(R.layout.activity_status);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+             public void onClick(View v) {
+                 finish();
+             }
+        });
         toolbar.inflateMenu(R.menu.set_status);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
