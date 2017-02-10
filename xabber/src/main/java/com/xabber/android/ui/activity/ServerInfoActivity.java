@@ -15,6 +15,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
@@ -22,9 +23,18 @@ import com.xabber.android.ui.color.BarPainter;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.blocking.BlockingCommandManager;
+import org.jivesoftware.smackx.csi.ClientStateIndicationManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
+import org.jivesoftware.smackx.mam.MamManager;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.jivesoftware.smackx.muclight.MultiUserChatLightManager;
+import org.jivesoftware.smackx.pep.PEPManager;
+import org.jivesoftware.smackx.push_notifications.PushNotificationsManager;
 import org.jxmpp.jid.DomainBareJid;
 
 import java.util.ArrayList;
@@ -123,19 +133,54 @@ public class ServerInfoActivity extends ManagedActivity {
         });
     }
 
+    String getCheckOrCross(boolean flag) {
+        if (flag) {
+            return getString(R.string.check_mark);
+        } else {
+            return getString(R.string.cross_mark);
+        }
+    }
+
     @NonNull
     List<String> getServerInfo(ServiceDiscoveryManager serviceDiscoveryManager)
             throws SmackException.NoResponseException, XMPPException.XMPPErrorException,
             SmackException.NotConnectedException, InterruptedException {
         final List<String> serverInfoList = new ArrayList<>();
 
-        DomainBareJid xmppServiceDomain = accountItem.getConnection().getXMPPServiceDomain();
+        XMPPTCPConnection connection = accountItem.getConnection();
+
+        boolean muc = !MultiUserChatManager.getInstanceFor(connection).getXMPPServiceDomains().isEmpty();
+        boolean pep = PEPManager.getInstanceFor(connection).isSupported();
+        boolean blockingCommand = BlockingCommandManager.getInstanceFor(connection).isSupportedByServer();
+        boolean sm = connection.isSmAvailable();
+        boolean rosterVersioning = Roster.getInstanceFor(connection).isRosterVersioningSupported();
+        boolean carbons = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connection).isSupportedByServer();
+        boolean mam = MamManager.getInstanceFor(connection).isSupportedByServer();
+        boolean csi = ClientStateIndicationManager.isSupported(connection);
+        boolean push = PushNotificationsManager.getInstanceFor(connection).isSupportedByServer();
+        boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
+        boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
+
+        serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
+        serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
+        serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));
+        serverInfoList.add(getString(R.string.xep_0198_sm) + " " + getCheckOrCross(sm));
+        serverInfoList.add(getString(R.string.xep_0237_roster_ver) + " " + getCheckOrCross(rosterVersioning));
+        serverInfoList.add(getString(R.string.xep_0280_carbons) + " " + getCheckOrCross(carbons));
+        serverInfoList.add(getString(R.string.xep_0313_mam) + " " + getCheckOrCross(mam));
+        serverInfoList.add(getString(R.string.xep_0352_csi) + " " + getCheckOrCross(csi));
+        serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
+        serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
+        serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
+        serverInfoList.add("");
+
+        DomainBareJid xmppServiceDomain = connection.getXMPPServiceDomain();
 
         DiscoverInfo discoverInfo = serviceDiscoveryManager.discoverInfo(xmppServiceDomain);
 
         List<DiscoverInfo.Identity> identities = discoverInfo.getIdentities();
 
-        serverInfoList.add("Identities:");
+        serverInfoList.add(getString(R.string.identities));
 
         for (DiscoverInfo.Identity identity : identities) {
             serverInfoList.add(identity.getCategory() + " " + identity.getType() + " " + identity.getName());
@@ -143,7 +188,7 @@ public class ServerInfoActivity extends ManagedActivity {
 
 
         serverInfoList.add("");
-        serverInfoList.add("Features:");
+        serverInfoList.add(getString(R.string.features));
 
         for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
             serverInfoList.add(feature.getVar());
@@ -154,7 +199,7 @@ public class ServerInfoActivity extends ManagedActivity {
         items.getItems();
 
         serverInfoList.add("");
-        serverInfoList.add("Items:");
+        serverInfoList.add(getString(R.string.items));
 
         for (DiscoverItems.Item item : items.getItems()) {
             serverInfoList.add(item.getEntityID().toString());

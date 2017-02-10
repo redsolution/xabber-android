@@ -40,6 +40,7 @@ android {
         dev {
             applicationId "com.xabber.androiddev"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
         beta {
