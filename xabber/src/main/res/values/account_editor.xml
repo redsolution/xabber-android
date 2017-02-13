@@ -61,6 +61,7 @@
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
     <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
+    <string name="SERVER_INFO_ERROR">Could not get server info.</string>
 
     <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>

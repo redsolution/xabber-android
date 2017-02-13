@@ -138,6 +138,11 @@ public class ServerInfoActivity extends ManagedActivity {
 
         XMPPTCPConnection connection = accountItem.getConnection();
 
+        if (!connection.isAuthenticated()) {
+            serverInfoList.add(getString(R.string.NOT_CONNECTED));
+            return serverInfoList;
+        }
+
         try {
             boolean muc = !MultiUserChatManager.getInstanceFor(connection).getXMPPServiceDomains().isEmpty();
             boolean pep = PEPManager.getInstanceFor(connection).isSupported();
@@ -175,30 +180,41 @@ public class ServerInfoActivity extends ManagedActivity {
 
             List<DiscoverInfo.Identity> identities = discoverInfo.getIdentities();
 
-            serverInfoList.add(getString(R.string.identities));
+            if (!identities.isEmpty()) {
+                serverInfoList.add(getString(R.string.identities));
 
-            for (DiscoverInfo.Identity identity : identities) {
-                serverInfoList.add(identity.getCategory() + " " + identity.getType() + " " + identity.getName());
+                for (DiscoverInfo.Identity identity : identities) {
+                    serverInfoList.add(identity.getCategory() + " " + identity.getType() + " " + identity.getName());
+                }
+                serverInfoList.add("");
             }
 
-            serverInfoList.add("");
-            serverInfoList.add(getString(R.string.features));
+            if (!discoverInfo.getFeatures().isEmpty()) {
+                serverInfoList.add(getString(R.string.features));
 
-            for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
-                serverInfoList.add(feature.getVar());
+                for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
+                    serverInfoList.add(feature.getVar());
+                }
+                serverInfoList.add("");
             }
 
             DiscoverItems items = serviceDiscoveryManager.discoverItems(xmppServiceDomain);
 
-            serverInfoList.add("");
-            serverInfoList.add(getString(R.string.items));
+            if (!items.getItems().isEmpty()) {
+                serverInfoList.add(getString(R.string.items));
 
-            for (DiscoverItems.Item item : items.getItems()) {
-                serverInfoList.add(item.getEntityID().toString());
+                for (DiscoverItems.Item item : items.getItems()) {
+                    serverInfoList.add(item.getEntityID().toString());
+                }
             }
+
         } catch (InterruptedException | SmackException.NoResponseException
                 | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
             LogManager.exception(LOG_TAG, e);
+        }
+
+        if (serverInfoList.isEmpty()) {
+            serverInfoList.add(getString(R.string.SERVER_INFO_ERROR));
         }
 
         return serverInfoList;
