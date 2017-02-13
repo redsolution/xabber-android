@@ -96,7 +96,7 @@ public abstract class ConnectionItem {
     }
 
     private XMPPTCPConnection createConnection() {
-        connection = ConnectionBuilder.build(connectionSettings);
+        connection = ConnectionBuilder.build(account, connectionSettings);
         LogManager.i(logTag, "Connection created");
 
         connectionThread = new ConnectionThread(connection, this);

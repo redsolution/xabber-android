@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AboutActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
@@ -177,6 +178,9 @@ public class ActivityManager implements OnUnloadListener {
     public void onPause(Activity activity) {
         if (LOG)
             LogManager.i(activity, "onPause");
+
+        CertificateManager.getInstance().unregisterActivity(activity);
+
         if (onErrorListener != null)
             application
                     .removeUIListener(OnErrorListener.class, onErrorListener);
@@ -211,6 +215,8 @@ public class ActivityManager implements OnUnloadListener {
             }
         };
         application.addUIListener(OnErrorListener.class, onErrorListener);
+
+        CertificateManager.getInstance().registerActivity(activity);
     }
 
     /**

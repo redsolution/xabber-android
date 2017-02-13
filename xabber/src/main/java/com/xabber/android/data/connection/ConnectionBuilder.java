@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Patterns;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.SASLAuthentication;
@@ -29,7 +29,7 @@ import de.duenndns.ssl.MemorizingTrustManager;
 class ConnectionBuilder {
     private static final String LOG_TAG = ConnectionBuilder.class.getSimpleName();
 
-    public static @NonNull XMPPTCPConnection build(@NonNull final ConnectionSettings connectionSettings) {
+    public static @NonNull XMPPTCPConnection build(AccountJid account, @NonNull final ConnectionSettings connectionSettings) {
         XMPPTCPConnectionConfiguration.Builder builder = XMPPTCPConnectionConfiguration.builder();
 
         builder.setXmppDomain(connectionSettings.getServerName());
@@ -52,7 +52,7 @@ class ConnectionBuilder {
         try {
             if (SettingsManager.securityCheckCertificate()) {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
-                MemorizingTrustManager mtm = new MemorizingTrustManager(Application.getInstance());
+                MemorizingTrustManager mtm = CertificateManager.getInstance().getNewMemorizingTrustManager(account);
                 sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
                 builder.setCustomSSLContext(sslContext);
                 builder.setHostnameVerifier(

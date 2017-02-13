@@ -23,6 +23,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ScreenManager;
+import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.ReconnectionManager;
@@ -330,6 +331,7 @@ public class Application extends android.app.Application {
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
         addManager(MamManager.getInstance());
+        addManager(CertificateManager.getInstance());
     }
 
     /**
