@@ -112,21 +112,12 @@ public class ServerInfoActivity extends ManagedActivity {
                 final ServiceDiscoveryManager serviceDiscoveryManager
                         = ServiceDiscoveryManager.getInstanceFor(accountItem.getConnection());
 
-                List<String> serverInfoList = null;
-
-                try {
-                    serverInfoList = getServerInfo(serviceDiscoveryManager);
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException e) {
-                    LogManager.exception(LOG_TAG, e);
-                }
-
-                final List<String> finalServerInfoList = serverInfoList;
+                final List<String> serverInfo = getServerInfo(serviceDiscoveryManager);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         progressBar.setVisibility(View.GONE);
-                        serverInfoAdapter.setServerInfoList(finalServerInfoList);
+                        serverInfoAdapter.setServerInfoList(serverInfo);
                     }
                 });
             }
@@ -142,68 +133,74 @@ public class ServerInfoActivity extends ManagedActivity {
     }
 
     @NonNull
-    List<String> getServerInfo(ServiceDiscoveryManager serviceDiscoveryManager)
-            throws SmackException.NoResponseException, XMPPException.XMPPErrorException,
-            SmackException.NotConnectedException, InterruptedException {
+    List<String> getServerInfo(ServiceDiscoveryManager serviceDiscoveryManager) {
         final List<String> serverInfoList = new ArrayList<>();
 
         XMPPTCPConnection connection = accountItem.getConnection();
 
-        boolean muc = !MultiUserChatManager.getInstanceFor(connection).getXMPPServiceDomains().isEmpty();
-        boolean pep = PEPManager.getInstanceFor(connection).isSupported();
-        boolean blockingCommand = BlockingCommandManager.getInstanceFor(connection).isSupportedByServer();
-        boolean sm = connection.isSmAvailable();
-        boolean rosterVersioning = Roster.getInstanceFor(connection).isRosterVersioningSupported();
-        boolean carbons = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connection).isSupportedByServer();
-        boolean mam = MamManager.getInstanceFor(connection).isSupportedByServer();
-        boolean csi = ClientStateIndicationManager.isSupported(connection);
-        boolean push = PushNotificationsManager.getInstanceFor(connection).isSupportedByServer();
-        boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
-        boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
+        try {
+            boolean muc = !MultiUserChatManager.getInstanceFor(connection).getXMPPServiceDomains().isEmpty();
+            boolean pep = PEPManager.getInstanceFor(connection).isSupported();
+            boolean blockingCommand = BlockingCommandManager.getInstanceFor(connection).isSupportedByServer();
+            boolean sm = connection.isSmAvailable();
+            boolean rosterVersioning = Roster.getInstanceFor(connection).isRosterVersioningSupported();
+            boolean carbons = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connection).isSupportedByServer();
+            boolean mam = MamManager.getInstanceFor(connection).isSupportedByServer();
+            boolean csi = ClientStateIndicationManager.isSupported(connection);
+            boolean push = PushNotificationsManager.getInstanceFor(connection).isSupportedByServer();
+            boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
+            boolean mucLight = !MultiUserChatLightManager.getInstanceFor(connection).getLocalServices().isEmpty();
 
-        serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
-        serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
-        serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));
-        serverInfoList.add(getString(R.string.xep_0198_sm) + " " + getCheckOrCross(sm));
-        serverInfoList.add(getString(R.string.xep_0237_roster_ver) + " " + getCheckOrCross(rosterVersioning));
-        serverInfoList.add(getString(R.string.xep_0280_carbons) + " " + getCheckOrCross(carbons));
-        serverInfoList.add(getString(R.string.xep_0313_mam) + " " + getCheckOrCross(mam));
-        serverInfoList.add(getString(R.string.xep_0352_csi) + " " + getCheckOrCross(csi));
-        serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
-        serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
-        serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
-        serverInfoList.add("");
+            serverInfoList.add(getString(R.string.xep_0045_muc) + " " + getCheckOrCross(muc));
+            serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
+            serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));
+            serverInfoList.add(getString(R.string.xep_0198_sm) + " " + getCheckOrCross(sm));
+            serverInfoList.add(getString(R.string.xep_0237_roster_ver) + " " + getCheckOrCross(rosterVersioning));
+            serverInfoList.add(getString(R.string.xep_0280_carbons) + " " + getCheckOrCross(carbons));
+            serverInfoList.add(getString(R.string.xep_0313_mam) + " " + getCheckOrCross(mam));
+            serverInfoList.add(getString(R.string.xep_0352_csi) + " " + getCheckOrCross(csi));
+            serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
+            serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
+            serverInfoList.add(getString(R.string.xep_xxxx_muc_light) + " " + getCheckOrCross(mucLight));
+            serverInfoList.add("");
+        } catch (InterruptedException | SmackException.NoResponseException
+                | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+            LogManager.exception(LOG_TAG, e);
+        }
 
         DomainBareJid xmppServiceDomain = connection.getXMPPServiceDomain();
 
-        DiscoverInfo discoverInfo = serviceDiscoveryManager.discoverInfo(xmppServiceDomain);
+        try {
+            DiscoverInfo discoverInfo = serviceDiscoveryManager.discoverInfo(xmppServiceDomain);
 
-        List<DiscoverInfo.Identity> identities = discoverInfo.getIdentities();
+            List<DiscoverInfo.Identity> identities = discoverInfo.getIdentities();
 
-        serverInfoList.add(getString(R.string.identities));
+            serverInfoList.add(getString(R.string.identities));
 
-        for (DiscoverInfo.Identity identity : identities) {
-            serverInfoList.add(identity.getCategory() + " " + identity.getType() + " " + identity.getName());
+            for (DiscoverInfo.Identity identity : identities) {
+                serverInfoList.add(identity.getCategory() + " " + identity.getType() + " " + identity.getName());
+            }
+
+            serverInfoList.add("");
+            serverInfoList.add(getString(R.string.features));
+
+            for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
+                serverInfoList.add(feature.getVar());
+            }
+
+            DiscoverItems items = serviceDiscoveryManager.discoverItems(xmppServiceDomain);
+
+            serverInfoList.add("");
+            serverInfoList.add(getString(R.string.items));
+
+            for (DiscoverItems.Item item : items.getItems()) {
+                serverInfoList.add(item.getEntityID().toString());
+            }
+        } catch (InterruptedException | SmackException.NoResponseException
+                | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
+            LogManager.exception(LOG_TAG, e);
         }
 
-
-        serverInfoList.add("");
-        serverInfoList.add(getString(R.string.features));
-
-        for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
-            serverInfoList.add(feature.getVar());
-        }
-
-        DiscoverItems items = serviceDiscoveryManager.discoverItems(xmppServiceDomain);
-
-        items.getItems();
-
-        serverInfoList.add("");
-        serverInfoList.add(getString(R.string.items));
-
-        for (DiscoverItems.Item item : items.getItems()) {
-            serverInfoList.add(item.getEntityID().toString());
-       }
         return serverInfoList;
     }
 }
