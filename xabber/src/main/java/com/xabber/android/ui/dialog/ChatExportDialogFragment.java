@@ -21,7 +21,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -44,11 +43,11 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_USER";
 
-    private AccountJid account;
-    private UserJid user;
+    AccountJid account;
+    UserJid user;
 
     private EditText nameView;
-    private CheckBox sendView;
+    CheckBox sendView;
 
     public static ChatExportDialogFragment newInstance(AccountJid account, UserJid user) {
         ChatExportDialogFragment fragment = new ChatExportDialogFragment();
@@ -86,57 +85,42 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
             return;
         }
 
-        String name = nameView.getText().toString();
+        final String name = nameView.getText().toString();
         if ("".equals(name)) {
             return;
         }
-        new ChatExportAsyncTask(account, user, name, sendView.isChecked()).execute();
-    }
 
-    // TODO get rid of async task
-    private class ChatExportAsyncTask extends AsyncTask<Void, Void, File> {
+        final boolean send = sendView.isChecked();
 
-        private final AccountJid account;
-        private final UserJid user;
-        private final String name;
-        private final boolean send;
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final File file = MessageManager.getInstance().exportChat(account, user, name);
 
-        public ChatExportAsyncTask(AccountJid account, UserJid user, String name, boolean send) {
-            this.account = account;
-            this.user = user;
-            this.name = name;
-            this.send = send;
-        }
-
-        @Override
-        protected File doInBackground(Void... params) {
-            try {
-                return MessageManager.getInstance().exportChat(account, user, name);
-            } catch (NetworkException e) {
-                Application.getInstance().onError(e);
-                return null;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: Use notification bar to notify about success.
+                            if (send) {
+                                Activity activity = getActivity();
+                                if (activity != null) {
+                                    Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                                    intent.setType("text/plain");
+                                    Uri uri = Uri.fromFile(file);
+                                    intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
+                                    activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.export_chat)));
+                                }
+                            } else {
+                                Toast.makeText(Application.getInstance(), R.string.export_chat_done, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                }
             }
-        }
-
-        @Override
-        public void onPostExecute(File result) {
-            Activity activity = getActivity();
-
-            if (result == null || activity == null) {
-                return;
-            }
-
-            // TODO: Use notification bar to notify about success.
-            if (send) {
-                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                Uri uri = Uri.fromFile(result);
-                intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
-                activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.export_chat)));
-            } else {
-                Toast.makeText(activity, R.string.export_chat_done, Toast.LENGTH_LONG).show();
-            }
-        }
+        });
 
     }
 }

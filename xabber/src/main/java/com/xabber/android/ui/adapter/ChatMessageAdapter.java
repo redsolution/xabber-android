@@ -150,7 +150,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                 messageHolder.messageText.setVisibility(View.GONE);
             } else {
                 final String uniqueId = messageItem.getUniqueId();
-                final Realm realm = MessageDatabaseManager.getInstance().getRealm();
+                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -160,16 +160,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                         if (first != null) {
                             first.setFilePath(null);
                         }
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        realm.close();
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-                        realm.close();
                     }
                 });
             }
@@ -218,7 +208,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                                     return;
                                 }
 
-                                final Realm realm = MessageDatabaseManager.getInstance().getRealm();
+                                final Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                                 realm.executeTransactionAsync(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {
@@ -229,16 +219,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
                                             first.setImageWidth(width);
                                             first.setImageHeight(height);
                                         }
-                                    }
-                                }, new Realm.Transaction.OnSuccess() {
-                                    @Override
-                                    public void onSuccess() {
-                                        realm.close();
-                                    }
-                                }, new Realm.Transaction.OnError() {
-                                    @Override
-                                    public void onError(Throwable error) {
-                                        realm.close();
                                     }
                                 });
 

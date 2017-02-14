@@ -112,7 +112,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsError(final AccountJid account, final Message message) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealm();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();
         MessageItem first = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
@@ -137,7 +137,7 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsDelivered(final Jid toJid, final String receiptId) {
-        Realm realm = MessageDatabaseManager.getInstance().getRealm();
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();
         MessageItem first = realm.where(MessageItem.class)
                 .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();

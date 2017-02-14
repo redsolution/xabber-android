@@ -2,11 +2,13 @@ package com.xabber.android.data.database;
 
 
 import android.database.Cursor;
+import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.database.sqlite.MessageTable;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
 
@@ -19,7 +21,10 @@ import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmMigration;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import io.realm.RealmSchema;
+import io.realm.Sort;
 import io.realm.annotations.RealmModule;
 
 public class MessageDatabaseManager {
@@ -28,6 +33,8 @@ public class MessageDatabaseManager {
     private final RealmConfiguration realmConfiguration;
 
     private static MessageDatabaseManager instance;
+
+    private Realm realmUiThread;
 
     public static MessageDatabaseManager getInstance() {
         if (instance == null) {
@@ -43,21 +50,71 @@ public class MessageDatabaseManager {
 
         boolean success = Realm.compactRealm(realmConfiguration);
         System.out.println("Realm message compact database file result: " + success);
+
     }
 
-    public Realm getRealm() {
+    /**
+     * Creates new realm instance for use from background thread.
+     * Realm should be closed after use.
+     *
+     * @throws IllegalStateException if called from UI (main) thread
+     * @return new realm instance
+     */
+    public Realm getNewBackgroundRealm() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            throw new IllegalStateException("Request background thread message realm from UI thread");
+        }
+
         return Realm.getInstance(realmConfiguration);
     }
 
+    /**
+     * Returns realm instance for use from UI (main) thread.
+     * Do not close realm after use!
+     *
+     * @throws IllegalStateException if called from background thread
+     * @return realm instance for UI thread
+     */
+    public Realm getRealmUiThread() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            throw new IllegalStateException("Request UI thread message realm from non UI thread");
+        }
+
+        if (realmUiThread == null) {
+            realmUiThread = Realm.getInstance(realmConfiguration);
+        }
+
+        return realmUiThread;
+    }
+
+    public static RealmResults<MessageItem> getChatMessages(Realm realm, AccountJid accountJid, UserJid userJid) {
+        return getChatMessagesQuery(realm, accountJid, userJid)
+                .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+    }
+
+    public RealmResults<MessageItem> getChatMessagesAsync(AccountJid accountJid, UserJid userJid) {
+        return getChatMessagesQuery(getRealmUiThread(), accountJid, userJid)
+                .findAllSortedAsync(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+    }
+
+    public static RealmQuery<MessageItem> getChatMessagesQuery(Realm realm, AccountJid accountJid, UserJid userJid) {
+        return realm.where(MessageItem.class)
+                .equalTo(MessageItem.Fields.ACCOUNT, accountJid.toString())
+                .equalTo(MessageItem.Fields.USER, userJid.toString())
+                .isNotNull(MessageItem.Fields.TEXT)
+                .isNotEmpty(MessageItem.Fields.TEXT);
+    }
+
+
     void deleteRealm() {
-        Realm realm = getRealm();
+        Realm realm = getNewBackgroundRealm();
         Realm.deleteRealm(realm.getConfiguration());
         realm.close();
     }
 
     void removeAccount(final String account) {
-        Realm realm = getRealm();
-        realm.executeTransactionAsync(new Realm.Transaction() {
+        Realm realm = getNewBackgroundRealm();
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
@@ -194,7 +251,7 @@ public class MessageDatabaseManager {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Realm realm = getRealm();
+                Realm realm = getRealmUiThread();
                 realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
@@ -228,8 +285,6 @@ public class MessageDatabaseManager {
 
                     }
                 });
-                realm.close();
-
             }
         });
 

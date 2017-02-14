@@ -243,7 +243,7 @@ public class RoomChat extends AbstractChat {
                     notify = false;
                 }
 
-                Realm realm = MessageDatabaseManager.getInstance().getRealm();
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
                 final MessageItem sameMessage = realm
                         .where(MessageItem.class)
                         .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
