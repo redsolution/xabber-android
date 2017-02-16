@@ -196,6 +196,8 @@ public class DatabaseManager extends SQLiteOpenHelper implements
     public void onLoad() {
         try {
             getWritableDatabase(); // Force onCreate or onUpgrade
+
+            RealmManager.getInstance().copyDataFromSqliteToRealm();
             MessageDatabaseManager.getInstance().copyDataFromSqliteToRealm();
         } catch (SQLiteException e) {
             if (e == DOWNGRADE_EXCEPTION) {

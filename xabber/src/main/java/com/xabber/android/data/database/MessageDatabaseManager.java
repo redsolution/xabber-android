@@ -57,8 +57,8 @@ public class MessageDatabaseManager {
      * Creates new realm instance for use from background thread.
      * Realm should be closed after use.
      *
-     * @throws IllegalStateException if called from UI (main) thread
      * @return new realm instance
+     * @throws IllegalStateException if called from UI (main) thread
      */
     public Realm getNewBackgroundRealm() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -72,8 +72,8 @@ public class MessageDatabaseManager {
      * Returns realm instance for use from UI (main) thread.
      * Do not close realm after use!
      *
-     * @throws IllegalStateException if called from background thread
      * @return realm instance for UI thread
+     * @throws IllegalStateException if called from background thread
      */
     public Realm getRealmUiThread() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -248,48 +248,31 @@ public class MessageDatabaseManager {
     }
 
     void copyDataFromSqliteToRealm() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Realm realm = getRealmUiThread();
-                realm.executeTransactionAsync(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        LogManager.i("DatabaseManager", "copying from sqlite to Reaml");
-                        long counter = 0;
-                        Cursor cursor = MessageTable.getInstance().getAllMessages();
-                        while (cursor.moveToNext()) {
-                            try {
-                                MessageItem messageItem = MessageTable.createMessageItem(cursor);
-                                realm.copyToRealm(messageItem);
-                            } catch (XmppStringprepException | UserJid.UserJidCreateException e) {
-                                LogManager.exception(this, e);
-                            }
+        Realm realm = getNewBackgroundRealm();
 
-                            counter++;
-                        }
-                        cursor.close();
-                        LogManager.i("DatabaseManager", counter + " messages copied to Realm");
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        LogManager.i("DatabaseManager", "onSuccess. removing messages from sqlite:");
-                        int removedMessages = MessageTable.getInstance().removeAllMessages();
-                        LogManager.i("DatabaseManager", removedMessages + " messages removed from sqlite");
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-                        LogManager.i("DatabaseManager", "onError " + error.getMessage());
+        realm.beginTransaction();
 
-                    }
-                });
+        LogManager.i("DatabaseManager", "copying from sqlite to Reaml");
+        long counter = 0;
+        Cursor cursor = MessageTable.getInstance().getAllMessages();
+        while (cursor.moveToNext()) {
+            try {
+                MessageItem messageItem = MessageTable.createMessageItem(cursor);
+                realm.copyToRealm(messageItem);
+            } catch (XmppStringprepException | UserJid.UserJidCreateException e) {
+                LogManager.exception(this, e);
             }
-        });
 
+            counter++;
+        }
+        cursor.close();
+        LogManager.i("DatabaseManager", counter + " messages copied to Realm");
 
+        LogManager.i("DatabaseManager", "onSuccess. removing messages from sqlite:");
+        int removedMessages = MessageTable.getInstance().removeAllMessages();
+        LogManager.i("DatabaseManager", removedMessages + " messages removed from sqlite");
+
+        realm.commitTransaction();
+        realm.close();
     }
-
-
 }

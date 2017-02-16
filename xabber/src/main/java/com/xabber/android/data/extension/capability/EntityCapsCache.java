@@ -19,7 +19,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
             return;
         }
 
-        Realm realm = RealmManager.getInstance().getRealm();
+        Realm realm = RealmManager.getInstance().getNewRealm();
         realm.beginTransaction();
 
         DiscoveryInfoCache discoveryInfoCache = new DiscoveryInfoCache(nodeVer, info);
@@ -31,7 +31,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public DiscoverInfo lookup(String nodeVer) {
-        Realm realm = RealmManager.getInstance().getRealm();
+        Realm realm = RealmManager.getInstance().getNewRealm();
 
         DiscoveryInfoCache discoveryInfoCache = realm.where(DiscoveryInfoCache.class)
                 .equalTo(DiscoveryInfoCache.Fields.NODE_VER, nodeVer)
@@ -50,7 +50,7 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public void emptyCache() {
-        Realm realm = RealmManager.getInstance().getRealm();
+        Realm realm = RealmManager.getInstance().getNewRealm();
 
         realm.beginTransaction();
         realm.where(DiscoveryInfoCache.class)

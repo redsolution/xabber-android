@@ -21,6 +21,8 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -66,6 +68,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 /**
  * This class manage all operations with accounts.
  * <p/>
@@ -78,6 +83,8 @@ import java.util.Map;
  * @author alexander.ivanov
  */
 public class AccountManager implements OnLoadListener, OnWipeListener {
+
+    private static final String LOG_TAG = AccountManager.class.getSimpleName();
 
     private static AccountManager instance;
 
@@ -127,8 +134,82 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     @Override
     public void onLoad() {
-        final Collection<SavedStatus> savedStatuses = new ArrayList<>();
+        final Collection<SavedStatus> savedStatuses = loadSavedStatuses();
+
+
         final Collection<AccountItem> accountItems = new ArrayList<>();
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+
+        RealmResults<AccountRealm> accountRealms = realm.where(AccountRealm.class).findAll();
+
+        LogManager.i(LOG_TAG, "onLoad got realm accounts: " + accountRealms.size());
+
+        for (AccountRealm accountRealm : accountRealms) {
+            DomainBareJid serverName = null;
+            try {
+                serverName = JidCreate.domainBareFrom(accountRealm.getServerName());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
+
+            Localpart userName = null;
+            try {
+                userName = Localpart.from(accountRealm.getUserName());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
+
+            Resourcepart resource = null;
+            try {
+                resource = Resourcepart.from(accountRealm.getResource());
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
+
+            AccountItem accountItem = new AccountItem(
+                    accountRealm.isCustom(),
+                    accountRealm.getHost(),
+                    accountRealm.getPort(),
+                    serverName,
+                    userName,
+                    resource,
+                    accountRealm.isStorePassword(),
+                    accountRealm.getPassword(),
+                    accountRealm.getColorIndex(),
+                    accountRealm.getPriority(),
+                    accountRealm.getStatusMode(),
+                    accountRealm.getStatusText(),
+                    accountRealm.isEnabled(),
+                    accountRealm.isSaslEnabled(),
+                    accountRealm.getTlsMode(),
+                    accountRealm.isCompression(),
+                    accountRealm.getProxyType(),
+                    accountRealm.getProxyHost(),
+                    accountRealm.getProxyPort(),
+                    accountRealm.getProxyUser(),
+                    accountRealm.getProxyPassword(),
+                    accountRealm.isSyncable(),
+                    accountRealm.getKeyPair(),
+                    accountRealm.getLastSync(),
+                    accountRealm.getArchiveMode());
+            accountItem.setId(accountRealm.getId());
+            accountItems.add(accountItem);
+
+        }
+
+        realm.close();
+
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                onLoaded(savedStatuses, accountItems);
+            }
+        });
+    }
+
+    @NonNull
+    private Collection<SavedStatus> loadSavedStatuses() {
+        final Collection<SavedStatus> savedStatuses = new ArrayList<>();
         Cursor cursor = StatusTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
@@ -140,72 +221,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         } finally {
             cursor.close();
         }
-
-        cursor = AccountTable.getInstance().list();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    DomainBareJid serverName = null;
-                    try {
-                        serverName = JidCreate.domainBareFrom(AccountTable.getServerName(cursor));
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-
-                    Localpart userName = null;
-                    try {
-                        userName = Localpart.from(AccountTable.getUserName(cursor));
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-
-                    Resourcepart resource = null;
-                    try {
-                        resource = Resourcepart.from(AccountTable.getResource(cursor));
-                    } catch (XmppStringprepException e) {
-                        LogManager.exception(this, e);
-                    }
-
-                    AccountItem accountItem = new AccountItem(
-                            AccountTable.isCustom(cursor),
-                            AccountTable.getHost(cursor),
-                            AccountTable.getPort(cursor),
-                            serverName,
-                            userName,
-                            resource,
-                            AccountTable.isStorePassword(cursor),
-                            AccountTable.getPassword(cursor),
-                            AccountTable.getColorIndex(cursor),
-                            AccountTable.getPriority(cursor),
-                            AccountTable.getStatusMode(cursor),
-                            AccountTable.getStatusText(cursor),
-                            AccountTable.isEnabled(cursor),
-                            AccountTable.isSaslEnabled(cursor),
-                            AccountTable.getTLSMode(cursor),
-                            AccountTable.isCompression(cursor),
-                            AccountTable.getProxyType(cursor),
-                            AccountTable.getProxyHost(cursor),
-                            AccountTable.getProxyPort(cursor),
-                            AccountTable.getProxyUser(cursor),
-                            AccountTable.getProxyPassword(cursor),
-                            AccountTable.isSyncable(cursor),
-                            AccountTable.getKeyPair(cursor),
-                            AccountTable.getLastSync(cursor),
-                            AccountTable.getArchiveMode(cursor));
-                    accountItem.setId(AccountTable.getId(cursor));
-                    accountItems.add(accountItem);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded(savedStatuses, accountItems);
-            }
-        });
+        return savedStatuses;
     }
 
     private void onLoaded(Collection<SavedStatus> savedStatuses, Collection<AccountItem> accountItems) {
@@ -264,7 +280,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                accountItem.setId(AccountTable.getInstance().write(accountItem.getId(), accountItem));
+                AccountTable.getInstance().write(accountItem.getId(), accountItem);
             }
         });
     }
@@ -395,12 +411,14 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             }
             onAccountDisabled(accountItem);
         }
+
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 AccountTable.getInstance().remove(account.toString(), accountItem.getId());
             }
         });
+
         accountItems.remove(account);
         for (OnAccountRemovedListener listener : application.getManagers(OnAccountRemovedListener.class)) {
             listener.onAccountRemoved(accountItem);

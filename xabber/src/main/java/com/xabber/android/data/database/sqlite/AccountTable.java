@@ -14,7 +14,6 @@
  */
 package com.xabber.android.data.database.sqlite;
 
-import android.content.ContentValues;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,6 +29,8 @@ import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.RealmManager;
+import com.xabber.android.data.database.realm.AccountRealm;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -40,6 +41,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
+
+import io.realm.Realm;
 
 /**
  * Storage with account settings.
@@ -80,80 +83,80 @@ public class AccountTable extends AbstractTable {
         return cursor.getLong(cursor.getColumnIndex(Fields._ID));
     }
 
-    public static String getHost(Cursor cursor) {
+    private static String getHost(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.HOST));
     }
 
-    public static boolean isCustom(Cursor cursor) {
+    private static boolean isCustom(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.CUSTOM)) != 0;
     }
 
-    public static int getPort(Cursor cursor) {
+    private static int getPort(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.PORT));
     }
 
-    public static String getServerName(Cursor cursor) {
+    private static String getServerName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.SERVER_NAME));
     }
 
-    public static String getUserName(Cursor cursor) {
+    private static String getUserName(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.USER_NAME));
     }
 
-    public static String getPassword(Cursor cursor) {
+    private static String getPassword(Cursor cursor) {
         if (!isStorePassword(cursor)) {
             return AccountItem.UNDEFINED_PASSWORD;
         }
         return cursor.getString(cursor.getColumnIndex(Fields.PASSWORD));
     }
 
-    public static String getResource(Cursor cursor) {
+    private static String getResource(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.RESOURCE));
     }
 
-    public static int getColorIndex(Cursor cursor) {
+    private static int getColorIndex(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.COLOR_INDEX));
     }
 
-    public static int getPriority(Cursor cursor) {
+    private static int getPriority(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.PRIORITY));
     }
 
-    public static StatusMode getStatusMode(Cursor cursor) {
+    private static StatusMode getStatusMode(Cursor cursor) {
         int statusModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.STATUS_MODE));
         return StatusMode.values()[statusModeIndex];
     }
 
-    public static String getStatusText(Cursor cursor) {
+    private static String getStatusText(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.STATUS_TEXT));
     }
 
-    public static boolean isEnabled(Cursor cursor) {
+    private static boolean isEnabled(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.ENABLED)) != 0;
     }
 
-    public static boolean isSaslEnabled(Cursor cursor) {
+    private static boolean isSaslEnabled(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.SASL_ENABLED)) != 0;
     }
 
-    public static TLSMode getTLSMode(Cursor cursor) {
+    private static TLSMode getTLSMode(Cursor cursor) {
         int tlsModeIndex = cursor.getInt(cursor.getColumnIndex(Fields.TLS_MODE));
         return TLSMode.values()[tlsModeIndex];
     }
 
-    public static boolean isCompression(Cursor cursor) {
+    private static boolean isCompression(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.COMPRESSION)) != 0;
     }
 
-    public static boolean isSyncable(Cursor cursor) {
+    private static boolean isSyncable(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.SYNCABLE)) != 0;
     }
 
-    public static boolean isStorePassword(Cursor cursor) {
+    private static boolean isStorePassword(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.STORE_PASSWORD)) != 0;
     }
 
-    public static Date getLastSync(Cursor cursor) {
+    private static Date getLastSync(Cursor cursor) {
         if (cursor.isNull(cursor.getColumnIndex(Fields.LAST_SYNC))) {
             return null;
         } else {
@@ -161,33 +164,33 @@ public class AccountTable extends AbstractTable {
         }
     }
 
-    public static ArchiveMode getArchiveMode(Cursor cursor) {
+    private static ArchiveMode getArchiveMode(Cursor cursor) {
         int index = cursor.getInt(cursor.getColumnIndex(Fields.ARCHIVE_MODE));
         return ArchiveMode.values()[index];
     }
 
-    public static ProxyType getProxyType(Cursor cursor) {
+    private static ProxyType getProxyType(Cursor cursor) {
         int index = cursor.getInt(cursor.getColumnIndex(Fields.PROXY_TYPE));
         return ProxyType.values()[index];
     }
 
-    public static String getProxyHost(Cursor cursor) {
+    private static String getProxyHost(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PROXY_HOST));
     }
 
-    public static int getProxyPort(Cursor cursor) {
+    private static int getProxyPort(Cursor cursor) {
         return cursor.getInt(cursor.getColumnIndex(Fields.PROXY_PORT));
     }
 
-    public static String getProxyUser(Cursor cursor) {
+    private static String getProxyUser(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PROXY_USER));
     }
 
-    public static String getProxyPassword(Cursor cursor) {
+    private static String getProxyPassword(Cursor cursor) {
         return cursor.getString(cursor.getColumnIndex(Fields.PROXY_PASSWORD));
     }
 
-    public static KeyPair getKeyPair(Cursor cursor) {
+    private static KeyPair getKeyPair(Cursor cursor) {
         byte[] publicKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PUBLIC_KEY));
         byte[] privateKeyBytes = cursor.getBlob(cursor.getColumnIndex(Fields.PRIVATE_KEY));
         if (privateKeyBytes == null || publicKeyBytes == null) {
@@ -402,65 +405,84 @@ public class AccountTable extends AbstractTable {
         }
     }
 
-    public long write(Long id, AccountItem accountItem) {
+    public static AccountRealm createAccountRealm(Cursor cursor) {
+        AccountRealm accountRealm = new AccountRealm();
+
+        accountRealm.setCustom(AccountTable.isCustom(cursor));
+        accountRealm.setHost(AccountTable.getHost(cursor));
+        accountRealm.setPort(AccountTable.getPort(cursor));
+        accountRealm.setServerName(AccountTable.getServerName(cursor));
+        accountRealm.setUserName(AccountTable.getUserName(cursor));
+        accountRealm.setResource(AccountTable.getResource(cursor));
+        accountRealm.setStorePassword(AccountTable.isStorePassword(cursor));
+        accountRealm.setPassword(AccountTable.getPassword(cursor));
+        accountRealm.setColorIndex(AccountTable.getColorIndex(cursor));
+        accountRealm.setPriority(AccountTable.getPriority(cursor));
+        accountRealm.setStatusMode(AccountTable.getStatusMode(cursor));
+        accountRealm.setStatusText(AccountTable.getStatusText(cursor));
+        accountRealm.setEnabled(AccountTable.isEnabled(cursor));
+        accountRealm.setSaslEnabled(AccountTable.isSaslEnabled(cursor));
+        accountRealm.setTlsMode(AccountTable.getTLSMode(cursor));
+        accountRealm.setCompression(AccountTable.isCompression(cursor));
+        accountRealm.setProxyType(AccountTable.getProxyType(cursor));
+        accountRealm.setProxyHost(AccountTable.getProxyHost(cursor));
+        accountRealm.setProxyPort(AccountTable.getProxyPort(cursor));
+        accountRealm.setProxyUser(AccountTable.getProxyUser(cursor));
+        accountRealm.setProxyPassword(AccountTable.getProxyPassword(cursor));
+        accountRealm.setSyncable(AccountTable.isSyncable(cursor));
+        accountRealm.setKeyPair(AccountTable.getKeyPair(cursor));
+        accountRealm.setLastSync(AccountTable.getLastSync(cursor));
+        accountRealm.setArchiveMode(AccountTable.getArchiveMode(cursor));
+
+        return accountRealm;
+    }
+
+    private void saveAccountRealm(String id, AccountItem accountItem) {
+        AccountRealm accountRealm = new AccountRealm(id);
+
         ConnectionSettings connectionSettings = accountItem.getConnectionSettings();
 
-        ContentValues values = new ContentValues();
-        values.put(Fields.CUSTOM, connectionSettings.isCustomHostAndPort() ? 1 : 0);
-        values.put(Fields.HOST, connectionSettings.getHost());
-        values.put(Fields.PORT, connectionSettings.getPort());
-        values.put(Fields.SERVER_NAME, connectionSettings.getServerName().getDomain().toString());
-        values.put(Fields.USER_NAME, connectionSettings.getUserName().toString());
+        accountRealm.setCustom(connectionSettings.isCustomHostAndPort());
+        accountRealm.setHost(connectionSettings.getHost());
+        accountRealm.setPort(connectionSettings.getPort());
+        accountRealm.setServerName(connectionSettings.getServerName().getDomain().toString());
+        accountRealm.setUserName(connectionSettings.getUserName().toString());
 
         String password = connectionSettings.getPassword();
         if (!accountItem.isStorePassword()) {
             password = AccountItem.UNDEFINED_PASSWORD;
         }
-        values.put(Fields.PASSWORD, password);
+        accountRealm.setPassword(password);
 
-        values.put(Fields.RESOURCE, connectionSettings.getResource().toString());
-        values.put(Fields.COLOR_INDEX, accountItem.getColorIndex());
-        values.put(Fields.PRIORITY, accountItem.getPriority());
-        values.put(Fields.STATUS_MODE, accountItem.getRawStatusMode().ordinal());
-        values.put(Fields.STATUS_TEXT, accountItem.getStatusText());
-        values.put(Fields.ENABLED, accountItem.isEnabled() ? 1 : 0);
-        values.put(Fields.SASL_ENABLED, connectionSettings.isSaslEnabled() ? 1 : 0);
-        values.put(Fields.TLS_MODE, connectionSettings.getTlsMode().ordinal());
-        values.put(Fields.COMPRESSION, connectionSettings.useCompression() ? 1 : 0);
-        values.put(Fields.PROXY_TYPE, connectionSettings.getProxyType().ordinal());
-        values.put(Fields.PROXY_HOST, connectionSettings.getProxyHost());
-        values.put(Fields.PROXY_PORT, connectionSettings.getProxyPort());
-        values.put(Fields.PROXY_USER, connectionSettings.getProxyUser());
-        values.put(Fields.PROXY_PASSWORD, connectionSettings.getProxyPassword());
-        values.put(Fields.SYNCABLE, accountItem.isSyncable() ? 1 : 0);
-        values.put(Fields.STORE_PASSWORD, accountItem.isStorePassword() ? 1 : 0);
+        accountRealm.setResource(connectionSettings.getResource().toString());
+        accountRealm.setColorIndex(accountItem.getColorIndex());
+        accountRealm.setPriority(accountItem.getPriority());
+        accountRealm.setStatusMode(accountItem.getRawStatusMode());
+        accountRealm.setStatusText(accountItem.getStatusText());
+        accountRealm.setEnabled(accountItem.isEnabled());
+        accountRealm.setSaslEnabled(connectionSettings.isSaslEnabled());
+        accountRealm.setTlsMode(connectionSettings.getTlsMode());
+        accountRealm.setCompression(connectionSettings.useCompression());
+        accountRealm.setProxyType(connectionSettings.getProxyType());
+        accountRealm.setProxyHost(connectionSettings.getProxyHost());
+        accountRealm.setProxyPort(connectionSettings.getProxyPort());
+        accountRealm.setProxyUser(connectionSettings.getProxyUser());
+        accountRealm.setProxyPassword(connectionSettings.getProxyPassword());
+        accountRealm.setSyncable(accountItem.isSyncable());
+        accountRealm.setStorePassword(accountItem.isStorePassword());
+        accountRealm.setKeyPair(accountItem.getKeyPair());
+        accountRealm.setLastSync(accountItem.getLastSync());
+        accountRealm.setArchiveMode(accountItem.getArchiveMode());
 
-        final KeyPair keyPair = accountItem.getKeyPair();
-        if (keyPair == null) {
-            values.putNull(Fields.PUBLIC_KEY);
-            values.putNull(Fields.PRIVATE_KEY);
-        } else {
-            PublicKey publicKey = keyPair.getPublic();
-            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
-            PrivateKey privateKey = keyPair.getPrivate();
-            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey.getEncoded());
-            byte[] publicKeyBytes = x509EncodedKeySpec.getEncoded();
-            byte[] privateKeyBytes = pkcs8EncodedKeySpec.getEncoded();
-            values.put(Fields.PUBLIC_KEY, publicKeyBytes);
-            values.put(Fields.PRIVATE_KEY, privateKeyBytes);
-        }
-        if (accountItem.getLastSync() == null) {
-            values.putNull(Fields.LAST_SYNC);
-        } else {
-            values.put(Fields.LAST_SYNC, accountItem.getLastSync().getTime());
-        }
-        values.put(Fields.ARCHIVE_MODE, accountItem.getArchiveMode().ordinal());
-        SQLiteDatabase db = databaseManager.getWritableDatabase();
-        if (id == null) {
-            return db.insert(NAME, Fields.USER_NAME, values);
-        }
-        db.update(NAME, values, Fields._ID + " = ?", new String[]{String.valueOf(id)});
-        return id;
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(accountRealm);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public void write(String id, AccountItem accountItem) {
+        saveAccountRealm(id, accountItem);
     }
 
     /**
@@ -468,10 +490,29 @@ public class AccountTable extends AbstractTable {
      *
      * @return <b>True</b> if record was removed.
      */
-    public void remove(String account, long id) {
+    public void remove(String account, String id) {
+        Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
+        realm.beginTransaction();
+        AccountRealm accountRealm = realm
+                .where(AccountRealm.class)
+                .equalTo(AccountRealm.Fields.ID, id)
+                .findFirst();
+
+        if (accountRealm != null) {
+            accountRealm.deleteFromRealm();
+        }
+        realm.commitTransaction();
+
+        realm.close();
+
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields._ID + " = ?", new String[]{ String.valueOf(id) });
         databaseManager.removeAccount(account);
+    }
+
+    public int removeAllAccounts() {
+        SQLiteDatabase db = databaseManager.getWritableDatabase();
+        return db.delete(NAME, null, null);
     }
 
     @Override
@@ -494,33 +535,33 @@ public class AccountTable extends AbstractTable {
     }
 
     private static final class Fields implements BaseColumns {
-        public static final String ENABLED = "enabled";
-        public static final String SERVER_NAME = "server_name";
-        public static final String USER_NAME = "user_name";
-        public static final String PASSWORD = "password";
-        public static final String RESOURCE = "resource";
-        public static final String PRIORITY = "priority";
-        public static final String STATUS_MODE = "status_mode";
-        public static final String STATUS_TEXT = "status_text";
-        public static final String CUSTOM = "custom";
-        public static final String HOST = "host";
-        public static final String PORT = "port";
-        public static final String SASL_ENABLED = "sasl_enabled";
-        public static final String TLS_MODE = "required_tls";
-        public static final String COMPRESSION = "compression";
-        public static final String COLOR_INDEX = "color_index";
-        public static final String PROTOCOL = "protocol";
-        public static final String SYNCABLE = "syncable";
-        public static final String STORE_PASSWORD = "store_password";
-        public static final String PUBLIC_KEY = "public_key";
-        public static final String PRIVATE_KEY = "private_key";
-        public static final String LAST_SYNC = "last_sync";
-        public static final String ARCHIVE_MODE = "archive_mode";
-        public static final String PROXY_TYPE = "proxy_type";
-        public static final String PROXY_HOST = "proxy_host";
-        public static final String PROXY_PORT = "proxy_port";
-        public static final String PROXY_USER = "proxy_user";
-        public static final String PROXY_PASSWORD = "proxy_password";
+        static final String ENABLED = "enabled";
+        static final String SERVER_NAME = "server_name";
+        static final String USER_NAME = "user_name";
+        static final String PASSWORD = "password";
+        static final String RESOURCE = "resource";
+        static final String PRIORITY = "priority";
+        static final String STATUS_MODE = "status_mode";
+        static final String STATUS_TEXT = "status_text";
+        static final String CUSTOM = "custom";
+        static final String HOST = "host";
+        static final String PORT = "port";
+        static final String SASL_ENABLED = "sasl_enabled";
+        static final String TLS_MODE = "required_tls";
+        static final String COMPRESSION = "compression";
+        static final String COLOR_INDEX = "color_index";
+        static final String PROTOCOL = "protocol";
+        static final String SYNCABLE = "syncable";
+        static final String STORE_PASSWORD = "store_password";
+        static final String PUBLIC_KEY = "public_key";
+        static final String PRIVATE_KEY = "private_key";
+        static final String LAST_SYNC = "last_sync";
+        static final String ARCHIVE_MODE = "archive_mode";
+        static final String PROXY_TYPE = "proxy_type";
+        static final String PROXY_HOST = "proxy_host";
+        static final String PROXY_PORT = "proxy_port";
+        static final String PROXY_USER = "proxy_user";
+        static final String PROXY_PASSWORD = "proxy_password";
 
         private Fields() {
         }
