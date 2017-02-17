@@ -46,6 +46,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
@@ -361,13 +362,18 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             return;
         }
 
-
+        // we do not want to show persistent notification if there are no enabled accounts
+        XabberService.getInstance().changeForeground();
+        Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
+        if (accountList.isEmpty()) {
+            return;
+        }
 
         int waiting = 0;
         int connecting = 0;
         int connected = 0;
 
-        Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
+
         for (AccountJid account : accountList) {
             ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
 
