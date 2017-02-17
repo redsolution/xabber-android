@@ -47,7 +47,7 @@ public abstract class ConnectionItem {
     @NonNull
     private final AccountJid account;
 
-    private final String logTag;
+    final String logTag;
 
     /**
      * Connection options.
@@ -71,7 +71,7 @@ public abstract class ConnectionItem {
 
     @NonNull
     private final AccountRosterListener rosterListener;
-    private Toast toast;
+    Toast toast;
 
     private ConnectionThread connectionThread;
 
@@ -126,7 +126,7 @@ public abstract class ConnectionItem {
         return connectionSettings;
     }
 
-    public ConnectionState getState() {
+    public synchronized ConnectionState getState() {
         return state;
     }
 
@@ -182,12 +182,18 @@ public abstract class ConnectionItem {
     }
 
     public void disconnect() {
-        LogManager.i(logTag, "disconnect");
-
         Thread thread = new Thread("Disconnection thread for " + connection) {
             @Override
             public void run() {
-                connection.disconnect();
+                LogManager.i(logTag, "disconnect");
+
+                if (connection.isConnected()) {
+                    updateState(ConnectionState.disconnecting);
+                    LogManager.i(logTag, "connected now, disconnecting...");
+                    connection.disconnect();
+                } else {
+                    LogManager.i(logTag, "already disconnected");
+                }
             }
 
         };
@@ -202,6 +208,7 @@ public abstract class ConnectionItem {
         Thread thread = new Thread("Disconnection thread for " + connection) {
             @Override
             public void run() {
+                updateState(ConnectionState.disconnecting);
                 connection.disconnect();
 
                 Application.getInstance().runOnUiThread(new Runnable() {
@@ -238,29 +245,21 @@ public abstract class ConnectionItem {
     }
 
     void updateState(ConnectionState newState) {
-        LogManager.i(logTag, "updateState " + newState);
+        boolean changed = setState(newState);
 
-        ConnectionState prevState = this.state;
-
-        if (connection.isAuthenticated()) {
-            this.state = ConnectionState.connected;
-        } else if (connection.isConnected()) {
-            if (newState == ConnectionState.authentication || newState == ConnectionState.registration) {
-                this.state = newState;
-            }
-        } else {
-            switch (newState) {
-                case offline:
-                case waiting:
-                case connecting:
-                    this.state = newState;
-                    break;
-            }
-        }
-
-        if (prevState != state) {
+        if (changed) {
             AccountManager.getInstance().onAccountChanged(getAccount());
         }
+    }
+
+    private synchronized boolean setState(ConnectionState newState) {
+        ConnectionState prevState = this.state;
+
+        this.state = newState;
+
+        LogManager.i(logTag, "updateState. prev " + prevState + " new "  + newState);
+
+        return prevState != state;
     }
 
 
@@ -289,11 +288,16 @@ public abstract class ConnectionItem {
     };
 
     void showDebugToast(final String message) {
-        if (toast != null) {
-            toast.cancel();
-        }
-        toast = Toast.makeText(Application.getInstance(), message, Toast.LENGTH_LONG);
-        toast.show();
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (toast != null) {
+                    toast.cancel();
+                }
+                toast = Toast.makeText(Application.getInstance(), message, Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
     }
 
 }

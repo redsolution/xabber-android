@@ -51,7 +51,7 @@ public class AccountItem extends ConnectionItem {
     /**
      * Whether account is enabled.
      */
-    private boolean enabled;
+    private volatile boolean enabled;
 
     /**
      * Whether roster contacts can be synchronized with system contact list.
@@ -293,6 +293,12 @@ public class AccountItem extends ConnectionItem {
     }
 
     void setEnabled(boolean enabled) {
+        if (!this.enabled && enabled) {
+            connect();
+        } else if (this.enabled && !enabled) {
+            disconnect();
+        }
+
         this.enabled = enabled;
     }
 

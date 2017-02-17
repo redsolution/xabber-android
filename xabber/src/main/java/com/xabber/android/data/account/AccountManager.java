@@ -549,7 +549,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         }
 
         accountItem.setEnabled(enabled);
-        accountItem.connect();
         requestToWriteAccount(accountItem);
     }
 

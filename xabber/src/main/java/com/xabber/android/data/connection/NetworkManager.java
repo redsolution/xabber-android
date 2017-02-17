@@ -31,7 +31,7 @@ import com.xabber.android.receiver.ConnectivityReceiver;
  *
  * @author alexander.ivanov
  */
-public class NetworkManager implements OnCloseListener, OnInitializedListener {
+public class  NetworkManager implements OnCloseListener, OnInitializedListener {
 
     private static final String LOG_TAG = NetworkManager.class.getSimpleName();
     private final ConnectivityReceiver connectivityReceiver;
@@ -90,6 +90,14 @@ public class NetworkManager implements OnCloseListener, OnInitializedListener {
     private void onAvailable() {
         LogManager.i(LOG_TAG, "onAvailable");
         ConnectionManager.getInstance().connectAll();
+    }
+
+    public static boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) Application.getInstance()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
 }

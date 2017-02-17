@@ -51,7 +51,12 @@ public enum ConnectionState {
     /**
      * Authorized connection has been established.
      */
-    connected;
+    connected,
+
+    /**
+     * Connection were established or authenticated and disconnection is in progress.
+     */
+    disconnecting;
 
     /**
      * @return whether authorized connection has been established.
@@ -86,6 +91,8 @@ public enum ConnectionState {
                 return R.string.account_state_authentication;
             case connected:
                 return R.string.account_state_connected;
+            case disconnecting:
+                return R.string.account_state_disconnecting;
             default:
                 throw new IllegalStateException();
         }

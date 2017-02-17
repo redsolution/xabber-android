@@ -59,7 +59,12 @@ class ConnectionThread {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                connectAndLogin();
+                if (NetworkManager.isNetworkAvailable()) {
+                    connectAndLogin();
+                } else {
+                    connectionItem.updateState(ConnectionState.waiting);
+                    LogManager.i(this, "No network connection");
+                }
             }
         }, "Connection thread for " + connectionItem.getAccount());
         thread.setPriority(Thread.MIN_PRIORITY);
@@ -101,6 +106,7 @@ class ConnectionThread {
         try {
             LogManager.i(this, "Trying to connect and login...");
             if (!connection.isConnected()) {
+                connectionItem.updateState(ConnectionState.connecting);
                 connection.connect();
             } else {
                 LogManager.i(this, "Already connected");
