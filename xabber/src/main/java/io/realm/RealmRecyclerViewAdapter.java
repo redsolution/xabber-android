@@ -79,30 +79,4 @@ public abstract class RealmRecyclerViewAdapter<T extends RealmObject, VH extends
         return i;
     }
 
-    /**
-     * Updates the RealmResults associated to the Adapter. Useful when the query has been changed.
-     * If the query does not change you might consider using the automaticUpdate feature.
-     *
-     * @param queryResults the new RealmResults coming from the new query.
-     */
-    public void updateRealmResults(RealmResults<T> queryResults) {
-        if (listener != null) {
-            // Making sure that Adapter is refreshed correctly if new RealmResults come from another Realm
-            if (this.realmResults != null) {
-                this.realmResults.realm.removeChangeListener(listener);
-            }
-            if (queryResults != null) {
-                queryResults.realm.addListener(listener);
-            }
-        }
-
-        this.realmResults = queryResults;
-        notifyDataSetChanged();
-    }
-
-    public void addChangeListenerAsWeakReference(RealmChangeListener realmChangeListener) {
-        if(realmResults != null) {
-            realmResults.realm.handlerController.addChangeListenerAsWeakReference(realmChangeListener);
-        }
-    }
 }
