@@ -17,7 +17,7 @@ public class WakeLockManager {
 
 
     static {
-        WIFI_LOCK = ((WifiManager) Application.getInstance()
+        WIFI_LOCK = ((WifiManager) Application.getInstance().getApplicationContext()
                 .getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "Xabber Wifi Lock");
         WIFI_LOCK.setReferenceCounted(false);
