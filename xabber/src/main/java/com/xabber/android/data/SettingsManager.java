@@ -31,6 +31,7 @@ import com.xabber.android.data.connection.WakeLockManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -465,6 +466,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
+    public static boolean fileLog() {
+        return getBoolean(R.string.debug_file_log_key, R.bool.debug_file_log_default);
+    }
+
     public static boolean showConnectionErrors() {
         return getBoolean(R.string.debug_connection_errors_key, R.bool.debug_connection_errors_default);
     }
@@ -692,6 +697,9 @@ public class SettingsManager implements OnInitializedListener,
             if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
                 SettingsManager.setDarkThemeSuggested();
             }
+        } else if(key.equals(Application.getInstance().getString(
+                R.string.debug_file_log_key))) {
+            LogManager.getInstance().onSettingsChanged();
         }
     }
 

@@ -92,7 +92,6 @@ class FileLog {
     }
 
     public static void e(final String tag, final String message, final Throwable exception) {
-        Log.e(tag, message, exception);
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
                 @Override
@@ -110,7 +109,6 @@ class FileLog {
     }
 
     public static void e(final String tag, final String message) {
-        Log.e(tag, message);
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
                 @Override
@@ -127,7 +125,6 @@ class FileLog {
     }
 
     public static void e(final String tag, final Throwable e) {
-        e.printStackTrace();
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
                 @Override
@@ -150,7 +147,6 @@ class FileLog {
     }
 
     public static void d(final String tag, final String message) {
-        Log.d(tag, message);
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
                 @Override
@@ -167,7 +163,6 @@ class FileLog {
     }
 
     public static void w(final String tag, final String message) {
-        Log.w(tag, message);
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(new Runnable() {
                 @Override

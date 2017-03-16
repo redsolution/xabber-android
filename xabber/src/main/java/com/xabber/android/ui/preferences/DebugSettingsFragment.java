@@ -5,7 +5,6 @@ import android.preference.PreferenceScreen;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 public class DebugSettingsFragment extends android.preference.PreferenceFragment {
@@ -17,9 +16,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
 
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
-        if (!LogManager.isDebuggable()) {
-            preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
-        }
+        preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_log_key)));
 
         if (!BuildConfig.FLAVOR.equals("beta")) {
             preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_crash_reports_key)));

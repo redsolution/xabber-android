@@ -15,9 +15,9 @@
 package com.xabber.android.data.log;
 
 import android.content.pm.ApplicationInfo;
+import android.util.Log;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 
 import org.jivesoftware.smack.SmackConfiguration;
@@ -32,9 +32,9 @@ import java.io.StringWriter;
  *
  * @author alexander.ivanov
  */
-public class LogManager implements OnLoadListener {
+public class LogManager {
 
-    private static boolean log;
+    private static volatile boolean fileLog;
     private static boolean debuggable;
 
     private static LogManager instance;
@@ -48,52 +48,70 @@ public class LogManager implements OnLoadListener {
 
     private LogManager() {
         debuggable = (Application.getInstance().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-//        log = debuggable && SettingsManager.debugLog();
-        log = SettingsManager.debugLog();
 
         System.setProperty("smack.debuggerClass", "com.xabber.android.data.log.SmackDebugger");
-        System.setProperty("smack.debugEnabled", "true");
-        SmackConfiguration.DEBUG = true;
+
+        onSettingsChanged();
     }
 
-    @Override
-    public void onLoad() {
-        if (log) {
-            // TODO: unknown Options
-//            Options.set("verbose");
-//            Options.set("verbosemsg");
-//            Options.set("verbosecompression");
-//            Options.set("verbosesec");
-//            Options.set("verbosecache");
+    public void onSettingsChanged() {
+        fileLog = SettingsManager.fileLog();
+
+        if (debuggable || fileLog) {
+            System.setProperty("smack.debugEnabled", "true");
+            SmackConfiguration.DEBUG = true;
+        } else {
+            System.setProperty("smack.debugEnabled", "false");
+            SmackConfiguration.DEBUG = false;
         }
     }
 
     private static void dString(String tag, String msg) {
-        if (log) {
+        if (debuggable) {
+            Log.d(tag, msg);
+        }
+
+        if (fileLog) {
             FileLog.d(tag, msg);
         }
     }
 
     private static void eString(String tag, String msg) {
-        if (log) {
+        if (debuggable) {
+            Log.e(tag, msg);
+        }
+
+        if (fileLog) {
             FileLog.e(tag, msg);
         }
     }
 
     public static void iString(String tag, String msg) {
-        if (log) {
+        if (debuggable) {
+            Log.i(tag, msg);
+        }
+
+        if (fileLog) {
             FileLog.d(tag, msg);
         }
     }
 
     private static void wString(String tag, String msg) {
-        if (log) {
+        if (debuggable) {
+            Log.w(tag, msg);
+        }
+
+        if (fileLog) {
             FileLog.w(tag, msg);
         }
     }
 
     private static void vString(String tag, String msg) {
-        if (log) {
+        if (debuggable) {
+            Log.v(tag, msg);
+        }
+
+        if (fileLog) {
             FileLog.d(tag, msg);
         }
     }
@@ -118,39 +136,32 @@ public class LogManager implements OnLoadListener {
         vString(obj.toString(), msg);
     }
 
-    /**
-     * Print stack trace if log is enabled.
-     */
-    public static void exception(Object obj, Exception exception) {
-        FileLog.e(obj.toString(), exception);
-
-        if (!log) {
-            return;
-        }
-        forceException(obj, exception);
-    }
-
     public static void exception(Object obj, Throwable throwable) {
-        FileLog.e(obj.toString(), throwable);
+        if (debuggable) {
+            Log.e(obj.toString(), throwable.getMessage());
+            Log.e(obj.toString(), Log.getStackTraceString(throwable));
+        } else {
+            forceException(obj, throwable);
+        }
+
+        if (fileLog) {
+            FileLog.e(obj.toString(), throwable);
+        }
     }
 
     /**
      * Print stack trace even if log is disabled.
      */
-    private static void forceException(Object obj, Exception exception) {
+    private static void forceException(Object obj, Throwable throwable) {
         System.err.println(obj.toString());
-        System.err.println(getStackTrace(exception));
+        System.err.println(getStackTrace(throwable));
     }
 
-    private static String getStackTrace(Exception exception) {
+    private static String getStackTrace(Throwable throwable) {
         final StringWriter result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
-        exception.printStackTrace(printWriter);
+        throwable.printStackTrace(printWriter);
         return result.toString();
-    }
-
-    public static boolean isDebuggable() {
-        return debuggable;
     }
 
     public static void clearLogs() {
