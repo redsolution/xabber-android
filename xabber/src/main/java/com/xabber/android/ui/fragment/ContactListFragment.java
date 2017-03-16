@@ -5,14 +5,11 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
@@ -34,6 +31,7 @@ import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.AccountListActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
@@ -42,11 +40,9 @@ import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
 import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
 import com.xabber.android.ui.adapter.contactlist.ContactListState;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
-import com.xabber.android.ui.activity.AccountListActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -115,7 +111,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
         recyclerView = (RecyclerView) view.findViewById(R.id.contact_list_recycler_view);
         registerForContextMenu(recyclerView);
-        adapter = new ContactListAdapter(getActivity(), this);
+        adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
@@ -172,26 +168,6 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     public void onDetach() {
         super.onDetach();
         contactListFragmentListener = null;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        Object itemAtPosition = adapter.getItem(info.position);
-        if (itemAtPosition instanceof AbstractContact) {
-            ContextMenuHelper.createContactContextMenu(
-                    (ManagedActivity) getActivity(), adapter, (AbstractContact) itemAtPosition, menu);
-        } else if (itemAtPosition instanceof AccountConfiguration) {
-            AccountConfiguration accountConfiguration = (AccountConfiguration) itemAtPosition;
-            ContextMenuHelper.createAccountContextMenu(
-                    (ManagedActivity) getActivity(), adapter, accountConfiguration.getAccount(), menu);
-        } else if (itemAtPosition instanceof GroupConfiguration) {
-            GroupConfiguration groupConfiguration = (GroupConfiguration) itemAtPosition;
-            ContextMenuHelper.createGroupContextMenu((ManagedActivity) getActivity(), adapter,
-                    groupConfiguration.getAccount(), groupConfiguration.getGroup(), menu);
-        } else {
-            throw new IllegalStateException();
-        }
     }
 
     @Override

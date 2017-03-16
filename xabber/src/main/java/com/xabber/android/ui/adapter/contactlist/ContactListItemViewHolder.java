@@ -1,13 +1,14 @@
 package com.xabber.android.ui.adapter.contactlist;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 
-class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
 
     final ImageView color;
     final ImageView avatar;
@@ -23,9 +24,11 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
     final View separator;
     private final ContactClickListener listener;
 
+
     interface ContactClickListener {
         void onContactClick(int adapterPosition);
         void onContactAvatarClick(int adapterPosition);
+        void onContactCreateContextMenu(int adapterPosition, ContextMenu menu);
     }
 
     ContactListItemViewHolder(View view, ContactClickListener listener) {
@@ -33,6 +36,7 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
         this.listener = listener;
 
         itemView.setOnClickListener(this);
+        itemView.setOnCreateContextMenuListener(this);
 
         color = (ImageView) view.findViewById(R.id.account_color_indicator);
         avatar = (ImageView) view.findViewById(R.id.avatar);
@@ -57,4 +61,10 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
             listener.onContactClick(getAdapterPosition());
         }
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        listener.onContactCreateContextMenu(getAdapterPosition(), menu);
+    }
+
 }

@@ -14,7 +14,6 @@
  */
 package com.xabber.android.ui.adapter.contactlist;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -23,6 +22,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +52,10 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.ComparatorByChat;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.helper.ContextMenuHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,7 +109,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * Layout inflater
      */
     private final LayoutInflater layoutInflater;
-    private final Activity activity;
+    private final ManagedActivity activity;
     private final int[] accountSubgroupColors;
     private final int activeChatsColor;
     private final ContactItemInflater contactItemInflater;
@@ -144,7 +146,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private boolean hasActiveChats = false;
     private int[] accountGroupColors;
 
-    public ContactListAdapter(Activity activity, ContactListAdapterListener listener) {
+    public ContactListAdapter(ManagedActivity activity, ContactListAdapterListener listener) {
         this.activity = activity;
         this.accountGroupClickListener = null;
 
@@ -714,6 +716,12 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        AbstractContact abstractContact = (AbstractContact) getItem(adapterPosition);
+        ContextMenuHelper.createContactContextMenu(activity, this, abstractContact, menu);
+    }
+
+    @Override
     public void onAccountAvatarClick(int adapterPosition) {
         activity.startActivity(AccountActivity.createAccountInfoIntent(activity,
                 ((AccountConfiguration)getItem(adapterPosition)).getAccount()));
@@ -731,8 +739,22 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    public void onAccountGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        AccountConfiguration accountConfiguration = (AccountConfiguration) getItem(adapterPosition);
+        ContextMenuHelper.createAccountContextMenu(activity, this, accountConfiguration.getAccount(), menu);
+    }
+
+    @Override
     public void onGroupClick(int adapterPosition) {
         toggleGroupExpand(adapterPosition);
+    }
+
+    @Override
+    public void onGroupCreateContextMenu(int adapterPosition, ContextMenu menu) {
+        GroupConfiguration groupConfiguration = (GroupConfiguration) getItem(adapterPosition);
+
+        ContextMenuHelper.createGroupContextMenu(activity, this,
+                groupConfiguration.getAccount(), groupConfiguration.getGroup(), menu);
     }
 
     private void toggleGroupExpand(int adapterPosition) {

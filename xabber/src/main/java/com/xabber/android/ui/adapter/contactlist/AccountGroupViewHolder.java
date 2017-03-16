@@ -1,6 +1,7 @@
 package com.xabber.android.ui.adapter.contactlist;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,7 +10,7 @@ import com.xabber.android.R;
 
 
 class AccountGroupViewHolder extends RecyclerView.ViewHolder
-        implements View.OnClickListener {
+        implements View.OnClickListener, View.OnCreateContextMenuListener {
 
     final ImageView avatar;
     final TextView name;
@@ -18,12 +19,14 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
     final ImageView smallRightIcon;
     final ImageView statusIcon;
     final ImageView offlineShadow;
+
     private final AccountGroupClickListener listener;
 
     interface AccountGroupClickListener {
         void onAccountAvatarClick(int adapterPosition);
         void onAccountMenuClick(int adapterPosition, View view);
         void onAccountGroupClick(int adapterPosition);
+        void onAccountGroupCreateContextMenu(int adapterPosition, ContextMenu menu);
     }
 
     AccountGroupViewHolder(View view, AccountGroupClickListener listener) {
@@ -31,6 +34,8 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
 
         this.listener = listener;
         itemView.setOnClickListener(this);
+        itemView.setOnCreateContextMenuListener(this);
+
         avatar = (ImageView) view.findViewById(R.id.avatar);
         avatar.setOnClickListener(this);
         name = (TextView) view.findViewById(R.id.contact_list_item_name);
@@ -51,5 +56,10 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
         } else {
             listener.onAccountGroupClick(getAdapterPosition());
         }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        listener.onAccountGroupCreateContextMenu(getAdapterPosition(), menu);
     }
 }

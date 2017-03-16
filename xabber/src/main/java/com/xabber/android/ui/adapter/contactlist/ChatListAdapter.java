@@ -2,6 +2,7 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -61,5 +62,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onContactAvatarClick(int adapterPosition) {
         contactItemInflater.onAvatarClick(contacts.get(adapterPosition));
+    }
+
+    @Override
+    public void onContactCreateContextMenu(int adapterPosition, ContextMenu menu) {
+
     }
 }
