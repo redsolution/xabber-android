@@ -137,10 +137,9 @@ public class LogManager {
     }
 
     public static void exception(Object obj, Throwable throwable) {
-        if (debuggable) {
-            Log.e(obj.toString(), throwable.getMessage());
-            Log.e(obj.toString(), Log.getStackTraceString(throwable));
-        } else {
+        wString(obj.toString(), Log.getStackTraceString(throwable));
+
+        if (!debuggable) {
             forceException(obj, throwable);
         }
 
