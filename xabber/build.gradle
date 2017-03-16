@@ -52,11 +52,13 @@ android {
         prod {
             applicationId "com.xabber.android"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
         vip {
             applicationId "com.xabber.androidvip"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
     }
