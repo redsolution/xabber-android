@@ -24,4 +24,10 @@
             android:targetPackage="@string/application_package" />
     </Preference>
 
+    <CheckBoxPreference
+        android:title="@string/debug_crash_reports_title"
+        android:key="@string/debug_crash_reports_key"
+        android:defaultValue="@bool/debug_crash_reports_default"
+        />
+
 </PreferenceScreen>

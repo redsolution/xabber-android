@@ -305,6 +305,9 @@
 
     <string name="debug_log_activity_key">debug_log_activity</string>
 
+    <string name="debug_crash_reports_key">debug_crash_reports</string>
+    <bool name="debug_crash_reports_default">true</bool>
+
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
     <string name="preference_about_key">preference_about</string>

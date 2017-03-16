@@ -469,6 +469,10 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_connection_errors_key, R.bool.debug_connection_errors_default);
     }
 
+    public static boolean sendCrashReports() {
+        return getBoolean(R.string.debug_crash_reports_key, R.bool.debug_crash_reports_default);
+    }
+
     public static InterfaceTheme interfaceTheme() {
         String value = getString(R.string.interface_theme_key, R.string.interface_theme_default);
         if (Application.getInstance().getString(R.string.interface_theme_dark_value).equals(value)) {
