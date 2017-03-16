@@ -25,7 +25,7 @@
 
     <Preference
         android:key="@string/debug_log_activity_key"
-        android:title="@string/debug_log_title">
+        android:title="@string/debug_log_files_title">
         <intent
             android:targetClass="com.xabber.android.ui.activity.LogActivity"
             android:targetPackage="@string/application_package" />

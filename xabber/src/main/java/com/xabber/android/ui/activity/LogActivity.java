@@ -35,7 +35,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log);
 
-        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.debug_log_title));
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.debug_log_files_activity_title));
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
