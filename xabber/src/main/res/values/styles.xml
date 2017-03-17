@@ -61,4 +61,8 @@
     <style name="OccupantList.Visitor">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
+
+    <style name="WhiteSwitchStyle">
+        <item name="colorControlActivated">@color/white</item>
+    </style>
 </resources>
