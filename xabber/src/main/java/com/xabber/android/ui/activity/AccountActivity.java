@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.xabber.android.R;
@@ -25,6 +28,7 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 public class AccountActivity extends ManagedActivity {
 
     public static final int ACCOUNT_VIEWER_MENU = R.menu.account_viewer;
+    private static final String LOG_TAG = AccountActivity.class.getSimpleName();
 
     private AccountJid account;
     private View contactTitleView;
@@ -56,7 +60,7 @@ public class AccountActivity extends ManagedActivity {
             return;
         }
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
@@ -71,6 +75,21 @@ public class AccountActivity extends ManagedActivity {
             @Override
             public void onClick(View v) {
                 NavUtils.navigateUpFromSameTask(AccountActivity.this);
+            }
+        });
+
+        toolbar.setTitle(R.string.contact_account);
+        toolbar.inflateMenu(R.menu.toolbar_account);
+
+        MenuItem item = toolbar.getMenu().findItem(R.id.action_account_switch);
+        SwitchCompat switchCompat = (SwitchCompat) item.getActionView().findViewById(R.id.account_switch_view);
+
+        switchCompat.setChecked(accountItem.isEnabled());
+
+        switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                AccountManager.getInstance().setEnabled(accountItem.getAccount(), isChecked);
             }
         });
 
@@ -90,7 +109,6 @@ public class AccountActivity extends ManagedActivity {
         contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(account));
         statusIcon = findViewById(R.id.status_icon);
         statusText = (TextView) findViewById(R.id.status_text);
-
     }
 
     @Override
