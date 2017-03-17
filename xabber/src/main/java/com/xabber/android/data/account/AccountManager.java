@@ -335,11 +335,15 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         } catch (XmppStringprepException e) {
             throw new NetworkException(R.string.INCORRECT_USER_NAME);
         }
+
         Resourcepart resource = null;
-        try {
-            resource = Resourcepart.from(XmppStringUtils.parseResource(user));
-        } catch (XmppStringprepException e) {
-            LogManager.exception(this, e);
+        String resourceString = XmppStringUtils.parseResource(user).trim();
+        if (!TextUtils.isEmpty(resourceString)) {
+            try {
+                resource = Resourcepart.from(resourceString);
+            } catch (XmppStringprepException e) {
+                LogManager.exception(this, e);
+            }
         }
         String host = serverName.getDomain().toString();
         int port = 5222;
@@ -348,9 +352,6 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
             tlsRequired = true;
         }
 
-        if (userName == null) {
-            throw new NetworkException(R.string.EMPTY_USER_NAME);
-        }
         if (resource == null) {
             resource = generateResource();
         }
