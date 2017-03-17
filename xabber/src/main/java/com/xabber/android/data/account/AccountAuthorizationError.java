@@ -32,8 +32,7 @@ public class AccountAuthorizationError extends AccountRelated implements
 
     @Override
     public Intent getIntent() {
-        return AccountActivity.createAccountPreferencesIntent(
-                Application.getInstance(), account);
+        return AccountActivity.createIntent(Application.getInstance(), account);
     }
 
     @Override

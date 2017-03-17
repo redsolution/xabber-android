@@ -739,6 +739,6 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public void onAccountSelected(AccountJid account) {
         drawerLayout.closeDrawers();
-        startActivity(AccountActivity.createAccountInfoIntent(this, account));
+        startActivity(AccountActivity.createIntent(this, account));
     }
 }

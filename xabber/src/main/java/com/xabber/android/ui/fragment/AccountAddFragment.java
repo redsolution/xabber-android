@@ -94,7 +94,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         }
 
         getActivity().setResult(Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account));
-        startActivity(AccountActivity.createAccountPreferencesIntent(getActivity(), account));
+        startActivity(AccountActivity.createIntent(getActivity(), account));
         getActivity().finish();
     }
 }

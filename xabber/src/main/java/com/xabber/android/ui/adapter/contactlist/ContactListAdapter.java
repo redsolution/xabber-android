@@ -723,7 +723,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onAccountAvatarClick(int adapterPosition) {
-        activity.startActivity(AccountActivity.createAccountInfoIntent(activity,
+        activity.startActivity(AccountActivity.createIntent(activity,
                 ((AccountConfiguration)getItem(adapterPosition)).getAccount()));
     }
 

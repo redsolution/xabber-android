@@ -122,7 +122,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onAccountClick(AccountJid account) {
-        startActivity(AccountActivity.createAccountPreferencesIntent(this, account));
+        startActivity(AccountActivity.createIntent(this, account));
     }
 
     @Override
@@ -132,7 +132,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onEditAccount(AccountItem accountItem) {
-        startActivity(AccountActivity.createAccountPreferencesIntent(this, accountItem.getAccount()));
+        startActivity(AccountActivity.createIntent(this, accountItem.getAccount()));
     }
 
     @Override

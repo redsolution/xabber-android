@@ -344,14 +344,14 @@ public class ContextMenuHelper {
         }
 
         menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditActivity.createIntent(activity, account));
-        menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createAccountPreferencesIntent(activity, account));
+        menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountActivity.createAccountInfoIntent(activity, account));
+                            activity.startActivity(AccountActivity.createIntent(activity, account));
                             return true;
                         }
                     });

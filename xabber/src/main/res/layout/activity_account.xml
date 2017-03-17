@@ -17,19 +17,4 @@
         <include layout="@layout/contact_title_expanded"/>
     </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragment_container"
-        android:layout_below="@id/contact_title_expanded"
-        />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scrollable_container"
-        android:layout_below="@id/contact_title_expanded"
-        />
-
-
 </RelativeLayout>
