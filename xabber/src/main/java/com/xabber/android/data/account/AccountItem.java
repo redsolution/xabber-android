@@ -30,6 +30,7 @@ import org.jxmpp.jid.parts.Resourcepart;
 
 import java.security.KeyPair;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Represent account settings and status.
@@ -93,7 +94,7 @@ public class AccountItem extends ConnectionItem {
         super(custom, host, port, serverName, userName, resource,
                 storePassword, password, saslEnabled, tlsMode, compression,
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
-        this.id = null;
+        this.id = UUID.randomUUID().toString();
         this.colorIndex = colorIndex;
 
         this.enabled = enabled;

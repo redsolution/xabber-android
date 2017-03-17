@@ -9,13 +9,16 @@ import com.xabber.android.data.database.realm.DiscoveryInfoCache;
 import com.xabber.android.data.database.sqlite.AccountTable;
 import com.xabber.android.data.log.LogManager;
 
+import io.realm.DynamicRealm;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmMigration;
+import io.realm.RealmSchema;
 import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 2;
+    private static final int REALM_DATABASE_VERSION = 3;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -54,7 +57,19 @@ public class RealmManager {
         return new RealmConfiguration.Builder()
                 .name(REALM_DATABASE_NAME)
                 .schemaVersion(REALM_DATABASE_VERSION)
-                .deleteRealmIfMigrationNeeded()
+                .migration(new RealmMigration() {
+                    @Override
+                    public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
+                        RealmSchema schema = realm.getSchema();
+
+                        if (oldVersion == 2) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .setRequired(AccountRealm.Fields.ID, true);
+
+                            oldVersion++;
+                        }
+                    }
+                })
                 .modules(new RealmDatabaseModule())
                 .build();
     }
