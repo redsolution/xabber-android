@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <include layout="@layout/toolbar_default"
         />
@@ -16,5 +17,12 @@
 
         <include layout="@layout/contact_title_expanded"/>
     </FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/account_options_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/contact_title_expanded"
+        tools:listitem="@layout/item_account_option" />
 
 </RelativeLayout>

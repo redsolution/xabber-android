@@ -73,4 +73,7 @@
     <string name="account_color_name_blue_grey">Blue grey</string>
     <string name="account_color_name_cyan">Cyan</string>
 
+    <string name="account_connection_settings">Connection settings</string>
+    <string name="account_chat_history">Chat history</string>
+
 </resources>

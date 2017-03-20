@@ -795,6 +795,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         }
     }
 
+    public void setColor(AccountJid accountJid, int colorIndex) {
+        AccountItem accountItem = getAccount(accountJid);
+        accountItem.setColorIndex(colorIndex);
+        requestToWriteAccount(accountItem);
+    }
+
     /**
      * Sets status for account.
      */

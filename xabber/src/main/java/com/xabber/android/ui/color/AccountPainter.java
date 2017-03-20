@@ -152,6 +152,10 @@ public class AccountPainter {
         return accountDarkColors[getColorIndexByName(targetColorName)];
     }
 
+    public String getAccountColorName(AccountJid accountJid) {
+        return accountColorNames[getAccountColorLevel(accountJid)];
+    }
+
     private Integer getColorIndexByName(String targetColorName) {
         for (int i = 0; i < accountColorNames.length; i++) {
             String accountColorName = accountColorNames[i];
