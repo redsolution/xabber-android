@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
@@ -14,10 +13,11 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
 
 
-public class AccountSettingsActivity extends AppCompatActivity implements AccountEditorFragment.AccountEditorFragmentInteractionListener {
+public class AccountSettingsActivity extends ManagedActivity implements AccountEditorFragment.AccountEditorFragmentInteractionListener {
 
     private AccountJid account;
     private AccountItem accountItem;
@@ -76,6 +76,6 @@ public class AccountSettingsActivity extends AppCompatActivity implements Accoun
 
     @Override
     public void showOrbotDialog() {
-
+        OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.newInstance().getTag());
     }
 }
