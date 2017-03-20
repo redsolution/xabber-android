@@ -113,10 +113,6 @@ public class AccountEditorFragment extends BaseSettingsFragment {
             }
         }
 
-        if (getString(R.string.account_color_key).equals(key)) {
-            listener.onColorChange((String) newValue);
-        }
-
         return true;
     }
 
@@ -231,6 +227,5 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         AccountJid getAccount();
         AccountItem getAccountItem();
         void showOrbotDialog();
-        void onColorChange(String colorName);
     }
 }

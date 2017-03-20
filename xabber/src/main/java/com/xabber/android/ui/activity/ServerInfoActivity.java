@@ -81,7 +81,7 @@ public class ServerInfoActivity extends ManagedActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(ServerInfoActivity.this);
+                finish();
             }
         });
         toolbar.setTitle(accountItem.getConnection().getXMPPServiceDomain());

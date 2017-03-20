@@ -178,7 +178,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
             case CONNECTION_SETTINGS:
-
+                startActivity(AccountSettingsActivity.createIntent(this, account));
                 break;
             case COLOR:
                 AccountColorDialog.newInstance(account).show(getFragmentManager(), AccountColorDialog.class.getSimpleName());
