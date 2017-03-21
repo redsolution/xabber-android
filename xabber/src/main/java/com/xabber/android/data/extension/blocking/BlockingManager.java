@@ -80,6 +80,8 @@ public class BlockingManager implements OnAuthorizedListener {
                     // block list already cached successfully
                     supportForAccounts.put(account, supportedByServer);
 
+                    BlockingManager.notify(account);
+
                 } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
                         | SmackException.NoResponseException | InterruptedException e) {
                     LogManager.exception(this, e);

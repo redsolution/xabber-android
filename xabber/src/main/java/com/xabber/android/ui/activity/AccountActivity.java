@@ -23,6 +23,7 @@ import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -36,7 +37,8 @@ import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import java.util.Collection;
 
-public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener, OnAccountChangedListener {
+public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
+        OnAccountChangedListener, OnBlockedListChangedListener {
 
     public static final int ACCOUNT_VIEWER_MENU = R.menu.account_viewer;
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
@@ -136,10 +138,15 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 
-        AccountOption.BLOCK_LIST.setDescription(String.valueOf(BlockingManager.getInstance().getBlockedContacts(account).size()));
+        updateBlockListOption();
         AccountOption.SERVER_INFO.setDescription(getString(R.string.account_server_info_description));
 
         accountOptionsAdapter.notifyDataSetChanged();
+    }
+
+    private void updateBlockListOption() {
+        AccountOption.BLOCK_LIST.setDescription(String.valueOf(BlockingManager.getInstance().getBlockedContacts(account).size()));
+        accountOptionsAdapter.notifyItemChanged(AccountOption.BLOCK_LIST.ordinal());
     }
 
     @Override
@@ -150,10 +157,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         updateOptions();
 
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
     }
 
     @Override
     protected void onPause() {
+        Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
 
         super.onPause();
@@ -202,6 +211,13 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         if (accounts.contains(account)) {
             updateTitle();
             updateOptions();
+        }
+    }
+
+    @Override
+    public void onBlockedListChanged(AccountJid account) {
+        if (this.account.equals(account)) {
+            updateBlockListOption();
         }
     }
 }
