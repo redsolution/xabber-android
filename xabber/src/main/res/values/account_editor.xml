@@ -74,7 +74,6 @@
     <string name="account_color_name_cyan">Cyan</string>
 
     <string name="account_connection_settings">Connection settings</string>
-    <string name="account_chat_history">Chat history</string>
 
     <string name="blocked_contacts">Blocked contacts</string>
     <string name="blocked_contacts_unknown">Blocking support is not determined yet.</string>
@@ -85,5 +84,14 @@
         <item quantity="one">%d contact blocked.</item>
         <item quantity="other">%d contacts blocked.</item>
     </plurals>
+
+    <string name="account_chat_history">Chat history</string>
+    <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
+    <string name="account_chat_history_not_supported">Server does not support chat history storing.</string>
+
+    <string name="account_chat_history_always">Store all messages on server</string>
+    <string name="account_chat_history_roster">Store roster contacts messages on server</string>
+    <string name="account_chat_history_never">Do not store any messages on server</string>
+
 
 </resources>

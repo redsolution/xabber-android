@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.mam;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
@@ -72,13 +73,11 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
             return;
         }
         final AccountItem accountItem = (AccountItem) connection;
-        supportedByAccount.remove(accountItem.getAccount());
 
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
                 updateIsSupported(accountItem);
-
             }
         });
     }
@@ -98,6 +97,11 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
                 }
             }
         });
+    }
+
+    @Nullable
+    public Boolean isSupported(AccountJid accountJid) {
+        return supportedByAccount.get(accountJid);
     }
 
     private boolean checkSupport(AccountItem accountItem) {
@@ -133,6 +137,8 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
         LogManager.i(this, "MAM support for account " + accountItem.getAccount() + " " + isSupported);
         supportedByAccount.put(accountItem.getAccount(), isSupported);
+
+        AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
         return isSupported;
     }
 
