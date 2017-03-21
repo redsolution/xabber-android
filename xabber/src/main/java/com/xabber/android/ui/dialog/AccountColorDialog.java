@@ -37,6 +37,7 @@ public class AccountColorDialog extends DialogFragment {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
         dialog.setTitle(getString(R.string.account_color));
         dialog.setPositiveButton(null, null);
+        dialog.setNegativeButton(android.R.string.cancel, null);
         int colorIndex = AccountManager.getInstance().getColorLevel(accountJid);
 
         dialog.setSingleChoiceItems(R.array.account_color_names, colorIndex, selectItemListener);
