@@ -85,7 +85,7 @@ android {
 
 ext {
     smackVersion = '4.2.0'
-    supportVersion = '25.2.0'
+    supportVersion = '25.3.0'
 }
 
 dependencies {
