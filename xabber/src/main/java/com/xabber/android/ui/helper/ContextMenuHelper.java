@@ -241,7 +241,9 @@ public class ContextMenuHelper {
                 menu.findItem(R.id.action_close_chat).setVisible(false);
             }
 
-            if (!BlockingManager.getInstance().isSupported(account)
+            Boolean supported = BlockingManager.getInstance().isSupported(account);
+
+            if ((supported == null || !supported)
                     && !MUCManager.getInstance().isMucPrivateChat(account, user)) {
                 menu.findItem(R.id.action_block_contact).setVisible(false);
             }

@@ -1,5 +1,7 @@
 package com.xabber.android.data.extension.blocking;
 
+import android.support.annotation.Nullable;
+
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -143,18 +145,22 @@ public class BlockingManager implements OnAuthorizedListener {
         });
     }
 
-    public boolean isSupported(AccountJid account) {
-        final Boolean isSupported = supportForAccounts.get(account);
-        if (isSupported == null) {
-            return false;
-        }
-        return isSupported;
+    /**
+     *
+     * @param account
+     * @return true if supported, false if not supported and null if unknown yet
+     */
+    @Nullable
+    public Boolean isSupported(AccountJid account) {
+        return supportForAccounts.get(account);
     }
 
     public List<UserJid> getBlockedContacts(AccountJid account) {
         List<UserJid> blockedContacts = new ArrayList<>();
 
-        if (isSupported(account)) {
+        Boolean supported = isSupported(account);
+
+        if (supported != null && supported) {
             try {
                 List<Jid> blockedJids = getBlockingCommandManager(account).getBlockList();
                 for (Jid jid : blockedJids) {
@@ -176,10 +182,6 @@ public class BlockingManager implements OnAuthorizedListener {
     }
 
     public void blockContact(final AccountJid account, final UserJid contactJid, final BlockContactListener listener) {
-        if (!isSupported(account)) {
-            return;
-        }
-
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -229,10 +231,6 @@ public class BlockingManager implements OnAuthorizedListener {
     }
 
     public void unblockContacts(final AccountJid account, final List<UserJid> contacts, final UnblockContactListener listener) {
-        if (!isSupported(account)) {
-            return;
-        }
-
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -268,10 +266,6 @@ public class BlockingManager implements OnAuthorizedListener {
     }
 
     public void unblockAll(final AccountJid account, final UnblockContactListener listener) {
-        if (!isSupported(account)) {
-            return;
-        }
-
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {

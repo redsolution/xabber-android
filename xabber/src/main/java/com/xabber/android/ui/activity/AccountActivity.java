@@ -139,13 +139,32 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
 
         updateBlockListOption();
+
         AccountOption.SERVER_INFO.setDescription(getString(R.string.account_server_info_description));
 
         accountOptionsAdapter.notifyDataSetChanged();
     }
 
     private void updateBlockListOption() {
-        AccountOption.BLOCK_LIST.setDescription(String.valueOf(BlockingManager.getInstance().getBlockedContacts(account).size()));
+        BlockingManager blockingManager = BlockingManager.getInstance();
+
+        Boolean supported = blockingManager.isSupported(account);
+
+        String description;
+        if (supported == null) {
+            description  = getString(R.string.blocked_contacts_unknown);
+        } else if (!supported) {
+            description  = getString(R.string.blocked_contacts_not_supported);
+        } else {
+            int size = blockingManager.getBlockedContacts(account).size();
+            if (size == 0) {
+                description = getString(R.string.blocked_contacts_empty);
+            } else {
+                description = getResources().getQuantityString(R.plurals.blocked_contacts_number, size, size);
+            }
+        }
+
+        AccountOption.BLOCK_LIST.setDescription(description);
         accountOptionsAdapter.notifyItemChanged(AccountOption.BLOCK_LIST.ordinal());
     }
 

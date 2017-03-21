@@ -76,4 +76,14 @@
     <string name="account_connection_settings">Connection settings</string>
     <string name="account_chat_history">Chat history</string>
 
+    <string name="blocked_contacts">Blocked contacts</string>
+    <string name="blocked_contacts_unknown">Blocking support is not determined yet.</string>
+    <string name="blocked_contacts_not_supported">Blocking does not supported by the server.</string>
+    <string name="blocked_contacts_empty">No blocked contacts.</string>
+
+    <plurals name="blocked_contacts_number">
+        <item quantity="one">%d contact blocked.</item>
+        <item quantity="other">%d contacts blocked.</item>
+    </plurals>
+
 </resources>
