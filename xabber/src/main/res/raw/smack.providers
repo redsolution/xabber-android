@@ -23,25 +23,4 @@
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
 
-    <!-- Blocking Command -->
-    <iqProvider>
-        <elementName>blocklist</elementName>
-        <namespace>urn:xmpp:blocking</namespace>
-        <className>com.xabber.xmpp.blocking.BlockListProvider</className>
-    </iqProvider>
-
-    <!-- Blocking Command -->
-    <iqProvider>
-        <elementName>block</elementName>
-        <namespace>urn:xmpp:blocking</namespace>
-        <className>com.xabber.xmpp.blocking.BlockProvider</className>
-    </iqProvider>
-
-    <!-- Blocking Command -->
-    <iqProvider>
-        <elementName>unblock</elementName>
-        <namespace>urn:xmpp:blocking</namespace>
-        <className>com.xabber.xmpp.blocking.UnblockProvider</className>
-    </iqProvider>
-
 </smackProviders>
