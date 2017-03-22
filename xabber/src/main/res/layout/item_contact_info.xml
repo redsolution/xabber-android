@@ -56,6 +56,15 @@
             android:visibility="gone"
             android:textSize="14sp"
             android:id="@+id/contact_info_item_secondary_second_line" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorSecondary"
+            android:singleLine="true"
+            android:text="Mobile"
+            android:visibility="gone"
+            android:textSize="14sp"
+            android:id="@+id/contact_info_item_secondary_third_line" />
     </LinearLayout>
 
     <ImageView

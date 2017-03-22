@@ -308,12 +308,9 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
                 priorityString = getString(R.string.account_priority) + ": " + priorityValue;
             }
 
-            String label = "";
             if (!client.isEmpty()) {
-                label = getString(R.string.contact_viewer_client) + ": " + client + ", ";
+                client = getString(R.string.contact_viewer_client) + ": " + client;
             }
-
-            label += priorityString;
 
             String resource = getString(R.string.account_resource) + ": " + user.getResourceOrNull();
 
@@ -328,11 +325,16 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
             View resourceView = inflater.inflate(R.layout.item_contact_info, xmppItems, false);
 
-            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary)).setText(label);
+            resourceView.findViewById(R.id.contact_info_item_secondary);
+
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary)).setText(client);
             ((TextView)resourceView.findViewById(R.id.contact_info_item_main)).setText(status);
 
             ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary_second_line)).setText(resource);
             resourceView.findViewById(R.id.contact_info_item_secondary_second_line).setVisibility(View.VISIBLE);
+
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary_third_line)).setText(priorityString);
+            resourceView.findViewById(R.id.contact_info_item_secondary_third_line).setVisibility(View.VISIBLE);
 
             ImageView statusIcon = (ImageView) resourceView.findViewById(R.id.contact_info_right_icon);
             statusIcon.setVisibility(View.VISIBLE);
