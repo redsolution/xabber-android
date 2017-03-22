@@ -53,6 +53,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private TextView statusText;
     private AccountOptionsAdapter accountOptionsAdapter;
     private BarPainter barPainter;
+    private SwitchCompat switchCompat;
+    private AccountItem accountItem;
 
     public AccountActivity() {
     }
@@ -78,7 +80,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             return;
         }
 
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        accountItem = AccountManager.getInstance().getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
@@ -100,9 +102,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         toolbar.inflateMenu(R.menu.toolbar_account);
 
         MenuItem item = toolbar.getMenu().findItem(R.id.action_account_switch);
-        SwitchCompat switchCompat = (SwitchCompat) item.getActionView().findViewById(R.id.account_switch_view);
-
-        switchCompat.setChecked(accountItem.isEnabled());
+        switchCompat = (SwitchCompat) item.getActionView().findViewById(R.id.account_switch_view);
 
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -233,6 +233,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         contactTitleView.setBackgroundColor(barPainter.getAccountPainter().getAccountMainColor(account));
         barPainter.updateWithAccountName(account);
+
+        switchCompat.setChecked(accountItem.isEnabled());
     }
 
     @Override
