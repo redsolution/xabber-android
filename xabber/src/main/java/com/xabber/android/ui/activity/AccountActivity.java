@@ -35,12 +35,13 @@ import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.AccountChatHistoryDialog;
 import com.xabber.android.ui.dialog.AccountColorDialog;
+import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
 import java.util.Collection;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
-        OnAccountChangedListener, OnBlockedListChangedListener {
+        OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener {
 
     public static final int ACCOUNT_VIEWER_MENU = R.menu.account_viewer;
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
@@ -132,7 +133,11 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(accountOptionsAdapter);
+        recyclerView.setNestedScrollingEnabled(false);
 
+        getFragmentManager().beginTransaction()
+                .add(R.id.account_fragment_container, ContactVcardViewerFragment.newInstance(account))
+                .commit();
     }
 
     private void updateOptions() {
@@ -273,5 +278,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         if (this.account.equals(account)) {
             updateBlockListOption();
         }
+    }
+
+    @Override
+    public void onVCardReceived() {
+
     }
 }
