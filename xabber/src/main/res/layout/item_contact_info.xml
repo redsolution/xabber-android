@@ -36,7 +36,7 @@
             android:text="(650) 555-1234"
             android:id="@+id/contact_info_item_main"
             android:textIsSelectable="true"
-            android:textSize="@dimen/abc_text_size_medium_material" />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -45,6 +45,7 @@
 
             android:singleLine="true"
             android:text="Mobile"
+            android:textSize="14sp"
             android:id="@+id/contact_info_item_secondary" />
         <TextView
             android:layout_width="wrap_content"
@@ -53,6 +54,7 @@
             android:singleLine="true"
             android:text="Mobile"
             android:visibility="gone"
+            android:textSize="14sp"
             android:id="@+id/contact_info_item_secondary_second_line" />
     </LinearLayout>
 
