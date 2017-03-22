@@ -18,8 +18,6 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.extension.capability.CapabilitiesManager;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
@@ -33,8 +31,10 @@ import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
@@ -45,8 +45,10 @@ import org.jxmpp.jid.EntityBareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -299,5 +301,9 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         } catch (NetworkException e) {
             LogManager.exception(this, e);
         }
+    }
+
+    public static void sortPresencesByPriority(List<Presence> allPresences) {
+        Collections.sort(allPresences, PresenceComparatorByPriority.INSTANCE);
     }
 }

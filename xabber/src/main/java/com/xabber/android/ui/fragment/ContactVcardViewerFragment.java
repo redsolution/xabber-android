@@ -28,6 +28,7 @@ import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -284,6 +285,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
                     .getConnection().getConfiguration().getResource();
         }
 
+        PresenceManager.sortPresencesByPriority(allPresences);
 
         for (Presence presence : allPresences) {
             Jid fromJid = presence.getFrom();
