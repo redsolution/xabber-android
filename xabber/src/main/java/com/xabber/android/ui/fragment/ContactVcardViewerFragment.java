@@ -9,6 +9,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.AccountInfoEditorActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
@@ -64,6 +66,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private boolean vCardError;
     private View progressBar;
     private Listener listener;
+    private Button editButton;
 
     public interface Listener {
         void onVCardReceived();
@@ -144,6 +147,18 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
         progressBar = view.findViewById(R.id.contact_info_progress_bar);
+
+        editButton = (Button) view.findViewById(R.id.contact_info_edit_button);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (vCard != null) {
+                    startActivity(AccountInfoEditorActivity
+                            .createIntent(getActivity(), account, vCard.getChildElementXML().toString()));
+                }
+            }
+        });
+
 
         return view;
     }
@@ -374,6 +389,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void updateVCard() {
         if (vCard == null) {
             return;
+        }
+
+        if (account.getFullJid().asBareJid().equals(user.getBareJid())) {
+            editButton.setVisibility(View.VISIBLE);
         }
 
         contactInfoItems.removeAllViews();

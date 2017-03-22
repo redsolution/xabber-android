@@ -14,19 +14,32 @@
         android:orientation="vertical"
         />
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/contact_info_progress_bar"
-        android:visibility="gone"
-        android:layout_gravity="center_horizontal" />
-
     <LinearLayout
         android:id="@+id/contact_info_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_account_user_info"
+        android:padding="16dp"
+        android:layout_marginLeft="56dp"
+        android:textColor="?colorAccent"
+        android:background="?android:attr/selectableItemBackground"
+        android:visibility="gone"
+        android:id="@+id/contact_info_edit_button"
+        android:layout_marginBottom="16dp"
+        />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_info_progress_bar"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
 
