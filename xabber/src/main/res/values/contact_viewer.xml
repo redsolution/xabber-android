@@ -2,6 +2,7 @@
 <resources>
     <string name="contact_viewer">Contact info</string>
     <string name="contact_viewer_client">Client</string>
+    <string name="contact_viewer_this_device">This device</string>
     <string name="vcard_nick_name">Nickname</string>
     <string name="vcard_formatted_name">Formatted name</string>
     <string name="vcard_prefix_name">Prefix</string>

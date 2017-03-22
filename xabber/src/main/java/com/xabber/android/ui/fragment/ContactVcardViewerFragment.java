@@ -30,6 +30,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;
@@ -40,6 +41,7 @@ import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -274,15 +276,24 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     private void fillResourceList(AccountJid account, Jid bareAddress, List<View> resourcesList) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
 
-        for (Presence presence : allPresences) {
-            Jid user = presence.getFrom();
+        boolean isAccount = account.getFullJid().asBareJid().equals(user.getBareJid());
+        Resourcepart accountResource = null;
+        if (isAccount) {
+            // TODO: probably not the best way to get own resource
+            accountResource = AccountManager.getInstance().getAccount(account)
+                    .getConnection().getConfiguration().getResource();
+        }
 
-            ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(user);
+
+        for (Presence presence : allPresences) {
+            Jid fromJid = presence.getFrom();
+
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(fromJid);
 
             String client = "";
             if (clientInfo == null) {
                 client = getString(R.string.please_wait);
-                CapabilitiesManager.getInstance().requestClientInfoByUser(account, user);
+                CapabilitiesManager.getInstance().requestClientInfoByUser(account, fromJid);
             } else if (clientInfo == ClientInfo.INVALID_CLIENT_INFO) {
                 client = getString(R.string.unknown);
             } else {
@@ -312,7 +323,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
                 client = getString(R.string.contact_viewer_client) + ": " + client;
             }
 
-            String resource = getString(R.string.account_resource) + ": " + user.getResourceOrNull();
+            Resourcepart resourceOrNull = fromJid.getResourceOrNull();
+            String resource = getString(R.string.account_resource) + ": " + resourceOrNull;
 
             final StatusMode statusMode = StatusMode.createStatusMode(presence);
 
@@ -335,6 +347,17 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
             ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary_third_line)).setText(priorityString);
             resourceView.findViewById(R.id.contact_info_item_secondary_third_line).setVisibility(View.VISIBLE);
+
+            if (isAccount &&resourceOrNull != null
+                    && resourceOrNull.equals(accountResource)) {
+                TextView thisDeviceIndicatorTextView
+                        = (TextView) resourceView.findViewById(R.id.contact_info_item_secondary_forth_line);
+
+                thisDeviceIndicatorTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account));
+                thisDeviceIndicatorTextView.setText(R.string.contact_viewer_this_device);
+                thisDeviceIndicatorTextView.setVisibility(View.VISIBLE);
+            }
+
 
             ImageView statusIcon = (ImageView) resourceView.findViewById(R.id.contact_info_right_icon);
             statusIcon.setVisibility(View.VISIBLE);
