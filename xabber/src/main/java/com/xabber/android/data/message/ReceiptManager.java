@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -88,7 +89,12 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
         }
         final Message message = (Message) packet;
         if (message.getType() == Message.Type.error) {
-            markAsError(account, message);
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+                @Override
+                public void run() {
+                    markAsError(account, message);
+                }
+            });
         } else {
             // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
