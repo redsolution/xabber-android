@@ -275,18 +275,34 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         xmppItems.removeAllViews();
 
+        List<View> resourcesList = new ArrayList<>();
+
+        fillResourceList(account, bareAddress.getJid(), resourcesList);
+
+        if (!resourcesList.isEmpty()) {
+            addHeader(xmppItems, getString(R.string.contact_info_connected_clients_header));
+        }
+
+        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp, false);
+
+        addHeader(xmppItems, getString(R.string.contact_info_visiting_card_header));
+
         View jabberIdView = createItemView(xmppItems, getString(R.string.jabber_id),
                 bareAddress.toString(), R.drawable.ic_vcard_xmpp_24dp);
 
         if (jabberIdView != null) {
             xmppItems.addView(jabberIdView);
         }
+    }
 
-        List<View> resourcesList = new ArrayList<>();
+    private void addHeader(LinearLayout rootView, String text) {
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        View contactInfoHeader = inflater.inflate(R.layout.item_contact_info_header, rootView, false);
+        TextView headerView = (TextView) contactInfoHeader.findViewById(R.id.contact_info_header_text_view);
+        headerView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
+        headerView.setText(text);
 
-        fillResourceList(account, bareAddress.getJid(), resourcesList);
-
-        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
+        rootView.addView(contactInfoHeader);
     }
 
     private void fillResourceList(AccountJid account, Jid bareAddress, List<View> resourcesList) {
@@ -516,11 +532,19 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon) {
+        addItemGroup(nameList, itemList, groupIcon, true);
+    }
+
+
+    private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon, boolean addSeparator) {
         if (nameList.isEmpty()) {
             return;
         }
 
-        addSeparator(itemList);
+        if (addSeparator) {
+            addSeparator(itemList);
+        }
+
         ((ImageView) nameList.get(0).findViewById(R.id.contact_info_group_icon)).setImageResource(groupIcon);
 
         for (View view : nameList) {
