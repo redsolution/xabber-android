@@ -51,6 +51,7 @@
     <string name="edit_contact_groups">Edit groups</string>
     <string name="remove_contact">Remove contact</string>
     <string name="edit_account_user_info">Edit user info</string>
+    <string name="edit_vcard">Edit</string>
     <string name="account_user_info_save_success">Account user info saved successfully</string>
     <string name="account_user_info_save_fail">Could not save account user info</string>
     <string name="saving">Saving…</string>

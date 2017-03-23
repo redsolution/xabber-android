@@ -24,9 +24,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/edit_account_user_info"
-        android:padding="16dp"
-        android:layout_marginLeft="56dp"
+        android:text="@string/edit_vcard"
+        android:layout_marginLeft="72dp"
         android:textColor="?colorAccent"
         android:background="?android:attr/selectableItemBackground"
         android:visibility="gone"
