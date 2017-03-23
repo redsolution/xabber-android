@@ -253,6 +253,7 @@
                         android:paddingRight="8dp"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
+
                         android:background="@drawable/ripple_background"
                         />
 
@@ -450,6 +451,7 @@
 
                         android:singleLine="true"
                         android:text="@string/vcard_type_home"
+                        android:layout_marginLeft="4dp"
                         />
 
                     <EditText
@@ -468,6 +470,7 @@
 
                         android:singleLine="true"
                         android:text="@string/vcard_type_work"
+                        android:layout_marginLeft="4dp"
                         />
 
                 </LinearLayout>
@@ -514,6 +517,7 @@
 
                         android:singleLine="true"
                         android:text="@string/vcard_type_home"
+                        android:layout_marginLeft="4dp"
                         />
 
                     <EditText
@@ -532,6 +536,7 @@
 
                         android:singleLine="true"
                         android:text="@string/vcard_type_work"
+                        android:layout_marginLeft="4dp"
                         />
 
                 </LinearLayout>
@@ -633,6 +638,7 @@
 
                         android:singleLine="true"
                         android:text="@string/vcard_type_home"
+                        android:layout_marginLeft="4dp"
                         />
 
 
@@ -707,6 +713,7 @@
                         android:textColor="?android:attr/textColorSecondary"
                         android:singleLine="true"
                         android:text="@string/vcard_type_work"
+                        android:layout_marginLeft="4dp"
                         />
 
                 </LinearLayout>
