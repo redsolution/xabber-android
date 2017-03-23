@@ -29,4 +29,10 @@
     <dimen name="min_chat_image_size">48dp</dimen>
     <dimen name="max_chat_image_size">288dp</dimen>
 
+    <dimen name="vcard_main_text">16sp</dimen>
+    <dimen name="vcard_secondary_text">14sp</dimen>
+
+    <dimen name="vcard_edit_main_text_size">16sp</dimen>
+    <dimen name="vcard_edit_secondary_text_size">14sp</dimen>
+
 </resources>

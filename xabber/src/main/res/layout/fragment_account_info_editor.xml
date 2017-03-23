@@ -52,6 +52,7 @@
                             android:textColor="?android:attr/textColorPrimary"
                             android:paddingLeft="4dp"
                             android:paddingTop="12dp"
+                            android:textSize="@dimen/vcard_edit_main_text_size"
                             />
 
                         <TextView
@@ -62,6 +63,7 @@
                             android:singleLine="true"
                             android:text="@string/jabber_id"
                             android:layout_marginLeft="4dp"
+                            android:textSize="@dimen/vcard_edit_secondary_text_size"
                             />
 
                 </LinearLayout>
@@ -101,6 +103,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_nickname"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -110,6 +113,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_formatted_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
 
@@ -120,6 +124,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_prefix_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -129,6 +134,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_given_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -138,6 +144,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_middle_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
 
@@ -148,6 +155,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_family_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -157,6 +165,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_suffix_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                 </LinearLayout>
@@ -218,6 +227,7 @@
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="173KB"
                             android:visibility="invisible"
+                            android:textSize="@dimen/vcard_edit_secondary_text_size"
                             />
 
                     </LinearLayout>
@@ -259,11 +269,11 @@
                         android:singleLine="true"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         android:paddingLeft="4dp"
                         android:paddingRight="8dp"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-
                         android:background="@drawable/ripple_background"
                         />
 
@@ -313,6 +323,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_title"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -322,6 +333,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_role"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -331,6 +343,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_organization_name"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <EditText
@@ -340,6 +353,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_organization_unit"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
 
@@ -380,6 +394,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_url"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         android:inputType="textUri" />
                 </LinearLayout>
 
@@ -416,6 +431,7 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/vcard_decsription"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                 </LinearLayout>
 
@@ -453,6 +469,7 @@
                         android:id="@+id/vcard_phone_home"
                         android:inputType="phone"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <TextView
                         android:layout_width="wrap_content"
@@ -472,6 +489,7 @@
                         android:id="@+id/vcard_phone_work"
                         android:inputType="phone"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <TextView
                         android:layout_width="wrap_content"
@@ -519,6 +537,7 @@
                         android:id="@+id/vcard_email_home"
                         android:inputType="textEmailAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <TextView
                         android:layout_width="wrap_content"
@@ -538,6 +557,7 @@
                         android:id="@+id/vcard_email_work"
                         android:inputType="textEmailAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <TextView
                         android:layout_width="wrap_content"
@@ -585,6 +605,7 @@
                         android:id="@+id/vcard_address_home_post_office_box"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -594,6 +615,7 @@
                         android:id="@+id/vcard_address_home_post_extended"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -603,6 +625,7 @@
                         android:id="@+id/vcard_address_home_post_street"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -612,6 +635,7 @@
                         android:id="@+id/vcard_address_home_locality"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -621,6 +645,7 @@
                         android:id="@+id/vcard_address_home_region"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -630,6 +655,7 @@
                         android:id="@+id/vcard_address_home_postal_code"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -639,6 +665,7 @@
                         android:id="@+id/vcard_address_home_country"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <TextView
@@ -649,6 +676,7 @@
                         android:singleLine="true"
                         android:text="@string/vcard_type_home"
                         android:layout_marginLeft="4dp"
+                        android:textSize="@dimen/vcard_edit_secondary_text_size"
                         />
 
 
@@ -661,6 +689,7 @@
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
                         android:layout_marginTop="16dp"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -670,6 +699,7 @@
                         android:id="@+id/vcard_address_work_post_extended"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -679,6 +709,7 @@
                         android:id="@+id/vcard_address_work_post_street"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -688,6 +719,7 @@
                         android:id="@+id/vcard_address_work_locality"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -697,6 +729,7 @@
                         android:id="@+id/vcard_address_work_region"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -706,6 +739,7 @@
                         android:id="@+id/vcard_address_work_postal_code"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -715,6 +749,7 @@
                         android:id="@+id/vcard_address_work_country"
                         android:inputType="textPostalAddress"
                         android:singleLine="true"
+                        android:textSize="@dimen/vcard_edit_main_text_size"
                         />
 
                     <TextView
@@ -724,6 +759,7 @@
                         android:singleLine="true"
                         android:text="@string/vcard_type_work"
                         android:layout_marginLeft="4dp"
+                        android:textSize="@dimen/vcard_edit_secondary_text_size"
                         />
 
                 </LinearLayout>

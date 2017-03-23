@@ -36,7 +36,7 @@
             android:text="(650) 555-1234"
             android:id="@+id/contact_info_item_main"
             android:textIsSelectable="true"
-            android:textSize="16sp" />
+            android:textSize="@dimen/vcard_main_text" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
 
             android:singleLine="true"
             android:text="Mobile"
-            android:textSize="14sp"
+            android:textSize="@dimen/vcard_secondary_text"
             android:id="@+id/contact_info_item_secondary" />
 
         <TextView
@@ -55,7 +55,7 @@
             android:singleLine="true"
             android:text="Mobile"
             android:visibility="gone"
-            android:textSize="14sp"
+            android:textSize="@dimen/vcard_secondary_text"
             android:id="@+id/contact_info_item_secondary_second_line" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:singleLine="true"
             android:text="Mobile"
             android:visibility="gone"
-            android:textSize="14sp"
+            android:textSize="@dimen/vcard_secondary_text"
             android:id="@+id/contact_info_item_secondary_third_line" />
 
         <TextView
@@ -75,7 +75,7 @@
             android:singleLine="true"
             android:text="Mobile"
             android:visibility="gone"
-            android:textSize="14sp"
+            android:textSize="@dimen/vcard_secondary_text"
             android:id="@+id/contact_info_item_secondary_forth_line" />
     </LinearLayout>
 
