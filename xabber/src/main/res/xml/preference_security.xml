@@ -13,9 +13,4 @@
         android:entryValues="@array/security_otr_mode_entryvalues"
         android:defaultValue="@string/security_otr_mode_default"
         />
-    <CheckBoxPreference
-        android:title="@string/security_otr_history"
-        android:key="@string/security_otr_history_key"
-        android:defaultValue="@bool/security_otr_history_default"
-        />
 </PreferenceScreen>
