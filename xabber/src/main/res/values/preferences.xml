@@ -387,6 +387,23 @@
 
     <string name="account_archive_mode_default_value">local</string>
 
+    <string name="account_clear_history_on_exit_key">account_clear_history_on_exit</string>
+    <bool name="account_clear_history_on_exit_default_value">false</bool>
+
+    <string name="account_history_mam_key">account_history_mam</string>
+
+    <string-array name="account_history_mam_entries">
+        <item>@string/account_chat_history_always</item>
+        <item>@string/account_chat_history_roster</item>
+        <item>@string/account_chat_history_never</item>
+    </string-array>
+
+    <string-array name="account_history_mam_values">
+        <item>@string/account_chat_history_always</item>
+        <item>@string/account_chat_history_roster</item>
+        <item>@string/account_chat_history_never</item>
+    </string-array>
+
 <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>

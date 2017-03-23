@@ -86,6 +86,8 @@
     </plurals>
 
     <string name="account_chat_history">Chat history</string>
+    <string name="account_history_options_summary">Chat message history storing options</string>
+
     <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
     <string name="account_chat_history_not_supported">Server does not support chat history storing.</string>
 
@@ -93,5 +95,9 @@
     <string name="account_chat_history_roster">Store roster contacts messages on server</string>
     <string name="account_chat_history_never">Do not store any messages on server</string>
 
+    <string name="account_clear_history_on_exit_title">Clear history on exit</string>
+    <string name="account_clear_history_on_exit_summary">Delete all chat messages from device before exiting Xabber.</string>
+
+    <string name="account_history_mam_title">Server history storage</string>
 
 </resources>

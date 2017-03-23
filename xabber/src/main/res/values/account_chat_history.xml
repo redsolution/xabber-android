@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="account_chat_history">
-        <item>@string/account_chat_history_always</item>
-        <item>@string/account_chat_history_roster</item>
-        <item>@string/account_chat_history_never</item>
-    </string-array>
-</resources>
