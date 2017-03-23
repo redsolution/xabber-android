@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -136,9 +136,13 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         recyclerView.setAdapter(accountOptionsAdapter);
         recyclerView.setNestedScrollingEnabled(false);
 
-        getFragmentManager().beginTransaction()
-                .add(R.id.account_fragment_container, ContactVcardViewerFragment.newInstance(account))
-                .commit();
+        Fragment fragmentById = getFragmentManager().findFragmentById(R.id.account_fragment_container);
+
+        if (fragmentById == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.account_fragment_container, ContactVcardViewerFragment.newInstance(account))
+                    .commit();
+        }
     }
 
     private void updateOptions() {
@@ -285,5 +289,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     @Override
     public void onVCardReceived() {
+        updateTitle();
     }
 }

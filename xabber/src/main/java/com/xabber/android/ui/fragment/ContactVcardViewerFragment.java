@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -58,6 +59,9 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static final String ARGUMENT_USER = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_USER";
     private static final String SAVED_VCARD = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD";
     private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
+    private static final String LOG_TAG = ContactVcardViewerFragment.class.getSimpleName();
+    public static final int REQUEST_CODE_EDIT_VCARD = 1;
+
     AccountJid account;
     UserJid user;
     private LinearLayout xmppItems;
@@ -153,8 +157,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             @Override
             public void onClick(View v) {
                 if (vCard != null) {
-                    startActivity(AccountInfoEditorActivity
-                            .createIntent(getActivity(), account, vCard.getChildElementXML().toString()));
+                    Intent intent = AccountInfoEditorActivity.createIntent(getActivity(), account,
+                            vCard.getChildElementXML().toString());
+
+                    startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
                 }
             }
         });
@@ -591,4 +597,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return vCard;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_EDIT_VCARD
+                && resultCode == Activity.RESULT_OK) {
+            requestVCard();
+        }
+
+    }
 }

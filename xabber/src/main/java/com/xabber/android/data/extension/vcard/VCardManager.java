@@ -227,10 +227,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             }
             name = EMPTY_STRUCTURED_NAME;
         } else {
-            for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
-                listener.onVCardReceived(account, bareAddress, vCard);
-            }
-
             try {
                 String hash = vCard.getAvatarHash();
                 byte[] avatar = vCard.getAvatar();
@@ -275,6 +271,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }
+        }
+
+        for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
+            listener.onVCardReceived(account, bareAddress, vCard);
         }
     }
 
