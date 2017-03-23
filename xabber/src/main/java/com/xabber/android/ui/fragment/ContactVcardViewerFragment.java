@@ -386,7 +386,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
                 TextView thisDeviceIndicatorTextView
                         = (TextView) resourceView.findViewById(R.id.contact_info_item_secondary_forth_line);
 
-                thisDeviceIndicatorTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account));
+                thisDeviceIndicatorTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
                 thisDeviceIndicatorTextView.setText(R.string.contact_viewer_this_device);
                 thisDeviceIndicatorTextView.setVisibility(View.VISIBLE);
             }
