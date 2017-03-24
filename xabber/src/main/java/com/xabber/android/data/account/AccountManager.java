@@ -23,6 +23,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
@@ -814,8 +815,12 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
 
     public void setMamDefaultBehaviour(AccountJid accountJid, MamPrefsIQ.DefaultBehavior mamDefaultBehavior) {
         AccountItem accountItem = getAccount(accountJid);
-        accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
-        requestToWriteAccount(accountItem);
+
+        if (!accountItem.getMamDefaultBehaviour().equals(mamDefaultBehavior)) {
+            accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
+            requestToWriteAccount(accountItem);
+            MamManager.getInstance().requestUpdatePreferences(accountJid);
+        }
     }
 
     /**

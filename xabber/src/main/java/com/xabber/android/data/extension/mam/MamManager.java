@@ -47,6 +47,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class MamManager implements OnAuthorizedListener, OnRosterReceivedListener {
+    static final String LOG_TAG = MamManager.class.getSimpleName();
     private static MamManager instance;
     public static final int SYNC_INTERVAL_MINUTES = 5;
 
@@ -141,6 +142,28 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
 
         AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
         return isSupported;
+    }
+
+    public void requestUpdatePreferences(final AccountJid accountJid) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager
+                        .getInstanceFor(accountItem.getConnection());
+
+                try {
+                    org.jivesoftware.smackx.mam.MamManager.MamPrefsResult result
+                            = mamManager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
+                    LogManager.i(LOG_TAG, "MAM default behavior updated to " + result.mamPrefs.getDefault());
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | InterruptedException | SmackException.NotConnectedException
+                        | SmackException.NotLoggedInException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
+
+            }
+        });
     }
 
     public void requestLastHistoryByUser(final AbstractChat chat) {
