@@ -125,7 +125,8 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
             if (isSupported) {
                 org.jivesoftware.smackx.mam.MamManager.MamPrefsResult archivingPreferences = mamManager.retrieveArchivingPreferences();
                 LogManager.i(this, "archivingPreferences default behaviour " + archivingPreferences.mamPrefs.getDefault());
-                org.jivesoftware.smackx.mam.MamManager.MamPrefsResult result = mamManager.updateArchivingPreferences(null, null, MamPrefsIQ.DefaultBehavior.always);
+                org.jivesoftware.smackx.mam.MamManager.MamPrefsResult result
+                        = mamManager.updateArchivingPreferences(null, null, accountItem.getMamDefaultBehaviour());
                 LogManager.i(this, "updateArchivingPreferences result " + result.toString());
             }
 

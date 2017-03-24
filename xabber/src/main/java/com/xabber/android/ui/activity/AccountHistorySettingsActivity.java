@@ -8,19 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.xabber.android.R;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.preferences.AccountHistorySettingsFragment;
 
 public class AccountHistorySettingsActivity extends ManagedActivity {
-
-
-    private AccountJid account;
-    private Toolbar toolbar;
-    private BarPainter barPainter;
 
     private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
@@ -37,9 +30,9 @@ public class AccountHistorySettingsActivity extends ManagedActivity {
         setContentView(R.layout.activity_account_history_settings);
 
 
-        account = getAccount(getIntent());
+        AccountJid account = getAccount(getIntent());
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setTitle(R.string.account_chat_history);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -49,13 +42,14 @@ public class AccountHistorySettingsActivity extends ManagedActivity {
             }
         });
 
-        barPainter = new BarPainter(this, toolbar);
+        BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.account_history_settings_fragment, new AccountHistorySettingsFragment())
+                    .add(R.id.account_history_settings_fragment,
+                            AccountHistorySettingsFragment.newInstance(account))
                     .commit();
         }
 

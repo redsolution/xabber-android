@@ -390,18 +390,18 @@
     <string name="account_clear_history_on_exit_key">account_clear_history_on_exit</string>
     <bool name="account_clear_history_on_exit_default_value">false</bool>
 
-    <string name="account_history_mam_key">account_history_mam</string>
+    <string name="account_mam_default_behavior_key">account_mam_default_behavior</string>
 
-    <string-array name="account_history_mam_entries">
-        <item>@string/account_chat_history_always</item>
-        <item>@string/account_chat_history_roster</item>
-        <item>@string/account_chat_history_never</item>
+    <string-array name="account_mam_default_behavior_entries">
+        <item>@string/account_mam_default_behavior_always</item>
+        <item>@string/account_mam_default_behavior_never</item>
+        <item>@string/account_mam_default_behavior_roster</item>
     </string-array>
 
-    <string-array name="account_history_mam_values">
-        <item>@string/account_chat_history_always</item>
-        <item>@string/account_chat_history_roster</item>
-        <item>@string/account_chat_history_never</item>
+    <string-array name="account_mam_default_behavior_values">
+        <item>@string/account_mam_default_behavior_always</item>
+        <item>@string/account_mam_default_behavior_never</item>
+        <item>@string/account_mam_default_behavior_roster</item>
     </string-array>
 
 <!-- preference_security -->

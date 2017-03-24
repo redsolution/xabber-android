@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.account;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.R;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
@@ -24,6 +26,7 @@ import com.xabber.android.data.connection.TLSMode;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -82,6 +85,17 @@ public class AccountItem extends ConnectionItem {
 
     private ArchiveMode archiveMode;
 
+    /**
+     * Delete all chat messages for account before explicit app exiting
+     */
+    private boolean clearHistoryOnExit;
+
+    /**
+     * Default behavior of Message Archive Management
+     * https://xmpp.org/extensions/xep-0313.html
+     */
+    private MamPrefsIQ.DefaultBehavior mamDefaultBehaviour;
+
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, int colorIndex,
@@ -106,6 +120,8 @@ public class AccountItem extends ConnectionItem {
         this.keyPair = keyPair;
         this.lastSync = lastSync;
         this.archiveMode = archiveMode;
+        this.clearHistoryOnExit = false;
+        this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
     }
 
     /**
@@ -337,5 +353,21 @@ public class AccountItem extends ConnectionItem {
     @Override
     public String toString() {
         return super.toString() + ":" + getAccount();
+    }
+
+    public boolean isClearHistoryOnExit() {
+        return clearHistoryOnExit;
+    }
+
+    void setClearHistoryOnExit(boolean clearHistoryOnExit) {
+        this.clearHistoryOnExit = clearHistoryOnExit;
+    }
+
+    public MamPrefsIQ.DefaultBehavior getMamDefaultBehaviour() {
+        return mamDefaultBehaviour;
+    }
+
+    void setMamDefaultBehaviour(@NonNull MamPrefsIQ.DefaultBehavior mamDefaultBehaviour) {
+        this.mamDefaultBehaviour = mamDefaultBehaviour;
     }
 }

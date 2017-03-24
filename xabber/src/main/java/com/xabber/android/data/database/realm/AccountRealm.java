@@ -1,9 +1,13 @@
 package com.xabber.android.data.database.realm;
 
+import android.support.annotation.Nullable;
+
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+
+import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -26,6 +30,8 @@ public class AccountRealm extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
+        public static final String CLEAR_HISTORY_ON_EXIT = "clearHistoryOnExit";
+        public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
     }
 
     @PrimaryKey
@@ -67,6 +73,9 @@ public class AccountRealm extends RealmObject {
 
     private long lastSync;
     private String archiveMode;
+
+    private boolean clearHistoryOnExit;
+    private String mamDefaultBehavior;
 
     public AccountRealm(String id) {
         this.id = id;
@@ -309,4 +318,24 @@ public class AccountRealm extends RealmObject {
         this.archiveMode = archiveMode.name();
     }
 
+    public boolean isClearHistoryOnExit() {
+        return clearHistoryOnExit;
+    }
+
+    public void setClearHistoryOnExit(boolean clearHistoryOnExit) {
+        this.clearHistoryOnExit = clearHistoryOnExit;
+    }
+
+    @Nullable
+    public MamPrefsIQ.DefaultBehavior getMamDefaultBehavior() {
+        if (mamDefaultBehavior == null) {
+            return null;
+        }
+        
+        return MamPrefsIQ.DefaultBehavior.valueOf(mamDefaultBehavior);
+    }
+
+    public void setMamDefaultBehavior(MamPrefsIQ.DefaultBehavior mamDefaultBehavior) {
+        this.mamDefaultBehavior = mamDefaultBehavior.name();
+    }
 }

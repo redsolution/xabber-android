@@ -51,6 +51,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 
 import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.DomainBareJid;
 import org.jxmpp.jid.impl.JidCreate;
@@ -193,6 +194,10 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
                     accountRealm.getLastSync(),
                     accountRealm.getArchiveMode());
             accountItem.setId(accountRealm.getId());
+            accountItem.setClearHistoryOnExit(accountRealm.isClearHistoryOnExit());
+            if (accountRealm.getMamDefaultBehavior() != null) {
+                accountItem.setMamDefaultBehaviour(accountRealm.getMamDefaultBehavior());
+            }
             accountItems.add(accountItem);
 
         }
@@ -798,6 +803,18 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
     public void setColor(AccountJid accountJid, int colorIndex) {
         AccountItem accountItem = getAccount(accountJid);
         accountItem.setColorIndex(colorIndex);
+        requestToWriteAccount(accountItem);
+    }
+
+    public void setClearHistoryOnExit(AccountJid accountJid, boolean clearHistoryOnExit) {
+        AccountItem accountItem = getAccount(accountJid);
+        accountItem.setClearHistoryOnExit(clearHistoryOnExit);
+        requestToWriteAccount(accountItem);
+    }
+
+    public void setMamDefaultBehaviour(AccountJid accountJid, MamPrefsIQ.DefaultBehavior mamDefaultBehavior) {
+        AccountItem accountItem = getAccount(accountJid);
+        accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
         requestToWriteAccount(accountItem);
     }
 
