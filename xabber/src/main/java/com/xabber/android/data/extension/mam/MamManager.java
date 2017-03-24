@@ -32,7 +32,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
-import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,7 +73,8 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         }
         final AccountItem accountItem = (AccountItem) connection;
 
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(
+                new Runnable() {
             @Override
             public void run() {
                 updateIsSupported(accountItem);
