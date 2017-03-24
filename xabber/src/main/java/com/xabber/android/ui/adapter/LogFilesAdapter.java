@@ -25,6 +25,10 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 
     public void setFiles(File[] files) {
+        if (files == null) {
+            return;
+        }
+
         this.files = files;
         Arrays.sort(files, Collections.reverseOrder());
         notifyDataSetChanged();
