@@ -13,6 +13,7 @@ class AccountOptionViewHolder extends RecyclerView.ViewHolder implements View.On
     ImageView icon;
     TextView title;
     TextView description;
+    View separator;
 
     AccountOptionViewHolder(View itemView, AccountOptionClickListener listener) {
         super(itemView);
@@ -22,6 +23,7 @@ class AccountOptionViewHolder extends RecyclerView.ViewHolder implements View.On
         icon = (ImageView) itemView.findViewById(R.id.account_option_icon);
         title = (TextView) itemView.findViewById(R.id.account_option_title);
         description = (TextView) itemView.findViewById(R.id.account_option_description);
+        separator = itemView.findViewById(R.id.account_option_separator);
 
         itemView.setOnClickListener(this);
     }

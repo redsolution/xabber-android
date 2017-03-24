@@ -38,6 +38,12 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
         holder.icon.setImageResource(accountOption.getIconId());
         holder.title.setText(accountOption.getTitleId());
         holder.description.setText(accountOption.getDescription());
+
+        if (position == 0) {
+            holder.separator.setVisibility(View.GONE);
+        } else {
+            holder.separator.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

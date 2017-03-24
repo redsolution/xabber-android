@@ -15,6 +15,14 @@
         android:src="@drawable/ic_settings_grey600_24dp"
         />
 
+    <View
+        android:id="@+id/account_option_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_toRightOf="@id/account_option_icon"
+        android:background="@color/grey_700"
+        />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,14 +49,6 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:textSize="14sp"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_toRightOf="@id/account_option_icon"
-        android:layout_below="@id/account_option_description"
-        android:background="@color/grey_700"
         />
 
 </RelativeLayout>
