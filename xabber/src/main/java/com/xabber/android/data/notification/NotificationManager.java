@@ -566,7 +566,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                NotificationTable.getInstance().removeAccount(account.toString());
+                NotificationTable.getInstance().removeAccount(account);
             }
         });
     }

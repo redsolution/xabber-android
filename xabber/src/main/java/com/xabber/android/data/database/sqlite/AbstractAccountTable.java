@@ -16,6 +16,7 @@ package com.xabber.android.data.database.sqlite;
 
 
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.entity.AccountJid;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,10 +40,10 @@ public abstract class AbstractAccountTable extends AbstractTable {
      *
      * @param account
      */
-    public void removeAccount(String account) {
+    public void removeAccount(AccountJid account) {
         SQLiteDatabase db = DatabaseManager.getInstance().getWritableDatabase();
         db.delete(getTableName(), Fields.ACCOUNT + " = ?",
-                new String[]{account});
+                new String[]{account.toString()});
     }
 
     public static String getAccount(Cursor cursor) {

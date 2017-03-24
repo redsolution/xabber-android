@@ -21,6 +21,8 @@ import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.OnUnloadListener;
+import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
 import com.xabber.android.data.extension.mam.MamManager;
@@ -84,7 +86,7 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class AccountManager implements OnLoadListener, OnWipeListener {
+public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeListener {
 
     private static final String LOG_TAG = AccountManager.class.getSimpleName();
 
@@ -422,7 +424,7 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                AccountTable.getInstance().remove(account.toString(), accountItem.getId());
+                AccountTable.getInstance().remove(account, accountItem.getId());
             }
         });
 
@@ -1004,4 +1006,18 @@ public class AccountManager implements OnLoadListener, OnWipeListener {
         AccountTable.getInstance().wipe();
     }
 
+    @Override
+    public void onUnload() {
+        removeHistoryOnExit();
+    }
+
+    private void removeHistoryOnExit() {
+        Collection<AccountItem> allAccountItems = AccountManager.getInstance().getAllAccountItems();
+        for (AccountItem accountItem : allAccountItems) {
+            if (accountItem.isClearHistoryOnExit()) {
+                LogManager.i(LOG_TAG, "Removing all history for account " + accountItem.getAccount());
+                MessageDatabaseManager.getInstance().removeAccountMessages(accountItem.getAccount());
+            }
+        }
+    }
 }

@@ -112,13 +112,18 @@ public class MessageDatabaseManager {
         realm.close();
     }
 
-    void removeAccount(final String account) {
+    public void removeAccountMessages(final AccountJid account) {
         Realm realm = getNewBackgroundRealm();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
                 realm.where(MessageItem.class)
-                        .equalTo(MessageItem.Fields.ACCOUNT, account)
+                        .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                        .findAll()
+                        .deleteAllFromRealm();
+
+                realm.where(SyncInfo.class)
+                        .equalTo(SyncInfo.FIELD_ACCOUNT, account.toString())
                         .findAll()
                         .deleteAllFromRealm();
             }

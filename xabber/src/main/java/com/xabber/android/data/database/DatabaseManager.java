@@ -41,6 +41,7 @@ import com.xabber.android.data.database.sqlite.StatusTable;
 import com.xabber.android.data.database.sqlite.Suppress100Table;
 import com.xabber.android.data.database.sqlite.VCardTable;
 import com.xabber.android.data.database.sqlite.VibroTable;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
 import java.io.File;
@@ -268,7 +269,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
         RealmManager.getInstance().deleteRealm();
     }
 
-    public void removeAccount(final String account) {
+    public void removeAccount(final AccountJid account) {
         // TODO: replace with constraint.
         for (DatabaseTable table : registeredTables) {
             if (table instanceof AbstractAccountTable) {
@@ -276,7 +277,7 @@ public class DatabaseManager extends SQLiteOpenHelper implements
             }
         }
 
-        MessageDatabaseManager.getInstance().removeAccount(account);
+        MessageDatabaseManager.getInstance().removeAccountMessages(account);
     }
 
 }
