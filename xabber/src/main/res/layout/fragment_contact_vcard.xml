@@ -25,11 +25,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/edit_vcard"
-        android:layout_marginLeft="72dp"
         android:textColor="?colorAccent"
         android:background="?android:attr/selectableItemBackground"
         android:visibility="gone"
         android:id="@+id/contact_info_edit_button"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
         />
 
