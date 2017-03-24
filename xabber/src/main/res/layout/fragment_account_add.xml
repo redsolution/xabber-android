@@ -79,6 +79,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:checked="false"
+            android:visibility="gone"
             android:text="@string/account_register" />
 
         <LinearLayout
