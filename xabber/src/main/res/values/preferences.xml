@@ -404,7 +404,21 @@
         <item>@string/account_mam_default_behavior_roster</item>
     </string-array>
 
-<!-- preference_security -->
+    <string name="account_mam_sync_key">account_mam_sync</string>
+
+    <string-array name="account_mam_sync_entries">
+        <item>@string/account_mam_sync_all</item>
+        <item>@string/account_mam_sync_current</item>
+        <item>@string/account_mam_sync_none</item>
+    </string-array>
+
+    <string-array name="account_mam_sync_values">
+        <item>@string/account_mam_sync_all</item>
+        <item>@string/account_mam_sync_current</item>
+        <item>@string/account_mam_sync_none</item>
+    </string-array>
+
+    <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>
 

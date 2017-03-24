@@ -23,6 +23,7 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
@@ -96,6 +97,12 @@ public class AccountItem extends ConnectionItem {
      */
     private MamPrefsIQ.DefaultBehavior mamDefaultBehaviour;
 
+    /**
+     * Options for loading history from MAM
+     * https://xmpp.org/extensions/xep-0313.html
+     */
+    private LoadHistorySettings loadHistorySettings;
+
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, int colorIndex,
@@ -122,6 +129,7 @@ public class AccountItem extends ConnectionItem {
         this.archiveMode = archiveMode;
         this.clearHistoryOnExit = false;
         this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
+        this.loadHistorySettings = LoadHistorySettings.all;
     }
 
     /**
@@ -369,5 +377,13 @@ public class AccountItem extends ConnectionItem {
 
     void setMamDefaultBehaviour(@NonNull MamPrefsIQ.DefaultBehavior mamDefaultBehaviour) {
         this.mamDefaultBehaviour = mamDefaultBehaviour;
+    }
+
+    public LoadHistorySettings getLoadHistorySettings() {
+        return loadHistorySettings;
+    }
+
+    public void setLoadHistorySettings(LoadHistorySettings loadHistorySettings) {
+        this.loadHistorySettings = loadHistorySettings;
     }
 }

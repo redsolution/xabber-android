@@ -12,6 +12,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.MamManager;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -49,7 +50,6 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
         Preference mamPreference = findPreference(getString(R.string.account_mam_default_behavior_key));
 
         setUpMamPreference(mamPreference, null);
-
     }
 
     private void setUpMamPreference(Preference mamPreference, @Nullable String newSummary) {
@@ -92,6 +92,10 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
             setUpMamPreference(preference, (String) newValue);
         }
 
+        if (getString(R.string.account_mam_sync_key).equals(key)) {
+            preference.setSummary((String)newValue);
+        }
+
         return true;
     }
 
@@ -106,6 +110,8 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
         // order of enum fields is very important!
         putValue(source, R.string.account_mam_default_behavior_key, accountItem.getMamDefaultBehaviour().ordinal());
 
+        putValue(source, R.string.account_mam_sync_key, accountItem.getLoadHistorySettings().ordinal());
+
         return source;
     }
 
@@ -114,8 +120,13 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
         AccountManager.getInstance().setClearHistoryOnExit(account, getBoolean(result, R.string.account_clear_history_on_exit_key));
 
         // order of enum fields and value array is very important
-        int index = getInt(result, R.string.account_mam_default_behavior_key);
-        AccountManager.getInstance().setMamDefaultBehaviour(account, MamPrefsIQ.DefaultBehavior.values()[index]);
+        int mamBehaviorIndex = getInt(result, R.string.account_mam_default_behavior_key);
+        AccountManager.getInstance()
+                .setMamDefaultBehaviour(account, MamPrefsIQ.DefaultBehavior.values()[mamBehaviorIndex]);
+
+        int loadHistoryIndex = getInt(result, R.string.account_mam_sync_key);
+        AccountManager.getInstance()
+                .setLoadHistorySettings(account, LoadHistorySettings.values()[loadHistoryIndex]);
         return true;
     }
 

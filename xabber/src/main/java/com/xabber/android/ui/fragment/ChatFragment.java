@@ -37,6 +37,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
 import com.xabber.android.data.entity.AccountJid;
@@ -49,6 +50,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.httpfileupload.HttpUploadListener;
 import com.xabber.android.data.extension.mam.LastHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.LastHistoryLoadStartedEvent;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadFinishedEvent;
 import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
@@ -302,10 +304,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         super.onStart();
         EventBus.getDefault().register(this);
 
-        if (!isRemoteHistoryRequested) {
-            MamManager.getInstance().requestLastHistoryByUser(getChat());
-        }
+        LoadHistorySettings loadHistorySettings = AccountManager.getInstance().getAccount(account).getLoadHistorySettings();
 
+        if (loadHistorySettings == LoadHistorySettings.all || loadHistorySettings == LoadHistorySettings.current) {
+            if (!isRemoteHistoryRequested) {
+                MamManager.getInstance().requestLastHistoryByUser(getChat());
+            }
+        }
     }
 
     @Override
@@ -527,6 +532,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void loadHistoryIfNeeded() {
+        LoadHistorySettings loadHistorySettings = AccountManager.getInstance()
+                .getAccount(account).getLoadHistorySettings();
+
+        if (loadHistorySettings != LoadHistorySettings.current
+                && loadHistorySettings != LoadHistorySettings.all) {
+            return;
+        }
+
         if (isRemoteHistoryRequested) {
             return;
         }

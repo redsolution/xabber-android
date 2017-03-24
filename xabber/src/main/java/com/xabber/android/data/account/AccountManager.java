@@ -25,6 +25,7 @@ import com.xabber.android.data.OnUnloadListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.RealmManager;
 import com.xabber.android.data.database.realm.AccountRealm;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
 import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
@@ -201,6 +202,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             if (accountRealm.getMamDefaultBehavior() != null) {
                 accountItem.setMamDefaultBehaviour(accountRealm.getMamDefaultBehavior());
             }
+            if (accountRealm.getLoadHistorySettings() != null) {
+                accountItem.setLoadHistorySettings(accountRealm.getLoadHistorySettings());
+            }
+
             accountItems.add(accountItem);
 
         }
@@ -822,6 +827,16 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
             requestToWriteAccount(accountItem);
             MamManager.getInstance().requestUpdatePreferences(accountJid);
+        }
+    }
+
+    public void setLoadHistorySettings(AccountJid accountJid, LoadHistorySettings loadHistorySettings) {
+        AccountItem accountItem = getAccount(accountJid);
+
+        if (!accountItem.getLoadHistorySettings().equals(loadHistorySettings)) {
+            accountItem.setLoadHistorySettings(loadHistorySettings);
+            requestToWriteAccount(accountItem);
+            // TODO request history if needed
         }
     }
 

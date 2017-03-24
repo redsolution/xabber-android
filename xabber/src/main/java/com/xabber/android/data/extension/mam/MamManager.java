@@ -90,6 +90,10 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (accountItem.getLoadHistorySettings() != LoadHistorySettings.all) {
+                    return;
+                }
+
                 Collection<RosterContact> contacts = RosterManager.getInstance()
                         .getAccountRosterContacts(accountItem.getAccount());
                 for (RosterContact contact : contacts) {
@@ -253,8 +257,8 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         realm.close();
     }
 
-    public int requestLastHistoryPage(org.jivesoftware.smackx.mam.MamManager mamManager,
-                                      AbstractChat chat, String lastMessageMamId) {
+    private int requestLastHistoryPage(org.jivesoftware.smackx.mam.MamManager mamManager,
+                                       AbstractChat chat, String lastMessageMamId) {
         final org.jivesoftware.smackx.mam.MamManager.MamQueryResult mamQueryResult;
         try {
             if (lastMessageMamId == null) {
@@ -282,7 +286,7 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         return receivedMessagesCount;
     }
 
-    public void syncMessages(Realm realm, AbstractChat chat, final Collection<MessageItem> messagesFromServer) {
+    private void syncMessages(Realm realm, AbstractChat chat, final Collection<MessageItem> messagesFromServer) {
 
         if (messagesFromServer == null || messagesFromServer.isEmpty()) {
             return;

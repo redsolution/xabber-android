@@ -6,6 +6,7 @@ import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
 
@@ -32,6 +33,7 @@ public class AccountRealm extends RealmObject {
         public static final String ID = "id";
         public static final String CLEAR_HISTORY_ON_EXIT = "clearHistoryOnExit";
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
+        public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
     }
 
     @PrimaryKey
@@ -76,6 +78,7 @@ public class AccountRealm extends RealmObject {
 
     private boolean clearHistoryOnExit;
     private String mamDefaultBehavior;
+    private String loadHistorySettings;
 
     public AccountRealm(String id) {
         this.id = id;
@@ -331,11 +334,24 @@ public class AccountRealm extends RealmObject {
         if (mamDefaultBehavior == null) {
             return null;
         }
-        
+
         return MamPrefsIQ.DefaultBehavior.valueOf(mamDefaultBehavior);
     }
 
     public void setMamDefaultBehavior(MamPrefsIQ.DefaultBehavior mamDefaultBehavior) {
-        this.mamDefaultBehavior = mamDefaultBehavior.name();
+        this.mamDefaultBehavior = mamDefaultBehavior.toString();
+    }
+
+    @Nullable
+    public LoadHistorySettings getLoadHistorySettings() {
+        if (loadHistorySettings == null) {
+            return null;
+        }
+
+        return LoadHistorySettings.valueOf(loadHistorySettings);
+    }
+
+    public void setLoadHistorySettings(LoadHistorySettings loadHistorySettings) {
+        this.loadHistorySettings = loadHistorySettings.toString();
     }
 }

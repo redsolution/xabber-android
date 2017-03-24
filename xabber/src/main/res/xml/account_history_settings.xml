@@ -15,4 +15,11 @@
         android:entryValues="@array/account_mam_default_behavior_values"
         />
 
+    <ListPreference
+        android:title="@string/account_mam_sync_title"
+        android:key="@string/account_mam_sync_key"
+        android:entries="@array/account_mam_sync_entries"
+        android:entryValues="@array/account_mam_sync_values"
+        />
+
 </PreferenceScreen>
