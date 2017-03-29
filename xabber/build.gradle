@@ -84,7 +84,7 @@ android {
 }
 
 ext {
-    smackVersion = '4.2.0'
+    smackVersion = '4.2.1-SNAPSHOT'
     supportVersion = '25.3.0'
 }
 
