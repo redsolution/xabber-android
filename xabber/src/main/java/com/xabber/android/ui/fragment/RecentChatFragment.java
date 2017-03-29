@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.message.AbstractChat;
@@ -125,7 +126,9 @@ public class RecentChatFragment extends Fragment implements ChatListAdapter.List
                     MessageItem lastMessage = abstractChat.getLastMessage();
 
                     if (lastMessage != null && !TextUtils.isEmpty(lastMessage.getText())) {
-                        recentChats.add(abstractChat);
+                        if (AccountManager.getInstance().getAccount(abstractChat.getAccount()).isEnabled()) {
+                            recentChats.add(abstractChat);
+                        }
                     }
                 }
 
