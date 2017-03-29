@@ -574,11 +574,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void closeAllChats() {
-        for (AbstractChat chat : MessageManager.getInstance().getActiveChats()) {
-            MessageManager.getInstance().closeChat(chat.getAccount(), chat.getUser());
-            NotificationManager.getInstance().
-                    removeMessageNotification(chat.getAccount(), chat.getUser());
-        }
+        MessageManager.closeActiveChats();
         getContactListFragment().getAdapter().onChange();
     }
 
