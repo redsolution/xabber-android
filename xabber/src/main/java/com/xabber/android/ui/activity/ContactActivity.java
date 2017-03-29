@@ -120,7 +120,7 @@ public class ContactActivity extends ManagedActivity implements
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(ContactActivity.this);
+                finish();
             }
         });
 
