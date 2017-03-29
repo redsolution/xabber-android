@@ -34,7 +34,7 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
 
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         if (rosterContact != null) {
-            toolbar.inflateMenu(R.menu.contact_viewer);
+            toolbar.inflateMenu(R.menu.toolbar_contact);
             toolbar.setOnMenuItemClickListener(this);
             toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         }
@@ -44,7 +44,7 @@ public class ContactEditActivity extends ContactActivity implements Toolbar.OnMe
     public boolean onCreateOptionsMenu(Menu menu) {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
         if (rosterContact != null) {
-            getMenuInflater().inflate(R.menu.contact_viewer, menu);
+            getMenuInflater().inflate(R.menu.toolbar_contact, menu);
         }
 
         return true;

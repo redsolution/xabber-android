@@ -63,7 +63,7 @@ public class ConferenceAddActivity extends ManagedActivity implements Toolbar.On
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        toolbar.inflateMenu(R.menu.add_conference);
+        toolbar.inflateMenu(R.menu.toolbar_add_conference);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

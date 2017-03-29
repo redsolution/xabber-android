@@ -23,7 +23,7 @@ public class PhraseAdder extends BasePhrasePreferences {
         super.onCreate(savedInstanceState);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, getString(R.string.phrase_add), R.drawable.ic_clear_white_24dp);
-        toolbar.inflateMenu(R.menu.save);
+        toolbar.inflateMenu(R.menu.toolbar_save);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -38,7 +38,7 @@ public class PhraseAdder extends BasePhrasePreferences {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.save, menu);
+        getMenuInflater().inflate(R.menu.toolbar_save, menu);
         return true;
     }
 

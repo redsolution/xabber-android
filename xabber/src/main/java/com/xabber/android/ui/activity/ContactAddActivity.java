@@ -62,7 +62,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
         setContentView(R.layout.activity_with_toolbar_and_container);
 
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, null, R.drawable.ic_clear_white_24dp);
-        toolbar.inflateMenu(R.menu.add_contact);
+        toolbar.inflateMenu(R.menu.toolbar_add_contact);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -91,7 +91,7 @@ public class ContactAddActivity extends ManagedActivity implements ContactAddFra
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
-        inflater.inflate(R.menu.add_contact, menu);
+        inflater.inflate(R.menu.toolbar_add_contact, menu);
 
         return true;
     }

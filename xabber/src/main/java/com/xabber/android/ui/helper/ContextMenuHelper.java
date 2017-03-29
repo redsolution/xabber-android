@@ -72,7 +72,7 @@ public class ContextMenuHelper {
         final UserJid user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
-        inflater.inflate(R.menu.contact_list_contact_context_menu, menu);
+        inflater.inflate(R.menu.item_contact, menu);
 
         setContactContextMenuActions(activity, adapter, menu, account, user);
         setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
@@ -321,7 +321,7 @@ public class ContextMenuHelper {
 
     public static void createAccountContextMenu( final ManagedActivity activity, final UpdatableAdapter adapter,
                                                  final AccountJid account, ContextMenu menu) {
-        activity.getMenuInflater().inflate(R.menu.account, menu);
+        activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
 
         setUpAccountMenu(activity, adapter, account, menu);

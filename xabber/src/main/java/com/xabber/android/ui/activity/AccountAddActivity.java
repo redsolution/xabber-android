@@ -59,7 +59,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
                 finish();
             }
         });
-        toolbar.inflateMenu(R.menu.add_account);
+        toolbar.inflateMenu(R.menu.toolbar_add_account);
         toolbar.getMenu().findItem(R.id.action_add_account).setIcon(null);
         toolbar.setOnMenuItemClickListener(this);
 
@@ -70,7 +70,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater=getMenuInflater();
-        inflater.inflate(R.menu.add_account, menu);
+        inflater.inflate(R.menu.toolbar_add_account, menu);
         menu.findItem(R.id.action_add_account).setIcon(null);
 
         return true;

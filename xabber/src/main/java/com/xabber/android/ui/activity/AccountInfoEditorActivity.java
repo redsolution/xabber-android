@@ -21,7 +21,7 @@ import com.xabber.android.ui.fragment.AccountInfoEditorFragment;
 public class AccountInfoEditorActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditorFragment.Listener {
 
     public static final String ARG_VCARD = "com.xabber.android.ui.activity.AccountInfoEditor.ARG_VCARD";
-    public static final int SAVE_MENU = R.menu.save;
+    public static final int SAVE_MENU = R.menu.toolbar_save;
     public static final String ARGUMENT_SAVE_BUTTON_ENABLED = "com.xabber.android.ui.activity.AccountInfoEditor.ARGUMENT_SAVE_BUTTON_ENABLED";
 
     private Toolbar toolbar;

@@ -193,7 +193,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.application_title_short, R.string.application_title_short);
         drawerLayout.setDrawerListener(drawerToggle);
 
-        toolbar.inflateMenu(R.menu.contact_list);
+        toolbar.inflateMenu(R.menu.toolbar_contact_list);
         optionsMenu = toolbar.getMenu();
         setUpSearchView(optionsMenu);
         toolbar.setOnMenuItemClickListener(this);
@@ -455,7 +455,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.contact_list, menu);
+        getMenuInflater().inflate(R.menu.toolbar_contact_list, menu);
         menu.findItem(R.id.action_search).setVisible(false);
         return true;
     }

@@ -59,7 +59,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.inflateMenu(R.menu.block_list);
+        toolbar.inflateMenu(R.menu.toolbar_block_list);
         toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
@@ -98,7 +98,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.block_list, menu);
+        getMenuInflater().inflate(R.menu.toolbar_block_list, menu);
         return true;
     }
 

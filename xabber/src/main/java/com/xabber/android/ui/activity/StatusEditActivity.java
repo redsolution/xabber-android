@@ -89,7 +89,7 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
                  finish();
              }
         });
-        toolbar.inflateMenu(R.menu.set_status);
+        toolbar.inflateMenu(R.menu.toolbar_set_status);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -192,7 +192,7 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.set_status, menu);
+        getMenuInflater().inflate(R.menu.toolbar_set_status, menu);
         return true;
     }
 
@@ -220,7 +220,7 @@ public class StatusEditActivity extends ManagedListActivity implements OnItemCli
         actionWithItem = (SavedStatus) getListView().getItemAtPosition(info.position);
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.status_context_menu, menu);
+        inflater.inflate(R.menu.item_status, menu);
     }
 
     @Override

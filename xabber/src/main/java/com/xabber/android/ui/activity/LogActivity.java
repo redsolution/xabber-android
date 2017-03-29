@@ -21,7 +21,7 @@ import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
 
-    public static final int LOG_MENU = R.menu.activity_log;
+    public static final int LOG_MENU = R.menu.toolbar_log;
     RecyclerView recyclerView;
     private LogFilesAdapter logFilesAdapter;
 

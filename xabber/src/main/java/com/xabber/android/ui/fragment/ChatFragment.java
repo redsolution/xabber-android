@@ -198,7 +198,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         contactTitleView.findViewById(R.id.avatar).setOnClickListener(this);
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_default);
-        toolbar.inflateMenu(R.menu.chat);
+        toolbar.inflateMenu(R.menu.toolbar_chat);
         toolbar.setOverflowIcon(getResources().getDrawable(R.drawable.ic_overflow_menu_white_24dp));
         toolbar.setOnMenuItemClickListener(this);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
@@ -804,7 +804,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.chat, menu);
+        inflater.inflate(R.menu.toolbar_chat, menu);
         setUpOptionsMenu(menu);
     }
 
@@ -1104,7 +1104,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
 
             PopupMenu popup = new PopupMenu(getActivity(), caller);
-            popup.inflate(R.menu.chat_context_menu);
+            popup.inflate(R.menu.item_message);
             popup.setOnMenuItemClickListener(this);
 
             final Menu menu = popup.getMenu();

@@ -33,7 +33,7 @@ public class PhraseList extends BaseListEditor<Integer> {
 
     @Override
     protected int getOptionsMenuId() {
-        return R.menu.add_phrase;
+        return R.menu.toolbar_add_phrase;
     }
 
     @Override

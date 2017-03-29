@@ -416,7 +416,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onAccountMenuClick(AccountJid accountJid, View view) {
         PopupMenu popup = new PopupMenu(getActivity(), view);
-        popup.inflate(R.menu.account);
+        popup.inflate(R.menu.item_account_group);
         ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, accountJid, popup.getMenu());
         popup.show();
     }
