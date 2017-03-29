@@ -5,7 +5,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -38,7 +37,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class HttpFileUploadManager implements OnAuthorizedListener {
+public class HttpFileUploadManager {
 
     private static HttpFileUploadManager instance;
 
@@ -151,18 +150,12 @@ public class HttpFileUploadManager implements OnAuthorizedListener {
         }
     }
 
-    @Override
     public void onAuthorized(final ConnectionItem connectionItem) {
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    discoverSupport(connectionItem.getAccount(), connectionItem.getConnection());
-                } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
-                        | SmackException.NoResponseException | InterruptedException e) {
-                    LogManager.exception(this, e);
-                }
-            }
-        });
+        try {
+            discoverSupport(connectionItem.getAccount(), connectionItem.getConnection());
+        } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
+                | SmackException.NoResponseException | InterruptedException e) {
+            LogManager.exception(this, e);
+        }
     }
 }

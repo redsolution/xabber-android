@@ -26,7 +26,6 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -57,7 +56,7 @@ import java.util.Set;
  * @author alexander.ivanov
  */
 public class PresenceManager implements OnLoadListener, OnAccountDisabledListener,
-        OnPacketListener, OnAuthorizedListener {
+        OnPacketListener {
 
     private static PresenceManager instance;
 
@@ -290,12 +289,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         }
     }
 
-    @Override
     public void onAuthorized(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-
         try {
             resendPresence(connection.getAccount());
         } catch (NetworkException e) {

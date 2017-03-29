@@ -1,17 +1,15 @@
 package com.xabber.android.data.extension.carbons;
 
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
-import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 
@@ -34,7 +32,7 @@ import java.util.Collection;
  *
  * @author Georg Lukas, Semyon Baranov
  */
-public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
+public class CarbonManager implements OnPacketListener {
     private static CarbonManager instance;
 
     public static CarbonManager getInstance() {
@@ -48,18 +46,8 @@ public class CarbonManager implements OnAuthorizedListener, OnPacketListener {
     private CarbonManager() {
     }
 
-    @Override
     public void onAuthorized(final ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                updateIsSupported(connection);
-            }
-        });
+        updateIsSupported(connection);
     }
 
     private void updateIsSupported(ConnectionItem connectionItem) {

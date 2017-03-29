@@ -7,7 +7,6 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
@@ -46,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MamManager implements OnAuthorizedListener, OnRosterReceivedListener {
+public class MamManager implements OnRosterReceivedListener {
     static final String LOG_TAG = MamManager.class.getSimpleName();
     private static MamManager instance;
     public static final int SYNC_INTERVAL_MINUTES = 5;
@@ -67,20 +66,8 @@ public class MamManager implements OnAuthorizedListener, OnRosterReceivedListene
         supportedByAccount = new ConcurrentHashMap<>();
     }
 
-    @Override
-    public void onAuthorized(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-        final AccountItem accountItem = (AccountItem) connection;
-
-        Application.getInstance().runInBackgroundUserRequest(
-                new Runnable() {
-            @Override
-            public void run() {
-                updateIsSupported(accountItem);
-            }
-        });
+    public void onAuthorized(ConnectionItem connectionItem) {
+        updateIsSupported((AccountItem) connectionItem);
     }
 
 

@@ -2,10 +2,14 @@ package com.xabber.android.data.connection;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.mam.MamManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.roster.PresenceManager;
 
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.sasl.SASLErrorException;
@@ -51,20 +55,26 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     public void authenticated(XMPPConnection connection, final boolean resumed) {
         LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
 
+        connectionItem.updateState(ConnectionState.connected);
+
+        if (resumed) {
+            connectionItem.showDebugToast("authenticated resumed");
+        } else {
+            connectionItem.showDebugToast("authenticated");
+        }
+
+        // just to see the order of call
+
+        CarbonManager.getInstance().onAuthorized(connectionItem);
+        MamManager.getInstance().onAuthorized(connectionItem);
+        BlockingManager.getInstance().onAuthorized(connectionItem);
+        HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
+
+        PresenceManager.getInstance().onAuthorized(connectionItem);
+
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (resumed) {
-                    connectionItem.showDebugToast("authenticated resumed");
-                } else {
-                    connectionItem.showDebugToast("authenticated");
-                }
-
-                connectionItem.updateState(ConnectionState.connected);
-
-                for (OnAuthorizedListener listener : Application.getInstance().getManagers(OnAuthorizedListener.class)) {
-                    listener.onAuthorized(connectionItem);
-                }
                 AccountManager.getInstance().removeAuthorizationError(connectionItem.getAccount());
             }
         });

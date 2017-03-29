@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnAuthorizedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.log.LogManager;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlockingManager implements OnAuthorizedListener {
+public class BlockingManager {
 
     static final String LOG_TAG = BlockingManager.class.getSimpleName();
     private static BlockingManager instance;
@@ -57,39 +56,32 @@ public class BlockingManager implements OnAuthorizedListener {
 
 
 
-    @Override
     public void onAuthorized(final ConnectionItem connection) {
         final AccountJid account = connection.getAccount();
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
+        BlockingCommandManager blockingCommandManager = BlockingCommandManager.getInstanceFor(connection.getConnection());
 
-                BlockingCommandManager blockingCommandManager = BlockingCommandManager.getInstanceFor(connection.getConnection());
+        try {
+            boolean supportedByServer = blockingCommandManager.isSupportedByServer();
 
-                try {
-                    boolean supportedByServer = blockingCommandManager.isSupportedByServer();
-
-                    if (supportedByServer) {
-                        // cache block list inside
-                        blockingCommandManager.getBlockList();
-                    }
-
-                    addBlockedListener(blockingCommandManager, account);
-                    addUnblockedListener(blockingCommandManager, account);
-                    addUnblockedAllListener(blockingCommandManager, account);
-
-                    // block list already cached successfully
-                    supportForAccounts.put(account, supportedByServer);
-
-                    BlockingManager.notify(account);
-
-                } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
-                        | SmackException.NoResponseException | InterruptedException e) {
-                    LogManager.exception(this, e);
-                }
+            if (supportedByServer) {
+                // cache block list inside
+                blockingCommandManager.getBlockList();
             }
-        });
+
+            addBlockedListener(blockingCommandManager, account);
+            addUnblockedListener(blockingCommandManager, account);
+            addUnblockedAllListener(blockingCommandManager, account);
+
+            // block list already cached successfully
+            supportForAccounts.put(account, supportedByServer);
+
+            BlockingManager.notify(account);
+
+        } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
+                | SmackException.NoResponseException | InterruptedException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @SuppressWarnings("WeakerAccess")
