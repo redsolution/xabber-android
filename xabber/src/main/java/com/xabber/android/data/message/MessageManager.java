@@ -524,13 +524,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
     }
 
-    public void displayForwardedMessage(ConnectionItem connection, final Message message, CarbonExtension.Direction direction) {
-
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-        AccountJid account = connection.getAccount();
-
+    public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
         if (direction == CarbonExtension.Direction.sent) {
             UserJid companion;
             try {
