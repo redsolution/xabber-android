@@ -588,6 +588,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return Collections.unmodifiableCollection(enabledAccounts);
     }
 
+    public boolean hasAccounts() {
+        return !accountItems.isEmpty();
+    }
+
     /**
      * @return List of all accounts including disabled.
      */

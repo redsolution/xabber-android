@@ -453,7 +453,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.xabber.android.ui.activity.AccountActivity" />
         </activity>
-        <activity android:name=".ui.activity.AccountHistorySettingsActivity"></activity>
+        <activity android:name=".ui.activity.AccountHistorySettingsActivity" />
+        <activity android:name=".ui.activity.IntroActivity"
+            android:theme="@style/ThemeDark"/>
     </application>
 
 </manifest>

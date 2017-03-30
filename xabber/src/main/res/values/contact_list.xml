@@ -81,4 +81,12 @@
     <string name="clear_log">Delete old log files</string>
     <string name="open_log_file">Open</string>
     <string name="send_log_file">Send</string>
+
+    <string name="intro_welcome">Welcome to Xabber</string>
+    <string name="intro_xabber_description">Open source XMPP client for Android</string>
+    <string name="intro_have_account">I have XMPP account</string>
+    <string name="intro_register_account">Register XMPP account</string>
+    <string name="intro_create_xabber_account">Create Xabber Account</string>
+    <string name="intro_faq">If you do not have an XMPP account,\nplease <a href="https://www.xabber.com/faq/">read our F.A.Q.</a> on how to get one</string>
+    <string name="intro_web_search_register_xmpp">Register XMPP Account</string>
 </resources>

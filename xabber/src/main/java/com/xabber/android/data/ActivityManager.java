@@ -25,6 +25,7 @@ import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.AboutActivity;
 import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.IntroActivity;
 import com.xabber.android.ui.activity.LoadActivity;
 
 import java.util.ArrayList;
@@ -143,7 +144,7 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onCreate: " + activity.getIntent());
         }
-        if (!(activity instanceof AboutActivity)) {
+        if (!(activity instanceof AboutActivity) && !(activity instanceof IntroActivity)) {
             applyTheme(activity);
         }
         if (application.isClosing() && !(activity instanceof LoadActivity)) {

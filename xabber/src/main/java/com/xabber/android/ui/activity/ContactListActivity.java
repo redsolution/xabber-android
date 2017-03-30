@@ -106,6 +106,7 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
 
     private static final String CONTACT_LIST_TAG = "CONTACT_LIST";
+    private static final String LOG_TAG = ContactListActivity.class.getSimpleName();
 
     /**
      * Current action.
@@ -301,6 +302,13 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!AccountManager.getInstance().hasAccounts()) {
+            startActivity(IntroActivity.createIntent(this));
+            finish();
+            return;
+        }
+
         barPainter.setDefaultColor();
         rebuildAccountToggle();
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
