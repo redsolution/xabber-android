@@ -172,6 +172,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     @Override
     public void onResume() {
         super.onResume();
+
+        if (AccountManager.getInstance().getAccount(account) == null) {
+            // in case if account was removed
+            return;
+        }
+
         Application.getInstance().addUIListener(OnVCardListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);

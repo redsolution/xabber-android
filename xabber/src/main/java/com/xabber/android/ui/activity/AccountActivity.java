@@ -183,6 +183,12 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     protected void onResume() {
         super.onResume();
 
+        if (AccountManager.getInstance().getAccount(account) == null) {
+            // in case if account was removed
+            finish();
+            return;
+        }
+
         updateTitle();
         updateOptions();
 

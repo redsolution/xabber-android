@@ -5,19 +5,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
 
+import java.util.Collection;
 
-public class AccountSettingsActivity extends ManagedActivity implements AccountEditorFragment.AccountEditorFragmentInteractionListener {
+
+public class AccountSettingsActivity extends ManagedActivity
+        implements AccountEditorFragment.AccountEditorFragmentInteractionListener, Toolbar.OnMenuItemClickListener,
+        OnAccountChangedListener {
 
     private AccountJid account;
     private AccountItem accountItem;
@@ -52,6 +60,9 @@ public class AccountSettingsActivity extends ManagedActivity implements AccountE
             }
         });
 
+        toolbar.inflateMenu(R.menu.toolbar_account_connection_settings);
+        toolbar.setOnMenuItemClickListener(this);
+
         barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
@@ -62,6 +73,20 @@ public class AccountSettingsActivity extends ManagedActivity implements AccountE
                     .commit();
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+    }
+
+    @Override
+    protected void onPause() {
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
+
+        super.onPause();
     }
 
     @Override
@@ -77,5 +102,26 @@ public class AccountSettingsActivity extends ManagedActivity implements AccountE
     @Override
     public void showOrbotDialog() {
         OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.newInstance().getTag());
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.action_remove_account) {
+            AccountDeleteDialog.newInstance(account).show(getFragmentManager(), AccountDeleteDialog.class.getSimpleName());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
+        if (accounts.contains(account)) {
+            AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+            if (accountItem == null) {
+                // in case if account was removed
+                finish();
+            }
+        }
     }
 }
