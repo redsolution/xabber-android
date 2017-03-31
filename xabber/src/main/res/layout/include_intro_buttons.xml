@@ -13,6 +13,9 @@
         android:layout_height="wrap_content"
         android:text="@string/intro_have_account"
         android:textColor="@color/black"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/WhiteButton"
+
         />
 
     <Button
@@ -21,6 +24,8 @@
         android:layout_height="wrap_content"
         android:text="@string/intro_register_account"
         android:textColor="@color/black"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/WhiteButton"
         android:layout_marginTop="12dp" />
 
     <Button
@@ -28,6 +33,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/intro_create_xabber_account"
+        android:textColor="@color/white"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/RedButton"
         android:layout_marginTop="12dp" />
 
 </LinearLayout>
