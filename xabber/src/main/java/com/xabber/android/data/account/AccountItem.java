@@ -103,6 +103,12 @@ public class AccountItem extends ConnectionItem {
      */
     private LoadHistorySettings loadHistorySettings;
 
+    /**
+     * Flag indication that successful connection and authorization
+     * happen at least ones with current connection settings
+     */
+    private volatile boolean successfulConnectionHappened;
+
     public AccountItem(boolean custom, String host,
                        int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, int colorIndex,
@@ -130,6 +136,7 @@ public class AccountItem extends ConnectionItem {
         this.clearHistoryOnExit = false;
         this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
         this.loadHistorySettings = LoadHistorySettings.all;
+        this.successfulConnectionHappened = false;
     }
 
     /**
@@ -385,5 +392,13 @@ public class AccountItem extends ConnectionItem {
 
     public void setLoadHistorySettings(LoadHistorySettings loadHistorySettings) {
         this.loadHistorySettings = loadHistorySettings;
+    }
+
+    public boolean isSuccessfulConnectionHappened() {
+        return successfulConnectionHappened;
+    }
+
+    void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
+        this.successfulConnectionHappened = successfulConnectionHappened;
     }
 }

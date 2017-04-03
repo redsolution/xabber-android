@@ -18,7 +18,7 @@ import io.realm.annotations.RealmModule;
 
 public class RealmManager {
     private static final String REALM_DATABASE_NAME = "realm_database.realm";
-    private static final int REALM_DATABASE_VERSION = 5;
+    private static final int REALM_DATABASE_VERSION = 6;
     private static final String LOG_TAG = RealmManager.class.getSimpleName();
     private final RealmConfiguration realmConfiguration;
 
@@ -81,6 +81,13 @@ public class RealmManager {
                         if (oldVersion == 4) {
                             schema.get(AccountRealm.class.getSimpleName()).
                                     addField(AccountRealm.Fields.LOAD_HISTORY_SETTINGS, String.class);
+
+                            oldVersion++;
+                        }
+
+                        if (oldVersion == 5) {
+                            schema.get(AccountRealm.class.getSimpleName())
+                                    .addField(AccountRealm.Fields.SUCCESSFUL_CONNECTION_HAPPENED, boolean.class);
 
                             oldVersion++;
                         }

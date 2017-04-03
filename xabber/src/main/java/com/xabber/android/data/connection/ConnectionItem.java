@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
@@ -248,6 +249,10 @@ public abstract class ConnectionItem {
         boolean changed = setState(newState);
 
         if (changed) {
+            if (newState == ConnectionState.connected) {
+                AccountManager.getInstance().setSuccessfulConnectionHappened(account, true);
+            }
+
             AccountManager.getInstance().onAccountChanged(getAccount());
         }
     }

@@ -477,6 +477,7 @@ public class AccountTable extends AbstractTable {
         accountRealm.setClearHistoryOnExit(accountItem.isClearHistoryOnExit());
         accountRealm.setMamDefaultBehavior(accountItem.getMamDefaultBehaviour());
         accountRealm.setLoadHistorySettings(accountItem.getLoadHistorySettings());
+        accountRealm.setSuccessfulConnectionHappened(accountItem.isSuccessfulConnectionHappened());
 
         Realm realm = RealmManager.getInstance().getNewBackgroundRealm();
         realm.beginTransaction();

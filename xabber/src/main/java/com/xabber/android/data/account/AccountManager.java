@@ -205,6 +205,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             if (accountRealm.getLoadHistorySettings() != null) {
                 accountItem.setLoadHistorySettings(accountRealm.getLoadHistorySettings());
             }
+            accountItem.setSuccessfulConnectionHappened(accountRealm.isSuccessfulConnectionHappened());
 
             accountItems.add(accountItem);
 
@@ -527,6 +528,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 }
             }
             if (changed || reconnect) {
+                result.setSuccessfulConnectionHappened(false);
                 result.recreateConnection();
             }
             if (changed && !enabled) {
@@ -842,6 +844,17 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
             requestToWriteAccount(accountItem);
             // TODO request history if needed
         }
+    }
+
+
+    public void setSuccessfulConnectionHappened(AccountJid account, boolean successfulConnectionHappened) {
+        AccountItem accountItem = getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+
+        accountItem.setSuccessfulConnectionHappened(successfulConnectionHappened);
+        requestToWriteAccount(accountItem);
     }
 
     /**

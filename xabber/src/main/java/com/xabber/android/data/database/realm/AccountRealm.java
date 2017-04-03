@@ -34,6 +34,7 @@ public class AccountRealm extends RealmObject {
         public static final String CLEAR_HISTORY_ON_EXIT = "clearHistoryOnExit";
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
+        public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
     }
 
     @PrimaryKey
@@ -79,6 +80,12 @@ public class AccountRealm extends RealmObject {
     private boolean clearHistoryOnExit;
     private String mamDefaultBehavior;
     private String loadHistorySettings;
+
+    /**
+     * Flag indication that successful connection and authorization
+     * happen at least ones with current connection settings
+     */
+    private boolean successfulConnectionHappened;
 
     public AccountRealm(String id) {
         this.id = id;
@@ -353,5 +360,13 @@ public class AccountRealm extends RealmObject {
 
     public void setLoadHistorySettings(LoadHistorySettings loadHistorySettings) {
         this.loadHistorySettings = loadHistorySettings.toString();
+    }
+
+    public boolean isSuccessfulConnectionHappened() {
+        return successfulConnectionHappened;
+    }
+
+    public void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
+        this.successfulConnectionHappened = successfulConnectionHappened;
     }
 }

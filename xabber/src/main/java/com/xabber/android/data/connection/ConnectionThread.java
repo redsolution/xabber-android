@@ -16,7 +16,7 @@ package com.xabber.android.data.connection;
 
 import android.support.annotation.NonNull;
 
-import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 
@@ -120,14 +120,17 @@ class ConnectionThread {
         } catch (SASLErrorException e)  {
             LogManager.exception(this, e);
             LogManager.i(this, "Error. " + e.getMessage() + " Exception class: " + e.getClass().getSimpleName());
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    connectionItem.showDebugToast("Auth error!");
-                    com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
-                }
-            });
-        } catch (XMPPException | SmackException | IOException | InterruptedException e) {
+            connectionItem.showDebugToast("Auth error!");
+            com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+        } catch (XMPPException | SmackException | IOException e) {
+            LogManager.exception(this, e);
+
+            if (!((AccountItem)connectionItem).isSuccessfulConnectionHappened()) {
+                connectionItem.showDebugToast(e.getMessage());
+                LogManager.i(this, "There was no successful connection, disabling account");
+                com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+            }
+        } catch (InterruptedException e) {
             LogManager.exception(this, e);
         }
 
