@@ -14,7 +14,9 @@
  */
 package com.xabber.android.data.account;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -22,6 +24,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
 import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.AccountSettingsActivity;
 
 public class AccountAuthorizationError extends AccountRelated implements
         AccountNotificationItem {
@@ -31,8 +34,15 @@ public class AccountAuthorizationError extends AccountRelated implements
     }
 
     @Override
-    public Intent getIntent() {
-        return AccountActivity.createIntent(Application.getInstance(), account);
+    public Intent[] getIntent() {
+        Context context = Application.getInstance().getApplicationContext();
+
+        return TaskStackBuilder.create(context)
+                .addNextIntent(AccountActivity.createIntent(context, account))
+                .addNextIntent(AccountSettingsActivity.createIntent(context, account))
+                .getIntents();
+//
+//        return AccountSettingsActivity.createIntent(Application.getInstance(), account);
     }
 
     @Override

@@ -121,6 +121,7 @@ class ConnectionThread {
             LogManager.exception(this, e);
             LogManager.i(this, "Error. " + e.getMessage() + " Exception class: " + e.getClass().getSimpleName());
             connectionItem.showDebugToast("Auth error!");
+            com.xabber.android.data.account.AccountManager.getInstance().addAuthenticationError(connectionItem.getAccount());
             com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
         } catch (XMPPException | SmackException | IOException e) {
             LogManager.exception(this, e);

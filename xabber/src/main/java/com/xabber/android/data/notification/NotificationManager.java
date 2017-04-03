@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -273,7 +274,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             ticker = top.getTitle();
         }
 
-        Intent intent = top.getIntent();
+        Intent[] intents = top.getIntent();
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
 
@@ -287,8 +288,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationBuilder.setContentTitle(top.getTitle());
         notificationBuilder.setContentText(top.getText());
 
-        notificationBuilder.setContentIntent(PendingIntent.getActivity(application, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT));
+        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(application);
+
+        taskStackBuilder.addNextIntentWithParentStack(intents[0]);
+        for (int i = 1; i < intents.length; i++) {
+            taskStackBuilder.addNextIntent(intents[i]);
+        }
+
+        notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
 
         if (ticker != null) {
             setNotificationDefaults(notificationBuilder, SettingsManager.eventsVibro(), provider.getSound(), provider.getStreamType());

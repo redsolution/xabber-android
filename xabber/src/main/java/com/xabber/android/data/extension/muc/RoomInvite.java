@@ -57,8 +57,8 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
     }
 
     @Override
-    public Intent getIntent() {
-        return ContactListActivity.createMucInviteIntent(Application.getInstance(), account, user);
+    public Intent[] getIntent() {
+        return new Intent[]{ContactListActivity.createMucInviteIntent(Application.getInstance(), account, user)};
     }
 
     @Override
