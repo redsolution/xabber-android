@@ -91,19 +91,17 @@
     <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
     <string name="account_chat_history_not_supported">Server does not support chat history storing.</string>
 
+    <string name="account_mam_default_behavior_title">Message Archive Management</string>
     <string name="account_mam_default_behavior_always">Store all messages on server</string>
     <string name="account_mam_default_behavior_roster">Store roster contacts messages on server</string>
     <string name="account_mam_default_behavior_never">Do not store any messages on server</string>
 
+    <string name="account_mam_sync_title">Load message history</string>
     <string name="account_mam_sync_all">Load history for all contacts</string>
     <string name="account_mam_sync_current">Load history for opened chat only</string>
     <string name="account_mam_sync_none">Do not load history for anybody</string>
 
     <string name="account_clear_history_on_exit_title">Clear history on exit</string>
     <string name="account_clear_history_on_exit_summary">Delete all chat messages from device before exiting Xabber.</string>
-
-    <string name="account_mam_default_behavior_title">Store messages on server</string>
-
-    <string name="account_mam_sync_title">Load message history</string>
 
 </resources>
