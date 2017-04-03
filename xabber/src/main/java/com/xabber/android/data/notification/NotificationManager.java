@@ -540,6 +540,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             }
         });
 
+        updateMessageNotification(null);
     }
 
     public void removeMessageNotificationsForAccount(final AccountJid account) {
