@@ -365,7 +365,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * Sets currently visible chat.
      */
     public void setVisibleChat(BaseEntity visibleChat) {
-        final boolean remove = !AccountManager.getInstance().getArchiveMode(visibleChat.getAccount()).saveLocally();
         AbstractChat chat = getChat(visibleChat.getAccount(), visibleChat.getUser());
         if (chat == null) {
             chat = createChat(visibleChat.getAccount(), visibleChat.getUser());
@@ -387,10 +386,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                     for (MessageItem messageItem : unreadMessagesList) {
                         messageItem.setRead(true);
-                    }
-
-                    if (remove) {
-                        unreadMessages.deleteAllFromRealm();
                     }
                 }
             });

@@ -74,6 +74,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
+    private static final String LOG_TAG = NotificationManager.class.getSimpleName();
     private static NotificationManager instance;
 
     private final Application application;
@@ -538,6 +539,26 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 NotificationTable.getInstance().remove(account.toString(), user.toString());
             }
         });
+
+    }
+
+    public void removeMessageNotificationsForAccount(final AccountJid account) {
+        Iterator<MessageNotification> iterator = messageNotifications.iterator();
+        while(iterator.hasNext()) {
+            MessageNotification messageNotification = iterator.next();
+
+            if (messageNotification.getAccount().equals(account)) {
+                iterator.remove();
+            }
+        }
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                NotificationTable.getInstance().remove(account);
+            }
+        });
+
         updateMessageNotification(null);
     }
 
@@ -578,6 +599,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
+        LogManager.i(LOG_TAG, "onAccountRemoved " + accountItem.getAccount());
+
         for (NotificationProvider<? extends NotificationItem> notificationProvider : providers) {
             if (notificationProvider instanceof AccountNotificationProvider) {
                 ((AccountNotificationProvider) notificationProvider)
@@ -585,6 +608,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 updateNotifications(notificationProvider, null);
             }
         }
+
+        removeMessageNotificationsForAccount(accountItem.getAccount());
     }
 
     @Override

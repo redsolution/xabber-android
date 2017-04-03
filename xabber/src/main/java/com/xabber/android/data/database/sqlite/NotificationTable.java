@@ -21,6 +21,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.entity.AccountJid;
 
 /**
  * Storage with notifications.
@@ -128,6 +129,12 @@ public class NotificationTable extends AbstractEntityTable {
         SQLiteDatabase db = databaseManager.getWritableDatabase();
         db.delete(NAME, Fields.ACCOUNT + " = ? AND " + Fields.USER + " = ?",
                 new String[]{account, user});
+    }
+
+    public void remove(AccountJid account) {
+        SQLiteDatabase db = databaseManager.getWritableDatabase();
+        db.delete(NAME, Fields.ACCOUNT + " = ?",
+                new String[]{account.toString()});
     }
 
     @Override
