@@ -162,7 +162,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         Boolean supported = blockingManager.isSupported(account);
 
         String description;
-        if (supported == null) {
+        if (!AccountManager.getInstance().getAccount(account).getConnection().isAuthenticated()) {
+            description  = getString(R.string.NOT_CONNECTED);
+        } else if (supported == null) {
             description  = getString(R.string.blocked_contacts_unknown);
         } else if (!supported) {
             description  = getString(R.string.blocked_contacts_not_supported);
