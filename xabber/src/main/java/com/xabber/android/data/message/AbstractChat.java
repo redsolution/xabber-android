@@ -376,6 +376,8 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             lastMessage = MessageDatabaseManager.getInstance()
                     .getRealmUiThread()
                     .copyFromRealm(messages.last());
+        } else {
+            lastMessage = null;
         }
     }
 
