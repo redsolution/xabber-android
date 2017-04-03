@@ -58,7 +58,7 @@
     <string name="chats_show_avatars">Avatars in messages\nShow avatars in each message</string>
     <string name="chats_show_status_change">Show status changes\nShow messages about status changes</string>
     <string name="chats_show_status_change_muc">In conferences</string>
-    <string name="chats_state_notification">Send typing notifications\nNotify the other user that you are typing</string>
+    <string name="chats_state_notification">Send typing notifications\nNotify the other user that you are typing a message to them</string>
 
     <string name="connection_adjust_priority">Adjust priority\nSet priority according to selected status. Account priority will be overridden.</string>
     <string name="connection_go_away_immediately">Immediately on screen lock</string>

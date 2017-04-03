@@ -6,7 +6,7 @@
     <string name="orbot">Orbot</string>
     <string name="socks4">SOCKS4</string>
     <string name="socks5">SOCKS5</string>
-    <string name="jabber_id">Jabber ID</string>
+    <string name="jabber_id">XMPP ID</string>
     <string name="bbs">BBS</string>
     <string name="isdn">ISDN</string>
     <string name="pcs">PCS</string>

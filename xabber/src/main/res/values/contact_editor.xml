@@ -13,7 +13,7 @@
     <string name="add_new_group">Add new group…</string>
     <string name="accept_contact">Authorize</string>
     <string name="decline_contact">Discard</string>
-    <string name="processing_image">Processing image...</string>
+    <string name="processing_image">Processing image…</string>
     <string name="error_during_crop">Error during image crop</string>
     <string name="error_during_image_processing">Error during image processing</string>
     <string name="account_settings">Account settings</string>
