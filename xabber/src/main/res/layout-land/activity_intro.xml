@@ -17,10 +17,9 @@
 
         <include layout="@layout/include_intro_faq"
             android:id="@+id/intro_faq_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             />
 
         <LinearLayout
