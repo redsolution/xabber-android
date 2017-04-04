@@ -18,8 +18,8 @@ public class MucPrivateChatNotification extends BaseEntity implements EntityNoti
     }
 
     @Override
-    public Intent[] getIntent() {
-        return new Intent[]{ContactListActivity.createMucPrivateChatInviteIntent(Application.getInstance(), account, user)};
+    public Intent getIntent() {
+        return ContactListActivity.createMucPrivateChatInviteIntent(Application.getInstance(), account, user);
     }
 
     @Override

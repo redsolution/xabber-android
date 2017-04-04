@@ -43,6 +43,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         OnAccountChangedListener, OnBlockedListChangedListener, ContactVcardViewerFragment.Listener {
 
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
+    private static final String ACTION_CONNECTION_SETTINGS = AccountActivity.class.getName() + "ACTION_CONNECTION_SETTINGS";
 
     private AccountJid account;
     private View contactTitleView;
@@ -66,6 +67,13 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         return new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
     }
 
+    @NonNull
+    public static Intent createConnectionSettingsIntent(Context context, AccountJid account) {
+        Intent intent = new AccountIntentBuilder(context, AccountActivity.class).setAccount(account).build();
+        intent.setAction(ACTION_CONNECTION_SETTINGS);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +82,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         account = getAccount(intent);
         if (account == null) {
+            LogManager.i(LOG_TAG, "Account is null, finishing!");
             finish();
             return;
         }
@@ -83,6 +92,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
             return;
+        }
+
+        if (ACTION_CONNECTION_SETTINGS.equals(intent.getAction())) {
+            startAccountSettingsActivity();
         }
 
         setContentView(R.layout.activity_account);
@@ -219,7 +232,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
             case CONNECTION_SETTINGS:
-                startActivity(AccountSettingsActivity.createIntent(this, account));
+                startAccountSettingsActivity();
                 break;
             case COLOR:
                 AccountColorDialog.newInstance(account).show(getFragmentManager(),
@@ -235,6 +248,10 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 startActivity(AccountHistorySettingsActivity.createIntent(this, account));
                 break;
         }
+    }
+
+    private void startAccountSettingsActivity() {
+        startActivity(AccountSettingsActivity.createIntent(this, account));
     }
 
     @Override

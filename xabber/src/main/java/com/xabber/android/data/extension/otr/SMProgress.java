@@ -32,8 +32,8 @@ public class SMProgress extends BaseEntity implements EntityNotificationItem {
     }
 
     @Override
-    public Intent[] getIntent() {
-        return new Intent[]{QuestionActivity.createCancelIntent(Application.getInstance(), account, user)};
+    public Intent getIntent() {
+        return QuestionActivity.createCancelIntent(Application.getInstance(), account, user);
     }
 
     @Override

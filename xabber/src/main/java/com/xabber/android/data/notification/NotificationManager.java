@@ -274,8 +274,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             ticker = top.getTitle();
         }
 
-        Intent[] intents = top.getIntent();
-
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
 
         notificationBuilder.setSmallIcon(provider.getIcon());
@@ -289,11 +287,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationBuilder.setContentText(top.getText());
 
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(application);
-
-        taskStackBuilder.addNextIntentWithParentStack(intents[0]);
-        for (int i = 1; i < intents.length; i++) {
-            taskStackBuilder.addNextIntent(intents[i]);
-        }
+        taskStackBuilder.addNextIntentWithParentStack(top.getIntent());
 
         notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
 

@@ -26,7 +26,7 @@ public interface NotificationItem {
     /**
      * @return Intent to launch activity.
      */
-    Intent[] getIntent();
+    Intent getIntent();
 
     /**
      * @return Title for notification bar.
