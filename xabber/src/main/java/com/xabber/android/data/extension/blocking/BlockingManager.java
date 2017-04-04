@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.blocking;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -15,6 +16,7 @@ import com.xabber.android.data.roster.RosterContact;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
 import org.jxmpp.jid.Jid;
 
@@ -144,6 +146,11 @@ public class BlockingManager {
      */
     @Nullable
     public Boolean isSupported(AccountJid account) {
+        if (getBlockingCommandManager(account) == null) {
+            supportForAccounts.remove(account);
+            return null;
+        }
+
         return supportForAccounts.get(account);
     }
 
@@ -152,9 +159,11 @@ public class BlockingManager {
 
         Boolean supported = isSupported(account);
 
-        if (supported != null && supported) {
+        BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+
+        if (blockingCommandManager != null && supported != null && supported) {
             try {
-                List<Jid> blockedJids = getBlockingCommandManager(account).getBlockList();
+                List<Jid> blockedJids = blockingCommandManager.getBlockList();
                 for (Jid jid : blockedJids) {
                     blockedContacts.add(UserJid.from(jid));
                 }
@@ -177,19 +186,21 @@ public class BlockingManager {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
+                boolean success = false;
 
                 BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
 
-                List<Jid> contactsToBlock = new ArrayList<>();
-                contactsToBlock.add(contactJid.getJid());
-                boolean success = false;
+                if (blockingCommandManager != null) {
+                    List<Jid> contactsToBlock = new ArrayList<>();
+                    contactsToBlock.add(contactJid.getJid());
 
-                try {
-                    blockingCommandManager.blockContacts(contactsToBlock);
-                    success = true;
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | InterruptedException | SmackException.NotConnectedException e) {
-                    LogManager.exception(LOG_TAG, e);
+                    try {
+                        blockingCommandManager.blockContacts(contactsToBlock);
+                        success = true;
+                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                            | InterruptedException | SmackException.NotConnectedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
                 }
 
                 final boolean finalSuccess = success;
@@ -208,8 +219,21 @@ public class BlockingManager {
     }
 
     @SuppressWarnings("WeakerAccess")
+    @Nullable
     BlockingCommandManager getBlockingCommandManager(AccountJid account) {
-        return BlockingCommandManager.getInstanceFor(AccountManager.getInstance().getAccount(account).getConnection());
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return null;
+        }
+
+        XMPPTCPConnection connection = accountItem.getConnection();
+
+        // "Must have a local (user) JID set. Either you didn't configure one or you where not connected at least once"
+        if (connection.getUser() == null) {
+            return null;
+        }
+
+        return BlockingCommandManager.getInstanceFor(connection);
     }
 
     static void blockContactLocally(AccountJid account, UserJid contactJid) {
@@ -226,19 +250,24 @@ public class BlockingManager {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
-                List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
-                for (UserJid userJid : contacts) {
-                    jidsToUnblock.add(userJid.getBareJid());
-                }
-
                 boolean success = false;
-                try {
-                    blockingCommandManager.unblockContacts(jidsToUnblock);
-                    success = true;
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException e) {
-                    LogManager.exception(LOG_TAG, e);
+
+                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+
+                if (blockingCommandManager != null) {
+                    List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
+                    for (UserJid userJid : contacts) {
+                        jidsToUnblock.add(userJid.getBareJid());
+                    }
+
+
+                    try {
+                        blockingCommandManager.unblockContacts(jidsToUnblock);
+                        success = true;
+                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                            | SmackException.NotConnectedException | InterruptedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
                 }
 
                 final boolean finalSuccess = success;
@@ -261,16 +290,18 @@ public class BlockingManager {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
-
                 boolean success = false;
 
-                try {
-                    blockingCommandManager.unblockAll();
-                    success = true;
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | SmackException.NotConnectedException | InterruptedException e) {
-                    LogManager.exception(LOG_TAG, e);
+                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+
+                if (blockingCommandManager != null) {
+                    try {
+                        blockingCommandManager.unblockAll();
+                        success = true;
+                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                            | SmackException.NotConnectedException | InterruptedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
                 }
 
                 final boolean finalSuccess = success;
