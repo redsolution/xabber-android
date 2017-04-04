@@ -130,7 +130,7 @@ public class RegularChat extends AbstractChat {
             final Presence presence = (Presence) packet;
 
             if (this.resource != null && presence.getType() == Presence.Type.unavailable
-                    && this.resource.equals(resource)) {
+                    && resource != null && this.resource.equals(resource)) {
                 this.resource = null;
             }
 
