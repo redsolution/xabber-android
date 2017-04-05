@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AccountJid implements Comparable<AccountJid>, Parcelable {
+public class AccountJid implements Comparable<AccountJid>, Parcelable, Serializable {
     private static final String LOG_TAG = AccountJid.class.getSimpleName();
 
     private final @NonNull FullJid fullJid;

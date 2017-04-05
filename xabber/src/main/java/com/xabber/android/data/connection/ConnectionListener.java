@@ -75,7 +75,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                AccountManager.getInstance().removeAuthorizationError(connectionItem.getAccount());
+                AccountManager.getInstance().removeAccountError(connectionItem.getAccount());
             }
         });
     }

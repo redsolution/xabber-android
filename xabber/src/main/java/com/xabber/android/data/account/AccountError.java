@@ -19,16 +19,18 @@ import android.content.Intent;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.AccountRelated;
 import com.xabber.android.data.notification.AccountNotificationItem;
 import com.xabber.android.ui.activity.AccountActivity;
 
-class AccountAuthorizationError extends AccountRelated implements
+class AccountError extends AccountRelated implements
         AccountNotificationItem {
 
-    AccountAuthorizationError(AccountJid account) {
-        super(account);
+    private final AccountErrorEvent.Type type;
+
+    AccountError(AccountErrorEvent accountErrorEvent) {
+        super(accountErrorEvent.getAccount());
+        type = accountErrorEvent.getType();
     }
 
     @Override
@@ -40,8 +42,13 @@ class AccountAuthorizationError extends AccountRelated implements
 
     @Override
     public String getTitle() {
-        return Application.getInstance().getString(
-                R.string.AUTHENTICATION_FAILED);
+        switch (type) {
+            case AUTHORIZATION:
+                return Application.getInstance().getString(R.string.AUTHENTICATION_FAILED);
+            case CONNECTION:
+                return Application.getInstance().getString(R.string.CONNECTION_FAILED);
+        }
+        return null;
     }
 
     @Override

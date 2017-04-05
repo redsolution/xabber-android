@@ -98,6 +98,7 @@
     <string name="events_phrases">Key phrases\nCreate custom notifications for received messages that contain specific phrases</string>
     <string name="security_clear_certificate_warning">Do you really want to remove all ignored certificates?</string>
 
+    <string name="account_error_settings">Settings</string>
 
 
 </resources>

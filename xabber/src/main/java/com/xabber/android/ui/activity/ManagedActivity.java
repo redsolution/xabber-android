@@ -19,8 +19,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.xabber.android.data.ActivityManager;
-import com.xabber.android.data.account.AccountAuthErrorEvent;
-import com.xabber.android.ui.dialog.AccountAuthErrorDialogFragment;
+import com.xabber.android.data.account.AccountErrorEvent;
+import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -85,11 +85,11 @@ public abstract class ManagedActivity extends AppCompatActivity {
         super.startActivityForResult(intent, requestCode);
     }
 
-    @Subscribe
-    public void onAuthErrorEvent(AccountAuthErrorEvent accountAuthErrorEvent) {
-        AccountAuthErrorDialogFragment.newInstance(accountAuthErrorEvent.getAccount())
-                .show(getFragmentManager(), AccountAuthErrorDialogFragment.class.getSimpleName());
-        EventBus.getDefault().removeStickyEvent(accountAuthErrorEvent);
+    @Subscribe(sticky = true)
+    public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
+        AccountErrorDialogFragment.newInstance(accountErrorEvent)
+                .show(getFragmentManager(), AccountErrorDialogFragment.class.getSimpleName());
+        EventBus.getDefault().removeStickyEvent(accountErrorEvent);
     }
 
 }

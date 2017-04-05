@@ -230,7 +230,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         isVisible = true;
 
-        EventBus.getDefault().register(this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
@@ -333,7 +332,6 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     @Override
     protected void onPause() {
         super.onPause();
-        EventBus.getDefault().unregister(this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);

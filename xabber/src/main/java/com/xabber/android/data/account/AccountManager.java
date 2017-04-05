@@ -105,7 +105,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      * List of accounts.
      */
     private final Map<AccountJid, AccountItem> accountItems;
-    private final BaseAccountNotificationProvider<AccountAuthorizationError> authorizationErrorProvider;
+    private final BaseAccountNotificationProvider<AccountError> accountErrorProvider;
 
     private final Application application;
     /**
@@ -129,7 +129,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         this.application = Application.getInstance();
         accountItems = new HashMap<>();
         savedStatuses = new ArrayList<>();
-        authorizationErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
+        accountErrorProvider = new BaseAccountNotificationProvider<>(R.drawable.ic_stat_error);
 
         colors = application.getResources().getIntArray(R.array.account_color_names).length;
 
@@ -243,7 +243,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (AccountItem accountItem : accountItems) {
             addAccount(accountItem);
         }
-        NotificationManager.getInstance().registerNotificationProvider(authorizationErrorProvider);
+        NotificationManager.getInstance().registerNotificationProvider(accountErrorProvider);
     }
 
     private void addAccount(AccountItem accountItem) {
@@ -438,7 +438,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         for (OnAccountRemovedListener listener : application.getManagers(OnAccountRemovedListener.class)) {
             listener.onAccountRemoved(accountItem);
         }
-        removeAuthorizationError(account);
+        removeAccountError(account);
     }
 
     /**
@@ -974,20 +974,16 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
         return null;
     }
 
-    public void removeAuthorizationError(AccountJid account) {
-        authorizationErrorProvider.remove(account);
+    public void removeAccountError(AccountJid account) {
+        accountErrorProvider.remove(account);
     }
 
-    public void addAuthenticationError(AccountJid account) {
-        authorizationErrorProvider.add(new AccountAuthorizationError(account), true);
+    public void addAccountError(AccountErrorEvent accountErrorEvent) {
+        accountErrorProvider.add(new AccountError(accountErrorEvent), true);
     }
 
-    public void removePasswordRequest(AccountJid account) {
-        authorizationErrorProvider.remove(account);
-    }
-
-    public void addPasswordRequest(AccountJid account) {
-        authorizationErrorProvider.add(new AccountAuthorizationError(account), true);
+    void removePasswordRequest(AccountJid account) {
+        accountErrorProvider.remove(account);
     }
 
     public void onAccountChanged(AccountJid account) {

@@ -16,7 +16,7 @@ package com.xabber.android.data.connection;
 
 import android.support.annotation.NonNull;
 
-import com.xabber.android.data.account.AccountAuthErrorEvent;
+import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
@@ -115,18 +115,25 @@ class ConnectionThread {
             }
         } catch (SASLErrorException e)  {
             LogManager.exception(this, e);
-            LogManager.i(this, "Error. " + e.getMessage() + " Exception class: " + e.getClass().getSimpleName());
-            connectionItem.showDebugToast("Auth error!");
-            com.xabber.android.data.account.AccountManager.getInstance().addAuthenticationError(connectionItem.getAccount());
+
+            AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
+                    AccountErrorEvent.Type.AUTHORIZATION, e.getMessage());
+
+            com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
             com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
-            EventBus.getDefault().postSticky(new AccountAuthErrorEvent(connectionItem.getAccount(), e));
+            EventBus.getDefault().postSticky(accountErrorEvent);
         } catch (XMPPException | SmackException | IOException e) {
             LogManager.exception(this, e);
 
             if (!((AccountItem)connectionItem).isSuccessfulConnectionHappened()) {
-                connectionItem.showDebugToast(e.getMessage());
                 LogManager.i(this, "There was no successful connection, disabling account");
+
+                AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
+                        AccountErrorEvent.Type.CONNECTION, e.getMessage());
+
+                com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
                 com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+                EventBus.getDefault().postSticky(accountErrorEvent);
             }
         } catch (InterruptedException e) {
             LogManager.exception(this, e);
