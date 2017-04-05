@@ -41,7 +41,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.showDebugToast("connected");
                 connectionItem.updateState(ConnectionState.authentication);
 
                 for (OnConnectedListener listener : Application.getInstance().getManagers(OnConnectedListener.class)) {
@@ -56,12 +55,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         LogManager.i(getLogTag(), "authenticated. resumed: " + resumed);
 
         connectionItem.updateState(ConnectionState.connected);
-
-        if (resumed) {
-            connectionItem.showDebugToast("authenticated resumed");
-        } else {
-            connectionItem.showDebugToast("authenticated");
-        }
 
         // just to see the order of call
 
@@ -87,8 +80,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.showDebugToast("connection closed");
-
                 connectionItem.updateState(ConnectionState.offline);
 
                 for (OnDisconnectListener listener
@@ -107,11 +98,9 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.showDebugToast("connection closed on error: " + e.getMessage() + ". Exception: " + e.getClass().getSimpleName());
                 connectionItem.updateState(ConnectionState.waiting);
 
                 if (e instanceof SASLErrorException) {
-                    connectionItem.showDebugToast("Auth error!");
                     AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
                 }
             }
@@ -121,13 +110,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
     @Override
     public void reconnectionSuccessful() {
         LogManager.i(getLogTag(), "reconnectionSuccessful");
-
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                connectionItem.showDebugToast("reconnection successful");
-            }
-        });
     }
 
     @Override
@@ -137,8 +119,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.showDebugToast("reconnecting in " + seconds + " seconds");
-
                 if (connectionItem.getState() != ConnectionState.waiting && !connectionItem.getConnection().isAuthenticated()
                         && !connectionItem.getConnection().isConnected()) {
                     connectionItem.updateState(ConnectionState.waiting);
@@ -154,7 +134,6 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionItem.showDebugToast("reconnection failed: " + e.getMessage() + ". Exception: " + e.getClass().getSimpleName());
                 connectionItem.updateState(ConnectionState.offline);
             }
         });

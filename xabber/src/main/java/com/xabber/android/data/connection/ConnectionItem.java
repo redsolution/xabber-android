@@ -231,8 +231,6 @@ public abstract class ConnectionItem {
     void createNewConnection() {
         LogManager.i(logTag, "createNewConnection");
 
-        showDebugToast("createNewConnection...");
-
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
 
         connection.removeConnectionListener(connectionListener);
@@ -285,24 +283,10 @@ public abstract class ConnectionItem {
     private PingFailedListener pingFailedListener = new PingFailedListener() {
         @Override
         public void pingFailed() {
-            showDebugToast("ping failed");
             LogManager.i(this, "pingFailed for " + getAccount());
             updateState(ConnectionState.offline);
             disconnect();
         }
     };
-
-    void showDebugToast(final String message) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (toast != null) {
-                    toast.cancel();
-                }
-                toast = Toast.makeText(Application.getInstance(), message, Toast.LENGTH_LONG);
-                toast.show();
-            }
-        });
-    }
 
 }
