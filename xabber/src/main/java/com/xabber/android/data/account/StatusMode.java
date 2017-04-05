@@ -77,9 +77,6 @@ public enum StatusMode {
 
     /**
      * Creates new {@link StatusMode} form {@link Presence}.
-     *
-     * @param mode
-     * @return
      */
     static public StatusMode createStatusMode(Presence presence) {
         if (presence == null) {

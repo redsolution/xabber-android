@@ -14,10 +14,10 @@
  */
 package com.xabber.android.data.roster;
 
+import com.xabber.android.data.BaseManagerInterface;
+
 import java.util.Collection;
 import java.util.Map;
-
-import com.xabber.android.data.BaseManagerInterface;
 
 /**
  * Listener for any contact changes.
@@ -29,13 +29,6 @@ public interface OnRosterChangedListener extends BaseManagerInterface {
     /**
      * Roster update received.
      *
-     * @param addedGroups
-     * @param addedContacts
-     * @param renamedContacts
-     * @param addedGroupReference
-     * @param removedGroupReference
-     * @param removedContacts
-     * @param removedGroups
      */
     void onRosterUpdate(
             Collection<RosterGroup> addedGroups,

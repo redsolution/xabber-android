@@ -14,11 +14,11 @@
  */
 package com.xabber.android.data.message.phrase;
 
+import android.net.Uri;
+
 import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import android.net.Uri;
 
 /**
  * Settings for phrase search.

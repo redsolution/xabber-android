@@ -14,9 +14,14 @@
  */
 package com.xabber.android.data.extension.muc;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.xmpp.muc.Affiliation;
-import com.xabber.xmpp.muc.Role;
+
+import org.jivesoftware.smackx.muc.MUCAffiliation;
+import org.jivesoftware.smackx.muc.MUCRole;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 /**
  * Room occupant.
@@ -25,50 +30,50 @@ import com.xabber.xmpp.muc.Role;
  */
 public class Occupant implements Comparable<Occupant> {
 
-    private final String nickname;
+    private final Resourcepart nickname;
 
-    private String jid;
+    private Jid jid;
 
-    private Role role;
+    private MUCRole role;
 
-    private Affiliation affiliation;
+    private MUCAffiliation affiliation;
 
     private StatusMode statusMode;
 
     private String statusText;
 
-    public Occupant(String nickname) {
+    public Occupant(Resourcepart nickname) {
         this.nickname = nickname;
     }
 
-    public String getNickname() {
+    public Resourcepart getNickname() {
         return nickname;
     }
 
     /**
      * @return can be <code>null</code>.
      */
-    public String getJid() {
+    public Jid getJid() {
         return jid;
     }
 
-    public void setJid(String jid) {
+    public void setJid(Jid jid) {
         this.jid = jid;
     }
 
-    public Role getRole() {
+    public MUCRole getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(MUCRole role) {
         this.role = role;
     }
 
-    public Affiliation getAffiliation() {
+    public MUCAffiliation getAffiliation() {
         return affiliation;
     }
 
-    public void setAffiliation(Affiliation affiliation) {
+    public void setAffiliation(MUCAffiliation affiliation) {
         this.affiliation = affiliation;
     }
 
@@ -89,12 +94,12 @@ public class Occupant implements Comparable<Occupant> {
     }
 
     @Override
-    public int compareTo(Occupant another) {
+    public int compareTo(@NonNull Occupant another) {
         int result = another.role.ordinal() - role.ordinal();
         if (result != 0) {
             return result;
         }
-        return nickname.compareTo(another.nickname);
+        return nickname.toString().compareTo(another.nickname.toString());
     }
 
 }

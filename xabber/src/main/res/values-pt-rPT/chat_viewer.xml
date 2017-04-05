@@ -90,4 +90,7 @@
   <string name="received_by">Recebida por %s</string>
   <string name="could_not_get_path_to_file">Não foi possível obter o caminho para o ficheiro</string>
   <string name="message_open_private_chat">Abrir conversação privada</string>
+  <string name="http_file_upload_slot_error">Não foi possível enviar o ficheiro. Muito grande?</string>
+  <string name="no_permission_to_read_files">Sem permissão para ler ficheiros</string>
+  <string name="no_permission_to_write_files">Sem permissão para gravar ficheiros</string>
 </resources>

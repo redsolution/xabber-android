@@ -8,9 +8,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
@@ -21,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String> {
+public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<AccountJid> {
 
     public NavigationDrawerAccountAdapter(Activity activity) {
         super(activity);
@@ -36,14 +39,18 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
         } else {
             view = convertView;
         }
-        String account = getItem(position);
+        AccountJid account = getItem(position);
 
         ((ImageView) view.findViewById(R.id.color)).setImageDrawable(new ColorDrawable((ColorManager.getInstance().getAccountPainter().getAccountMainColor(account))));
         ((ImageView) view.findViewById(R.id.avatar)).setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
 
         TextView accountName = (TextView) view.findViewById(R.id.name);
 
-        accountName.setText(RosterManager.getInstance().getBestContact(account, accountManager.getVerboseName(account)).getName());
+        try {
+            accountName.setText(RosterManager.getInstance().getBestContact(account, UserJid.from(accountManager.getVerboseName(account))).getName());
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
         accountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
 
         ((TextView) view.findViewById(R.id.account_jid)).setText(accountManager.getVerboseName(account));
@@ -60,9 +67,9 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<String
     }
 
     @Override
-    protected Collection<String> getTags() {
-        List<String> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getAccounts());
+    protected Collection<AccountJid> getTags() {
+        List<AccountJid> list = new ArrayList<>();
+        list.addAll(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(list);
         return list;
     }

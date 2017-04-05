@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.widget.RingtonePreference;
 
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public abstract class BaseSettingsFragment extends PreferenceFragment
 
         onInflate(savedInstanceState);
 
-        PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
+        PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
         if (savedInstanceState == null)
             operation(Operation.read);
         PreferenceScreen preferenceScreen = getPreferenceScreen();

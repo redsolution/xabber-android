@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 public class PreferencesFragment extends android.preference.PreferenceFragment {
 
@@ -21,7 +21,7 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
         Preference about = getPreferenceScreen().findPreference(getString(R.string.preference_about_key));
         about.setSummary(getString(R.string.application_title_full) + "\n" + mListener.getVersionName());
 
-        PreferenceSummaryHelper.updateSummary(getPreferenceScreen());
+        PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
     }
 
     @Override

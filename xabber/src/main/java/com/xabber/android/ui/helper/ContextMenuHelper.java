@@ -17,7 +17,6 @@ package com.xabber.android.ui.helper;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +30,8 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.message.MessageManager;
@@ -38,14 +39,16 @@ import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.GroupManager;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
-import com.xabber.android.ui.activity.AccountViewer;
-import com.xabber.android.ui.activity.ChatViewer;
-import com.xabber.android.ui.activity.ConferenceAdd;
-import com.xabber.android.ui.activity.ContactAdd;
-import com.xabber.android.ui.activity.ContactEditor;
-import com.xabber.android.ui.activity.GroupEditor;
-import com.xabber.android.ui.activity.StatusEditor;
+import com.xabber.android.ui.activity.AccountActivity;
+import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ContactEditActivity;
+import com.xabber.android.ui.activity.GroupEditActivity;
+import com.xabber.android.ui.activity.ManagedActivity;
+import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ContactDeleteDialogFragment;
@@ -63,36 +66,36 @@ public class ContextMenuHelper {
     private ContextMenuHelper() {
     }
 
-    public static void createContactContextMenu(final FragmentActivity activity,
+    public static void createContactContextMenu(final ManagedActivity activity,
             final UpdatableAdapter adapter, AbstractContact abstractContact, ContextMenu menu) {
-        final String account = abstractContact.getAccount();
-        final String user = abstractContact.getUser();
+        final AccountJid account = abstractContact.getAccount();
+        final UserJid user = abstractContact.getUser();
         menu.setHeaderTitle(abstractContact.getName());
         MenuInflater inflater = activity.getMenuInflater();
-        inflater.inflate(R.menu.contact_list_contact_context_menu, menu);
+        inflater.inflate(R.menu.item_contact, menu);
 
         setContactContextMenuActions(activity, adapter, menu, account, user);
         setContactContextMenuItemsVisibilty(abstractContact, menu, account, user);
     }
 
-    private static void setContactContextMenuActions(final FragmentActivity activity,
+    private static void setContactContextMenuActions(final ManagedActivity activity,
                                                      final UpdatableAdapter adapter,
                                                      ContextMenu menu,
-                                                     final String account, final String user) {
+                                                     final AccountJid account, final UserJid user) {
         menu.findItem(R.id.action_chat).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
 
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         MessageManager.getInstance().openChat(account, user);
-                        activity.startActivity(ChatViewer.createSpecificChatIntent(
+                        activity.startActivity(ChatActivity.createSpecificChatIntent(
                                 activity, account, user));
                         return true;
                     }
                 });
 
         menu.findItem(R.id.action_edit_conference).setIntent(
-                ConferenceAdd.createIntent(activity, account, user));
+                ConferenceAddActivity.createIntent(activity, account, user.getBareUserJid()));
 
         menu.findItem(R.id.action_delete_conference).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -108,8 +111,7 @@ public class ContextMenuHelper {
                 new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        MUCManager.getInstance().joinRoom(account,
-                                user, true);
+                        MUCManager.getInstance().joinRoom(account, user.getJid().asEntityBareJidIfPossible(), true);
                         return true;
                     }
                 });
@@ -119,7 +121,7 @@ public class ContextMenuHelper {
 
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        MUCManager.getInstance().leaveRoom(account, user);
+                        MUCManager.getInstance().leaveRoom(account, user.getJid().asEntityBareJidIfPossible());
                         MessageManager.getInstance().closeChat(account, user);
                         NotificationManager.getInstance().removeMessageNotification(account, user);
                         adapter.onChange();
@@ -129,9 +131,9 @@ public class ContextMenuHelper {
                 });
 
         menu.findItem(R.id.action_contact_info).setIntent(
-                ContactEditor.createIntent(activity, account, user));
+                ContactEditActivity.createIntent(activity, account, user));
         menu.findItem(R.id.action_edit_contact_groups).setIntent(
-                GroupEditor.createIntent(activity, account, user));
+                GroupEditActivity.createIntent(activity, account, user));
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 new MenuItem.OnMenuItemClickListener() {
@@ -198,7 +200,7 @@ public class ContextMenuHelper {
                         } catch (NetworkException e) {
                             Application.getInstance().onError(e);
                         }
-                        activity.startActivity(GroupEditor.createIntent(activity, account, user));
+                        activity.startActivity(GroupEditActivity.createIntent(activity, account, user));
                         return true;
                     }
                 });
@@ -219,7 +221,7 @@ public class ContextMenuHelper {
 
     private static void setContactContextMenuItemsVisibilty(AbstractContact abstractContact,
                                                             ContextMenu menu,
-                                                            String account, String user) {
+                                                            AccountJid account, UserJid user) {
         // all menu items are visible by default
         // it allows to hide items in xml file without touching code
 
@@ -231,11 +233,17 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_leave_conference).setVisible(false);
             menu.findItem(R.id.action_join_conference).setVisible(false);
 
+            if (RosterManager.getInstance().getRosterContact(account, user) == null) {
+                menu.findItem(R.id.action_delete_contact).setVisible(false);
+            }
+
             if (!MessageManager.getInstance().hasActiveChat(account, user)) {
                 menu.findItem(R.id.action_close_chat).setVisible(false);
             }
 
-            if (!BlockingManager.getInstance().isSupported(account)
+            Boolean supported = BlockingManager.getInstance().isSupported(account);
+
+            if ((supported == null || !supported)
                     && !MUCManager.getInstance().isMucPrivateChat(account, user)) {
                 menu.findItem(R.id.action_block_contact).setVisible(false);
             }
@@ -251,11 +259,11 @@ public class ContextMenuHelper {
             menu.findItem(R.id.action_close_chat).setVisible(false);
             menu.findItem(R.id.action_request_subscription).setVisible(false);
 
-            if (MUCManager.getInstance().inUse(account, user)) {
+            if (MUCManager.getInstance().inUse(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_edit_conference).setVisible(false);
             }
 
-            if (MUCManager.getInstance().isDisabled(account, user)) {
+            if (MUCManager.getInstance().isDisabled(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_leave_conference).setVisible(false);
             } else {
                 menu.findItem(R.id.action_join_conference).setVisible(false);
@@ -269,8 +277,8 @@ public class ContextMenuHelper {
         }
     }
 
-    public static void createGroupContextMenu(final FragmentActivity activity,
-              final UpdatableAdapter adapter, final String account, final String group, ContextMenu menu) {
+    public static void createGroupContextMenu(final ManagedActivity activity,
+              final UpdatableAdapter adapter, final AccountJid account, final String group, ContextMenu menu) {
         menu.setHeaderTitle(GroupManager.getInstance().getGroupName(account, group));
         if (!group.equals(GroupManager.ACTIVE_CHATS) && !group.equals(GroupManager.IS_ROOM)) {
             menu.add(R.string.group_rename).setOnMenuItemClickListener(
@@ -311,15 +319,15 @@ public class ContextMenuHelper {
         }
     }
 
-    public static void createAccountContextMenu( final FragmentActivity activity, final UpdatableAdapter adapter,
-                                                 final String account, ContextMenu menu) {
-        activity.getMenuInflater().inflate(R.menu.account, menu);
+    public static void createAccountContextMenu( final ManagedActivity activity, final UpdatableAdapter adapter,
+                                                 final AccountJid account, ContextMenu menu) {
+        activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
         menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
 
         setUpAccountMenu(activity, adapter, account, menu);
     }
 
-    public static void setUpAccountMenu(final FragmentActivity activity, final UpdatableAdapter adapter, final String account, Menu menu) {
+    public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final AccountJid account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
         ConnectionState state = accountItem.getState();
 
@@ -329,27 +337,27 @@ public class ContextMenuHelper {
 
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            if (accountItem.updateConnection(true))
-                                AccountManager.getInstance().onAccountChanged(account);
+                            accountItem.disconnect();
+                            AccountManager.getInstance().onAccountChanged(account);
                             return true;
                         }
 
                     });
         }
 
-        menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditor.createIntent(activity, account));
-        menu.findItem(R.id.action_edit_account).setIntent(AccountViewer.createAccountPreferencesIntent(activity, account));
+        menu.findItem(R.id.action_edit_account_status).setIntent(StatusEditActivity.createIntent(activity, account));
+        menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
 
         if (state.isConnected()) {
             menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountViewer.createAccountInfoIntent(activity, account));
+                            activity.startActivity(AccountActivity.createIntent(activity, account));
                             return true;
                         }
                     });
-            menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAdd.createIntent(activity, account));
+            menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));
         }
 
         if (SettingsManager.contactsShowAccounts()) {
@@ -366,7 +374,7 @@ public class ContextMenuHelper {
     }
 
     public static AlertDialog createOfflineContactsDialog(Context context, final UpdatableAdapter adapter,
-                                                          final String account, final String group) {
+                                                          final AccountJid account, final String group) {
         return new AlertDialog.Builder(context)
                 .setTitle(R.string.show_offline_settings)
                 .setSingleChoiceItems(

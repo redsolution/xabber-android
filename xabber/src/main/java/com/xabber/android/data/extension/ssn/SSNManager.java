@@ -14,20 +14,18 @@
  */
 package com.xabber.android.data.extension.ssn;
 
-import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.xmpp.archive.OtrMode;
-import com.xabber.xmpp.archive.SaveMode;
-import com.xabber.xmpp.form.DataFormType;
 import com.xabber.xmpp.ssn.DisclosureValue;
 import com.xabber.xmpp.ssn.Feature;
 import com.xabber.xmpp.ssn.LoggingValue;
@@ -37,6 +35,9 @@ import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Collection;
 
@@ -59,61 +60,62 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
      */
     private final NestedMap<OtrMode> sessionOtrs;
 
-    private final static SSNManager instance;
-
-    static {
-        instance = new SSNManager(Application.getInstance());
-        Application.getInstance().addManager(instance);
-    }
+    private static SSNManager instance;
 
     public static SSNManager getInstance() {
+        if (instance == null) {
+            instance = new SSNManager();
+        }
+
         return instance;
     }
 
-    private SSNManager(Application application) {
-        sessionStates = new NestedMap<SessionState>();
-        sessionOtrs = new NestedMap<OtrMode>();
+    private SSNManager() {
+        sessionStates = new NestedMap<>();
+        sessionOtrs = new NestedMap<>();
     }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
-        sessionStates.clear(accountItem.getAccount());
-        sessionOtrs.clear(accountItem.getAccount());
+        sessionStates.clear(accountItem.getAccount().toString());
+        sessionOtrs.clear(accountItem.getAccount().toString());
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
-        String from = packet.getFrom();
-        if (from == null)
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
+        Jid from = stanza.getFrom();
+        if (from == null) {
             return;
-        if (!(connection instanceof AccountItem)
-                || !(packet instanceof Message))
+        }
+        if (!(connection instanceof AccountItem) || !(stanza instanceof Message)) {
             return;
-        String account = ((AccountItem) connection).getAccount();
-        Message message = (Message) packet;
+        }
+        AccountJid account = ((AccountItem) connection).getAccount();
+        Message message = (Message) stanza;
         String session = message.getThread();
-        if (session == null)
+        if (session == null) {
             return;
-        for (ExtensionElement packetExtension : packet.getExtensions())
+        }
+        for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof Feature) {
                 Feature feature = (Feature) packetExtension;
-                if (!feature.isValid())
+                if (!feature.isValid()) {
                     continue;
-                DataFormType type = feature.getDataFormType();
-                if (type == DataFormType.form)
-                    onFormReceived(account, from, bareAddress, session, feature);
-                else if (type == DataFormType.submit)
-                    onSubmitReceived(account, from, bareAddress, session,
-                            feature);
-                else if (type == DataFormType.result)
-                    onResultReceived(account, from, bareAddress, session,
-                            feature);
+                }
+                DataForm.Type dataFormType = feature.getDataFormType();
+                if (dataFormType == DataForm.Type.form) {
+                    onFormReceived(account, from, session, feature);
+                } else if (dataFormType == DataForm.Type.submit) {
+                    onSubmitReceived(account, from, session, feature);
+                } else if (dataFormType == DataForm.Type.result) {
+                    onResultReceived(account, session, feature);
+                }
             }
+        }
     }
 
-    private void onFormReceived(String account, String from,
-                                String bareAddress, String session, Feature feature) {
-        OtrMode otrMode = getOtrMode(account, bareAddress, session);
+    private void onFormReceived(AccountJid account, Jid from, String session, Feature feature) {
+        OtrMode otrMode = getOtrMode(account, session);
         boolean cancel = false;
 
         Collection<DisclosureValue> disclosureValues = feature
@@ -147,10 +149,10 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         }
 
         if (cancel) {
-            DataForm dataForm = Feature.createDataForm(DataFormType.submit);
+            DataForm dataForm = Feature.createDataForm(DataForm.Type.submit);
             if (feature.getAcceptValue() != null) {
                 Feature.addAcceptField(dataForm, false);
-                sessionStates.remove(account, session);
+                sessionStates.remove(account.toString(), session);
             } else {
                 Feature.addRenegotiateField(dataForm, false);
             }
@@ -158,7 +160,7 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
             return;
         }
 
-        DataForm dataForm = Feature.createDataForm(DataFormType.submit);
+        DataForm dataForm = Feature.createDataForm(DataForm.Type.submit);
         if (feature.getAcceptValue() != null)
             Feature.addAcceptField(dataForm, true);
         else
@@ -168,108 +170,91 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
         if (securityValue != null)
             Feature.addSecurityField(dataForm, null, securityValue);
         if (loggingValue != null) {
-            try {
-                if (loggingValue == LoggingValue.mustnot)
-                    MessageArchiveManager.getInstance().setSaveMode(account,
-                            from, session, SaveMode.fls);
-                else
-                    MessageArchiveManager.getInstance().setSaveMode(account,
-                            from, session, SaveMode.body);
-            } catch (NetworkException e) {
-            }
             Feature.addLoggingField(dataForm, null, loggingValue);
         }
-        sessionStates.put(account, session, SessionState.active);
+        sessionStates.put(account.toString(), session, SessionState.active);
         sendFeature(account, from, session, new Feature(dataForm));
     }
 
-    private void onSubmitReceived(String account, String from,
-                                  String bareAddress, String session, Feature feature) {
+    private void onSubmitReceived(AccountJid account, Jid from, String session, Feature feature) {
         if (feature.getTerminateValue() != null) {
             onTerminateReceived(account, from, session);
             return;
         }
-        if (!isAccepted(account, from, bareAddress, session, feature))
+        if (!isAccepted(account, session, feature)) {
             return;
-        OtrMode otrMode = getOtrMode(account, bareAddress, session);
+        }
+        OtrMode otrMode = getOtrMode(account, session);
         LoggingValue loggingValue = feature.getLoggingValue();
         if (loggingValue == null || otrMode.acceptLoggingValue(loggingValue)) {
-            DataForm dataForm = Feature.createDataForm(DataFormType.result);
-            if (feature.getAcceptValue() != null)
+            DataForm dataForm = Feature.createDataForm(DataForm.Type.result);
+            if (feature.getAcceptValue() != null) {
                 Feature.addAcceptField(dataForm, true);
-            else
+            } else {
                 Feature.addRenegotiateField(dataForm, true);
+            }
             sendFeature(account, from, session, new Feature(dataForm));
-            sessionStates.put(account, session, SessionState.active);
+            sessionStates.put(account.toString(), session, SessionState.active);
         } else {
-            DataForm dataForm = Feature.createDataForm(DataFormType.result);
+            DataForm dataForm = Feature.createDataForm(DataForm.Type.result);
             if (feature.getAcceptValue() != null) {
                 Feature.addAcceptField(dataForm, false);
-                sessionStates.remove(account, session);
-            } else
+                sessionStates.remove(account.toString(), session);
+            } else {
                 Feature.addRenegotiateField(dataForm, false);
+            }
             sendFeature(account, from, session, new Feature(dataForm));
         }
     }
 
-    private void onTerminateReceived(String account, String from, String session) {
-        if (sessionStates.get(account, session) == null)
+    private void onTerminateReceived(AccountJid account, Jid from, String session) {
+        if (sessionStates.get(account.toString(), session) == null) {
             return;
-        sessionStates.remove(account, session);
-        DataForm dataForm = Feature.createDataForm(DataFormType.result);
+        }
+        sessionStates.remove(account.toString(), session);
+        DataForm dataForm = Feature.createDataForm(DataForm.Type.result);
         Feature.addTerminateField(dataForm);
         sendFeature(account, from, session, new Feature(dataForm));
     }
 
-    private OtrMode getOtrMode(String account, String bareAddress,
-                               String session) {
-        OtrMode otrMode = sessionOtrs.get(account, session);
-        if (otrMode != null)
+    private OtrMode getOtrMode(AccountJid account, String session) {
+        OtrMode otrMode = sessionOtrs.get(account.toString(), session);
+        if (otrMode != null) {
             return otrMode;
-        otrMode = MessageArchiveManager.getInstance().getOtrMode(account,
-                bareAddress);
-        if (otrMode != null)
-            return otrMode;
+        }
         return OtrMode.concede;
     }
 
-    private boolean isAccepted(String account, String from, String bareAddress,
-                               String session, Feature feature) {
+    private boolean isAccepted(AccountJid account, String session, Feature feature) {
         Boolean accept = feature.getAcceptValue();
         if (accept != null && !accept) {
-            sessionStates.remove(account, session);
+            sessionStates.remove(account.toString(), session);
             return false;
         }
         Boolean renegotiate = feature.getRenegotiateValue();
         if (renegotiate != null && !renegotiate) {
-            if (sessionStates.get(account, session) == SessionState.renegotiation)
-                sessionStates.put(account, session, SessionState.active);
+            if (sessionStates.get(account.toString(), session) == SessionState.renegotiation) {
+                sessionStates.put(account.toString(), session, SessionState.active);
+            }
             return false;
         }
         return true;
     }
 
-    private void onResultReceived(String account, String from,
-                                  String bareAddress, String session, Feature feature) {
-        isAccepted(account, from, bareAddress, session, feature);
+    private void onResultReceived(AccountJid account, String session, Feature feature) {
+        isAccepted(account, session, feature);
     }
 
     /**
      * Sets OTR mode for the session and starts negotiation / renegotiation.
-     *
-     * @param account
-     * @param user
-     * @param session
-     * @param otrMode
-     * @throws NetworkException
      */
-    public void setSessionOtrMode(String account, String user, String session,
-                                  OtrMode otrMode) {
-        if (sessionOtrs.get(account, session) == otrMode)
+    public void setSessionOtrMode(String account, String user, String session, OtrMode otrMode) {
+        if (sessionOtrs.get(account, session) == otrMode) {
             return;
+        }
         sessionOtrs.put(account, session, otrMode);
         SessionState state = sessionStates.get(account, session);
-        DataForm dataForm = Feature.createDataForm(DataFormType.form);
+        DataForm dataForm = Feature.createDataForm(DataForm.Type.form);
         Feature.addLoggingField(dataForm, otrMode.getLoggingValues(),
                 otrMode.getLoggingValues()[0]);
         Feature.addDisclosureField(dataForm, DisclosureValue.values(),
@@ -283,17 +268,21 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
             sessionStates.put(account, session, SessionState.renegotiation);
             Feature.addRenegotiateField(dataForm, true);
         }
-        sendFeature(account, user, session, new Feature(dataForm));
+        try {
+            sendFeature(AccountJid.from(account), JidCreate.from(user), session, new Feature(dataForm));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
-    private void sendFeature(String account, String user, String session,
-                             Feature feature) {
+    private void sendFeature(AccountJid account, Jid user, String session, Feature feature) {
         Message message = new Message(user, Message.Type.normal);
         message.setThread(session);
         message.addExtension(feature);
         try {
-            ConnectionManager.getInstance().sendStanza(account, message);
+            StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
+            LogManager.exception(this, e);
         }
     }
 

@@ -11,12 +11,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
-import com.xabber.android.ui.activity.ChatViewer;
+import com.xabber.android.ui.activity.ChatActivity;
 
+import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 import org.jxmpp.util.XmppStringUtils;
 
 public class ConferenceAddFragment extends Fragment {
@@ -27,14 +33,14 @@ public class ConferenceAddFragment extends Fragment {
     private EditText nickView;
     private EditText passwordView;
 
-    private String account = null;
-    private String conferenceJid = null;
+    private AccountJid account = null;
+    private EntityBareJid conferenceJid = null;
 
-    public static ConferenceAddFragment newInstance(String account, String conference) {
+    public static ConferenceAddFragment newInstance(AccountJid account, EntityBareJid conference) {
         ConferenceAddFragment fragment = new ConferenceAddFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ACCOUNT, account);
-        args.putString(ARG_CONFERENCE_JID, conference);
+        args.putParcelable(ARG_ACCOUNT, account);
+        args.putSerializable(ARG_CONFERENCE_JID, conference);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,17 +50,17 @@ public class ConferenceAddFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            account = getArguments().getString(ARG_ACCOUNT);
-            conferenceJid = getArguments().getString(ARG_CONFERENCE_JID);
+            account = getArguments().getParcelable(ARG_ACCOUNT);
+            conferenceJid = (EntityBareJid) getArguments().getSerializable(ARG_CONFERENCE_JID);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.conference_add_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_conference_add, container, false);
 
         ((TextView) view.findViewById(R.id.muc_conference_jid)).setText(conferenceJid);
-        ((TextView) view.findViewById(R.id.muc_account_jid)).setText(XmppStringUtils.parseBareJid(account));
+        ((TextView) view.findViewById(R.id.muc_account_jid)).setText(account.getFullJid().asBareJid().toString());
 
         Drawable accountAvatar = AvatarManager.getInstance().getAccountAvatar(account);
         int h = accountAvatar.getIntrinsicHeight();
@@ -90,7 +96,7 @@ public class ConferenceAddFragment extends Fragment {
     /**
      * @return Suggested nickname in the conferenceJid.
      */
-    private String getNickname(String account) {
+    private String getNickname(AccountJid account) {
         if (account == null) {
             return "";
         }
@@ -104,14 +110,22 @@ public class ConferenceAddFragment extends Fragment {
     }
 
     public void addConference() {
-        String nick = nickView.getText().toString();
-        if ("".equals(nick)) {
+        Resourcepart nick;
+        try {
+            nick = Resourcepart.from(nickView.getText().toString());
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
             Toast.makeText(getActivity(), getString(R.string.EMPTY_NICK_NAME), Toast.LENGTH_LONG).show();
             return;
         }
+
         String password = passwordView.getText().toString();
         final boolean join = true;
         MUCManager.getInstance().createRoom(account, conferenceJid, nick, password, join);
-        startActivity(ChatViewer.createSpecificChatIntent(getActivity(), account, conferenceJid));
+        try {
+            startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, UserJid.from(conferenceJid)));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 }

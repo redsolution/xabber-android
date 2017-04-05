@@ -14,8 +14,6 @@
  */
 package com.xabber.android.data.account;
 
-import java.util.Calendar;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -23,14 +21,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.xabber.android.data.Application;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.extension.csi.ClientStateManager;
 import com.xabber.android.receiver.GoAwayReceiver;
 import com.xabber.android.receiver.GoXaReceiver;
 import com.xabber.android.receiver.ScreenReceiver;
+import com.xabber.android.ui.helper.BatteryHelper;
+
+import java.util.Calendar;
 
 /**
  * Manage screen on / off.
@@ -39,19 +40,19 @@ import com.xabber.android.receiver.ScreenReceiver;
  */
 public class ScreenManager implements OnInitializedListener, OnCloseListener {
 
+    private static final String LOG_TAG = ScreenManager.class.getSimpleName();
     private final ScreenReceiver screenReceiver;
     private final AlarmManager alarmManager;
     private final PendingIntent goAwayPendingIntent;
     private final PendingIntent goXaPendingIntent;
 
-    private final static ScreenManager instance;
-
-    static {
-        instance = new ScreenManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static ScreenManager instance;
 
     public static ScreenManager getInstance() {
+        if (instance == null) {
+            instance = new ScreenManager();
+        }
+
         return instance;
     }
 
@@ -79,7 +80,13 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
     public void onClose() {
         alarmManager.cancel(goAwayPendingIntent);
         alarmManager.cancel(goXaPendingIntent);
-        Application.getInstance().unregisterReceiver(screenReceiver);
+        try {
+            Application.getInstance().unregisterReceiver(screenReceiver);
+        } catch (IllegalArgumentException e) {
+            // happens sometimes.
+            LogManager.e(this, "Error unregistering screen receiver " + e.getMessage());
+        }
+
     }
 
     private long getTime(int milliSeconds) {
@@ -93,7 +100,9 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
         int goAway = SettingsManager.connectionGoAway();
         int goXa = SettingsManager.connectionGoXa();
         if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
-            ConnectionManager.getInstance().updateConnections(false);
+            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_ON isOptimizingBattery: " + BatteryHelper.isOptimizingBattery());
+
+//            ConnectionManager.getInstance().updateConnections(false);
             alarmManager.cancel(goAwayPendingIntent);
             alarmManager.cancel(goXaPendingIntent);
             AccountManager.getInstance().wakeUp();
@@ -101,6 +110,8 @@ public class ScreenManager implements OnInitializedListener, OnCloseListener {
             // notify server(s) that client is now active
             ClientStateManager.setActive();
         } else if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+            LogManager.i(LOG_TAG, "onScreen ACTION_SCREEN_OFF isOptimizingBattery: " + BatteryHelper.isOptimizingBattery());
+
             if (goAway >= 0)
                 alarmManager.set(AlarmManager.RTC_WAKEUP, getTime(goAway),
                         goAwayPendingIntent);

@@ -27,21 +27,26 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnLowMemoryListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.OAuthManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.database.sqlite.AvatarTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.avatar.VCardUpdate;
+import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,12 +77,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     public static final String EMPTY_HASH = "";
     private static final Bitmap EMPTY_BITMAP = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
-    private final static AvatarManager instance;
-
-    static {
-        instance = new AvatarManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static AvatarManager instance;
 
     private final Application application;
     /**
@@ -85,7 +85,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * <p/>
      * {@link #EMPTY_HASH} is used to store <code>null</code> values.
      */
-    private final Map<String, String> hashes;
+    private final Map<Jid, String> hashes;
     /**
      * Map with bitmaps for specified hashes.
      * <p/>
@@ -95,7 +95,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Map with drawable used in contact list only for specified uses.
      */
-    private final Map<String, Drawable> contactListDrawables;
+    private final Map<Jid, Drawable> contactListDrawables;
     /**
      * Users' default avatar set.
      */
@@ -105,6 +105,14 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      */
     private final BaseAvatarSet roomAvatarSet;
 
+    public static AvatarManager getInstance() {
+        if (instance == null) {
+            instance = new AvatarManager();
+        }
+
+        return instance;
+    }
+
     private AvatarManager() {
         this.application = Application.getInstance();
         userAvatarSet = new BaseAvatarSet(application, R.array.default_avatars_icons, R.array.default_avatars_colors);
@@ -113,10 +121,6 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         hashes = new HashMap<>();
         bitmaps = new HashMap<>();
         contactListDrawables = new HashMap<>();
-    }
-
-    public static AvatarManager getInstance() {
-        return instance;
     }
 
     /**
@@ -172,14 +176,20 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
 
     @Override
     public void onLoad() {
-        final Map<String, String> hashes = new HashMap<>();
+        final Map<Jid, String> hashes = new HashMap<>();
         final Map<String, Bitmap> bitmaps = new HashMap<>();
         Cursor cursor = AvatarTable.getInstance().list();
         try {
             if (cursor.moveToFirst()) {
                 do {
                     String hash = AvatarTable.getHash(cursor);
-                    hashes.put(AvatarTable.getUser(cursor), hash == null ? EMPTY_HASH : hash);
+                    try {
+                        Jid jid = JidCreate.from(AvatarTable.getUser(cursor));
+                        hashes.put(jid, hash == null ? EMPTY_HASH : hash);
+                    } catch (XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
+
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -198,7 +208,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
         });
     }
 
-    private void onLoaded(Map<String, String> hashes, Map<String, Bitmap> bitmaps) {
+    private void onLoaded(Map<Jid, String> hashes, Map<String, Bitmap> bitmaps) {
         this.hashes.putAll(hashes);
         this.bitmaps.putAll(bitmaps);
     }
@@ -206,16 +216,16 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Sets avatar's hash for user.
      *
-     * @param bareAddress
+     * @param jid
      * @param hash        can be <code>null</code>.
      */
-    private void setHash(final String bareAddress, final String hash) {
-        hashes.put(bareAddress, hash == null ? EMPTY_HASH : hash);
-        contactListDrawables.remove(bareAddress);
+    private void setHash(final Jid jid, final String hash) {
+        hashes.put(jid, hash == null ? EMPTY_HASH : hash);
+        contactListDrawables.remove(jid);
         application.runInBackground(new Runnable() {
             @Override
             public void run() {
-                AvatarTable.getInstance().write(bareAddress, hash);
+                AvatarTable.getInstance().write(jid.toString(), hash);
             }
         });
     }
@@ -223,12 +233,12 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Get avatar's value for user.
      *
-     * @param bareAddress
+     * @param jid
      * @return avatar's value. <code>null</code> can be returned if user has no
      * avatar or avatar doesn't exists.
      */
-    private Bitmap getBitmap(String bareAddress) {
-        String hash = getHash(bareAddress);
+    private Bitmap getBitmap(Jid jid) {
+        String hash = getHash(jid);
         if (hash == null || hash.equals(EMPTY_HASH)) {
             return null;
         }
@@ -241,9 +251,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @Nullable
-    public String getHash(String bareAddress) {
-        String hash = hashes.get(bareAddress);
-        return hash;
+    public String getHash(Jid bareAddress) {
+        return hashes.get(bareAddress);
     }
 
     /**
@@ -282,12 +291,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * <li>account has no avatar.</li>
      * </ul>
      */
-    public Drawable getAccountAvatar(String account) {
-        String jid = OAuthManager.getInstance().getAssignedJid(account);
-        if (jid == null) {
-            jid = account;
-        }
-        Bitmap value = getBitmap(Jid.getBareAddress(jid));
+    public Drawable getAccountAvatar(AccountJid account) {
+        Bitmap value = getBitmap(account.getFullJid().asBareJid());
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
@@ -296,7 +301,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     }
 
     @NonNull
-    public Drawable getDefaultAccountAvatar(String account) {
+    public Drawable getDefaultAccountAvatar(AccountJid account) {
         Drawable[] layers = new Drawable[2];
         layers[0] = new ColorDrawable(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         layers[1] = application.getResources().getDrawable(R.drawable.ic_avatar_1);
@@ -309,8 +314,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getUserAvatar(String user) {
-        Bitmap value = getBitmap(user);
+    public Drawable getUserAvatar(UserJid user) {
+        Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return new BitmapDrawable(application.getResources(), value);
         } else {
@@ -333,8 +338,8 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Bitmap getUserBitmap(String user) {
-        Bitmap value = getBitmap(user);
+    public Bitmap getUserBitmap(UserJid user) {
+        Bitmap value = getBitmap(user.getJid());
         if (value != null) {
             return value;
         } else {
@@ -348,11 +353,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getUserAvatarForContactList(String user) {
-        Drawable drawable = contactListDrawables.get(user);
+    public Drawable getUserAvatarForContactList(UserJid user) {
+        Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
             drawable = getUserAvatar(user);
-            contactListDrawables.put(user, drawable);
+            contactListDrawables.put(user.getJid(), drawable);
         }
         return drawable;
     }
@@ -363,7 +368,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getRoomAvatar(String user) {
+    public Drawable getRoomAvatar(UserJid user) {
         return getDefaultAvatarDrawable(roomAvatarSet.getResourceId(user));
     }
 
@@ -373,7 +378,7 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Bitmap getRoomBitmap(String user) {
+    public Bitmap getRoomBitmap(UserJid user) {
         return drawableToBitmap(getRoomAvatar(user));
     }
 
@@ -383,11 +388,11 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getRoomAvatarForContactList(String user) {
-        Drawable drawable = contactListDrawables.get(user);
+    public Drawable getRoomAvatarForContactList(UserJid user) {
+        Drawable drawable = contactListDrawables.get(user.getJid());
         if (drawable == null) {
             drawable = getRoomAvatar(user);
-            contactListDrawables.put(user, drawable);
+            contactListDrawables.put(user.getJid(), drawable);
         }
         return drawable;
     }
@@ -398,32 +403,30 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
      * @param user
      * @return
      */
-    public Drawable getOccupantAvatar(String user) {
+    public Drawable getOccupantAvatar(UserJid user) {
         return getDefaultAvatarDrawable(userAvatarSet.getResourceId(user));
     }
 
     /**
      * Avatar was received.
      *
-     * @param bareAddress
+     * @param jid
      * @param hash
      * @param value
      */
-    public void onAvatarReceived(String bareAddress, String hash, byte[] value) {
+    public void onAvatarReceived(Jid jid, String hash, byte[] value) {
         setValue(hash, value);
-        setHash(bareAddress, hash);
+        setHash(jid, hash);
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
-        if (!(packet instanceof Presence) || bareAddress == null) {
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
+        if (!(stanza instanceof Presence)) {
             return;
         }
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-        String account = ((AccountItem) connection).getAccount();
-        Presence presence = (Presence) packet;
+
+        AccountJid account = ((AccountItem) connection).getAccount();
+        Presence presence = (Presence) stanza;
         if (presence.getType() == Presence.Type.error) {
             return;
         }
@@ -431,26 +434,30 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
             if (packetExtension instanceof VCardUpdate) {
                 VCardUpdate vCardUpdate = (VCardUpdate) packetExtension;
                 if (vCardUpdate.isValid() && vCardUpdate.isPhotoReady()) {
-                    onPhotoReady(account, bareAddress, vCardUpdate);
+                    try {
+                        onPhotoReady(account, UserJid.from(stanza.getFrom()), vCardUpdate);
+                    } catch (UserJid.UserJidCreateException e) {
+                        LogManager.exception(this, e);
+                    }
                 }
             }
         }
     }
 
-    private void onPhotoReady(final String account, final String bareAddress, VCardUpdate vCardUpdate) {
+    private void onPhotoReady(final AccountJid account, final UserJid user, VCardUpdate vCardUpdate) {
         if (vCardUpdate.isEmpty()) {
-            setHash(bareAddress, EMPTY_HASH);
+            setHash(user.getJid(), EMPTY_HASH);
             return;
         }
         final String hash = vCardUpdate.getPhotoHash();
         if (bitmaps.containsKey(hash)) {
-            setHash(bareAddress, hash);
+            setHash(user.getJid(), hash);
             return;
         }
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                loadBitmap(account, bareAddress, hash);
+                loadBitmap(account, user.getJid(), hash);
             }
         });
     }
@@ -458,39 +465,30 @@ public class AvatarManager implements OnLoadListener, OnLowMemoryListener, OnPac
     /**
      * Read bitmap in background.
      *
-     * @param account
-     * @param bareAddress
-     * @param hash
      */
-    private void loadBitmap(final String account, final String bareAddress, final String hash) {
+    private void loadBitmap(final AccountJid account, final Jid jid, final String hash) {
         final byte[] value = AvatarStorage.getInstance().read(hash);
         final Bitmap bitmap = makeBitmap(value);
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                onBitmapLoaded(account, bareAddress, hash, value, bitmap);
+                onBitmapLoaded(account, jid, hash, value, bitmap);
             }
         });
     }
 
     /**
      * Update data or request avatar on bitmap load.
-     *
-     * @param account
-     * @param bareAddress
-     * @param hash
-     * @param value
-     * @param bitmap
      */
-    private void onBitmapLoaded(String account, String bareAddress,
+    private void onBitmapLoaded(AccountJid account, Jid jid,
                                 String hash, byte[] value, Bitmap bitmap) {
         if (value == null) {
             if (SettingsManager.connectionLoadVCard()) {
-                VCardManager.getInstance().request(account, bareAddress);
+                VCardManager.getInstance().request(account, jid);
             }
         } else {
             bitmaps.put(hash, bitmap == null ? EMPTY_BITMAP : bitmap);
-            setHash(bareAddress, hash);
+            setHash(jid, hash);
         }
     }
 

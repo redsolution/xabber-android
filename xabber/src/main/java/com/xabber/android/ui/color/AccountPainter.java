@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,9 +45,9 @@ public class AccountPainter {
         greyDark = context.getResources().getColor(R.color.grey_700);
     }
 
-    private static String getFirstAccount() {
-        List<String> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getAccounts());
+    private static AccountJid getFirstAccount() {
+        List<AccountJid> list = new ArrayList<>();
+        list.addAll(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(list);
         if (list.isEmpty()) {
             return null;
@@ -55,12 +56,12 @@ public class AccountPainter {
         }
     }
 
-    private static int getAccountColorLevel(String account) {
+    private static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 
     public static int getDefaultAccountColorLevel() {
-        String firstAccount = getFirstAccount();
+        AccountJid firstAccount = getFirstAccount();
         if (firstAccount == null) {
             return 5;
         } else {
@@ -96,12 +97,12 @@ public class AccountPainter {
         return context.getResources().getColor(getThemeAttribute(context, android.R.attr.textColorPrimary));
     }
 
-    public int getAccountMainColor(String account) {
+    public int getAccountMainColor(AccountJid account) {
         return accountMainColors[getAccountColorLevel(account)];
     }
 
     public int getDefaultMainColor() {
-        String firstAccount = getFirstAccount();
+        AccountJid firstAccount = getFirstAccount();
         if (firstAccount == null) {
             return themeMainColor;
         } else {
@@ -109,24 +110,24 @@ public class AccountPainter {
         }
     }
 
-    public int getAccountDarkColor(String account) {
+    public int getAccountDarkColor(AccountJid account) {
         return accountDarkColors[getAccountColorLevel(account)];
     }
 
-    public int getAccountTextColor(String account) {
+    public int getAccountTextColor(AccountJid account) {
         return accountTextColors[getAccountColorLevel(account)];
     }
 
-    public int getAccountRippleColor(String account) {
+    public int getAccountRippleColor(AccountJid account) {
         return accountRippleColors[getAccountColorLevel(account)];
     }
 
-    public int getAccountSendButtonColor(String account) {
+    public int getAccountSendButtonColor(AccountJid account) {
         return accountSendButtonColors[getAccountColorLevel(account)];
     }
 
     public int getDefaultTextColor() {
-        String firstAccount = getFirstAccount();
+        AccountJid firstAccount = getFirstAccount();
         if (firstAccount == null) {
             return themeTextColor;
         } else {
@@ -135,7 +136,7 @@ public class AccountPainter {
     }
 
     public int getDefaultDarkColor() {
-        String firstAccount = getFirstAccount();
+        AccountJid firstAccount = getFirstAccount();
         if (firstAccount == null) {
             return themeDarkColor;
         } else {
@@ -149,6 +150,10 @@ public class AccountPainter {
 
     public int getAccountDarkColorByColorName(String targetColorName) {
         return accountDarkColors[getColorIndexByName(targetColorName)];
+    }
+
+    public String getAccountColorName(AccountJid accountJid) {
+        return accountColorNames[getAccountColorLevel(accountJid)];
     }
 
     private Integer getColorIndexByName(String targetColorName) {

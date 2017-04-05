@@ -10,24 +10,28 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ContactList;
-import com.xabber.android.ui.activity.ContactViewer;
+import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.ContactActivity;
 
 public class ContactDeleteDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ContactDeleteDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ContactDeleteDialogFragment.ARGUMENT_USER";
 
-    private String user;
-    private String account;
+    private UserJid user;
+    private AccountJid account;
 
-    public static ContactDeleteDialogFragment newInstance(String account, String user) {
+    public static ContactDeleteDialogFragment newInstance(AccountJid account, UserJid user) {
         ContactDeleteDialogFragment fragment = new ContactDeleteDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -35,8 +39,8 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
         return new AlertDialog.Builder(getActivity())
                 .setMessage(String.format(getActivity().getString(R.string.contact_delete_confirm),
@@ -49,10 +53,18 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == Dialog.BUTTON_POSITIVE) {
+            MessageManager.getInstance().closeChat(account, user);
+
+            try {
+                PresenceManager.getInstance().discardSubscription(account, user);
+            } catch (NetworkException e) {
+                Application.getInstance().onError(R.string.CONNECTION_FAILED);
+            }
+
             RosterManager.getInstance().removeContact(account, user);
 
-            if (getActivity() instanceof ContactViewer) {
-                startActivity(ContactList.createIntent(getActivity()));
+            if (getActivity() instanceof ContactActivity) {
+                startActivity(ContactListActivity.createIntent(getActivity()));
             }
         }
     }

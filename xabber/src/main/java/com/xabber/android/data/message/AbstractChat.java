@@ -14,72 +14,57 @@
  */
 package com.xabber.android.data.message;
 
-import android.database.Cursor;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ArchiveMode;
-import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.database.MessageDatabaseManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.messagerealm.SyncInfo;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.archive.SaveMode;
-import com.xabber.xmpp.carbon.CarbonManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.UUID;
+
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Chat instance.
  *
  * @author alexander.ivanov
  */
-public abstract class AbstractChat extends BaseEntity {
-
-    /**
-     * Message tag used when server side record is disable.
-     */
-    private static final String NO_RECORD_TAG = "com.xabber.android.data.message.NO_RECORD_TAG";
+public abstract class AbstractChat extends BaseEntity implements RealmChangeListener<RealmResults<MessageItem>> {
 
     /**
      * Number of messages from history to be shown for context purpose.
      */
-    private static final int PRELOADED_MESSAGES = 3;
-    /**
-     * Ids of messages not loaded in to the memory.
-     * <p/>
-     * MUST BE ACCESSED FROM BACKGROUND THREAD ONLY.
-     */
-    protected final Collection<Long> historyIds;
-    /**
-     * Sorted list of messages in this chat.
-     */
-    protected final List<MessageItem> messages;
-    /**
-     * List of messages to be sent.
-     */
-    protected final Collection<MessageItem> sendQuery;
+    public static final int PRELOADED_MESSAGES = 50;
+
     /**
      * Whether chat is open and should be displayed as active chat.
      */
@@ -87,190 +72,60 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Whether changes in status should be record.
      */
-    protected boolean trackStatus;
+    private boolean trackStatus;
     /**
      * Whether user never received notifications from this chat.
      */
-    protected boolean firstNotification;
-    /**
-     * Last incoming message's text.
-     */
-    protected String lastText;
-    /**
-     * Last message's time.
-     */
-    protected Date lastTime;
-    protected Date creationTime = new Date();
+    private boolean firstNotification;
+
     /**
      * Current thread id.
      */
     private String threadId;
-    private boolean isLastMessageIncoming;
 
     private boolean isPrivateMucChat;
     private boolean isPrivateMucChatAccepted;
 
+    private boolean isRemotePreviousHistoryCompletelyLoaded = false;
 
-    protected AbstractChat(final String account, final String user, boolean isPrivateMucChat) {
-        super(account, isPrivateMucChat ? user : Jid.getBareAddress(user));
+    private Date lastSyncedTime;
+    private RealmResults<SyncInfo> syncInfo;
+    private MessageItem lastMessage;
+    private RealmResults<MessageItem> messages;
+
+    protected AbstractChat(@NonNull final AccountJid account, @NonNull final UserJid user, boolean isPrivateMucChat) {
+        super(account, isPrivateMucChat ? user : user.getBareUserJid());
         threadId = StringUtils.randomString(12);
         active = false;
         trackStatus = false;
         firstNotification = true;
-        lastText = "";
-        lastTime = null;
-        historyIds = new ArrayList<Long>();
-        messages = new ArrayList<MessageItem>();
-        sendQuery = new ArrayList<MessageItem>();
         this.isPrivateMucChat = isPrivateMucChat;
         isPrivateMucChatAccepted = false;
-        updateCreationTime();
 
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                loadMessages();
-            }
-        });
-    }
-
-    /**
-     * Load recent messages from local history.
-     * <p/>
-     * CALL THIS METHOD FROM BACKGROUND THREAD ONLY.
-     */
-    private void loadMessages() {
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
-        LinkedList<MessageItem> linkedList = new LinkedList<MessageItem>();
-        boolean started = false;
-        Cursor cursor = MessageTable.getInstance().list(account, user);
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    MessageItem messageItem = createMessageItem(cursor);
-                    if (started) {
-                        messageItems.add(messageItem);
-                        continue;
-                    }
-                    linkedList.addLast(messageItem);
-                    if (messageItem.isRead() && messageItem.isSent()) {
-                        if (linkedList.size() <= PRELOADED_MESSAGES)
-                            continue;
-                        messageItem = linkedList.removeFirst();
-                        historyIds.add(messageItem.getId());
-                        continue;
-                    }
-                    started = true;
-                    messageItems.addAll(linkedList);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        if (!started)
-            messageItems.addAll(linkedList);
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (MessageItem messageItem : messageItems) {
-                    updateSendQuery(messageItem);
-                }
-                addMessages(messageItems);
+                getMessages();
             }
         });
     }
 
-    /**
-     * Update existing message list with loaded.
-     *
-     * @param messageItems
-     */
-    private void addMessages(Collection<MessageItem> messageItems) {
-        for (MessageItem messageItem : messageItems) {
-            FileManager.processFileMessage(messageItem, false);
-        }
-
-        messages.addAll(messageItems);
-        sort();
-        MessageManager.getInstance().onChatChanged(account, user, false);
+    public boolean isRemotePreviousHistoryCompletelyLoaded() {
+        return isRemotePreviousHistoryCompletelyLoaded;
     }
 
-    /**
-     * @param cursor
-     * @return New message item.
-     */
-    private MessageItem createMessageItem(Cursor cursor) {
-        MessageItem messageItem = new MessageItem(this,
-                MessageTable.getTag(cursor), MessageTable.getResource(cursor),
-                MessageTable.getText(cursor), MessageTable.getAction(cursor),
-                MessageTable.getTimeStamp(cursor),
-                MessageTable.getDelayTimeStamp(cursor),
-                MessageTable.isIncoming(cursor), MessageTable.isRead(cursor),
-                MessageTable.isSent(cursor), MessageTable.hasError(cursor),
-                true, false, false);
-        messageItem.setId(MessageTable.getId(cursor));
-        return messageItem;
+    public void setRemotePreviousHistoryCompletelyLoaded(boolean remotePreviousHistoryCompletelyLoaded) {
+        isRemotePreviousHistoryCompletelyLoaded = remotePreviousHistoryCompletelyLoaded;
     }
 
-    /**
-     * Load all message from local history.
-     * <p/>
-     * CALL THIS METHOD FROM BACKGROUND THREAD ONLY.
-     */
-    private void loadHistory() {
-        if (historyIds.isEmpty())
-            return;
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
-        Cursor cursor = MessageTable.getInstance().list(account, user);
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    MessageItem messageItem = createMessageItem(cursor);
-                    if (historyIds.contains(messageItem.getId()))
-                        messageItems.add(messageItem);
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
-        }
-        historyIds.clear();
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                addMessages(messageItems);
-            }
-        });
+    public Date getLastSyncedTime() {
+        return lastSyncedTime;
     }
 
-    /**
-     * Updates chat with messages received from server side message archive.
-     * Replaces local copies with the same tag and offline messages.
-     *
-     * @param tag
-     * @param items
-     * @param replication Whether all message without tag (not received from server
-     *                    side) should be removed.
-     * @return Number of new messages.
-     */
-    public int onMessageDownloaded(String tag, Collection<MessageItem> items,
-                                   boolean replication) {
-        int previous = messages.size();
-        Iterator<MessageItem> iterator = messages.iterator();
-        while (iterator.hasNext()) {
-            MessageItem messageItem = iterator.next();
-            if (messageItem.getAction() == null
-                    && !messageItem.isError()
-                    && messageItem.isSent()
-                    && ((replication && messageItem.getTag() == null)
-                    || messageItem.isOffline() || tag
-                    .equals(messageItem.getTag())))
-                iterator.remove();
-        }
-        messages.addAll(items);
-        sort();
-        MessageManager.getInstance().onChatChanged(account, user, false);
-        return Math.max(0, messages.size() - previous);
+    public void setLastSyncedTime(Date lastSyncedTime) {
+        this.lastSyncedTime = lastSyncedTime;
     }
+
 
     public boolean isActive() {
         if (isPrivateMucChat && !isPrivateMucChatAccepted) {
@@ -280,11 +135,7 @@ public abstract class AbstractChat extends BaseEntity {
         return active;
     }
 
-    void openChat() {
-        if (!active) {
-            updateCreationTime();
-        }
-
+    public void openChat() {
         active = true;
         trackStatus = true;
     }
@@ -294,6 +145,40 @@ public abstract class AbstractChat extends BaseEntity {
         firstNotification = true;
     }
 
+    private String getAccountString() {
+        return account.toString();
+    }
+
+    private String getUserString() {
+        return user.toString();
+    }
+
+    public RealmResults<MessageItem> getMessages() {
+        if (messages == null) {
+            messages = MessageDatabaseManager.getChatMessages(
+                    MessageDatabaseManager.getInstance().getRealmUiThread(),
+                    account,
+                    user);
+            updateLastMessage();
+
+            messages.addChangeListener(this);
+        }
+
+        return messages;
+    }
+
+    public RealmResults<SyncInfo> getSyncInfo() {
+        if (syncInfo == null) {
+            syncInfo = MessageDatabaseManager.getInstance()
+                    .getRealmUiThread().where(SyncInfo.class)
+                    .equalTo(SyncInfo.FIELD_ACCOUNT, getAccountString())
+                    .equalTo(SyncInfo.FIELD_USER, getUserString())
+                    .findAllAsync();
+        }
+
+        return syncInfo;
+    }
+
     boolean isStatusTrackingEnabled() {
         return trackStatus;
     }
@@ -301,7 +186,8 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * @return Target address for sending message.
      */
-    public abstract String getTo();
+    @NonNull
+    public abstract Jid getTo();
 
     /**
      * @return Message type to be assigned.
@@ -318,19 +204,6 @@ public abstract class AbstractChat extends BaseEntity {
         return result;
     }
 
-    void requestToLoadLocalHistory() {
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                loadHistory();
-            }
-        });
-    }
-
-    Collection<MessageItem> getMessages() {
-        return Collections.unmodifiableCollection(messages);
-    }
-
     /**
      * @return Whether user should be notified about incoming messages in chat.
      */
@@ -338,21 +211,15 @@ public abstract class AbstractChat extends BaseEntity {
         return SettingsManager.eventsMessage() != SettingsManager.EventsMessage.none;
     }
 
-    /**
-     * @param text
-     * @return New message instance.
-     */
-    abstract protected MessageItem newMessage(String text);
+    abstract protected MessageItem createNewMessageItem(String text);
 
     /**
      * Creates new action.
-     *
      * @param resource can be <code>null</code>.
      * @param text     can be <code>null</code>.
-     * @param action
      */
-    public void newAction(String resource, String text, ChatAction action) {
-        newMessage(resource, text, action, null, true, false, false, false, true);
+    public void newAction(Resourcepart resource, String text, ChatAction action) {
+        createAndSaveNewMessage(resource, text, action, null, true, false, false, false, null);
     }
 
     /**
@@ -368,211 +235,165 @@ public abstract class AbstractChat extends BaseEntity {
      * @param notify         Notify user about this message when appropriated.
      * @param unencrypted    Whether not encrypted message in OTR chat was received.
      * @param offline        Whether message was received from server side offline storage.
-     * @param record         Whether record server side is enabled.
      * @return
      */
-    protected MessageItem newMessage(String resource, String text,
-                                     ChatAction action, Date delayTimestamp, boolean incoming,
-                                     boolean notify, boolean unencrypted, boolean offline, boolean record) {
-        boolean save;
-        boolean visible = MessageManager.getInstance().isVisibleChat(this);
+    protected void createAndSaveNewMessage(Resourcepart resource, String text,
+                                           final ChatAction action, final Date delayTimestamp, final boolean incoming,
+                                           boolean notify, final boolean unencrypted, final boolean offline, final String stanzaId) {
+        final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
+                incoming, notify, unencrypted, offline, stanzaId);
+        saveMessageItem(messageItem);
+        EventBus.getDefault().post(new NewMessageEvent());
+    }
+
+    public void saveMessageItem(final MessageItem messageItem) {
+        MessageDatabaseManager.getInstance().getRealmUiThread()
+                .executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealm(messageItem);
+            }
+        });
+    }
+
+    protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
+                                            Date delayTimestamp, boolean incoming, boolean notify,
+                                            boolean unencrypted, boolean offline, String stanzaId) {
+        final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
-        if (action == null && text == null)
+        if (action == null && text == null) {
             throw new IllegalArgumentException();
-        if (resource == null)
-            resource = "";
-        if (text == null)
+        }
+        if (text == null) {
             text = "";
+        }
         if (action != null) {
             read = true;
             send = true;
-            save = false;
-        } else {
-            ArchiveMode archiveMode = AccountManager.getInstance()
-                    .getArchiveMode(account);
-            if (archiveMode == ArchiveMode.dontStore)
-                save = false;
-            else
-                save = archiveMode.saveLocally() || !send
-                        || (!read && archiveMode == ArchiveMode.unreadOnly);
-            if (save)
-                save = ChatManager.getInstance().isSaveMessages(account, user);
         }
-        if (save
-                && (unencrypted || (!SettingsManager.securityOtrHistory() && OTRManager
-                .getInstance().getSecurityLevel(account, user) != SecurityLevel.plain)))
-            save = false;
-        Date timestamp = new Date();
+
+        final Date timestamp = new Date();
 
         if (text.trim().isEmpty()) {
             notify = false;
         }
 
-        if (notify || !incoming)
+        if (notify || !incoming) {
             openChat();
-        if (!incoming)
+        }
+        if (!incoming) {
             notify = false;
+        }
 
         if (isPrivateMucChat) {
-            if (!isPrivateMucChatAccepted
-                    || PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account).contains(user)) {
+            if (!isPrivateMucChatAccepted) {
                 notify = false;
             }
         }
 
-        MessageItem messageItem = new MessageItem(this, record ? null
-                : NO_RECORD_TAG, resource, text, action, timestamp,
-                delayTimestamp, incoming, read, send, false, incoming,
-                unencrypted, offline);
-        FileManager.processFileMessage(messageItem, true);
+        MessageItem messageItem = new MessageItem();
 
-        messages.add(messageItem);
-        updateSendQuery(messageItem);
-        sort();
-        if (save && !isPrivateMucChat)
-            requestToWriteMessage(messageItem, resource, text, action,
-                    timestamp, delayTimestamp, incoming, read, send);
+        messageItem.setAccount(account);
+        messageItem.setUser(user);
+
+        if (resource == null) {
+            messageItem.setResource(Resourcepart.EMPTY);
+        }
+        if (action != null) {
+            messageItem.setAction(action.toString());
+        }
+        messageItem.setText(text);
+        messageItem.setTimestamp(timestamp.getTime());
+        if (delayTimestamp != null) {
+            messageItem.setDelayTimestamp(delayTimestamp.getTime());
+        }
+        messageItem.setIncoming(incoming);
+        messageItem.setRead(read);
+        messageItem.setSent(send);
+        messageItem.setUnencrypted(unencrypted);
+        messageItem.setOffline(offline);
+        messageItem.setStanzaId(stanzaId);
+        FileManager.processFileMessage(messageItem);
 
         if (notify && notifyAboutMessage()) {
             if (visible) {
                 if (ChatManager.getInstance().isNotifyVisible(account, user)) {
-                    NotificationManager.getInstance().onCurrentChatMessageNotification(messageItem);
+                    NotificationManager.getInstance().onMessageNotification(messageItem);
                 }
             } else {
                 NotificationManager.getInstance().onMessageNotification(messageItem);
             }
         }
 
-        MessageManager.getInstance().onChatChanged(account, user, incoming);
         return messageItem;
     }
 
-    protected MessageItem newFileMessage(String text, File file, boolean isError) {
-        Date timestamp = new Date();
+    String newFileMessage(final File file) {
+        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
-        MessageItem messageItem = new MessageItem(this, NO_RECORD_TAG, "", text, null, timestamp,
-                null, false, true, false, false, false,
-                false, false);
+        final String messageId = UUID.randomUUID().toString();
 
-        messageItem.setIsUploadFileMessage(true);
-        if (isError) {
-            messageItem.markAsError();
-        }
-        messageItem.setFile(file);
-
-        messages.add(messageItem);
-        sort();
-
-        MessageManager.getInstance().onChatChanged(account, user, false);
-        return messageItem;
-    }
-
-    private void requestToWriteMessage(final MessageItem messageItem,
-                                       final String resource, final String text, final ChatAction action,
-                                       final Date timestamp, final Date delayTimestamp,
-                                       final boolean incoming, final boolean read, final boolean sent) {
-        Application.getInstance().runInBackground(new Runnable() {
+        realm.executeTransaction(new Realm.Transaction() {
             @Override
-            public void run() {
-                long id = MessageTable.getInstance().add(account, user, null,
-                        resource, text, action, timestamp, delayTimestamp,
-                        incoming, read, sent, false);
-                messageItem.setId(id);
+            public void execute(Realm realm) {
+                MessageItem messageItem = new MessageItem(messageId);
+                messageItem.setAccount(account);
+                messageItem.setUser(user);
+                messageItem.setText(file.getName());
+                messageItem.setFilePath(file.getPath());
+                messageItem.setIsImage(FileManager.fileIsImage(file));
+                messageItem.setTimestamp(System.currentTimeMillis());
+                messageItem.setRead(true);
+                messageItem.setSent(true);
+                messageItem.setError(false);
+                messageItem.setIncoming(false);
+                messageItem.setInProgress(true);
+                realm.copyToRealm(messageItem);
             }
         });
-    }
 
-    private void updateSendQuery(MessageItem messageItem) {
-        if (!messageItem.isSent())
-            sendQuery.add(messageItem);
+
+        realm.close();
+
+        return messageId;
     }
 
     /**
-     * Sorts messages and update last text and time.
-     */
-    private void sort() {
-        Collections.sort(messages);
-        for (int index = messages.size() - 1; index >= 0; index--) {
-            MessageItem messageItem = messages.get(index);
-            if (messageItem.getAction() == null) {
-                lastText = messageItem.getDisplayText();
-                lastTime = messageItem.getTimestamp();
-                isLastMessageIncoming = messageItem.isIncoming();
-                return;
-            }
-        }
-    }
-
-    void removeMessage(MessageItem messageItem) {
-        messages.remove(messageItem);
-        sendQuery.remove(messageItem);
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>();
-        messageItems.add(messageItem);
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                MessageTable.getInstance().removeMessages(MessageManager.getMessageIds(messageItems, true));
-            }
-        });
-    }
-
-    void removeAllMessages() {
-        final ArrayList<MessageItem> messageItems = new ArrayList<MessageItem>(
-                messages);
-        lastText = "";
-        messages.clear();
-        sendQuery.clear();
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                MessageTable.getInstance().removeMessages(MessageManager.getMessageIds(messageItems, true));
-                MessageTable.getInstance().removeMessages(historyIds);
-                historyIds.clear();
-            }
-        });
-    }
-
-    /**
-     * @param bareAddress bareAddress of the user.
-     * @param user        full jid.
      * @return Whether chat accepts packets from specified user.
      */
-    boolean accept(String bareAddress, String user) {
-        return this.user.equals(bareAddress);
+    private boolean accept(UserJid jid) {
+        return this.user.equals(jid);
     }
 
-    /**
-     * Requests to send all not sent messages.
-     */
-    public void sendMessages() {
-        sendQueue(null);
+    @Nullable
+    public synchronized MessageItem getLastMessage() {
+        return lastMessage;
     }
 
-    /**
-     * @return Whether chat can send messages.
-     */
-    protected boolean canSendMessage() {
-        return !sendQuery.isEmpty();
-    }
-
-    /**
-     * @return Last incoming message's text. Empty string if last message is
-     * outgoing.
-     */
-    public String getLastText() {
-        return lastText;
+    private void updateLastMessage() {
+        if (messages.isValid() && messages.isLoaded() && !messages.isEmpty()) {
+            lastMessage = MessageDatabaseManager.getInstance()
+                    .getRealmUiThread()
+                    .copyFromRealm(messages.last());
+        } else {
+            lastMessage = null;
+        }
     }
 
     /**
      * @return Time of last message in chat. Can be <code>null</code>.
      */
     public Date getLastTime() {
-        return lastTime;
+        MessageItem lastMessage = getLastMessage();
+        if (lastMessage != null) {
+            return new Date(lastMessage.getTimestamp());
+        } else {
+            return null;
+        }
     }
 
     /**
-     * @param body
      * @return New message packet to be sent.
      */
     public Message createMessagePacket(String body) {
@@ -587,83 +408,106 @@ public abstract class AbstractChat extends BaseEntity {
     /**
      * Prepare text to be send.
      *
-     * @param text
      * @return <code>null</code> if text shouldn't be send.
      */
     protected String prepareText(String text) {
         return text;
     }
 
-    /**
-     * Requests to send messages from queue.
-     *
-     * @param intent can be <code>null</code>.
-     */
-    protected void sendQueue(MessageItem intent) {
-        if (!canSendMessage())
-            return;
-        final ArrayList<MessageItem> sentMessages = new ArrayList<MessageItem>();
-        final ArrayList<MessageItem> removeMessages = new ArrayList<MessageItem>();
-        for (final MessageItem messageItem : sendQuery) {
-            String text = prepareText(messageItem.getText());
-            if (text == null) {
-                messageItem.markAsError();
-                Application.getInstance().runInBackground(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (messageItem.getId() != null)
-                            MessageTable.getInstance().markAsError(
-                                    messageItem.getId());
-                    }
-                });
-            } else {
-                Message message = createMessagePacket(text);
-                messageItem.setPacketID(message.getPacketID());
-                ChatStateManager.getInstance().updateOutgoingMessage(this,
-                        message);
-                ReceiptManager.getInstance().updateOutgoingMessage(this,
-                        message, messageItem);
-                CarbonManager.getInstance().updateOutgoingMessage(this,
-                        message, messageItem);
-                if (messageItem != intent)
-                    message.addExtension(new DelayInformation(messageItem
-                            .getTimestamp()));
-                try {
-                    ConnectionManager.getInstance()
-                            .sendStanza(account, message);
-                } catch (NetworkException e) {
-                    break;
-                }
-            }
-            if (MessageArchiveManager.getInstance().getSaveMode(account, user,
-                    threadId) == SaveMode.fls)
-                messageItem.setTag(NO_RECORD_TAG);
-            if (messageItem != intent) {
-                messageItem.setSentTimeStamp(new Date());
-                Collections.sort(messages);
-            }
-            messageItem.markAsSent();
-            if (AccountManager.getInstance()
-                    .getArchiveMode(messageItem.getChat().getAccount())
-                    .saveLocally())
-                sentMessages.add(messageItem);
-            else
-                removeMessages.add(messageItem);
-        }
-        sendQuery.removeAll(sentMessages);
-        sendQuery.removeAll(removeMessages);
-        MessageManager.getInstance().onChatChanged(account, user, false);
-        Application.getInstance().runInBackground(new Runnable() {
+
+    public void sendMessages() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                Collection<Long> sentIds = MessageManager.getMessageIds(
-                        sentMessages, false);
-                Collection<Long> removeIds = MessageManager.getMessageIds(
-                        removeMessages, true);
-                MessageTable.getInstance().markAsSent(sentIds);
-                MessageTable.getInstance().removeMessages(removeIds);
+                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+
+                RealmResults<MessageItem> messagesToSend = realm.where(MessageItem.class)
+                        .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
+                        .equalTo(MessageItem.Fields.USER, user.toString())
+                        .equalTo(MessageItem.Fields.SENT, false)
+                        .findAllSorted(MessageItem.Fields.TIMESTAMP, Sort.ASCENDING);
+
+                realm.beginTransaction();
+
+                for (final MessageItem messageItem : messagesToSend) {
+                    if (!sendMessage(messageItem)) {
+                        break;
+                    }
+                }
+                realm.commitTransaction();
+
+                realm.close();
             }
         });
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    boolean sendMessage(MessageItem messageItem) {
+        String text = prepareText(messageItem.getText());
+        Long timestamp = messageItem.getTimestamp();
+
+        Date currentTime = new Date(System.currentTimeMillis());
+        Date delayTimestamp = null;
+
+        if (timestamp != null) {
+            if (currentTime.getTime() - timestamp > 60000) {
+                delayTimestamp = currentTime;
+            }
+        }
+
+        Message message = null;
+        if (text != null) {
+            message = createMessagePacket(text);
+        }
+
+        if (message != null) {
+            ChatStateManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            CarbonManager.getInstance().updateOutgoingMessage(AbstractChat.this, message);
+            if (delayTimestamp != null) {
+                message.addExtension(new DelayInformation(delayTimestamp));
+            }
+
+            final String messageId = messageItem.getUniqueId();
+            try {
+                StanzaSender.sendStanza(account, message, new StanzaListener() {
+                    @Override
+                    public void processStanza(Stanza packet) throws SmackException.NotConnectedException {
+                        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                        realm.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+                                    MessageItem acknowledgedMessage = realm
+                                            .where(MessageItem.class)
+                                            .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+                                            .findFirst();
+
+                                    if (acknowledgedMessage != null) {
+                                        acknowledgedMessage.setAcknowledged(true);
+                                    }
+                                }
+                            });
+                        realm.close();
+                    }
+                });
+            } catch (NetworkException e) {
+                return false;
+            }
+        }
+
+        if (message == null) {
+            messageItem.setError(true);
+        } else {
+            messageItem.setStanzaId(message.getStanzaId());
+        }
+
+        if (delayTimestamp != null) {
+            messageItem.setDelayTimestamp(delayTimestamp.getTime());
+        }
+        if (messageItem.getTimestamp() == null) {
+            messageItem.setTimestamp(currentTime.getTime());
+        }
+        messageItem.setSent(true);
+        return true;
     }
 
     public String getThreadId() {
@@ -676,43 +520,25 @@ public abstract class AbstractChat extends BaseEntity {
      * @param threadId <code>null</code> if current value shouldn't be changed.
      */
     protected void updateThreadId(String threadId) {
-        if (threadId == null)
+        if (threadId == null) {
             return;
+        }
         this.threadId = threadId;
-    }
-
-    /**
-     * Returns number of messages to be loaded from server side archive to be
-     * displayed. Should be called before notification messages will be removed.
-     *
-     * @return
-     */
-    public int getRequiredMessageCount() {
-        int count = PRELOADED_MESSAGES
-                + NotificationManager.getInstance()
-                .getNotificationMessageCount(account, user);
-        for (MessageItem message : messages)
-            if (message.isIncoming()) {
-                count -= 1;
-                if (count <= 0)
-                    return 0;
-            }
-        return count;
     }
 
     /**
      * Processes incoming packet.
      *
-     * @param bareAddress
+     * @param userJid
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(String bareAddress, Stanza packet) {
-        return accept(bareAddress, packet.getFrom());
+    protected boolean onPacket(UserJid userJid, Stanza packet) {
+        return accept(userJid);
     }
 
     /**
-     * Connection complete.
+     * Connection complete.f
      */
     protected void onComplete() {
     }
@@ -723,27 +549,20 @@ public abstract class AbstractChat extends BaseEntity {
     protected void onDisconnect() {
     }
 
-    public Date getCreationTime() {
-        return creationTime;
-    }
-
-    public void updateCreationTime() {
-        creationTime.setTime(System.currentTimeMillis());
-    }
-
-    public boolean isLastMessageIncoming() {
-        return isLastMessageIncoming;
-    }
-
     public void setIsPrivateMucChatAccepted(boolean isPrivateMucChatAccepted) {
         this.isPrivateMucChatAccepted = isPrivateMucChatAccepted;
     }
 
-    public boolean isPrivateMucChat() {
+    boolean isPrivateMucChat() {
         return isPrivateMucChat;
     }
 
-    public boolean isPrivateMucChatAccepted() {
+    boolean isPrivateMucChatAccepted() {
         return isPrivateMucChatAccepted;
+    }
+
+    @Override
+    public void onChange(RealmResults<MessageItem> messageItems) {
+        updateLastMessage();
     }
 }

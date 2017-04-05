@@ -7,14 +7,20 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountProtocol;
 import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.helper.OrbotHelper;
+
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,30 +28,18 @@ import java.util.Map;
 public class AccountEditorFragment extends BaseSettingsFragment {
 
     @Nullable
-    private AccountEditorFragmentInteractionListener mListener;
+    private AccountEditorFragmentInteractionListener listener;
 
     @Override
     protected void onInflate(Bundle savedInstanceState) {
-        AccountProtocol protocol;
-        if (mListener == null) {
+        if (listener == null) {
             return;
         }
 
-        protocol = mListener.getAccountItem().getConnectionSettings().getProtocol();
-        if (protocol == AccountProtocol.xmpp) {
-            addPreferencesFromResource(R.xml.account_editor_xmpp);
-        } else if (protocol == AccountProtocol.gtalk) {
-            addPreferencesFromResource(R.xml.account_editor_xmpp);
-        } else {
-            throw new IllegalStateException();
-        }
-        if (!Application.getInstance().isContactsSupported()) {
-            getPreferenceScreen().removePreference(findPreference(getString(R.string.account_syncable_key)));
-        }
-
+        addPreferencesFromResource(R.xml.account_editor_xmpp);
         getPreferenceScreen().removePreference(findPreference(getString(R.string.account_sasl_key)));
 
-        AccountManager.getInstance().removeAuthorizationError(mListener.getAccount());
+        AccountManager.getInstance().removeAccountError(listener.getAccount());
     }
 
     @Override
@@ -103,7 +97,7 @@ public class AccountEditorFragment extends BaseSettingsFragment {
 
         if (getString(R.string.account_proxy_type_key).equals(key)) {
             if (getString(R.string.orbot).equals(newValue) && !OrbotHelper.isOrbotInstalled()) {
-                mListener.showOrbotDialog();
+                listener.showOrbotDialog();
                 return false;
             }
 
@@ -119,17 +113,13 @@ public class AccountEditorFragment extends BaseSettingsFragment {
             }
         }
 
-        if (getString(R.string.account_color_key).equals(key)) {
-            mListener.onColorChange((String) newValue);
-        }
-
         return true;
     }
 
     @Override
     protected Map<String, Object> getValues() {
         Map<String, Object> source = new HashMap<>();
-        AccountItem accountItem = mListener.getAccountItem();
+        AccountItem accountItem = listener.getAccountItem();
 
         putValue(source, R.string.account_priority_key, accountItem.getPriority());
         putValue(source, R.string.account_enabled_key, accountItem.isEnabled());
@@ -142,10 +132,10 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         putValue(source, R.string.account_custom_key, connectionSettings.isCustomHostAndPort());
         putValue(source, R.string.account_host_key, connectionSettings.getHost());
         putValue(source, R.string.account_port_key, connectionSettings.getPort());
-        putValue(source, R.string.account_server_key, connectionSettings.getServerName());
-        putValue(source, R.string.account_username_key, connectionSettings.getUserName());
+        putValue(source, R.string.account_server_key, connectionSettings.getServerName().toString());
+        putValue(source, R.string.account_username_key, connectionSettings.getUserName().toString());
         putValue(source, R.string.account_password_key, connectionSettings.getPassword());
-        putValue(source, R.string.account_resource_key, connectionSettings.getResource());
+        putValue(source, R.string.account_resource_key, connectionSettings.getResource().toString());
         putValue(source, R.string.account_sasl_key, connectionSettings.isSaslEnabled());
         putValue(source, R.string.account_tls_mode_key, connectionSettings.getTlsMode().ordinal());
         putValue(source, R.string.account_compression_key, connectionSettings.useCompression());
@@ -165,21 +155,38 @@ public class AccountEditorFragment extends BaseSettingsFragment {
 
     @Override
     protected boolean setValues(Map<String, Object> source, Map<String, Object> result) {
-        ProxyType proxyType = ProxyType.values()[getInt(result, R.string.account_proxy_type_key)];
-        if (proxyType == ProxyType.orbot && !OrbotHelper.isOrbotInstalled()) {
-            mListener.showOrbotDialog();
+        if (listener == null) {
             return false;
         }
+
+        ProxyType proxyType = ProxyType.values()[getInt(result, R.string.account_proxy_type_key)];
+        if (proxyType == ProxyType.orbot && !OrbotHelper.isOrbotInstalled()) {
+            listener.showOrbotDialog();
+            return false;
+        }
+
+        DomainBareJid serverName;
+        Localpart userName;
+        Resourcepart resource;
+        try {
+            serverName = JidCreate.domainBareFrom(getString(result, R.string.account_server_key));
+            userName = Localpart.from(getString(result, R.string.account_username_key));
+            resource = Resourcepart.from(getString(result, R.string.account_resource_key));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return false;
+        }
+
         AccountManager.getInstance().updateAccount(
-                mListener.getAccount(),
+                listener.getAccount(),
                 getBoolean(result, R.string.account_custom_key),
                 getString(result, R.string.account_host_key),
                 getInt(result, R.string.account_port_key),
-                getString(result, R.string.account_server_key),
-                getString(result, R.string.account_username_key),
+                serverName,
+                userName,
                 getBoolean(result, R.string.account_store_password_key),
                 getString(result, R.string.account_password_key),
-                getString(result, R.string.account_resource_key),
+                resource,
                 getInt(result, R.string.account_priority_key),
                 getBoolean(result, R.string.account_enabled_key),
                 getBoolean(result, R.string.account_sasl_key),
@@ -203,7 +210,7 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         super.onAttach(activity);
 
         try {
-            mListener = (AccountEditorFragmentInteractionListener) activity;
+            listener = (AccountEditorFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement AccountEditorFragmentInteractionListener");
@@ -213,13 +220,12 @@ public class AccountEditorFragment extends BaseSettingsFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
     public interface AccountEditorFragmentInteractionListener {
-        String getAccount();
+        AccountJid getAccount();
         AccountItem getAccountItem();
         void showOrbotDialog();
-        void onColorChange(String colorName);
     }
 }

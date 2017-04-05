@@ -16,6 +16,8 @@ package com.xabber.android.data.message;
 
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.AbstractContact;
 
 /**
@@ -25,7 +27,7 @@ import com.xabber.android.data.roster.AbstractContact;
  */
 public class ChatContact extends AbstractContact {
 
-    public ChatContact(String account, String user) {
+    public ChatContact(AccountJid account, UserJid user) {
         super(account, user);
     }
 

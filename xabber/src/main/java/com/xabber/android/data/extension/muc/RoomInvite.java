@@ -19,11 +19,13 @@ import android.content.Intent;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ContactList;
-import com.xabber.xmpp.address.Jid;
+import com.xabber.android.ui.activity.ContactListActivity;
+
 
 /**
  * Invite to join the room.
@@ -35,7 +37,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
     /**
      * JID of entity that sent an invitation.
      */
-    private final String inviter;
+    private final UserJid inviter;
 
     /**
      * Text of invitation.
@@ -47,7 +49,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
      */
     private final String password;
 
-    public RoomInvite(String account, String user, String inviter, String reason, String password) {
+    public RoomInvite(AccountJid account, UserJid user, UserJid inviter, String reason, String password) {
         super(account, user);
         this.inviter = inviter;
         this.reason = reason == null ? "" : reason;
@@ -56,7 +58,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return ContactList.createMucInviteIntent(Application.getInstance(), account, user);
+        return ContactListActivity.createMucInviteIntent(Application.getInstance(), account, user);
     }
 
     @Override
@@ -66,7 +68,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public String getTitle() {
-        return user;
+        return user.toString();
     }
 
     /**
@@ -74,7 +76,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
      */
     public String getConfirmation() {
         String accountName = AccountManager.getInstance().getVerboseName(account);
-        String inviterName = RosterManager.getInstance().getBestContact(account, Jid.getBareAddress(inviter)).getName();
+        String inviterName = RosterManager.getInstance().getBestContact(account, inviter).getName();
         if (reason == null || "".equals(reason)) {
             return Application.getInstance()
                     .getString(R.string.muc_invite_confirm, accountName,
@@ -86,7 +88,7 @@ public class RoomInvite extends BaseEntity implements EntityNotificationItem {
         }
     }
 
-    public String getInviter() {
+    public UserJid getInviter() {
         return inviter;
     }
 

@@ -21,7 +21,11 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.data.connection.CertificateManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.activity.AboutActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.IntroActivity;
 import com.xabber.android.ui.activity.LoadActivity;
 
 import java.util.ArrayList;
@@ -39,12 +43,7 @@ public class ActivityManager implements OnUnloadListener {
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
 
     private static final boolean LOG = true;
-    private final static ActivityManager instance;
-
-    static {
-        instance = new ActivityManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static ActivityManager instance;
 
     private final Application application;
     /**
@@ -64,15 +63,19 @@ public class ActivityManager implements OnUnloadListener {
      */
     private OnErrorListener onErrorListener;
 
-    private ActivityManager() {
-        this.application = Application.getInstance();
-        activities = new ArrayList<Activity>();
-        nextTaskIndex = 0;
-        taskIndexes = new WeakHashMap<Activity, Integer>();
+    public static ActivityManager getInstance() {
+        if (instance == null) {
+            instance = new ActivityManager();
+        }
+
+        return instance;
     }
 
-    public static ActivityManager getInstance() {
-        return instance;
+    private ActivityManager() {
+        this.application = Application.getInstance();
+        activities = new ArrayList<>();
+        nextTaskIndex = 0;
+        taskIndexes = new WeakHashMap<>();
     }
 
     /**
@@ -80,9 +83,11 @@ public class ActivityManager implements OnUnloadListener {
      */
     private void rebuildStack() {
         Iterator<Activity> iterator = activities.iterator();
-        while (iterator.hasNext())
-            if (iterator.next().isFinishing())
+        while (iterator.hasNext()) {
+            if (iterator.next().isFinishing()) {
                 iterator.remove();
+            }
+        }
     }
 
     /**
@@ -91,11 +96,11 @@ public class ActivityManager implements OnUnloadListener {
      * @param finishRoot also finish root contact list.
      */
     public void clearStack(boolean finishRoot) {
-        ContactList root = null;
+        ContactListActivity root = null;
         rebuildStack();
         for (Activity activity : activities) {
-            if (!finishRoot && root == null && activity instanceof ContactList)
-                root = (ContactList) activity;
+            if (!finishRoot && root == null && activity instanceof ContactListActivity)
+                root = (ContactListActivity) activity;
             else
                 activity.finish();
         }
@@ -108,7 +113,7 @@ public class ActivityManager implements OnUnloadListener {
     public boolean hasContactList(Context context) {
         rebuildStack();
         for (Activity activity : activities)
-            if (activity instanceof ContactList)
+            if (activity instanceof ContactListActivity)
                 return true;
         return false;
     }
@@ -139,7 +144,7 @@ public class ActivityManager implements OnUnloadListener {
         if (LOG) {
             LogManager.i(activity, "onCreate: " + activity.getIntent());
         }
-        if (!activity.getClass().getSimpleName().equals("AboutViewer")) {
+        if (!(activity instanceof AboutActivity) && !(activity instanceof IntroActivity)) {
             applyTheme(activity);
         }
         if (application.isClosing() && !(activity instanceof LoadActivity)) {
@@ -174,6 +179,9 @@ public class ActivityManager implements OnUnloadListener {
     public void onPause(Activity activity) {
         if (LOG)
             LogManager.i(activity, "onPause");
+
+        CertificateManager.getInstance().unregisterActivity(activity);
+
         if (onErrorListener != null)
             application
                     .removeUIListener(OnErrorListener.class, onErrorListener);
@@ -188,11 +196,13 @@ public class ActivityManager implements OnUnloadListener {
      * @param activity
      */
     public void onResume(final Activity activity) {
-        if (LOG)
+        if (LOG) {
             LogManager.i(activity, "onResume");
+        }
         if (!application.isInitialized() && !(activity instanceof LoadActivity)) {
-            if (LOG)
+            if (LOG) {
                 LogManager.i(this, "Wait for loading");
+            }
             activity.startActivity(LoadActivity.createIntent(activity));
         }
         if (onErrorListener != null) {
@@ -206,6 +216,8 @@ public class ActivityManager implements OnUnloadListener {
             }
         };
         application.addUIListener(OnErrorListener.class, onErrorListener);
+
+        CertificateManager.getInstance().registerActivity(activity);
     }
 
     /**
@@ -277,9 +289,11 @@ public class ActivityManager implements OnUnloadListener {
         if (index == null) {
             activity.moveTaskToBack(true);
         } else {
-            for (Entry<Activity, Integer> entry : taskIndexes.entrySet())
-                if (entry.getValue() == index)
+            for (Entry<Activity, Integer> entry : taskIndexes.entrySet()) {
+                if (entry.getValue().equals(index)) {
                     entry.getKey().finish();
+                }
+            }
         }
     }
 

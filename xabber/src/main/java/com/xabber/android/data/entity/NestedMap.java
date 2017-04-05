@@ -32,12 +32,10 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
     private final Map<String, Map<String, T>> map;
 
     public NestedMap() {
-        map = new HashMap<String, Map<String, T>>();
+        map = new HashMap<>();
     }
 
     /**
-     * @param first
-     * @param second
      * @return <code>null</code> if there is no such first or second level.
      */
     public T get(String first, String second) {
@@ -49,15 +47,11 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
 
     /**
      * Puts value. Nested map will be created if necessary.
-     *
-     * @param first
-     * @param second
-     * @param value
      */
     synchronized public void put(String first, String second, T value) {
         Map<String, T> nested = map.get(first);
         if (nested == null) {
-            nested = new HashMap<String, T>();
+            nested = new HashMap<>();
             map.put(first, nested);
         }
         nested.put(second, value);
@@ -65,9 +59,6 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
 
     /**
      * Removes value. Nested map will be removed if necessary.
-     *
-     * @param first
-     * @param second
      */
     synchronized public T remove(String first, String second) {
         Map<String, T> nested = map.get(first);
@@ -81,8 +72,6 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
 
     /**
      * Removes all information associated with first level.
-     *
-     * @param first
      */
     synchronized public void clear(String first) {
         map.remove(first);
@@ -106,8 +95,6 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
      * Returns an {@link Iterator} for the elements in this object.
      * <p/>
      * Iterators are designed to be used by only one thread at a time.
-     *
-     * @return
      */
     @Override
     public Iterator<Entry<T>> iterator() {
@@ -117,7 +104,6 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
     /**
      * Returns nested map.
      *
-     * @param first
      * @return empty map if there is no such first level.
      */
     public Map<String, T> getNested(String first) {
@@ -131,8 +117,6 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
      * Collection with values.
      * <p/>
      * ONLY {@link Collection#iterator()} FUNCTION IS SUPPORTED.
-     *
-     * @return
      */
     public Collection<T> values() {
         return new Values();
@@ -140,8 +124,6 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
 
     /**
      * Adds all elements from another {@link NestedMap}.
-     *
-     * @param nestedMap
      */
     public void addAll(NestedMap<T> nestedMap) {
         for (NestedMap.Entry<T> entry : nestedMap)
@@ -160,7 +142,7 @@ public class NestedMap<T> implements Iterable<NestedMap.Entry<T>> {
         private final String second;
         private final T value;
 
-        public Entry(String first, String second, T value) {
+        Entry(String first, String second, T value) {
             super();
             this.first = first;
             this.second = second;

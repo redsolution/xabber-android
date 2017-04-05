@@ -14,22 +14,18 @@
  */
 package com.xabber.xmpp.ssn;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import com.xabber.xmpp.PacketExtension;
+import com.xabber.xmpp.ProviderUtils;
 
-import org.jivesoftware.smack.util.XmlStringBuilder;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.xabber.xmpp.PacketExtension;
-import com.xabber.xmpp.ProviderUtils;
-import com.xabber.xmpp.SerializerUtils;
-import com.xabber.xmpp.form.DataFormType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Packet extension for Stanza Session Negotiation.
@@ -70,8 +66,8 @@ public class Feature extends PacketExtension {
     public boolean isValid() {
         if (dataForm == null)
             return false;
-        DataFormType dataFormType = getDataFormType();
-        if (dataFormType == null || dataFormType == DataFormType.cancel)
+        DataForm.Type dataFormType = getDataFormType();
+        if (dataFormType == null || dataFormType == DataForm.Type.cancel)
             return false;
         int selected = 0;
         if (getAcceptValue() != null)
@@ -80,7 +76,7 @@ public class Feature extends PacketExtension {
             selected += 1;
         if (getTerminateValue() != null) {
             if (!getTerminateValue()
-                    || getDataFormType() != DataFormType.submit)
+                    || dataFormType != DataForm.Type.submit)
                 return false;
             selected += 1;
         }
@@ -107,8 +103,8 @@ public class Feature extends PacketExtension {
         this.dataForm = dataForm;
     }
 
-    static public DataForm createDataForm(DataFormType type) {
-        DataForm dataForm = new DataForm(DataForm.Type.fromString(type.toString()));
+    static public DataForm createDataForm(DataForm.Type type) {
+        DataForm dataForm = new DataForm(type);
         FormField typeField = new FormField(FORM_TYPE_FIELD);
         typeField.addValue(FORM_TYPE_VALUE);
         typeField.setType(FormField.Type.hidden);
@@ -260,9 +256,9 @@ public class Feature extends PacketExtension {
         return ProviderUtils.parseBoolean(getValue(TERMINATE_FIELD));
     }
 
-    public DataFormType getDataFormType() {
+    public DataForm.Type getDataFormType() {
         try {
-            return DataFormType.fromString(dataForm.getType().toString());
+            return dataForm.getType();
         } catch (NoSuchElementException e) {
             return null;
         }

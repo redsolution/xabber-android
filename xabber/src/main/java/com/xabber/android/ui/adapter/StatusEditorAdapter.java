@@ -63,7 +63,7 @@ public class StatusEditorAdapter extends BaseAdapter implements UpdatableAdapter
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(R.layout.status_editor_item, parent, false);
+            view = activity.getLayoutInflater().inflate(R.layout.item_status_editor, parent, false);
         } else {
             view = convertView;
         }

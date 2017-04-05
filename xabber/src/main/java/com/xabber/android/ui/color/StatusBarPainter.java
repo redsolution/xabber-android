@@ -5,6 +5,8 @@ import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.xabber.android.data.entity.AccountJid;
+
 
 public class StatusBarPainter {
 
@@ -21,7 +23,7 @@ public class StatusBarPainter {
         }
     }
 
-    public void updateWithAccountName(String account) {
+    public void updateWithAccountName(AccountJid account) {
         updateWithColor(accountPainter.getAccountDarkColor(account));
     }
 

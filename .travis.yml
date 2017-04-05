@@ -1,0 +1,30 @@
+language: android
+android:
+  components:
+    - platform-tools
+    - tools
+    - build-tools-25.0.2
+    - build-tools-25.0.0
+    - android-25
+    - android-23
+    - extra-android-m2repository
+    - extra-google-m2repository
+
+  licenses:
+    - '.+'
+
+install:
+  # Check install section: http://docs.travis-ci.com/user/build-configuration/#install
+  # If you'd like to skip the install stage entirely, set it to true and nothing will be run.
+  - true
+
+script:
+  # By default Travis-ci executes './gradlew build connectedCheck' if no 'script:' section found.
+  - ./gradlew build
+
+
+env:
+- GRADLE_OPTS="-Xmx1024m -XX:MaxPermSize=1024m"
+
+jdk:
+  - oraclejdk8

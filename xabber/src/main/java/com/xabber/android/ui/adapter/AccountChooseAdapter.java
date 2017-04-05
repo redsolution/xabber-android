@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 
 import java.util.ArrayList;
@@ -34,14 +35,14 @@ import java.util.Collections;
  * @author alexander.ivanov
  */
 public class AccountChooseAdapter extends BaseAdapter {
-    protected final ArrayList<String> accounts;
+    protected final ArrayList<AccountJid> accounts;
     private final int[] accountColors;
     private final Activity activity;
 
     public AccountChooseAdapter(Activity activity) {
         super();
         this.activity = activity;
-        accounts = new ArrayList<>(AccountManager.getInstance().getAccounts());
+        accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
         Collections.sort(accounts);
 
         accountColors = activity.getResources().getIntArray(R.array.account_500);
@@ -68,11 +69,11 @@ public class AccountChooseAdapter extends BaseAdapter {
         final AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
             view = activity.getLayoutInflater().inflate(
-                    R.layout.account_choose_item, parent, false);
+                    R.layout.item_account_choose, parent, false);
         } else {
             view = convertView;
         }
-        final String account = (String) getItem(position);
+        final AccountJid account = (AccountJid) getItem(position);
 
         int accountColor = accountColors[accountManager.getColorLevel(account)];
         ((ImageView) view.findViewById(R.id.avatar))

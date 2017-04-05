@@ -1,28 +1,38 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'realm-android'
+apply plugin: 'com.frogermcs.androiddevmetrics'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 247
-        versionName '1.0.74'
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 340
+        versionName '1.0.168'
     }
 
     lintOptions {
         // problems with generated "applicationId" string resource
         disable 'MissingTranslation'
+        disable 'InvalidPackage'
+
+        abortOnError false
     }
 
-    dexOptions {
-        incremental true
+    subprojects {
+        afterEvaluate {
+            if (getPlugins().hasPlugin('android') ||
+                    getPlugins().hasPlugin('android-library')) {
+
+                configure(android.lintOptions) {
+                    abortOnError false
+
+                }
+            }
+        }
     }
 
     productFlavors {
@@ -30,54 +40,77 @@ android {
         dev {
             applicationId "com.xabber.androiddev"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
         beta {
             applicationId "com.xabber.android.beta"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
         prod {
             applicationId "com.xabber.android"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
         vip {
             applicationId "com.xabber.androidvip"
             resValue 'string', 'application_package', applicationId
+            multiDexEnabled true
         }
 
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'mips', 'x86', 'x86_64'
+
+            universalApk true
         }
     }
 }
 
 ext {
-    smackVersion = '4.1.5'
+    smackVersion = '4.2.1-SNAPSHOT'
+    supportVersion = '25.3.1'
 }
 
 dependencies {
-    compile 'com.android.support:design:23.1.1'
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:support-v13:23.1.1'
-    compile 'de.hdodenhof:circleimageview:1.2.2'
-    compile 'com.melnykov:floatingactionbutton:1.2.0'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
-    compile 'com.google.zxing:android-integration:3.1.0'
-    compile 'com.loopj.android:android-async-http:1.4.9'
-    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
-    compile 'io.realm:realm-android:0.85.0'
-
-    compile "org.igniterealtime.smack:smack-android-extensions:$smackVersion"
-    compile "org.igniterealtime.smack:smack-experimental:$smackVersion"
-    compile "org.igniterealtime.smack:smack-tcp:$smackVersion"
-    compile project('otr4j')
     compile project('MemorizingTrustManager')
     compile project('emojicon')
+
+    compile "org.igniterealtime.smack:smack-android-extensions:4.2.1-20170404.010458-5"
+    compile "org.igniterealtime.smack:smack-experimental:4.2.1-20170404.010520-5"
+    compile "org.igniterealtime.smack:smack-tcp:4.2.1-20170404.010559-5"
+
+    compile "com.android.support:design:$supportVersion"
+    compile "com.android.support:support-v13:$supportVersion"
+
+    compile 'org.jitsi:org.otr4j:0.22'
+    compile 'com.google.zxing:android-integration:3.3.0'
+
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
+
+    compile 'com.soundcloud.android:android-crop:1.0.1@aar'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.melnykov:floatingactionbutton:1.3.0'
+}
+
+configurations {
+    all*.exclude group: 'xpp3', module: 'xpp3'
 }

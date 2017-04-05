@@ -13,69 +13,6 @@
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string-array name="managers">
-        <item>com.xabber.android.data.SettingsManager</item>
-        <item>com.xabber.android.data.LogManager</item>
-        <item>com.xabber.android.data.DatabaseManager</item>
-        <item>com.xabber.android.data.extension.avatar.AvatarStorage</item>
-        <item>com.xabber.android.data.extension.otr.OTRManager</item>
-        <item>com.xabber.android.data.connection.ConnectionManager</item>
-        <item>com.xabber.android.data.account.ScreenManager</item>
-        <item>com.xabber.android.data.connection.ReconnectionManager</item>
-        <item>com.xabber.android.data.account.AccountManager</item>
-        <item>com.xabber.android.data.account.AccountAuthenticator</item>
-        <item>com.xabber.android.data.extension.muc.MUCManager</item>
-        <item>com.xabber.android.data.message.MessageManager</item>
-        <item>com.xabber.android.data.message.chat.ChatManager</item>
-        <item>com.xabber.android.data.extension.vcard.VCardManager</item>
-        <item>com.xabber.android.data.extension.avatar.AvatarManager</item>
-        <item>com.xabber.android.data.roster.PresenceManager</item>
-        <item>com.xabber.android.data.roster.RosterManager</item>
-        <item>com.xabber.android.data.roster.GroupManager</item>
-        <item>com.xabber.android.data.message.phrase.PhraseManager</item>
-        <item>com.xabber.android.data.notification.NotificationManager</item>
-        <item>com.xabber.android.data.ActivityManager</item>
-        <item>com.xabber.android.data.extension.capability.CapabilitiesManager</item>
-        <item>com.xabber.android.data.extension.ping.PingManager</item>
-        <item>com.xabber.android.data.extension.cs.ChatStateManager</item>
-        <item>com.xabber.android.data.connection.NetworkManager</item>
-        <item>com.xabber.android.data.account.OAuthManager</item>
-        <item>com.xabber.android.data.roster.SyncManager</item>
-        <item>com.xabber.android.data.message.ReceiptManager</item>
-        <item>com.xabber.android.data.extension.archive.MessageArchiveManager</item>
-        <item>com.xabber.android.data.extension.ssn.SSNManager</item>
-        <item>com.xabber.android.data.extension.capability.ServerInfoManager</item>
-        <item>com.xabber.android.data.extension.time.TimeManager</item>
-        <item>com.xabber.android.data.extension.attention.AttentionManager</item>
-        <item>com.xabber.xmpp.carbon.CarbonManager</item>
-        <item>com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager</item>
-        <item>com.xabber.android.data.extension.blocking.BlockingManager</item>
-    </string-array>
-
-    <string-array name="contact_managers">
-        <item>com.xabber.android.data.account.AccountAuthenticator</item>
-        <item>com.xabber.android.data.roster.SyncManager</item>
-    </string-array>
-
-    <string-array name="tables">
-        <item>com.xabber.android.data.account.AccountTable</item>
-        <item>com.xabber.android.data.extension.muc.RoomTable</item>
-        <item>com.xabber.android.data.message.MessageTable</item>
-        <item>com.xabber.android.data.roster.GroupTable</item>
-        <item>com.xabber.android.data.message.chat.PrivateChatTable</item>
-        <item>com.xabber.android.data.message.chat.NotifyVisibleTable</item>
-        <item>com.xabber.android.data.message.chat.ShowTextTable</item>
-        <item>com.xabber.android.data.message.chat.SoundTable</item>
-        <item>com.xabber.android.data.extension.vcard.VCardTable</item>
-        <item>com.xabber.android.data.extension.avatar.AvatarTable</item>
-        <item>com.xabber.android.data.extension.capability.CapabilitiesTable</item>
-        <item>com.xabber.android.data.account.StatusTable</item>
-        <item>com.xabber.android.data.extension.otr.OTRTable</item>
-        <item>com.xabber.android.data.message.chat.VibroTable</item>
-        <item>com.xabber.android.data.notification.NotificationTable</item>
-        <item>com.xabber.android.data.message.chat.Suppress100Table</item>
-        <item>com.xabber.android.data.message.phrase.PhraseTable</item>
-    </string-array>
 
     <string name="in_never_value">-1</string>
     <string name="in_immediately_value">0</string>
@@ -125,7 +62,7 @@
     <bool name="contacts_show_avatars_default">true</bool>
 
     <string name="contacts_show_offline_key">contacts_show_offline</string>
-    <bool name="contacts_show_offline_default">false</bool>
+    <bool name="contacts_show_offline_default">true</bool>
 
     <string name="contacts_show_groups_key">contacts_show_groups</string>
     <bool name="contacts_show_groups_default">true</bool>
@@ -352,7 +289,7 @@
     <bool name="connection_load_images_default">true</bool>
 
     <string name="connection_use_carbons_key">connection_use_carbons</string>
-    <bool name="connection_use_carbons_default">false</bool>
+    <bool name="connection_use_carbons_default">true</bool>
 
     <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
     <bool name="connection_use_plain_text_auth_default">false</bool>
@@ -363,8 +300,16 @@
     <string name="debug_log_key">debug_log</string>
     <bool name="debug_log_default">true</bool>
 
+    <string name="debug_file_log_key">debug_file_log</string>
+    <bool name="debug_file_log_default">false</bool>
+
     <string name="debug_connection_errors_key">connection_errors</string>
     <bool name="debug_connection_errors_default">false</bool>
+
+    <string name="debug_log_activity_key">debug_log_activity</string>
+
+    <string name="debug_crash_reports_key">debug_crash_reports</string>
+    <bool name="debug_crash_reports_default">true</bool>
 
 <!-- preference_about -->
     <string name="preference_about">@string/about_viewer</string>
@@ -384,7 +329,7 @@
     <string name="account_port_key">account_port</string>
     <string name="account_server_key">account_server</string>
     <string name="account_resource_key">account_resource</string>
-    <string name="account_resource_default">@string/client_name</string>
+    <string name="account_resource_default">@string/application_title_short</string>
     <string name="account_priority_key">account_priority</string>
     <string name="account_sasl_key">account_sasl</string>
     <string name="account_tls_mode_key">account_tls_mode</string>
@@ -442,7 +387,38 @@
 
     <string name="account_archive_mode_default_value">local</string>
 
-<!-- preference_security -->
+    <string name="account_clear_history_on_exit_key">account_clear_history_on_exit</string>
+    <bool name="account_clear_history_on_exit_default_value">false</bool>
+
+    <string name="account_mam_default_behavior_key">account_mam_default_behavior</string>
+
+    <string-array name="account_mam_default_behavior_entries">
+        <item>@string/account_mam_default_behavior_always</item>
+        <item>@string/account_mam_default_behavior_never</item>
+        <item>@string/account_mam_default_behavior_roster</item>
+    </string-array>
+
+    <string-array name="account_mam_default_behavior_values">
+        <item>@string/account_mam_default_behavior_always</item>
+        <item>@string/account_mam_default_behavior_never</item>
+        <item>@string/account_mam_default_behavior_roster</item>
+    </string-array>
+
+    <string name="account_mam_sync_key">account_mam_sync</string>
+
+    <string-array name="account_mam_sync_entries">
+        <item>@string/account_mam_sync_all</item>
+        <item>@string/account_mam_sync_current</item>
+        <item>@string/account_mam_sync_none</item>
+    </string-array>
+
+    <string-array name="account_mam_sync_values">
+        <item>@string/account_mam_sync_all</item>
+        <item>@string/account_mam_sync_current</item>
+        <item>@string/account_mam_sync_none</item>
+    </string-array>
+
+    <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>
 
@@ -517,6 +493,7 @@
     <string name="contact_integration_suggested_key">contact_integration_suggested</string>
     <string name="translation_suggested_key">translation_suggested</string>
     <string name="dark_theme_suggested_key">dark_theme_suggested</string>
+    <string name="battery_optimization_disable_suggested_key">battery_optimization_disable_suggested</string>
     <string name="sync_account_type">@string/application_package</string>
     <string name="contact_viewer_mime_type">vnd.android.cursor.item/vnd.com.xabber.view</string>
 </resources>

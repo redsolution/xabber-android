@@ -18,70 +18,66 @@ import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnAuthorizedListener;
-import com.xabber.android.data.connection.OnDisconnectListener;
-import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.extension.archive.OnArchiveModificationsReceivedListener;
+import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.avatar.VCardUpdate;
+import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jxmpp.jid.EntityBareJid;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Process contact's presence information.
  *
  * @author alexander.ivanov
  */
-public class PresenceManager implements OnArchiveModificationsReceivedListener,
-        OnLoadListener, OnAccountDisabledListener, OnDisconnectListener, OnPacketListener, OnAuthorizedListener {
+public class PresenceManager implements OnLoadListener, OnAccountDisabledListener,
+        OnPacketListener {
 
-    private final static PresenceManager instance;
-
-    static {
-        instance = new PresenceManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static PresenceManager instance;
 
     private final EntityNotificationProvider<SubscriptionRequest> subscriptionRequestProvider;
     /**
      * List of account with requested subscriptions for auto accept incoming
      * subscription request.
      */
-    private final HashMap<String, HashSet<String>> requestedSubscriptions;
-    /**
-     * Account ready to send / update its presence information.
-     */
-    private final ArrayList<String> readyAccounts;
+    private final HashMap<AccountJid, Set<UserJid>> requestedSubscriptions;
+
+    public static PresenceManager getInstance() {
+        if (instance == null) {
+            instance = new PresenceManager();
+        }
+
+        return instance;
+    }
 
     private PresenceManager() {
         subscriptionRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_add_circle);
         requestedSubscriptions = new HashMap<>();
-        readyAccounts = new ArrayList<>();
-    }
-
-    public static PresenceManager getInstance() {
-        return instance;
     }
 
     @Override
@@ -99,94 +95,86 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     }
 
     /**
-     * @param account
-     * @param user
      * @return <code>null</code> can be returned.
      */
-    public SubscriptionRequest getSubscriptionRequest(String account, String user) {
+    public SubscriptionRequest getSubscriptionRequest(AccountJid account, UserJid user) {
         return subscriptionRequestProvider.get(account, user);
     }
 
     /**
      * Requests subscription to the contact.
      *
-     * @param account
-     * @param bareAddress
      * @throws NetworkException
      */
-    public void requestSubscription(String account, String bareAddress)
-            throws NetworkException {
+    public void requestSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribe);
-        packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendStanza(account, packet);
-        HashSet<String> set = requestedSubscriptions.get(account);
+        packet.setTo(user.getJid());
+        StanzaSender.sendStanza(account, packet);
+        Set<UserJid> set = requestedSubscriptions.get(account);
         if (set == null) {
             set = new HashSet<>();
             requestedSubscriptions.put(account, set);
         }
-        set.add(bareAddress);
+        set.add(user);
     }
 
-    private void removeRequestedSubscription(String account, String bareAddress) {
-        HashSet<String> set = requestedSubscriptions.get(account);
+    private void removeRequestedSubscription(AccountJid account, UserJid user) {
+        Set<UserJid> set = requestedSubscriptions.get(account);
         if (set != null) {
-            set.remove(bareAddress);
+            set.remove(user);
         }
     }
 
     /**
      * Accepts subscription request from the entity (share own presence).
-     *
-     * @param account
-     * @param bareAddress
-     * @throws NetworkException
      */
-    public void acceptSubscription(String account, String bareAddress) throws NetworkException {
+    public void acceptSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.subscribed);
-        packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendStanza(account, packet);
-        subscriptionRequestProvider.remove(account, bareAddress);
-        removeRequestedSubscription(account, bareAddress);
+        packet.setTo(user.getJid());
+        StanzaSender.sendStanza(account, packet);
+        subscriptionRequestProvider.remove(account, user);
+        removeRequestedSubscription(account, user);
     }
 
     /**
      * Discards subscription request from the entity (deny own presence
      * sharing).
-     *
-     * @param account
-     * @param bareAddress
-     * @throws NetworkException
      */
-    public void discardSubscription(String account, String bareAddress) throws NetworkException {
+    public void discardSubscription(AccountJid account, UserJid user) throws NetworkException {
         Presence packet = new Presence(Presence.Type.unsubscribed);
-        packet.setTo(bareAddress);
-        ConnectionManager.getInstance().sendStanza(account, packet);
-        subscriptionRequestProvider.remove(account, bareAddress);
-        removeRequestedSubscription(account, bareAddress);
+        packet.setTo(user.getJid());
+        StanzaSender.sendStanza(account, packet);
+        subscriptionRequestProvider.remove(account, user);
+        removeRequestedSubscription(account, user);
     }
 
-    public boolean hasSubscriptionRequest(String account, String bareAddress) {
+    public boolean hasSubscriptionRequest(AccountJid account, UserJid bareAddress) {
         return getSubscriptionRequest(account, bareAddress) != null;
     }
 
-    public StatusMode getStatusMode(String account, String bareAddress) {
-        final Occupant occupant = getOccupant(account, Jid.getBareAddress(bareAddress));
+    public StatusMode getStatusMode(AccountJid account, UserJid user) {
+        final Occupant occupant = getOccupant(account, user);
         if (occupant != null) {
             return occupant.getStatusMode();
         }
 
-        return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, bareAddress));
+        return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
     }
 
     /**
      * if contact is private MUC chat
      */
     @Nullable
-    private Occupant getOccupant(String account, String bareAddress) {
-        if (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(bareAddress))) {
-            final Collection<Occupant> occupants = MUCManager.getInstance().getOccupants(account, Jid.getBareAddress(bareAddress));
+    private Occupant getOccupant(AccountJid account, UserJid user) {
+        EntityBareJid userEntityBareJid = user.getJid().asEntityBareJidIfPossible();
+        if (userEntityBareJid == null) {
+            return null;
+        }
+        if (MUCManager.getInstance().hasRoom(account, userEntityBareJid)) {
+            final Collection<Occupant> occupants = MUCManager.getInstance().getOccupants(account,
+                    userEntityBareJid);
             for (Occupant occupant : occupants) {
-                if (occupant.getNickname().equals(Jid.getResource(bareAddress))) {
+                if (occupant.getNickname().equals(user.getJid().getResourceOrNull())) {
                     return occupant;
                 }
             }
@@ -194,7 +182,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
         return null;
     }
 
-    public String getStatusText(String account, String bareAddress) {
+    public String getStatusText(AccountJid account, UserJid bareAddress) {
         final Occupant occupant = getOccupant(account, bareAddress);
         if (occupant != null) {
             return occupant.getStatusText();
@@ -208,16 +196,25 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
         }
     }
 
-    public void onPresenceChanged(String account, Presence presence) {
-        final String bareAddress = Jid.getBareAddress(presence.getFrom());
-
-        CapabilitiesManager.getInstance().onPresenceChanged(account, presence);
-        for (OnStatusChangeListener listener
-                : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
-                listener.onStatusChanged(account, bareAddress, Jid.getResource(presence.getFrom()), StatusMode.createStatusMode(presence), presence.getStatus());
+    public void onPresenceChanged(AccountJid account, Presence presence) {
+        UserJid from;
+        try {
+            from = UserJid.from(presence.getFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            return;
         }
 
-        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, bareAddress);
+        if (presence.isAvailable()) {
+            CapabilitiesManager.getInstance().onPresence(account, presence);
+        }
+
+        for (OnStatusChangeListener listener : Application.getInstance().getManagers(OnStatusChangeListener.class)) {
+                listener.onStatusChanged(account, from,
+                        StatusMode.createStatusMode(presence), presence.getStatus());
+        }
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, from.getBareJid());
         if (rosterContact != null) {
             ArrayList<RosterContact> rosterContacts = new ArrayList<>();
             rosterContacts.add(rosterContact);
@@ -226,20 +223,7 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
                 listener.onPresenceChanged(rosterContacts);
             }
         }
-        RosterManager.onContactChanged(account, bareAddress);
-    }
-
-    @Override
-    public void onArchiveModificationsReceived(ConnectionItem connection) {
-
-    }
-
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        String account = ((AccountItem) connection).getAccount();
-        readyAccounts.remove(account);
+        RosterManager.onContactChanged(account, from);
     }
 
     @Override
@@ -250,24 +234,25 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
     /**
      * Sends new presence information.
      *
-     * @param account
      * @throws NetworkException
      */
-    public void resendPresence(String account) throws NetworkException {
-        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(Jid.getBareAddress(account)));
+    public void resendPresence(AccountJid account) throws NetworkException {
+        sendVCardUpdatePresence(account, AvatarManager.getInstance().getHash(account.getFullJid().asBareJid()));
     }
 
-    public void sendVCardUpdatePresence(String account, String hash) throws NetworkException {
+    public void sendVCardUpdatePresence(AccountJid account, String hash) throws NetworkException {
+        LogManager.i(this, "sendVCardUpdatePresence: " + account);
+
         final Presence presence = AccountManager.getInstance().getAccount(account).getPresence();
 
         final VCardUpdate vCardUpdate = new VCardUpdate();
         vCardUpdate.setPhotoHash(hash);
         presence.addExtension(vCardUpdate);
-        ConnectionManager.getInstance().sendStanza(account, presence);
+        StanzaSender.sendStanza(account, presence);
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza stanza) {
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
         if (!(connection instanceof AccountItem)) {
             return;
         }
@@ -278,33 +263,41 @@ public class PresenceManager implements OnArchiveModificationsReceivedListener,
 
         Presence presence = (Presence) stanza;
 
+        UserJid from;
+        try {
+            from = UserJid.from(stanza.getFrom());
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+            return;
+        }
+
         if (presence.getType() == Presence.Type.subscribe) {
-            String account = ((AccountItem) connection).getAccount();
+            AccountJid account = connection.getAccount();
 
             // Subscription request
-            HashSet<String> set = requestedSubscriptions.get(account);
-            if (set != null && set.contains(bareAddress)) {
+            Set<UserJid> set = requestedSubscriptions.get(account);
+            if (set != null && set.contains(from)) {
                 try {
-                    acceptSubscription(account, bareAddress);
+                    acceptSubscription(account, from);
                 } catch (NetworkException e) {
+                    LogManager.exception(this, e);
                 }
-                subscriptionRequestProvider.remove(account, bareAddress);
+                subscriptionRequestProvider.remove(account, from);
             } else {
-                subscriptionRequestProvider.add(new SubscriptionRequest(account, bareAddress), null);
+                subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
             }
         }
     }
 
-    @Override
     public void onAuthorized(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-
         try {
-            resendPresence(((AccountItem) connection).getAccount());
+            resendPresence(connection.getAccount());
         } catch (NetworkException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
+    }
+
+    public static void sortPresencesByPriority(List<Presence> allPresences) {
+        Collections.sort(allPresences, PresenceComparatorByPriority.INSTANCE);
     }
 }

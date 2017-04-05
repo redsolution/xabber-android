@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.roster;
 
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.AccountRelated;
 
 /**
@@ -32,7 +33,7 @@ public class RosterGroup extends AccountRelated implements Group {
      */
     private Long id;
 
-    public RosterGroup(String account, String name) {
+    public RosterGroup(AccountJid account, String name) {
         super(account);
         this.name = name;
         id = null;

@@ -9,6 +9,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 
 public class ColorManager {
 
@@ -114,11 +115,11 @@ public class ColorManager {
         return color;
     }
 
-    public ColorStateList getChatIncomingBalloonColorsStateList(String account) {
+    public ColorStateList getChatIncomingBalloonColorsStateList(AccountJid account) {
         return chatIncomingBalloonColorStateLists[getAccountColorLevel(account)];
     }
 
-    private static int getAccountColorLevel(String account) {
+    private static int getAccountColorLevel(AccountJid account) {
         return AccountManager.getInstance().getColorLevel(account);
     }
 

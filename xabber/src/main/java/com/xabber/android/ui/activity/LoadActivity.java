@@ -26,15 +26,15 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.helper.SingleActivity;
 
 import java.util.Collection;
 
-public class LoadActivity extends SingleActivity implements
-        OnAccountChangedListener {
+public class LoadActivity extends SingleActivity implements OnAccountChangedListener {
 
     private Animation animation;
     private View disconnectedView;
@@ -46,7 +46,7 @@ public class LoadActivity extends SingleActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.load);
+        setContentView(R.layout.activity_load);
         animation = AnimationUtils.loadAnimation(this, R.anim.connection);
         disconnectedView = findViewById(R.id.disconnected);
     }
@@ -54,11 +54,12 @@ public class LoadActivity extends SingleActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnAccountChangedListener.class,
-                this);
+        Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         if (Application.getInstance().isClosing()) {
-            ((TextView) findViewById(R.id.text))
-                    .setText(R.string.application_state_closing);
+            TextView textView = (TextView) findViewById(R.id.text);
+            if (textView != null) {
+                textView.setText(R.string.application_state_closing);
+            }
         } else {
             startService(XabberService.createIntent(this));
             disconnectedView.startAnimation(animation);
@@ -69,13 +70,12 @@ public class LoadActivity extends SingleActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        Application.getInstance().removeUIListener(
-                OnAccountChangedListener.class, this);
+        Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         disconnectedView.clearAnimation();
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         update();
     }
 

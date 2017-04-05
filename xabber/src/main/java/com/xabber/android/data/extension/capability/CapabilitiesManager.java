@@ -14,519 +14,193 @@
  */
 package com.xabber.android.data.extension.capability;
 
-import android.database.Cursor;
+import android.content.Context;
+import android.support.annotation.Nullable;
 
+import com.xabber.android.BuildConfig;
+import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.OnAccountRemovedListener;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnAuthorizedListener;
-import com.xabber.android.data.connection.OnDisconnectListener;
-import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.address.Jid;
 
-import org.jivesoftware.smack.packet.ExtensionElement;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.IQ.Type;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.caps.packet.CapsExtension;
+import org.jivesoftware.smackx.caps.EntityCapsManager;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
-import org.jivesoftware.smackx.xdata.FormField;
-import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provide information about entity capabilities.
  *
  * @author alexander.ivanov
  */
-public class CapabilitiesManager implements OnAuthorizedListener,
-        OnDisconnectListener, OnAccountRemovedListener, OnPacketListener,
-        OnLoadListener {
+public class CapabilitiesManager {
 
-    private static final String FORM_TYPE = "FORM_TYPE";
+    @SuppressWarnings("WeakerAccess")
+    static final String LOG_TAG = CapabilitiesManager.class.getSimpleName();
 
-    public static final ClientInfo INVALID_CLIENT_INFO = new ClientInfo(null,
-            null, null, new ArrayList<String>());
+    private static CapabilitiesManager instance;
 
-    private final static CapabilitiesManager instance;
-
-    static {
-        instance = new CapabilitiesManager();
-        Application.getInstance().addManager(instance);
-    }
+    // cache for jids does not supporting Entity Caps
+    @SuppressWarnings("WeakerAccess")
+    Map<Jid, DiscoverInfo> discoverInfoCache;
+    private Map<Jid, ClientInfo> clientInfoCache;
 
     public static CapabilitiesManager getInstance() {
+        if (instance == null) {
+            instance = new CapabilitiesManager();
+        }
+
         return instance;
     }
 
-    /**
-     * List of sent requests.
-     */
-    private final Collection<DiscoverInfoRequest> requests;
-
-    /**
-     * Capability information for full jid in account.
-     */
-    private final NestedMap<Capability> userCapabilities;
-
-    /**
-     * Capabilities information with associated discovery information.
-     */
-    private final Map<Capability, ClientInfo> clientInformations;
-
     private CapabilitiesManager() {
-        requests = new ArrayList<DiscoverInfoRequest>();
-        userCapabilities = new NestedMap<Capability>();
-        clientInformations = new HashMap<Capability, ClientInfo>();
+        Context applicationContext = Application.getInstance().getApplicationContext();
+
+        EntityCapsManager.setDefaultEntityNode(applicationContext.getString(R.string.caps_entity_node));
+        EntityCapsManager.setPersistentCache(new EntityCapsCache());
+
+        setServiceDiscoveryClientIdentity(applicationContext);
+
+        discoverInfoCache = new ConcurrentHashMap<>();
+        clientInfoCache = new ConcurrentHashMap<>();
     }
 
-    @Override
-    public void onLoad() {
-        Cursor cursor = CapabilitiesTable.getInstance().list();
-        final Map<Capability, ClientInfo> clientInformations = new HashMap<Capability, ClientInfo>();
-        try {
-            if (cursor.moveToFirst()) {
-                do {
-                    clientInformations.put(new Capability(null, null,
-                                    CapabilitiesTable.getHash(cursor),
-                                    CapabilitiesTable.getNode(cursor),
-                                    CapabilitiesTable.getVersion(cursor)),
-                            new ClientInfo(CapabilitiesTable.getType(cursor),
-                                    CapabilitiesTable.getName(cursor),
-                                    CapabilitiesTable.getNode(cursor),
-                                    CapabilitiesTable.getFeatures(cursor)));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            cursor.close();
+    private void setServiceDiscoveryClientIdentity(Context applicationContext) {
+        String identityName = applicationContext.getString(R.string.application_title_full)
+                + " Android "
+                + BuildConfig.VERSION_NAME;
+        String identityCategory = "client";
+        String identityType = "phone";
+
+        ServiceDiscoveryManager.setDefaultIdentity(
+                new DiscoverInfo.Identity(identityCategory, identityName, identityType));
+    }
+
+    @Nullable
+    public ClientInfo getCachedClientInfo(final Jid jid) {
+        ClientInfo clientInfo = clientInfoCache.get(jid);
+
+        if (clientInfo != null) {
+            return clientInfo;
         }
-        Application.getInstance().runOnUiThread(new Runnable() {
+
+        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
+
+        if (discoverInfoByUser == null) {
+            discoverInfoByUser = discoverInfoCache.get(jid);
+        }
+
+        if (discoverInfoByUser != null) {
+            clientInfo =  ClientInfo.fromDiscoveryInfo(discoverInfoByUser);
+            clientInfoCache.put(jid, clientInfo);
+        }
+
+        return clientInfo;
+    }
+
+    public void onPresence(final AccountJid accountJid, final Presence presence) {
+        final Jid from = presence.getFrom();
+
+        discoverInfoCache.remove(from);
+        clientInfoCache.remove(from);
+
+        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(from);
+        if (discoverInfoByUser != null) {
+            return;
+        }
+
+        Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                onLoaded(clientInformations);
+                updateClientInfo(accountJid, from);
             }
         });
     }
 
-    private void onLoaded(Map<Capability, ClientInfo> clientInformations) {
-        this.clientInformations.putAll(clientInformations);
-    }
-
-    /**
-     * Returns information about client.
-     *
-     * @param account
-     * @param user    full JID.
-     * @return <code>null</code> if there is no available information.
-     */
-    public ClientInfo getClientInfo(String account, String user) {
-        Capability capability = userCapabilities.get(account,
-                Jid.getStringPrep(user));
-        if (capability == null)
-            return null;
-        return clientInformations.get(capability);
-    }
-
-    /**
-     * @param discoverInfo
-     * @return Client information.
-     */
-    private Collection<String> getFeatures(DiscoverInfo discoverInfo) {
-        Collection<String> features = new ArrayList<String>();
-        for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
-            features.add(feature.getVar());
-        }
-        return features;
-    }
-
-    /**
-     * @param discoverInfo
-     * @return Client information.
-     */
-    private ClientInfo getClientInfo(DiscoverInfo discoverInfo) {
-        for (int useClient = 1; useClient >= 0; useClient--) {
-            for (int useLanguage = 2; useLanguage >= 0; useLanguage--) {
-                for (DiscoverInfo.Identity identity : discoverInfo.getIdentities()) {
-                    if (useClient == 1 && !"client".equals(identity.getCategory())) {
-                        continue;
-                    }
-                    if (useLanguage == 2 && !Stanza.getDefaultLanguage().equals(identity.getLanguage())) {
-                        continue;
-                    }
-                    if (useLanguage == 1 && identity.getLanguage() != null) {
-                        continue;
-                    }
-                    return new ClientInfo(identity.getType(), identity.getName(),
-                            discoverInfo.getNode(), getFeatures(discoverInfo));
-                }
+    public void requestClientInfoByUser(final AccountJid account, final Jid jid) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                updateClientInfo(account, jid);
             }
-        }
-        return new ClientInfo(null, null, null, getFeatures(discoverInfo));
+        });
     }
 
-    /**
-     * Requests disco info.
-     *
-     * @param account
-     * @param user
-     */
-    public void request(String account, String user) {
-        user = Jid.getStringPrep(user);
-        Capability capability = new Capability(account,
-                Jid.getStringPrep(user), Capability.DIRECT_REQUEST_METHOD, null, null);
-        userCapabilities.put(account, Jid.getStringPrep(user), capability);
-        request(account, user, capability);
-    }
+    @SuppressWarnings("WeakerAccess")
+    void updateClientInfo(final AccountJid account, final Jid jid) {
+        DiscoverInfo discoverInfo = EntityCapsManager.getDiscoverInfoByUser(jid);
 
-    /**
-     * Requests disco info.
-     *
-     * @param account
-     * @param user
-     * @param capability
-     */
-    private void request(String account, String user, Capability capability) {
-        for (DiscoverInfoRequest check : requests) {
-            if (capability.equals(check.getCapability())) {
-                return;
-            }
+        if (discoverInfo != null) {
+            return;
         }
-        DiscoverInfo packet = new DiscoverInfo();
-        packet.setTo(user);
-        packet.setType(Type.get);
-        if (capability.getNode() != null && capability.getVersion() != null)
-            packet.setNode(capability.getNode() + "#" + capability.getVersion());
+
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+
         try {
-            ConnectionManager.getInstance().sendStanza(account, packet);
-        } catch (NetworkException e) {
-            return;
-        }
-        requests.add(new DiscoverInfoRequest(account, Jid.getStringPrep(user),
-                packet.getStanzaId(), capability));
-    }
+            discoverInfo = ServiceDiscoveryManager.getInstanceFor(accountItem.getConnection())
+                    .discoverInfo(jid);
 
-    private boolean isValid(DiscoverInfo discoverInfo) {
-        Set<DiscoverInfo.Identity> identities = new TreeSet<>(
-                new Comparator<DiscoverInfo.Identity>() {
-
-                    private int compare(String string1, String string2) {
-                        return (string1 == null ? "" : string1)
-                                .compareTo(string2 == null ? "" : string2);
-                    }
-
-                    @Override
-                    public int compare(DiscoverInfo.Identity identity1, DiscoverInfo.Identity identity2) {
-                        int result;
-                        result = compare(identity1.getCategory(), identity2.getCategory());
-                        if (result != 0) {
-                            return result;
-                        }
-                        result = compare(identity1.getType(), identity2.getType());
-                        if (result != 0) {
-                            return result;
-                        }
-                        result = compare(identity1.getLanguage(), identity2.getLanguage());
-                        if (result != 0) {
-                            return result;
-                        }
-                        result = compare(identity1.getName(), identity2.getName());
-                        if (result != 0) {
-                            return result;
-                        }
-                        return 0;
-                    }
-                });
-        for (DiscoverInfo.Identity identity : discoverInfo.getIdentities()) {
-            if (!identities.add(identity)) {
-                return false;
+            EntityCapsManager.NodeVerHash nodeVerHashByJid = EntityCapsManager.getNodeVerHashByJid(jid);
+            if (nodeVerHashByJid == null) {
+                discoverInfoCache.put(jid, discoverInfo);
             }
-        }
 
-        Set<String> features = new HashSet<>();
-
-        for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
-            if (!features.add(feature.getVar())) {
-                return false;
+            if (discoverInfo != null) {
+                clientInfoCache.put(jid, ClientInfo.fromDiscoveryInfo(discoverInfo));
             }
+
+        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException e) {
+            LogManager.exception(this, e);
+            clientInfoCache.put(jid, ClientInfo.INVALID_CLIENT_INFO);
         }
-        Set<String> formTypes = new HashSet<>();
-        for (ExtensionElement packetExtension : discoverInfo.getExtensions())
-            if (packetExtension instanceof DataForm) {
-                DataForm dataForm = (DataForm) packetExtension;
-                String formType = null;
-                for (FormField formField : dataForm.getFields()) {
-                    if (FORM_TYPE.equals(formField.getVariable())) {
-                        for (String value : formField.getValues()) {
-                            if (formType != null && !formType.equals(value)) {
-                                return false;
-                            }
-                            formType = value;
-                        }
+
+        RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, jid.asBareJid());
+
+        if (rosterContact != null) {
+            final ArrayList<RosterContact> rosterContacts = new ArrayList<>();
+            rosterContacts.add(rosterContact);
+
+            Application.getInstance().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnContactChangedListener onContactChangedListener
+                            : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
+                        onContactChangedListener.onContactsChanged(rosterContacts);
                     }
                 }
-                if (!formTypes.add(formType)) {
-                    return false;
-                }
-            }
-        return true;
-    }
-
-    private String calculateString(DiscoverInfo discoverInfo) {
-        StringBuilder s = new StringBuilder();
-
-        SortedSet<String> identities = new TreeSet<>();
-        for (DiscoverInfo.Identity identity : discoverInfo.getIdentities()) {
-            StringBuilder builder = new StringBuilder();
-            builder.append(identity.getCategory());
-            builder.append("/");
-            String type = identity.getType();
-            if (type != null) {
-                builder.append(type);
-            }
-            builder.append("/");
-            String lang = identity.getLanguage();
-            if (lang != null) {
-                builder.append(lang);
-            }
-            builder.append("/");
-            String name = identity.getName();
-            if (name != null) {
-                builder.append(name);
-            }
-            identities.add(builder.toString());
-        }
-        for (String identity : identities) {
-            s.append(identity);
-            s.append("<");
-        }
-
-        SortedSet<String> features = new TreeSet<>();
-        for (DiscoverInfo.Feature feature : discoverInfo.getFeatures()) {
-            features.add(feature.getVar());
-        }
-        for (String feature : features) {
-            s.append(feature);
-            s.append("<");
-        }
-
-        // Maps prepared value to FORM_TYPE key.
-        // Extensions with equal FORM_TYPEs are not allowed.
-        SortedMap<String, String> extendeds = new TreeMap<>();
-        for (ExtensionElement packetExtension : discoverInfo.getExtensions()) {
-            if (packetExtension instanceof DataForm) {
-                DataForm dataForm = (DataForm) packetExtension;
-                // Fields with equal var are allowed for fixed type.
-                SortedSet<FormField> formFields = new TreeSet<>(
-                        new Comparator<FormField>() {
-                            @Override
-                            public int compare(FormField f1, FormField f2) {
-                                // Var may not exists for fixed type.
-                                String s1 = f1.getVariable();
-                                String s2 = f2.getVariable();
-                                return (s1 == null ? "" : s1)
-                                        .compareTo(s2 == null ? "" : s2);
-                            }
-                        });
-                String formType = null;
-                for (FormField formField : dataForm.getFields()) {
-                    if (FORM_TYPE.equals(formField.getVariable())) {
-                        if (formField.getType() != FormField.Type.hidden) {
-                            continue;
-                        }
-                        for (String value : formField.getValues()) {
-                            formType = value;
-                        }
-                    } else {
-                        formFields.add(formField);
-                    }
-                }
-                if (formType == null) {
-                    continue;
-                }
-                StringBuilder builder = new StringBuilder();
-                builder.append(formType);
-                builder.append("<");
-                for (FormField formField : formFields) {
-                    builder.append(formField.getVariable());
-                    builder.append("<");
-                    SortedSet<String> values = new TreeSet<>();
-                    for (String value : formField.getValues()) {
-                        values.add(value);
-                    }
-                    for (String value : values) {
-                        builder.append(value);
-                        builder.append("<");
-                    }
-                }
-                extendeds.put(formType, builder.toString());
-            }
-        }
-        for (Entry<String, String> extended : extendeds.entrySet()) {
-            s.append(extended.getValue());
-        }
-        return s.toString();
-    }
-
-    @Override
-    public void onAuthorized(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        removeAccountInfo(((AccountItem) connection).getAccount());
-    }
-
-    @Override
-    public void onAccountRemoved(AccountItem accountItem) {
-        removeAccountInfo(accountItem.getAccount());
-    }
-
-    private void removeAccountInfo(String account) {
-        userCapabilities.clear(account);
-        Iterator<Capability> iterator = clientInformations.keySet().iterator();
-        while (iterator.hasNext())
-            if (account.equals(iterator.next().getAccount()))
-                iterator.remove();
-    }
-
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem))
-            return;
-        String account = ((AccountItem) connection).getAccount();
-        Iterator<DiscoverInfoRequest> iterator = requests.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().getAccount().equals(account))
-                iterator.remove();
+            });
         }
     }
 
-    public void onPresenceChanged(final String account, final Presence presence) {
-        final String user = Jid.getStringPrep(presence.getFrom());
-        if (user == null)
-            return;
-        if (presence.getType() == Presence.Type.error)
-            return;
-        if (presence.getType() == Presence.Type.unavailable) {
-            userCapabilities.remove(account, user);
-            return;
-        }
-
-        LogManager.i(this, "onPresenceChanged " + user);
-
-        for (ExtensionElement packetExtension : presence.getExtensions()) {
-            if (packetExtension instanceof CapsExtension) {
-                CapsExtension capsExtension = (CapsExtension) packetExtension;
-                if (capsExtension.getNode() == null || capsExtension.getVer() == null) {
-                    continue;
-                }
-                Capability capability = new Capability(account, user,
-                        capsExtension.getHash(), capsExtension.getNode(),
-                        capsExtension.getVer());
-                if (capability.equals(userCapabilities.get(account, user))) {
-                    continue;
-                }
-                userCapabilities.put(account, user, capability);
-                ClientInfo clientInfo = clientInformations.get(capability);
-                if (clientInfo == null || clientInfo == INVALID_CLIENT_INFO) {
-                    request(account, presence.getFrom(), capability);
-                }
-            }
-        }
+    public boolean isFeatureSupported(Jid jid, String namespace) {
+        DiscoverInfo discoverInfo = getDiscoverInfo(jid);
+        return discoverInfo != null && discoverInfo.containsFeature(namespace);
     }
 
-    @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
-        if (!(connection instanceof AccountItem))
-            return;
-        final String account = ((AccountItem) connection).getAccount();
-        final String user = Jid.getStringPrep(packet.getFrom());
-        if (packet instanceof IQ) {
-            IQ iq = (IQ) packet;
-            if (iq.getType() != Type.error
-                    && !(packet instanceof DiscoverInfo && iq.getType() == Type.result))
-                return;
-            String packetId = iq.getStanzaId();
-            DiscoverInfoRequest request = null;
-            Iterator<DiscoverInfoRequest> iterator = requests.iterator();
-            while (iterator.hasNext()) {
-                DiscoverInfoRequest check = iterator.next();
-                if (check.getPacketId().equals(packetId)) {
-                    request = check;
-                    iterator.remove();
-                    break;
-                }
-            }
-            if (request == null || !request.getUser().equals(user))
-                return;
-            final Capability capability = request.getCapability();
-            final ClientInfo clientInfo;
-            if (iq.getType() == Type.error) {
-                if (!Capability.DIRECT_REQUEST_METHOD.equals(capability
-                        .getHash()))
-                    // Don't save invalid replay if it wasn't direct request.
-                    return;
-                if (clientInformations.containsKey(capability))
-                    return;
-                clientInfo = INVALID_CLIENT_INFO;
-            } else if (iq.getType() == Type.result) {
-                DiscoverInfo discoverInfo = (DiscoverInfo) packet;
-                if (capability.isSupportedHash() || capability.isLegacy()) {
-                    if (capability.isLegacy()
-                            || (isValid(discoverInfo) && capability
-                            .getHashedValue(
-                                    calculateString(discoverInfo))
-                            .equals(capability.getVersion()))) {
-                        clientInfo = getClientInfo(discoverInfo);
-                        Application.getInstance().runInBackground(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        CapabilitiesTable.getInstance().write(
-                                                capability.getHash(),
-                                                capability.getNode(),
-                                                capability.getVersion(),
-                                                clientInfo.getType(),
-                                                clientInfo.getName(),
-                                                clientInfo.getFeatures());
-                                    }
-                                });
-                    } else {
-                        // Just wait for next presence from another entity.
-                        return;
-                    }
-                } else {
-                    clientInfo = getClientInfo(discoverInfo);
-                }
-            } else
-                throw new IllegalStateException();
-            clientInformations.put(capability, clientInfo);
-            ArrayList<BaseEntity> entities = new ArrayList<>();
-            for (NestedMap.Entry<Capability> entry : userCapabilities)
-                if (capability.equals(entry.getValue()))
-                    entities.add(new BaseEntity(account, Jid
-                            .getBareAddress(entry.getSecond())));
-            RosterManager.getInstance().onContactsChanged(entities);
+    @Nullable
+    private DiscoverInfo getDiscoverInfo(final Jid jid) {
+        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
+
+        if (discoverInfoByUser == null) {
+            discoverInfoByUser = discoverInfoCache.get(jid);
         }
+
+        return discoverInfoByUser;
     }
+
 }

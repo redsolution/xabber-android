@@ -17,16 +17,18 @@ package com.xabber.android.data.roster;
 import android.graphics.drawable.Drawable;
 
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.capability.ClientSoftware;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.packet.Presence;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,34 +42,41 @@ import java.util.Collections;
 public class AbstractContact extends BaseEntity {
 
 
-    public AbstractContact(String account, String user) {
+    protected AbstractContact(AccountJid account, UserJid user) {
         super(account, user);
     }
 
     /**
-     * vCard and roster can be used for name resolving.
+     * vCard and roster can be  used for name resolving.
      *
      * @return Verbose name.
      */
     public String getName() {
-        String vCardName = VCardManager.getInstance().getName(user);
+        String vCardName = VCardManager.getInstance().getName(user.getJid());
 
         if (MUCManager.getInstance().isMucPrivateChat(account, user)) {
-            String name;
+            String name = "";
 
             if (!"".equals(vCardName)) {
                 name = vCardName;
             } else {
-                name = Jid.getResource(user);
+                Resourcepart resourcepart = user.getJid().getResourceOrNull();
+                if (resourcepart != null) {
+                    name = resourcepart.toString();
+                }
             }
 
-            return String.format("%s (%s)", name, Jid.getBareAddress(user));
+            if (user.getBareJid() == null) {
+                return String.format("%s (%s)", name, user.toString());
+            } else {
+                return String.format("%s (%s)", name, user.getBareJid().toString());
+            }
         }
 
         if (!"".equals(vCardName))
             return vCardName;
 
-        return user;
+        return user.toString();
     }
 
     public StatusMode getStatusMode() {
@@ -90,13 +99,12 @@ public class AbstractContact extends BaseEntity {
             return ClientSoftware.unknown;
         }
 
-        final String fullJid = presence.getFrom();
-        ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, fullJid);
+        ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(presence.getFrom());
         if (clientInfo == null) {
-
             return ClientSoftware.unknown;
+        } else {
+            return clientInfo.getClientSoftware();
         }
-        return clientInfo.getClientSoftware();
     }
 
     public Collection<? extends Group> getGroups() {

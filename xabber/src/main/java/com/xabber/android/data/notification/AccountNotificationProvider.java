@@ -15,9 +15,11 @@
 package com.xabber.android.data.notification;
 
 
+import com.xabber.android.data.entity.AccountJid;
+
 public interface AccountNotificationProvider<T extends AccountNotificationItem>
         extends NotificationProvider<T> {
 
-    void clearAccountNotifications(String account);
+    void clearAccountNotifications(AccountJid account);
 
 }

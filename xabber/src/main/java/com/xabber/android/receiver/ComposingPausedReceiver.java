@@ -18,6 +18,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 
@@ -33,17 +35,16 @@ public class ComposingPausedReceiver extends BroadcastReceiver {
         ChatStateManager.getInstance().onPaused(getAccount(intent), getUser(intent));
     }
 
-    public static Intent createIntent(Context context, String account,
-                                      String user) {
+    public static Intent createIntent(Context context, AccountJid account, UserJid user) {
         return new EntityIntentBuilder(context, ComposingPausedReceiver.class)
                 .setAccount(account).setUser(user).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return EntityIntentBuilder.getAccount(intent);
     }
 
-    private static String getUser(Intent intent) {
+    private static UserJid getUser(Intent intent) {
         return EntityIntentBuilder.getUser(intent);
     }
 

@@ -12,6 +12,7 @@
         android:paddingRight="16dp"
         android:text="@string/xmpp_accounts"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:background="@drawable/ripple_background"
         android:textSize="16sp"
         android:textStyle="bold" />
 </LinearLayout>

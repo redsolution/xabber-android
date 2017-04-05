@@ -19,4 +19,8 @@
   <string name="error_during_image_processing">Erro durante o processamento da imagem</string>
   <string name="account_settings">Definições da conta</string>
   <string name="account_user_info">Informação da conta</string>
+  <string name="conference_private_chat_invitation">%1$s de %2$s quer começar uma conversação privada consigo</string>
+  <string name="accept_muc_private_chat">Aceitar</string>
+  <string name="block_muc_private_chat">Bloquear</string>
+  <string name="no_permission_camera">Sem permissão para aceder à câmara</string>
 </resources>

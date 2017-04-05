@@ -15,7 +15,7 @@
         android:key="@string/preference_accounts_key"
         android:title="@string/preference_accounts">
         <intent
-            android:targetClass="com.xabber.android.ui.preferences.AccountList"
+            android:targetClass="com.xabber.android.ui.activity.AccountListActivity"
             android:targetPackage="@string/application_package" />
     </Preference>
 
@@ -73,7 +73,7 @@
         android:key="@string/preference_about_key"
         android:title="@string/preference_about">
         <intent
-            android:targetClass="com.xabber.android.ui.activity.AboutViewer"
+            android:targetClass="com.xabber.android.ui.activity.AboutActivity"
             android:targetPackage="@string/application_package" />
     </Preference>
 </PreferenceScreen>

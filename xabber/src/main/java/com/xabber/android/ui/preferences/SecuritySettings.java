@@ -5,8 +5,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.ui.activity.ManagedActivity;
-import com.xabber.android.ui.activity.PreferenceSummaryHelper;
+import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class SecuritySettings extends ManagedActivity {
     @Override
@@ -18,16 +19,11 @@ public class SecuritySettings extends ManagedActivity {
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-
-        setSupportActionBar(toolbar);
+        String title = PreferenceSummaryHelperActivity.getPreferenceTitle(getString(R.string.preference_security));
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
-
-        setTitle(PreferenceSummaryHelper.getPreferenceTitle(getString(R.string.preference_security)));
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()

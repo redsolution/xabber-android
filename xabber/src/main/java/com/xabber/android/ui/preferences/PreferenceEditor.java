@@ -21,9 +21,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class PreferenceEditor extends ManagedActivity
         implements PreferencesFragment.OnPreferencesFragmentInteractionListener {
@@ -41,8 +43,8 @@ public class PreferenceEditor extends ManagedActivity
             return;
 
         setContentView(R.layout.activity_with_toolbar_and_container);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        setSupportActionBar(toolbar);
+
+        Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this);
         barPainter = new BarPainter(this, toolbar);
 
 
@@ -50,8 +52,6 @@ public class PreferenceEditor extends ManagedActivity
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, new PreferencesFragment()).commit();
         }
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Force request sound. This will set default value if not specified.
         SettingsManager.eventsSound();
@@ -69,7 +69,7 @@ public class PreferenceEditor extends ManagedActivity
         try {
             return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            LogManager.exception(this, e);
         }
         return "";
     }

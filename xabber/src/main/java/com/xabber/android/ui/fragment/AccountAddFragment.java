@@ -15,9 +15,9 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.AccountType;
-import com.xabber.android.ui.activity.AccountAdd;
-import com.xabber.android.ui.activity.AccountViewer;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.helper.OrbotHelper;
 
@@ -37,7 +37,7 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.account_add_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_account_add, container, false);
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
         useOrbotView = (CheckBox) view.findViewById(R.id.use_orbot);
@@ -79,13 +79,11 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             return;
         }
 
-        AccountType accountType = AccountManager.getInstance().getAccountTypes().get(0);
-
-        String account;
+        AccountJid account;
         try {
             account = AccountManager.getInstance().addAccount(
                     userView.getText().toString(),
-                    passwordView.getText().toString(), accountType,
+                    passwordView.getText().toString(),
                     false,
                     storePasswordView.isChecked(),
                     useOrbotView.isChecked(),
@@ -95,8 +93,8 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
             return;
         }
 
-        getActivity().setResult(Activity.RESULT_OK, AccountAdd.createAuthenticatorResult(account));
-        startActivity(AccountViewer.createAccountPreferencesIntent(getActivity(), account));
+        getActivity().setResult(Activity.RESULT_OK, AccountAddActivity.createAuthenticatorResult(account));
+        startActivity(AccountActivity.createIntent(getActivity(), account));
         getActivity().finish();
     }
 }

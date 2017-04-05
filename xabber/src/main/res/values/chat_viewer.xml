@@ -41,7 +41,7 @@
     <string name="action_otr_smp_not_approved">Your answer for the secret question was verified. You should ask your opponent too or check shared secret.</string>
     <string name="action_otr_smp_unverified">Verification failed</string>
     <string name="action_otr_smp_verified">Verification successfully passed</string>
-    <string name="action_otr_unreadable">The encrypted message received is unreadable</string>
+    <string name="action_otr_unreadable">The received encrypted message is unreadable</string>
     <string name="action_otr_verified">Encryption enabled</string>
     <string name="action_status_available">%1$s is now online</string>
     <string name="action_status_away">%1$s is now away</string>
@@ -67,7 +67,7 @@
     <string name="otr_encryption">OTR encryption</string>
     <string name="otr_end">Stop encryption</string>
     <string name="otr_refresh">Restart encryption</string>
-    <string name="otr_request">Off-the-Record private conversation has been requested but you do not have a supportive plugin. Use Pidgin, Gajim or Adium for PC/Mac and Xabber, Conversations or ChatSecure for Android. Go to http://otr.cypherpunks.ca/ for more information.</string>
+    <string name="otr_request">Off-The-Record private conversation has been requested but you do not have a supportive plugin. Use Pidgin, Gajim or Adium for PC/Mac and Xabber, Conversations or ChatSecure for Android. Go to http://otr.cypherpunks.ca/ for more information.</string>
     <string name="otr_start">Start encryption</string>
     <string name="otr_unencrypted_message">This message has not been encrypted</string>
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>

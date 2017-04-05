@@ -18,24 +18,26 @@ import android.content.Intent;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
 
 public class RoomAuthorizationError extends BaseEntity implements EntityNotificationItem {
 
-    public RoomAuthorizationError(String account, String user) {
+    public RoomAuthorizationError(AccountJid account, UserJid user) {
         super(account, user);
     }
 
     @Override
     public Intent getIntent() {
-        return ConferenceAdd.createIntent(Application.getInstance(), account, user);
+        return ConferenceAddActivity.createIntent(Application.getInstance(), account, user.getBareUserJid());
     }
 
     @Override
     public String getTitle() {
-        return user;
+        return user.toString();
     }
 
     @Override

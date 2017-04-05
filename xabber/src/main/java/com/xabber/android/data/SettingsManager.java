@@ -27,8 +27,11 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.connection.WakeLockManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
@@ -37,7 +40,7 @@ import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.xmpp.carbon.CarbonManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,18 +55,16 @@ import java.util.regex.Pattern;
 public class SettingsManager implements OnInitializedListener,
         OnMigrationListener, OnSharedPreferenceChangeListener {
 
-    private static final SettingsManager instance;
-
-    static {
-        instance = new SettingsManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static SettingsManager instance;
 
     private SettingsManager() {
         getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     public static SettingsManager getInstance() {
+        if (instance == null) {
+            instance = new SettingsManager();
+        }
         return instance;
     }
 
@@ -204,9 +205,13 @@ public class SettingsManager implements OnInitializedListener,
         return getString(R.string.contacts_selected_account_key, "");
     }
 
-    public static void setContactsSelectedAccount(String value) {
-        if (value == null)
+    public static void setContactsSelectedAccount(AccountJid account) {
+        String value;
+        if (account == null) {
             value = "";
+        } else {
+            value = account.toString();
+        }
         setString(R.string.contacts_selected_account_key, value);
     }
 
@@ -461,8 +466,16 @@ public class SettingsManager implements OnInitializedListener,
         return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
+    public static boolean fileLog() {
+        return getBoolean(R.string.debug_file_log_key, R.bool.debug_file_log_default);
+    }
+
     public static boolean showConnectionErrors() {
         return getBoolean(R.string.debug_connection_errors_key, R.bool.debug_connection_errors_default);
+    }
+
+    public static boolean sendCrashReports() {
+        return getBoolean(R.string.debug_crash_reports_key, R.bool.debug_crash_reports_default);
     }
 
     public static InterfaceTheme interfaceTheme() {
@@ -572,6 +585,14 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.interface_theme_dark_value));
     }
 
+    public static boolean isBatteryOptimizationDisableSuggested() {
+        return getBoolean(R.string.battery_optimization_disable_suggested_key, false);
+    }
+
+    public static void setBatteryOptimizationDisableSuggested() {
+        setBoolean(R.string.battery_optimization_disable_suggested_key, true);
+    }
+
     /**
      * @return Common status mode for all accounts or
      * {@link StatusMode#available} if mode was not set.
@@ -654,10 +675,10 @@ public class SettingsManager implements OnInitializedListener,
             XabberService.getInstance().changeForeground();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_wake_lock_key))) {
-            NetworkManager.getInstance().onWakeLockSettingsChanged();
+            WakeLockManager.onWakeLockSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_wifi_lock_key))) {
-            NetworkManager.getInstance().onWifiLockSettingsChanged();
+            WakeLockManager.onWifiLockSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.connection_use_carbons_key))) {
             CarbonManager.getInstance().onUseCarbonsSettingsChanged();
@@ -676,6 +697,9 @@ public class SettingsManager implements OnInitializedListener,
             if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
                 SettingsManager.setDarkThemeSuggested();
             }
+        } else if(key.equals(Application.getInstance().getString(
+                R.string.debug_file_log_key))) {
+            LogManager.getInstance().onSettingsChanged();
         }
     }
 

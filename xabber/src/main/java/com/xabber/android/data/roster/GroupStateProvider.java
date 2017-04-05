@@ -14,6 +14,8 @@
  */
 package com.xabber.android.data.roster;
 
+import com.xabber.android.data.entity.AccountJid;
+
 /**
  * Provide information about group.
  *
@@ -22,37 +24,27 @@ package com.xabber.android.data.roster;
 public interface GroupStateProvider {
 
     /**
-     * @param account
-     * @param group
      * @return Whether specified group in specified account is expanded.
      */
-    boolean isExpanded(String account, String group);
+    boolean isExpanded(AccountJid account, String group);
 
     /**
-     * @param account
-     * @param group
      * @return Whether to show offline contacts for specified group in specified
      * account.
      */
-    ShowOfflineMode getShowOfflineMode(String account, String group);
+    ShowOfflineMode getShowOfflineMode(AccountJid account, String group);
 
     /**
      * Sets whether group in specified account is expanded.
      *
-     * @param account
-     * @param group
-     * @param expanded
      */
-    void setExpanded(String account, String group, boolean expanded);
+    void setExpanded(AccountJid account, String group, boolean expanded);
 
     /**
      * Sets whether to show offline contacts for specified group.
      *
-     * @param account
-     * @param group
-     * @param show
      */
-    void setShowOfflineMode(String account, String group,
+    void setShowOfflineMode(AccountJid account, String group,
                             ShowOfflineMode showOfflineMode);
 
 }

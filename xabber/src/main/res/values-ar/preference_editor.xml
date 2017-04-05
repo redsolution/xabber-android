@@ -76,6 +76,7 @@
   <string name="chats_attention">لفت الانتباه\nاستجب لطلبات لفت الانتباه الواردة</string>
   <string name="chats_attention_sound">صوت التنبيه\nاختر نغمة</string>
   <string name="connection_load_vcard">حمّل بطاقة vCard\nحمّل وحدّث البيانات الشخصية وصورة طرف الاتصال. عطّلها لتقليل استخدام بيانات الشبكة.</string>
+  <string name="connection_load_images">تحميل صور\nتحميل الصور من رابط الملف تلقائياً. تعطيل للحد من استخدام بيانات الهاتف.</string>
   <string name="connection_use_carbons">وضع النسخة الكربونية\nقد تكون غير مستقرة!سوف تشارك المحادثات لنفس الحساب على هذا العميل. عطّلها لتقليل استخدام بيانات الشبكة.</string>
   <string name="events_phrases">عبارات مفتاحية\nتخصيص إخطارات للرسائل المستقبلة التي تحتوي على عبارات معينة</string>
   <string name="security_clear_certificate_warning">هل ترغب حقاً في حذف كل الشهادات المهملة؟</string>

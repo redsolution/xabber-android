@@ -51,7 +51,12 @@ public enum ConnectionState {
     /**
      * Authorized connection has been established.
      */
-    connected;
+    connected,
+
+    /**
+     * Connection were established or authenticated and disconnection is in progress.
+     */
+    disconnecting;
 
     /**
      * @return whether authorized connection has been established.
@@ -72,20 +77,25 @@ public enum ConnectionState {
      * @return Resource id with associated string.
      */
     public int getStringId() {
-        if (this == ConnectionState.offline)
-            return R.string.account_state_offline;
-        else if (this == ConnectionState.waiting)
-            return R.string.account_state_waiting;
-        else if (this == ConnectionState.connecting)
-            return R.string.account_state_connecting;
-        else if (this == ConnectionState.registration)
-            return R.string.account_state_registration;
-        else if (this == ConnectionState.authentication)
-            return R.string.account_state_authentication;
-        else if (this == ConnectionState.connected)
-            return R.string.account_state_connected;
-        else
-            throw new IllegalStateException();
+        switch (this) {
+
+            case offline:
+                return R.string.account_state_offline;
+            case waiting:
+                return R.string.account_state_waiting;
+            case connecting:
+                return R.string.account_state_connecting;
+            case registration:
+                return R.string.account_state_registration;
+            case authentication:
+                return R.string.account_state_authentication;
+            case connected:
+                return R.string.account_state_connected;
+            case disconnecting:
+                return R.string.account_state_disconnecting;
+            default:
+                throw new IllegalStateException();
+        }
     }
 
 }

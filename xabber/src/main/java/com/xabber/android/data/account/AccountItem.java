@@ -14,20 +14,27 @@
  */
 package com.xabber.android.data.account;
 
+import android.support.annotation.NonNull;
+
 import com.xabber.android.R;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.connection.ConnectionThread;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
+import com.xabber.android.data.extension.mam.LoadHistorySettings;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.security.KeyPair;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Represent account settings and status.
@@ -37,23 +44,19 @@ import java.util.Date;
 public class AccountItem extends ConnectionItem {
 
     public static final String UNDEFINED_PASSWORD = "com.xabber.android.data.core.AccountItem.UNDEFINED_PASSWORD";
-    /**
-     * Full jid calculated according to {@link #userName}, {@link #serverName},
-     * {@link #resource}.
-     */
-    private final String account;
+
     /**
      * Id in database.
      * <p/>
      * MUST BE USED FROM BACKGROUND THREAD ONLY!
      */
-    private Long id;
+    private String id;
     private int colorIndex;
 
     /**
      * Whether account is enabled.
      */
-    private boolean enabled;
+    private volatile boolean enabled;
 
     /**
      * Whether roster contacts can be synchronized with system contact list.
@@ -64,21 +67,6 @@ public class AccountItem extends ConnectionItem {
      * Whether password must be stored in database.
      */
     private boolean storePassword;
-
-    /**
-     * Whether authorization was failed.
-     */
-    private boolean authFailed;
-
-    /**
-     * Whether certificate is invalid.
-     */
-    private boolean invalidCertificate;
-
-    /**
-     * Whether password was requested.
-     */
-    private boolean passwordRequested;
 
     private int priority;
 
@@ -98,8 +86,31 @@ public class AccountItem extends ConnectionItem {
 
     private ArchiveMode archiveMode;
 
-    public AccountItem(AccountProtocol protocol, boolean custom, String host,
-                       int port, String serverName, String userName, String resource,
+    /**
+     * Delete all chat messages for account before explicit app exiting
+     */
+    private boolean clearHistoryOnExit;
+
+    /**
+     * Default behavior of Message Archive Management
+     * https://xmpp.org/extensions/xep-0313.html
+     */
+    private MamPrefsIQ.DefaultBehavior mamDefaultBehaviour;
+
+    /**
+     * Options for loading history from MAM
+     * https://xmpp.org/extensions/xep-0313.html
+     */
+    private LoadHistorySettings loadHistorySettings;
+
+    /**
+     * Flag indication that successful connection and authorization
+     * happen at least ones with current connection settings
+     */
+    private volatile boolean successfulConnectionHappened;
+
+    public AccountItem(boolean custom, String host,
+                       int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
                        boolean storePassword, String password, int colorIndex,
                        int priority, StatusMode statusMode, String statusText,
                        boolean enabled, boolean saslEnabled, TLSMode tlsMode,
@@ -107,11 +118,10 @@ public class AccountItem extends ConnectionItem {
                        int proxyPort, String proxyUser, String proxyPassword,
                        boolean syncable, KeyPair keyPair, Date lastSync,
                        ArchiveMode archiveMode) {
-        super(protocol, custom, host, port, serverName, userName, resource,
+        super(custom, host, port, serverName, userName, resource,
                 storePassword, password, saslEnabled, tlsMode, compression,
                 proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
-        this.id = null;
-        this.account = userName + "@" + serverName + "/" + resource;
+        this.id = UUID.randomUUID().toString();
         this.colorIndex = colorIndex;
 
         this.enabled = enabled;
@@ -123,13 +133,13 @@ public class AccountItem extends ConnectionItem {
         this.keyPair = keyPair;
         this.lastSync = lastSync;
         this.archiveMode = archiveMode;
-        authFailed = false;
-        invalidCertificate = false;
-        passwordRequested = false;
+        this.clearHistoryOnExit = false;
+        this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
+        this.loadHistorySettings = LoadHistorySettings.all;
+        this.successfulConnectionHappened = false;
     }
 
     /**
-     * @param priority
      * @return Valid priority value between -128 and 128.
      */
     static private int getValidPriority(int priority) {
@@ -139,7 +149,7 @@ public class AccountItem extends ConnectionItem {
     /**
      * @return ID in database.
      */
-    Long getId() {
+    String getId() {
         return id;
     }
 
@@ -147,18 +157,9 @@ public class AccountItem extends ConnectionItem {
      * Set id in db.
      * <p/>
      * MUST BE MANAGED FROM BACKGROUND THREAD ONLY.
-     *
-     * @param id
      */
-    void setId(long id) {
+    void setId(String id) {
         this.id = id;
-    }
-
-    /**
-     * @return Account's JID.
-     */
-    public String getAccount() {
-        return account;
     }
 
     /**
@@ -183,8 +184,6 @@ public class AccountItem extends ConnectionItem {
     /**
      * Sets whether roster contacts can be synchronized with system contact
      * list.
-     *
-     * @param syncable
      */
     void setSyncable(boolean syncable) {
         this.syncable = syncable;
@@ -199,8 +198,6 @@ public class AccountItem extends ConnectionItem {
 
     /**
      * Sets whether password must be stored in database.
-     *
-     * @param storePassword
      */
     void setStorePassword(boolean storePassword) {
         this.storePassword = storePassword;
@@ -216,10 +213,6 @@ public class AccountItem extends ConnectionItem {
 
     public Date getLastSync() {
         return lastSync;
-    }
-
-    void setLastSync(Date lastSync) {
-        this.lastSync = lastSync;
     }
 
     public ArchiveMode getArchiveMode() {
@@ -246,7 +239,7 @@ public class AccountItem extends ConnectionItem {
     /**
      * @return Saved status mode.
      */
-    StatusMode getRawStatusMode() {
+    public StatusMode getRawStatusMode() {
         return statusMode;
     }
 
@@ -263,12 +256,13 @@ public class AccountItem extends ConnectionItem {
      */
     public StatusMode getDisplayStatusMode() {
         ConnectionState state = getState();
-        if (state.isConnected())
+        if (state.isConnected()) {
             return statusMode;
-        else if (state.isConnectable())
+        } else if (state.isConnectable()) {
             return StatusMode.connection;
-        else
+        } else {
             return StatusMode.unavailable;
+        }
     }
 
     /**
@@ -276,10 +270,11 @@ public class AccountItem extends ConnectionItem {
      * authenticated to be used in status editor.
      */
     public StatusMode getFactualStatusMode() {
-        if (getState().isConnected())
+        if (getState().isConnected()) {
             return statusMode;
-        else
+        } else {
             return StatusMode.unavailable;
+        }
     }
 
     /**
@@ -330,19 +325,17 @@ public class AccountItem extends ConnectionItem {
     }
 
     void setEnabled(boolean enabled) {
+        if (!this.enabled && enabled) {
+            connect();
+        } else if (this.enabled && !enabled) {
+            disconnect();
+        }
+
         this.enabled = enabled;
     }
 
     /**
      * Update connection options
-     *
-     * @param custom
-     * @param host
-     * @param port
-     * @param password
-     * @param saslEnabled
-     * @param tlsMode
-     * @param compression
      */
     void updateConnectionSettings(boolean custom, String host, int port,
                                   String password, boolean saslEnabled, TLSMode tlsMode,
@@ -351,27 +344,7 @@ public class AccountItem extends ConnectionItem {
         getConnectionSettings().update(custom, host, port, password,
                 saslEnabled, tlsMode, compression, proxyType, proxyHost,
                 proxyPort, proxyUser, proxyPassword);
-        passwordRequested = false;
-        AccountManager.getInstance().removePasswordRequest(account);
-    }
-
-    @Override
-    protected boolean isConnectionAvailable(boolean userRequest) {
-        // Check password before go online.
-        if (statusMode.isOnline()
-                && enabled
-                && !passwordRequested
-                && UNDEFINED_PASSWORD.equals(getConnectionSettings()
-                .getPassword())) {
-            passwordRequested = true;
-            AccountManager.getInstance().addPasswordRequest(account);
-        }
-        if (userRequest) {
-            authFailed = false;
-            invalidCertificate = false;
-        }
-        return statusMode.isOnline() && enabled && !authFailed
-                && !invalidCertificate && !passwordRequested;
+        AccountManager.getInstance().removePasswordRequest(getAccount());
     }
 
     /**
@@ -379,10 +352,10 @@ public class AccountItem extends ConnectionItem {
      * disabled.
      */
     void clearPassword() {
-        if (storePassword)
+        if (storePassword) {
             return;
-        passwordRequested = false;
-        AccountManager.getInstance().removePasswordRequest(account);
+        }
+        AccountManager.getInstance().removePasswordRequest(getAccount());
         getConnectionSettings().setPassword(UNDEFINED_PASSWORD);
     }
 
@@ -393,47 +366,39 @@ public class AccountItem extends ConnectionItem {
     }
 
     @Override
-    protected void onSRVResolved(ConnectionThread connectionThread) {
-        super.onSRVResolved(connectionThread);
-        AccountManager.getInstance().onAccountChanged(account);
-    }
-
-    @Override
-    protected void onInvalidCertificate() {
-        super.onInvalidCertificate();
-        invalidCertificate = true;
-        updateConnection(false);
-    }
-
-    @Override
-    protected void onConnected(ConnectionThread connectionThread) {
-        super.onConnected(connectionThread);
-        AccountManager.getInstance().onAccountChanged(account);
-    }
-
-    @Override
-    protected void onAuthFailed() {
-        super.onAuthFailed();
-        // Login failed. We don`t want to reconnect.
-        authFailed = true;
-        updateConnection(false);
-        AccountManager.getInstance().addAuthenticationError(account);
-    }
-
-    @Override
-    protected void onAuthorized(ConnectionThread connectionThread) {
-        super.onAuthorized(connectionThread);
-        AccountManager.getInstance().onAccountChanged(account);
-    }
-
-    @Override
-    protected void onClose(ConnectionThread connectionThread) {
-        super.onClose(connectionThread);
-        AccountManager.getInstance().onAccountChanged(account);
-    }
-
-    @Override
     public String toString() {
         return super.toString() + ":" + getAccount();
+    }
+
+    public boolean isClearHistoryOnExit() {
+        return clearHistoryOnExit;
+    }
+
+    void setClearHistoryOnExit(boolean clearHistoryOnExit) {
+        this.clearHistoryOnExit = clearHistoryOnExit;
+    }
+
+    public MamPrefsIQ.DefaultBehavior getMamDefaultBehaviour() {
+        return mamDefaultBehaviour;
+    }
+
+    void setMamDefaultBehaviour(@NonNull MamPrefsIQ.DefaultBehavior mamDefaultBehaviour) {
+        this.mamDefaultBehaviour = mamDefaultBehaviour;
+    }
+
+    public LoadHistorySettings getLoadHistorySettings() {
+        return loadHistorySettings;
+    }
+
+    public void setLoadHistorySettings(LoadHistorySettings loadHistorySettings) {
+        this.loadHistorySettings = loadHistorySettings;
+    }
+
+    public boolean isSuccessfulConnectionHappened() {
+        return successfulConnectionHappened;
+    }
+
+    void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
+        this.successfulConnectionHappened = successfulConnectionHappened;
     }
 }

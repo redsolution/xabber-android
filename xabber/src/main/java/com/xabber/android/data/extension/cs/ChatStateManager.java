@@ -27,16 +27,18 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnDisconnectListener;
-import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedNestedMaps;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.receiver.ComposingPausedReceiver;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smack.ConnectionCreationListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -49,6 +51,9 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.chatstates.ChatState;
 import org.jivesoftware.smackx.chatstates.packet.ChatStateExtension;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.BareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -61,16 +66,13 @@ import java.util.Map;
 public class ChatStateManager implements OnDisconnectListener,
         OnPacketListener, OnCloseListener {
 
-    private final static ChatStateManager instance;
+    private static ChatStateManager instance;
 
     private static final int PAUSE_TIMEOUT = 30 * 1000;
 
     private static final long REMOVE_STATE_DELAY = 10 * 1000;
 
     static {
-        instance = new ChatStateManager();
-        Application.getInstance().addManager(instance);
-
         XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
                     @Override
                     public void connectionCreated(final XMPPConnection connection) {
@@ -81,25 +83,29 @@ public class ChatStateManager implements OnDisconnectListener,
     }
 
     public static ChatStateManager getInstance() {
+        if (instance == null) {
+            instance = new ChatStateManager();
+        }
+
         return instance;
     }
 
     /**
      * Chat states for lower cased resource for bareAddress in account.
      */
-    private final NestedNestedMaps<String, ChatState> chatStates;
+    private final NestedNestedMaps<Resourcepart, ChatState> chatStates;
 
     /**
      * Cleaners for chat states for lower cased resource for bareAddress in
      * account.
      */
-    private final NestedNestedMaps<String, Runnable> stateCleaners;
+    private final NestedNestedMaps<Resourcepart, Runnable> stateCleaners;
 
     /**
      * Information about chat state notification support for lower cased
      * resource for bareAddress in account.
      */
-    private final NestedNestedMaps<String, Boolean> supports;
+    private final NestedNestedMaps<Resourcepart, Boolean> supports;
 
     /**
      * Sent chat state notifications for bareAddress in account.
@@ -122,11 +128,11 @@ public class ChatStateManager implements OnDisconnectListener,
     private final Handler handler;
 
     private ChatStateManager() {
-        chatStates = new NestedNestedMaps<String, ChatState>();
-        stateCleaners = new NestedNestedMaps<String, Runnable>();
-        supports = new NestedNestedMaps<String, Boolean>();
-        sent = new NestedMap<ChatState>();
-        pauseIntents = new NestedMap<PendingIntent>();
+        chatStates = new NestedNestedMaps<>();
+        stateCleaners = new NestedNestedMaps<>();
+        supports = new NestedNestedMaps<>();
+        sent = new NestedMap<>();
+        pauseIntents = new NestedMap<>();
         alarmManager = (AlarmManager) Application.getInstance()
                 .getSystemService(Context.ALARM_SERVICE);
         handler = new Handler();
@@ -135,37 +141,34 @@ public class ChatStateManager implements OnDisconnectListener,
     /**
      * Returns best information chat state for specified bare address.
      *
-     * @param account
-     * @param bareAddress
      * @return <code>null</code> if there is no available information.
      */
-    public ChatState getChatState(String account, String bareAddress) {
-        Map<String, ChatState> map = chatStates.get(account, bareAddress);
-        if (map == null)
+    public ChatState getChatState(AccountJid account, UserJid bareAddress) {
+        Map<Resourcepart, ChatState> map = chatStates.get(account.toString(), bareAddress.toString());
+        if (map == null) {
             return null;
+        }
         ChatState chatState = null;
-        for (ChatState check : map.values())
-            if (chatState == null || check.compareTo(chatState) < 0)
+        for (ChatState check : map.values()) {
+            if (chatState == null || check.compareTo(chatState) < 0) {
                 chatState = check;
+            }
+        }
         return chatState;
     }
 
     /**
      * Whether sending chat notification for specified chat is supported.
-     *
-     * @param chat
-     * @param outgoingMessage
-     * @return
      */
     private boolean isSupported(AbstractChat chat, boolean outgoingMessage) {
         if (chat instanceof RoomChat)
             return false;
-        String to = chat.getTo();
-        String bareAddress = Jid.getBareAddress(to);
-        String resource = Jid.getResource(to);
-        Map<String, Boolean> map = supports.get(chat.getAccount(), bareAddress);
+        Jid to = chat.getTo();
+        BareJid bareAddress = to.asBareJid();
+        Resourcepart resource = to.getResourceOrNull();
+        Map<Resourcepart, Boolean> map = supports.get(chat.getAccount().toString(), bareAddress.toString());
         if (map != null) {
-            if (!"".equals(resource)) {
+            if (resource!= null && !resource.equals(Resourcepart.EMPTY)) {
                 Boolean value = map.get(resource);
                 if (value != null)
                     return value;
@@ -182,40 +185,36 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Update outgoing message before sending.
-     *
-     * @param chat
-     * @param message
      */
     public void updateOutgoingMessage(AbstractChat chat, Message message) {
-        if (!isSupported(chat, true))
+        if (!isSupported(chat, true)) {
             return;
+        }
         message.addExtension(new ChatStateExtension(ChatState.active));
-        sent.put(chat.getAccount(), chat.getUser(), ChatState.active);
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), ChatState.active);
         cancelPauseIntent(chat.getAccount(), chat.getUser());
     }
 
     /**
      * Update chat state information and send message if necessary.
-     *
-     * @param account
-     * @param user
-     * @param chatState
      */
-    private void updateChatState(String account, String user,
+    private void updateChatState(AccountJid account, UserJid user,
                                  ChatState chatState) {
         if (!SettingsManager.chatsStateNotification()
-                || sent.get(account, user) == chatState)
+                || sent.get(account.toString(), user.toString()) == chatState) {
             return;
+        }
         AbstractChat chat = MessageManager.getInstance().getChat(account, user);
-        if (chat == null || !isSupported(chat, false))
+        if (chat == null || !isSupported(chat, false)) {
             return;
-        sent.put(chat.getAccount(), chat.getUser(), chatState);
+        }
+        sent.put(chat.getAccount().toString(), chat.getUser().toString(), chatState);
         Message message = new Message();
         message.setType(chat.getType());
         message.setTo(chat.getTo());
         message.addExtension(new ChatStateExtension(chatState));
         try {
-            ConnectionManager.getInstance().sendStanza(account, message);
+            StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
             // Just ignore it.
         }
@@ -223,23 +222,17 @@ public class ChatStateManager implements OnDisconnectListener,
 
     /**
      * Cancel pause intent from the schedule.
-     *
-     * @param account
-     * @param user
      */
-    private void cancelPauseIntent(String account, String user) {
-        PendingIntent pendingIntent = pauseIntents.remove(account, user);
+    private void cancelPauseIntent(AccountJid account, UserJid user) {
+        PendingIntent pendingIntent = pauseIntents.remove(account.toString(), user.toString());
         if (pendingIntent != null)
             alarmManager.cancel(pendingIntent);
     }
 
     /**
      * Must be call each time user change text message.
-     *
-     * @param account
-     * @param user
      */
-    public void onComposing(String account, String user, CharSequence text) {
+    public void onComposing(AccountJid account, UserJid user, CharSequence text) {
         cancelPauseIntent(account, user);
         if (text.length() == 0) {
             updateChatState(account, user, ChatState.active);
@@ -256,108 +249,119 @@ public class ChatStateManager implements OnDisconnectListener,
         calendar.add(Calendar.MILLISECOND, PAUSE_TIMEOUT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 pendingIntent);
-        pauseIntents.put(account, user, pendingIntent);
+        pauseIntents.put(account.toString(), user.toString(), pendingIntent);
     }
 
-    public void onPaused(String account, String user) {
+    public void onPaused(AccountJid account, UserJid user) {
         if (account == null || user == null)
             return;
-        if (sent.get(account, user) != ChatState.composing) {
+        if (sent.get(account.toString(), user.toString()) != ChatState.composing) {
             return;
         }
 
         updateChatState(account, user, ChatState.paused);
-        pauseIntents.remove(account, user);
+        pauseIntents.remove(account.toString(), user.toString());
     }
 
     @Override
     public void onDisconnect(ConnectionItem connection) {
         if (!(connection instanceof AccountItem))
             return;
-        String account = ((AccountItem) connection).getAccount();
-        chatStates.clear(account);
-        for (Map<String, Runnable> map : stateCleaners.getNested(account)
-                .values())
-            for (Runnable runnable : map.values())
+        AccountJid account = ((AccountItem) connection).getAccount();
+        chatStates.clear(account.toString());
+        for (Map<Resourcepart, Runnable> map : stateCleaners.getNested(account.toString()).values()) {
+            for (Runnable runnable : map.values()) {
                 handler.removeCallbacks(runnable);
-        stateCleaners.clear(account);
-        supports.clear(account);
-        sent.clear(account);
-        for (PendingIntent pendingIntent : pauseIntents.getNested(account)
-                .values())
+            }
+        }
+        stateCleaners.clear(account.toString());
+        supports.clear(account.toString());
+        sent.clear(account.toString());
+        for (PendingIntent pendingIntent : pauseIntents.getNested(account.toString()).values()) {
             alarmManager.cancel(pendingIntent);
-        pauseIntents.clear(account);
+        }
+        pauseIntents.clear(account.toString());
     }
 
-    private void removeCallback(String account, String bareAddress,
-                                String resource) {
-        Runnable runnable = stateCleaners
-                .remove(account, bareAddress, resource);
-        if (runnable != null)
+    private void removeCallback(AccountJid account, BareJid bareAddress, Resourcepart resource) {
+        Runnable runnable = stateCleaners.remove(account.toString(), bareAddress.toString(), resource);
+        if (runnable != null) {
             handler.removeCallbacks(runnable);
+        }
     }
 
     @Override
-    public void onPacket(ConnectionItem connection, final String bareAddress, Stanza packet) {
-        if (!(connection instanceof AccountItem))
+    public void onStanza(ConnectionItem connection, Stanza stanza) {
+        if (stanza.getFrom() == null) {
             return;
-        final String resource = Jid.getResource(packet.getFrom());
-        if (resource == null)
+        }
+
+        final Resourcepart resource = stanza.getFrom().getResourceOrNull();
+        if (resource == null) {
             return;
-        final String account = ((AccountItem) connection).getAccount();
-        if (packet instanceof Presence) {
-            Presence presence = (Presence) packet;
-            if (presence.getType() != Type.unavailable)
+        }
+
+        final AccountJid account = ((AccountItem) connection).getAccount();
+        final UserJid bareUserJid;
+        try {
+            bareUserJid = UserJid.from(stanza.getFrom()).getBareUserJid();
+        } catch (UserJid.UserJidCreateException e) {
+            return;
+        }
+
+        if (stanza instanceof Presence) {
+            Presence presence = (Presence) stanza;
+            if (presence.getType() != Type.unavailable) {
                 return;
-            chatStates.remove(account, bareAddress, resource);
-            removeCallback(account, bareAddress, resource);
-            supports.remove(account, bareAddress, resource);
-        } else if (packet instanceof Message) {
+            }
+            chatStates.remove(account.toString(), bareUserJid.toString(), resource);
+            removeCallback(account, bareUserJid.getBareJid(), resource);
+            supports.remove(account.toString(), bareUserJid.toString(), resource);
+        } else if (stanza instanceof Message) {
             boolean support = false;
-            for (ExtensionElement extension : packet.getExtensions())
+            for (ExtensionElement extension : stanza.getExtensions())
                 if (extension instanceof ChatStateExtension) {
-                    removeCallback(account, bareAddress, resource);
+                    removeCallback(account, bareUserJid.getBareJid(), resource);
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
-                    chatStates.put(account, bareAddress, resource, chatState);
+                    chatStates.put(account.toString(), bareUserJid.toString(), resource, chatState);
                     if (chatState != ChatState.active) {
                         Runnable runnable = new Runnable() {
                             @Override
                             public void run() {
-                                if (this != stateCleaners.get(account,
-                                        bareAddress, resource))
+                                if (this != stateCleaners.get(account.toString(), bareUserJid.toString(), resource)) {
                                     return;
-                                chatStates.remove(account, bareAddress,
-                                        resource);
-                                removeCallback(account, bareAddress, resource);
-                                RosterManager.getInstance().onContactChanged(
-                                        account, bareAddress);
+                                }
+                                chatStates.remove(account.toString(), bareUserJid.toString(), resource);
+                                removeCallback(account, bareUserJid.getBareJid(), resource);
+                                RosterManager.onContactChanged(account, bareUserJid);
                             }
                         };
                         handler.postDelayed(runnable, REMOVE_STATE_DELAY);
-                        stateCleaners.put(account, bareAddress, resource,
-                                runnable);
+                        stateCleaners.put(account.toString(), bareUserJid.toString(), resource, runnable);
                     }
-                    RosterManager.getInstance().onContactChanged(account,
-                            bareAddress);
+                    RosterManager.onContactChanged(account, bareUserJid);
                     support = true;
                     break;
                 }
-            Message message = (Message) packet;
+            Message message = (Message) stanza;
             if (message.getType() != Message.Type.chat
-                    && message.getType() != Message.Type.groupchat)
+                    && message.getType() != Message.Type.groupchat) {
                 return;
-            if (support)
-                supports.put(account, bareAddress, resource, true);
-            else if (supports.get(account, bareAddress, resource) == null)
+            }
+            if (support) {
+                supports.put(account.toString(), bareUserJid.toString(), resource, true);
+            } else if (supports.get(account.toString(), bareUserJid.toString(), resource) == null) {
                 // Disable only if there no information about support.
-                supports.put(account, bareAddress, resource, false);
+                supports.put(account.toString(), bareUserJid.toString(), resource, false);
+            }
         }
     }
 
     @Override
     public void onClose() {
-        for (PendingIntent pendingIntent : pauseIntents.values())
+        for (PendingIntent pendingIntent : pauseIntents.values()) {
             alarmManager.cancel(pendingIntent);
+        }
         pauseIntents.clear();
     }
 

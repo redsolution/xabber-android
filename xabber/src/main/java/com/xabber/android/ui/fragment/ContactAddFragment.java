@@ -3,6 +3,7 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,16 @@ import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.helper.ContactAdder;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
+import com.xabber.android.ui.helper.ContactAdder;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -39,11 +43,11 @@ public class ContactAddFragment extends GroupEditorFragment
     private String name;
     private View accountSelectorPanel;
 
-    public static ContactAddFragment newInstance(String account, String user) {
+    public static ContactAddFragment newInstance(AccountJid account, UserJid user) {
         ContactAddFragment fragment = new ContactAddFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ACCOUNT, account);
-        args.putString(ARG_USER, user);
+        args.putParcelable(ARG_ACCOUNT, account);
+        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,25 +60,25 @@ public class ContactAddFragment extends GroupEditorFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contact_add_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_contact_add, container, false);
 
 
         if (savedInstanceState != null) {
             name = savedInstanceState.getString(SAVED_NAME);
-            setAccount(savedInstanceState.getString(SAVED_ACCOUNT));
-            setUser(savedInstanceState.getString(SAVED_USER));
+            setAccount((AccountJid) savedInstanceState.getParcelable(SAVED_ACCOUNT));
+            setUser((UserJid) savedInstanceState.getParcelable(SAVED_USER));
         } else {
             if (getAccount() == null || getUser() == null) {
                 name = null;
             } else {
                 name = RosterManager.getInstance().getName(getAccount(), getUser());
-                if (getUser().equals(name)) {
+                if (getUser().getJid().asBareJid().toString().equals(name)) {
                     name = null;
                 }
             }
         }
         if (getAccount() == null) {
-            Collection<String> accounts = AccountManager.getInstance().getAccounts();
+            Collection<AccountJid> accounts = AccountManager.getInstance().getEnabledAccounts();
             if (accounts.size() == 1) {
                 setAccount(accounts.iterator().next());
             }
@@ -92,9 +96,13 @@ public class ContactAddFragment extends GroupEditorFragment
         accountView.setAdapter(new AccountChooseAdapter(getActivity()));
         accountView.setOnItemSelectedListener(this);
 
-        if (getAccount() != null) {
+        AccountJid account = getAccount();
+
+        if (account != null) {
             for (int position = 0; position < accountView.getCount(); position++) {
-                if (getAccount().equals(accountView.getItemAtPosition(position))) {
+                AccountJid itemAtPosition = (AccountJid) accountView.getItemAtPosition(position);
+                LogManager.i(this, "itemAtPosition " + itemAtPosition + " account " + account);
+                if (account.equals(accountView.getItemAtPosition(position))) {
                     accountView.setSelection(position);
                     break;
                 }
@@ -122,7 +130,7 @@ public class ContactAddFragment extends GroupEditorFragment
         nameView = (EditText) headerView.findViewById(R.id.contact_name);
 
         if (getUser() != null) {
-            userView.setText(getUser());
+            userView.setText(getUser().toString());
         }
         if (name != null) {
             nameView.setText(name);
@@ -132,7 +140,7 @@ public class ContactAddFragment extends GroupEditorFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(SAVED_ACCOUNT, getAccount());
+        outState.putParcelable(SAVED_ACCOUNT, getAccount());
         outState.putString(SAVED_USER, userView.getText().toString());
         outState.putString(SAVED_NAME, nameView.getText().toString());
 
@@ -146,11 +154,11 @@ public class ContactAddFragment extends GroupEditorFragment
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String selectedAccount = (String) accountView.getSelectedItem();
+        AccountJid selectedAccount = (AccountJid) accountView.getSelectedItem();
 
         if (selectedAccount == null) {
             onNothingSelected(parent);
-            setAccount(selectedAccount);
+            setAccount(null);
         } else {
             listenerActivity.onAccountSelected(selectedAccount);
 
@@ -179,13 +187,25 @@ public class ContactAddFragment extends GroupEditorFragment
             return;
         }
 
-        String user = userView.getText().toString();
-        if ("".equals(user)) {
+        String contactString = userView.getText().toString();
+
+        if (TextUtils.isEmpty(contactString)) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_USER_NAME),
                     Toast.LENGTH_LONG).show();
+            return ;
+        }
+
+        UserJid user;
+        try {
+            user = UserJid.from(contactString);
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
             return;
         }
-        String account = (String) accountView.getSelectedItem();
+
+        LogManager.i(this, "user: " + user);
+
+        AccountJid account = (AccountJid) accountView.getSelectedItem();
         if (account == null) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT),
                     Toast.LENGTH_LONG).show();
@@ -204,12 +224,14 @@ public class ContactAddFragment extends GroupEditorFragment
             Application.getInstance().onError(R.string.CONNECTION_FAILED);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
+        } catch (InterruptedException e) {
+            LogManager.exception(this, e);
         }
 
         getActivity().finish();
     }
 
     public interface Listener {
-        void onAccountSelected(String account);
+        void onAccountSelected(AccountJid account);
     }
 }

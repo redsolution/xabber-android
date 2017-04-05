@@ -3,193 +3,85 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.annotation.NonNull;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
-import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.message.AbstractChat;
-import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.ui.fragment.ChatViewerFragment;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+public class ChatViewerAdapter extends FragmentPagerAdapter {
 
-import static java.lang.Math.abs;
+    private static final String LOG_TAG = ChatViewerAdapter.class.getSimpleName();
+    public static final int PAGE_POSITION_RECENT_CHATS = 0;
+    public static final int PAGE_POSITION_CHAT = 1;
 
-public class ChatViewerAdapter extends FragmentStatePagerAdapter {
+    public interface FinishUpdateListener {
+        void onChatViewAdapterFinishUpdate();
+    }
 
-    /**
-     * Intent sent while opening chat activity.
-     */
-    private final AbstractChat intent;
+    private AccountJid accountJid;
+    private UserJid userJid;
 
-    private ArrayList<AbstractChat> activeChats;
+    private int itemCount;
 
     private FinishUpdateListener finishUpdateListener;
 
-    private static final int TOTAL_COUNT = 200;
-    private static final int OFFSET = TOTAL_COUNT / 2;
-
-    private Fragment currentFragment;
-
-    public ChatViewerAdapter(FragmentManager fragmentManager, BaseEntity chat, FinishUpdateListener finishUpdateListener) {
+    public ChatViewerAdapter(FragmentManager fragmentManager,
+                             FinishUpdateListener finishUpdateListener) {
         super(fragmentManager);
         this.finishUpdateListener = finishUpdateListener;
-
-        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = MessageManager.getInstance().getOrCreateChat(chat.getAccount(), chat.getUser());
-
-        updateChats();
+        itemCount = 1;
     }
 
-    public ChatViewerAdapter(FragmentManager fragmentManager, FinishUpdateListener finishUpdateListener) {
+    public ChatViewerAdapter(FragmentManager fragmentManager,
+                             FinishUpdateListener finishUpdateListener,
+                             @NonNull AccountJid accountJid,
+                             @NonNull UserJid userJid) {
         super(fragmentManager);
         this.finishUpdateListener = finishUpdateListener;
+        setChat(accountJid, userJid);
+    }
 
-        activeChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-        intent = null;
-        updateChats();
+    public void selectChat(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
+        if (accountJid.equals(this.accountJid) && userJid.equals(this.userJid)) {
+            return;
+        }
+
+        setChat(accountJid, userJid);
+        notifyDataSetChanged();
+    }
+
+    private void setChat(@NonNull AccountJid accountJid, @NonNull UserJid userJid) {
+        itemCount = 2;
+        this.accountJid = accountJid;
+        this.userJid = userJid;
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+        if (position == PAGE_POSITION_RECENT_CHATS) {
+            return RecentChatFragment.newInstance();
+        } else if (position == PAGE_POSITION_CHAT) {
+            return ChatFragment.newInstance(accountJid, userJid);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public int getCount() {
-        // warning: scrolling to very high values (1,000,000+) results in
-        // strange drawing behaviour
-        return TOTAL_COUNT;
+        return itemCount;
     }
 
-    public int getRealCount() {
-        return activeChats.size() + 1;
-    }
-
-    @Override
-    public Fragment getItem(int virtualPagePosition) {
-        int realPosition = getRealPagePosition(virtualPagePosition);
-
-        if (realPosition == 0) {
-            return RecentChatFragment.newInstance();
-        }
-
-        AbstractChat chat = activeChats.get(getChatIndexFromRealPosition(realPosition));
-        return ChatViewerFragment.newInstance(chat.getAccount(), chat.getUser());
-    }
-
-    public boolean updateChats() {
-
-        ArrayList<AbstractChat> newChats = new ArrayList<>(MessageManager.getInstance().getActiveChats());
-
-        if (intent != null && !newChats.contains(intent)) {
-            newChats.add(intent);
-        }
-
-        Collections.sort(newChats, new Comparator<AbstractChat>() {
-            @Override
-            public int compare(AbstractChat lhs, AbstractChat rhs) {
-                return lhs.getCreationTime().compareTo(rhs.getCreationTime());
-            }
-        });
-
-
-        if (isChatsEquals(newChats)) {
-            return false;
-        }
-
-        activeChats = newChats;
-        notifyDataSetChanged();
-
-        return true;
-    }
-
-    private boolean isChatsEquals(ArrayList<AbstractChat> newChats) {
-        if (newChats.size() != activeChats.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < activeChats.size(); i++) {
-            AbstractChat oldChat = activeChats.get(i);
-            AbstractChat newChat = newChats.get(i);
-
-            if (!oldChat.equals(newChat.getAccount(), newChat.getUser())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public int getPageNumber(BaseEntity chat) {
-        int realPosition = 0;
-
-        for (int chatIndex = 0; chatIndex < activeChats.size(); chatIndex++) {
-            if (activeChats.get(chatIndex).equals(chat)) {
-                realPosition = chatIndex + 1;
-                break;
-            }
-        }
-
-        return realPosition + OFFSET;
-    }
-
-    public AbstractChat getChatByPageNumber(int virtualPosition) {
-        int realPosition = getRealPagePosition(virtualPosition);
-
-        if (realPosition == 0) {
-            return null;
-        }
-        return activeChats.get(getChatIndexFromRealPosition(realPosition));
-    }
-
-
-    public int getRealPagePosition(int virtualPosition) {
-        int realCount = getRealCount();
-
-        int pageNumber = abs(virtualPosition - OFFSET) % realCount;
-        if (virtualPosition >= OFFSET) {
-            return pageNumber;
-        } else {
-            return pageNumber == 0 ? 0 : realCount - pageNumber;
-        }
-
-    }
-
-    private int getChatIndexFromRealPosition(int realPosition) {
-        return realPosition - 1;
-    }
 
     @Override
     public void finishUpdate(ViewGroup container) {
         super.finishUpdate(container);
 
         finishUpdateListener.onChatViewAdapterFinishUpdate();
-    }
-
-    public interface FinishUpdateListener {
-        void onChatViewAdapterFinishUpdate();
-    }
-
-    public ArrayList<AbstractChat> getActiveChats() {
-        return activeChats;
-    }
-
-    @Override
-    public int getItemPosition(Object object) {
-        return POSITION_NONE;
-    }
-
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-
-        if (currentFragment instanceof ChatViewerFragment) {
-            ((ChatViewerFragment)currentFragment).saveInputState();
-        }
-
-        currentFragment = (Fragment) object;
-    }
-
-    public Fragment getCurrentFragment() {
-        return currentFragment;
     }
 
 }

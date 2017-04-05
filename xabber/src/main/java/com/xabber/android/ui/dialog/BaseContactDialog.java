@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.AccountPainter;
@@ -23,8 +25,8 @@ public abstract class BaseContactDialog extends DialogFragment
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.BaseContactDialog.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_CONTACT = "com.xabber.android.ui.dialog.BaseContactDialog.ARGUMENT_CONTACT";
 
-    private String account;
-    private String contact;
+    private AccountJid account;
+    private UserJid contact;
     private AccountPainter accountPainter;
     private AlertDialog dialog;
 
@@ -37,18 +39,18 @@ public abstract class BaseContactDialog extends DialogFragment
     protected abstract void onNegativeButtonClick();
     protected abstract void onNeutralButtonClick();
 
-    protected static void setArguments(String account, String contact, DialogFragment fragment) {
+    protected static void setArguments(AccountJid account, UserJid contact, DialogFragment fragment) {
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_CONTACT, contact);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_CONTACT, contact);
         fragment.setArguments(arguments);
     }
 
-    protected String getAccount() {
+    protected AccountJid getAccount() {
         return account;
     }
 
-    protected String getContact() {
+    protected UserJid getContact() {
         return contact;
     }
 
@@ -57,14 +59,14 @@ public abstract class BaseContactDialog extends DialogFragment
 
         ((ImageView)view.findViewById(R.id.avatar)).setImageDrawable(bestContact.getAvatar());
         ((TextView)view.findViewById(R.id.name)).setText(bestContact.getName());
-        ((TextView)view.findViewById(R.id.status_text)).setText(contact);
+        ((TextView)view.findViewById(R.id.status_text)).setText(contact.toString());
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        contact = args.getString(ARGUMENT_CONTACT, null);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        contact = args.getParcelable(ARGUMENT_CONTACT);
 
         accountPainter = ColorManager.getInstance().getAccountPainter();
 

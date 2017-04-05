@@ -61,6 +61,7 @@
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
     <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
+    <string name="SERVER_INFO_ERROR">Could not get server info.</string>
 
     <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>
@@ -71,5 +72,36 @@
     <string name="account_color_name_teal">Teal</string>
     <string name="account_color_name_blue_grey">Blue grey</string>
     <string name="account_color_name_cyan">Cyan</string>
+
+    <string name="account_connection_settings">Connection settings</string>
+
+    <string name="blocked_contacts">Blocked contacts</string>
+    <string name="blocked_contacts_unknown">Blocking support is not determined yet.</string>
+    <string name="blocked_contacts_not_supported">Blocking does not supported by the server.</string>
+    <string name="blocked_contacts_empty">No blocked contacts.</string>
+
+    <plurals name="blocked_contacts_number">
+        <item quantity="one">%d contact blocked.</item>
+        <item quantity="other">%d contacts blocked.</item>
+    </plurals>
+
+    <string name="account_chat_history">Chat history</string>
+    <string name="account_history_options_summary">Chat message history storing options</string>
+
+    <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
+    <string name="account_chat_history_not_supported">Server does not support chat history storing.</string>
+
+    <string name="account_mam_default_behavior_title">Message Archive Management</string>
+    <string name="account_mam_default_behavior_always">Store all messages on server</string>
+    <string name="account_mam_default_behavior_roster">Store roster contacts messages on server</string>
+    <string name="account_mam_default_behavior_never">Do not store any messages on server</string>
+
+    <string name="account_mam_sync_title">Load message history</string>
+    <string name="account_mam_sync_all">Load history for all contacts</string>
+    <string name="account_mam_sync_current">Load history for opened chat only</string>
+    <string name="account_mam_sync_none">Do not load history for anybody</string>
+
+    <string name="account_clear_history_on_exit_title">Clear history on exit</string>
+    <string name="account_clear_history_on_exit_summary">Delete all chat messages from device before exiting Xabber.</string>
 
 </resources>

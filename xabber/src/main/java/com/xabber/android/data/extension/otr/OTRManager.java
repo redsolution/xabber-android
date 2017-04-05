@@ -15,11 +15,12 @@
 package com.xabber.android.data.extension.otr;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnLoadListener;
@@ -27,13 +28,15 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.SettingsManager.SecurityOtrMode;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountAddedListener;
-import com.xabber.android.data.account.OnAccountRemovedListener;
-import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.account.listeners.OnAccountAddedListener;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.connection.StanzaSender;
+import com.xabber.android.data.database.sqlite.OTRTable;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.NestedMap.Entry;
 import com.xabber.android.data.entity.NestedNestedMaps;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -42,19 +45,24 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.xmpp.archive.OtrMode;
-import com.xabber.xmpp.archive.SaveMode;
 
 import net.java.otr4j.OtrEngineHost;
 import net.java.otr4j.OtrEngineListener;
 import net.java.otr4j.OtrException;
 import net.java.otr4j.OtrPolicy;
+import net.java.otr4j.OtrPolicyImpl;
 import net.java.otr4j.crypto.OtrCryptoEngine;
+import net.java.otr4j.crypto.OtrCryptoEngineImpl;
 import net.java.otr4j.crypto.OtrCryptoException;
 import net.java.otr4j.io.SerializationUtils;
+import net.java.otr4j.session.FragmenterInstructions;
 import net.java.otr4j.session.InstanceTag;
 import net.java.otr4j.session.Session;
 import net.java.otr4j.session.SessionID;
+import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -76,20 +84,15 @@ import java.util.concurrent.ThreadFactory;
 public class OTRManager implements OtrEngineHost, OtrEngineListener,
         OnLoadListener, OnAccountAddedListener, OnAccountRemovedListener, OnCloseListener {
 
-    private final static OTRManager instance;
+    private static OTRManager instance;
     private static Map<SecurityOtrMode, OtrPolicy> POLICIES;
 
     static {
         POLICIES = new HashMap<>();
-        POLICIES.put(SecurityOtrMode.disabled, new OtrPolicy(OtrPolicy.NEVER));
-        POLICIES.put(SecurityOtrMode.manual, new OtrPolicy(OtrPolicy.OTRL_POLICY_MANUAL & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.auto, new OtrPolicy(OtrPolicy.OPPORTUNISTIC & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.required, new OtrPolicy(OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
-    }
-
-    static {
-        instance = new OTRManager();
-        Application.getInstance().addManager(instance);
+        POLICIES.put(SecurityOtrMode.disabled, new OtrPolicyImpl(OtrPolicy.NEVER));
+        POLICIES.put(SecurityOtrMode.manual, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_MANUAL & ~OtrPolicy.ALLOW_V1));
+        POLICIES.put(SecurityOtrMode.auto, new OtrPolicyImpl(OtrPolicy.OPPORTUNISTIC & ~OtrPolicy.ALLOW_V1));
+        POLICIES.put(SecurityOtrMode.required, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
     }
 
     private final EntityNotificationProvider<SMRequest> smRequestProvider;
@@ -115,6 +118,14 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      */
     private final ExecutorService keyPairGenerator;
 
+    public static OTRManager getInstance() {
+        if (instance == null) {
+            instance = new OTRManager();
+        }
+
+        return instance;
+    }
+
     private OTRManager() {
         smRequestProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_help);
         smProgressProvider = new EntityNotificationProvider<>(R.drawable.ic_stat_play_circle_fill);
@@ -132,10 +143,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                         return thread;
                     }
                 });
-    }
-
-    public static OTRManager getInstance() {
-        return instance;
     }
 
     @Override
@@ -169,37 +176,52 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         NotificationManager.getInstance().registerNotificationProvider(smProgressProvider);
     }
 
-    public void startSession(String account, String user) throws NetworkException {
+    public void startSession(AccountJid account, UserJid user) throws NetworkException {
         LogManager.i(this, "Starting session for " + user);
         try {
-            getOrCreateSession(account, user).startSession();
+            getOrCreateSession(account.toString(), user.toString()).startSession();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
         LogManager.i(this, "Started session for " + user);
     }
 
-    public void refreshSession(String account, String user) throws NetworkException {
+    public void refreshSession(AccountJid account, UserJid user) throws NetworkException {
         LogManager.i(this, "Refreshing session for " + user);
         try {
-            getOrCreateSession(account, user).refreshSession();
+            getOrCreateSession(account.toString(), user.toString()).refreshSession();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
         LogManager.i(this, "Refreshed session for " + user);
     }
 
-    public void endSession(String account, String user) throws NetworkException {
+    private void endSession(String account, String user) throws NetworkException {
         LogManager.i(this, "Ending session for " + user);
         try {
             getOrCreateSession(account, user).endSession();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        MessageArchiveManager.getInstance().setSaveMode(account, user, abstractChat.getThreadId(), SaveMode.body);
-        SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.concede);
-        LogManager.i(this, "Ended session for " + user);
+        AbstractChat abstractChat = getChat(account, user);
+        if (abstractChat != null) {
+            SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.concede);
+            LogManager.i(this, "Ended session for " + user);
+        }
+    }
+
+    @Nullable
+    private AbstractChat getChat(String account, String user) {
+        try {
+            return MessageManager.getInstance().getChat(AccountJid.from(account), UserJid.from(user));
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return null;
+        }
+    }
+
+    public void endSession(AccountJid account, UserJid user) throws NetworkException {
+        endSession(account.toString(), user.toString());
     }
 
     private Session getOrCreateSession(String account, String user) {
@@ -211,9 +233,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
         LogManager.i(this, "Creating new session for " + user);
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
-        session = new Session(new SessionID(account, user,
-                accountItem == null ? "" : accountItem.getConnectionSettings().getProtocol().toString()), this);
+        session = new SessionImpl(new SessionID(account, user, "xmpp"), this);
         session.addOtrEngineListener(this);
         sessions.put(account, user, session);
         return session;
@@ -226,16 +246,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     private void injectMessage(String account, String user, String msg) throws OtrException {
         LogManager.i(this, "injectMessage. user: " + user + " message: " + msg);
-        AbstractChat abstractChat = MessageManager.getInstance().getChat(account, user);
-        try {
-            MessageArchiveManager.getInstance().setSaveMode(account, user, abstractChat.getThreadId(), SaveMode.fls);
-        } catch (NetworkException e) {
-            throw new OtrException(e);
-        }
+        AbstractChat abstractChat = getChat(account, user);
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
         try {
-            ConnectionManager.getInstance()
-                    .sendStanza(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
+            StanzaSender.sendStanza(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
         } catch (NetworkException e) {
             throw new OtrException(e);
         }
@@ -252,7 +266,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      */
     private void newAction(String account, String user, String text, ChatAction action) {
         LogManager.i(this, "newAction. text: " + text + " action " + action);
-        MessageManager.getInstance().getChat(account, user).newAction(null, text, action);
+        AbstractChat chat = getChat(account, user);
+        if (chat != null) {
+            chat.newAction(null, text, action);
+        }
     }
 
     @Override
@@ -305,8 +322,18 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         return POLICIES.get(SettingsManager.securityOtrMode());
     }
 
+    @Override
+    public FragmenterInstructions getFragmenterInstructions(SessionID sessionID) {
+        return null;
+    }
+
     private KeyPair getLocalKeyPair(String account) throws OtrException {
-        KeyPair keyPair = AccountManager.getInstance().getAccount(account).getKeyPair();
+        KeyPair keyPair = null;
+        try {
+            keyPair = AccountManager.getInstance().getAccount(AccountJid.from(account)).getKeyPair();
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
         if (keyPair == null) {
             throw new OtrException(new IllegalStateException("KeyPair is not ready, yet."));
         }
@@ -332,7 +359,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             PublicKey remotePublicKey = session.getRemotePublicKey();
             String value;
             try {
-                value = OtrCryptoEngine.getFingerprint(remotePublicKey);
+                OtrCryptoEngine otrCryptoEngine = new OtrCryptoEngineImpl();
+                value = otrCryptoEngine.getFingerprint(remotePublicKey);
             } catch (OtrCryptoException e) {
                 LogManager.exception(this, e);
                 value = null;
@@ -346,8 +374,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             }
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, isVerified(sessionID.getAccountID(),
                     sessionID.getUserID()) ? ChatAction.otr_verified : ChatAction.otr_encryption);
-            MessageManager.getInstance()
-                    .getChat(sessionID.getAccountID(), sessionID.getUserID()).sendMessages();
+            AbstractChat chat = getChat(sessionID.getAccountID(), sessionID.getUserID());
+            if (chat != null) {
+                chat.sendMessages();
+            }
         } else if (sStatus == SessionStatus.PLAINTEXT) {
             actives.remove(sessionID.getAccountID(), sessionID.getUserID());
             sessions.remove(sessionID.getAccountID(), sessionID.getUserID());
@@ -366,20 +396,33 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         } else {
             throw new IllegalStateException();
         }
-        RosterManager.getInstance().onContactChanged(sessionID.getAccountID(), sessionID.getUserID());
+        onContactChanged(sessionID);
+    }
+
+    public void onContactChanged(SessionID sessionID) {
+        try {
+            RosterManager.onContactChanged(AccountJid.from(sessionID.getAccountID()), UserJid.from(sessionID.getUserID()));
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override
     public void askForSecret(SessionID sessionID, InstanceTag receiverTag, String question) {
-        smRequestProvider.add(new SMRequest(sessionID.getAccountID(), sessionID.getUserID(), question), true);
+        try {
+            smRequestProvider.add(new SMRequest(AccountJid.from(sessionID.getAccountID()),
+                    UserJid.from(sessionID.getUserID()), question), true);
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     /**
      * Transform outgoing message before sending.
      */
-    public String transformSending(String account, String user, String content) throws OtrException {
+    public String transformSending(AccountJid account, UserJid user, String content) throws OtrException {
         LogManager.i(this, "transform outgoing message... " + user);
-        String parts[] = getOrCreateSession(account, user).transformSending(content, null);
+        String parts[] = getOrCreateSession(account.toString(), user.toString()).transformSending(content, null);
         if (BuildConfig.DEBUG && parts.length != 1) {
             throw new RuntimeException(
             "We do not use fragmentation, so there must be only one otr fragment.");
@@ -390,9 +433,9 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Transform incoming message after receiving.
      */
-    public String transformReceiving(String account, String user, String content) throws OtrException {
+    public String transformReceiving(AccountJid account, UserJid user, String content) throws OtrException {
         LogManager.i(this, "transform incoming message... " + content);
-        Session session = getOrCreateSession(account, user);
+        Session session = getOrCreateSession(account.toString(), user.toString());
         try {
             String s = session.transformReceiving(content);
             LogManager.i(this, "transformed incoming message: " + s + " session status: " + session.getSessionStatus());
@@ -402,9 +445,9 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    public SecurityLevel getSecurityLevel(String account, String user) {
-        if (actives.get(account, user) == null) {
-            if (finished.get(account, user) == null) {
+    public SecurityLevel getSecurityLevel(AccountJid account, UserJid user) {
+        if (actives.get(account.toString(), user.toString()) == null) {
+            if (finished.get(account.toString(), user.toString()) == null) {
                 return SecurityLevel.plain;
             } else {
                 return SecurityLevel.finished;
@@ -418,7 +461,11 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
-    public boolean isVerified(String account, String user) {
+    public boolean isVerified(AccountJid account, UserJid user) {
+        return isVerified(account.toString(), user.toString());
+    }
+
+    private boolean isVerified(String account, String user) {
         String active = actives.get(account, user);
         if (active == null) {
             return false;
@@ -426,6 +473,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         Boolean value = fingerprints.get(account, user, active);
         return value != null && value;
     }
+
 
     private void setVerifyWithoutNotification(String account, String user, String fingerprint, boolean value) {
         fingerprints.put(account, user, fingerprint, value);
@@ -435,12 +483,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Set whether fingerprint was verified. Add action to the chat history.
      */
-    public void setVerify(String account, String user, String fingerprint, boolean value) {
-        setVerifyWithoutNotification(account, user, fingerprint, value);
+    public void setVerify(AccountJid account, UserJid user, String fingerprint, boolean value) {
+        setVerifyWithoutNotification(account.toString(), user.toString(), fingerprint, value);
         if (value) {
-            newAction(account, user, null, ChatAction.otr_smp_verified);
-        } else if (actives.get(account, user) != null) {
-            newAction(account, user, null, ChatAction.otr_encryption);
+            newAction(account.toString(), user.toString(), null, ChatAction.otr_smp_verified);
+        } else if (actives.get(account.toString(), user.toString()) != null) {
+            newAction(account.toString(), user.toString(), null, ChatAction.otr_encryption);
         }
     }
 
@@ -453,7 +501,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         setVerifyWithoutNotification(sessionID.getAccountID(), sessionID.getUserID(), active, value);
         newAction(sessionID.getAccountID(), sessionID.getUserID(), null,
                 value ? ChatAction.otr_smp_verified : ChatAction.otr_smp_unverified);
-        RosterManager.getInstance().onContactChanged(sessionID.getAccountID(), sessionID.getUserID());
+        onContactChanged(sessionID);
     }
 
     @Override
@@ -472,22 +520,30 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         removeSMProgress(sessionID.getAccountID(), sessionID.getUserID());
     }
 
-    public String getRemoteFingerprint(String account, String user) {
-        return actives.get(account, user);
+    public String getRemoteFingerprint(AccountJid account, UserJid user) {
+        return actives.get(account.toString(), user.toString());
     }
 
-    public String getLocalFingerprint(String account) {
+    @Nullable
+    public String getLocalFingerprint(AccountJid account) {
         try {
-            return OtrCryptoEngine.getFingerprint(getLocalKeyPair(account).getPublic());
+            OtrCryptoEngine otrCryptoEngine = new OtrCryptoEngineImpl();
+            return otrCryptoEngine.getFingerprint(getLocalKeyPair(account.toString()).getPublic());
         } catch (OtrException e) {
             LogManager.exception(this, e);
         }
         return null;
     }
 
+    @Nullable
     @Override
     public byte[] getLocalFingerprintRaw(SessionID sessionID) {
-        return SerializationUtils.hexStringToByteArray(getLocalFingerprint(sessionID.getAccountID()));
+        try {
+            return SerializationUtils.hexStringToByteArray(getLocalFingerprint(AccountJid.from(sessionID.getAccountID())));
+        } catch (XmppStringprepException e) {
+            LogManager.exception(this, e);
+            return null;
+        }
     }
 
     @Override
@@ -498,12 +554,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Respond using SM protocol.
      */
-    public void respondSmp(String account, String user, String question, String secret) throws NetworkException {
+    public void respondSmp(AccountJid account, UserJid user, String question, String secret) throws NetworkException {
         LogManager.i(this, "responding smp... " + user);
         removeSMRequest(account, user);
         addSMProgress(account, user);
         try {
-            getOrCreateSession(account, user).respondSmp(question, secret);
+            getOrCreateSession(account.toString(), user.toString()).respondSmp(question, secret);
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
@@ -512,12 +568,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Initiate request using SM protocol.
      */
-    public void initSmp(String account, String user, String question, String secret) throws NetworkException {
+    public void initSmp(AccountJid account, UserJid user, String question, String secret) throws NetworkException {
         LogManager.i(this, "initializing smp... " + user);
-        removeSMRequest(account, user);
+        removeSMRequest(account.toString(), user.toString());
         addSMProgress(account, user);
         try {
-            getOrCreateSession(account, user).initSmp(question, secret);
+            getOrCreateSession(account.toString(), user.toString()).initSmp(question, secret);
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
@@ -526,27 +582,39 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     /**
      * Abort SM negotiation.
      */
-    public void abortSmp(String account, String user) throws NetworkException {
+    public void abortSmp(AccountJid account, UserJid user) throws NetworkException {
         LogManager.i(this, "aborting smp... " + user);
-        removeSMRequest(account, user);
-        removeSMProgress(account, user);
+        removeSMRequest(account.toString(), user.toString());
+        removeSMProgress(account.toString(), user.toString());
         try {
-            getOrCreateSession(account, user).abortSmp();
+            getOrCreateSession(account.toString(), user.toString()).abortSmp();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
     }
 
-    private void removeSMRequest(String account, String user) {
+    private void removeSMRequest(AccountJid account, UserJid user) {
         smRequestProvider.remove(account, user);
     }
 
-    private void addSMProgress(String account, String user) {
+    private void removeSMRequest(String account, String user) {
+        try {
+            smRequestProvider.remove(AccountJid.from(account), UserJid.from(user));
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
+    }
+
+    private void addSMProgress(AccountJid account, UserJid user) {
         smProgressProvider.add(new SMProgress(account, user), false);
     }
 
     private void removeSMProgress(String account, String user) {
-        smProgressProvider.remove(account, user);
+        try {
+            smProgressProvider.remove(AccountJid.from(account), UserJid.from(user));
+        } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override
@@ -585,10 +653,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
-        fingerprints.clear(accountItem.getAccount());
-        actives.clear(accountItem.getAccount());
-        finished.clear(accountItem.getAccount());
-        sessions.clear(accountItem.getAccount());
+        fingerprints.clear(accountItem.getAccount().toString());
+        actives.clear(accountItem.getAccount().toString());
+        finished.clear(accountItem.getAccount().toString());
+        sessions.clear(accountItem.getAccount().toString());
     }
 
     /**
@@ -596,7 +664,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      */
     private void requestToWrite(final String account, final String user,
                                 final String fingerprint, final boolean verified) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 OTRTable.getInstance().write(account, user, fingerprint, verified);
@@ -629,12 +697,6 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     @Override
-    public int getMaxFragmentSize(SessionID sessionID) {
-        // we do not want fragmentation
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
     public void outgoingSessionChanged(SessionID sessionID) {
         LogManager.i(this, "Outgoing session change with SessionID " + sessionID);
         // TODO what to in this situation?
@@ -653,8 +715,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         // since this is not supported, we don't need to do anything
     }
 
-    public void onContactUnAvailable(String account, String user) {
-        Session session = sessions.get(account, user);
+    public void onContactUnAvailable(AccountJid account, UserJid user) {
+        Session session = sessions.get(account.toString(), user.toString());
 
         if (session == null) {
             return;

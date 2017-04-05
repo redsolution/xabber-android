@@ -21,7 +21,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -32,6 +31,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -42,18 +43,18 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "com.xabber.android.ui.dialog.ChatExportDialogFragment.ARGUMENT_USER";
 
-    private String account;
-    private String user;
+    AccountJid account;
+    UserJid user;
 
     private EditText nameView;
-    private CheckBox sendView;
+    CheckBox sendView;
 
-    public static ChatExportDialogFragment newInstance(String account, String user) {
+    public static ChatExportDialogFragment newInstance(AccountJid account, UserJid user) {
         ChatExportDialogFragment fragment = new ChatExportDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -61,8 +62,8 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
         View layout = getActivity().getLayoutInflater().inflate(R.layout.export_chat, null);
         nameView = (EditText) layout.findViewById(R.id.name);
@@ -84,57 +85,42 @@ public class ChatExportDialogFragment extends DialogFragment implements DialogIn
             return;
         }
 
-        String name = nameView.getText().toString();
+        final String name = nameView.getText().toString();
         if ("".equals(name)) {
             return;
         }
-        new ChatExportAsyncTask(account, user, name, sendView.isChecked()).execute();
-    }
 
-    // TODO get rid of async task
-    private class ChatExportAsyncTask extends AsyncTask<Void, Void, File> {
+        final boolean send = sendView.isChecked();
 
-        private final String account;
-        private final String user;
-        private final String name;
-        private final boolean send;
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final File file = MessageManager.getInstance().exportChat(account, user, name);
 
-        public ChatExportAsyncTask(String account, String user, String name, boolean send) {
-            this.account = account;
-            this.user = user;
-            this.name = name;
-            this.send = send;
-        }
-
-        @Override
-        protected File doInBackground(Void... params) {
-            try {
-                return MessageManager.getInstance().exportChat(account, user, name);
-            } catch (NetworkException e) {
-                Application.getInstance().onError(e);
-                return null;
+                    Application.getInstance().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: Use notification bar to notify about success.
+                            if (send) {
+                                Activity activity = getActivity();
+                                if (activity != null) {
+                                    Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                                    intent.setType("text/plain");
+                                    Uri uri = Uri.fromFile(file);
+                                    intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
+                                    activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.export_chat)));
+                                }
+                            } else {
+                                Toast.makeText(Application.getInstance(), R.string.export_chat_done, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } catch (NetworkException e) {
+                    Application.getInstance().onError(e);
+                }
             }
-        }
-
-        @Override
-        public void onPostExecute(File result) {
-            Activity activity = getActivity();
-
-            if (result == null || activity == null) {
-                return;
-            }
-
-            // TODO: Use notification bar to notify about success.
-            if (send) {
-                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                Uri uri = Uri.fromFile(result);
-                intent.putExtra(android.content.Intent.EXTRA_STREAM, uri);
-                activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.export_chat)));
-            } else {
-                Toast.makeText(activity, R.string.export_chat_done, Toast.LENGTH_LONG).show();
-            }
-        }
+        });
 
     }
 }

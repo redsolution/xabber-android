@@ -18,23 +18,25 @@ import android.content.Intent;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.QuestionViewer;
+import com.xabber.android.ui.activity.QuestionActivity;
 
 public class SMRequest extends BaseEntity implements EntityNotificationItem {
 
     private final String question;
 
-    public SMRequest(String account, String user, String question) {
+    public SMRequest(AccountJid account, UserJid user, String question) {
         super(account, user);
         this.question = question;
     }
 
     @Override
     public Intent getIntent() {
-        return QuestionViewer.createIntent(
+        return QuestionActivity.createIntent(
                 Application.getInstance(), account, user, question != null, true, question);
     }
 

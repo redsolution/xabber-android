@@ -16,18 +16,25 @@ package com.xabber.android.data.intent;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
+
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.entity.AccountJid;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 class BaseAccountIntentBuilder<T extends BaseAccountIntentBuilder<?>> extends
         SegmentIntentBuilder<T> {
 
-    private String account;
+    private static final String LOG_TAG = BaseAccountIntentBuilder.class.getSimpleName();
+    private AccountJid account;
 
     public BaseAccountIntentBuilder(Context context, Class<?> cls) {
         super(context, cls);
     }
 
     @SuppressWarnings("unchecked")
-    public T setAccount(String account) {
+    public T setAccount(AccountJid account) {
         this.account = account;
         return (T) this;
     }
@@ -39,11 +46,20 @@ class BaseAccountIntentBuilder<T extends BaseAccountIntentBuilder<?>> extends
             return;
         if (getSegmentCount() != 0)
             throw new IllegalStateException();
-        addSegment(account);
+        addSegment(account.toString());
     }
 
-    public static String getAccount(Intent intent) {
-        return getSegment(intent, 0);
+    @Nullable
+    public static AccountJid getAccount(Intent intent) {
+        try {
+            String segment = getSegment(intent, 0);
+            if (segment != null) {
+                return AccountJid.from(segment);
+            }
+        } catch (XmppStringprepException e) {
+            LogManager.exception(LOG_TAG, e);
+        }
+        return null;
     }
 
 }

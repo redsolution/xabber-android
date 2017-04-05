@@ -1,9 +1,9 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,7 +16,10 @@ import android.widget.ListView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.GroupEditorAdapter;
 
 import java.util.ArrayList;
@@ -33,8 +36,8 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     private static final String SAVED_SELECTED = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_SELECTED";
     private static final String SAVED_ADD_GROUP_NAME = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_ADD_GROUP_NAME";
 
-    private String account;
-    private String user;
+    private AccountJid account;
+    private UserJid user;
 
     private GroupEditorAdapter groupEditorAdapter;
 
@@ -52,11 +55,11 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
     public GroupEditorFragment() {
     }
 
-    public static GroupEditorFragment newInstance(String account, String user) {
+    public static GroupEditorFragment newInstance(AccountJid account, UserJid user) {
         GroupEditorFragment fragment = new GroupEditorFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ACCOUNT, account);
-        args.putString(ARG_USER, user);
+        args.putParcelable(ARG_ACCOUNT, account);
+        args.putParcelable(ARG_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -75,8 +78,8 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            account = getArguments().getString(ARG_ACCOUNT);
-            user = getArguments().getString(ARG_USER);
+            account = getArguments().getParcelable(ARG_ACCOUNT);
+            user = getArguments().getParcelable(ARG_USER);
         }
     }
 
@@ -87,8 +90,8 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
 
         setUpFooter();
 
-        groupEditorAdapter = new GroupEditorAdapter(getActivity(),
-                R.layout.group_list_item, new ArrayList<GroupEditorAdapter.Group>());
+        groupEditorAdapter = new GroupEditorAdapter((ManagedActivity) getActivity(),
+                R.layout.item_group, new ArrayList<GroupEditorAdapter.Group>());
 
         setListAdapter(groupEditorAdapter);
 
@@ -160,7 +163,7 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
 
         selected = getSelected();
 
-        if (account != null && !"".equals(user)) {
+        if (account != null && user != null) {
             try {
                 RosterManager.getInstance().setGroups(account, user, selected);
             } catch (NetworkException e) {
@@ -235,19 +238,19 @@ public class GroupEditorFragment extends ListFragment implements TextWatcher, Vi
 
     }
 
-    protected String getAccount() {
+    protected AccountJid getAccount() {
         return account;
     }
 
-    protected void setAccount(String account) {
+    protected void setAccount(AccountJid account) {
         this.account = account;
     }
 
-    protected String getUser() {
+    protected UserJid getUser() {
         return user;
     }
 
-    protected void setUser(String user) {
+    protected void setUser(UserJid user) {
         this.user = user;
     }
 

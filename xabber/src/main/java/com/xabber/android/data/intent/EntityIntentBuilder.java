@@ -16,6 +16,10 @@ package com.xabber.android.data.intent;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
+
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.entity.UserJid;
 
 /**
  * Intent builder with account and user fields.
@@ -25,13 +29,15 @@ import android.content.Intent;
 public class EntityIntentBuilder extends
         BaseAccountIntentBuilder<EntityIntentBuilder> {
 
+    private static final String LOG_TAG = EntityIntentBuilder.class.getSimpleName();
+
     public EntityIntentBuilder(Context context, Class<?> cls) {
         super(context, cls);
     }
 
-    private String user;
+    private UserJid user;
 
-    public EntityIntentBuilder setUser(String user) {
+    public EntityIntentBuilder setUser(UserJid user) {
         this.user = user;
         return this;
     }
@@ -43,11 +49,23 @@ public class EntityIntentBuilder extends
             return;
         if (getSegmentCount() == 0)
             throw new IllegalStateException();
-        addSegment(user);
+        addSegment(user.toString());
     }
 
-    public static String getUser(Intent intent) {
-        return getSegment(intent, 1);
+    @Nullable
+    public static UserJid getUser(Intent intent) {
+        String segment = getSegment(intent, 1);
+
+        if (segment == null) {
+            return null;
+        }
+
+        try {
+            return UserJid.from(segment);
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(LOG_TAG, e);
+            return null;
+        }
     }
 
 }

@@ -14,9 +14,11 @@
  */
 package com.xabber.android.data.notification;
 
-import java.util.Date;
-
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
+
+import java.util.Date;
 
 /**
  * Notification for the contact.
@@ -40,7 +42,7 @@ public class MessageNotification extends BaseEntity {
      */
     private int count;
 
-    public MessageNotification(String account, String user, String text,
+    public MessageNotification(AccountJid account, UserJid user, String text,
                                Date timestamp, int count) {
         super(account, user);
         this.text = text;

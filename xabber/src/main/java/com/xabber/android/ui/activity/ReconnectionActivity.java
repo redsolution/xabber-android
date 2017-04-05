@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.connection.ConnectionManager;
 
 /**
@@ -33,8 +33,8 @@ public class ReconnectionActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogManager.i(this, "onReconnect");
-        ConnectionManager.getInstance().updateConnections(false);
-        Intent intent = ContactList.createIntent(this);
+        ConnectionManager.getInstance().connectAll();
+        Intent intent = ContactListActivity.createIntent(this);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         finish();

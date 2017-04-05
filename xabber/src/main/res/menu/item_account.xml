@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_account_edit_status"
+        android:title="@string/status_editor"
+        />
+
+    <item android:id="@+id/action_account_edit"
+        android:title="@string/account_editor"
+        />
+
+    <item android:id="@+id/action_account_delete"
+        android:title="@string/account_delete"
+        />
+</menu>

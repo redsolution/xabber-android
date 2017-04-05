@@ -1,24 +1,18 @@
 package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -28,37 +22,40 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.message.OnChatChangedListener;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.message.NewMessageEvent;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.android.ui.activity.AccountAdd;
-import com.xabber.android.ui.activity.ContactAdd;
+import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.activity.AccountAddActivity;
+import com.xabber.android.ui.activity.AccountListActivity;
+import com.xabber.android.ui.activity.ContactAddActivity;
+import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.adapter.AccountActionButtonsAdapter;
-import com.xabber.android.ui.adapter.AccountConfiguration;
-import com.xabber.android.ui.adapter.ContactListAdapter;
-import com.xabber.android.ui.adapter.ContactListAdapter.OnContactListChangedListener;
-import com.xabber.android.ui.adapter.ContactListState;
-import com.xabber.android.ui.adapter.GroupConfiguration;
-import com.xabber.android.ui.adapter.GroupedContactAdapter;
 import com.xabber.android.ui.adapter.UpdatableAdapter;
+import com.xabber.android.ui.adapter.contactlist.AccountConfiguration;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter;
+import com.xabber.android.ui.adapter.contactlist.ContactListAdapter.ContactListAdapterListener;
+import com.xabber.android.ui.adapter.contactlist.ContactListState;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.helper.ContextMenuHelper;
-import com.xabber.android.ui.preferences.AccountList;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collection;
 
 public class ContactListFragment extends Fragment implements OnAccountChangedListener,
-        OnContactChangedListener, OnChatChangedListener, OnItemClickListener,
-        OnContactListChangedListener, View.OnClickListener, GroupedContactAdapter.OnClickListener {
+        OnContactChangedListener, ContactListAdapterListener, View.OnClickListener {
 
     private ContactListAdapter adapter;
 
-    private ListView listView;
+    private RecyclerView recyclerView;
 
     /**
      * View with information shown on empty contact list.
@@ -96,6 +93,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     private AccountPainter accountPainter;
 
     private ContactListFragmentListener contactListFragmentListener;
+    private LinearLayoutManager linearLayoutManager;
 
     @Override
     public void onAttach(Activity activity) {
@@ -106,17 +104,17 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.contact_list_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
         // to avoid strange bug on some 4.x androids
         view.setBackgroundColor(ColorManager.getInstance().getContactListBackgroundColor());
 
-        listView = (ListView) view.findViewById(android.R.id.list);
-        listView.setOnItemClickListener(this);
-        listView.setItemsCanFocus(true);
-        registerForContextMenu(listView);
-        adapter = new ContactListAdapter(getActivity(), this, this);
-        listView.setAdapter(adapter);
+        recyclerView = (RecyclerView) view.findViewById(R.id.contact_list_recycler_view);
+        registerForContextMenu(recyclerView);
+        adapter = new ContactListAdapter((ManagedActivity) getActivity(), this);
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(adapter);
         infoView = view.findViewById(R.id.info);
         connectedView = infoView.findViewById(R.id.connected);
         disconnectedView = infoView.findViewById(R.id.disconnected);
@@ -146,9 +144,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     @Override
     public void onResume() {
         super.onResume();
+        EventBus.getDefault().register(this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
-        Application.getInstance().addUIListener(OnChatChangedListener.class, this);
         adapter.onChange();
         scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
         scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
@@ -173,52 +171,15 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(info.position);
-        if (baseEntity instanceof AbstractContact) {
-            ContextMenuHelper.createContactContextMenu(
-                    getActivity(), adapter, (AbstractContact) baseEntity, menu);
-        } else if (baseEntity instanceof AccountConfiguration) {
-            ContextMenuHelper.createAccountContextMenu(
-                    getActivity(), adapter, baseEntity.getAccount(), menu);
-        } else if (baseEntity instanceof GroupConfiguration) {
-            ContextMenuHelper.createGroupContextMenu(getActivity(), adapter,
-                    baseEntity.getAccount(), baseEntity.getUser(), menu);
-        } else {
-            throw new IllegalStateException();
-        }
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Object object = parent.getAdapter().getItem(position);
-        if (object instanceof AbstractContact) {
-            contactListFragmentListener.onContactClick((AbstractContact) object);
-        } else if (object instanceof GroupConfiguration) {
-            GroupConfiguration groupConfiguration = (GroupConfiguration) object;
-            adapter.setExpanded(groupConfiguration.getAccount(), groupConfiguration.getUser(),
-                    !groupConfiguration.isExpanded());
-        }
-    }
-
-    @Override
-    public void onContactsChanged(Collection<BaseEntity> addresses) {
-        adapter.refreshRequest();
-    }
-
-    @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         adapter.refreshRequest();
         scrollToChatsActionButton.setColorNormal(accountPainter.getDefaultMainColor());
         scrollToChatsActionButton.setColorPressed(accountPainter.getDefaultDarkColor());
     }
 
-    @Override
-    public void onChatChanged(String account, String user, boolean incoming) {
-        if (incoming) {
-            adapter.refreshRequest();
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMessageEvent(NewMessageEvent event) {
+        adapter.refreshRequest();
     }
 
     @Override
@@ -271,7 +232,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(ContactAdd.createIntent(getActivity()));
+                    startActivity(ContactAddActivity.createIntent(getActivity()));
                 }
             };
         } else if (commonState == CommonState.roster) {
@@ -291,7 +252,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ConnectionManager.getInstance().updateConnections(true);
+                    ConnectionManager.getInstance().connectAll();
                 }
             };
         } else if (commonState == CommonState.offline) {
@@ -312,7 +273,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(AccountList.createIntent(getActivity()));
+                    startActivity(AccountListActivity.createIntent(getActivity()));
                 }
             };
         } else if (commonState == CommonState.empty) {
@@ -322,7 +283,7 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
             listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(AccountAdd.createIntent(getActivity()));
+                    startActivity(AccountAddActivity.createIntent(getActivity()));
                 }
             };
         } else {
@@ -357,9 +318,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Force stop contact list updates before pause or application close.
      */
     public void unregisterListeners() {
+        EventBus.getDefault().unregister(this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().removeUIListener(OnContactChangedListener.class, this);
-        Application.getInstance().removeUIListener(OnChatChangedListener.class, this);
         adapter.removeRefreshRequests();
     }
 
@@ -376,14 +337,13 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      *
      * @param account
      */
-    void scrollTo(String account) {
-        long count = listView.getCount();
+    void scrollTo(AccountJid account) {
+        long count = adapter.getItemCount();
         for (int position = 0; position < (int) count; position++) {
-            BaseEntity baseEntity = (BaseEntity) listView.getItemAtPosition(position);
-            if (baseEntity != null && baseEntity instanceof AccountConfiguration
-                    && baseEntity.getAccount().equals(account)) {
-                stopMovement();
-                listView.setSelection(position);
+            Object itemAtPosition = adapter.getItem(position);
+            if (itemAtPosition != null && itemAtPosition instanceof AccountConfiguration
+                    && ((AccountConfiguration)itemAtPosition).getAccount().equals(account)) {
+                linearLayoutManager.scrollToPositionWithOffset(position, 0);
                 break;
             }
         }
@@ -394,13 +354,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      *
      * @param account
      */
-    void setSelectedAccount(String account) {
+    void setSelectedAccount(AccountJid account) {
         if (account.equals(AccountManager.getInstance().getSelectedAccount())) {
-            SettingsManager.setContactsSelectedAccount("");
+            SettingsManager.setContactsSelectedAccount(null);
         } else {
             SettingsManager.setContactsSelectedAccount(account);
         }
-        stopMovement();
         adapter.onChange();
     }
 
@@ -408,21 +367,9 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
      * Scroll to the top of contact list.
      */
     public void scrollUp() {
-        if (listView.getCount() > 0) {
-            listView.setSelection(0);
-        }
-        stopMovement();
+        recyclerView.scrollToPosition(0);
     }
 
-    /**
-     * Stop fling scrolling.
-     */
-    private void stopMovement() {
-        MotionEvent event = MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_CANCEL, 0, 0, 0);
-        listView.onTouchEvent(event);
-        event.recycle();
-    }
 
     @Override
     public void onClick(View view) {
@@ -432,12 +379,12 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         }
 
 
-        String account = accountActionButtonsAdapter.getItemForView(view);
+        AccountJid account = accountActionButtonsAdapter.getItemForView(view);
         if (account == null) { // Check for tap on account in the title
             return;
         }
         if (!SettingsManager.contactsShowAccounts()) {
-            if (AccountManager.getInstance().getAccounts().size() < 2) {
+            if (AccountManager.getInstance().getEnabledAccounts().size() < 2) {
                 scrollUp();
             } else {
                 setSelectedAccount(account);
@@ -456,18 +403,29 @@ public class ContactListFragment extends Fragment implements OnAccountChangedLis
         accountActionButtonsAdapter.rebuild();
     }
 
-    @Override
-    public void onAccountMenuClick(View view, final String account) {
-        PopupMenu popup = new PopupMenu(getActivity(), view);
-        popup.inflate(R.menu.account);
-        ContextMenuHelper.setUpAccountMenu(getActivity(), adapter, account, popup.getMenu());
-        popup.show();
-    }
-
     public interface ContactListFragmentListener {
         void onContactClick(AbstractContact contact);
         void onContactListChange(CommonState commonState);
     }
+
+    @Override
+    public void onContactClick(AbstractContact contact) {
+        contactListFragmentListener.onContactClick(contact);
+    }
+
+    @Override
+    public void onAccountMenuClick(AccountJid accountJid, View view) {
+        PopupMenu popup = new PopupMenu(getActivity(), view);
+        popup.inflate(R.menu.item_account_group);
+        ContextMenuHelper.setUpAccountMenu((ManagedActivity) getActivity(), adapter, accountJid, popup.getMenu());
+        popup.show();
+    }
+
+    @Override
+    public void onContactsChanged(Collection<RosterContact> addresses) {
+        adapter.refreshRequest();
+    }
+
 
 
 

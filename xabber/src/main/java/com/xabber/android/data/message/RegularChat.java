@@ -14,27 +14,32 @@
  */
 package com.xabber.android.data.message;
 
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.SettingsManager.SecurityOtrMode;
-import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.OTRUnencryptedException;
-import com.xabber.android.data.extension.otr.SecurityLevel;
-import com.xabber.xmpp.address.Jid;
-import com.xabber.xmpp.archive.SaveMode;
-import com.xabber.xmpp.delay.Delay;
-import com.xabber.xmpp.muc.MUC;
 
 import net.java.otr4j.OtrException;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Domainpart;
+import org.jxmpp.jid.parts.Resourcepart;
+
+import java.util.Date;
 
 /**
  * Represents normal chat.
@@ -46,25 +51,26 @@ public class RegularChat extends AbstractChat {
     /**
      * Resource used for contact.
      */
-    private String resource;
+    private Resourcepart resource;
 
 
-    RegularChat(String account, String user, boolean isPrivateMucChat) {
+    RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
         super(account, user, isPrivateMucChat);
         resource = null;
     }
 
-    public String getResource() {
+    public Resourcepart getResource() {
         return resource;
     }
 
+    @NonNull
     @Override
-    public String getTo() {
+    public Jid getTo() {
         if (resource == null
-                || (MUCManager.getInstance().hasRoom(account, Jid.getBareAddress(user)) && getType() != Message.Type.groupchat )) {
-            return user;
+                || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat )) {
+            return user.getJid();
         } else {
-            return user + "/" + resource;
+            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
         }
     }
 
@@ -73,29 +79,28 @@ public class RegularChat extends AbstractChat {
         return Type.chat;
     }
 
-    @Override
-    protected boolean canSendMessage() {
-        if (super.canSendMessage()) {
-            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
-                return true;
-            SecurityLevel securityLevel = OTRManager.getInstance()
-                    .getSecurityLevel(account, user);
-            if (securityLevel != SecurityLevel.plain)
-                return true;
-            try {
-                OTRManager.getInstance().startSession(account, user);
-            } catch (NetworkException e) {
-            }
-        }
-        return false;
-    }
+//    @Override
+//    protected boolean canSendMessage() {
+//        if (super.canSendMessage()) {
+//            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
+//                return true;
+//            SecurityLevel securityLevel = OTRManager.getInstance()
+//                    .getSecurityLevel(account, user);
+//            if (securityLevel != SecurityLevel.plain)
+//                return true;
+//            try {
+//                OTRManager.getInstance().startSession(account, user);
+//            } catch (NetworkException e) {
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     protected String prepareText(String text) {
         text = super.prepareText(text);
         try {
-            return OTRManager.getInstance().transformSending(account, user,
-                    text);
+            return OTRManager.getInstance().transformSending(account, user, text);
         } catch (OtrException e) {
             LogManager.exception(this, e);
             return null;
@@ -103,8 +108,8 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected MessageItem newMessage(String text) {
-        return newMessage(
+    protected MessageItem createNewMessageItem(String text) {
+        return createMessageItem(
                 null,
                 text,
                 null,
@@ -113,20 +118,19 @@ public class RegularChat extends AbstractChat {
                 false,
                 false,
                 false,
-                MessageArchiveManager.getInstance().getSaveMode(account, user,
-                        getThreadId()) != SaveMode.fls);
+                null);
     }
 
     @Override
-    protected boolean onPacket(String bareAddress, Stanza packet) {
+    protected boolean onPacket(UserJid bareAddress, Stanza packet) {
         if (!super.onPacket(bareAddress, packet))
             return false;
-        final String resource = Jid.getResource(packet.getFrom());
+        final Resourcepart resource = packet.getFrom().getResourceOrNull();
         if (packet instanceof Presence) {
             final Presence presence = (Presence) packet;
 
             if (this.resource != null && presence.getType() == Presence.Type.unavailable
-                    && this.resource.equals(resource)) {
+                    && resource != null && this.resource.equals(resource)) {
                 this.resource = null;
             }
 
@@ -138,7 +142,7 @@ public class RegularChat extends AbstractChat {
             if (message.getType() == Message.Type.error)
                 return true;
 
-            MUCUser mucUser = MUC.getMUCUserExtension(message);
+            MUCUser mucUser = MUCUser.from(message);
             if (mucUser != null && mucUser.getInvite() != null)
                 return true;
 
@@ -164,22 +168,43 @@ public class RegularChat extends AbstractChat {
             // System message received.
             if (text == null || text.trim().equals(""))
                 return true;
-            if (!"".equals(resource))
+            if (resource != null && !resource.equals(Resourcepart.EMPTY)) {
                 this.resource = resource;
-            newMessage(
+            }
+            createAndSaveNewMessage(
                     resource,
                     text,
                     null,
-                    Delay.getDelay(message),
+                    getDelayStamp(message),
                     true,
                     true,
                     unencrypted,
-                    Delay.isOfflineMessage(Jid.getServer(account), packet),
-                    MessageArchiveManager.getInstance().getSaveMode(account,
-                            user, getThreadId()) != SaveMode.fls);
+                    isOfflineMessage(account.getFullJid().getDomain(), packet),
+                    packet.getStanzaId());
+            EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));
         }
         return true;
     }
+
+    /**
+     * @return Whether message was delayed by server.
+     */
+    public static boolean isOfflineMessage(Domainpart server, Stanza stanza) {
+        DelayInformation delayInformation = DelayInformation.from(stanza);
+
+        return delayInformation != null
+                && TextUtils.equals(delayInformation.getFrom(), server);
+    }
+
+    public static Date getDelayStamp(Message message) {
+        DelayInformation delayInformation = DelayInformation.from(message);
+        if (delayInformation != null) {
+            return delayInformation.getStamp();
+        } else {
+            return null;
+        }
+    }
+
 
     @Override
     protected void onComplete() {

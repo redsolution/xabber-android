@@ -17,16 +17,23 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.ui.activity.ChatViewer;
-import com.xabber.android.ui.activity.ConferenceAdd;
+import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
 import com.xabber.android.ui.activity.ConferenceFilterActivity;
 import com.xabber.android.ui.adapter.AccountChooseAdapter;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +47,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     private EditText roomView;
     private HostedConferencesAdapter hostedConferencesAdapter;
     private View roomsProgressBar;
-    private String account;
+    private AccountJid account;
 
     Listener listener;
     private Button nextButton;
@@ -64,7 +71,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.conference_select_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_conference_select, container, false);
 
         accountView = (Spinner) view.findViewById(R.id.contact_account);
         serverView = (EditText) view.findViewById(R.id.muc_server);
@@ -80,24 +87,6 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             }
         });
 
-
-        roomView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                hostedConferencesAdapter.getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         roomsProgressBar = view.findViewById(R.id.muc_rooms_progress_bar);
 
         view.findViewById(R.id.muc_get_hosted_rooms).setOnClickListener(this);
@@ -105,7 +94,7 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
         accountView.setAdapter(new AccountChooseAdapter(getActivity()));
         accountView.setOnItemSelectedListener(this);
 
-        if (AccountManager.getInstance().getAccounts().size() == 1) {
+        if (AccountManager.getInstance().getEnabledAccounts().size() == 1) {
             accountView.setSelection(0);
         }
 
@@ -132,6 +121,22 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             hostedConferencesAdapter.addAll(ConferenceFilterActivity.restoreConferenceList(savedInstanceState));
         }
 
+        roomView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                hostedConferencesAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
     }
 
@@ -143,13 +148,17 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        startActivity(ConferenceAdd.createIntent(getActivity(), account,
-                hostedConferencesAdapter.getItem(position).getJid()));
+        try {
+            startActivity(ConferenceAddActivity.createIntent(getActivity(), account,
+                    UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String newAccount = (String) accountView.getSelectedItem();
+        AccountJid newAccount = (AccountJid) accountView.getSelectedItem();
 
         if (account != null && account.equals(newAccount)) {
             return;
@@ -206,15 +215,14 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     }
 
     private void storeConferenceList(Bundle intent) {
-        List<HostedRoom> conferencesList = new ArrayList<>();
-        conferencesList.addAll(hostedConferencesAdapter.getConferencesList());
+        List<HostedRoom> conferencesList = hostedConferencesAdapter.getConferencesList();
 
         ArrayList<String> names = new ArrayList<>();
         ArrayList<String> jids = new ArrayList<>();
 
         for (HostedRoom hostedRoom : conferencesList) {
             names.add(hostedRoom.getName());
-            jids.add(hostedRoom.getJid());
+            jids.add(hostedRoom.getJid().toString());
         }
 
         intent.putStringArrayList(ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES, names);
@@ -240,21 +248,29 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_SHORT).show();
             return;
         }
-        String server = serverView.getText().toString();
-        if ("".equals(server)) {
+        DomainBareJid server;
+        try {
+            server = JidCreate.domainBareFrom(serverView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_SERVER_NAME), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String room = roomView.getText().toString();
-        if ("".equals(room)) {
+        Localpart room;
+        try {
+            room = Localpart.from(roomView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ROOM_NAME), Toast.LENGTH_LONG).show();
             return;
         }
 
-        room = room + "@" + server;
-
-        startActivity(ConferenceAdd.createIntent(getActivity(), account, room));
+        UserJid roomJid = null;
+        try {
+            roomJid = UserJid.from(JidCreate.entityBareFrom(room, server));
+            startActivity(ConferenceAddActivity.createIntent(getActivity(), account, roomJid));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     private void onRequestHostedRoomsClick() {
@@ -262,20 +278,27 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
             Toast.makeText(getActivity(), getString(R.string.EMPTY_ACCOUNT), Toast.LENGTH_SHORT).show();
             return;
         }
-        String server = serverView.getText().toString();
-        if ("".equals(server)) {
+        DomainBareJid server;
+        try {
+            server = JidCreate.domainBareFrom(serverView.getText().toString());
+        } catch (XmppStringprepException e) {
             Toast.makeText(getActivity(), getString(R.string.EMPTY_SERVER_NAME), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        ChatViewer.hideKeyboard(getActivity());
-        MUCManager.requestHostedRooms(account, server, this);
+        ChatActivity.hideKeyboard(getActivity());
+
         hostedConferencesAdapter.clear();
         roomsProgressBar.setVisibility(View.VISIBLE);
+        MUCManager.requestHostedRooms(account, server, this);
     }
 
     @Override
     public void onHostedRoomsReceived(Collection<HostedRoom> hostedRooms) {
+        if (!isAdded()) {
+            return;
+        }
+
         roomsProgressBar.setVisibility(View.GONE);
 
         if (hostedRooms == null) {
@@ -293,6 +316,6 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
     }
 
     public interface Listener {
-        void onAccountSelected(String account);
+        void onAccountSelected(AccountJid account);
     }
 }

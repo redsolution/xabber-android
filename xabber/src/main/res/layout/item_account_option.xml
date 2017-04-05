@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/account_option_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginLeft="16dp"
+        android:src="@drawable/ic_settings_grey600_24dp"
+        />
+
+    <View
+        android:id="@+id/account_option_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_toRightOf="@id/account_option_icon"
+        android:background="@color/grey_700"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorPrimary"
+
+        tools:text="Connection settings"
+        android:id="@+id/account_option_title"
+
+        android:layout_toRightOf="@id/account_option_icon"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorSecondary"
+
+        tools:text="username@example.com"
+        android:layout_toRightOf="@id/account_option_icon"
+        android:layout_below="@id/account_option_title"
+
+        android:id="@+id/account_option_description"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="14sp"
+        />
+
+</RelativeLayout>

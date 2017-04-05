@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:title="@string/account_clear_history_on_exit_title"
+        android:summary="@string/account_clear_history_on_exit_summary"
+        android:key="@string/account_clear_history_on_exit_key"
+        />
+
+    <ListPreference
+        android:title="@string/account_mam_default_behavior_title"
+        android:key="@string/account_mam_default_behavior_key"
+        android:entries="@array/account_mam_default_behavior_entries"
+        android:entryValues="@array/account_mam_default_behavior_values"
+        />
+
+    <ListPreference
+        android:title="@string/account_mam_sync_title"
+        android:key="@string/account_mam_sync_key"
+        android:entries="@array/account_mam_sync_entries"
+        android:entryValues="@array/account_mam_sync_values"
+        />
+
+</PreferenceScreen>

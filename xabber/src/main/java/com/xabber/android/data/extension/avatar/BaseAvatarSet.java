@@ -18,6 +18,7 @@ import android.content.res.TypedArray;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLowMemoryListener;
+import com.xabber.android.data.entity.UserJid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class BaseAvatarSet implements OnLowMemoryListener {
     /**
      * Map with resource ids for specified uses.
      */
-    private final Map<String, DefaultAvatar> resources;
+    private final Map<UserJid, DefaultAvatar> resources;
 
     public static class DefaultAvatar {
         public DefaultAvatar(int iconResource, int backgroundColor) {
@@ -77,10 +78,8 @@ public class BaseAvatarSet implements OnLowMemoryListener {
     /**
      * Calculate avatar index for specified user.
      *
-     * @param user
-     * @return
      */
-    protected int getIndex(String user) {
+    protected int getIndex(UserJid user) {
         return user.hashCode();
     }
 
@@ -90,7 +89,7 @@ public class BaseAvatarSet implements OnLowMemoryListener {
      * @param user
      * @return
      */
-    public DefaultAvatar getResourceId(String user) {
+    public DefaultAvatar getResourceId(UserJid user) {
         DefaultAvatar avatar = resources.get(user);
         if (avatar == null) {
             avatar = getElement(getIndex(user));
@@ -102,8 +101,6 @@ public class BaseAvatarSet implements OnLowMemoryListener {
     /**
      * Gets element from array by index.
      *
-     * @param index
-     * @param array
      * @return Always return element even if array's length is less then index.
      */
     private DefaultAvatar getElement(int index) {

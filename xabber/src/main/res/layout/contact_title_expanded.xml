@@ -13,7 +13,7 @@
     android:paddingLeft="@dimen/contact_title_padding_left"
     android:paddingRight="@dimen/contact_title_padding_right"
     android:paddingBottom="@dimen/contact_title_padding_bottom"
-    tools:showIn="@layout/contact_viewer">
+    tools:showIn="@layout/activity_contact">
 
     <ImageView
         android:id="@+id/avatar"

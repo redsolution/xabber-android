@@ -15,6 +15,7 @@
 package com.xabber.android.ui.adapter;
 
 import java.util.Comparator;
+import java.util.Date;
 
 import com.xabber.android.data.message.AbstractChat;
 
@@ -23,16 +24,23 @@ public class ChatComparator implements Comparator<AbstractChat> {
     public static final ChatComparator CHAT_COMPARATOR = new ChatComparator();
 
     @Override
-    public int compare(AbstractChat object1, AbstractChat object2) {
-        if (object1.getLastTime() == null) {
-            if (object2.getLastTime() != null)
-                return 1;
+    public int compare(AbstractChat chat1, AbstractChat chat2) {
+        Date lastTime1 = chat1.getLastTime();
+        Date lastTime2 = chat2.getLastTime();
+
+        if (lastTime1 == null && lastTime2 == null) {
             return 0;
-        } else {
-            if (object2.getLastTime() == null)
-                return -1;
-            return -object1.getLastTime().compareTo(object2.getLastTime());
         }
+
+        if (lastTime1 == null) {
+            return 1;
+        }
+
+        if (lastTime2 == null) {
+            return -1;
+        }
+
+        return -lastTime1.compareTo(lastTime2);
     }
 
 }

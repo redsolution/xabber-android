@@ -24,10 +24,11 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.OnLoadListener;
@@ -35,20 +36,24 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.ArchiveMode;
-import com.xabber.android.data.account.OnAccountArchiveModeChangedListener;
-import com.xabber.android.data.account.OnAccountChangedListener;
-import com.xabber.android.data.account.OnAccountRemovedListener;
+import com.xabber.android.data.account.listeners.OnAccountArchiveModeChangedListener;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
-import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.sqlite.NotificationTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ClearNotifications;
-import com.xabber.android.ui.activity.ContactList;
-import com.xabber.android.ui.activity.ReconnectionActivity;
+import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.activity.ClearNotificationsActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
+
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,16 +72,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
     public static final int MESSAGE_NOTIFICATION_ID = 2;
-    public static final int CURRENT_CHAT_MESSAGE_NOTIFICATION_ID = 3;
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
 
     private static final long VIBRATION_DURATION = 500;
-    private final static NotificationManager instance;
-
-    static {
-        instance = new NotificationManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static final String LOG_TAG = NotificationManager.class.getSimpleName();
+    private static NotificationManager instance;
 
     private final Application application;
     private final android.app.NotificationManager notificationManager;
@@ -105,6 +105,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     private MessageNotificationCreator messageNotificationCreator;
     private int persistentNotificationColor;
 
+    public static NotificationManager getInstance() {
+        if (instance == null) {
+            instance = new NotificationManager();
+        }
+
+        return instance;
+    }
+
     private NotificationManager() {
         this.application = Application.getInstance();
 
@@ -116,7 +124,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         providers = new ArrayList<>();
         messageNotifications = new ArrayList<>();
         clearNotifications = PendingIntent.getActivity(
-                application, 0, ClearNotifications.createIntent(application), 0);
+                application, 0, ClearNotificationsActivity.createIntent(application), 0);
 
         stopVibration = new Runnable() {
             @Override
@@ -151,19 +159,15 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
     }
 
-    public static NotificationManager getInstance() {
-        return instance;
-    }
-
     public static void addEffects(NotificationCompat.Builder notificationBuilder, MessageItem messageItem) {
         if (messageItem == null) {
             return;
         }
-        if (messageItem.getChat().getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
-            Uri sound = PhraseManager.getInstance().getSound(messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser(), messageItem.getText());
-            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getChat().getAccount(),
-                    messageItem.getChat().getUser());
+        if (MessageManager.getInstance().getChat(messageItem.getAccount(), messageItem.getUser()).getFirstNotification() || !SettingsManager.eventsFirstOnly()) {
+            Uri sound = PhraseManager.getInstance().getSound(messageItem.getAccount(),
+                    messageItem.getUser(), messageItem.getText());
+            boolean makeVibration = ChatManager.getInstance().isMakeVibro(messageItem.getAccount(),
+                    messageItem.getUser());
 
             NotificationManager.getInstance().setNotificationDefaults(notificationBuilder,
                     makeVibration, sound, AudioManager.STREAM_NOTIFICATION);
@@ -188,12 +192,16 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    messageNotifications.add(new MessageNotification(
-                            NotificationTable.getAccount(cursor),
-                            NotificationTable.getUser(cursor),
-                            NotificationTable.getText(cursor),
-                            NotificationTable.getTimeStamp(cursor),
-                            NotificationTable.getCount(cursor)));
+                    try {
+                        messageNotifications.add(new MessageNotification(
+                        AccountJid.from(NotificationTable.getAccount(cursor)),
+                        UserJid.from(NotificationTable.getUser(cursor)),
+                        NotificationTable.getText(cursor),
+                        NotificationTable.getTimeStamp(cursor),
+                        NotificationTable.getCount(cursor)));
+                    } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+                        LogManager.exception(this, e);
+                    }
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -266,8 +274,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             ticker = top.getTitle();
         }
 
-        Intent intent = top.getIntent();
-
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
 
         notificationBuilder.setSmallIcon(provider.getIcon());
@@ -280,8 +286,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         notificationBuilder.setContentTitle(top.getTitle());
         notificationBuilder.setContentText(top.getText());
 
-        notificationBuilder.setContentIntent(PendingIntent.getActivity(application, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT));
+        TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(application);
+        taskStackBuilder.addNextIntentWithParentStack(top.getIntent());
+
+        notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
 
         if (ticker != null) {
             setNotificationDefaults(notificationBuilder, SettingsManager.eventsVibro(), provider.getSound(), provider.getStreamType());
@@ -356,30 +364,46 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             return;
         }
 
+        // we do not want to show persistent notification if there are no enabled accounts
+        XabberService.getInstance().changeForeground();
+        Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
+        if (accountList.isEmpty()) {
+            return;
+        }
+
         int waiting = 0;
         int connecting = 0;
         int connected = 0;
 
-        Collection<String> accountList = AccountManager.getInstance().getAccounts();
-        for (String account : accountList) {
+
+        for (AccountJid account : accountList) {
             ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
 
-            if (RosterManager.getInstance().isRosterReceived(account)) {
-                connected++;
-            } else if (state == ConnectionState.connecting || state == ConnectionState.authentication) {
-                connecting++;
-            } else if (state == ConnectionState.waiting) {
-                waiting++;
+            LogManager.i(this, "updatePersistentNotification account " + account + " state " + state );
+
+            switch (state) {
+
+                case offline:
+                    break;
+                case waiting:
+                    waiting++;
+                    break;
+
+                case connecting:
+                case registration:
+                case authentication:
+                    connecting++;
+                    break;
+
+                case connected:
+                    connected++;
+                    break;
             }
         }
 
         final Intent persistentIntent;
 
-        if (waiting > 0 && application.isInitialized()) {
-            persistentIntent = ReconnectionActivity.createIntent(application);
-        } else {
-            persistentIntent = ContactList.createPersistentIntent(application);
-        }
+        persistentIntent = ContactListActivity.createPersistentIntent(application);
 
         if (connected > 0) {
             persistentNotificationBuilder.setColor(persistentNotificationColor);
@@ -451,7 +475,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
     }
 
-    private MessageNotification getMessageNotification(String account, String user) {
+    private MessageNotification getMessageNotification(AccountJid account, UserJid user) {
         for (MessageNotification messageNotification : messageNotifications) {
             if (messageNotification.equals(account, user)) {
                 return messageNotification;
@@ -462,38 +486,32 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     public void onMessageNotification(MessageItem messageItem) {
         MessageNotification messageNotification = getMessageNotification(
-                messageItem.getChat().getAccount(), messageItem.getChat().getUser());
+                messageItem.getAccount(), messageItem.getUser());
         if (messageNotification == null) {
             messageNotification = new MessageNotification(
-                    messageItem.getChat().getAccount(), messageItem.getChat().getUser(), null, null, 0);
+                    messageItem.getAccount(), messageItem.getUser(), null, null, 0);
         } else {
             messageNotifications.remove(messageNotification);
         }
-        messageNotification.addMessage(messageItem.getDisplayText());
+        messageNotification.addMessage(messageItem.getText());
         messageNotifications.add(messageNotification);
 
-        final String account = messageNotification.getAccount();
-        final String user = messageNotification.getUser();
+        final AccountJid account = messageNotification.getAccount();
+        final UserJid user = messageNotification.getUser();
         final String text = messageNotification.getText();
         final Date timestamp = messageNotification.getTimestamp();
         final int count = messageNotification.getCount();
 
         if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore) {
-            Application.getInstance().runInBackground(new Runnable() {
+            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
                 @Override
                 public void run() {
-                    NotificationTable.getInstance().write(account, user, text, timestamp, count);
+                    NotificationTable.getInstance().write(account.toString(), user.toString(), text, timestamp, count);
                 }
             });
         }
 
         updateMessageNotification(messageItem);
-    }
-
-    public void onCurrentChatMessageNotification(MessageItem messageItem) {
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
-        addEffects(notificationBuilder, messageItem);
-        notify(CURRENT_CHAT_MESSAGE_NOTIFICATION_ID, notificationBuilder.build());
     }
 
     /**
@@ -503,7 +521,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         updateMessageNotification(null);
     }
 
-    public int getNotificationMessageCount(String account, String user) {
+    public int getNotificationMessageCount(AccountJid account, UserJid user) {
         MessageNotification messageNotification = getMessageNotification(
                 account, user);
         if (messageNotification == null)
@@ -511,17 +529,38 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         return messageNotification.getCount();
     }
 
-    public void removeMessageNotification(final String account, final String user) {
+    public void removeMessageNotification(final AccountJid account, final UserJid user) {
         MessageNotification messageNotification = getMessageNotification(account, user);
         if (messageNotification == null)
             return;
         messageNotifications.remove(messageNotification);
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                NotificationTable.getInstance().remove(account, user);
+                NotificationTable.getInstance().remove(account.toString(), user.toString());
             }
         });
+
+        updateMessageNotification(null);
+    }
+
+    public void removeMessageNotificationsForAccount(final AccountJid account) {
+        Iterator<MessageNotification> iterator = messageNotifications.iterator();
+        while(iterator.hasNext()) {
+            MessageNotification messageNotification = iterator.next();
+
+            if (messageNotification.getAccount().equals(account)) {
+                iterator.remove();
+            }
+        }
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                NotificationTable.getInstance().remove(account);
+            }
+        });
+
         updateMessageNotification(null);
     }
 
@@ -533,7 +572,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             if (provider.canClearNotifications())
                 provider.clearNotifications();
         messageNotifications.clear();
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 NotificationTable.getInstance().clear();
@@ -544,10 +583,10 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onAccountArchiveModeChanged(AccountItem accountItem) {
-        final String account = accountItem.getAccount();
+        final AccountJid account = accountItem.getAccount();
         if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore)
             return;
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 NotificationTable.getInstance().removeAccount(account);
@@ -556,12 +595,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         handler.post(this);
     }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
+        LogManager.i(LOG_TAG, "onAccountRemoved " + accountItem.getAccount());
+
         for (NotificationProvider<? extends NotificationItem> notificationProvider : providers) {
             if (notificationProvider instanceof AccountNotificationProvider) {
                 ((AccountNotificationProvider) notificationProvider)
@@ -569,6 +610,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 updateNotifications(notificationProvider, null);
             }
         }
+
+        removeMessageNotificationsForAccount(accountItem.getAccount());
     }
 
     @Override

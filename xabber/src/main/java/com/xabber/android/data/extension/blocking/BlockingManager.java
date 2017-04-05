@@ -1,162 +1,180 @@
 package com.xabber.android.data.extension.blocking;
 
+import android.support.annotation.Nullable;
+
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnAuthorizedListener;
-import com.xabber.android.data.connection.OnPacketListener;
-import com.xabber.android.data.connection.OnResponseListener;
-import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
-import com.xabber.xmpp.blocking.Block;
-import com.xabber.xmpp.blocking.BlockList;
-import com.xabber.xmpp.blocking.Unblock;
-import com.xabber.xmpp.blocking.XmlConstants;
+import com.xabber.android.data.roster.RosterContact;
 
 import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.IQ;
-import org.jivesoftware.smack.packet.Stanza;
-import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smackx.blocking.BlockingCommandManager;
+import org.jxmpp.jid.Jid;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
+public class BlockingManager {
 
+    static final String LOG_TAG = BlockingManager.class.getSimpleName();
+    private static BlockingManager instance;
 
-    private final static BlockingManager instance;
+    @SuppressWarnings("WeakerAccess")
+    Map<AccountJid, Boolean> supportForAccounts;
 
-    private Map<String, Boolean> supportForAccounts;
-    private Map<String, List<String>> blockListsForAccounts;
-
-    static {
-        instance = new BlockingManager();
-        Application.getInstance().addManager(instance);
-    }
+    @SuppressWarnings("WeakerAccess")
+    Map<AccountJid, BlockedListener> blockedListeners;
+    @SuppressWarnings("WeakerAccess")
+    Map<AccountJid, UnblockedListener> unblockedListeners;
+    @SuppressWarnings("WeakerAccess")
+    Map<AccountJid, UnblockedAllListener> unblockedAllListeners;
 
     public static BlockingManager getInstance() {
+        if (instance == null) {
+            instance = new BlockingManager();
+        }
+
         return instance;
     }
 
     private BlockingManager() {
         supportForAccounts = new ConcurrentHashMap<>();
-        blockListsForAccounts = new ConcurrentHashMap<>();
+
+        blockedListeners = new ConcurrentHashMap<>();
+        unblockedListeners = new ConcurrentHashMap<>();
+        unblockedAllListeners = new ConcurrentHashMap<>();
     }
 
-    private void discoverSupport(XMPPConnection xmppConnection)
-            throws SmackException.NotConnectedException, XMPPException.XMPPErrorException, SmackException.NoResponseException {
-        ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
-        final String account = xmppConnection.getUser();
-        final boolean isSupported = discoManager.serverSupportsFeature(XmlConstants.NAMESPACE);
 
-        if (isSupported) {
-            LogManager.i(this, "Blocking is supported for account" + account);
-        }
 
-        supportForAccounts.put(account, isSupported);
-    }
+    public void onAuthorized(final ConnectionItem connection) {
+        final AccountJid account = connection.getAccount();
 
-    public boolean isSupported(String account) {
-        final Boolean isSupported = supportForAccounts.get(account);
-        if (isSupported == null) {
-            return false;
-        }
-        return isSupported;
-    }
-
-    public Map<String, List<String>> getBlockedContacts() {
-        return Collections.unmodifiableMap(blockListsForAccounts);
-    }
-
-    public Collection<String> getBlockedContacts(String account) {
-
-        return Collections.unmodifiableCollection(getBlockedListForAccount(account));
-    }
-
-    private List<String> getBlockedListForAccount(String account) {
-        if (!blockListsForAccounts.containsKey(account)) {
-            blockListsForAccounts.put(account, new ArrayList<String>());
-        }
-        return blockListsForAccounts.get(account);
-    }
-
-    public void requestBlockList(String account) {
-        if (!isSupported(account)) {
-            return;
-        }
-
-        final BlockList blockListRequest  = new BlockList();
-        blockListRequest.setType(IQ.Type.get);
+        BlockingCommandManager blockingCommandManager = BlockingCommandManager.getInstanceFor(connection.getConnection());
 
         try {
-            ConnectionManager.getInstance().sendRequest(account, blockListRequest, new OnResponseListener() {
+            boolean supportedByServer = blockingCommandManager.isSupportedByServer();
 
-                @Override
-                public void onReceived(String account, String packetId, IQ iq) {
-                    if (!blockListRequest.getStanzaId().equals(packetId) || !(iq instanceof BlockList)) {
-                        return;
-                    }
+            if (supportedByServer) {
+                // cache block list inside
+                blockingCommandManager.getBlockList();
+            }
 
-                    if (iq.getType() == IQ.Type.result) {
-                        blockListsForAccounts.put(account, ((BlockList) iq).getItems());
-                        for (OnBlockedListChangedListener onBlockedListChangedListener
-                                : Application.getInstance().getUIListeners(OnBlockedListChangedListener.class)) {
-                            onBlockedListChangedListener.onBlockedListChanged(account);
-                        }
+            addBlockedListener(blockingCommandManager, account);
+            addUnblockedListener(blockingCommandManager, account);
+            addUnblockedAllListener(blockingCommandManager, account);
 
-                        for (OnContactChangedListener onContactChangedListener
-                                : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
-                            onContactChangedListener.onContactsChanged(new ArrayList<BaseEntity>());
-                        }
-                    }
-                }
+            // block list already cached successfully
+            supportForAccounts.put(account, supportedByServer);
 
-                @Override
-                public void onError(String account, String packetId, IQ iq) {
+            BlockingManager.notify(account);
 
-                }
-
-                @Override
-                public void onTimeout(String account, String packetId) {
-
-                }
-
-                @Override
-                public void onDisconnect(String account, String packetId) {
-
-                }
-            });
-        } catch (NetworkException e) {
-            e.printStackTrace();
+        } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
+                | SmackException.NoResponseException | InterruptedException e) {
+            LogManager.exception(this, e);
         }
-
     }
 
-    @Override
-    public void onPacket(ConnectionItem connection, String bareAddress, Stanza packet) {
-        if (packet instanceof Block && ((Block) packet).getType() == IQ.Type.set) {
-            LogManager.i(this, "Block push received");
-            Block block = (Block) packet;
-            for (String contact : block.getItems()) {
-                blockContactLocally(packet.getTo(), contact);
-            }
-            requestBlockList(packet.getTo());
+    @SuppressWarnings("WeakerAccess")
+    void addBlockedListener(BlockingCommandManager blockingCommandManager, AccountJid account) {
+        BlockedListener blockedListener = blockedListeners.remove(account);
+        if (blockedListener != null) {
+            blockingCommandManager.removeJidsBlockedListener(blockedListener);
         }
 
-        if (packet instanceof Unblock && ((Unblock) packet).getType() == IQ.Type.set) {
-            LogManager.i(this, "Unblock push received");
-            requestBlockList(packet.getTo());
+        blockedListener = new BlockedListener(account);
+        blockedListeners.put(account, blockedListener);
+        blockingCommandManager.addJidsBlockedListener(blockedListener);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    void addUnblockedListener(BlockingCommandManager blockingCommandManager, AccountJid account) {
+        UnblockedListener unblockedListener = unblockedListeners.remove(account);
+        if (unblockedListener != null) {
+            blockingCommandManager.removeJidsUnblockedListener(unblockedListener);
         }
+
+        unblockedListener = new UnblockedListener(account);
+        unblockedListeners.put(account, unblockedListener);
+        blockingCommandManager.addJidsUnblockedListener(unblockedListener);
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    void addUnblockedAllListener(BlockingCommandManager blockingCommandManager, AccountJid account) {
+        UnblockedAllListener unblockedAllListener = unblockedAllListeners.remove(account);
+        if (unblockedAllListener != null) {
+            blockingCommandManager.removeAllJidsUnblockedListener(unblockedAllListener);
+        }
+
+        unblockedAllListener = new UnblockedAllListener(account);
+        unblockedAllListeners.put(account, unblockedAllListener);
+        blockingCommandManager.addAllJidsUnblockedListener(unblockedAllListener);
+    }
+
+    static void notify(final AccountJid account) {
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (OnBlockedListChangedListener onBlockedListChangedListener
+                        : Application.getInstance().getUIListeners(OnBlockedListChangedListener.class)) {
+                    onBlockedListChangedListener.onBlockedListChanged(account);
+                }
+
+                for (OnContactChangedListener onContactChangedListener
+                        : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
+                    onContactChangedListener.onContactsChanged(new ArrayList<RosterContact>());
+                }
+            }
+        });
+    }
+
+    /**
+     *
+     * @param account
+     * @return true if supported, false if not supported and null if unknown yet
+     */
+    @Nullable
+    public Boolean isSupported(AccountJid account) {
+        if (getBlockingCommandManager(account) == null) {
+            supportForAccounts.remove(account);
+            return null;
+        }
+
+        return supportForAccounts.get(account);
+    }
+
+    public List<UserJid> getBlockedContacts(AccountJid account) {
+        List<UserJid> blockedContacts = new ArrayList<>();
+
+        Boolean supported = isSupported(account);
+
+        BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+
+        if (blockingCommandManager != null && supported != null && supported) {
+            try {
+                List<Jid> blockedJids = blockingCommandManager.getBlockList();
+                for (Jid jid : blockedJids) {
+                    blockedContacts.add(UserJid.from(jid));
+                }
+
+            } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                    | InterruptedException | SmackException.NotConnectedException | UserJid.UserJidCreateException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        }
+
+        return blockedContacts;
     }
 
     public interface BlockContactListener {
@@ -164,51 +182,61 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         void onError();
     }
 
-    public void blockContact(String account, final String contactJid, final BlockContactListener listener) {
-        final Block blockRequest  = new Block();
-        blockRequest.setType(IQ.Type.set);
-        blockRequest.addItem(contactJid);
+    public void blockContact(final AccountJid account, final UserJid contactJid, final BlockContactListener listener) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                boolean success = false;
 
-        try {
-            ConnectionManager.getInstance().sendRequest(account, blockRequest, new OnResponseListener() {
+                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
 
-                @Override
-                public void onReceived(String account, String packetId, IQ iq) {
-                    if (!blockRequest.getStanzaId().equals(packetId)) {
-                        return;
+                if (blockingCommandManager != null) {
+                    List<Jid> contactsToBlock = new ArrayList<>();
+                    contactsToBlock.add(contactJid.getJid());
+
+                    try {
+                        blockingCommandManager.blockContacts(contactsToBlock);
+                        success = true;
+                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                            | InterruptedException | SmackException.NotConnectedException e) {
+                        LogManager.exception(LOG_TAG, e);
                     }
+                }
 
-                    if (iq.getType() == IQ.Type.result) {
-                        requestBlockList(account);
-                        listener.onSuccess();
-                    } else {
-                        listener.onError();
+                final boolean finalSuccess = success;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalSuccess) {
+                            listener.onSuccess();
+                        } else {
+                            listener.onError();
+                        }
                     }
-                }
-
-                @Override
-                public void onError(String account, String packetId, IQ iq) {
-                    listener.onError();
-                }
-
-                @Override
-                public void onTimeout(String account, String packetId) {
-                    listener.onError();
-                }
-
-                @Override
-                public void onDisconnect(String account, String packetId) {
-                    listener.onError();
-                }
-            });
-        } catch (NetworkException e) {
-            e.printStackTrace();
-            listener.onError();
-        }
-
+                });
+            }
+        });
     }
 
-    private void blockContactLocally(String account, String contactJid) {
+    @SuppressWarnings("WeakerAccess")
+    @Nullable
+    BlockingCommandManager getBlockingCommandManager(AccountJid account) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return null;
+        }
+
+        XMPPTCPConnection connection = accountItem.getConnection();
+
+        // "Must have a local (user) JID set. Either you didn't configure one or you where not connected at least once"
+        if (connection.getUser() == null) {
+            return null;
+        }
+
+        return BlockingCommandManager.getInstanceFor(connection);
+    }
+
+    static void blockContactLocally(AccountJid account, UserJid contactJid) {
         MessageManager.getInstance().closeChat(account, contactJid);
         NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
@@ -218,75 +246,78 @@ public class BlockingManager implements OnAuthorizedListener, OnPacketListener {
         void onError();
     }
 
-    public void unblockContacts(String account, final List<String> contacts, final UnblockContactListener listener) {
-        if (!isSupported(account)) {
-            return;
-        }
-
-        final Unblock unblockRequest  = new Unblock();
-        unblockRequest.setType(IQ.Type.set);
-        for (String contact : contacts) {
-            unblockRequest.addItem(contact);
-        }
-
-        sendUnblock(account, listener, unblockRequest);
-    }
-
-    public void unblockAll(String account, final UnblockContactListener listener) {
-        unblockContacts(account, blockListsForAccounts.get(account), listener);
-    }
-
-    private void sendUnblock(String account, final UnblockContactListener listener, final Unblock unblockRequest) {
-        try {
-            ConnectionManager.getInstance().sendRequest(account, unblockRequest, new OnResponseListener() {
-
-                @Override
-                public void onReceived(String account, String packetId, IQ iq) {
-                    if (!unblockRequest.getStanzaId().equals(packetId)) {
-                        return;
-                    }
-
-                    if (iq.getType() == IQ.Type.result) {
-                        requestBlockList(account);
-                        listener.onSuccess();
-                    } else {
-                        listener.onError();
-                    }
-                }
-
-                @Override
-                public void onError(String account, String packetId, IQ iq) {
-                    listener.onError();
-                }
-
-                @Override
-                public void onTimeout(String account, String packetId) {
-                    listener.onError();
-                }
-
-                @Override
-                public void onDisconnect(String account, String packetId) {
-                    listener.onError();
-                }
-            });
-        } catch (NetworkException e) {
-            e.printStackTrace();
-            listener.onError();
-        }
-    }
-
-    @Override
-    public void onAuthorized(final ConnectionItem connection) {
-        new Thread("Thread to check " + connection.getRealJid() + " for blocking command support") {
+    public void unblockContacts(final AccountJid account, final List<UserJid> contacts, final UnblockContactListener listener) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                try {
-                    discoverSupport(connection.getConnectionThread().getXMPPConnection());
-                    requestBlockList(connection.getConnectionThread().getXMPPConnection().getUser());
-                } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
-                    e.printStackTrace();
+                boolean success = false;
+
+                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+
+                if (blockingCommandManager != null) {
+                    List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
+                    for (UserJid userJid : contacts) {
+                        jidsToUnblock.add(userJid.getBareJid());
+                    }
+
+
+                    try {
+                        blockingCommandManager.unblockContacts(jidsToUnblock);
+                        success = true;
+                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                            | SmackException.NotConnectedException | InterruptedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
                 }
+
+                final boolean finalSuccess = success;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalSuccess) {
+                            listener.onSuccess();
+                        } else {
+                            listener.onError();
+                        }
+                    }
+                });
+
             }
-        }.start();
+        });
     }
+
+    public void unblockAll(final AccountJid account, final UnblockContactListener listener) {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                boolean success = false;
+
+                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+
+                if (blockingCommandManager != null) {
+                    try {
+                        blockingCommandManager.unblockAll();
+                        success = true;
+                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                            | SmackException.NotConnectedException | InterruptedException e) {
+                        LogManager.exception(LOG_TAG, e);
+                    }
+                }
+
+                final boolean finalSuccess = success;
+                Application.getInstance().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (finalSuccess) {
+                            listener.onSuccess();
+                        } else {
+                            listener.onError();
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
 }

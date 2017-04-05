@@ -2,6 +2,7 @@
 <resources>
     <string name="contact_viewer">Contact info</string>
     <string name="contact_viewer_client">Client</string>
+    <string name="contact_viewer_this_device">This device</string>
     <string name="vcard_nick_name">Nickname</string>
     <string name="vcard_formatted_name">Formatted name</string>
     <string name="vcard_prefix_name">Prefix</string>
@@ -50,6 +51,7 @@
     <string name="edit_contact_groups">Edit groups</string>
     <string name="remove_contact">Remove contact</string>
     <string name="edit_account_user_info">Edit user info</string>
+    <string name="edit_vcard">Edit</string>
     <string name="account_user_info_save_success">Account user info saved successfully</string>
     <string name="account_user_info_save_fail">Could not save account user info</string>
     <string name="saving">Saving…</string>
@@ -62,4 +64,6 @@
     <string name="conference_description">Description</string>
     <string name="conference_subject">Subject</string>
     <string name="message_info_occupants_number">Occupants: %d</string>
+    <string name="contact_info_connected_clients_header">Connected devices</string>
+    <string name="contact_info_visiting_card_header">vCard</string>
 </resources>

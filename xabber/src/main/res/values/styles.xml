@@ -61,4 +61,17 @@
     <style name="OccupantList.Visitor">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
+
+    <style name="WhiteSwitchStyle">
+        <item name="colorControlActivated">@color/white</item>
+    </style>
+
+    <style name="RedButton" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/red_700</item>
+    </style>
+
+    <style name="WhiteButton" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/white</item>
+    </style>
+
 </resources>

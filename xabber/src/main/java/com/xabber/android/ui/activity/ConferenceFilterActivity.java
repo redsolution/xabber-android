@@ -15,18 +15,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.adapter.HostedConferencesAdapter;
 
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.muc.HostedRoom;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConferenceFilterActivity extends ManagedActivity implements TextWatcher, View.OnClickListener,
         AdapterView.OnItemClickListener, TextView.OnEditorActionListener {
+
+    private static final String LOG_TAG = ConferenceFilterActivity.class.getSimpleName();
 
     public static final String ARG_CONFERENCE_NAME = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_NAME";
     public static final String ARG_CONFERENCE_LIST_NAMES = "com.xabber.android.ui.activity.ConferenceFilterActivity.ARG_CONFERENCE_LIST_NAMES";
@@ -39,15 +46,15 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
     private EditText conferenceNameEditText;
     private ImageButton roomClearButton;
 
-    private String account;
+    private AccountJid account;
     private HostedConferencesAdapter hostedConferencesAdapter;
 
 
-    public static Intent createIntent(Context context, String account) {
+    public static Intent createIntent(Context context, AccountJid account) {
         return new EntityIntentBuilder(context, ConferenceFilterActivity.class).setAccount(account).build();
     }
 
-    private static String getAccount(Intent intent) {
+    private static AccountJid getAccount(Intent intent) {
         return AccountIntentBuilder.getAccount(intent);
     }
 
@@ -78,9 +85,6 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
         roomClearButton.setOnClickListener(this);
         conferenceNameEditText = (EditText)findViewById(R.id.room_name_edit_text);
 
-        conferenceNameEditText.addTextChangedListener(this);
-        conferenceNameEditText.setOnEditorActionListener(this);
-
         setRoomClearButtonVisibility();
 
         Intent intent = getIntent();
@@ -104,6 +108,8 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
             conferenceNameEditText.setSelection(room.length());
         }
 
+        conferenceNameEditText.addTextChangedListener(this);
+        conferenceNameEditText.setOnEditorActionListener(this);
     }
 
     public static List<HostedRoom> restoreConferenceList(Bundle bundleExtra) {
@@ -114,9 +120,13 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
 
         if (conferencesNames != null && conferencesJids != null && conferencesNames.size() == conferencesJids.size()) {
             for (int i = 0; i < conferencesNames.size(); i++) {
-                DiscoverItems.Item item = new DiscoverItems.Item(conferencesJids.get(i));
-                item.setName(conferencesNames.get(i));
-                conferences.add(new HostedRoom(item));
+                try {
+                    DiscoverItems.Item item = new DiscoverItems.Item(JidCreate.from(conferencesJids.get(i)));
+                    item.setName(conferencesNames.get(i));
+                    conferences.add(new HostedRoom(item));
+                } catch (XmppStringprepException e) {
+                    LogManager.exception(LOG_TAG, e);
+                }
             }
         }
         return conferences;
@@ -156,8 +166,12 @@ public class ConferenceFilterActivity extends ManagedActivity implements TextWat
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        startActivity(ConferenceAdd.createIntent(this, account,
-                hostedConferencesAdapter.getItem(position).getJid()));
+        try {
+            startActivity(ConferenceAddActivity.createIntent(this, account,
+                    UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));
+        } catch (UserJid.UserJidCreateException e) {
+            LogManager.exception(this, e);
+        }
     }
 
     @Override

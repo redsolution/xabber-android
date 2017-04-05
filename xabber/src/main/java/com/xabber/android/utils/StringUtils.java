@@ -16,16 +16,15 @@ package com.xabber.android.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.webkit.MimeTypeMap;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.xabber.android.data.Application;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * Helper class to get plural forms.
@@ -36,12 +35,17 @@ public class StringUtils {
 
     private static final DateFormat DATE_TIME;
     private static final DateFormat TIME;
+    private static final String LOG_DATE_TIME_FORMAT = "HH:mm:ss yyyy-MM-dd";
 
     static {
         DATE_TIME = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
                 DateFormat.SHORT);
         TIME = new SimpleDateFormat("H:mm");
+        timeFormat = android.text.format.DateFormat.getTimeFormat(Application.getInstance());
     }
+
+    private static SimpleDateFormat logDateTimeFormat;
+    private static DateFormat timeFormat;
 
     private StringUtils() {
     }
@@ -141,16 +145,19 @@ public class StringUtils {
         midnight.set(Calendar.SECOND, 0);
         midnight.set(Calendar.MILLISECOND, 0);
 
-        DateFormat timeFormat = android.text.format.DateFormat.getTimeFormat(context);
-
         if (timeStamp.getTime() > midnight.getTimeInMillis()) {
-            synchronized (TIME) {
-                return timeFormat.format(timeStamp);
-            }
+            return timeFormat.format(timeStamp);
         } else {
             DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(context);
             return dateFormat.format(timeStamp) + " " + timeFormat.format(timeStamp);
         }
     }
 
+    public static SimpleDateFormat getLogDateTimeFormat() {
+        if (logDateTimeFormat == null) {
+            logDateTimeFormat = new SimpleDateFormat(LOG_DATE_TIME_FORMAT, Locale.ENGLISH);
+        }
+
+        return logDateTimeFormat;
+    }
 }

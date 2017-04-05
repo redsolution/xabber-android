@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -9,41 +10,45 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
 import com.xabber.android.data.VcardMaps;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.OnAccountChangedListener;
 import com.xabber.android.data.account.StatusMode;
+import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
+import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.address.Jid;
+import com.xabber.android.ui.activity.AccountInfoEditorActivity;
+import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.AddressProperty;
 import com.xabber.xmpp.vcard.AddressType;
 import com.xabber.xmpp.vcard.EmailType;
 import com.xabber.xmpp.vcard.TelephoneType;
 import com.xabber.xmpp.vcard.VCardProperty;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Presence;
-import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 import org.jivesoftware.smackx.vcardtemp.provider.VCardProvider;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,27 +59,39 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static final String ARGUMENT_USER = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.ARGUMENT_USER";
     private static final String SAVED_VCARD = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD";
     private static final String SAVED_VCARD_ERROR = "com.xabber.android.ui.fragment.ContactVcardViewerFragment.SAVED_VCARD_ERROR";
-    String account;
-    String user;
+    private static final String LOG_TAG = ContactVcardViewerFragment.class.getSimpleName();
+    public static final int REQUEST_CODE_EDIT_VCARD = 1;
+
+    AccountJid account;
+    UserJid user;
     private LinearLayout xmppItems;
     private LinearLayout contactInfoItems;
     private VCard vCard;
     private boolean vCardError;
     private View progressBar;
     private Listener listener;
+    private Button editButton;
 
     public interface Listener {
         void onVCardReceived();
     }
 
-    public static ContactVcardViewerFragment newInstance(String account, String user) {
+    public static ContactVcardViewerFragment newInstance(AccountJid account, UserJid user) {
         ContactVcardViewerFragment fragment = new ContactVcardViewerFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
-        arguments.putString(ARGUMENT_USER, user);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_USER, user);
         fragment.setArguments(arguments);
         return fragment;
+    }
+
+    public static ContactVcardViewerFragment newInstance(AccountJid account) {
+        try {
+            return newInstance(account, UserJid.from(account.getFullJid().asBareJid()));
+        } catch (UserJid.UserJidCreateException e) {
+            throw new IllegalStateException("Cannot convert account to user. Account: " + account, e);
+        }
     }
 
     @Override
@@ -89,8 +106,8 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
-        user = args.getString(ARGUMENT_USER, null);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
+        user = args.getParcelable(ARGUMENT_USER);
 
         vCard = null;
         vCardError = false;
@@ -100,14 +117,14 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
             if (xml != null) {
                 try {
                     vCard = parseVCard(xml);
-                } catch (XmlPullParserException | IOException | SmackException e) {
+                } catch (Exception e) {
                     LogManager.exception(this, e);
                 }
             }
         }
     }
 
-    public static VCard parseVCard(String xml) throws XmlPullParserException, IOException, SmackException {
+    public static VCard parseVCard(String xml) throws Exception {
         XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
         parser.setInput(new StringReader(xml));
@@ -129,11 +146,25 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.contact_vcard_viewer_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_contact_vcard, container, false);
 
         xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
         contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
         progressBar = view.findViewById(R.id.contact_info_progress_bar);
+
+        editButton = (Button) view.findViewById(R.id.contact_info_edit_button);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (vCard != null) {
+                    Intent intent = AccountInfoEditorActivity.createIntent(getActivity(), account,
+                            vCard.getChildElementXML().toString());
+
+                    startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
+                }
+            }
+        });
+
 
         return view;
     }
@@ -141,22 +172,28 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     @Override
     public void onResume() {
         super.onResume();
+
+        if (AccountManager.getInstance().getAccount(account) == null) {
+            // in case if account was removed
+            return;
+        }
+
         Application.getInstance().addUIListener(OnVCardListener.class, this);
         Application.getInstance().addUIListener(OnContactChangedListener.class, this);
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
-
-        updateContact(account, user);
 
         if (vCard == null && !vCardError) {
             requestVCard();
         } else {
             updateVCard();
         }
+
+        updateContact(account, user);
     }
 
     public void requestVCard() {
         progressBar.setVisibility(View.VISIBLE);
-        VCardManager.getInstance().request(account, user);
+        VCardManager.getInstance().requestByUser(account, user.getJid());
     }
 
     @Override
@@ -184,7 +221,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onVCardReceived(String account, String bareAddress, VCard vCard) {
+    public void onVCardReceived(AccountJid account, Jid bareAddress, VCard vCard) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
         }
@@ -196,7 +233,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onVCardFailed(String account, String bareAddress) {
+    public void onVCardFailed(AccountJid account, Jid bareAddress) {
         if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
             return;
         }
@@ -206,7 +243,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onContactsChanged(Collection<BaseEntity> entities) {
+    public void onContactsChanged(Collection<RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
                 updateContact(account, user);
@@ -216,21 +253,18 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     @Override
-    public void onAccountsChanged(Collection<String> accounts) {
+    public void onAccountsChanged(Collection<AccountJid> accounts) {
         if (accounts.contains(account)) {
             updateContact(account, user);
-            if (Jid.getBareAddress(account).equals(Jid.getBareAddress(user))) {
+            if (account.getFullJid().asBareJid().equals(user.getJid().asBareJid())) {
                 if (AccountManager.getInstance().getAccount(account).getFactualStatusMode().isOnline()) {
-                    VCardManager.getInstance().request(account, Jid.getBareAddress(account));
+                    VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
                 }
             }
         }
     }
 
     /**
-     * @param source
-     * @param value
-     * @param splitter
      * @return Concatenated source and value with splitter if necessary.
      */
     private String addString(String source, String value, String splitter) {
@@ -243,38 +277,69 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return source + splitter + value;
     }
 
-    public void updateContact(String account, String bareAddress) {
+    public void updateContact(AccountJid account, UserJid bareAddress) {
         this.account = account;
         this.user = bareAddress;
 
+        if (!isAdded()) {
+            return;
+        }
+
         xmppItems.removeAllViews();
 
+        List<View> resourcesList = new ArrayList<>();
+
+        fillResourceList(account, bareAddress.getJid(), resourcesList);
+
+        if (!resourcesList.isEmpty()) {
+            addHeader(xmppItems, getString(R.string.contact_info_connected_clients_header));
+        }
+
+        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp, false);
+
+        addHeader(xmppItems, getString(R.string.contact_info_visiting_card_header));
+
         View jabberIdView = createItemView(xmppItems, getString(R.string.jabber_id),
-                bareAddress, R.drawable.ic_vcard_xmpp_24dp);
+                bareAddress.toString(), R.drawable.ic_vcard_xmpp_24dp);
 
         if (jabberIdView != null) {
             xmppItems.addView(jabberIdView);
         }
-
-        List<View> resourcesList = new ArrayList<>();
-
-        fillResourceList(account, bareAddress, resourcesList);
-
-        addItemGroup(resourcesList, xmppItems, R.drawable.ic_vcard_jabber_24dp);
     }
 
-    private void fillResourceList(String account, String bareAddress, List<View> resourcesList) {
+    private void addHeader(LinearLayout rootView, String text) {
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        View contactInfoHeader = inflater.inflate(R.layout.item_contact_info_header, rootView, false);
+        TextView headerView = (TextView) contactInfoHeader.findViewById(R.id.contact_info_header_text_view);
+        headerView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
+        headerView.setText(text);
+
+        rootView.addView(contactInfoHeader);
+    }
+
+    private void fillResourceList(AccountJid account, Jid bareAddress, List<View> resourcesList) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
 
+        boolean isAccount = account.getFullJid().asBareJid().equals(user.getBareJid());
+        Resourcepart accountResource = null;
+        if (isAccount) {
+            // TODO: probably not the best way to get own resource
+            accountResource = AccountManager.getInstance().getAccount(account)
+                    .getConnection().getConfiguration().getResource();
+        }
+
+        PresenceManager.sortPresencesByPriority(allPresences);
+
         for (Presence presence : allPresences) {
-            String user = presence.getFrom();
-            ClientInfo clientInfo = CapabilitiesManager.getInstance().getClientInfo(account, user);
+            Jid fromJid = presence.getFrom();
+
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(fromJid);
 
             String client = "";
             if (clientInfo == null) {
-                CapabilitiesManager.getInstance().request(account, user);
                 client = getString(R.string.please_wait);
-            } else if (clientInfo == CapabilitiesManager.INVALID_CLIENT_INFO) {
+                CapabilitiesManager.getInstance().requestClientInfoByUser(account, fromJid);
+            } else if (clientInfo == ClientInfo.INVALID_CLIENT_INFO) {
                 client = getString(R.string.unknown);
             } else {
                 String name = clientInfo.getName();
@@ -299,14 +364,12 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
                 priorityString = getString(R.string.account_priority) + ": " + priorityValue;
             }
 
-            String label = "";
             if (!client.isEmpty()) {
-                label = getString(R.string.contact_viewer_client) + ": " + client + ", ";
+                client = getString(R.string.contact_viewer_client) + ": " + client;
             }
 
-            label += priorityString;
-
-            String resource = getString(R.string.account_resource) + ": " + Jid.getResource(user);
+            Resourcepart resourceOrNull = fromJid.getResourceOrNull();
+            String resource = getString(R.string.account_resource) + ": " + resourceOrNull;
 
             final StatusMode statusMode = StatusMode.createStatusMode(presence);
 
@@ -317,13 +380,29 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
             LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-            View resourceView = inflater.inflate(R.layout.contact_info_item, xmppItems, false);
+            View resourceView = inflater.inflate(R.layout.item_contact_info, xmppItems, false);
 
-            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary)).setText(label);
+            resourceView.findViewById(R.id.contact_info_item_secondary);
+
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary)).setText(client);
             ((TextView)resourceView.findViewById(R.id.contact_info_item_main)).setText(status);
 
             ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary_second_line)).setText(resource);
             resourceView.findViewById(R.id.contact_info_item_secondary_second_line).setVisibility(View.VISIBLE);
+
+            ((TextView)resourceView.findViewById(R.id.contact_info_item_secondary_third_line)).setText(priorityString);
+            resourceView.findViewById(R.id.contact_info_item_secondary_third_line).setVisibility(View.VISIBLE);
+
+            if (isAccount &&resourceOrNull != null
+                    && resourceOrNull.equals(accountResource)) {
+                TextView thisDeviceIndicatorTextView
+                        = (TextView) resourceView.findViewById(R.id.contact_info_item_secondary_forth_line);
+
+                thisDeviceIndicatorTextView.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(account));
+                thisDeviceIndicatorTextView.setText(R.string.contact_viewer_this_device);
+                thisDeviceIndicatorTextView.setVisibility(View.VISIBLE);
+            }
+
 
             ImageView statusIcon = (ImageView) resourceView.findViewById(R.id.contact_info_right_icon);
             statusIcon.setVisibility(View.VISIBLE);
@@ -338,6 +417,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void updateVCard() {
         if (vCard == null) {
             return;
+        }
+
+        if (account.getFullJid().asBareJid().equals(user.getBareJid())) {
+            editButton.setVisibility(View.VISIBLE);
         }
 
         contactInfoItems.removeAllViews();
@@ -461,11 +544,19 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon) {
+        addItemGroup(nameList, itemList, groupIcon, true);
+    }
+
+
+    private void addItemGroup(List<View> nameList, LinearLayout itemList, int groupIcon, boolean addSeparator) {
         if (nameList.isEmpty()) {
             return;
         }
 
-        addSeparator(itemList);
+        if (addSeparator) {
+            addSeparator(itemList);
+        }
+
         ((ImageView) nameList.get(0).findViewById(R.id.contact_info_group_icon)).setImageResource(groupIcon);
 
         for (View view : nameList) {
@@ -493,7 +584,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        View contactInfoItem = inflater.inflate(R.layout.contact_info_item, rootView, false);
+        View contactInfoItem = inflater.inflate(R.layout.item_contact_info, rootView, false);
 
         if (label == null || label.trim().isEmpty()) {
             contactInfoItem.findViewById(R.id.contact_info_item_secondary).setVisibility(View.GONE);
@@ -512,4 +603,13 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         return vCard;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_EDIT_VCARD
+                && resultCode == Activity.RESULT_OK) {
+            requestVCard();
+        }
+
+    }
 }

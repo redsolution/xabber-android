@@ -1,4 +1,3 @@
 include ':xabber'
-include ':xabber:otr4j'
 include ':xabber:MemorizingTrustManager'
 include ':xabber:emojicon'

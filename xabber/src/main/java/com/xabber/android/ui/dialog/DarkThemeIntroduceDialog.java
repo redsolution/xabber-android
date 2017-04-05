@@ -9,11 +9,12 @@ import android.os.Bundle;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ContactListActivity;
 
 public class DarkThemeIntroduceDialog extends DialogFragment implements DialogInterface.OnClickListener {
-@Override
-public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
         .setTitle(R.string.dark_theme_suggest_dialog_title)
         .setMessage(R.string.dark_theme_suggest_dialog_message)
@@ -25,6 +26,8 @@ public Dialog onCreateDialog(Bundle savedInstanceState) {
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
+        SettingsManager.setDarkThemeSuggested();
+
         if (which == Dialog.BUTTON_POSITIVE) {
             joinDarkSide();
         }
@@ -33,6 +36,6 @@ public Dialog onCreateDialog(Bundle savedInstanceState) {
     private void joinDarkSide() {
         SettingsManager.setDarkTheme();
         ActivityManager.getInstance().clearStack(true);
-        startActivity(ContactList.createIntent(getActivity()));
+        startActivity(ContactListActivity.createIntent(getActivity()));
     }
 }

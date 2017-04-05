@@ -8,5 +8,5 @@
     <string name="phrase_regexp">Regular expression</string>
     <string name="phrase_sound">Sound\nChoose notification sound</string>
     <string name="phrase_text">Text to search for</string>
-    <string name="phrase_user">Contact\'s Jabber ID part</string>
+    <string name="phrase_user">Contact\'s XMPP ID part</string>
 </resources>

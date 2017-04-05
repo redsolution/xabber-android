@@ -9,13 +9,13 @@ import android.text.style.StyleSpan;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ChatViewer;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.android.ui.activity.ContactListActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -53,7 +53,7 @@ public class MessageNotificationCreator {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application);
         notificationBuilder.setContentTitle(getTitle(message, messageCount));
         notificationBuilder.setContentText(getText(message, showText));
-        notificationBuilder.setSubText(message.getAccount());
+        notificationBuilder.setSubText(message.getAccount().toString());
 
         notificationBuilder.setTicker(getText(message, showText));
 
@@ -126,7 +126,7 @@ public class MessageNotificationCreator {
 
     private android.graphics.Bitmap getLargeIcon(MessageNotification message) {
         if (isFromOneContact()) {
-            if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser())) {
+            if (MUCManager.getInstance().hasRoom(message.getAccount(), message.getUser().getJid().asEntityBareJidIfPossible())) {
                 return AvatarManager.getInstance().getRoomBitmap(message.getUser());
             } else {
                 return AvatarManager.getInstance().getUserBitmap(message.getUser());
@@ -147,11 +147,11 @@ public class MessageNotificationCreator {
             if (showText) {
                 bigTextStyle.bigText(message.getText());
             }
-            bigTextStyle.setSummaryText(message.getAccount());
+            bigTextStyle.setSummaryText(message.getAccount().toString());
 
             return bigTextStyle;
         } else {
-            return getInboxStyle(messageCount, message.getAccount());
+            return getInboxStyle(messageCount, message.getAccount().toString());
         }
     }
 
@@ -193,10 +193,10 @@ public class MessageNotificationCreator {
     }
 
     private PendingIntent getIntent(MessageNotification message) {
-        Intent backIntent = ContactList.createIntent(application);
+        Intent backIntent = ContactListActivity.createIntent(application);
         backIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        Intent intent = ChatViewer.createClearTopIntent(application, message.getAccount(), message.getUser());
+        Intent intent = ChatActivity.createClearTopIntent(application, message.getAccount(), message.getUser());
         return PendingIntent.getActivities(application, UNIQUE_REQUEST_CODE++,
                 new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
     }

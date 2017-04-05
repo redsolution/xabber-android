@@ -1,5 +1,6 @@
 package com.xabber.android.ui.adapter;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +12,9 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.PrivateMucChatBlockingManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -25,13 +27,17 @@ import java.util.Set;
 
 public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements UpdatableAdapter {
 
-    private String account;
-    private List<String> blockedContacts;
-    private OnBlockedContactClickListener listener;
+    private AccountJid account;
+    @SuppressWarnings("WeakerAccess")
+    List<UserJid> blockedContacts;
 
-    private Set<String> checkedContacts;
+    @SuppressWarnings("WeakerAccess")
+    @Nullable OnBlockedContactClickListener listener;
 
-    public BlockedListAdapter(String account) {
+    @SuppressWarnings("WeakerAccess")
+    Set<UserJid> checkedContacts;
+
+    public BlockedListAdapter(AccountJid account) {
         this.account = account;
         blockedContacts = new ArrayList<>();
         checkedContacts = new HashSet<>();
@@ -40,51 +46,25 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new BlockListItemViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.block_list_item, parent, false));
+                .inflate(R.layout.item_block, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final BlockListItemViewHolder viewHolder = (BlockListItemViewHolder) holder;
-        final String contact = blockedContacts.get(position);
+        final UserJid contact = blockedContacts.get(position);
 
         final AbstractContact rosterContact = RosterManager.getInstance().getBestContact(account, contact);
 
-        if (SettingsManager.contactsShowAvatars()) {
-            viewHolder.avatar.setVisibility(View.VISIBLE);
+        if (viewHolder.avatar != null) {
             viewHolder.avatar.setImageDrawable(rosterContact.getAvatarForContactList());
-        } else {
-            viewHolder.avatar.setVisibility(View.GONE);
         }
 
         viewHolder.name.setText(rosterContact.getName());
         viewHolder.name.setVisibility(View.VISIBLE);
 
-
         viewHolder.checkBox.setChecked(checkedContacts.contains(contact));
-
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewHolder.checkBox.setChecked(!viewHolder.checkBox.isChecked());
-            }
-        });
-
-        viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    checkedContacts.add(contact);
-                } else {
-                    checkedContacts.remove(contact);
-                }
-                if (listener != null) {
-                    listener.onBlockedContactClick();
-                }
-            }
-        });
     }
-
 
     @Override
     public int getItemCount() {
@@ -94,19 +74,15 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public void onChange() {
         blockedContacts.clear();
-        final Collection<String> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
+        final Collection<UserJid> blockedContacts = BlockingManager.getInstance().getBlockedContacts(account);
         if (blockedContacts != null) {
             this.blockedContacts.addAll(blockedContacts);
         }
 
-        final Collection<String> blockedMucContacts = PrivateMucChatBlockingManager.getInstance().getBlockedContacts(account);
-        if (blockedMucContacts != null) {
-            this.blockedContacts.addAll(blockedMucContacts);
-        }
-
-        final Iterator<String> iterator = checkedContacts.iterator();
+        // remove checked contacts not containing in new blocked list
+        final Iterator<UserJid> iterator = checkedContacts.iterator();
         while (iterator.hasNext()) {
-            final String next = iterator.next();
+            final UserJid next = iterator.next();
             if (!this.blockedContacts.contains(next)) {
                 iterator.remove();
             }
@@ -119,30 +95,59 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         void onBlockedContactClick();
     }
 
-    public void setListener(OnBlockedContactClickListener listener) {
+    public void setListener(@Nullable OnBlockedContactClickListener listener) {
         this.listener = listener;
     }
 
-    class BlockListItemViewHolder extends RecyclerView.ViewHolder {
+    private class BlockListItemViewHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
 
+        @Nullable
         final ImageView avatar;
         final TextView name;
         final CheckBox checkBox;
 
-        public BlockListItemViewHolder(View view) {
+        BlockListItemViewHolder(View view) {
             super(view);
 
-            avatar = (ImageView) view.findViewById(R.id.avatar);
+            if (SettingsManager.contactsShowAvatars()) {
+                avatar = (ImageView) view.findViewById(R.id.avatar);
+                avatar.setVisibility(View.VISIBLE);
+            } else {
+                avatar = null;
+            }
+
             name = (TextView) view.findViewById(R.id.contact_list_item_name);
             checkBox = (CheckBox) view.findViewById(R.id.block_list_contact_checkbox);
+            checkBox.setOnClickListener(this);
+
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            UserJid userJid = blockedContacts.get(getAdapterPosition());
+
+            if (checkedContacts.contains(userJid)) {
+                checkedContacts.remove(userJid);
+                checkBox.setChecked(false);
+            } else {
+                checkedContacts.add(userJid);
+                checkBox.setChecked(true);
+            }
+
+            if (listener != null) {
+                listener.onBlockedContactClick();
+            }
+
         }
     }
 
-    public ArrayList<String> getCheckedContacts() {
+    public ArrayList<UserJid> getCheckedContacts() {
         return new ArrayList<>(checkedContacts);
     }
 
-    public void setCheckedContacts(List<String> checkedContacts) {
+    public void setCheckedContacts(List<UserJid> checkedContacts) {
         this.checkedContacts.clear();
         this.checkedContacts.addAll(checkedContacts);
     }

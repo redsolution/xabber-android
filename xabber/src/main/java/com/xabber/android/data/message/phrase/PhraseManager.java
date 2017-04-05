@@ -14,17 +14,20 @@
  */
 package com.xabber.android.data.message.phrase;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.database.sqlite.PhraseTable;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.RosterManager;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Manage custom notification based on message.
@@ -38,24 +41,23 @@ public class PhraseManager implements OnLoadListener {
      */
     private final List<Phrase> phrases;
 
-    private final static PhraseManager instance;
-
-    static {
-        instance = new PhraseManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static PhraseManager instance;
 
     public static PhraseManager getInstance() {
+        if (instance == null) {
+            instance = new PhraseManager();
+        }
+
         return instance;
     }
 
     private PhraseManager() {
-        phrases = new ArrayList<Phrase>();
+        phrases = new ArrayList<>();
     }
 
     @Override
     public void onLoad() {
-        final Collection<Phrase> phrases = new ArrayList<Phrase>();
+        final Collection<Phrase> phrases = new ArrayList<>();
         Cursor cursor;
         cursor = PhraseTable.getInstance().list();
         try {
@@ -89,11 +91,11 @@ public class PhraseManager implements OnLoadListener {
      * @return Sound associated with first matched phrase. Chat specific setting
      * if no one matches .
      */
-    public Uri getSound(String account, String user, String text) {
+    public Uri getSound(AccountJid account, UserJid user, String text) {
         Collection<String> groups = RosterManager.getInstance().getGroups(
                 account, user);
         for (Phrase phrase : phrases)
-            if (phrase.matches(text, user, groups)) {
+            if (phrase.matches(text, user.toString(), groups)) {
                 Uri value = phrase.getSound();
                 if (ChatManager.EMPTY_SOUND.equals(value))
                     return null;
@@ -133,7 +135,7 @@ public class PhraseManager implements OnLoadListener {
     private void writePhrase(final Phrase phrase, final String value,
                              final String user, final String group, final boolean regexp,
                              final Uri sound) {
-        Application.getInstance().runInBackground(new Runnable() {
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
                 phrase.setId(PhraseTable.getInstance().write(phrase.getId(),

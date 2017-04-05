@@ -6,18 +6,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomInvite;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.ui.activity.ConferenceAdd;
-import com.xabber.xmpp.address.Jid;
+import com.xabber.android.ui.activity.ConferenceAddActivity;
+
 
 public class MucInviteDialog extends BaseContactDialog {
 
     private RoomInvite roomInvite;
 
-    public static DialogFragment newInstance(String account, String contact) {
+    public static DialogFragment newInstance(AccountJid account, UserJid contact) {
         DialogFragment fragment = new MucInviteDialog();
         setArguments(account, contact, fragment);
         return fragment;
@@ -50,7 +52,7 @@ public class MucInviteDialog extends BaseContactDialog {
 
     @Override
     protected void onPositiveButtonClick() {
-        startActivity(ConferenceAdd.createIntent(getActivity(), getAccount(), getContact()));
+        startActivity(ConferenceAddActivity.createIntent(getActivity(), getAccount(), getContact().getBareUserJid()));
     }
 
     @Override
@@ -65,14 +67,14 @@ public class MucInviteDialog extends BaseContactDialog {
 
     @Override
     protected void setUpContactTitleView(View view) {
-        roomInvite = MUCManager.getInstance().getInvite(getAccount(), getContact());
-        final String inviter = Jid.getBareAddress(roomInvite.getInviter());
+        roomInvite = MUCManager.getInstance().getInvite(getAccount(), getContact().getJid().asEntityBareJidIfPossible());
+        final UserJid inviter = roomInvite.getInviter().getBareUserJid();
 
         final AbstractContact bestContact = RosterManager.getInstance().getBestContact(getAccount(), inviter);
 
         ((ImageView)view.findViewById(R.id.avatar)).setImageDrawable(bestContact.getAvatar());
         ((TextView)view.findViewById(R.id.name)).setText(bestContact.getName());
-        ((TextView)view.findViewById(R.id.status_text)).setText(inviter);
+        ((TextView)view.findViewById(R.id.status_text)).setText(inviter.toString());
     }
 
 }

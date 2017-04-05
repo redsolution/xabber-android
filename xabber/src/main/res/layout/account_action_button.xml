@@ -27,8 +27,8 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@drawable/ic_avatar_1"
-        app:border_width="3dp"
-        app:border_color="@android:color/transparent"
+        app:civ_border_width="3dp"
+        app:civ_border_color="@android:color/transparent"
         android:elevation="8dp"
 
         android:layout_marginTop="4dp"

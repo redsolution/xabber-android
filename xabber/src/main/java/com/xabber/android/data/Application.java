@@ -15,11 +15,41 @@
 package com.xabber.android.data;
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.content.res.TypedArray;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
+import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.ScreenManager;
+import com.xabber.android.data.connection.CertificateManager;
+import com.xabber.android.data.connection.ConnectionManager;
+import com.xabber.android.data.connection.NetworkManager;
+import com.xabber.android.data.connection.ReconnectionManager;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.avatar.AvatarStorage;
+import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.mam.MamManager;
+import com.xabber.android.data.extension.muc.MUCManager;
+import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.ssn.SSNManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.ReceiptManager;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.phrase.PhraseManager;
+import com.xabber.android.data.notification.NotificationManager;
+import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
@@ -50,6 +80,7 @@ public class Application extends android.app.Application {
      * Thread to execute tasks in background..
      */
     private final ExecutorService backgroundExecutor;
+    private final ExecutorService backgroundExecutorForUserActions;
     /**
      * Handler to execute runnable in UI thread.
      */
@@ -81,14 +112,17 @@ public class Application extends android.app.Application {
      * Whether {@link #onServiceDestroy()} has been called.
      */
     private boolean closed;
+
     private final Runnable timerRunnable = new Runnable() {
 
         @Override
         public void run() {
-            for (OnTimerListener listener : getManagers(OnTimerListener.class))
+            for (OnTimerListener listener : getManagers(OnTimerListener.class)) {
                 listener.onTimer();
-            if (!closing)
+            }
+            if (!closing) {
                 startTimer();
+            }
         }
 
     };
@@ -109,10 +143,26 @@ public class Application extends android.app.Application {
         registeredManagers = new ArrayList<>();
 
         handler = new Handler();
-        backgroundExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        backgroundExecutor = createSingleThreadExecutor("Background executor service");
+        backgroundExecutorForUserActions = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(),
+                new ThreadFactory() {
             @Override
-            public Thread newThread(Runnable runnable) {
-                Thread thread = new Thread(runnable, "Background executor service");
+            public Thread newThread(@NonNull Runnable runnable) {
+                Thread thread = new Thread(runnable);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
+    }
+
+    @NonNull
+    private ExecutorService createSingleThreadExecutor(final String threadName) {
+        return Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(@NonNull Runnable runnable) {
+                Thread thread = new Thread(runnable, threadName);
                 thread.setPriority(Thread.MIN_PRIORITY);
                 thread.setDaemon(true);
                 return thread;
@@ -163,7 +213,7 @@ public class Application extends android.app.Application {
         closed = true;
     }
 
-    private void onUnload() {
+    void onUnload() {
         LogManager.i(this, "onUnload");
         for (Object manager : registeredManagers) {
             if (manager instanceof OnUnloadListener) {
@@ -187,8 +237,6 @@ public class Application extends android.app.Application {
 
     /**
      * Starts data loading in background if not started yet.
-     *
-     * @return
      */
     public void onServiceStarted() {
         if (serviceStarted) {
@@ -235,54 +283,62 @@ public class Application extends android.app.Application {
         return closing;
     }
 
-    /**
-     * Returns whether system contact storage is supported.
-     * <p/>
-     * Note:
-     * <p/>
-     * Please remove *_CONTACTS, *_ACCOUNTS, *_SETTINGS permissions,
-     * SyncAdapterService and AccountAuthenticatorService together from manifest
-     * file.
-     *
-     * @return
-     */
-    public boolean isContactsSupported() {
-        return checkCallingOrSelfPermission("android.permission.READ_CONTACTS") == PackageManager.PERMISSION_GRANTED;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            AndroidDevMetrics.initWith(this);
+        }
+
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-        ArrayList<String> contactManager = new ArrayList<>();
-        TypedArray contactManagerClasses = getResources().obtainTypedArray(R.array.contact_managers);
-        for (int index = 0; index < contactManagerClasses.length(); index++) {
-            contactManager.add(contactManagerClasses.getString(index));
-        }
-        contactManagerClasses.recycle();
+        addManagers();
 
-        TypedArray managerClasses = getResources().obtainTypedArray(R.array.managers);
-        for (int index = 0; index < managerClasses.length(); index++) {
-            if (isContactsSupported() || !contactManager.contains(managerClasses.getString(index))) {
-                try {
-                    Class.forName(managerClasses.getString(index));
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        managerClasses.recycle();
+        DatabaseManager.getInstance().addTables();
 
-        TypedArray tableClasses = getResources().obtainTypedArray(R.array.tables);
-        for (int index = 0; index < tableClasses.length(); index++) {
-            try {
-                Class.forName(tableClasses.getString(index));
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        tableClasses.recycle();
+        LogManager.i(this, "onCreate finished...");
+    }
+
+    private void addManagers() {
+        addManager(SettingsManager.getInstance());
+        addManager(LogManager.getInstance());
+        addManager(DatabaseManager.getInstance());
+        addManager(AvatarStorage.getInstance());
+        addManager(OTRManager.getInstance());
+        addManager(ConnectionManager.getInstance());
+        addManager(ScreenManager.getInstance());
+        addManager(AccountManager.getInstance());
+        addManager(MUCManager.getInstance());
+        addManager(MessageManager.getInstance());
+        addManager(ChatManager.getInstance());
+        addManager(VCardManager.getInstance());
+        addManager(AvatarManager.getInstance());
+        addManager(PresenceManager.getInstance());
+        addManager(RosterManager.getInstance());
+        addManager(GroupManager.getInstance());
+        addManager(PhraseManager.getInstance());
+        addManager(NotificationManager.getInstance());
+        addManager(ActivityManager.getInstance());
+        addManager(CapabilitiesManager.getInstance());
+        addManager(ChatStateManager.getInstance());
+        addManager(NetworkManager.getInstance());
+        addManager(ReconnectionManager.getInstance());
+        addManager(ReceiptManager.getInstance());
+        addManager(SSNManager.getInstance());
+        addManager(AttentionManager.getInstance());
+        addManager(CarbonManager.getInstance());
+        addManager(HttpFileUploadManager.getInstance());
+        addManager(BlockingManager.getInstance());
+        addManager(MamManager.getInstance());
+        addManager(CertificateManager.getInstance());
+    }
+
+    /**
+     * Register new manager.
+     */
+    private void addManager(Object manager) {
+        registeredManagers.add(manager);
     }
 
     @Override
@@ -301,12 +357,18 @@ public class Application extends android.app.Application {
             return;
         }
         onClose();
-        runInBackground(new Runnable() {
+
+        // use new thread instead of run in background to exit immediately
+        // without waiting for possible other threads in executor
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 onUnload();
             }
         });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     @Override
@@ -320,13 +382,6 @@ public class Application extends android.app.Application {
      */
     private void startTimer() {
         runOnUiThreadDelay(timerRunnable, OnTimerListener.DELAY);
-    }
-
-    /**
-     * Register new manager.
-     */
-    public void addManager(Object manager) {
-        registeredManagers.add(manager);
     }
 
     /**
@@ -453,6 +508,19 @@ public class Application extends android.app.Application {
      */
     public void runInBackground(final Runnable runnable) {
         backgroundExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    runnable.run();
+                } catch (Exception e) {
+                    LogManager.exception(runnable, e);
+                }
+            }
+        });
+    }
+
+    public void runInBackgroundUserRequest(final Runnable runnable) {
+        backgroundExecutorForUserActions.submit(new Runnable() {
             @Override
             public void run() {
                 try {

@@ -55,6 +55,7 @@
   <string name="show_offline_never">никад</string>
   <string name="show_offline_normal">користи опште поставке</string>
   <string name="show_offline_settings">Прикажи неповезане контакте</string>
+  <string name="start_at_boot">Покретање при дизању система</string>
   <string name="start_at_boot_suggest">Желите ли покретати Ксабер при дизању система?\nМожете да измените ово у \"Поставке\" → \"Поставке везе\" → \"Покрени при подизању система\"</string>
   <string name="contact_search_hint">Тражи контакте</string>
   <string name="sender_is_you">Ви</string>
@@ -69,4 +70,8 @@
   <string name="unblock_all_contacts_confirm">Желите ли заиста да одблокирате све контакте са налога %1$s?</string>
   <string name="unblock_all">Одблокирај све</string>
   <string name="unblock_selected">Одблокирај одабране</string>
+  <string name="dark_theme_suggest_dialog_title">Изаберите своју судбину</string>
+  <string name="dark_theme_suggest_dialog_message">Нова тамна тема је доступна за Ксабер. Можете ли се одупрети искушењу да је пробате?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Придружи се Тамној страни</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Остани на Светлој страни"</string>
 </resources>

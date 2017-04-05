@@ -1,227 +1,161 @@
 package com.xabber.android.data.extension.httpfileupload;
 
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.LogManager;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnAuthorizedListener;
-import com.xabber.android.data.connection.OnResponseListener;
-import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.message.MessageItem;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.xmpp.httpfileupload.Request;
 import com.xabber.xmpp.httpfileupload.Slot;
 
+import org.jivesoftware.smack.ExceptionCallback;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jxmpp.jid.DomainBareJid;
+import org.jxmpp.jid.Jid;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.entity.ContentType;
-import cz.msebera.android.httpclient.entity.FileEntity;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-public class HttpFileUploadManager implements OnAuthorizedListener {
 
-    private final static HttpFileUploadManager instance;
+public class HttpFileUploadManager {
 
-    private static final String CONTENT_TYPE = RequestParams.APPLICATION_OCTET_STREAM;
+    private static HttpFileUploadManager instance;
 
-    static {
-        instance = new HttpFileUploadManager();
-        Application.getInstance().addManager(instance);
-    }
+    private static final MediaType CONTENT_TYPE = MediaType.parse("application/octet-stream");
+
+    private Map<AccountJid, Jid> uploadServers = new ConcurrentHashMap<>();
 
     public static HttpFileUploadManager getInstance() {
+        if (instance == null) {
+            instance = new HttpFileUploadManager();
+        }
+
         return instance;
     }
 
-    private Map<String, String> uploadServers = new ConcurrentHashMap<>();
+    private HttpFileUploadManager() {
+    }
 
-    public boolean isFileUploadSupported(String account) {
+    public boolean isFileUploadSupported(AccountJid account) {
         return uploadServers.containsKey(account);
     }
 
-    public void uploadFile(final String account, final String user, final String filePath) {
-        final String uploadServerUrl = uploadServers.get(account);
+    public void uploadFile(final AccountJid account, final UserJid user, final String filePath) {
+        final Jid uploadServerUrl = uploadServers.get(account);
         if (uploadServerUrl == null) {
             return;
         }
 
         final File file = new File(filePath);
 
-        final Request httpFileUpload = new Request();
+        final com.xabber.xmpp.httpfileupload.Request httpFileUpload = new com.xabber.xmpp.httpfileupload.Request();
         httpFileUpload.setFilename(file.getName());
         httpFileUpload.setSize(String.valueOf(file.length()));
         httpFileUpload.setTo(uploadServerUrl);
 
-
         try {
-            ConnectionManager.getInstance().sendRequest(account, httpFileUpload, new OnResponseListener() {
+            AccountManager.getInstance().getAccount(account).getConnection().sendIqWithResponseCallback(httpFileUpload, new StanzaListener() {
                 @Override
-                public void onReceived(final String account, String packetId, IQ iq) {
-                    if (!httpFileUpload.getStanzaId().equals(packetId) || !(iq instanceof Slot)) {
+                public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
+                    if (!(packet instanceof Slot)) {
                         return;
                     }
 
-                    uploadFileToSlot(account, (Slot) iq);
+                    uploadFileToSlot(account, (Slot) packet);
                 }
 
+                private void uploadFileToSlot(final AccountJid account, final Slot slot) {
+                    OkHttpClient client = new OkHttpClient().newBuilder()
+                            .writeTimeout(5, TimeUnit.MINUTES)
+                            .connectTimeout(5, TimeUnit.MINUTES)
+                            .readTimeout(5, TimeUnit.MINUTES)
+                            .build();
 
-                private void uploadFileToSlot(final String account, final Slot slot) {
-                    AsyncHttpClient client = new AsyncHttpClient();
-                    client.setLoggingEnabled(SettingsManager.debugLog());
-                    client.setResponseTimeout(60 * 1000);
 
-                    FileEntity fileEntity = new FileEntity(file, ContentType.DEFAULT_BINARY);
+                    Request request = new Request.Builder()
+                            .url(slot.getPutUrl())
+                            .put(RequestBody.create(CONTENT_TYPE, file))
+                            .build();
 
+                    final String fileMessageId;
+                    fileMessageId = MessageManager.getInstance().createFileMessage(account, user, file);
 
-                    LogManager.i(this, "fileEntity.getContentLength() " + fileEntity.getContentLength());
-
-                    client.put(Application.getInstance(), slot.getPutUrl(), fileEntity, CONTENT_TYPE, new AsyncHttpResponseHandler() {
-
-                        MessageItem fileMessage;
-
+                    LogManager.i(HttpFileUploadManager.this, "starting upload file to " + slot.getPutUrl() + " size " + file.length());
+                    client.newCall(request).enqueue(new Callback() {
                         @Override
-                        public void onStart() {
-                            super.onStart();
-                            LogManager.i(this, "uploadFileToSlot onStart");
-
-                            fileMessage = MessageManager.getInstance().createFileMessage(account, user, file);
+                        public void onFailure(Call call, IOException e) {
+                            LogManager.i(HttpFileUploadManager.this, "onFailure " + e.getMessage());
+                            MessageManager.getInstance().updateMessageWithError(fileMessageId);
                         }
 
                         @Override
-                        public void onSuccess(int i, Header[] headers, byte[] bytes) {
-                            LogManager.i(this, "uploadFileToSlot onSuccess " + i);
-                            MessageManager.getInstance().replaceMessage(account, user, fileMessage, slot.getGetUrl());
-
-                            if (FileManager.fileIsImage(file)) {
-                                saveImageToCache(slot.getGetUrl(), file);
+                        public void onResponse(Call call, Response response) throws IOException {
+                            LogManager.i(HttpFileUploadManager.this, "onResponse " + response.isSuccessful() + " " + response.body().string());
+                            if (response.isSuccessful()) {
+                                MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, slot.getGetUrl());
+                            } else {
+                                MessageManager.getInstance().updateMessageWithError(fileMessageId);
                             }
                         }
-
-                        @Override
-                        public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
-                            LogManager.i(this, "uploadFileToSlot onFailure " + i);
-
-                            MessageManager.getInstance().updateMessageWithError(account, user, fileMessage, file.getName());
-
-                        }
-
-                        @Override
-                        public void onRetry(int retryNo) {
-                            super.onRetry(retryNo);
-                            LogManager.i(this, "uploadFileToSlot onRetry " + retryNo);
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            super.onCancel();
-
-                            LogManager.i(this, "uploadFileToSlot onCancel");
-
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            super.onFinish();
-                            LogManager.i(this, "uploadFileToSlot onFinish");
-                        }
-
-
                     });
+
                 }
 
+            }, new ExceptionCallback() {
                 @Override
-                public void onError(String account, String packetId, IQ iq) {
+                public void processException(Exception exception) {
                     LogManager.i(this, "On HTTP file upload slot error");
+                    LogManager.exception(this, exception);
                     Application.getInstance().onError(R.string.http_file_upload_slot_error);
                 }
-
-                @Override
-                public void onTimeout(String account, String packetId) {
-
-                }
-
-                @Override
-                public void onDisconnect(String account, String packetId) {
-
-                }
             });
-        } catch (NetworkException e) {
-            e.printStackTrace();
+        } catch (SmackException.NotConnectedException | InterruptedException e) {
+            LogManager.exception(this, e);
         }
     }
 
-    private void saveImageToCache(String getUrl, final File file) {
-        final URL url;
-        try {
-            url = new URL(getUrl);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    FileManager.saveFileToCache(file, url);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    private void discoverSupport(XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
-            XMPPException.XMPPErrorException, SmackException.NoResponseException {
-
-        final String account = xmppConnection.getUser();
+    private void discoverSupport(AccountJid account, XMPPConnection xmppConnection) throws SmackException.NotConnectedException,
+            XMPPException.XMPPErrorException, SmackException.NoResponseException, InterruptedException {
 
         uploadServers.remove(account);
 
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
 
-        List<String> services = discoManager.findServices(Request.NAMESPACE, true, true);
+        List<DomainBareJid> services = discoManager.findServices(com.xabber.xmpp.httpfileupload.Request.NAMESPACE, true, true);
 
         if (!services.isEmpty()) {
-            final String uploadServerUrl = services.get(0);
-            if (!uploadServerUrl.isEmpty()) {
-                LogManager.i(this, "Http file upload server: " + uploadServerUrl);
-                uploadServers.put(account, uploadServerUrl);
-            }
+            final DomainBareJid uploadServerUrl = services.get(0);
+            LogManager.i(this, "Http file upload server: " + uploadServerUrl);
+            uploadServers.put(account, uploadServerUrl);
         }
     }
 
-    @Override
-    public void onAuthorized(final ConnectionItem connection) {
-        new Thread("Thread to check for " + connection.getRealJid()) {
-            @Override
-            public void run() {
-                try {
-                    discoverSupport(connection.getConnectionThread().getXMPPConnection());
-                } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException | SmackException.NoResponseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+    public void onAuthorized(final ConnectionItem connectionItem) {
+        try {
+            discoverSupport(connectionItem.getAccount(), connectionItem.getConnection());
+        } catch (SmackException.NotConnectedException | XMPPException.XMPPErrorException
+                | SmackException.NoResponseException | InterruptedException e) {
+            LogManager.exception(this, e);
+        }
     }
 }

@@ -19,19 +19,21 @@ import android.content.Intent;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
-import com.xabber.android.ui.activity.ContactList;
+import com.xabber.android.ui.activity.ContactListActivity;
 
 public class SubscriptionRequest extends BaseEntity implements EntityNotificationItem {
 
-    public SubscriptionRequest(String account, String user) {
+    public SubscriptionRequest(AccountJid account, UserJid user) {
         super(account, user);
     }
 
     @Override
     public Intent getIntent() {
-        return ContactList.createContactSubscriptionIntent(Application.getInstance(), account, user);
+        return ContactListActivity.createContactSubscriptionIntent(Application.getInstance(), account, user);
     }
 
     @Override
@@ -42,7 +44,7 @@ public class SubscriptionRequest extends BaseEntity implements EntityNotificatio
 
     @Override
     public String getTitle() {
-        return user;
+        return user.toString();
     }
 
     public String getConfirmation() {

@@ -24,4 +24,5 @@
     <item android:drawable="@drawable/ic_client_qip_18dp" android:minLevel="8" android:maxLevel="8" />
     <item android:drawable="@drawable/ic_client_vip_18dp" android:minLevel="9" android:maxLevel="9" />
     <item android:drawable="@drawable/ic_client_xabber_18dp" android:minLevel="10" android:maxLevel="10" />
+    <item android:drawable="@drawable/ic_client_conversations_18dp" android:minLevel="11" android:maxLevel="11" />
 </level-list>

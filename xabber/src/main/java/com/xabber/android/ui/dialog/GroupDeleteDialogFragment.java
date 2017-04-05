@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.RosterManager;
 
 public class GroupDeleteDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
@@ -16,17 +17,17 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.dialog.GroupDeleteDialogFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_GROUP = "com.xabber.android.ui.dialog.GroupDeleteDialogFragment.ARGUMENT_GROUP";
 
-    private String account;
+    private AccountJid account;
     private String group;
 
     /**
      * @param account can be <code>null</code> to be used for all accounts.
      */
-    public static DialogFragment newInstance(String account, String group) {
+    public static DialogFragment newInstance(AccountJid account, String group) {
         GroupDeleteDialogFragment fragment = new GroupDeleteDialogFragment();
 
         Bundle arguments = new Bundle();
-        arguments.putString(ARGUMENT_ACCOUNT, account);
+        arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putString(ARGUMENT_GROUP, group);
         fragment.setArguments(arguments);
         return fragment;
@@ -35,7 +36,7 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        account = args.getString(ARGUMENT_ACCOUNT, null);
+        account = args.getParcelable(ARGUMENT_ACCOUNT);
         group = args.getString(ARGUMENT_GROUP, null);
 
         return new AlertDialog.Builder(getActivity())

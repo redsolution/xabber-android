@@ -7,6 +7,8 @@ import android.os.Bundle;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.ArchiveMode;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.ShowMessageTextInNotification;
 
@@ -39,8 +41,8 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
     @Override
     protected Map<String, Object> getValues() {
         Map<String, Object> map = new HashMap<>();
-        String account = mListener.getAccount();
-        String user = mListener.getUser();
+        AccountJid account = mListener.getAccount();
+        UserJid user = mListener.getUser();
 
         putValue(map, R.string.chat_save_history_key, ChatManager.getInstance()
                 .isSaveMessages(account, user));
@@ -60,8 +62,8 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
 
     @Override
     protected boolean setValues(Map<String, Object> source, Map<String, Object> result) {
-        String account = mListener.getAccount();
-        String user = mListener.getUser();
+        AccountJid account = mListener.getAccount();
+        UserJid user = mListener.getUser();
 
         if (hasChanges(source, result, R.string.chat_save_history_key))
             ChatManager.getInstance().setSaveMessages(account, user,
@@ -108,8 +110,8 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
     }
 
     public interface ChatEditorFragmentInteractionListener {
-        String getAccount();
+        AccountJid getAccount();
         AccountItem getAccountItem();
-        String getUser();
+        UserJid getUser();
     }
 }

@@ -23,7 +23,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.xmpp.address.Jid;
 
 import org.jivesoftware.smackx.chatstates.ChatState;
 
@@ -37,7 +36,7 @@ public class ContactTitleInflater {
         nameView.setText(abstractContact.getName());
 
         // if it is account, not simple user contact
-        if (Jid.getBareAddress(abstractContact.getUser()).equals(Jid.getBareAddress(abstractContact.getAccount()))) {
+        if (abstractContact.getUser().getJid().asBareJid().equals(abstractContact.getAccount().getFullJid().asBareJid())) {
             avatarView.setImageDrawable(AvatarManager.getInstance().getAccountAvatar(abstractContact.getAccount()));
         } else {
             avatarView.setImageDrawable(abstractContact.getAvatar());

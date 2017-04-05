@@ -70,7 +70,23 @@
     <string name="unblock_all">Unblock all</string>
     <string name="unblock_selected">Unblock selected</string>
     <string name="dark_theme_suggest_dialog_title">Choose your destiny</string>
-    <string name="dark_theme_suggest_dialog_message">New dark theme is now available for Xabber. Can you resist the temptation to use it?</string>
-    <string name="dark_theme_suggest_dialog_join_dark_side">Join the Dark Side</string>
-    <string name="dark_theme_suggest_dialog_stay_on_light_side">"Stay on the Light Side"</string>
+    <string name="dark_theme_suggest_dialog_message">New dark theme is now available for Xabber. Join the dark side or stay on the light side?</string>
+    <string name="dark_theme_suggest_dialog_join_dark_side">Dark</string>
+    <string name="dark_theme_suggest_dialog_stay_on_light_side">Light</string>
+
+    <string name="battery_optimization_disable_dialog_title">Battery optimization</string>
+    <string name="battery_optimization_disable_dialog_message">Your device is doing some heavy battery optimizations on Xabber that might lead to delayed notifications or even message loss.\n\nYou will now be asked to disable those.</string>
+
+    <string name="save_log_to_file">Save to file</string>
+    <string name="clear_log">Delete old log files</string>
+    <string name="open_log_file">Open</string>
+    <string name="send_log_file">Send</string>
+
+    <string name="intro_welcome">Welcome to Xabber</string>
+    <string name="intro_xabber_description">Open source XMPP client for Android</string>
+    <string name="intro_have_account">I have XMPP account</string>
+    <string name="intro_register_account">Register XMPP account</string>
+    <string name="intro_create_xabber_account">Create Xabber Account</string>
+    <string name="intro_faq">If you do not have an XMPP account, please <a href="https://www.xabber.com/faq/">read our F.A.Q.</a> on how to get one.</string>
+    <string name="intro_web_search_register_xmpp">Register XMPP Account</string>
 </resources>
