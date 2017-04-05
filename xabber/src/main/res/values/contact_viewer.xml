@@ -64,6 +64,6 @@
     <string name="conference_description">Description</string>
     <string name="conference_subject">Subject</string>
     <string name="message_info_occupants_number">Occupants: %d</string>
-    <string name="contact_info_connected_clients_header">Connected resources</string>
+    <string name="contact_info_connected_clients_header">Connected devices</string>
     <string name="contact_info_visiting_card_header">vCard</string>
 </resources>
