@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Escolha o seu destino</string>
   <string name="dark_theme_suggest_dialog_message">Novo tema escuro está agora disponível para o Xabber. Consegue resistir à tentação para usá-lo?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Junte-se ao Lado Negro</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Ficar no Lado da Luz"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Ficar no Lado da Luz</string>
 </resources>

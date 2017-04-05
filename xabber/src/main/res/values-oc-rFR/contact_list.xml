@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Causissètz vòstre destin</string>
   <string name="dark_theme_suggest_dialog_message">Un novèl tèma escur es d\'ara enlà disponible per Xabber. Anatz resistir a la temptacion de l\'utilizar ?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Rejónher lo Costat Escur</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Demorar dins lo costat Luminós"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Demorar dins lo costat Luminós</string>
 </resources>

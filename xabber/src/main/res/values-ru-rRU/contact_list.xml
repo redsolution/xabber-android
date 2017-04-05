@@ -71,7 +71,20 @@
   <string name="unblock_all">Разблокировать всех</string>
   <string name="unblock_selected">Разблокировать выбранные</string>
   <string name="dark_theme_suggest_dialog_title">Выбери свою судьбу</string>
-  <string name="dark_theme_suggest_dialog_message">Для Xabber доступна новая тёмная тема. Сможешь ли ты противостоять искушению использовать её?</string>
-  <string name="dark_theme_suggest_dialog_join_dark_side">Перейти на Тёмную сторону</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Остаться на Светлой стороне"</string>
+  <string name="dark_theme_suggest_dialog_message">Для Xabber доступна новая тёмная тема. Перейти на тёмную сторону или остаться на светлой?</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Тёмная</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Светлая</string>
+  <string name="battery_optimization_disable_dialog_title">Оптимизация расхода аккумулятора</string>
+  <string name="battery_optimization_disable_dialog_message">Ваше устройство оптимизирует расход батареи, что может привести к задержкам в доставке сообщений или их потере.\n\nСейчас вам предложат отключить оптимизацию.</string>
+  <string name="save_log_to_file">Сохранить в файл</string>
+  <string name="clear_log">Удалить старые файлы журнала</string>
+  <string name="open_log_file">Открыть</string>
+  <string name="send_log_file">Отправить</string>
+  <string name="intro_welcome">Добро пожаловать в Xabber</string>
+  <string name="intro_xabber_description">XMPP-клиент для Android с открытым исходным кодом</string>
+  <string name="intro_have_account">У меня есть учётная запись XMPP</string>
+  <string name="intro_register_account">Зарегистрировать учётную запись XMPP</string>
+  <string name="intro_create_xabber_account">Создать учётную запись Xabber</string>
+  <string name="intro_faq">Если у вас нет учётной записи XMPP, пожалуйста, <a href="https://www.xabber.com/faq/">прочтите наш F.A.Q.</a> о том, как зарегистрироваться.</string>
+  <string name="intro_web_search_register_xmpp">Зарегистрировать XMPP аккаунт</string>
 </resources>

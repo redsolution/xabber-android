@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">选择你的命运</string>
   <string name="dark_theme_suggest_dialog_message">Xabber 有新黑暗主题可用。你能抗拒使用它的诱惑吗？</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">加入黑暗的一面</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"留在光明的一面"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">留在光明的一面</string>
 </resources>

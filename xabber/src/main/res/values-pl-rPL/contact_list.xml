@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Wybierz swoje przeznaczenie</string>
   <string name="dark_theme_suggest_dialog_message">Nowy motyw w ciemnych kolorach jest już dostępny dla Xabbera. Czy oprzesz się pokusie by go użyć?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Wstąp na Ciemną Stronę</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Pozostań na Jasnej Stronie"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Pozostań na Jasnej Stronie</string>
 </resources>

@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Vyber si svůj úděl</string>
   <string name="dark_theme_suggest_dialog_message">Nové tmavé téma pro Xabber je nyní k dispozici. Dokážete odolat pokušení jej používat?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Připojte se k Temné straně</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Zůstat na Světlé straně"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Zůstat na Světlé straně</string>
 </resources>

@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Mostrar painel de conta\nMostra os botões de ação com avatares no canto inferior direito da lista de contactos</string>
   <string name="contacts_stay_active_chats">Duplicar conversações ativas\nMostra as conversações ativas no topo da lista de contactos e nos grupos</string>
   <string name="debug_log">Registo de depuração\nGrava as mensagens no registo de depuração (por favor, reinicie a aplicação para aplicar as alterações)</string>
+  <string name="debug_connection_errors_title">Mostrar erros de ligação\nExibe as janelas de exceções de ligação</string>
   <string name="events_lightning">Luz de notificação\nPiscar o LED quando com notificação</string>
   <string name="events_persistent">Ícone na barra de tarefas\nMostra uma notificação persistente. Esta opção impede que o Android carregue a aplicação a partir da memória</string>
   <string name="events_sound">Som de notificação\nEscolha uma som de notificação</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Autorização de texto simples\nUsar a autenticação de texto simples para todas as contas. Não recomendado.</string>
   <string name="events_phrases">Frases chave\nConfigura as notificações personalizadas para as mensagens recebidas que contenham frases especificas</string>
   <string name="security_clear_certificate_warning">Deseja remover todos os certificados ignorados?</string>
-  <string name="debug_connection_errors_title">Mostrar erros de ligação\nExibe as janelas de exceções de ligação</string>
 </resources>

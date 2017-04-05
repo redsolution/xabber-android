@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Hesap panelini göster\nKişi listesinin sağ alt köşesinde avatarlar ile birlikte eylem butonlarını göster</string>
   <string name="contacts_stay_active_chats">Etkin sohbetleri çoğaltın.\nAktif sohbetler kişi ve grup listesinin üstünde görünür</string>
   <string name="debug_log">Hata ayıklama kaydı\nMesajları hata ayıklama kaydına yaz (değişikliklerin geçerli olması için uygulamayı yeniden başlatın)</string>
+  <string name="debug_connection_errors_title">Bağlantı hatalarını göster\nBağlantı hatalarını bildiren pencereleri göster</string>
   <string name="events_lightning">LED bildirimi \nBildirim için LED yansın</string>
   <string name="events_persistent">Görev çubuğu ikonu\nKalıcı bildirimi göster. Bu seçenek Android\'in hafızayı boşaltırken bu uygulamayı kapatmasını engeller</string>
   <string name="events_sound">Sesli uyarı\nBildirim sesini seçin</string>
@@ -80,5 +81,4 @@
   <string name="connection_use_carbons">Karbon-kağıdı modu\nKararsız çalışabilir! Aynı hesap için bu istemcideki hesap oturumunu paylaşır. Trafik kullanımını azaltmak için devre dışı bırakın.</string>
   <string name="events_phrases">Anahtar kelimeler\nGelen mesajların içeriğinde geçen kelimeler için özel bildirim oluşturun</string>
   <string name="security_clear_certificate_warning">Tüm yoksayılan sertifikaları kaldırmak istiyor musunuz?</string>
-  <string name="debug_connection_errors_title">Bağlantı hatalarını göster\nBağlantı hatalarını bildiren pencereleri göster</string>
 </resources>

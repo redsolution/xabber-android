@@ -3,7 +3,7 @@
 <resources>
   <string name="account_compression">Använd komprimering</string>
   <string name="account_enabled">Aktiverad</string>
-  <string name="account_host">Värd/Host</string>
+  <string name="account_host">Värd</string>
   <string name="account_password">Lösenord</string>
   <string name="confirm_password">Bekräfta lösenord</string>
   <string name="account_port">Port</string>
@@ -27,7 +27,7 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_archive_mode_unread">Lokalt men bara ej skickade och olästa</string>
   <string name="account_compression_summary">Markera för att aktivera datakomprimering</string>
   <string name="account_custom">Anpassad värd</string>
-  <string name="account_custom_summary">Ange anpassat värdnamn istället för SRV-post</string>
+  <string name="account_custom_summary">Använd den anpassade värdens inställningar istället för SRV-post</string>
   <string name="account_enabled_summary">Knapp för att aktivera kontot</string>
   <string name="account_invalid_port">Port måste anges som en siffra (default: 5222)</string>
   <string name="account_invalid_port_range">Port måste vara mellan 1 och 65535 (standard: 5222)</string>
@@ -37,17 +37,17 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_oauth_summary">Inställningar för OAuth</string>
   <string name="account_proxy_host">Proxyserver</string>
   <string name="account_proxy_invalid_port_range">Proxy-porten måste vara mellan 1 och 65535 (standard: 8080)</string>
-  <string name="account_proxy_invalid_port">Proxy-porten måste vara ett tal (standard: 8080)</string>
+  <string name="account_proxy_invalid_port">Proxy-porten måste vara ett tal (förvalt: 8080)</string>
   <string name="account_proxy_password">Lösenord för proxy</string>
   <string name="account_proxy_port">Proxyport</string>
   <string name="account_proxy_type">Proxytyp</string>
   <string name="account_proxy_type_none">Avaktiverad</string>
   <string name="account_proxy_user">Proxyanvändare</string>
-  <string name="account_sasl">Använd SASL-autentifiering (rekommenderat)</string>
+  <string name="account_sasl">Använd SASL-autentisering (rekommenderas)</string>
   <string name="account_sasl_summary">Avaktivera på gamla servrar</string>
   <string name="account_store_password">Spara lösenord</string>
   <string name="account_store_password_summary">Avmarkera denna för att få fråga om lösenord varje gång du loggar in</string>
-  <string name="account_syncable">Integrera med systemets kontakter</string>
+  <string name="account_syncable">Integrera med din enhets kontaktbok</string>
   <string name="account_syncable_summary">Visa kontakter från detta konto i telefonens kontaktbok</string>
   <string name="account_tls_enable">Aktivera TLS</string>
   <string name="account_tls_enable_summary">Använd TLS-kryptering när det är möjligt för att ansluta till server</string>

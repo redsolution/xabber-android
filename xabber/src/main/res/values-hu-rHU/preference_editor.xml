@@ -17,6 +17,8 @@
   <string name="contacts_show_panel">Fiókpanel mutatása\nMutassa a műveleti gombokat avatarokkal a névjegylista jobb alsó sarkában</string>
   <string name="contacts_stay_active_chats">Aktív chat duplázása\nAz aktív beszélgetések megjelennek a névjegylista tetején és a csoporton belül is</string>
   <string name="debug_log">Hibakeresési napló\nÜzeneteket ír a hibakeresési naplóba (az alkalmazást újra kell indítani, hogy a változás életbe lépjen)</string>
+  <string name="debug_log_files_title">Naplófájlok\nNaplófájlok listája.</string>
+  <string name="debug_log_files_activity_title">Naplófájlok</string>
   <string name="events_lightning">Fényjelzés\nA LED villogtatása értesítés esetén</string>
   <string name="events_persistent">Tálca ikon\nFolyamatosan látszik az értesítési területen. Ez megakadályozza, hogy az Android törölje az alkalmazást a memóriából</string>
   <string name="events_sound">Hangjelzés\nVálaszd ki az értesítés hangját</string>
@@ -79,4 +81,5 @@
   <string name="connection_use_carbons">Másolat-mód\nBizonytalanul működik! Megosztja az adott fiók munkameneteit ebben a kliensben. A kikapcsolása csökkenti az adatforgalmat.</string>
   <string name="events_phrases">Kulcskifejezések\nKészíts egyedi értesítést azokhoz az üzenetekhez, amelyek bizonyos kifejezéseket tartalmaznak</string>
   <string name="security_clear_certificate_warning">Biztos törlöd az összes figyelmen kívül hagyott tanúsítványt?</string>
+  <string name="account_error_settings">Beállítások</string>
 </resources>

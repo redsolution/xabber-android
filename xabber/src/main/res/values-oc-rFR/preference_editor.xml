@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Botons de compte\nAficha de botons d\'action amb avatar en bas e a dreita de la lista de contactes</string>
   <string name="contacts_stay_active_chats">Duplicar las conversacions activas\nLas conversacions activas apareisson a l\'encòp en naut de la lista de contactes e dins los gropes</string>
   <string name="debug_log">Jornal de desbugatge\nEscriure los messatges dins lo jornal de desbugatge (reaviatz l\'aplicacion per aplicar)</string>
+  <string name="debug_connection_errors_title">Mostrar errors de connexion\nAficha las pop-ups d\'excepcion de connexion</string>
   <string name="events_lightning">Notificacion luminosa\nLa LED cluqueja al moment d\'una notificacion</string>
   <string name="events_persistent">Icòna de barra dels prètzfaits\nAficha una notificacion permanenta. Aquesta opcion fòrça Android a gardar l\'aplicacion en memòria</string>
   <string name="events_sound">Sonariá\nCausir la sonariá de notificacion</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Autentificacion pas chifrada\nUtiliza una autentificacion pas chifrada per totes los comptes. Desconselhat.</string>
   <string name="events_phrases">Expressions claus\nCrear de notificacions personalizadas pels messatges recebuts que contenon de formulas especificas</string>
   <string name="security_clear_certificate_warning">Sètz segur que volètz suprimir totes los certificats ignorats ?</string>
-  <string name="debug_connection_errors_title">Mostrar errors de connexion\nAficha las pop-ups d\'excepcion de connexion</string>
 </resources>

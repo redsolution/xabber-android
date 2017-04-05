@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">Konferenciák listázása</string>
   <string name="muc_error_getting_conferences">Konferenciák listázása sikertelen</string>
   <string name="muc_type_conference_name">Konferencia nevének megadása</string>
+  <string name="contact_is_blocked">A partner le van tiltva!</string>
+  <string name="conference_invitation">Meghívás konferenciabeszélgetésre</string>
 </resources>

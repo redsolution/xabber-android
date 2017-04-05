@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Tercihinizi belirleyin</string>
   <string name="dark_theme_suggest_dialog_message">Xabber için yeni karanlık tema artık kullanılabilir. Yeni temayivkulllakmak ostermisiniz?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Karanlık Tarafa Katılın</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Aydınlık Tarafta Kalın"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Aydınlık Tarafta Kalın</string>
 </resources>

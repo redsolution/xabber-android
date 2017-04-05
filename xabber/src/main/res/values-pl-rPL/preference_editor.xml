@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Pokaż panel kont\nPokaż przyciski z avatarami w prawym dolnym rogu listy kontaktów</string>
   <string name="contacts_stay_active_chats">Duplikuj aktywne rozmowy\nAktywne rozmowy będą się pojawiać na górze listy kontaktów i w grupach</string>
   <string name="debug_log">Log debugowania\nWpisz wiadomość do logu debugowania (wymaga ponownego uruchomienia aplikacji)</string>
+  <string name="debug_connection_errors_title">Pokaż błędy połączeń\nPokaż powiadomienia o błędach połączeń</string>
   <string name="events_lightning">Dioda\nMiga diodą przy powiadomieniu</string>
   <string name="events_persistent">Ikona paska zadań\nPokaż trwałe powiadomienie. Ta opcja uniemożliwia systemowi wyłączenie aplikacji</string>
   <string name="events_sound">Dźwięk powiadomienia\nWybierz dźwięk powiadomienia</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Uwierzytelnienie czystym tekstem\nUżyj czystego tekstu uwierzytelnienie dla wszytkich kont. Nie zalecane.</string>
   <string name="events_phrases">Słowa kluczowe\nUtwórz niestandardowe powiadomienia dla odebranych wiadomości zawierających słowa kluczowe</string>
   <string name="security_clear_certificate_warning">Czy na pewno chcesz usunąć wszystkie ignorowane certyfikaty?</string>
-  <string name="debug_connection_errors_title">Pokaż błędy połączeń\nPokaż powiadomienia o błędach połączeń</string>
 </resources>

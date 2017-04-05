@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Информация о контакте</string>
   <string name="contact_viewer_client">Клиент</string>
+  <string name="contact_viewer_this_device">Это устройство</string>
   <string name="vcard_nick_name">Псевдоним</string>
   <string name="vcard_formatted_name">Полное имя</string>
   <string name="vcard_prefix_name">Обращение</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Редактировать группы</string>
   <string name="remove_contact">Удалить контакт</string>
   <string name="edit_account_user_info">Редактировать информацию о пользователе</string>
+  <string name="edit_vcard">Редактировать</string>
   <string name="account_user_info_save_success">Информация о пользователе успешно изменена</string>
   <string name="account_user_info_save_fail">Не удалось сохранить изменения информации о пользователе</string>
   <string name="saving">Сохранение&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">Описание</string>
   <string name="conference_subject">Тема</string>
   <string name="message_info_occupants_number">Участники: %d</string>
+  <string name="contact_info_connected_clients_header">Подключенные устройства</string>
+  <string name="contact_info_visiting_card_header">Визитная карточка</string>
 </resources>

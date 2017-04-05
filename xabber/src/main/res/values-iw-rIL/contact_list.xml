@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">בחר את גורלך</string>
   <string name="dark_theme_suggest_dialog_message">ערכת נושא כהה חדשה זמינה כעת עבור Xabber. אתה יכול לעמוד בפיתוי להשתמש בה?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">הצטרף לצד האפל</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"הישאר בצד המואר"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">הישאר בצד המואר</string>
 </resources>

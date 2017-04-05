@@ -14,4 +14,13 @@
   <string name="add_new_group">Új csoport&#8230;</string>
   <string name="accept_contact">Engedélyezés</string>
   <string name="decline_contact">Mégsem</string>
+  <string name="processing_image">Kép feldolgozása&#8230;</string>
+  <string name="error_during_crop">Hiba a kép vágása közben</string>
+  <string name="error_during_image_processing">Hiba a kép feldolgozás során</string>
+  <string name="account_settings">Fiókbeállítások</string>
+  <string name="account_user_info">Fiókinformációk</string>
+  <string name="account_server_info">Szerverinformációk</string>
+  <string name="account_server_info_description">A szerver funkcióinak lekérése</string>
+  <string name="accept_muc_private_chat">Elfogadás</string>
+  <string name="no_permission_camera">Nincs engedélyezve a hozzáférés a kamerához</string>
 </resources>

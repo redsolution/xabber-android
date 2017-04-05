@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Zobraziť panel účty\nZobraziť akčné tlačidlá s miniatúrami v pravom dolnom rohu zoznamu kontaktov</string>
   <string name="contacts_stay_active_chats">Duplikovať aktívne konverzácie\nAktívne konverzácie sa zobrazia aj na vrchu zoznamu kontaktov aj v skupinách</string>
   <string name="debug_log">Ladiaci záznam\nZapisovať správy do ladiaceho záznamu (prosím reštartujte aplikáciu pre uplatnenie zmeny)</string>
+  <string name="debug_connection_errors_title">Zobraziť chyby pripojenia\nZobraziť pop-up o výnimkách pripojenia</string>
   <string name="events_lightning">Indikácia svetlom\nBlikať LED počas upozornenia</string>
   <string name="events_persistent">Ikona v lište\nZobrazovať trvalú notifikáciu. Táto možnosť zabraňuje Androidu v samovoľnom ukončení aplikácie na pozadí</string>
   <string name="events_sound">Zvukové upozornenie\nZvoľte zvuk upozornenia</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Overenie obyčajným textom\nPoužiť obyčajný text pre overenie na všetkých účtoch. Neodporúčané.</string>
   <string name="events_phrases">Kľúčové frázy\nVytvorte vlastné notifikácie pre prijaté správy, ktoré obsahujú špecifické frázy</string>
   <string name="security_clear_certificate_warning">Naozaj chcete odstrániť všetky ignorované certifikáty?</string>
-  <string name="debug_connection_errors_title">Zobraziť chyby pripojenia\nZobraziť pop-up o výnimkách pripojenia</string>
 </resources>

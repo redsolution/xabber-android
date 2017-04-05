@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Soll Orbot installiert werden?</string>
   <string name="install_orbot">Orbot installieren</string>
   <string name="ACCOUNT_REGISTER_FAILED">Das Benutzerkonto konnte nicht auf dem Server angelegt werden.</string>
+  <string name="SERVER_INFO_ERROR">Medieninformationen konnten nicht abgerufen werden.</string>
   <string name="account_color">Kontofarbe</string>
   <string name="account_color_name_green">Grün</string>
   <string name="account_color_name_orange">Orange</string>
@@ -71,4 +72,27 @@
   <string name="account_color_name_teal">Blaugrün</string>
   <string name="account_color_name_blue_grey">Graublau</string>
   <string name="account_color_name_cyan">Türkis</string>
+  <string name="account_connection_settings">Verbindungseinstellungen</string>
+  <string name="blocked_contacts">Blockierte Kontakte</string>
+  <string name="blocked_contacts_unknown">Unterstützung für Sperrung noch nicht beschlossen.</string>
+  <string name="blocked_contacts_not_supported">Sperrung wird vom Server nicht unterstützt.</string>
+  <string name="blocked_contacts_empty">Nicht blockierte Kontakte.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d Kontakt blockiert.</item>
+    <item quantity="other">%d Kontakte blockiert.</item>
+  </plurals>
+  <string name="account_chat_history">Chatverlauf</string>
+  <string name="account_history_options_summary">Speicheroptionen für Chatverlauf</string>
+  <string name="account_chat_history_unknown">Support für Serverspeicherung des Chatverlaufs noch nicht beschlossen</string>
+  <string name="account_chat_history_not_supported">Server unterstützt kein Speichern des Chatverlaufes.</string>
+  <string name="account_mam_default_behavior_title">Nachrichtenarchivmanagement</string>
+  <string name="account_mam_default_behavior_always">Alle Nachrichten auf dem Server speichern</string>
+  <string name="account_mam_default_behavior_roster">Nachrichten der hinzugefügten Kontakte auf dem Server speichern</string>
+  <string name="account_mam_default_behavior_never">Keine Nachrichten auf dem Server speichern</string>
+  <string name="account_mam_sync_title">Laden des Chatverlaufs</string>
+  <string name="account_mam_sync_all">Chatverlauf aller Kontakte laden</string>
+  <string name="account_mam_sync_current">Nur den Chatverlauf des geöffneten Chats laden</string>
+  <string name="account_mam_sync_none">Keinen Verlauf laden</string>
+  <string name="account_clear_history_on_exit_title">Löschen des Verlaufs beim Verlassen</string>
+  <string name="account_clear_history_on_exit_summary">Löschen aller Chatnachrichten vom Gerät vor dem Beenden von Xabber.</string>
 </resources>

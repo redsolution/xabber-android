@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Scegli il tuo destino</string>
   <string name="dark_theme_suggest_dialog_message">Il nuovo tema Oscuro è disponibile per Xabber. Puoi resistere alla tentazione di usarlo?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Unisciti alla Forza Oscura</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Resta con la Luce"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Resta con la Luce</string>
 </resources>

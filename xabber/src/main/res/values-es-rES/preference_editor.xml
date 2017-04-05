@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Mostrar panel de cuentas\nMostrar los botones de acción con avatares en la esquina inferior derecha de la lista de contactos</string>
   <string name="contacts_stay_active_chats">Duplicar conversaciones activas\nHace que aparezcan las conversaciones activas tanto en la parte superior de la lista de contactos como en los grupos</string>
   <string name="debug_log">Depurar registro\nEscribir mensajes en el registro de depuración (para que los cambios se apliquen, por favor reinicia la aplicación)</string>
+  <string name="debug_connection_errors_title">Mostrar errores de conexión\nVer problemas de conexión con \"pop-us\"</string>
   <string name="events_lightning">Luz de notificación\nParpadeo del LED en las notificaciones</string>
   <string name="events_persistent">Icono en la barra de tareas\nMostrar una notificación persistente. Esta opción previene que Android deje de usar la aplicación desde la memoria</string>
   <string name="events_sound">Tono de notificación\nElegir el sonido de notificación</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Autentificación en texto plano\nUsa una autentificación de texto plano para todas las cuentas. No recomendado.</string>
   <string name="events_phrases">Frases clave\nPersonalizar sonidos de notificaciones para mensajes que contienen determinadas frases</string>
   <string name="security_clear_certificate_warning">¿Realmente quieres eliminar todos los certificados ignorados?</string>
-  <string name="debug_connection_errors_title">Mostrar errores de conexión\nVer problemas de conexión con \"pop-us\"</string>
 </resources>

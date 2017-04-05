@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Επιλέξτε το πεπρωμένο σας</string>
   <string name="dark_theme_suggest_dialog_message">Νέο σκούρο θέμα είναι τώρα διαθέσιμο για το Xabber. Μπορείτε να αντισταθείτε στον πειρασμό να το χρησιμοποιήσετε;</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Μπείτε στη Σκοτεινή Πλευρά</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Μείνετε στη Σκοτεινή Πλευρά"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Μείνετε στη Σκοτεινή Πλευρά</string>
 </resources>

@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">運命の選択</string>
   <string name="dark_theme_suggest_dialog_message">Xabber の新しいダークテーマが利用可能です。利用する誘惑に勝てますか?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">ダークサイドに参加</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"ライトサイドに留まる"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">ライトサイドに留まる</string>
 </resources>

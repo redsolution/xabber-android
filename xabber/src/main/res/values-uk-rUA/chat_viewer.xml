@@ -82,6 +82,9 @@
   <string name="chat_events_show_text_global">Використовувати глобальні параметри</string>
   <string name="chat_events_show_text_always">Показати текст повідомлення</string>
   <string name="chat_events_show_text_never">Приховати текст повідомлення</string>
+  <string name="sending_file">Надсилання файлу %s</string>
+  <string name="error_sending_file">Помилка при надсиланні файлу %s</string>
   <string name="could_not_save_file">Не вдалося зберегти файл</string>
   <string name="file_saved_successfully">Файл успішно збережений</string>
+  <string name="http_file_upload_slot_error">Не вдається вивантажити файл. Завеликий?</string>
 </resources>

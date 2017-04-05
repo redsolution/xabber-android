@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Hiện khung tài khoản\nHiển thị các nút thao tác với ảnh đại diện ở góc dưới bên phải danh bạ</string>
   <string name="contacts_stay_active_chats">Nhân đôi chat hiện hữu\nCác chat hiện hữu sẽ xuất hiện cả trong danh bạ lẫn trong nhóm</string>
   <string name="debug_log">Dò lỗi nhật ký\nSoạn tin nhắn để dò lỗi nhật ký (xin khởi động lại ứng dụng để áp dụng thay đổi)</string>
+  <string name="debug_connection_errors_title">Hiện lỗi kết nối\nHiển thị thông báo nổi cho lỗi kết nối</string>
   <string name="events_lightning">Đèn hiệu\nNháy đèn LED khi thông báo</string>
   <string name="events_persistent">Biểu tượng thanh tác vụ\nHiển thị thông báo cố định. Tuỳ chọn này ngăn không cho Android tắt ứng dụng khỏi bộ nhớ</string>
   <string name="events_sound">Chuông báo\nChọn nhạc chuông báo</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Xác minh bằng văn bản thường\nXác minh bằng văn bản không mã hoá. Không khuyên dùng.</string>
   <string name="events_phrases">Cụm từ then chốt\nTạo thông báo tuỳ chọn cho những tin nhắn chứa các cụm từ cụ thể</string>
   <string name="security_clear_certificate_warning">Có chắc là bạn muốn xoá toàn bộ chứng chỉ bị bỏ qua?</string>
-  <string name="debug_connection_errors_title">Hiện lỗi kết nối\nHiển thị thông báo nổi cho lỗi kết nối</string>
 </resources>

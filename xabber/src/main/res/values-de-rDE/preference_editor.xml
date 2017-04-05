@@ -17,6 +17,11 @@
   <string name="contacts_show_panel">Konten Panel anzeigen\nAnzeigen der Aktions-Buttons mit Avatars in der unteren rechten Ecke der Kontaktliste</string>
   <string name="contacts_stay_active_chats">Duplizieren der aktiven Chats\nAktive Chats werden sowohl am Beginn der Kontakteliste als auch in den Gruppen angezeigt</string>
   <string name="debug_log">Debug Logging\nSchreibe Nachrichten in das Fehlerprotokoll (Um Änderungen zu aktivieren, muss die  Anwendung neugestartet werden)</string>
+  <string name="debug_file_log_title">Schreibe Logdaten\nSchreibe Debugdaten in lokale Datei (kann geteilt werden).</string>
+  <string name="debug_log_files_title">Logdateien\nListe der geschriebenen Logdateien.</string>
+  <string name="debug_log_files_activity_title">Logdateien</string>
+  <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>
+  <string name="debug_crash_reports_title">Absturzberichte senden\nSende anonyme Absturzberichte um bei der Xabber Entwicklung zu helfen (Bitte starten Sie die Anwendung neu, um die Änderungen anzuwenden).</string>
   <string name="events_lightning">LED-Benachrichtigung\nLED blinkt bei Benachrichtigung</string>
   <string name="events_persistent">Taskleisten Icon\nAnzeige einer dauerhaften Benachrichtigung. Diese Option verhindert, dass Android die Anwendung  aus dem Speicher entfernt</string>
   <string name="events_sound">Benachrichtigungston\nBenachrichtigungston wählen</string>
@@ -81,5 +86,5 @@
   <string name="connection_use_plain_text_auth">Klartext Authentifizierung. Nur-Text-Authentifizierung für alle Konten. Nicht zu empfehlen.</string>
   <string name="events_phrases">Schlüsselbegriffe\nBenachrichtigung wenn Nachrichten voreingestellte Begriffe enthalten und auswahl des dazugehörigen Klanges</string>
   <string name="security_clear_certificate_warning">Wollen Sie wirklich alle ignorierten Zertifikate entfernen?</string>
-  <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>
+  <string name="account_error_settings">Einstellungen</string>
 </resources>

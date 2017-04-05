@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Hãy chọn lựa vận mệnh của bạn</string>
   <string name="dark_theme_suggest_dialog_message">Đã có một nền tối mới cho Xabber. Bạn có thể cưỡng lại cám dỗ này không?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Gia nhập Phe bóng tối</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Trung thành với Phe ánh sáng"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Trung thành với Phe ánh sáng</string>
 </resources>

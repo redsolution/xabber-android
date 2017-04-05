@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">Csatlakozási hiba</string>
   <string name="contact_add">Partner hozzáadása</string>
   <string name="contact_delete">Törlés</string>
+  <string name="contact_block">Partner tiltása</string>
   <string name="contact_delete_confirm">Valóban törlöd %1$s partnert %2$s fiókból?</string>
   <string name="contact_list">Névjegyzék</string>
   <string name="discard_subscription">Partner elutasítása</string>
@@ -58,4 +59,6 @@
   <string name="contact_search_hint">Személy keresése</string>
   <string name="sender_is_you">Te</string>
   <string name="xmpp_accounts">XMPP fiókok</string>
+  <string name="dark_theme_suggest_dialog_join_dark_side">Sötét</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Világos</string>
 </resources>

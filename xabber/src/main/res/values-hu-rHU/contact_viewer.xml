@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Névjegy</string>
   <string name="contact_viewer_client">Kliens</string>
+  <string name="contact_viewer_this_device">Ez az eszköz</string>
   <string name="vcard_nick_name">Becenév</string>
   <string name="vcard_formatted_name">Teljes név</string>
   <string name="vcard_prefix_name">Előtag</string>
@@ -13,6 +14,7 @@
   <string name="vcard_birth_date">Születésnap</string>
   <string name="vcard_url">Weboldal</string>
   <string name="vcard_organization">Szervezet</string>
+  <string name="vcard_organization_unit">Szervezeti egység</string>
   <string name="vcard_title">Munkakör</string>
   <string name="vcard_role">Beosztás</string>
   <string name="vcard_other">Egyéb információ</string>
@@ -49,4 +51,5 @@
   <string name="edit_alias">Név módosítása</string>
   <string name="edit_contact_groups">Csoport szerkesztése</string>
   <string name="remove_contact">Partner eltávolítása</string>
+  <string name="message_info_occupants_number">Résztvevők: %d</string>
 </resources>

@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Установить Orbot?</string>
   <string name="install_orbot">Установить Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Не удалось зарегистрировать аккаунт на сервере.</string>
+  <string name="SERVER_INFO_ERROR">Не удалось получить информацию о сервере.</string>
   <string name="account_color">Цвет учётной записи</string>
   <string name="account_color_name_green">Зеленый</string>
   <string name="account_color_name_orange">Оранжевый</string>
@@ -71,4 +72,28 @@
   <string name="account_color_name_teal">Изумрудный</string>
   <string name="account_color_name_blue_grey">Серо-голубой</string>
   <string name="account_color_name_cyan">Циан</string>
+  <string name="account_connection_settings">Параметры подключения</string>
+  <string name="blocked_contacts">Заблокированные контакты</string>
+  <string name="blocked_contacts_unknown">Поддержка блокировки контактов ещё не определена.</string>
+  <string name="blocked_contacts_not_supported">Блокировка контактов не поддерживается сервером.</string>
+  <string name="blocked_contacts_empty">Нет заблокированных контактов.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d контакт заблокирован.</item>
+    <item quantity="few">%d контакта заблокировано.</item>
+    <item quantity="other">%d контактов заблокировано.</item>
+  </plurals>
+  <string name="account_chat_history">История сообщений</string>
+  <string name="account_history_options_summary">Настройки хранения истории сообщений</string>
+  <string name="account_chat_history_unknown">Поддержка хранения истории сервером ещё не определена</string>
+  <string name="account_chat_history_not_supported">Сервер не поддерживает хранение истории сообщений.</string>
+  <string name="account_mam_default_behavior_title">Архив сообщений</string>
+  <string name="account_mam_default_behavior_always">Хранить все сообщения на сервере</string>
+  <string name="account_mam_default_behavior_roster">Хранить переписку только с контактами</string>
+  <string name="account_mam_default_behavior_never">Не хранить сообщения на сервере</string>
+  <string name="account_mam_sync_title">Загрузка истории сообщений</string>
+  <string name="account_mam_sync_all">Загружать историю для всех контактов</string>
+  <string name="account_mam_sync_current">Загружать историю только для открытых чатов</string>
+  <string name="account_mam_sync_none">Не загружать историю</string>
+  <string name="account_clear_history_on_exit_title">Очищать историю при выходе</string>
+  <string name="account_clear_history_on_exit_summary">Удалять все сообщения с устройства перед выходом из Xabber.</string>
 </resources>

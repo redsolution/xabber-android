@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">הצג פנל חשבון\nהצג לחצני פעולה עם אווטרס בפינה הימנית התחתונה של רשימת אנשי קשר</string>
   <string name="contacts_stay_active_chats">תצוגה כפולה של שיחות פעילות\nשיחות פעילות יוצגו גם בראש רשימת אנשי הקשר וגם בקבוצה שלהם</string>
   <string name="debug_log">יומן Debug\nרישום הודעות ליומן debug (עליך להתחיל מחדש אפליקציה כדי להחיל שינויים)</string>
+  <string name="debug_connection_errors_title">הצג שגיאות תקשורת\nהצג חריגות תקשורת בחלונית קופצת</string>
   <string name="events_lightning">מחוון אור\nהבהוב LED על התראה</string>
   <string name="events_persistent">צלמית בשורת המשימות\nהצג בקביעות את הצלמית. אפשרות זו תמנע ממערכת האנדרואיד לסגור את האפליקציה בשל מחסור זמני בזיכרון</string>
   <string name="events_sound">צפצוף אודיו\nבחירת צליל התראה</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">אימות באמצעות טקסט רגיל\nהשתמש באימות של טקסט רגיל עבור כל החשבונות. לא מומלץ.</string>
   <string name="events_phrases">ביטויי מפתח\nצור התראות להודעות נכנסות המכילות ביטויים מסויימים</string>
   <string name="security_clear_certificate_warning">האם אכן ברצונך להסיר את כל תעודות האבטחה שאין להם אישור?</string>
-  <string name="debug_connection_errors_title">הצג שגיאות תקשורת\nהצג חריגות תקשורת בחלונית קופצת</string>
 </resources>

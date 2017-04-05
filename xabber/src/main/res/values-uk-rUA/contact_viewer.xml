@@ -58,4 +58,6 @@
   <string name="take_photo">Зробити фото</string>
   <string name="remove_avatar">Видалити Аватар</string>
   <string name="change">Змінити</string>
+  <string name="conference_name">Назва</string>
+  <string name="conference_description">Опис</string>
 </resources>

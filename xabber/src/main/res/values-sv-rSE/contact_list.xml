@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Välj ditt öde</string>
   <string name="dark_theme_suggest_dialog_message">Ett nytt mörkt tema är nu tillgängligt för Xabber. Kan du motstå frestelsen att använda det?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Anslut dig till den mörka sidan</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Bli kvar på den ljusa sidan"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Bli kvar på den ljusa sidan</string>
 </resources>
