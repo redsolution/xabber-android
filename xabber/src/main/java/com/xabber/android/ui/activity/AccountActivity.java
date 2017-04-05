@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -37,6 +37,8 @@ import com.xabber.android.ui.dialog.AccountColorDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.Collection;
 
 public class AccountActivity extends ManagedActivity implements AccountOptionsAdapter.Listener,
@@ -54,6 +56,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     private BarPainter barPainter;
     private SwitchCompat switchCompat;
     private AccountItem accountItem;
+    private boolean isConnectionSettingsAction;
 
     public AccountActivity() {
     }
@@ -95,7 +98,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         }
 
         if (ACTION_CONNECTION_SETTINGS.equals(intent.getAction())) {
+            isConnectionSettingsAction = true;
             startAccountSettingsActivity();
+            setIntent(null);
         }
 
         setContentView(R.layout.activity_account);
@@ -214,6 +219,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
         Application.getInstance().removeUIListener(OnBlockedListChangedListener.class, this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
 
+        isConnectionSettingsAction = false;
         super.onPause();
     }
 
@@ -274,5 +280,15 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     @Override
     public void onVCardReceived() {
         updateTitle();
+    }
+
+    @Subscribe(sticky = true)
+    @Override
+    public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
+        LogManager.i(LOG_TAG, "onAuthErrorEvent ");
+
+        if (!isConnectionSettingsAction) {
+            super.onAuthErrorEvent(accountErrorEvent);
+        }
     }
 }
