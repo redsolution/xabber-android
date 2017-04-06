@@ -374,7 +374,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
 
         for (AccountJid account : accountList) {
-            ConnectionState state = AccountManager.getInstance().getAccount(account).getState();
+
+            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            if (accountItem == null) {
+                continue;
+            }
+            ConnectionState state = accountItem.getState();
 
             LogManager.i(this, "updatePersistentNotification account " + account + " state " + state );
 

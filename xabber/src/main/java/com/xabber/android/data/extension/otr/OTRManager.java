@@ -330,7 +330,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     private KeyPair getLocalKeyPair(String account) throws OtrException {
         KeyPair keyPair = null;
         try {
-            keyPair = AccountManager.getInstance().getAccount(AccountJid.from(account)).getKeyPair();
+            AccountItem accountItem = AccountManager.getInstance().getAccount(AccountJid.from(account));
+            if (accountItem != null) {
+                keyPair = accountItem.getKeyPair();
+            }
         } catch (XmppStringprepException e) {
             LogManager.exception(this, e);
         }

@@ -416,6 +416,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
      */
     private void removeAccountWithoutCallback(final AccountJid account) {
         final AccountItem accountItem = getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+
         boolean wasEnabled = accountItem.isEnabled();
         accountItem.setEnabled(false);
         accountItem.disconnect();
@@ -548,8 +552,10 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     public void setKeyPair(AccountJid account, KeyPair keyPair) {
         AccountItem accountItem = getAccount(account);
-        accountItem.setKeyPair(keyPair);
-        requestToWriteAccount(accountItem);
+        if (accountItem != null) {
+            accountItem.setKeyPair(keyPair);
+            requestToWriteAccount(accountItem);
+        }
     }
 
     public void setEnabled(AccountJid account, boolean enabled) {
@@ -802,18 +808,25 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     public void setColor(AccountJid accountJid, int colorIndex) {
         AccountItem accountItem = getAccount(accountJid);
-        accountItem.setColorIndex(colorIndex);
-        requestToWriteAccount(accountItem);
+        if (accountItem != null) {
+            accountItem.setColorIndex(colorIndex);
+            requestToWriteAccount(accountItem);
+        }
     }
 
     public void setClearHistoryOnExit(AccountJid accountJid, boolean clearHistoryOnExit) {
         AccountItem accountItem = getAccount(accountJid);
-        accountItem.setClearHistoryOnExit(clearHistoryOnExit);
-        requestToWriteAccount(accountItem);
+        if (accountItem != null) {
+            accountItem.setClearHistoryOnExit(clearHistoryOnExit);
+            requestToWriteAccount(accountItem);
+        }
     }
 
     public void setMamDefaultBehaviour(AccountJid accountJid, MamPrefsIQ.DefaultBehavior mamDefaultBehavior) {
         AccountItem accountItem = getAccount(accountJid);
+        if (accountItem == null) {
+            return;
+        }
 
         if (!accountItem.getMamDefaultBehaviour().equals(mamDefaultBehavior)) {
             accountItem.setMamDefaultBehaviour(mamDefaultBehavior);
@@ -824,6 +837,9 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
     public void setLoadHistorySettings(AccountJid accountJid, LoadHistorySettings loadHistorySettings) {
         AccountItem accountItem = getAccount(accountJid);
+        if (accountItem == null) {
+            return;
+        }
 
         if (!accountItem.getLoadHistorySettings().equals(loadHistorySettings)) {
             accountItem.setLoadHistorySettings(loadHistorySettings);

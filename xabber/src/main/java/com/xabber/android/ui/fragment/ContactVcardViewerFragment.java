@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.VcardMaps;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -257,8 +258,9 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         if (accounts.contains(account)) {
             updateContact(account, user);
             if (account.getFullJid().asBareJid().equals(user.getJid().asBareJid())) {
-                if (AccountManager.getInstance().getAccount(account).getFactualStatusMode().isOnline()) {
-                    VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
+                AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+                if (accountItem != null && accountItem.getFactualStatusMode().isOnline()) {
+                    VCardManager.getInstance().request(this.account, this.account.getFullJid().asBareJid());
                 }
             }
         }
@@ -324,8 +326,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
         Resourcepart accountResource = null;
         if (isAccount) {
             // TODO: probably not the best way to get own resource
-            accountResource = AccountManager.getInstance().getAccount(account)
-                    .getConnection().getConfiguration().getResource();
+            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            if (accountItem != null) {
+                accountResource = accountItem.getConnection().getConfiguration().getResource();
+            }
         }
 
         PresenceManager.sortPresencesByPriority(allPresences);

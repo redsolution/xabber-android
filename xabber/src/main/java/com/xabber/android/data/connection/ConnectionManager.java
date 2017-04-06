@@ -16,6 +16,7 @@ package com.xabber.android.data.connection;
 
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
@@ -66,7 +67,10 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     public void onClose() {
         LogManager.i(LOG_TAG, "onClose");
         for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            AccountManager.getInstance().getAccount(accountJid).disconnect();
+            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            if (accountItem != null) {
+                accountItem.disconnect();
+            }
         }
     }
 

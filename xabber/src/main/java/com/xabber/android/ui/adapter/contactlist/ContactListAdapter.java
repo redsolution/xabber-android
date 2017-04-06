@@ -43,6 +43,7 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.MessageManager;
@@ -605,7 +606,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         holder.bottomLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
         holder.topLayer.setBackgroundDrawable(new ColorDrawable(accountSubgroupColors[level]));
 
-        StatusMode statusMode = AccountManager.getInstance().getAccount(accountBottomSeparator.getAccount()).getDisplayStatusMode();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountBottomSeparator.getAccount());
+        StatusMode statusMode = null;
+        if (accountItem != null) {
+            statusMode = accountItem.getDisplayStatusMode();
+        }
 
         if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
             holder.offlineShadowBottom.setVisibility(View.VISIBLE);
@@ -631,6 +636,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.smallRightText.setText(configuration.getOnline() + "/" + configuration.getTotal());
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            LogManager.e(LOG_TAG, "accountItem is null " + account);
+            return;
+        }
+
         String statusText = accountItem.getStatusText().trim();
 
         if (statusText.isEmpty()) {
@@ -660,7 +670,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         viewHolder.smallRightIcon.setImageLevel(showOfflineMode.ordinal());
 
 
-        StatusMode statusMode = AccountManager.getInstance().getAccount(configuration.getAccount()).getDisplayStatusMode();
+        StatusMode statusMode = accountItem.getDisplayStatusMode();
 
         if (statusMode == StatusMode.unavailable || statusMode == StatusMode.connection) {
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);
