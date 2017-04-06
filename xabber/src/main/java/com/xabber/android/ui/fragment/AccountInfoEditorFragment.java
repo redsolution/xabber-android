@@ -565,7 +565,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (activity == null) {
             return;
         }
-        Crop.of(srcUri, newAvatarImageUri).withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS).start(activity);
+        Crop.of(srcUri, newAvatarImageUri)
+                .asSquare()
+                .withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS)
+                .start(activity);
     }
 
     private void handleCrop(int resultCode, Intent result) {
