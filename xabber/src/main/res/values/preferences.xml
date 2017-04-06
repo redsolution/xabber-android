@@ -288,7 +288,9 @@
     <string name="connection_load_images_key">connection_load_images</string>
     <bool name="connection_load_images_default">true</bool>
 
-    <string name="connection_use_carbons_key">connection_use_carbons</string>
+    <!-- "connection_use_carbons" was used up to 1.0.169, default value earlier was false -->
+    <!-- so we add new key and set it to true (old users key will not be used) -->
+    <string name="connection_use_carbons_key">connection_use_carbons_new</string>
     <bool name="connection_use_carbons_default">true</bool>
 
     <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
