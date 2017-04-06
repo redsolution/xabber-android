@@ -310,8 +310,18 @@ public class AccountItem extends ConnectionItem {
                     priority = SettingsManager.connectionPriorityXa();
                 else
                     throw new IllegalStateException();
-            } else
+            } else {
                 priority = this.priority;
+            }
+
+            if (priority > 127) {
+                priority = 127;
+            }
+
+            if (priority < -128) {
+                priority = -128;
+            }
+
             return new Presence(Type.available, statusText, priority,
                     statusMode.getMode());
         }
