@@ -19,7 +19,7 @@ public class StanzaSender {
     private static String LOG_TAG = StanzaSender.class.getSimpleName();
 
     /**
-     * Send stanza to authenticated connection and and acknowledged listener if Stream Management is enabled on server.
+     * Send stanza to authenticated connection and add acknowledged listener if Stream Management is enabled on server.
      */
     public static void sendStanza(AccountJid account, Message stanza, StanzaListener acknowledgedListener) throws NetworkException {
         XMPPTCPConnection xmppConnection = getXmppTcpConnection(account);
