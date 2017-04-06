@@ -140,10 +140,10 @@ public class AccountItem extends ConnectionItem {
     }
 
     /**
-     * @return Valid priority value between -128 and 128.
+     * @return Valid priority value between -128 and 127.
      */
     static private int getValidPriority(int priority) {
-        return Math.min(128, Math.max(-128, priority));
+        return Math.min(127, Math.max(-128, priority));
     }
 
     /**
