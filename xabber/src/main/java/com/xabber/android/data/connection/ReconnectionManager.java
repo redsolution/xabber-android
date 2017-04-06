@@ -132,7 +132,9 @@ public class ReconnectionManager implements OnConnectedListener,
 
     void resetReconnectionInfo(AccountJid accountJid) {
         ReconnectionInfo info = connections.get(accountJid);
-        info.reset();
+        if (info != null) {
+            info.reset();
+        }
     }
 
     @Override
