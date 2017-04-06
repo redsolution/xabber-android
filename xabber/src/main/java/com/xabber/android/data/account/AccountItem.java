@@ -314,15 +314,7 @@ public class AccountItem extends ConnectionItem {
                 priority = this.priority;
             }
 
-            if (priority > 127) {
-                priority = 127;
-            }
-
-            if (priority < -128) {
-                priority = -128;
-            }
-
-            return new Presence(Type.available, statusText, priority,
+            return new Presence(Type.available, statusText, AccountItem.getValidPriority(priority),
                     statusMode.getMode());
         }
     }
