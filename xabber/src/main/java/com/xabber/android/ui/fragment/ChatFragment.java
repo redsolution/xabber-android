@@ -37,6 +37,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.messagerealm.SyncInfo;
@@ -304,11 +305,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         super.onStart();
         EventBus.getDefault().register(this);
 
-        LoadHistorySettings loadHistorySettings = AccountManager.getInstance().getAccount(account).getLoadHistorySettings();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+        if (accountItem != null) {
+            LoadHistorySettings loadHistorySettings = accountItem.getLoadHistorySettings();
 
-        if (loadHistorySettings == LoadHistorySettings.all || loadHistorySettings == LoadHistorySettings.current) {
-            if (!isRemoteHistoryRequested) {
-                MamManager.getInstance().requestLastHistoryByUser(getChat());
+            if (loadHistorySettings == LoadHistorySettings.all || loadHistorySettings == LoadHistorySettings.current) {
+                if (!isRemoteHistoryRequested) {
+                    MamManager.getInstance().requestLastHistoryByUser(getChat());
+                }
             }
         }
     }
@@ -532,8 +536,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void loadHistoryIfNeeded() {
-        LoadHistorySettings loadHistorySettings = AccountManager.getInstance()
-                .getAccount(account).getLoadHistorySettings();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+        if (accountItem == null) {
+            return;
+        }
+
+        LoadHistorySettings loadHistorySettings = accountItem.getLoadHistorySettings();
 
         if (loadHistorySettings != LoadHistorySettings.current
                 && loadHistorySettings != LoadHistorySettings.all) {
