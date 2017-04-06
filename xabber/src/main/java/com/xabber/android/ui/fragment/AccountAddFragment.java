@@ -3,12 +3,14 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -49,6 +51,9 @@ public class AccountAddFragment extends Fragment implements View.OnClickListener
         passwordConfirmEditText = (EditText) view.findViewById(R.id.confirm_password);
 
         passwordConfirmView = (LinearLayout) view.findViewById(R.id.confirm_password_layout);
+
+        ((TextView) view.findViewById(R.id.account_help))
+                .setMovementMethod(LinkMovementMethod.getInstance());
 
         return view;
     }

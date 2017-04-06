@@ -103,11 +103,31 @@
                 android:text="" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/account_help"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/account_type_helps_xmpp"
-            android:autoLink="all" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_error_grey_24dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                />
+
+            <TextView
+                android:id="@+id/account_help"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/account_xmpp_register_warning"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                />
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

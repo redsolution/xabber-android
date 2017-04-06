@@ -12,6 +12,7 @@
     <string name="account_type">Account type</string>
     <string name="account_type_hints_gtalk">username for gmail.com or Google Apps domain</string>
     <string name="account_type_helps_gtalk">If you don\'t have Google account you may create one at http://mail.google.com\nAlso you can use your_user_name@your_google_domain</string>
+    <string name="account_xmpp_register_warning">You must <a href="http://www.google.com/#q=register XMPP account">register XMPP account</a> before adding it to Xabber!</string>
     <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org</string>
     <string name="account_user_name">Username</string>
     <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
@@ -54,7 +55,7 @@
     <string name="account_tls_mode">TLS/SSL usage</string>
     <string name="account_tls_require">Require TLS</string>
     <string name="account_tls_require_summary">Require TLS encryption when connect to server</string>
-    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol\nNot recommended for Google Talk</string>
+    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol</string>
     <string name="confirm_cancellation">Are you sure you want to discard all the changes?</string>
     <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
