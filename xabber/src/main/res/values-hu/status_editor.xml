@@ -12,7 +12,7 @@
   <string name="status_editor">Állapot beállítása</string>
   <string name="status_text_hint">Írj állapotüzenetet</string>
   <string name="unavailable">Kijelentkezve</string>
-  <string name="unsubscribed">Nincs hitelesítve</string>
+  <string name="unsubscribed">Nincs jóváhagyva</string>
   <string name="xa">Régóta távol</string>
   <string name="new_status">Új állapot</string>
   <string name="saved_statuses">Mentett állapotok</string>

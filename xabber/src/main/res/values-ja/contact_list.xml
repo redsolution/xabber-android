@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Xabber の新しいダークテーマが利用可能です。利用する誘惑に勝てますか?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">ダークサイドに参加</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">ライトサイドに留まる</string>
+  <string name="battery_optimization_disable_dialog_title">バッテリーの最適化</string>
+  <string name="battery_optimization_disable_dialog_message">お使いのデバイスでいくつかのバッテリー最適化を行うと Xabber の通知が遅延したり、メッセージを損失する可能性があります。\n\nそれらを無効にするかを確認します。</string>
+  <string name="save_log_to_file">ファイルへ保存</string>
+  <string name="clear_log">古いログファイルを削除</string>
+  <string name="open_log_file">開く</string>
+  <string name="send_log_file">送信</string>
+  <string name="intro_welcome">Xabber へようこそ</string>
+  <string name="intro_xabber_description">Android 用のオープンソース XMPP クライアント</string>
+  <string name="intro_have_account">私は XMPP のアカウントを持っています</string>
+  <string name="intro_register_account">XMPP アカウントを登録</string>
+  <string name="intro_create_xabber_account">Xabber アカウントを作成</string>
+  <string name="intro_faq">XMPP のアカウントを持っていない場合に、取得する方法については <a href="https://www.xabber.com/faq/"> 私たちの FAQ をお読みください</a>。</string>
+  <string name="intro_web_search_register_xmpp">XMPP アカウントを登録</string>
 </resources>

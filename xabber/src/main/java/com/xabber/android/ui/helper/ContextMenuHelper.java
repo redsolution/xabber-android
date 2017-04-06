@@ -329,6 +329,10 @@ public class ContextMenuHelper {
 
     public static void setUpAccountMenu(final ManagedActivity activity, final UpdatableAdapter adapter, final AccountJid account, Menu menu) {
         final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+        
         ConnectionState state = accountItem.getState();
 
         if (state == ConnectionState.waiting) {

@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
@@ -51,6 +52,7 @@ import java.util.Collection;
 public class ContactActivity extends ManagedActivity implements
         OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener {
 
+    private static final String LOG_TAG = ContactActivity.class.getSimpleName();
     private AccountJid account;
     private UserJid user;
     private Toolbar toolbar;
@@ -83,9 +85,16 @@ public class ContactActivity extends ManagedActivity implements
         account = getAccount(getIntent());
         user = getUser(getIntent());
 
+        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+        if (accountItem == null) {
+            LogManager.e(LOG_TAG, "Account item is null " + account);
+            finish();
+            return;
+        }
+
         if (user != null && user.getBareJid().equals(account.getFullJid().asBareJid())) {
             try {
-                user = UserJid.from(AccountManager.getInstance().getAccount(account).getRealJid().asBareJid());
+                user = UserJid.from(accountItem.getRealJid().asBareJid());
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
             }

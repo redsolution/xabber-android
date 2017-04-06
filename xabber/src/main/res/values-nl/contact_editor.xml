@@ -19,6 +19,8 @@
   <string name="error_during_image_processing">Fout tijdens verwerken afbeelding</string>
   <string name="account_settings">Accountinstellingen</string>
   <string name="account_user_info">Accountinfo</string>
+  <string name="account_server_info">Server info</string>
+  <string name="account_server_info_description">Lijst van server mogelijkheden</string>
   <string name="conference_private_chat_invitation">%1$s van %2$s wil privegesprek met u voeren</string>
   <string name="accept_muc_private_chat">Accepteer</string>
   <string name="block_muc_private_chat">Blokkeer</string>

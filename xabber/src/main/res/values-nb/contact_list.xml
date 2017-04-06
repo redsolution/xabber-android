@@ -74,4 +74,14 @@
   <string name="dark_theme_suggest_dialog_message">En nytt mørk drakt er nå tilgjengelig for Xabber. Kan du motstå fristelsen?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Gå over til den mørke siden</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Bli værende på lysets side</string>
+  <string name="battery_optimization_disable_dialog_title">Batterioptimisering</string>
+  <string name="open_log_file">Åpne</string>
+  <string name="send_log_file">Send</string>
+  <string name="intro_welcome">Velkommen til Xabber</string>
+  <string name="intro_xabber_description">Friprog XMPP-klient for Android</string>
+  <string name="intro_have_account">Jeg har en XMPP-konto</string>
+  <string name="intro_register_account">Registrer XMPP-konto</string>
+  <string name="intro_create_xabber_account">Opprett Xabber-konto</string>
+  <string name="intro_faq">Hvis du ikke har en XMPP-konto, <a href="https://www.xabber.com/faq/">les vår O-S-S</a> om hvordan du oppretter en.</string>
+  <string name="intro_web_search_register_xmpp">Registrer XMPP-konto</string>
 </resources>

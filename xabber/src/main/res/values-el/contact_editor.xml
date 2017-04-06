@@ -19,6 +19,8 @@
   <string name="error_during_image_processing">Σφάλμα κατά την επεξεργασία εικόνας</string>
   <string name="account_settings">Ρυθμίσεις λογαριασμού</string>
   <string name="account_user_info">Πληροφορίες λογαριασμού</string>
+  <string name="account_server_info">Πληροφορίες διακομιστή</string>
+  <string name="account_server_info_description">Λίστα των δυνατοτήτων του διακομιστή</string>
   <string name="conference_private_chat_invitation">%1$s από %2$s θέλουν να ξεκινήσουν ιδιωτική συνομιλία μαζί σας</string>
   <string name="accept_muc_private_chat">Αποδοχή</string>
   <string name="block_muc_private_chat">Αποκλεισμός</string>

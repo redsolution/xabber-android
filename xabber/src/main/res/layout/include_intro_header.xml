@@ -16,20 +16,22 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:textColor="@color/white"
-        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
         android:layout_marginTop="24dp"
+        android:textAlignment="center"
         android:text="@string/intro_welcome" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textColor="@color/white"
-        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
         android:text="@string/intro_xabber_description" />
 </LinearLayout>

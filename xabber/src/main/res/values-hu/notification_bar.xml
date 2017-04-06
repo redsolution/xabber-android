@@ -17,7 +17,7 @@
   <string name="chat_message_quantity_1">üzenet</string>
   <string name="chat_message_quantity_2">üzenet</string>
   <!-- Used for plural form in russian. -->
-  <string name="chat_message_quantity_5">üzenet</string>
+  <string name="chat_message_quantity_5">-</string>
   <string name="chat_status">%1$d %2$s jött %3$d %4$stől</string>
   <string name="chat_messages_from_contact">%3$s %1$d %2$set küldött</string>
   <string name="chat_contact_and_message">%1$s: %2$s</string>

@@ -69,8 +69,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     public static final int REQUEST_NEED_VCARD = 2;
     public static final int REQUEST_TAKE_PHOTO = 3;
     private static final int REQUEST_PERMISSION_GALLERY = 4;
-    private static final int REQUEST_PERMISSION_CAMERA = 5;
-
 
     public static final int MAX_AVATAR_SIZE_PIXELS = 192;
     public static final String TEMP_FILE_NAME = "cropped";
@@ -442,9 +440,7 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
     }
 
     private void onTakePhotoClick() {
-        if (PermissionsRequester.requestCameraPermissionIfNeeded(this, REQUEST_PERMISSION_CAMERA)) {
-            takePhoto();
-        }
+        takePhoto();
     }
 
     private void onChooseFromGalleryClick() {
@@ -493,14 +489,6 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
                     chooseFromGallery();
                 } else {
                     Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
-                }
-                break;
-
-            case REQUEST_PERMISSION_CAMERA:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    takePhoto();
-                } else {
-                    Toast.makeText(getActivity(), R.string.no_permission_camera, Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -577,7 +565,10 @@ public class AccountInfoEditorFragment extends Fragment implements OnVCardSaveLi
         if (activity == null) {
             return;
         }
-        Crop.of(srcUri, newAvatarImageUri).withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS).start(activity);
+        Crop.of(srcUri, newAvatarImageUri)
+                .asSquare()
+                .withMaxSize(MAX_AVATAR_SIZE_PIXELS, MAX_AVATAR_SIZE_PIXELS)
+                .start(activity);
     }
 
     private void handleCrop(int resultCode, Intent result) {

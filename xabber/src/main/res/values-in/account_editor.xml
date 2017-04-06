@@ -16,7 +16,7 @@
   <string name="account_type_helps_xmpp">Jika anda ingin mempelajari XMPP (Jabber) lebih lanjut, kunjungi: https://xmpp.org</string>
   <string name="account_user_name">Nama pengguna</string>
   <string name="EMPTY_SERVER_NAME">Nama server belum ditentukan</string>
-  <string name="EMPTY_USER_NAME">Nama pengguna belum ditentukan</string>
+  <string name="EMPTY_USER_NAME">Nama pengguna belum diisi</string>
   <string name="CONFIRM_PASSWORD">Kata sandi tidak cocok</string>
   <string name="account_archive_mode">Simpan riwayat pesan</string>
   <string name="account_archive_mode_available">Di server bila tersedia</string>
@@ -26,11 +26,11 @@
   <string name="account_archive_mode_unread">Simpan lokal hanya pesan yang belum terkirim dan belum dibaca</string>
   <string name="account_compression_summary">Centang untuk mengaktifkan kompresi data</string>
   <string name="account_custom">Custom host</string>
-  <string name="account_custom_summary">Gunakan pengaturan custom host sebagai ganti rekaman SRV</string>
+  <string name="account_custom_summary">Gunakan pengaturan khusus host sebagai ganti data SRV</string>
   <string name="account_enabled_summary">Sentuh untuk mengaktifkan akun</string>
-  <string name="account_invalid_port">Port harus berupa angka (default: 5222)</string>
+  <string name="account_invalid_port">Isian Port harus berupa angka (default: 5222)</string>
   <string name="account_invalid_port_range">Port harus antara 1 dan 65535 (default: 5222)</string>
-  <string name="account_invalid_priority">Nilai prioritas harus angka antara -128 dan 128 (default: 0)</string>
+  <string name="account_invalid_priority">Nilai prioritas harus angka antara -128 dan 127 (default: 0)</string>
   <string name="account_oauth">Otorisasi</string>
   <string name="account_oauth_invalidated">Tidak terotorisasi</string>
   <string name="account_oauth_summary">Pengaturan OAuth</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Pasang Orbot?</string>
   <string name="install_orbot">Memasang Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Gagal mendaftarkan akun di server.</string>
+  <string name="SERVER_INFO_ERROR">Tidak bisa mendapatkan informasi server.</string>
   <string name="account_color">Warna akun</string>
   <string name="account_color_name_green">Hijau</string>
   <string name="account_color_name_orange">Orange</string>
@@ -71,4 +72,26 @@
   <string name="account_color_name_teal">Hijau kebiruan</string>
   <string name="account_color_name_blue_grey">Abu-abu kebiruan</string>
   <string name="account_color_name_cyan">Biru kehijauan</string>
+  <string name="account_connection_settings">Pengaturan koneksi</string>
+  <string name="blocked_contacts">Kontak terblokir</string>
+  <string name="blocked_contacts_unknown">Dukungan pemblokiran belum diatur.</string>
+  <string name="blocked_contacts_not_supported">Pemblokiran tidak didukung oleh server.</string>
+  <string name="blocked_contacts_empty">Tidak ada kontak terblokir.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="other">%d kontak diblokir.</item>
+  </plurals>
+  <string name="account_chat_history">Riwayat obrolan</string>
+  <string name="account_history_options_summary">Pilihan penyimpanan riwayat obrolan</string>
+  <string name="account_chat_history_unknown">Dukungan server untuk penyimpanan riwayat obrolan belum diatur</string>
+  <string name="account_chat_history_not_supported">Server tidak mendukung penyimpanan riwayat obrolan.</string>
+  <string name="account_mam_default_behavior_title">Manajemen Arsip Pesan</string>
+  <string name="account_mam_default_behavior_always">Simpan semua pesan di server</string>
+  <string name="account_mam_default_behavior_roster">Simpan daftar pesan kontak di server</string>
+  <string name="account_mam_default_behavior_never">Jangan simpan pesan di server</string>
+  <string name="account_mam_sync_title">Muat riwayat pesan</string>
+  <string name="account_mam_sync_all">Muat riwayat semua kontak</string>
+  <string name="account_mam_sync_current">Muat riwayat obrolan terbuka saja</string>
+  <string name="account_mam_sync_none">Jangan muat riwayat apa pun</string>
+  <string name="account_clear_history_on_exit_title">Bersihkan riwayat saat keluar</string>
+  <string name="account_clear_history_on_exit_summary">Hapus semua obrolan dari perangkat sebelum meninggalkan Xabber.</string>
 </resources>

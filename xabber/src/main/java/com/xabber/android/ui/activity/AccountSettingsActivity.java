@@ -15,6 +15,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
@@ -27,6 +28,7 @@ public class AccountSettingsActivity extends ManagedActivity
         implements AccountEditorFragment.AccountEditorFragmentInteractionListener, Toolbar.OnMenuItemClickListener,
         OnAccountChangedListener {
 
+    private static final String LOG_TAG = AccountSettingsActivity.class.getSimpleName();
     private AccountJid account;
     private AccountItem accountItem;
     private Toolbar toolbar;
@@ -49,6 +51,11 @@ public class AccountSettingsActivity extends ManagedActivity
 
         account = getAccount(getIntent());
         accountItem = AccountManager.getInstance().getAccount(this.account);
+        if (accountItem == null) {
+            LogManager.e(LOG_TAG, "Account item is null " + account);
+            finish();
+            return;
+        }
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);

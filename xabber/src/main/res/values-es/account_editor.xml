@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Activar Cuenta</string>
   <string name="account_invalid_port">El puerto debe ser un número (por defecto: 5222)</string>
   <string name="account_invalid_port_range">El puerto debe estar entre 1 y 65535 (predeterminado: 5222)</string>
-  <string name="account_invalid_priority">El valor de la prioridad debe ser un número entre -128 y 128 (por defecto: 10)</string>
+  <string name="account_invalid_priority">El valor de la prioridad debe ser un número entre -128 y 127 (por defecto: 0)</string>
   <string name="account_oauth">Autorización</string>
   <string name="account_oauth_invalidated">No autorizado</string>
   <string name="account_oauth_summary">Configuración de OAuth</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">¿Instalar Orbot?</string>
   <string name="install_orbot">Instalar Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Ha fallado el registro de la cuenta en el servidor.</string>
+  <string name="SERVER_INFO_ERROR">No se pudo obtener la información del servidor.</string>
   <string name="account_color">Color de la cuenta</string>
   <string name="account_color_name_green">Verde</string>
   <string name="account_color_name_orange">Naranja</string>
@@ -71,4 +72,14 @@
   <string name="account_color_name_teal">Verde azulado</string>
   <string name="account_color_name_blue_grey">Gris azulado</string>
   <string name="account_color_name_cyan">Cian</string>
+  <string name="account_connection_settings">Configuración de conexion</string>
+  <string name="blocked_contacts">Contactos bloqueados</string>
+  <string name="blocked_contacts_not_supported">El bloqueo no es soportado por el servidor.</string>
+  <string name="blocked_contacts_empty">Sin contactos bloqueados.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d contacto bloqueado.</item>
+    <item quantity="other">%d contactos bloqueados.</item>
+  </plurals>
+  <string name="account_chat_history">Historial de conversacion</string>
+  <string name="account_history_options_summary">Opciones de guardados de los mensajes de chat</string>
 </resources>

@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Skru på for å aktivere konto</string>
   <string name="account_invalid_port">Port må være et nummer (forvalg: 5222)</string>
   <string name="account_invalid_port_range">Port må være mellom 1 og 65535 (forvalg: 5222)</string>
-  <string name="account_invalid_priority">Prioritet må angis som et nummer mellom -128 og 128 (standard: 0)</string>
+  <string name="account_invalid_priority">Prioritet må angis som et nummer mellom -128 og 127 (standard: 0)</string>
   <string name="account_oauth">Godkjenning</string>
   <string name="account_oauth_invalidated">Ikke bekreftet</string>
   <string name="account_oauth_summary">Innstillinger for OAuth</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Installer Orbot?</string>
   <string name="install_orbot">Installer Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Registrering av konto på tjeneren mislyktes.</string>
+  <string name="SERVER_INFO_ERROR">Kunne ikke hente inn informasjon om tjener.</string>
   <string name="account_color">Kontofarge</string>
   <string name="account_color_name_green">Grønn</string>
   <string name="account_color_name_orange">Oransje</string>
@@ -71,4 +72,25 @@
   <string name="account_color_name_teal">Blågrønn</string>
   <string name="account_color_name_blue_grey">Blågrå</string>
   <string name="account_color_name_cyan">Cyan</string>
+  <string name="account_connection_settings">Tilkoblingsinnstillinger</string>
+  <string name="blocked_contacts">Blokkerte kontakter</string>
+  <string name="blocked_contacts_unknown">Kunne ikke bestemme støtte for blokkering.</string>
+  <string name="blocked_contacts_not_supported">Blokkering støttes ikke av tjeneren.</string>
+  <string name="blocked_contacts_empty">Ingen blokkerte kontakter.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d kontakt blokkert.</item>
+    <item quantity="other">%d kontakter blokkert.</item>
+  </plurals>
+  <string name="account_chat_history">Sludrehistorikk</string>
+  <string name="account_history_options_summary">Lagringsvalg for sludrehistorikk</string>
+  <string name="account_chat_history_not_supported">Tjeneren støtter ikke lagring av sludrehistorikk.</string>
+  <string name="account_mam_default_behavior_title">Behandling av meldingsarkiv</string>
+  <string name="account_mam_default_behavior_always">Lagre alle meldinger på tjeneren</string>
+  <string name="account_mam_default_behavior_never">Ikke lagre noen meldinger på tjeneren</string>
+  <string name="account_mam_sync_title">Last inn meldingshistorikk</string>
+  <string name="account_mam_sync_all">Last inn historikk for alle kontakter</string>
+  <string name="account_mam_sync_current">Bare last inn historikk for åpnet sludder</string>
+  <string name="account_mam_sync_none">Ikke last inn historikk fra noen</string>
+  <string name="account_clear_history_on_exit_title">Tøm historikk ved avslutning</string>
+  <string name="account_clear_history_on_exit_summary">Slett alle sludremeldinger fra enheten for Xabber avsluttes.</string>
 </resources>

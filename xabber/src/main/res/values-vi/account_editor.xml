@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Chuyển đổi để kích hoạt tài khoản</string>
   <string name="account_invalid_port">Cổng phải là một con số (mặc định: 5222)</string>
   <string name="account_invalid_port_range">Cổng phải từ 1 đến 65535 (mặc định: 5222)</string>
-  <string name="account_invalid_priority">Giá trị mức độ ưu tiên phải là một con số từ -128 đến 128 (mặc định: 0)</string>
+  <string name="account_invalid_priority">Giá trị mức độ ưu tiên phải là một con số từ -128 đến 127 (mặc định: 0)</string>
   <string name="account_oauth">Xác thực</string>
   <string name="account_oauth_invalidated">Chưa được xác thực</string>
   <string name="account_oauth_summary">Cài đặt OAuth</string>

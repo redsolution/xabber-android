@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">連絡先情報</string>
   <string name="contact_viewer_client">クライアント</string>
+  <string name="contact_viewer_this_device">このデバイス</string>
   <string name="vcard_nick_name">ニックネーム</string>
   <string name="vcard_formatted_name">正式名</string>
   <string name="vcard_prefix_name">接頭辞(敬称)</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">グループを編集</string>
   <string name="remove_contact">連絡先を削除</string>
   <string name="edit_account_user_info">ユーザー情報を編集</string>
+  <string name="edit_vcard">編集</string>
   <string name="account_user_info_save_success">アカウントのユーザー情報を正常に保存しました</string>
   <string name="account_user_info_save_fail">アカウントのユーザー情報を保存できませんでした</string>
   <string name="saving">保存中&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">説明</string>
   <string name="conference_subject">件名</string>
   <string name="message_info_occupants_number">参加者: %d</string>
+  <string name="contact_info_connected_clients_header">接続されているデバイス</string>
+  <string name="contact_info_visiting_card_header">vCard</string>
 </resources>

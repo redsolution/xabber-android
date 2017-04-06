@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.database.messagerealm.MessageItem;
@@ -33,7 +34,8 @@ class ContactItemInflater {
     }
 
     void bindViewHolder(ContactListItemViewHolder viewHolder, final AbstractContact contact) {
-        if (AccountManager.getInstance().getAccount(contact.getAccount()).getState() == ConnectionState.connected) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(contact.getAccount());
+        if (accountItem != null && accountItem.getState() == ConnectionState.connected) {
             viewHolder.offlineShadow.setVisibility(View.GONE);
         } else {
             viewHolder.offlineShadow.setVisibility(View.VISIBLE);

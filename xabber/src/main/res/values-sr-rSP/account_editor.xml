@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Кликните да укључите налог</string>
   <string name="account_invalid_port">Порт мора бити број (подразумевано: 5222)</string>
   <string name="account_invalid_port_range">Порт мора бити између 1 и 65535 (подразумевани: 5222)</string>
-  <string name="account_invalid_priority">Приоритет мора бити број између -128 и 128 (подразумевано: 10)</string>
+  <string name="account_invalid_priority">Приоритет мора бити број између -128 и 127 (подразумевано: 10)</string>
   <string name="account_oauth">Овлашћење</string>
   <string name="account_oauth_invalidated">Без овлашћења</string>
   <string name="account_oauth_summary">ОАут поставке</string>

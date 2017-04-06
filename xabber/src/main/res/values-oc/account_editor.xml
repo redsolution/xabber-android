@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Interruptor per activar lo compte</string>
   <string name="account_invalid_port">Lo pòrt deu èsser un nombre (defaut : 5222)</string>
   <string name="account_invalid_port_range">Lo pòrt deu èsser comprés entre 1 e 65535 (defaut : 5222)</string>
-  <string name="account_invalid_priority">La prioritat deu èsser un nombre comprés entre -128 e 128 (defaut : 10)</string>
+  <string name="account_invalid_priority">La prioritat deu èsser un nombre comprés entre -128 e 127 (defaut: 10)</string>
   <string name="account_oauth">Autorizacion</string>
   <string name="account_oauth_invalidated">Autorizacion refusada</string>
   <string name="account_oauth_summary">Paramètres OAuth</string>

@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Hesabı aktifleştir</string>
   <string name="account_invalid_port">Port bir numara olmalı (ön tanımlı: 5222)</string>
   <string name="account_invalid_port_range">Bağlantı noktası 1 ile 65535 arasında olmalıdır (varsayılan: 5222)</string>
-  <string name="account_invalid_priority">Öncelik değeri, -128 ile 128 arasında bir numara olmalı. (ön tanımlı: 10)</string>
+  <string name="account_invalid_priority">Öncelik değeri, -128 ile 127 arasında bir numara olmalı. (ön tanımlı: 10)</string>
   <string name="account_oauth">Yetkilendirme</string>
   <string name="account_oauth_invalidated">Yetkilendirilmemiş</string>
   <string name="account_oauth_summary">OAuth ayarları</string>

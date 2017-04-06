@@ -86,5 +86,5 @@
   <string name="intro_register_account">Зарегистрировать учётную запись XMPP</string>
   <string name="intro_create_xabber_account">Создать учётную запись Xabber</string>
   <string name="intro_faq">Если у вас нет учётной записи XMPP, пожалуйста, <a href="https://www.xabber.com/faq/">прочтите наш F.A.Q.</a> о том, как зарегистрироваться.</string>
-  <string name="intro_web_search_register_xmpp">Зарегистрировать XMPP аккаунт</string>
+  <string name="intro_web_search_register_xmpp">Зарегистрировать учётную запись XMPP</string>
 </resources>

@@ -17,7 +17,11 @@
   <string name="contacts_show_panel">アカウントパネルを表示\n連絡先リストの右下隅にアバターと操作ボタンを表示します</string>
   <string name="contacts_stay_active_chats">アクティブなチャットを複製\n連絡先リストの上部とグループの両方にアクティブなチャットを表示します</string>
   <string name="debug_log">デバッグ・ログ\nメッセージをデバッグ･ログに書き込む (変更を適用するにはアプリケーションを再起動してください)</string>
+  <string name="debug_file_log_title">ファイルにログを書き込み\nローカルファイルにデバッグログを書き込みます (それを共有できます)。</string>
+  <string name="debug_log_files_title">ログファイル\n書き込まれたログファイルの一覧。</string>
+  <string name="debug_log_files_activity_title">ログファイル</string>
   <string name="debug_connection_errors_title">接続エラーを表示\n接続例外のポップアップを表示します</string>
+  <string name="debug_crash_reports_title">クラッシュレポートを送信\n匿名のクラッシュレポートを送信して Xabber の開発を支援します (変更を適用するためアプリケーションを再起動してください)。</string>
   <string name="events_lightning">ライト通知\n通知時に LED を点滅します</string>
   <string name="events_persistent">タスクバーアイコン\n永続的な通知を表示します。このオプションは、Android がアプリケーションをメモリからアンロードしないようにします</string>
   <string name="events_sound">オーディオ・アラート\n通知サウンドを選択します</string>
@@ -82,4 +86,5 @@
   <string name="connection_use_plain_text_auth">平文認証\nすべてのアカウントに対して平文で認証します。お勧めできません。</string>
   <string name="events_phrases">キーフレーズ\n指定したフレーズが含まれるメッセージを通知します</string>
   <string name="security_clear_certificate_warning">無視された証明書をすべて削除してもよろしいですか?</string>
+  <string name="account_error_settings">設定</string>
 </resources>

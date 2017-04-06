@@ -243,7 +243,12 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
     public void sendVCardUpdatePresence(AccountJid account, String hash) throws NetworkException {
         LogManager.i(this, "sendVCardUpdatePresence: " + account);
 
-        final Presence presence = AccountManager.getInstance().getAccount(account).getPresence();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+
+        final Presence presence = accountItem.getPresence();
 
         final VCardUpdate vCardUpdate = new VCardUpdate();
         vCardUpdate.setPhotoHash(hash);

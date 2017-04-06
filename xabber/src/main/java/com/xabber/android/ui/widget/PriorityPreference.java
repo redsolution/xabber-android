@@ -49,7 +49,7 @@ public class PriorityPreference extends EditTextPreference {
     protected boolean callChangeListener(Object newValue) {
         try {
             int value = Integer.parseInt((String) newValue);
-            if (value < -128 || value > 128)
+            if (value < -128 || value > 127)
                 throw new NumberFormatException();
         } catch (NumberFormatException e) {
             Toast.makeText(context,

@@ -3,6 +3,7 @@ package com.xabber.android.data.connection;
 import android.support.annotation.NonNull;
 
 import com.xabber.android.R;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
@@ -19,7 +20,7 @@ public class StanzaSender {
     private static String LOG_TAG = StanzaSender.class.getSimpleName();
 
     /**
-     * Send stanza to authenticated connection and and acknowledged listener if Stream Management is enabled on server.
+     * Send stanza to authenticated connection and add acknowledged listener if Stream Management is enabled on server.
      */
     public static void sendStanza(AccountJid account, Message stanza, StanzaListener acknowledgedListener) throws NetworkException {
         XMPPTCPConnection xmppConnection = getXmppTcpConnection(account);
@@ -58,7 +59,12 @@ public class StanzaSender {
     }
 
     private static @NonNull XMPPTCPConnection getXmppTcpConnection(AccountJid account) throws NetworkException {
-        XMPPTCPConnection returnConnection = AccountManager.getInstance().getAccount(account).getConnection();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            throw new NetworkException(R.string.NOT_CONNECTED);
+        }
+
+        XMPPTCPConnection returnConnection = accountItem.getConnection();
         if (!returnConnection.isAuthenticated()) {
             throw new NetworkException(R.string.NOT_CONNECTED);
         }

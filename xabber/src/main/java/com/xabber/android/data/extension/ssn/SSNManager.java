@@ -128,11 +128,13 @@ public class SSNManager implements OnPacketListener, OnAccountRemovedListener {
 
         Collection<SecurityValue> securityValues = feature.getSecurityOptions();
         SecurityValue securityValue;
-        if (AccountManager.getInstance().getAccount(account)
-                .getConnectionSettings().getTlsMode() == TLSMode.required)
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem != null
+                && accountItem.getConnectionSettings().getTlsMode() == TLSMode.required) {
             securityValue = SecurityValue.c2s;
-        else
+        } else {
             securityValue = SecurityValue.none;
+        }
         if (securityValues == null)
             securityValue = null;
         else if (!securityValues.contains(securityValue))

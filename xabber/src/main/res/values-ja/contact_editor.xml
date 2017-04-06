@@ -19,6 +19,8 @@
   <string name="error_during_image_processing">画像の処理中にエラー</string>
   <string name="account_settings">アカウント設定</string>
   <string name="account_user_info">アカウント情報</string>
+  <string name="account_server_info">サーバー情報</string>
+  <string name="account_server_info_description">サーバー機能の一覧</string>
   <string name="conference_private_chat_invitation">%2$s から %1$s があなたとプライベートチャットの開始を希望しています</string>
   <string name="accept_muc_private_chat">同意</string>
   <string name="block_muc_private_chat">ブロック</string>

@@ -17,7 +17,11 @@
   <string name="contacts_show_panel">Mostra pannello account\nMostra pulsante d\'azione con gli avatar nell\'angolo in basso a destra della lista contatti</string>
   <string name="contacts_stay_active_chats">Duplica chat attive\nLe chat attive appariranno sia in cima alla lista contatti che nei gruppi</string>
   <string name="debug_log">Log debug \nScrive messaggi di debug nel log (riavviare l\'applicazione per applicare i cambiamenti)</string>
+  <string name="debug_file_log_title">Scrivi il log\nScrivi il log di debug in un file locale (puoi condividerlo).</string>
+  <string name="debug_log_files_title">File di log\nLista dei file di log scritti.</string>
+  <string name="debug_log_files_activity_title">File di log</string>
   <string name="debug_connection_errors_title">Mostra errori di connessione\nMostra problemi di connessione in pop-up</string>
+  <string name="debug_crash_reports_title">Invia i report dei crash\nInvia i resoconti anonimi dei crash per aiutare lo sviluppo di Xabber (per favore riavvia l\'applicazione per applicare i cambiamenti).</string>
   <string name="events_lightning">Indicatore luminoso \nLampeggio LED durante la notifica</string>
   <string name="events_persistent">Icona nella barra delle applicazioni\nMostra una notifica persistente. Questa opzione evita che Android scarichi l\'app dalla memoria</string>
   <string name="events_sound">Suoneria\nScegli il suono di notifica</string>
@@ -82,4 +86,5 @@
   <string name="connection_use_plain_text_auth">Autenticazione in chiaro\nUsa l\'autenticazione in chiaro per tutti gli account. Sconsigliato.</string>
   <string name="events_phrases">frasi chiave\nCrea notifiche personalizzate per messaggi ricevuti contenenti una specifica frase</string>
   <string name="security_clear_certificate_warning">Vuoi davvero rimuovere tutti i certificati ignorati?</string>
+  <string name="account_error_settings">Impostazioni</string>
 </resources>

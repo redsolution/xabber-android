@@ -140,6 +140,9 @@ public class MamManager implements OnRosterReceivedListener {
             @Override
             public void run() {
                 AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+                if (accountItem == null) {
+                    return;
+                }
                 org.jivesoftware.smackx.mam.MamManager mamManager = org.jivesoftware.smackx.mam.MamManager
                         .getInstanceFor(accountItem.getConnection());
 

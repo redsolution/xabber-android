@@ -105,12 +105,14 @@ public class AccountHistorySettingsFragment extends BaseSettingsFragment impleme
 
         AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
 
-        putValue(source, R.string.account_clear_history_on_exit_key, accountItem.isClearHistoryOnExit());
+        if (accountItem != null) {
+            putValue(source, R.string.account_clear_history_on_exit_key, accountItem.isClearHistoryOnExit());
 
-        // order of enum fields is very important!
-        putValue(source, R.string.account_mam_default_behavior_key, accountItem.getMamDefaultBehaviour().ordinal());
+            // order of enum fields is very important!
+            putValue(source, R.string.account_mam_default_behavior_key, accountItem.getMamDefaultBehaviour().ordinal());
 
-        putValue(source, R.string.account_mam_sync_key, accountItem.getLoadHistorySettings().ordinal());
+            putValue(source, R.string.account_mam_sync_key, accountItem.getLoadHistorySettings().ordinal());
+        }
 
         return source;
     }

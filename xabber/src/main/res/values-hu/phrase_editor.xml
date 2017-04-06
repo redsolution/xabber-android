@@ -7,7 +7,7 @@
   <string name="phrase_empty">&lt;Bármilyen szöveg&gt;</string>
   <string name="phrase_group">A névjegycsoport része</string>
   <string name="phrase_regexp">Reguláris kifejezés</string>
-  <string name="phrase_sound">Hang \nÉrtesítési hang választása</string>
+  <string name="phrase_sound">Hang\nÉrtesítési hang választása</string>
   <string name="phrase_text">Keresendő szöveg</string>
   <string name="phrase_user">A partner Jabber-ID-jének része</string>
 </resources>

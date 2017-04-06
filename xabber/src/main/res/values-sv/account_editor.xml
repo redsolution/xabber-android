@@ -11,7 +11,7 @@
   <string name="account_resource">Resurs</string>
   <string name="account_server_name">Server</string>
   <string name="account_type">Kontotyp</string>
-  <string name="account_type_hints_gtalk">användarnamn för gmail.com eller Google Apps domänen</string>
+  <string name="account_type_hints_gtalk">användarnamn för gmail.com eller Google Appsdomänen</string>
   <string name="account_type_helps_gtalk">Om du ännu inte har ett Googlekonto kan du skapa ett på: http://mail.google.com\n
 Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_type_helps_xmpp">Om du vill veta mer om XMPP (Jabber) gå till: https://xmpp.org</string>
@@ -20,8 +20,8 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="EMPTY_USER_NAME">Användarnamn saknas</string>
   <string name="CONFIRM_PASSWORD">Lösenorden stämmer inte överens</string>
   <string name="account_archive_mode">Lagra meddelandehistorik</string>
-  <string name="account_archive_mode_available">På server om möjligt</string>
-  <string name="account_archive_mode_dont_store">Lagra inte</string>
+  <string name="account_archive_mode_available">På server om den finns tillgänglig</string>
+  <string name="account_archive_mode_dont_store">Spara inte</string>
   <string name="account_archive_mode_local">Lokalt på enheten</string>
   <string name="account_archive_mode_server">På server</string>
   <string name="account_archive_mode_unread">Lokalt men bara ej skickade och olästa</string>
@@ -29,16 +29,16 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_custom">Anpassad värd</string>
   <string name="account_custom_summary">Använd den anpassade värdens inställningar istället för SRV-post</string>
   <string name="account_enabled_summary">Knapp för att aktivera kontot</string>
-  <string name="account_invalid_port">Port måste anges som en siffra (default: 5222)</string>
+  <string name="account_invalid_port">Port måste anges som ett tal (förvalt: 5222)</string>
   <string name="account_invalid_port_range">Port måste vara mellan 1 och 65535 (standard: 5222)</string>
-  <string name="account_invalid_priority">Prioritet måste anges som en siffra mellan -128 och 128 (default: 10)</string>
+  <string name="account_invalid_priority">Prioritet måste anges som en siffra mellan -128 och 127 (default: 10)</string>
   <string name="account_oauth">Auktorisering</string>
   <string name="account_oauth_invalidated">Ej auktoriserad</string>
   <string name="account_oauth_summary">Inställningar för OAuth</string>
   <string name="account_proxy_host">Proxyserver</string>
-  <string name="account_proxy_invalid_port_range">Proxy-porten måste vara mellan 1 och 65535 (standard: 8080)</string>
+  <string name="account_proxy_invalid_port_range">Proxy-porten måste vara mellan 1 och 65535 (förvald: 8080)</string>
   <string name="account_proxy_invalid_port">Proxy-porten måste vara ett tal (förvalt: 8080)</string>
-  <string name="account_proxy_password">Lösenord för proxy</string>
+  <string name="account_proxy_password">Lösenord för proxyserver</string>
   <string name="account_proxy_port">Proxyport</string>
   <string name="account_proxy_type">Proxytyp</string>
   <string name="account_proxy_type_none">Avaktiverad</string>
@@ -47,7 +47,7 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_sasl_summary">Avaktivera på gamla servrar</string>
   <string name="account_store_password">Spara lösenord</string>
   <string name="account_store_password_summary">Avmarkera denna för att få fråga om lösenord varje gång du loggar in</string>
-  <string name="account_syncable">Integrera med din enhets kontaktbok</string>
+  <string name="account_syncable">Integrera med systemets kontakter</string>
   <string name="account_syncable_summary">Visa kontakter från detta konto i telefonens kontaktbok</string>
   <string name="account_tls_enable">Aktivera TLS</string>
   <string name="account_tls_enable_summary">Använd TLS-kryptering när det är möjligt för att ansluta till server</string>
@@ -55,14 +55,15 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_tls_legacy_summary">Använd äldre SSL-kryptering för att ansluta till servern</string>
   <string name="account_tls_mode">TLS/SSL-användning</string>
   <string name="account_tls_require">Kräv TLS</string>
-  <string name="account_tls_require_summary">Kräv TLS vid anslutning till server</string>
+  <string name="account_tls_require_summary">Kräv TLS vid anslutning till servern</string>
   <string name="account_use_orbot">Chatta via anonymiseringstjänsten TOR och tvinga kryptering med TLS.\nRekommenderas inte för Google Talk</string>
-  <string name="confirm_cancellation">Är du säker på att du vill kasta alla ändringar?</string>
+  <string name="confirm_cancellation">Är du säker på att du vill slänga alla ändringar?</string>
   <string name="INCORRECT_USER_NAME">Felaktigt användarnamn. Kolla hjälptexten nedan för detaljer.</string>
   <string name="orbot_required_message">För att kunna använda TOR måste du ha Orbot installerad och aktiverad. Vill du installera Orbot från Google Play?</string>
   <string name="orbot_required_title">Installera Orbot?</string>
   <string name="install_orbot">Installera Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Det gick inte att registrera kontot på servern.</string>
+  <string name="SERVER_INFO_ERROR">Kunde inte hämta information om servern.</string>
   <string name="account_color">Kontofärg</string>
   <string name="account_color_name_green">Grön</string>
   <string name="account_color_name_orange">Orange</string>
@@ -72,4 +73,27 @@ Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
   <string name="account_color_name_teal">Blågrön</string>
   <string name="account_color_name_blue_grey">Blågrå</string>
   <string name="account_color_name_cyan">Turkos</string>
+  <string name="account_connection_settings">Anslutningsinställningar</string>
+  <string name="blocked_contacts">Blockerade kontakter</string>
+  <string name="blocked_contacts_unknown">Kan inte avgöra om servern stöder blockering.</string>
+  <string name="blocked_contacts_not_supported">Blockering stöds inte av servern.</string>
+  <string name="blocked_contacts_empty">Inga blockerade kontakter.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d kontakt blockerad.</item>
+    <item quantity="other">%d kontakter blockeras.</item>
+  </plurals>
+  <string name="account_chat_history">Chathistorik</string>
+  <string name="account_history_options_summary">Alternativ för lagring av chathistorik</string>
+  <string name="account_chat_history_unknown">Kan inte avgöra om servern stöder lagring av chathistorik</string>
+  <string name="account_chat_history_not_supported">Servern stöder inte lagring av chathistorik.</string>
+  <string name="account_mam_default_behavior_title">Hantera meddelandearkiv</string>
+  <string name="account_mam_default_behavior_always">Spara alla meddelanden på servern</string>
+  <string name="account_mam_default_behavior_roster">Lagra roster kontakter meddelanden på servern</string>
+  <string name="account_mam_default_behavior_never">Spara inga meddelanden på servern</string>
+  <string name="account_mam_sync_title">Läs in meddelandehistorik</string>
+  <string name="account_mam_sync_all">Läs in historik för alla kontakter</string>
+  <string name="account_mam_sync_current">Läs in historik endast för den aktiva chatten</string>
+  <string name="account_mam_sync_none">Läs inte in historik för någon</string>
+  <string name="account_clear_history_on_exit_title">Rensa historik vid avslut</string>
+  <string name="account_clear_history_on_exit_summary">Ta bort alla chattmeddelanden från enheten innan du avslutar Xabber.</string>
 </resources>

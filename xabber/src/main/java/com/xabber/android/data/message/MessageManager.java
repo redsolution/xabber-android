@@ -26,7 +26,6 @@ import com.xabber.android.data.SettingsManager.ChatsShowStatusChange;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.account.listeners.OnAccountArchiveModeChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
@@ -79,7 +78,7 @@ import io.realm.RealmResults;
  */
 public class MessageManager implements OnLoadListener, OnPacketListener, OnDisconnectListener,
         OnAccountRemovedListener, OnAccountDisabledListener, OnRosterReceivedListener,
-        OnAccountArchiveModeChangedListener, OnStatusChangeListener {
+        OnStatusChangeListener {
 
     private static MessageManager instance;
 
@@ -456,11 +455,6 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
      * Called on action settings change.
      */
     public void onSettingsChanged() {
-
-    }
-
-    @Override
-    public void onAccountArchiveModeChanged(AccountItem accountItem) {
 
     }
 

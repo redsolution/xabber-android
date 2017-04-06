@@ -29,7 +29,7 @@
   <string name="account_custom_summary">Выкарыстоўваць наладкі адмысловага хаста замест SRV запісу</string>
   <string name="account_invalid_port">Порт мусіць быць лічбай (па-змоўчаньні: 5222)</string>
   <string name="account_invalid_port_range">Порт мусіць быць лічбай паміж 1 ды 65535 (значэньне па-змоўчаньні: 5222)</string>
-  <string name="account_invalid_priority">Прыярытэт мусіць быць лічбай дыяпазону паміж -128 і 128 (па-змоўчаньні: 10)</string>
+  <string name="account_invalid_priority">Прыярытэт мусіць быць лічбай дыяпазону паміж -128 і 127 (па-змоўчаньні: 10)</string>
   <string name="account_oauth">Аўтарызацыя</string>
   <string name="account_oauth_invalidated">Не аўтарызаваны</string>
   <string name="account_oauth_summary">Наладкі OAuth</string>

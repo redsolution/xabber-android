@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Contact informatie</string>
   <string name="contact_viewer_client">Klant</string>
+  <string name="contact_viewer_this_device">Dit apparaat</string>
   <string name="vcard_nick_name">Bijnaam</string>
   <string name="vcard_formatted_name">Volledige naam</string>
   <string name="vcard_prefix_name">Voorvoegsel</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Bewerk groepen</string>
   <string name="remove_contact">Contactpersoon verwijderen</string>
   <string name="edit_account_user_info">Gebruikersinfo bewerken</string>
+  <string name="edit_vcard">Bewerk</string>
   <string name="account_user_info_save_success">Opslaan gebruikersinfo geslaagd</string>
   <string name="account_user_info_save_fail">Kon gebruikersinfo niet opslaan</string>
   <string name="saving">Bezig met opslaan&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">Beschrijving</string>
   <string name="conference_subject">Onderwerp</string>
   <string name="message_info_occupants_number">Aanwezigen: %d</string>
+  <string name="contact_info_connected_clients_header">Aangesloten apparaten</string>
+  <string name="contact_info_visiting_card_header">vCard</string>
 </resources>

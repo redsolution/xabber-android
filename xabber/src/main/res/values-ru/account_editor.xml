@@ -13,6 +13,7 @@
   <string name="account_type">Тип учетной записи</string>
   <string name="account_type_hints_gtalk">учетная запись gmail.com или службы google</string>
   <string name="account_type_helps_gtalk">Если у Вас нет учётной записи Google, её можно создать на сайте http://mail.google.com/\nТакже вы можете использовать ваше_имя@ваш_гугло_домен</string>
+  <string name="account_xmpp_register_warning">Вы должны <a href="http://www.google.com/#q=зарегистрировать учётную запись XMPP">зарегистрировать учётную запись XMPP</a> перед тем, как добавить её в Xabber!</string>
   <string name="account_type_helps_xmpp">Подробную информацию об XMPP (Jabber) можно найти по адресу https://xmpp.org\nЗарегистрировать новую учетную запись можно тут https://register.jabber.org или тут http://jabber.ru</string>
   <string name="account_user_name">Имя пользователя</string>
   <string name="EMPTY_SERVER_NAME">Не указано имя сервера</string>
@@ -30,7 +31,7 @@
   <string name="account_enabled_summary">Переключите, чтобы включить учетную запись</string>
   <string name="account_invalid_port">Порт должен быть числом (значение по умолчанию: 5222)</string>
   <string name="account_invalid_port_range">Порт должен быть числом между 1 и 65535 (значение по умолчанию: 5222)</string>
-  <string name="account_invalid_priority">Приоритет должен быть между -128 и 128 (значение по умолчанию: 0)</string>
+  <string name="account_invalid_priority">Приоритет должен быть между -128 и 127 (значение по умолчанию: 0)</string>
   <string name="account_oauth">Авторизация</string>
   <string name="account_oauth_invalidated">Не авторизован</string>
   <string name="account_oauth_summary">Настройки авторизации OAuth</string>
@@ -55,7 +56,7 @@
   <string name="account_tls_mode">Использование TLS/SSL</string>
   <string name="account_tls_require">Требовать TLS</string>
   <string name="account_tls_require_summary">Требовать TLS шифрование при подключении к серверу</string>
-  <string name="account_use_orbot">Использовать анонимное соединение через TOR и требовать TLS шифрование\nНе рекомендуется для Google Talk</string>
+  <string name="account_use_orbot">Использовать анонимное соединение через TOR и требовать TLS шифрование</string>
   <string name="confirm_cancellation">Вы уверены, что хотите отменить все не сохраненные изменения?</string>
   <string name="INCORRECT_USER_NAME">Неправильное имя пользователя. Просмотрите подсказку внизу экрана</string>
   <string name="orbot_required_message">Для использования TOR необходимо установить приложение Orbot и активировать в нём передачу данных. Вы хотите установить его из Google Play?</string>

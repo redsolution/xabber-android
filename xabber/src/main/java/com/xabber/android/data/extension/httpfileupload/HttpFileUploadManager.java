@@ -3,6 +3,7 @@ package com.xabber.android.data.extension.httpfileupload;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -66,6 +67,11 @@ public class HttpFileUploadManager {
             return;
         }
 
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        if (accountItem == null) {
+            return;
+        }
+
         final File file = new File(filePath);
 
         final com.xabber.xmpp.httpfileupload.Request httpFileUpload = new com.xabber.xmpp.httpfileupload.Request();
@@ -74,7 +80,7 @@ public class HttpFileUploadManager {
         httpFileUpload.setTo(uploadServerUrl);
 
         try {
-            AccountManager.getInstance().getAccount(account).getConnection().sendIqWithResponseCallback(httpFileUpload, new StanzaListener() {
+            accountItem.getConnection().sendIqWithResponseCallback(httpFileUpload, new StanzaListener() {
                 @Override
                 public void processStanza(Stanza packet) throws SmackException.NotConnectedException, InterruptedException {
                     if (!(packet instanceof Slot)) {

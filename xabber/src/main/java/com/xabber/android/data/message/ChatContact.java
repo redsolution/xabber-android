@@ -37,12 +37,8 @@ public class ChatContact extends AbstractContact {
 
     @Override
     public boolean isConnected() {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(
-                account);
-        if (accountItem == null)
-            return false;
-        else
-            return accountItem.getState().isConnected();
+        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        return accountItem != null && accountItem.getState().isConnected();
     }
 
 }

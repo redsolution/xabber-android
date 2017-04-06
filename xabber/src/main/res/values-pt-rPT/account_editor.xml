@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Mude para ativar a conta</string>
   <string name="account_invalid_port">A porta deve ser um número (predefinição: 5222)</string>
   <string name="account_invalid_port_range">A porta deve ser um número entre 1 e 65535 (predefinição: 5222)</string>
-  <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 128 (predefinição: 0)</string>
+  <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 127 (predefinição: 10)</string>
   <string name="account_oauth">Autorização</string>
   <string name="account_oauth_invalidated">Não autorizada</string>
   <string name="account_oauth_summary">Definições OAuth</string>

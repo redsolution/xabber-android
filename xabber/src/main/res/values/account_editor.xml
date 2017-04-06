@@ -12,6 +12,7 @@
     <string name="account_type">Account type</string>
     <string name="account_type_hints_gtalk">username for gmail.com or Google Apps domain</string>
     <string name="account_type_helps_gtalk">If you don\'t have Google account you may create one at http://mail.google.com\nAlso you can use your_user_name@your_google_domain</string>
+    <string name="account_xmpp_register_warning">You must <a href="http://www.google.com/#q=register XMPP account">register XMPP account</a> before adding it to Xabber!</string>
     <string name="account_type_helps_xmpp">If you want to learn more about XMPP (Jabber) here: https://xmpp.org</string>
     <string name="account_user_name">Username</string>
     <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
@@ -29,7 +30,7 @@
     <string name="account_enabled_summary">Switch to enable account</string>
     <string name="account_invalid_port">Port must be a number (default: 5222)</string>
     <string name="account_invalid_port_range">Port must be between 1 and 65535 (default: 5222)</string>
-    <string name="account_invalid_priority">Priority value must be a number between -128 and 128 (default: 0)</string>
+    <string name="account_invalid_priority">Priority value must be a number between -128 and 127 (default: 0)</string>
     <string name="account_oauth">Authorization</string>
     <string name="account_oauth_invalidated">Not authorized</string>
     <string name="account_oauth_summary">OAuth settings</string>
@@ -54,7 +55,7 @@
     <string name="account_tls_mode">TLS/SSL usage</string>
     <string name="account_tls_require">Require TLS</string>
     <string name="account_tls_require_summary">Require TLS encryption when connect to server</string>
-    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol\nNot recommended for Google Talk</string>
+    <string name="account_use_orbot">Chat through TOR anonymity network and force TLS cryptographic protocol</string>
     <string name="confirm_cancellation">Are you sure you want to discard all the changes?</string>
     <string name="INCORRECT_USER_NAME">Incorrect user name. Check help text below for details.</string>
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
@@ -76,8 +77,8 @@
     <string name="account_connection_settings">Connection settings</string>
 
     <string name="blocked_contacts">Blocked contacts</string>
-    <string name="blocked_contacts_unknown">Blocking support is not determined yet.</string>
-    <string name="blocked_contacts_not_supported">Blocking does not supported by the server.</string>
+    <string name="blocked_contacts_unknown">Could not determine support for blocking contacts.</string>
+    <string name="blocked_contacts_not_supported">Blocking is not supported by server.</string>
     <string name="blocked_contacts_empty">No blocked contacts.</string>
 
     <plurals name="blocked_contacts_number">
@@ -86,10 +87,10 @@
     </plurals>
 
     <string name="account_chat_history">Chat history</string>
-    <string name="account_history_options_summary">Chat message history storing options</string>
+    <string name="account_history_options_summary">Storage options for chat messages</string>
 
     <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
-    <string name="account_chat_history_not_supported">Server does not support chat history storing.</string>
+    <string name="account_chat_history_not_supported">The server does not support storing chat history.</string>
 
     <string name="account_mam_default_behavior_title">Message Archive Management</string>
     <string name="account_mam_default_behavior_always">Store all messages on server</string>
