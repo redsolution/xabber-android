@@ -76,8 +76,8 @@
     <string name="account_connection_settings">Connection settings</string>
 
     <string name="blocked_contacts">Blocked contacts</string>
-    <string name="blocked_contacts_unknown">Blocking support is not determined yet.</string>
-    <string name="blocked_contacts_not_supported">Blocking does not supported by the server.</string>
+    <string name="blocked_contacts_unknown">Could not determine support for blocking contacts.</string>
+    <string name="blocked_contacts_not_supported">Blocking is not supported by server.</string>
     <string name="blocked_contacts_empty">No blocked contacts.</string>
 
     <plurals name="blocked_contacts_number">
@@ -86,7 +86,7 @@
     </plurals>
 
     <string name="account_chat_history">Chat history</string>
-    <string name="account_history_options_summary">Chat message history storing options</string>
+    <string name="account_history_options_summary">Storage options for chat messages</string>
 
     <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
     <string name="account_chat_history_not_supported">The server does not support storing chat history.</string>
