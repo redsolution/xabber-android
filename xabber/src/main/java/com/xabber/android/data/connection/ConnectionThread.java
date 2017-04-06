@@ -62,7 +62,7 @@ class ConnectionThread {
                     LogManager.i(this, "No network connection");
                 }
             }
-        }, "Connection thread for " + connectionItem.getAccount());
+        });
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
     }
