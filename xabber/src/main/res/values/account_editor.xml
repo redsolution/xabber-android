@@ -89,7 +89,7 @@
     <string name="account_history_options_summary">Chat message history storing options</string>
 
     <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
-    <string name="account_chat_history_not_supported">Server does not support chat history storing.</string>
+    <string name="account_chat_history_not_supported">The server does not support storing chat history.</string>
 
     <string name="account_mam_default_behavior_title">Message Archive Management</string>
     <string name="account_mam_default_behavior_always">Store all messages on server</string>
