@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Смени, за да активираш профил</string>
   <string name="account_invalid_port">Портът може да е само число (5222 по подразбиране)</string>
   <string name="account_invalid_port_range">Портът може да е число между 1 и 65535 (5222 по подразбиране)</string>
-  <string name="account_invalid_priority">Приоритета може да е число между -128 и 128 (0 по подразбиране)</string>
+  <string name="account_invalid_priority">Приоритета може да е число между -128 и 127 (0 по подразбиране)</string>
   <string name="account_oauth">Ауторизация</string>
   <string name="account_oauth_invalidated">Не е ауторизиран</string>
   <string name="account_oauth_summary">OAuth настройки</string>

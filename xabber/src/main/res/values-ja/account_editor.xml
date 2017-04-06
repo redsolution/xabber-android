@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">アカウントを有効にするスイッチ</string>
   <string name="account_invalid_port">ポートは数字で入力してください (デフォルト: 5222)</string>
   <string name="account_invalid_port_range">ポートは 1 から 65535 の間にする必要があります (デフォルト: 5222)</string>
-  <string name="account_invalid_priority">優先度の値は -128 から 128 の間の数字で入力してください (デフォルト: 10)</string>
+  <string name="account_invalid_priority">優先度の値は -128 から 127 の間の数字で入力してください (デフォルト: 10)</string>
   <string name="account_oauth">認証</string>
   <string name="account_oauth_invalidated">認証されていません</string>
   <string name="account_oauth_summary">OAuth 設定</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Orbot をインストールしますか?</string>
   <string name="install_orbot">Orbot をインストール</string>
   <string name="ACCOUNT_REGISTER_FAILED">サーバーにアカウントを登録できませんでした。</string>
+  <string name="SERVER_INFO_ERROR">サーバー情報を取得できませんでした。</string>
   <string name="account_color">アカウントの色</string>
   <string name="account_color_name_green">グリーン</string>
   <string name="account_color_name_orange">オレンジ</string>
@@ -71,4 +72,26 @@
   <string name="account_color_name_teal">ティール</string>
   <string name="account_color_name_blue_grey">ブルーグレー</string>
   <string name="account_color_name_cyan">シアン</string>
+  <string name="account_connection_settings">接続設定</string>
+  <string name="blocked_contacts">ブロックした連絡先</string>
+  <string name="blocked_contacts_unknown">ブロックのサポートは未定です。</string>
+  <string name="blocked_contacts_not_supported">ブロックがサーバーによってサポートされていません。</string>
+  <string name="blocked_contacts_empty">ブロックした連絡先はありません。</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="other">%d 連絡先をブロックしました。</item>
+  </plurals>
+  <string name="account_chat_history">チャット履歴</string>
+  <string name="account_history_options_summary">チャットメッセージ履歴の保存オプション</string>
+  <string name="account_chat_history_unknown">チャット履歴のサーバー保存のサポートは未定です</string>
+  <string name="account_chat_history_not_supported">サーバーは、チャット履歴の保存をサポートしません。</string>
+  <string name="account_mam_default_behavior_title">メッセージ アーカイブの管理</string>
+  <string name="account_mam_default_behavior_always">すべてのメッセージをサーバーに保存</string>
+  <string name="account_mam_default_behavior_roster">名簿の連絡先メッセージをサーバーに保存</string>
+  <string name="account_mam_default_behavior_never">メッセージをサーバーに保存しない</string>
+  <string name="account_mam_sync_title">メッセージ履歴の読み込み</string>
+  <string name="account_mam_sync_all">すべての連絡先の履歴を読み込み</string>
+  <string name="account_mam_sync_current">開いたチャットのみ履歴を読み込み</string>
+  <string name="account_mam_sync_none">誰も履歴を読み込まない</string>
+  <string name="account_clear_history_on_exit_title">終了時に履歴をクリア</string>
+  <string name="account_clear_history_on_exit_summary">Xabber を終了する前に、デバイスからすべてのチャットメッセージを削除します。</string>
 </resources>

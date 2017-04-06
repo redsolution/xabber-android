@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Schakel account aan of uit</string>
   <string name="account_invalid_port">Poort moet een nummer zijn (standaard: 5222)</string>
   <string name="account_invalid_port_range">Poortnummer moet tussen de 1 en 65535 liggen (standaard: 5222)</string>
-  <string name="account_invalid_priority">Waarde prioriteit moet een nummer zijn tussen -128 en 128 (standaard: 10)</string>
+  <string name="account_invalid_priority">Waarde prioriteit moet een nummer zijn tussen -128 en 127 (standaard: 10)</string>
   <string name="account_oauth">Autorisatie</string>
   <string name="account_oauth_invalidated">Niet geautoriseerd</string>
   <string name="account_oauth_summary">OAuth instellingen</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Installeer Orbot?</string>
   <string name="install_orbot">Installeer Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Registratie van de account op de server is mislukt.</string>
+  <string name="SERVER_INFO_ERROR">Kon server informatie niet ophalen.</string>
   <string name="account_color">Account kleur</string>
   <string name="account_color_name_green">Groen</string>
   <string name="account_color_name_orange">Oranje</string>
@@ -71,4 +72,27 @@
   <string name="account_color_name_teal">Groenblauw</string>
   <string name="account_color_name_blue_grey">Blauw grijs</string>
   <string name="account_color_name_cyan">Cyaan</string>
+  <string name="account_connection_settings">Verbindingsinstellingen</string>
+  <string name="blocked_contacts">Geblokkeerde contacten</string>
+  <string name="blocked_contacts_unknown">Ondersteuning voor blokkeren is nog niet bepaald.</string>
+  <string name="blocked_contacts_not_supported">Blokkeren wordt niet ondersteund door de server.</string>
+  <string name="blocked_contacts_empty">Geen geblokkeerde contacten.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d contact geblokkeerd.</item>
+    <item quantity="other">%d contactpersonen geblokkeerd.</item>
+  </plurals>
+  <string name="account_chat_history">Chatgeschiedenis</string>
+  <string name="account_history_options_summary">Bericht chatgeschiedenis opslaan opties</string>
+  <string name="account_chat_history_unknown">Ondersteuning voor server chat archief is nog niet bepaald</string>
+  <string name="account_chat_history_not_supported">Server biedt geen ondersteuning voor het opslaan van de chat geschiedenis.</string>
+  <string name="account_mam_default_behavior_title">Berichten archiefbeheer</string>
+  <string name="account_mam_default_behavior_always">Alle berichten op de server opslaan</string>
+  <string name="account_mam_default_behavior_roster">Rooster contacten berichten opslaan op de server</string>
+  <string name="account_mam_default_behavior_never">Geen berichten op de server opslaan</string>
+  <string name="account_mam_sync_title">Laad berichtengeschiedenis</string>
+  <string name="account_mam_sync_all">Laad geschiedenis voor alle contacten</string>
+  <string name="account_mam_sync_current">Laad geschiedenis voor alle geopende chats</string>
+  <string name="account_mam_sync_none">Geen geschiedenis laden voor niemand</string>
+  <string name="account_clear_history_on_exit_title">Geschiedenis wissen bij afsluiten</string>
+  <string name="account_clear_history_on_exit_summary">Alle chatberichten van apparaat verwijderen voordat u Xabber afsluit.</string>
 </resources>

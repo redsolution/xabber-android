@@ -11,8 +11,8 @@
   <string name="chat_send">Küldés</string>
   <string name="clear_history">Előzmények törlése</string>
   <string name="contact_is_offline">A címzett kijelentkezett. Az elküldött üzeneteid a következő belépésekor lesznek kézbesítve.</string>
-  <string name="ENTRY_IS_NOT_AVAILABLE">A kapcsolat nem elérhető</string>
-  <string name="FILE_NOT_FOUND">Nincs meg a fájl</string>
+  <string name="ENTRY_IS_NOT_AVAILABLE">A partner nem elérhető</string>
+  <string name="FILE_NOT_FOUND">A fájl nem található</string>
   <string name="message_copy">Másolás</string>
   <string name="message_quote">Idéz</string>
   <string name="message_remove">Törlés az előzményekből</string>
@@ -67,7 +67,7 @@
   <string name="occupant_list">Résztvevők listája</string>
   <string name="otr_encryption">OTR titkosítás</string>
   <string name="otr_end">Titkosítás leállítása</string>
-  <string name="otr_refresh">Titkosítás újrakezdése</string>
+  <string name="otr_refresh">Titkosítás újraindítása</string>
   <string name="otr_request">Off-the-Record magánbeszélgetésre hívtak, de nincs bővítményed, amely ezt támogatná. PC-n/Macen használd a Pidgin, Gajim vagy Adium programot, illetve Androidon a Xabber, Conversations vagy ChatSecure alkalmazást. További információért keresd fel a http://otr.cypherpunks.ca/ webhelyet.</string>
   <string name="otr_start">Titkosítás indítása</string>
   <string name="otr_unencrypted_message">Ez az üzenet nem titkosított</string>
@@ -87,6 +87,7 @@
   <string name="no_application_to_open_file">Nem található alkalmazás a fájl megnyitásához</string>
   <string name="could_not_save_file">A fájlt nem sikerült elmenteni</string>
   <string name="file_saved_successfully">A fájl sikeresen elmentve</string>
+  <string name="received_by">%s alkalmazáson keresztül</string>
   <string name="could_not_get_path_to_file">Nem sikerült beolvasni a fájl elérési útját</string>
   <string name="message_open_private_chat">Magánbeszélgetés megnyitása</string>
   <string name="http_file_upload_slot_error">Nem sikerült feltölteni a fájlt. Túl nagy?</string>

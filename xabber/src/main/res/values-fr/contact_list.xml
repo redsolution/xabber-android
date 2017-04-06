@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Un nouveau thème sombre est désormais disponible pour Xabber. Allez-vous résistez à la tentation de l\'utiliser ?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Rejoindre le Côté Obscur</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Rester dans le côté Lumineux</string>
+  <string name="battery_optimization_disable_dialog_title">Optimisation de la batterie</string>
+  <string name="battery_optimization_disable_dialog_message">Votre appareil procède à l\'optimisation de la consommation d’énergie de Xabber, cela peut retarder les notification ou mener à la perte de certains message.\n\nVous allez maintenant être invité à désactiver cette optimisation.</string>
+  <string name="save_log_to_file">Sauvegarder dans un fichier</string>
+  <string name="clear_log">Supprimer les anciens fichiers journaux</string>
+  <string name="open_log_file">Ouvrir</string>
+  <string name="send_log_file">Envoyer</string>
+  <string name="intro_welcome">Bienvenue sur Xabber</string>
+  <string name="intro_xabber_description">Client XMPP Open source pour Android</string>
+  <string name="intro_have_account">J\'ai déjà un compte XMPP</string>
+  <string name="intro_register_account">Créer un compte XMPP</string>
+  <string name="intro_create_xabber_account">Créer un compte Xabber</string>
+  <string name="intro_faq">Si vous n’avez pas un compte XMPP, veuillez <a href="https://www.xabber.com/faq/"> lire notre F.A.Q.</a> sur comment en obtenir un.</string>
+  <string name="intro_web_search_register_xmpp">Créer un compte XMPP</string>
 </resources>

@@ -17,7 +17,11 @@
   <string name="contacts_show_panel">Tampilkan panel akun\nTampilkan tombol aktivitas dengan avatar di kiri bawah daftar kontak</string>
   <string name="contacts_stay_active_chats">Gandakan obrolan aktif\nObrolan aktif muncul di atas daftar kontak dan grup</string>
   <string name="debug_log">Debug log\nTulis pesan untuk debug log (mohon restart aplikasi untuk menerapkan perubahan)</string>
+  <string name="debug_file_log_title">Simpan berkas log\nSimpan log debug dalam perangkat (dapat dibagikan).</string>
+  <string name="debug_log_files_title">Berkas log\nDaftar berkas log tersimpan.</string>
+  <string name="debug_log_files_activity_title">Berkas log</string>
   <string name="debug_connection_errors_title">Tampilkan kesalahan jaringan\nMenampilkan layar munculan tentang pengecualian koneksi</string>
+  <string name="debug_crash_reports_title">Kirim laporan kesalahan\nKirim secara anonim laporan kesalahan untuk membantu perbaikan Xabber (silakan mulai ulang aplikasi untuk menerapkan pengaturan).</string>
   <string name="events_lightning">Lampu indikator\nKedipkan LED untuk pemberitahuan</string>
   <string name="events_persistent">Ikon taskbar\nTampilkan selalu notifikasi. Pilihan ini mencegah Android untuk mengeluarkan aplikasi dari memori</string>
   <string name="events_sound">Suara\nPilih suara pemberitahuan</string>
@@ -82,4 +86,5 @@
   <string name="connection_use_plain_text_auth">Otorisasi teks sederhana\nGunakan otentikasi teks sederhana untuk semua akun. Tidak direkomendasikan.</string>
   <string name="events_phrases">Frasa kunci\nBuat pemberitahuan pribadi untuk menerima pesan yang berisi frasa tertentu</string>
   <string name="security_clear_certificate_warning">Apakah Anda yakin ingin menghapus semua sertifikat yang diabaikan?</string>
+  <string name="account_error_settings">Pengaturan</string>
 </resources>

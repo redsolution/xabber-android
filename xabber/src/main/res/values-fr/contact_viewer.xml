@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Détails du contact</string>
   <string name="contact_viewer_client">Client </string>
+  <string name="contact_viewer_this_device">Cet appareil</string>
   <string name="vcard_nick_name">Pseudo</string>
   <string name="vcard_formatted_name">Nom formaté</string>
   <string name="vcard_prefix_name">Titre</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Éditer les groupes</string>
   <string name="remove_contact">Supprimer le contact</string>
   <string name="edit_account_user_info">Éditer mes détails</string>
+  <string name="edit_vcard">Modifier</string>
   <string name="account_user_info_save_success">Détails de l\'utilisateur sauvegardés avec succès</string>
   <string name="account_user_info_save_fail">Échec de la sauvegarde des détails de l\'utilisateur</string>
   <string name="saving">Sauvegarde en cours&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">Description</string>
   <string name="conference_subject">Sujet</string>
   <string name="message_info_occupants_number">Participants : %d</string>
+  <string name="contact_info_connected_clients_header">Appareils connectés</string>
+  <string name="contact_info_visiting_card_header">vCard</string>
 </resources>

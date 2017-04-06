@@ -21,6 +21,8 @@
   <string name="account_user_info">Fiókinformációk</string>
   <string name="account_server_info">Szerverinformációk</string>
   <string name="account_server_info_description">A szerver funkcióinak lekérése</string>
+  <string name="conference_private_chat_invitation">%2$s beszélgetésből %1$s privát csevegésre hív</string>
   <string name="accept_muc_private_chat">Elfogadás</string>
+  <string name="block_muc_private_chat">Tiltás</string>
   <string name="no_permission_camera">Nincs engedélyezve a hozzáférés a kamerához</string>
 </resources>

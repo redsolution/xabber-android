@@ -31,7 +31,7 @@
   <string name="account_enabled_summary">הפעל את החשבון</string>
   <string name="account_invalid_port">היציאה חייבת להיות מספר (ברירת מחדל: 5222)‎</string>
   <string name="account_invalid_port_range">יציאה חייבת להיות בין 1 ל-65535 (ברירת מחדל: 5222)</string>
-  <string name="account_invalid_priority">ערך עדיפות חייב להיות מספר בין 128- לבין 128 (ברירת מחדל: 10)‎</string>
+  <string name="account_invalid_priority">ערך עדיפות חייב להיות מספר בין 128- לבין 127 (ברירת מחדל: 10)‎</string>
   <string name="account_oauth">אימות</string>
   <string name="account_oauth_invalidated">לא מאומת</string>
   <string name="account_oauth_summary">הגדרות OAuth</string>

@@ -30,8 +30,8 @@
   <string name="account_enabled_summary">Abilita per attivare l\'account</string>
   <string name="account_invalid_port">La porta deve essere un numero (predefinita: 5222)</string>
   <string name="account_invalid_port_range">La porta deve essere compresa tra 1 e 65535 (predefinito: 5222)</string>
-  <string name="account_invalid_priority">Il valore della priorità deve essere un numero compreso tra -128 e 128 (predefinito: 0)</string>
-  <string name="account_oauth">Autenticazione</string>
+  <string name="account_invalid_priority">Il valore della priorità deve essere un numero compreso tra -128 e 127 (predefinito: 0)</string>
+  <string name="account_oauth">Autorizzazione</string>
   <string name="account_oauth_invalidated">Non autorizzato</string>
   <string name="account_oauth_summary">Impostazioni OAuth</string>
   <string name="account_proxy_host">Host del proxy</string>
@@ -72,17 +72,27 @@
   <string name="account_color_name_teal">Verdeacqua</string>
   <string name="account_color_name_blue_grey">Grigio-blu</string>
   <string name="account_color_name_cyan">Ciano</string>
-  <string name="account_connection_settings">Impostazioni di connessione</string>
+  <string name="account_connection_settings">Impostazioni Connessione</string>
   <string name="blocked_contacts">Contatti bloccati</string>
   <string name="blocked_contacts_unknown">Supporto al blocco non ancora determinato.</string>
   <string name="blocked_contacts_not_supported">Blocco non supportato dal server.</string>
   <string name="blocked_contacts_empty">Nessun contatto bloccato.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d contatto bloccato.</item>
+    <item quantity="other">%d contatti bloccati.</item>
+  </plurals>
   <string name="account_chat_history">Cronologia chat</string>
   <string name="account_history_options_summary">Opzioni di memorizzazione della cronologia delle chat</string>
+  <string name="account_chat_history_unknown">Supporto per la memorizzazione della cronologia sul server ancora non determinato</string>
   <string name="account_chat_history_not_supported">Server non supporta la memorizzazione della cronologia di chat.</string>
   <string name="account_mam_default_behavior_title">Gestione archivio messaggi</string>
   <string name="account_mam_default_behavior_always">Archivia tutti i messaggi sul server</string>
+  <string name="account_mam_default_behavior_roster">Archivia i messaggi dei contatti sul server</string>
   <string name="account_mam_default_behavior_never">Non conservare i messaggi sul server</string>
   <string name="account_mam_sync_title">Carica Storico Messaggi</string>
-  <string name="account_mam_sync_all">Carica storico di tutti i contatti</string>
+  <string name="account_mam_sync_all">Carica cronologia per tutti i contatti</string>
+  <string name="account_mam_sync_current">Carica la cronologia soltanto per le chat aperte</string>
+  <string name="account_mam_sync_none">Non caricare la cronologia per tutti</string>
+  <string name="account_clear_history_on_exit_title">Elimina la cronologia all\'uscita</string>
+  <string name="account_clear_history_on_exit_summary">Elimina tutti i messaggi dal dispositivo prima di uscire da Xabber.</string>
 </resources>

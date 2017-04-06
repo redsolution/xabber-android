@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Het donkere thema voor Xabber is nu beschikbaar. Kan je de verleiding weerstaan?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Loop over naar de Duistere Zijde</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Blijf aan de Lichte Zijde</string>
+  <string name="battery_optimization_disable_dialog_title">Batterij optimalisatie</string>
+  <string name="battery_optimization_disable_dialog_message">Uw apparaat doet aan hevige energie optimalisaties voor Xabber welke kunnen leiden tot vertraagde of zelf verlies van berichten.\n\nU wordt verzocht deze uit te schakelen.</string>
+  <string name="save_log_to_file">Opslaan naar bestand</string>
+  <string name="clear_log">Oude logboekbestanden verwijderen</string>
+  <string name="open_log_file">Openen</string>
+  <string name="send_log_file">Verzend</string>
+  <string name="intro_welcome">Welkom bij Xabber</string>
+  <string name="intro_xabber_description">Open source XMPP-client voor Android</string>
+  <string name="intro_have_account">Ik heb een XMPP account</string>
+  <string name="intro_register_account">Nieuw XMPP account aanmaken</string>
+  <string name="intro_create_xabber_account">Xabber account aanmaken</string>
+  <string name="intro_faq">Als u nog geen XMPP-account heeft, gelieve <a href="https://www.xabber.com/faq/"> onze F.A.Q. lezen</a> over hoe je deze kunt aanmaken.</string>
+  <string name="intro_web_search_register_xmpp">Nieuw XMPP account aanmaken</string>
 </resources>

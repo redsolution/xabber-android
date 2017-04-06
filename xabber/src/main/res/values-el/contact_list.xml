@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Νέο σκούρο θέμα είναι τώρα διαθέσιμο για το Xabber. Μπορείτε να αντισταθείτε στον πειρασμό να το χρησιμοποιήσετε;</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Μπείτε στη Σκοτεινή Πλευρά</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Μείνετε στη Σκοτεινή Πλευρά</string>
+  <string name="battery_optimization_disable_dialog_title">Βελτιστοποίηση μπαταρίας</string>
+  <string name="battery_optimization_disable_dialog_message">Η συσκευή σας κάνει κάποιες βαριές βελτιστοποιήσεις στη μπαταρία για το Xabber οι οποίες μπορεί να οδηγήσουν σε καθυστερημένες ειδοποιήσεις ή ακόμη και σε απώλεια μηνυμάτωνs.\n\nΘα σας ζητηθεί τώρα να τις απενεργοποιήσετε.</string>
+  <string name="save_log_to_file">Αποθήκευση σε αρχείο</string>
+  <string name="clear_log">Διέγραψε τα παλιά αρχεία καταγραφής</string>
+  <string name="open_log_file">Άνοιγμα</string>
+  <string name="send_log_file">Αποστολή</string>
+  <string name="intro_welcome">Καλώς ήλθατε στο Xabber</string>
+  <string name="intro_xabber_description">Πρόγραμμα πελάτη ανοικτού κώδικα XMPP για το Android</string>
+  <string name="intro_have_account">Έχω λογαριασμό XMPP</string>
+  <string name="intro_register_account">Κατοχύρωσε λογαριασμό XMPP</string>
+  <string name="intro_create_xabber_account">Δημιουργία λογαριασμού Xabber</string>
+  <string name="intro_faq">Αν δεν έχετε λογαριασμό XMPP, παρακαλώ <a href="https://www.xabber.com/faq/">διαβάστε τις συχνές ερωτήσεις</a> για το πως να αποκτήσετε.</string>
+  <string name="intro_web_search_register_xmpp">Κατοχύρωσε λογαριασμό XMPP</string>
 </resources>

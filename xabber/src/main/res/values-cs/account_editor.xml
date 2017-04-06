@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Přepnout pro povolení účtu</string>
   <string name="account_invalid_port">Port musí být číslo (výchozí: 5222)</string>
   <string name="account_invalid_port_range">Port musí být mezi 1 a 65535 (výchozí: 5222)</string>
-  <string name="account_invalid_priority">Hodnota priority musí být číslo od -128 do 128 (výchozí: 0)</string>
+  <string name="account_invalid_priority">Hodnota priority musí být číslo od -128 do 127 (výchozí: 0)</string>
   <string name="account_oauth">Autorizace</string>
   <string name="account_oauth_invalidated">Neautorizováno</string>
   <string name="account_oauth_summary">Nastavení OAuth</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Nainstalovat Orbot?</string>
   <string name="install_orbot">Nainstalovat Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Nepodařilo se zaregistrovat účet na serveru.</string>
+  <string name="SERVER_INFO_ERROR">Nelze získat informace o serveru.</string>
   <string name="account_color">Barva účtu</string>
   <string name="account_color_name_green">Zelená</string>
   <string name="account_color_name_orange">Oranžová</string>
@@ -71,4 +72,28 @@
   <string name="account_color_name_teal">Šedozelená</string>
   <string name="account_color_name_blue_grey">Modrošedá</string>
   <string name="account_color_name_cyan">Azurová</string>
+  <string name="account_connection_settings">Nastavení připojení</string>
+  <string name="blocked_contacts">Blokované kontakty</string>
+  <string name="blocked_contacts_unknown">O podpoře blokování ještě není rozhodnuto.</string>
+  <string name="blocked_contacts_not_supported">Blokování není serverem podporováno.</string>
+  <string name="blocked_contacts_empty">Žádné blokované kontakty.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d kontakt blokován.</item>
+    <item quantity="few">%d kontakty blokovány.</item>
+    <item quantity="other">%d kontaktů blokováno.</item>
+  </plurals>
+  <string name="account_chat_history">Historie zpráv</string>
+  <string name="account_history_options_summary">Možnosti ukládání historie zpráv</string>
+  <string name="account_chat_history_unknown">O podpoře serverové historie zpráv ještě není rozhodnuto</string>
+  <string name="account_chat_history_not_supported">Server nepodporuje ukládání historie zpráv.</string>
+  <string name="account_mam_default_behavior_title">Správa archivu zpráv</string>
+  <string name="account_mam_default_behavior_always">Ukládat všechny zprávy na serveru</string>
+  <string name="account_mam_default_behavior_roster">Ukládat pouze zprávy kontaktů na serveru</string>
+  <string name="account_mam_default_behavior_never">Neukládat žádné zprávy na serveru</string>
+  <string name="account_mam_sync_title">Načítání historie zpráv</string>
+  <string name="account_mam_sync_all">Načítat historii pro všechny kontakty</string>
+  <string name="account_mam_sync_current">Načítat historii pouze pro otevřené konverzace</string>
+  <string name="account_mam_sync_none">Nenačítat historii pro nikoho</string>
+  <string name="account_clear_history_on_exit_title">Při ukončení vymazat historii</string>
+  <string name="account_clear_history_on_exit_summary">Odstraní všechny zprávy z historie před ukončením Xabber.</string>
 </resources>

@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Tema baru Kegelapan tersedia untuk Xabber. Dapatkah kamu menghindari godaan untuk menggunakannya?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Bergabung dengan Sisi Gelap</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Tetap dalam Sisi Terang</string>
+  <string name="battery_optimization_disable_dialog_title">Optimasi baterai</string>
+  <string name="battery_optimization_disable_dialog_message">Perangkat Anda sedang melakukan optimasi besar pada Xabber yang dapat memicu tertundanya notifikasi atau bahkan kehilangan pesan.\n\nAnda akan diminta untuk menonaktifkannya.</string>
+  <string name="save_log_to_file">Simpan berkas</string>
+  <string name="clear_log">Hapus berkas log lama</string>
+  <string name="open_log_file">Buka</string>
+  <string name="send_log_file">Kirim</string>
+  <string name="intro_welcome">Selamat datang di Xabber</string>
+  <string name="intro_xabber_description">Klien XMPP sumber terbuka untuk Android</string>
+  <string name="intro_have_account">Saya punya akun XMPP</string>
+  <string name="intro_register_account">Daftar akun XMPP</string>
+  <string name="intro_create_xabber_account">Buat akun Xabber</string>
+  <string name="intro_faq">Jika Anda tidak memiliki akun XMPP, silakan <a href="https://www.xabber.com/faq/">baca S.S.D. kami</a> untuk membuatnya.</string>
+  <string name="intro_web_search_register_xmpp">Daftar akun XMPP</string>
 </resources>

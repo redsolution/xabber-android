@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Nové tmavé téma pro Xabber je nyní k dispozici. Dokážete odolat pokušení jej používat?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Připojte se k Temné straně</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Zůstat na Světlé straně</string>
+  <string name="battery_optimization_disable_dialog_title">Optimalizace baterie</string>
+  <string name="battery_optimization_disable_dialog_message">Vaše zařízení používá radikální optimalizaci spotřeby energie, které může vést ke zpožděným notifikacím i ztrátám zpráv.\n\nBudete nyní požádáni o jejich vypnutí.</string>
+  <string name="save_log_to_file">Ulož do souboru</string>
+  <string name="clear_log">Odstranit staré soubory protokolu</string>
+  <string name="open_log_file">Otevřít</string>
+  <string name="send_log_file">Odeslat</string>
+  <string name="intro_welcome">Vítejte na Xabber</string>
+  <string name="intro_xabber_description">Open source Android XMPP klient</string>
+  <string name="intro_have_account">Mám XMPP účet</string>
+  <string name="intro_register_account">Registrovat XMPP účet</string>
+  <string name="intro_create_xabber_account">Vytvořit Xabber účet</string>
+  <string name="intro_faq">Pokud nemáte XMPP účet, prosím přečtěte si naše <a href="https://www.xabber.com/faq/">odpovědi na časté otázky,</a> jak jej získat.</string>
+  <string name="intro_web_search_register_xmpp">Registrovat XMPP účet</string>
 </resources>

@@ -8,13 +8,13 @@
   <string name="application_action_no_contacts">Lägg till kontakt</string>
   <string name="application_action_no_online">Visa offlinekontakter</string>
   <string name="application_action_offline">Anslut</string>
-  <string name="application_action_waiting">Anslut igen</string>
+  <string name="application_action_waiting">Återanslut</string>
   <string name="application_state_connecting">Ansluter...</string>
-  <string name="application_state_disabled">Konton inaktiverade</string>
+  <string name="application_state_disabled">Konton som inaktiverats</string>
   <string name="application_state_empty">Du har inga konton</string>
   <string name="application_state_no_contacts">Du har inga kontakter</string>
   <string name="application_state_no_online">Ingen är online</string>
-  <string name="application_state_offline">Inga konton online</string>
+  <string name="application_state_offline">Inga online-konton</string>
   <string name="application_state_roster">Ansluten.</string>
   <string name="application_state_starting">Startar applikation... </string>
   <string name="application_state_waiting">Väntar på anslutning...</string>
@@ -35,7 +35,7 @@
   <string name="group_remove">Radera grupp</string>
   <string name="group_remove_confirm">Vill du verkligen radera gruppen %s? Användarna från gruppen blir kvar i kontaktlistan.</string>
   <string name="group_rename">Byt namn på grupp</string>
-  <string name="NO_SUCH_ACCOUNT">Kontot hittades ej</string>
+  <string name="NO_SUCH_ACCOUNT">Kan inte hitta kontot</string>
   <string name="NOT_CONNECTED">Anslutning inte upprättad</string>
   <string name="request_subscription">Begär prenumeration</string>
   <string name="XMPP_EXCEPTION">Fel i XMPP-stream</string>
@@ -64,7 +64,7 @@
   <string name="contact_blocked_successfully">Kontakten är nu blockerad</string>
   <string name="error_blocking_contact">Det gick inte att blockera kontakten</string>
   <string name="unblock_contact">Avblockera kontakt</string>
-  <string name="contacts_unblocked_successfully">Kontakten är nu blockerad</string>
+  <string name="contacts_unblocked_successfully">Kontakten är nu avblockerad</string>
   <string name="error_unblocking_contacts">Det gick inte att avblockera kontakten</string>
   <string name="block_contact_confirm">Vill du verkligen blockera kontakt %1$s från konto %2$s?</string>
   <string name="unblock_all_contacts_confirm">Vill du avblockera alla kontakter från konto %1$s?</string>
@@ -74,4 +74,17 @@
   <string name="dark_theme_suggest_dialog_message">Ett nytt mörkt tema är nu tillgängligt för Xabber. Kan du motstå frestelsen att använda det?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Anslut dig till den mörka sidan</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Bli kvar på den ljusa sidan</string>
+  <string name="battery_optimization_disable_dialog_title">Batterioptimering</string>
+  <string name="battery_optimization_disable_dialog_message">Enheten gör några tunga batterioptimeringar på Xabber som kan leda till försenade statusuppdateringar eller i värsta fall att meddelanden försvinner. \n\nDu blir nu tillfrågad om du vill stänga av batterioptimeringar.</string>
+  <string name="save_log_to_file">Spara till fil</string>
+  <string name="clear_log">Ta bort gamla loggfiler</string>
+  <string name="open_log_file">Öppna</string>
+  <string name="send_log_file">Skicka</string>
+  <string name="intro_welcome">Välkommen till Xabber</string>
+  <string name="intro_xabber_description">Öppen källkods XMPP-klient för Android</string>
+  <string name="intro_have_account">Jag har ett XMPP konto</string>
+  <string name="intro_register_account">Registrera ett XMPP konto</string>
+  <string name="intro_create_xabber_account">Skapa ett Xabber konto</string>
+  <string name="intro_faq">Om du inte har ett XMPP konto, vänligen <a href="https://www.xabber.com/faq/"> Läs vår FAQ</a> om hur du skapar ett.</string>
+  <string name="intro_web_search_register_xmpp">Registrera ett XMPP konto</string>
 </resources>

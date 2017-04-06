@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Interrupteur pour activer le compte</string>
   <string name="account_invalid_port">Le port doit être un nombre (défaut : 5222)</string>
   <string name="account_invalid_port_range">Le port doit être compris entre 1 et 65535 (défaut : 5222)</string>
-  <string name="account_invalid_priority">La priorité doit être un nombre compris entre -128 et 128 (défaut : 10)</string>
+  <string name="account_invalid_priority">La priorité doit être un nombre compris entre -128 et 127 (défaut : 10)</string>
   <string name="account_oauth">Autorisation</string>
   <string name="account_oauth_invalidated">Autorisation refusée</string>
   <string name="account_oauth_summary">Paramètres OAuth</string>
@@ -62,6 +62,7 @@
   <string name="orbot_required_title">Installer Orbot ?</string>
   <string name="install_orbot">Installer Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">L\'enregistrement sur le serveur a échoué.</string>
+  <string name="SERVER_INFO_ERROR">Impossible d\'obtenir les informations du serveur.</string>
   <string name="account_color">Couleur du compte</string>
   <string name="account_color_name_green">Vert</string>
   <string name="account_color_name_orange">Orange</string>
@@ -71,9 +72,22 @@
   <string name="account_color_name_teal">Turquoise</string>
   <string name="account_color_name_blue_grey">Bleu-gris</string>
   <string name="account_color_name_cyan">Cyan</string>
+  <string name="account_connection_settings">Paramètres de connexion</string>
+  <string name="blocked_contacts">Contacts bloqués</string>
+  <string name="blocked_contacts_unknown">La prise en charge du blocage n’est pas encore définie.</string>
+  <string name="blocked_contacts_not_supported">Le blocage n’a pas pris en charge par le serveur.</string>
+  <string name="blocked_contacts_empty">Aucun contact bloqué.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d contacts bloqués.</item>
+    <item quantity="other">%d contacts bloqués.</item>
+  </plurals>
+  <string name="account_chat_history">Historique de discussion</string>
+  <string name="account_history_options_summary">Paramètres d\'enregistrement de l\'historique</string>
+  <string name="account_chat_history_unknown">La prise en charge de l\'enregistrement de l\'historique n\'est pas encore défini</string>
   <string name="account_chat_history_not_supported">Le serveur ne gère pas l\'enregistrement des messages.</string>
   <string name="account_mam_default_behavior_title">Gestion de l\'historique des messages</string>
   <string name="account_mam_default_behavior_always">Enregistrer tous les messages sur le serveur</string>
+  <string name="account_mam_default_behavior_roster">Enregistrer les messages des contacts de votre liste sur le serveur</string>
   <string name="account_mam_default_behavior_never">N\'enregistrer aucun message sur le serveur</string>
   <string name="account_mam_sync_title">Charger l\'historique des messages</string>
   <string name="account_mam_sync_all">Charger l\'historique pour tous les contacts</string>

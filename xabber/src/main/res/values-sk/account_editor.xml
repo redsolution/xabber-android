@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Prepnúť pre povolenie účtu</string>
   <string name="account_invalid_port">Port musí byť číslo (predvolené: 5222)</string>
   <string name="account_invalid_port_range">Port musí byť v rozsahu medzi 1 a 65535 (predvolené: 5222)</string>
-  <string name="account_invalid_priority">Hodnota priority musí byť v intervale od -128 do 128 (predvolené: 0)</string>
+  <string name="account_invalid_priority">Hodnota priority musí byť v intervale od -128 do 127 (predvolené: 0)</string>
   <string name="account_oauth">Autorizácia</string>
   <string name="account_oauth_invalidated">Neautorizovaný</string>
   <string name="account_oauth_summary">Nastavenia OAuth</string>

@@ -27,9 +27,10 @@
   <string name="account_compression_summary">Seleção para ativar a compactação de dados</string>
   <string name="account_custom">Host personalizado</string>
   <string name="account_custom_summary">Usar configurações de host personalizado em vez de registro SRV</string>
+  <string name="account_enabled_summary">Ativar a conta</string>
   <string name="account_invalid_port">A porta deve ser um número (padrão: 5222)</string>
   <string name="account_invalid_port_range">A porta deve ser um número entre 1 e 65535 (o padrão é: 5222)</string>
-  <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 128 (padrão: 10)</string>
+  <string name="account_invalid_priority">O valor da prioridade deve ser um número entre -128 e 127 (padrão: 10)</string>
   <string name="account_oauth">Autorização</string>
   <string name="account_oauth_invalidated">Não autorizado</string>
   <string name="account_oauth_summary">Configuração de Autenticação</string>
@@ -59,7 +60,9 @@
   <string name="INCORRECT_USER_NAME">Nome de usuário incorreto. Confira o texto de ajuda abaixo para obter detalhes.</string>
   <string name="orbot_required_message">Para usar o TOR você deve possuir o Orbot instalado e ativado para tráfego de proxy nele. Você gostaria de instalá-lo pelo Google Play?</string>
   <string name="orbot_required_title">Instalar Orbot?</string>
+  <string name="install_orbot">Instalar Orbot ?</string>
   <string name="ACCOUNT_REGISTER_FAILED">Falhou ao registrar conta no servidor.</string>
+  <string name="SERVER_INFO_ERROR">Não foi possível obter a informação do servidor.</string>
   <string name="account_color">Cor da conta</string>
   <string name="account_color_name_green">Verde</string>
   <string name="account_color_name_orange">Laranja</string>
@@ -69,4 +72,27 @@
   <string name="account_color_name_teal">Verde-azulado</string>
   <string name="account_color_name_blue_grey">Cinza azul</string>
   <string name="account_color_name_cyan">Ciano</string>
+  <string name="account_connection_settings">Configurações de conexão</string>
+  <string name="blocked_contacts">Contatos bloqueados</string>
+  <string name="blocked_contacts_unknown">Bloquear contatos desconhecidos</string>
+  <string name="blocked_contacts_not_supported">bloqueio de contatos não suportado.</string>
+  <string name="blocked_contacts_empty">Sem contatos bloqueados.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d contato bloqueado.</item>
+    <item quantity="other">%d contatos bloqueados.</item>
+  </plurals>
+  <string name="account_chat_history">Histórico de chats</string>
+  <string name="account_history_options_summary">Resumo de opções de histórico de conta</string>
+  <string name="account_chat_history_unknown">Ainda não existe suporte para armazenamento de histórico no servidor</string>
+  <string name="account_chat_history_not_supported">Servidor não oferece suporte a armazenamento de histórico de bate-papo.</string>
+  <string name="account_mam_default_behavior_title">Gestão de arquivo de mensagens</string>
+  <string name="account_mam_default_behavior_always">Armazenar todas as mensagens no servidor</string>
+  <string name="account_mam_default_behavior_roster">Armazenar mensagens de contatos da lista no servidor</string>
+  <string name="account_mam_default_behavior_never">Não armazenar as mensagens no servidor</string>
+  <string name="account_mam_sync_title">Histórico de mensagens de carga</string>
+  <string name="account_mam_sync_all">História de carga para todos os contatos</string>
+  <string name="account_mam_sync_current">História de carga para bate-papo aberto apenas</string>
+  <string name="account_mam_sync_none">Não carregar a histórico para</string>
+  <string name="account_clear_history_on_exit_title">Limpar o histórico ao sair</string>
+  <string name="account_clear_history_on_exit_summary">Exclua todas as mensagens de bate-papo do dispositivo antes de sair Xabber.</string>
 </resources>

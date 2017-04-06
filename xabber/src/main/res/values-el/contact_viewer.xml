@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Πληροφορίες επαφής</string>
   <string name="contact_viewer_client">Πελάτης</string>
+  <string name="contact_viewer_this_device">Αυτή η συσκευή</string>
   <string name="vcard_nick_name">Ψευδώνυμο</string>
   <string name="vcard_formatted_name">Μορφοποιημένο όνομα</string>
   <string name="vcard_prefix_name">Πρόθεμα</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Επεξεργασία ομάδων</string>
   <string name="remove_contact">Αφαίρεση επαφής</string>
   <string name="edit_account_user_info">Επεξεργασία πληροφοριών χρήστη</string>
+  <string name="edit_vcard">Έπεξεργασία</string>
   <string name="account_user_info_save_success">Οι πληροφορίες του λογαριασμού αποθηκεύτηκαν επιτυχώς</string>
   <string name="account_user_info_save_fail">Αδυναμία αποθήκευσης πληροφοριών χρήστη στο λογαριασμό</string>
   <string name="saving">Αποθήκευση&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">Περιγραφή</string>
   <string name="conference_subject">Θέμα</string>
   <string name="message_info_occupants_number">Συμμετέχοντες: %d</string>
+  <string name="contact_info_connected_clients_header">Συνδεδεμένες συσκευές</string>
+  <string name="contact_info_visiting_card_header">vCard</string>
 </resources>

@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Informace o kontaktu</string>
   <string name="contact_viewer_client">Klient</string>
+  <string name="contact_viewer_this_device">Toto zařízení</string>
   <string name="vcard_nick_name">Přezdívka</string>
   <string name="vcard_formatted_name">Skutečné jméno</string>
   <string name="vcard_prefix_name">Titul před jménem</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Upravit skupiny</string>
   <string name="remove_contact">Odstranit kontakt</string>
   <string name="edit_account_user_info">Upravit informace o uživateli</string>
+  <string name="edit_vcard">Upravit</string>
   <string name="account_user_info_save_success">Profil uživatele účtu úspěšně uložen</string>
   <string name="account_user_info_save_fail">Nelze uložit informace o účtu uživatele</string>
   <string name="saving">Ukládání...</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">Popis</string>
   <string name="conference_subject">Předmět</string>
   <string name="message_info_occupants_number">Uživatelé: %d</string>
+  <string name="contact_info_connected_clients_header">Připojená zařízení</string>
+  <string name="contact_info_visiting_card_header">vCard</string>
 </resources>

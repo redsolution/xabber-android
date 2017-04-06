@@ -19,6 +19,8 @@
   <string name="error_during_image_processing">Errore durante l\'elaborazione dell\'immagine</string>
   <string name="account_settings">Impostazioni account</string>
   <string name="account_user_info">Informazioni account</string>
+  <string name="account_server_info">Informazioni server</string>
+  <string name="account_server_info_description">Lista delle funzionalità del server</string>
   <string name="conference_private_chat_invitation">%1$s da %2$s vuole avviare chat privata con te</string>
   <string name="accept_muc_private_chat">Accetta</string>
   <string name="block_muc_private_chat">Blocca</string>

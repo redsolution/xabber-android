@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Schalter zum Aktivieren des Kontos</string>
   <string name="account_invalid_port">Der Port muss numerisch sein (Standard: 5222)</string>
   <string name="account_invalid_port_range">Port muss ein Wert zwischen 1 und 65535 sein (Standard: 5222)</string>
-  <string name="account_invalid_priority">Die Priorität muss ein numerischer Wert zwischen -128 und 128 sein (Standardwert: 10)</string>
+  <string name="account_invalid_priority">Die Priorität muss ein numerischer Wert zwischen -128 und 127 sein (Standardwert: 10)</string>
   <string name="account_oauth">Autorisierung</string>
   <string name="account_oauth_invalidated">Nicht autorisiert</string>
   <string name="account_oauth_summary">OAuth-Einstellungen</string>
@@ -51,7 +51,7 @@
   <string name="account_tls_enable">TLS verwenden</string>
   <string name="account_tls_enable_summary">TLS Verschlüsselung für die Serververbindung verwenden (falls möglich)</string>
   <string name="account_tls_legacy">Veraltetes SSL</string>
-  <string name="account_tls_legacy_summary">Herkömmliche SSL-Verschlüsselung für die Serververbindung verwenden</string>
+  <string name="account_tls_legacy_summary">Veraltete SSL-Verschlüsselung für die Serververbindung verwenden</string>
   <string name="account_tls_mode">TLS/SSL-Verschlüsselung</string>
   <string name="account_tls_require">TLS benötigt</string>
   <string name="account_tls_require_summary">TLS-Verschlüsselung für Verbindung zum Server verlangen</string>

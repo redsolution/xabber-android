@@ -17,7 +17,11 @@
   <string name="contacts_show_panel">Boutons de compte\nAffiche des boutons d\'action avec avatar en bas et à droite de la liste de contacts</string>
   <string name="contacts_stay_active_chats">Dupliquer les conversations actives\nLes conversations actives apparaissent à la fois en haut de la liste de contacts et dans les groupes</string>
   <string name="debug_log">Journal de débogage\nÉcrire les messages dans le journal de débogage (redémarrez l\'application pour appliquer)</string>
+  <string name="debug_file_log_title">Écrire le journal\nÉcrire le journal de débogage dans un fichier local (vous pouvez le partage).</string>
+  <string name="debug_log_files_title">Fichier journaux\nListe des fichiers journaux enregistrés.</string>
+  <string name="debug_log_files_activity_title">Fichiers journaux</string>
   <string name="debug_connection_errors_title">Montrer erreurs de connexion\nAffiche les pop-ups d\'exception de connexion</string>
+  <string name="debug_crash_reports_title">Envoyer des rapports de plantage\nEnvoyer des rapports anonymes lors des plantages pour aider au développement de Xabber (veuillez redémarrer l\'application pour prendre en comptes les modifications).</string>
   <string name="events_lightning">Notification lumineuse\nLa LED clignote lors d\'une notification</string>
   <string name="events_persistent">Icône de barre des tâches\nAffiche une notification permanente. Cette option force Android à garder l\'application en mémoire</string>
   <string name="events_sound">Sonnerie\nChoisir la sonnerie de notification</string>
@@ -82,4 +86,5 @@
   <string name="connection_use_plain_text_auth">Authentification non-chiffrée\nUtilise une authentification non-chiffrée pour tous les comptes. Déconseillé.</string>
   <string name="events_phrases">Expressions clés\nCréer des notifications personnalisées pour les messages reçus contenant des formules spécifiques</string>
   <string name="security_clear_certificate_warning">Êtes-vous sûr de vouloir supprimer tous les certificats ignorés ?</string>
+  <string name="account_error_settings">Paramètres</string>
 </resources>

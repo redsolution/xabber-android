@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Włącz konto</string>
   <string name="account_invalid_port">Numer portu musi być liczbą (domyślnie: 5222)</string>
   <string name="account_invalid_port_range">Port musi być od 1 do 65535 (domyślnie: 5222)</string>
-  <string name="account_invalid_priority">Priorytet musi być liczbą pomiędzy -128 i 128 (domyślnie: 10)</string>
+  <string name="account_invalid_priority">Priorytet musi być liczbą pomiędzy -128 i 127 (domyślnie: 10)</string>
   <string name="account_oauth">Autoryzacja</string>
   <string name="account_oauth_invalidated">Brak autoryzacji</string>
   <string name="account_oauth_summary">Ustawienia OAuth</string>

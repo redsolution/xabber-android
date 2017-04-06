@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">切换以启用帐户</string>
   <string name="account_invalid_port">端口必须是整数（默认：5222）</string>
   <string name="account_invalid_port_range">端口必须介于 1 和 65535 之间 (默认: 5222)</string>
-  <string name="account_invalid_priority">优先级必须是-128至128间的整数（默认：10）</string>
+  <string name="account_invalid_priority">优先级必须是-128至127间的整数（默认：10）</string>
   <string name="account_oauth">授权</string>
   <string name="account_oauth_invalidated">未授权</string>
   <string name="account_oauth_summary">OAuth设置</string>

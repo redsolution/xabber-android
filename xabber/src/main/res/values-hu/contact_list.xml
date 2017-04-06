@@ -27,7 +27,7 @@
   <string name="contact_delete">Törlés</string>
   <string name="contact_block">Partner tiltása</string>
   <string name="contact_delete_confirm">Valóban törlöd %1$s partnert %2$s fiókból?</string>
-  <string name="contact_list">Névjegyzék</string>
+  <string name="contact_list">Partnerlista</string>
   <string name="discard_subscription">Partner elutasítása</string>
   <string name="exit">Kilépés</string>
   <string name="group_active_chat">Aktív csevegések</string>
@@ -41,7 +41,7 @@
   <string name="XMPP_EXCEPTION">Adatfolyam hiba</string>
   <string name="application_state_closing">Változások mentése...\nAz alkalmazás hamarosan bezáródik.</string>
   <string name="certificate_confirmation">%1$s\nEgész biztos megbízol a tanúsítványban a következő sha1 ujjlenyomattal: %2$s?\nNem szeretnél több értesítést kapni erről a tanúsítványhibáról?</string>
-  <string name="certificate_details">\n\nKiadva a részére: \nNév (CN): %1$s \nSzervezet (O): %2$s \nSzervezeti egység (OU): %3$s \nSorozatszám: %4$s \n \nKiadta: \nNév (CN): %5$s \nSzervezet (O): %6$s \nSzervezeti egység (OU): %7$s \n \nÉrvényesség: \nKiadva: %8$s \nLejár: %9$s.</string>
+  <string name="certificate_details">\n\nTulajdonos:\nÁltalános név (CN): %1$s\nSzervezet (O): %2$s\nSzervezeti egység (OU): %3$s\nSorozatszám: %4$s\n\nKibocsátó:\nÁltalános név (CN): %5$s\nSzervezet (O): %6$s\nSzervezeti egység (OU): %7$s\n\nÉrvényesség időtartama: \nKezdődik: %8$s \nLejárat dátuma: %9$s.</string>
   <string name="certificate_invalid_chane">Aláíráslánc ellenőrzése sikertelen</string>
   <string name="certificate_invalid_target">Cél ellenőrzése sikertelen</string>
   <string name="certificate_self_signed">Önaláírt tanúsítvány</string>
@@ -55,10 +55,36 @@
   <string name="show_offline_never">Soha ne mutassa</string>
   <string name="show_offline_normal">Általános beállítás szerint</string>
   <string name="show_offline_settings">Offline partnerek megjelenítése</string>
+  <string name="start_at_boot">Futtatás rendszerindításkor</string>
   <string name="start_at_boot_suggest">Induljon el a Xabber bekapcsoláskor?\nEzt meg lehet változtatni: \"Beállítások\" → \"Csatlakozási beállítások\" → \"Futás induláskor\"</string>
   <string name="contact_search_hint">Személy keresése</string>
   <string name="sender_is_you">Te</string>
   <string name="xmpp_accounts">XMPP fiókok</string>
+  <string name="block_list">Tiltólista</string>
+  <string name="contact_blocked_successfully">Partner sikeresen letiltva</string>
+  <string name="error_blocking_contact">Nem sikerült a partner tiltása</string>
+  <string name="unblock_contact">Tiltás feloldása</string>
+  <string name="contacts_unblocked_successfully">A partner tiltása sikeresen feloldva</string>
+  <string name="error_unblocking_contacts">Nem sikerült a partnertiltás feloldása</string>
+  <string name="block_contact_confirm">Biztosan le szeretnéd tiltani %1$s partnert %2$s fiókon?</string>
+  <string name="unblock_all_contacts_confirm">Biztosan feloldod az összes partner tiltását %1$s fiókon?</string>
+  <string name="unblock_all">Összes tiltás feloldása</string>
+  <string name="unblock_selected">Kijelöltek tiltásának feloldása</string>
+  <string name="dark_theme_suggest_dialog_title">Válaszd meg a végzeted</string>
+  <string name="dark_theme_suggest_dialog_message">Új, sötét színű téma érhető el a Xabberben. Átállsz a sötét oldalra vagy maradsz a világoson?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Sötét</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Világos</string>
+  <string name="battery_optimization_disable_dialog_title">Akkumulátoroptimalizálás</string>
+  <string name="battery_optimization_disable_dialog_message">A készüléked akkumulátoroptimalizálása a Xabbert komolyan visszafogja, emiatt késhetnek az értesítések vagy akár üzenetek veszhetnek el.\n\nMost kikapcsolhatod ezt.</string>
+  <string name="save_log_to_file">Mentés fájlba</string>
+  <string name="clear_log">Régi naplófájlok törlése</string>
+  <string name="open_log_file">Megnyitás</string>
+  <string name="send_log_file">Küldés</string>
+  <string name="intro_welcome">Üdvözlet a Xabberben!</string>
+  <string name="intro_xabber_description">Nyílt forráskódú XMPP kliens Androidra</string>
+  <string name="intro_have_account">Van már XMPP-fiókom</string>
+  <string name="intro_register_account">XMPP-fiók regisztrálása</string>
+  <string name="intro_create_xabber_account">Xabber-fiók létrehozása</string>
+  <string name="intro_faq">Ha nincs még XMPP fiókod, <a href="https://www.xabber.com/faq/">olvasd el a GyIK-et</a>, hogy hogyan szerezhetsz.</string>
+  <string name="intro_web_search_register_xmpp">XMPP fiók regisztrálása</string>
 </resources>

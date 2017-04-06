@@ -30,7 +30,7 @@
   <string name="account_enabled_summary">Переключите, чтобы включить учетную запись</string>
   <string name="account_invalid_port">Порт должен быть числом (значение по умолчанию: 5222)</string>
   <string name="account_invalid_port_range">Порт должен быть числом между 1 и 65535 (значение по умолчанию: 5222)</string>
-  <string name="account_invalid_priority">Приоритет должен быть между -128 и 128 (значение по умолчанию: 0)</string>
+  <string name="account_invalid_priority">Приоритет должен быть между -128 и 127 (значение по умолчанию: 0)</string>
   <string name="account_oauth">Авторизация</string>
   <string name="account_oauth_invalidated">Не авторизован</string>
   <string name="account_oauth_summary">Настройки авторизации OAuth</string>
