@@ -15,6 +15,7 @@
 package com.xabber.android.data.connection;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
@@ -62,7 +63,7 @@ class ConnectionThread {
                     LogManager.i(this, "No network connection");
                 }
             }
-        }, "Connection thread for " + connectionItem.getAccount());
+        });
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
     }
@@ -122,14 +123,17 @@ class ConnectionThread {
             com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
             com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
             EventBus.getDefault().postSticky(accountErrorEvent);
-        } catch (XMPPException | SmackException | IOException e) {
+
+            // catching RuntimeExceptions seems to be strange, but we got a lot of error coming from
+            // Smack or mini DSN client inside of Smack.
+        } catch (XMPPException | SmackException | IOException | RuntimeException e) {
             LogManager.exception(this, e);
 
             if (!((AccountItem)connectionItem).isSuccessfulConnectionHappened()) {
                 LogManager.i(this, "There was no successful connection, disabling account");
 
                 AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                        AccountErrorEvent.Type.CONNECTION, e.getMessage());
+                        AccountErrorEvent.Type.CONNECTION, Log.getStackTraceString(e));
 
                 com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
                 com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);

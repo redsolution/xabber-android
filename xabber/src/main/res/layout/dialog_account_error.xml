@@ -54,6 +54,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:textSize="14sp"
+        android:textIsSelectable="true"
         tools:text="TextView" />
     </ScrollView>
 

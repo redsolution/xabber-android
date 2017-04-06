@@ -243,22 +243,18 @@ public class RoomChat extends AbstractChat {
                     notify = false;
                 }
 
-                Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
+                Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
                 final MessageItem sameMessage = realm
                         .where(MessageItem.class)
                         .equalTo(MessageItem.Fields.STANZA_ID, stanzaId)
                         .findFirst();
 
-                try {
-                    // Server send our own message back
-                    if (sameMessage != null) {
-                        realm.beginTransaction();
-                        sameMessage.setDelivered(true);
-                        realm.commitTransaction();
-                        return true;
-                    }
-                } finally {
-                    realm.close();
+                // Server send our own message back
+                if (sameMessage != null) {
+                    realm.beginTransaction();
+                    sameMessage.setDelivered(true);
+                    realm.commitTransaction();
+                    return true;
                 }
 
                 if (isSelf(resource)) { // Own message from other client
