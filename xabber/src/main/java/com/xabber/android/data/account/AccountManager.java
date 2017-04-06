@@ -33,7 +33,6 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.OnWipeListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.listeners.OnAccountAddedListener;
-import com.xabber.android.data.account.listeners.OnAccountArchiveModeChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountEnabledListener;
@@ -514,12 +513,7 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 }
             }
             if (result.getArchiveMode() != archiveMode) {
-                reconnect = (result.getArchiveMode() == ArchiveMode.server) != (archiveMode == ArchiveMode.server);
                 result.setArchiveMode(archiveMode);
-                for (OnAccountArchiveModeChangedListener listener :
-                        application.getManagers(OnAccountArchiveModeChangedListener.class)) {
-                    listener.onAccountArchiveModeChanged(result);
-                }
             }
             if (changed && enabled) {
                 onAccountEnabled(result);
@@ -566,14 +560,6 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
 
         accountItem.setEnabled(enabled);
         requestToWriteAccount(accountItem);
-    }
-
-    public ArchiveMode getArchiveMode(AccountJid account) {
-        AccountItem accountItem = getAccount(account);
-        if (accountItem == null) {
-            return ArchiveMode.available;
-        }
-        return accountItem.getArchiveMode();
     }
 
     /**

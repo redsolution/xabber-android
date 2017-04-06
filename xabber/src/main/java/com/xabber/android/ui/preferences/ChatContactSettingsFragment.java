@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.ArchiveMode;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -22,14 +21,8 @@ public class ChatContactSettingsFragment extends BaseSettingsFragment {
     @Override
     protected void onInflate(Bundle savedInstanceState) {
         addPreferencesFromResource(R.xml.preference_chat_contact);
-
-        AccountItem accountItem = mListener.getAccountItem();
-
-        if (accountItem.getArchiveMode() == ArchiveMode.server
-                || accountItem.getArchiveMode() == ArchiveMode.dontStore) {
-            getPreferenceScreen().removePreference(getPreferenceScreen()
-                    .findPreference(getString(R.string.chat_save_history_key)));
-        }
+        getPreferenceScreen().removePreference(getPreferenceScreen()
+                .findPreference(getString(R.string.chat_save_history_key)));
     }
 
     @Override

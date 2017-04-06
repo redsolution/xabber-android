@@ -28,15 +28,12 @@ import android.support.v4.app.TaskStackBuilder;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ArchiveMode;
-import com.xabber.android.data.account.listeners.OnAccountArchiveModeChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
@@ -44,6 +41,7 @@ import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.database.sqlite.NotificationTable;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.phrase.PhraseManager;
@@ -67,8 +65,7 @@ import java.util.List;
  * @author alexander.ivanov
  */
 public class NotificationManager implements OnInitializedListener, OnAccountChangedListener,
-        OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener,
-        OnAccountArchiveModeChangedListener {
+        OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener {
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
     public static final int MESSAGE_NOTIFICATION_ID = 2;
@@ -502,14 +499,12 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         final Date timestamp = messageNotification.getTimestamp();
         final int count = messageNotification.getCount();
 
-        if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore) {
-            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                @Override
-                public void run() {
-                    NotificationTable.getInstance().write(account.toString(), user.toString(), text, timestamp, count);
-                }
-            });
-        }
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                NotificationTable.getInstance().write(account.toString(), user.toString(), text, timestamp, count);
+            }
+        });
 
         updateMessageNotification(messageItem);
     }
@@ -579,19 +574,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             }
         });
         updateMessageNotification(null);
-    }
-
-    @Override
-    public void onAccountArchiveModeChanged(AccountItem accountItem) {
-        final AccountJid account = accountItem.getAccount();
-        if (AccountManager.getInstance().getArchiveMode(account) != ArchiveMode.dontStore)
-            return;
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                NotificationTable.getInstance().removeAccount(account);
-            }
-        });
     }
 
     @Override
