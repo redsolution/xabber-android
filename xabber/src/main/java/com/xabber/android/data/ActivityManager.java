@@ -99,10 +99,11 @@ public class ActivityManager implements OnUnloadListener {
         ContactListActivity root = null;
         rebuildStack();
         for (Activity activity : activities) {
-            if (!finishRoot && root == null && activity instanceof ContactListActivity)
+            if (!finishRoot && root == null && activity instanceof ContactListActivity) {
                 root = (ContactListActivity) activity;
-            else
+            } else {
                 activity.finish();
+            }
         }
         rebuildStack();
     }
@@ -313,7 +314,12 @@ public class ActivityManager implements OnUnloadListener {
 
     @Override
     public void onUnload() {
-        clearStack(true);
+        Application.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                clearStack(true);
+            }
+        });
     }
 
 }
