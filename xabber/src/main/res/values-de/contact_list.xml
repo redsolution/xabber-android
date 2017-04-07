@@ -6,7 +6,7 @@
   <string name="application_action_disabled">Konten verwalten</string>
   <string name="application_action_empty">Konto hinzufügen</string>
   <string name="application_action_no_contacts">Kontakt hinzufügen</string>
-  <string name="application_action_no_online">Offline Kontakte zeigen</string>
+  <string name="application_action_no_online">Offline Kontakte anzeigen</string>
   <string name="application_action_offline">Verbinden</string>
   <string name="application_action_waiting">Wiederverbinden</string>
   <string name="application_state_connecting">Verbinde...</string>

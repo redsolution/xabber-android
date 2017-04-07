@@ -17,7 +17,11 @@
   <string name="contacts_show_panel">Vis kontopanel\nVis handlingsknapper med avatarer nederst til høyre i kontaktlisten</string>
   <string name="contacts_stay_active_chats">Dupliser aktive samtaler\nAktive samtaler vises både øverst i kontaktlisten og i grupper</string>
   <string name="debug_log">Feilsøkingslogg\nSkriv beskjeder til feilsøkingsloggen (du starte programmet på nytt for å ta endringene i bruk)</string>
+  <string name="debug_file_log_title">Skriv fillogg\nSkriv feilrettingslogg til lokal fil (du kan dele den).</string>
+  <string name="debug_log_files_title">Loggfiler\nListe over skrevne loggfiler.</string>
+  <string name="debug_log_files_activity_title">Loggfiler</string>
   <string name="debug_connection_errors_title">Vis tilkoblingsfeil\nVis oppsprettsvinduer med tilkoblingsunntak</string>
+  <string name="debug_crash_reports_title">Send kræsjrapporter\nSend anonyme kræsjrapporter for å hjelpe utviklingen av Xabber. (Start programmet på nytt for at disse endringene skal tre i effekt).</string>
   <string name="events_lightning">Lysvarsel\nBlink LED-lyset ved varsler</string>
   <string name="events_persistent">Ikon på oppgavelinjen\nVis vedvarende melding. Dette alternativet hindrer at Android fjerner programmet fra minnet</string>
   <string name="events_sound">Varslingslyd\nVelg varslingslyd</string>
@@ -82,4 +86,5 @@
   <string name="connection_use_plain_text_auth">Klartekstbekreftelse\nBruk klartekstbekreftelse for alle kontoer. Ikke anbefalt.</string>
   <string name="events_phrases">Nøkkelsetninger\nOpprett egendefinert varsel for mottatte meldinger som inneholder gitte setninger</string>
   <string name="security_clear_certificate_warning">Ønsker du virkelig å fjerne alle ignorerte sertifikater?</string>
+  <string name="account_error_settings">Innstillinger</string>
 </resources>

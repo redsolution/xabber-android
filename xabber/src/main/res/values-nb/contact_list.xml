@@ -75,6 +75,9 @@
   <string name="dark_theme_suggest_dialog_join_dark_side">Gå over til den mørke siden</string>
   <string name="dark_theme_suggest_dialog_stay_on_light_side">Bli værende på lysets side</string>
   <string name="battery_optimization_disable_dialog_title">Batterioptimisering</string>
+  <string name="battery_optimization_disable_dialog_message">Enheten din har iverksatt hissig batterioptimisering som kan lede til at merknader fra Xabber blir forsinket eller faktisk forsvinne.\n\nDu vil nå bli spurt om å skru av dette.</string>
+  <string name="save_log_to_file">Lagre til fil</string>
+  <string name="clear_log">Slett gamle loggfiler</string>
   <string name="open_log_file">Åpne</string>
   <string name="send_log_file">Send</string>
   <string name="intro_welcome">Velkommen til Xabber</string>

@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">联系人信息</string>
   <string name="contact_viewer_client">客户端</string>
+  <string name="contact_viewer_this_device">此设备</string>
   <string name="vcard_nick_name">昵称</string>
   <string name="vcard_formatted_name">姓名</string>
   <string name="vcard_prefix_name">前缀</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">编辑分组</string>
   <string name="remove_contact">删除联系人</string>
   <string name="edit_account_user_info">编辑用户信息</string>
+  <string name="edit_vcard">编辑</string>
   <string name="account_user_info_save_success">已成功保存的帐户用户信息</string>
   <string name="account_user_info_save_fail">不能保存帐户用户信息</string>
   <string name="saving">正在保存&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">描述</string>
   <string name="conference_subject">主题</string>
   <string name="message_info_occupants_number">参与者: %d</string>
+  <string name="contact_info_connected_clients_header">已连接的设备</string>
+  <string name="contact_info_visiting_card_header">电子名片</string>
 </resources>

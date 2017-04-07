@@ -13,6 +13,7 @@
   <string name="account_type">Kontotyp</string>
   <string name="account_type_hints_gtalk">Benutzername für Google Talk</string>
   <string name="account_type_helps_gtalk">Wenn du über kein Google-Konto verfügst, kannst du unter http://mail.google.com\n eins erstellen. Verwende bitte your_user_name@your_google_domain</string>
+  <string name="account_xmpp_register_warning">Du musst zunächst <a href="http://www.google.de/#q=XMPP+Account+erstellen">einen XMPP Account erstellen</a> um Xabber zu nutzen!</string>
   <string name="account_type_helps_xmpp">Wenn du mehr über XMPP (Jabber) erfahren möchtest, besuche https://xmpp.org</string>
   <string name="account_user_name">Benutzername</string>
   <string name="EMPTY_SERVER_NAME">Servername nicht angegeben</string>
@@ -55,7 +56,7 @@
   <string name="account_tls_mode">TLS/SSL-Verschlüsselung</string>
   <string name="account_tls_require">TLS benötigt</string>
   <string name="account_tls_require_summary">TLS-Verschlüsselung für Verbindung zum Server verlangen</string>
-  <string name="account_use_orbot">Chatten über das anonyme Netzwerk TOR und erzwingen einer TLS Verschlüsselung\nFür Google Talk nicht empfohlen</string>
+  <string name="account_use_orbot">Anonymer Chat über TOR und Erzwingen einer TLS Verschlüsselung wird für Google Talk nicht empfohlen</string>
   <string name="confirm_cancellation">Wollen Sie wirklich alle Änderungen verwerfen?</string>
   <string name="INCORRECT_USER_NAME">Überprüfen Sie den Benutzernamen. Details finden Sie unten im Hilfetext.</string>
   <string name="orbot_required_message">Für die Nutzung von TOR muss Orbot installiert sein und die Proxy-Verbindung darüber laufen. Möchten Sie die App von Google Play herunterladen?</string>
@@ -74,8 +75,8 @@
   <string name="account_color_name_cyan">Türkis</string>
   <string name="account_connection_settings">Verbindungseinstellungen</string>
   <string name="blocked_contacts">Blockierte Kontakte</string>
-  <string name="blocked_contacts_unknown">Unterstützung für Sperrung noch nicht beschlossen.</string>
-  <string name="blocked_contacts_not_supported">Sperrung wird vom Server nicht unterstützt.</string>
+  <string name="blocked_contacts_unknown">Serverseitige Unterstützung für Kontaktsperrung noch nicht ermittelt.</string>
+  <string name="blocked_contacts_not_supported">Keine serverseitige Unterstützung für Kontaktsperrung.</string>
   <string name="blocked_contacts_empty">Nicht blockierte Kontakte.</string>
   <plurals name="blocked_contacts_number">
     <item quantity="one">%d Kontakt blockiert.</item>

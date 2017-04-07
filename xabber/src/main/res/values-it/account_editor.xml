@@ -13,6 +13,7 @@
   <string name="account_type">Tipo account</string>
   <string name="account_type_hints_gtalk">username per gmail.com o per Google Apps</string>
   <string name="account_type_helps_gtalk">Se non possiedi un account Google puoi crearne uno visitando http://mail.google.com\nÈ anche possibile utilizzare  nome_utente@dominio_personale_google</string>
+  <string name="account_xmpp_register_warning">È necessario <a href="http://www.google.com/#q=register XMPP account">registrare un account XMPP</a> prima di aggiungerlo a Xabber!</string>
   <string name="account_type_helps_xmpp">Se vuoi saperne di più su XMPP (Jabber) visita https://xmpp.org</string>
   <string name="account_user_name">Nome utente</string>
   <string name="EMPTY_SERVER_NAME">Il nome del server non è stato specificato</string>

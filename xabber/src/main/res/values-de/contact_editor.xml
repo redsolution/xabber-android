@@ -6,7 +6,7 @@
   <string name="contact_name">Alias (optional)</string>
   <string name="contact_subscribe_confirm">Wollen Sie Ihren Kontostatus %1$s mit dem Kontakt teilen?</string>
   <string name="contact_user">Benutzername des Kontakts</string>
-  <string name="ENTRY_IS_NOT_FOUND">Kontakt wurde nicht gefunden</string>
+  <string name="ENTRY_IS_NOT_FOUND">Kontakt nicht gefunden</string>
   <string name="group_is_empty">Gruppenname setzen</string>
   <string name="group_name">Gruppenname</string>
   <string name="choose_account">Konto auswählen</string>

@@ -4,10 +4,10 @@
   <string name="EMPTY_NICK_NAME">Nickname nicht angegeben</string>
   <string name="EMPTY_ROOM_NAME">Konferenz nicht angegeben</string>
   <string name="muc_join">Konferenz beitreten</string>
-  <string name="muc_nick">Nick</string>
-  <string name="muc_nick_hint">Ihr Nickname in der Konferenz</string>
+  <string name="muc_nick">Spitzname</string>
+  <string name="muc_nick_hint">Ihr Spitzname in der Konferenz</string>
   <string name="muc_password">Passwort</string>
-  <string name="muc_password_hint">Kein Passwort benötigt</string>
+  <string name="muc_password_hint">Passwort wird nicht benötigt</string>
   <string name="muc_room">Konferenz</string>
   <string name="muc_server">Mehrbenutzer Chat</string>
   <string name="NICK_ALREADY_USED">Der Nickname wird bereits verwendet</string>

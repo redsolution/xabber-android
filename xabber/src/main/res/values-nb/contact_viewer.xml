@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Kontaktinformasjon</string>
   <string name="contact_viewer_client">Klient</string>
+  <string name="contact_viewer_this_device">Denne enheten</string>
   <string name="vcard_nick_name">Kallenavn</string>
   <string name="vcard_formatted_name">Fullt navn</string>
   <string name="vcard_prefix_name">Prefiks</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Rediger grupper</string>
   <string name="remove_contact">Slett kontakt</string>
   <string name="edit_account_user_info">Rediger brukerinformasjon</string>
+  <string name="edit_vcard">Rediger</string>
   <string name="account_user_info_save_success">Brukerinformasjon for konto er lagret</string>
   <string name="account_user_info_save_fail">Kunne ikke lagre brukerinformasjon for konto</string>
   <string name="saving">Lagrer&#8230;</string>
@@ -63,4 +65,6 @@
   <string name="conference_description">Beskrivelse</string>
   <string name="conference_subject">Emne</string>
   <string name="message_info_occupants_number">Deltakere: %d</string>
+  <string name="contact_info_connected_clients_header">Tilkoblede enheter</string>
+  <string name="contact_info_visiting_card_header">vCard</string>
 </resources>
