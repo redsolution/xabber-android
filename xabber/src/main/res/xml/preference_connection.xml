@@ -44,11 +44,6 @@
         android:key="@string/connection_use_carbons_key"
         android:defaultValue="@bool/connection_use_carbons_default"
         />
-    <CheckBoxPreference
-        android:title="@string/connection_use_plain_text_auth"
-        android:key="@string/connection_use_plain_text_auth_key"
-        android:defaultValue="@bool/connection_use_plain_text_auth_default"
-        />
 
     <PreferenceCategory
         android:title="@string/connection_priority"
