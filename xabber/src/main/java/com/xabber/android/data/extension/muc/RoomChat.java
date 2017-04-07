@@ -332,7 +332,7 @@ public class RoomChat extends AbstractChat {
      * @param resource
      */
     private boolean isSelf(Resourcepart resource) {
-        return nickname.equals(resource);
+        return nickname != null && resource != null && nickname.equals(resource);
     }
 
     /**
