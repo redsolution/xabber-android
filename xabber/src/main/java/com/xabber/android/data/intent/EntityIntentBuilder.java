@@ -45,10 +45,12 @@ public class EntityIntentBuilder extends
     @Override
     void preBuild() {
         super.preBuild();
-        if (user == null)
+        if (user == null) {
             return;
-        if (getSegmentCount() == 0)
-            throw new IllegalStateException();
+        }
+        if (getSegmentCount() == 0) {
+            throw new IllegalStateException("Wrong segment count: " + getSegmentCount());
+        }
         addSegment(user.toString());
     }
 

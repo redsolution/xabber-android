@@ -42,10 +42,12 @@ class BaseAccountIntentBuilder<T extends BaseAccountIntentBuilder<?>> extends
     @Override
     void preBuild() {
         super.preBuild();
-        if (account == null)
+        if (account == null) {
             return;
-        if (getSegmentCount() != 0)
-            throw new IllegalStateException();
+        }
+        if (getSegmentCount() != 0) {
+            throw new IllegalStateException("Wrong segment count: " + getSegmentCount());
+        }
         addSegment(account.toString());
     }
 
