@@ -170,6 +170,13 @@ public class AccountManager implements OnLoadListener, OnUnloadListener, OnWipeL
                 LogManager.exception(this, e);
             }
 
+            if (serverName == null || userName == null || resource == null) {
+                LogManager.e(LOG_TAG, "could not create account. username " + userName
+                        + ", server name " + serverName
+                        + ", resource " + resource);
+                continue;
+            }
+
             AccountItem accountItem = new AccountItem(
                     accountRealm.isCustom(),
                     accountRealm.getHost(),

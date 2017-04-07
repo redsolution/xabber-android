@@ -14,6 +14,7 @@
   <string name="account_type_hints_gtalk">användarnamn för gmail.com eller Google Appsdomänen</string>
   <string name="account_type_helps_gtalk">Om du ännu inte har ett Googlekonto kan du skapa ett på: http://mail.google.com\n
 Du kan även välja att använda ditt_konto_namn@din_google_domän</string>
+  <string name="account_xmpp_register_warning">Du måste <a href="http://www.google.com/#q=register XMPP account"> registrera ett XMPP-konto</a> innan du lägger till det i Xabber!</string>
   <string name="account_type_helps_xmpp">Om du vill veta mer om XMPP (Jabber) gå till: https://xmpp.org</string>
   <string name="account_user_name">Användarnamn</string>
   <string name="EMPTY_SERVER_NAME">Servernamn har inte angetts</string>

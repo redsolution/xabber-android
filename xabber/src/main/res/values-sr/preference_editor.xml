@@ -17,6 +17,7 @@
   <string name="contacts_show_panel">Прикажи панел налога\nПриказ дугмади радњи са аватарима у доњем десном углу листе</string>
   <string name="contacts_stay_active_chats">Дупликати активног ћаскања\nАктивна ћаскања се приказују и изнад листе и у групама</string>
   <string name="debug_log">Дневник грешака\nУпис порука у дневник за отклањање грешака (потребан рестарт)</string>
+  <string name="debug_connection_errors_title">Приказ грешака везе\nИскачуће поруке при грешкама повезивања</string>
   <string name="events_lightning">Светлосна индикација\nЛЕД трепће при обавештењима</string>
   <string name="events_persistent">Икона траке задатака\nПриказује стално обавештење. Ова опција спречава Андроид да избаци програм из меморије</string>
   <string name="events_sound">Звучно упозорење\nИзаберите звук обавештења</string>
@@ -81,5 +82,4 @@
   <string name="connection_use_plain_text_auth">Аутентификација обичним текстом\nАутентификација обичним текстом за све налоге. Није препоручљиво.</string>
   <string name="events_phrases">Кључне речи\nНаправите посебна обавештења кад примљене поруке садрже наведене речи</string>
   <string name="security_clear_certificate_warning">Желите ли заиста да уклоните све игнорисане сертификате?</string>
-  <string name="debug_connection_errors_title">Приказ грешака везе\nИскачуће поруке при грешкама повезивања</string>
 </resources>

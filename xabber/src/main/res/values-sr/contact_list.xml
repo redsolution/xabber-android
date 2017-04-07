@@ -73,5 +73,5 @@
   <string name="dark_theme_suggest_dialog_title">Изаберите своју судбину</string>
   <string name="dark_theme_suggest_dialog_message">Нова тамна тема је доступна за Ксабер. Можете ли се одупрети искушењу да је пробате?</string>
   <string name="dark_theme_suggest_dialog_join_dark_side">Придружи се Тамној страни</string>
-  <string name="dark_theme_suggest_dialog_stay_on_light_side">"Остани на Светлој страни"</string>
+  <string name="dark_theme_suggest_dialog_stay_on_light_side">Остани на Светлој страни</string>
 </resources>

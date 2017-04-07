@@ -4,7 +4,7 @@
   <string name="contact_viewer">Kontaktinformationen</string>
   <string name="contact_viewer_client">Client</string>
   <string name="contact_viewer_this_device">Dieses Gerät</string>
-  <string name="vcard_nick_name">Nickname</string>
+  <string name="vcard_nick_name">Spitzname</string>
   <string name="vcard_formatted_name">Formatierter Name</string>
   <string name="vcard_prefix_name">Präfix</string>
   <string name="vcard_given_name">Vorname</string>

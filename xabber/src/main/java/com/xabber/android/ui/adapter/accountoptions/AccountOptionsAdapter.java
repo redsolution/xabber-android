@@ -53,6 +53,8 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
 
     @Override
     public void onAccountOptionClick(int adapterPosition) {
-        listener.onAccountOptionClick(options[adapterPosition]);
+        if (adapterPosition >= 0 && adapterPosition < options.length) {
+            listener.onAccountOptionClick(options[adapterPosition]);
+        }
     }
 }

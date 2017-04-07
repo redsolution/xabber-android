@@ -8,7 +8,7 @@
   <string name="account_editor">Konto bearbeiten</string>
   <string name="account_state_registration">Registrierung</string>
   <string name="account_state_authentication">Autorisierung</string>
-  <string name="account_state_connected">Online</string>
+  <string name="account_state_connected">Verfügbar</string>
   <string name="account_state_connecting">Verbinden</string>
   <string name="account_state_disconnecting">Verbindung wird getrennt</string>
   <string name="account_state_offline">Abgemeldet</string>

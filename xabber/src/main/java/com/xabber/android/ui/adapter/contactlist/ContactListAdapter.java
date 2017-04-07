@@ -717,7 +717,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onContactClick(int adapterPosition) {
-        listener.onContactClick((AbstractContact) baseEntities.get(adapterPosition));
+        if (adapterPosition >= 0 && adapterPosition < baseEntities.size()) {
+            listener.onContactClick((AbstractContact) baseEntities.get(adapterPosition));
+        }
     }
 
     @Override

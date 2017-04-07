@@ -42,6 +42,7 @@ import java.util.List;
 public class ConferenceSelectFragment extends ListFragment implements AdapterView.OnItemSelectedListener,
         View.OnClickListener, MUCManager.HostedRoomsListener, AdapterView.OnItemClickListener {
 
+    private static final String LOG_TAG = ConferenceSelectFragment.class.getSimpleName();
     private Spinner accountView;
     private EditText serverView;
     private EditText roomView;
@@ -148,6 +149,11 @@ public class ConferenceSelectFragment extends ListFragment implements AdapterVie
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (account == null) {
+            LogManager.w(LOG_TAG, "onItemClick: Account is null!");
+            return;
+        }
+
         try {
             startActivity(ConferenceAddActivity.createIntent(getActivity(), account,
                     UserJid.from(hostedConferencesAdapter.getItem(position).getJid())));

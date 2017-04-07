@@ -13,6 +13,7 @@
   <string name="account_type">アカウントの種類</string>
   <string name="account_type_hints_gtalk">gmail.com または Google Apps ドメイン用のユーザー名</string>
   <string name="account_type_helps_gtalk">Google アカウントを持っていない場合、http://mail.google.com で作成してください\nyour_user_name@your_google_domain を使用することもできます</string>
+  <string name="account_xmpp_register_warning">Xabber に追加する前に <a href="http://www.google.com/#q=register XMPP account">XMPP アカウントを登録</a> する必要があります!</string>
   <string name="account_type_helps_xmpp">XMPP (Jabber) についての詳細は: https://xmpp.org</string>
   <string name="account_user_name">ユーザー名</string>
   <string name="EMPTY_SERVER_NAME">サーバー名が指定されていません</string>

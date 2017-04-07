@@ -9,6 +9,8 @@
     <string name="chat_input_hint">Type your message here</string>
     <string name="chat_send">Send</string>
     <string name="clear_history">Clear history</string>
+    <string name="clear_chat_history_dialog_button">Clear</string>
+    <string name="clear_chat_history_dialog_message">Do you really want to clear all chat history with %s?</string>
     <string name="contact_is_offline">The recipient is offline. Messages you send will be delivered when they come back online.</string>
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
     <string name="FILE_NOT_FOUND">File not found</string>

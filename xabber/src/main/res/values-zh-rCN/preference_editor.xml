@@ -17,7 +17,11 @@
   <string name="contacts_show_panel">显示账户面板\n在联系人列表的右下角显示带有头像的动作按钮</string>
   <string name="contacts_stay_active_chats">重复显示进行中的聊天\n同时在联系人列表顶部和分组中显示进行中聊天</string>
   <string name="debug_log">调试日志\n将消息写入调试日志（请重启程序来应用设置）</string>
+  <string name="debug_file_log_title">写文件日志\n写调试日志到本地文件(你可以共享它)。</string>
+  <string name="debug_log_files_title">日志文件\n写入的日志文件列表。</string>
+  <string name="debug_log_files_activity_title">日志文件</string>
   <string name="debug_connection_errors_title">显示连接错误\n显示连接异常弹出消息</string>
+  <string name="debug_crash_reports_title">发送崩溃报告\n发送匿名崩溃报告以帮助 Xabber 开发(请重启程序以应用更改)。</string>
   <string name="events_lightning">灯光提示\n通知时闪烁LED</string>
   <string name="events_persistent">任务栏图标\n显示持久性通知，此选项可防止Android从内存中卸载该程序</string>
   <string name="events_sound">声音提示\n选择提示音</string>
@@ -78,8 +82,9 @@
   <string name="chats_attention_sound">注意声音\n选择铃声</string>
   <string name="connection_load_vcard">加载vCard\n加载和更新联系人的个人信息和头像，禁用以减少流量</string>
   <string name="connection_load_images">加载图像\n自动从文件URL加载图像。禁用以降低带宽使用率。</string>
-  <string name="connection_use_carbons">复写模式\n可能不稳定！将为此客户端上的相同账户共享会话，禁用以减少流量使用。</string>
+  <string name="connection_use_carbons">复写模式\n将为此客户端上的相同账户共享会话，禁用以减少流量使用。</string>
   <string name="connection_use_plain_text_auth">纯文本身份验证\n对所有账户使用纯文本认证。 不建议。</string>
   <string name="events_phrases">关键短语\n通知某些包含预设短语的消息并选择声音</string>
   <string name="security_clear_certificate_warning">你确实要删除所有忽略的证书吗？</string>
+  <string name="account_error_settings">设置</string>
 </resources>
