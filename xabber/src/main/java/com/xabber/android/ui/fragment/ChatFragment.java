@@ -1113,6 +1113,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
 
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
+            if (clickedMessageItem == null) {
+                LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
+                return;
+            }
 
             PopupMenu popup = new PopupMenu(getActivity(), caller);
             popup.inflate(R.menu.item_message);
@@ -1142,6 +1146,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Override
     public void onMessageImageClick(View caller, int position) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+        if (messageItem == null) {
+            LogManager.w(LOG_TAG, "onMessageImageClick: null message item. Position: " + position);
+            return;
+        }
+
 
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(messageItem.getText()));
