@@ -13,7 +13,7 @@
   <string name="account_type">Fióktípus</string>
   <string name="account_type_hints_gtalk">gmail.com felhasználónév vagy Google Apps tartomány</string>
   <string name="account_type_helps_gtalk">Ha nincs Google fiókod, létrehozhatsz egyet itt: http://mail.google.com \n Vagy használhatod a felhasznaloneved@google_tartomanyod is</string>
-  <string name="account_xmpp_register_warning"><a href="http://www.google.com/#q=register XMPP account">Regisztrálj XMPP fiókot</a>, azután tudod hozzáadni a Xabberhez!</string>
+  <string name="account_xmpp_register_warning"><a href="http://www.google.com/#q=Regisztrálj XMPP fiókot">Regisztrálj XMPP fiókot</a>, azután tudod hozzáadni a Xabberhez!</string>
   <string name="account_type_helps_xmpp">Tudj meg többet az XMPP-ről (Jabberről) itt: https://xmpp.org</string>
   <string name="account_user_name">Felhasználónév</string>
   <string name="EMPTY_SERVER_NAME">A szervernév nincs megadva</string>

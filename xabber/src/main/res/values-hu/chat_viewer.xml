@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Írd ide az üzeneted</string>
   <string name="chat_send">Küldés</string>
   <string name="clear_history">Előzmények törlése</string>
+  <string name="clear_chat_history_dialog_button">Törlés</string>
+  <string name="clear_chat_history_dialog_message">Biztos törölni szeretnéd a beszélgetés minden előzményét %s partnerrel?</string>
   <string name="contact_is_offline">A címzett kijelentkezett. Az elküldött üzeneteid a következő belépésekor lesznek kézbesítve.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">A partner nem elérhető</string>
   <string name="FILE_NOT_FOUND">A fájl nem található</string>

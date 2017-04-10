@@ -26,4 +26,6 @@
   <string name="muc_get_hosted_conferences">Отримати відкриті конференції</string>
   <string name="muc_error_getting_conferences">Помилка отримання конференцій</string>
   <string name="muc_type_conference_name">Введіть назву конференції</string>
+  <string name="contact_is_blocked">Контакт заблоковано!</string>
+  <string name="conference_invitation">Запрошення у конференцію</string>
 </resources>

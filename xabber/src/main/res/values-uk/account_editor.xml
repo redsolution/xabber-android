@@ -13,6 +13,7 @@
   <string name="account_type">Тип облікового запису</string>
   <string name="account_type_hints_gtalk">обліковий запис gmail.com чи служби google</string>
   <string name="account_type_helps_gtalk">Якщо ви не маєте облікового запису Google, ви можете створити його на http://mail.google.com\nАбо ви можете використати  your_user_name@your_google_domain</string>
+  <string name="account_xmpp_register_warning">Вам необхідно <a href="http://www.google.com/#q=register an XMPP account"> зареєструвати XMPP акаунт</a> перед додаванням його до Xabber!</string>
   <string name="account_type_helps_xmpp">Якщо ви хочете дізнатися більше про XMPP (Jabber) тут: https://xmpp.org</string>
   <string name="account_user_name">Ім’я користувача</string>
   <string name="EMPTY_SERVER_NAME">Не вказано ім’я сервера</string>
@@ -27,6 +28,7 @@
   <string name="account_compression_summary">Позначте для включення стиснення даних</string>
   <string name="account_custom">Вказати хост вручну</string>
   <string name="account_custom_summary">Вказати хост для підключення вручну, замість використання SRV запису</string>
+  <string name="account_enabled_summary">Перемикніть, щоб увімкнути обліковий запис</string>
   <string name="account_invalid_port">Порт має бути числом (типове значення: 5222)</string>
   <string name="account_invalid_port_range">Порт має бути від 1 до 65535 (за замовчуванням: 5222)</string>
   <string name="account_invalid_priority">Пріоритет має бути в діапазоні між -128 і 127 (типове значення: 10)</string>
@@ -59,7 +61,9 @@
   <string name="INCORRECT_USER_NAME">Неправильне ім’я користувача. Перегляньте підказку в нижній частині екрану</string>
   <string name="orbot_required_message">Для використання TOR має бути встановлений Orbot і використаний як проксі сервер. Бажаєте встановити його із Google Play?</string>
   <string name="orbot_required_title">Встановити Orbot?</string>
+  <string name="install_orbot">Встановити Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Не вдалося зареєструвати обліковий запис на сервері.</string>
+  <string name="SERVER_INFO_ERROR">Не вдалося отримати відомості про сервер.</string>
   <string name="account_color">Колір облікового запису</string>
   <string name="account_color_name_green">Зелений</string>
   <string name="account_color_name_orange">Помаранчевий</string>
@@ -69,4 +73,28 @@
   <string name="account_color_name_teal">Зеленовато-Голубий</string>
   <string name="account_color_name_blue_grey">Синій сірий</string>
   <string name="account_color_name_cyan">Блакитний</string>
+  <string name="account_connection_settings">Налаштування з\'єднання</string>
+  <string name="blocked_contacts">Заблоковані контакти</string>
+  <string name="blocked_contacts_unknown">Не вдалося визначити підтримку блокування контактів.</string>
+  <string name="blocked_contacts_not_supported">Блокування не підтримується сервером.</string>
+  <string name="blocked_contacts_empty">Немає заблокованих контактів.</string>
+  <plurals name="blocked_contacts_number">
+    <item quantity="one">%d контакт заблоковано.</item>
+    <item quantity="few">%d контакти заблоковано.</item>
+    <item quantity="other">%d контактів заблоковано.</item>
+  </plurals>
+  <string name="account_chat_history">Історія чату</string>
+  <string name="account_history_options_summary">Налаштування зберігання історії повідомлень</string>
+  <string name="account_chat_history_unknown">Підтримка зберігання історії сервером ще не визначена</string>
+  <string name="account_chat_history_not_supported">Сервер не підтримує зберігання історії чату.</string>
+  <string name="account_mam_default_behavior_title">Архів повідомлень</string>
+  <string name="account_mam_default_behavior_always">Зберігати всі повідомлення на сервері</string>
+  <string name="account_mam_default_behavior_roster">Зберігати переписку тільки з контактами</string>
+  <string name="account_mam_default_behavior_never">Не зберігати повідомлення на сервері</string>
+  <string name="account_mam_sync_title">Завантаження історії повідомлень</string>
+  <string name="account_mam_sync_all">Завантажувати історію для всіх контактів</string>
+  <string name="account_mam_sync_current">Завантажувати історію тільки для відкритих чатів</string>
+  <string name="account_mam_sync_none">Не завантажувати історію</string>
+  <string name="account_clear_history_on_exit_title">Очищати історію при виході</string>
+  <string name="account_clear_history_on_exit_summary">Видаляти всі повідомлення з пристрою перед виходом із Xabber.</string>
 </resources>

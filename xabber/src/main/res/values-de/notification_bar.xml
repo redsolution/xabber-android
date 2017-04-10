@@ -40,7 +40,7 @@
   <string name="muc_invite_message">Möchtest du der Konferenz beitreten?</string>
   <string name="otr_verification_in_progress">Hier klicken um abzubrechen.</string>
   <string name="PASSWORD_REQUIRED">Kennwort erforderlich</string>
-  <string name="pay_attention">Aufmerksamkeit geben</string>
+  <string name="pay_attention">Achtung!</string>
   <string name="subscription_request_message">Autorisationsanfrage</string>
   <string name="conference_private_chat">Konferenz-Privatchat</string>
 </resources>

@@ -83,6 +83,9 @@
   <string name="connection_load_vcard">Charger les vCard\nTélécharger et mettre à jour les détails personnels et les avatars des contacts. Désactivez pour réduire l\'utilisation du réseau.</string>
   <string name="connection_load_images">Charger les images\nCharger les images depuis l\'URL du fichier automatiquement. Désactiver pour réduire l\'utilisation du réseau.</string>
   <string name="connection_use_carbons">Mode copie carbone\nPeut être instable ! Partagera les séances pour le même compte utilisant ce client. Désactiver pour réduire l\'utilisation du réseau.</string>
+  <string name="connection_dns_resolver_type">Type de résolveur DNS</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (expérimental)</string>
   <string name="connection_use_plain_text_auth">Authentification non-chiffrée\nUtilise une authentification non-chiffrée pour tous les comptes. Déconseillé.</string>
   <string name="events_phrases">Expressions clés\nCréer des notifications personnalisées pour les messages reçus contenant des formules spécifiques</string>
   <string name="security_clear_certificate_warning">Êtes-vous sûr de vouloir supprimer tous les certificats ignorés ?</string>

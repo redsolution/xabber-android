@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">بيانات طرف الاتصال</string>
   <string name="contact_viewer_client">عميل</string>
+  <string name="contact_viewer_this_device">هذا الجهاز</string>
   <string name="vcard_nick_name">كنية</string>
   <string name="vcard_formatted_name">الاسم الكامل</string>
   <string name="vcard_prefix_name">بادئة</string>
@@ -13,6 +14,7 @@
   <string name="vcard_birth_date">تاريخ الميلاد</string>
   <string name="vcard_url">الموقع</string>
   <string name="vcard_organization">المؤسسة</string>
+  <string name="vcard_organization_unit">الوحدة التنظيمية</string>
   <string name="vcard_title">الوظيفة</string>
   <string name="vcard_role">الدور</string>
   <string name="vcard_other">معلومات أخرى</string>
@@ -49,4 +51,6 @@
   <string name="edit_alias">تعديل المعرِّف</string>
   <string name="edit_contact_groups">تعديل المجموعات</string>
   <string name="remove_contact">حذف جهة اتصال</string>
+  <string name="edit_vcard">تعديل</string>
+  <string name="account_user_info_save_success">تم حفظ معلومات الحساب بنجاح</string>
 </resources>

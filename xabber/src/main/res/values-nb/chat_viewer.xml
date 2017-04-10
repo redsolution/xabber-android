@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Skriv meldingen din her</string>
   <string name="chat_send">Send</string>
   <string name="clear_history">Slett historie</string>
+  <string name="clear_chat_history_dialog_button">Tøm</string>
+  <string name="clear_chat_history_dialog_message">Ønsker du å slette all sludrehistorikk med %s?</string>
   <string name="contact_is_offline">Mottakeren er frakoblet. Meldinger du sender vil bli levert neste gang mottakeren logger på.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontakten er ikke tilgjengelig</string>
   <string name="FILE_NOT_FOUND">Filen ble ikke funnet</string>

@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Zde napište vaši zprávu</string>
   <string name="chat_send">Poslat</string>
   <string name="clear_history">Smazat historii</string>
+  <string name="clear_chat_history_dialog_button">Smazat</string>
+  <string name="clear_chat_history_dialog_message">Opravdu chcete vymazat celou historii konverzace s %s?</string>
   <string name="contact_is_offline">Příjemce je v režimu offline. Odeslané zprávy budou doručeny, až přejde zpět do režimu online.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontakt není k dostupný</string>
   <string name="FILE_NOT_FOUND">Soubor nenalezen</string>

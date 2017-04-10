@@ -3,6 +3,7 @@
 <resources>
   <string name="contact_viewer">Контактна інформація</string>
   <string name="contact_viewer_client">Клієнт</string>
+  <string name="contact_viewer_this_device">Цей пристрій</string>
   <string name="vcard_nick_name">Нік</string>
   <string name="vcard_formatted_name">Повне ім\'я</string>
   <string name="vcard_prefix_name">Звертання</string>
@@ -51,6 +52,7 @@
   <string name="edit_contact_groups">Редагувати групу</string>
   <string name="remove_contact">Видалити контакт</string>
   <string name="edit_account_user_info">Редагувати інформацію користувача</string>
+  <string name="edit_vcard">Редагувати</string>
   <string name="account_user_info_save_success">Інформація про користувача успішно збережено</string>
   <string name="account_user_info_save_fail">Не вдалося зберегти інформацію про користувача</string>
   <string name="saving">Збереження&#8230;</string>
@@ -58,6 +60,11 @@
   <string name="take_photo">Зробити фото</string>
   <string name="remove_avatar">Видалити Аватар</string>
   <string name="change">Змінити</string>
+  <string name="could_not_get_room_info">Не вдалося отримати відомості про конференцію</string>
   <string name="conference_name">Назва</string>
   <string name="conference_description">Опис</string>
+  <string name="conference_subject">Тема</string>
+  <string name="message_info_occupants_number">Учасників: %d</string>
+  <string name="contact_info_connected_clients_header">Підключені пристрої</string>
+  <string name="contact_info_visiting_card_header">Контактні дані</string>
 </resources>

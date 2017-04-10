@@ -83,6 +83,9 @@
   <string name="connection_load_vcard">vCard betöltése\nA partner személyes adatainak és képének betöltése és frissítése. Kapcsold ki az adatforgalom csökkentéséhez.</string>
   <string name="connection_load_images">Képek betöltése\nKépek automatikus betöltése URL-ből. Kikapcsolva csökken az adatforgalom.</string>
   <string name="connection_use_carbons">Másolat-mód\nBizonytalanul működik! Megosztja az adott fiók munkameneteit ebben a kliensben. A kikapcsolása csökkenti az adatforgalmat.</string>
+  <string name="connection_dns_resolver_type">DNS névfeloldó típusa</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (kísérleti)</string>
   <string name="connection_use_plain_text_auth">Egyszerű szöveges hitelesítés\nEgyszerű szöveges hitelesítés minden fióknál. Nem javasolt.</string>
   <string name="events_phrases">Kulcskifejezések\nKészíts egyedi értesítést azokhoz az üzenetekhez, amelyek bizonyos kifejezéseket tartalmaznak</string>
   <string name="security_clear_certificate_warning">Biztos törlöd az összes figyelmen kívül hagyott tanúsítványt?</string>

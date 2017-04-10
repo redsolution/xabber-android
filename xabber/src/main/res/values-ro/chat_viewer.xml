@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Tastaţi mesajul aici</string>
   <string name="chat_send">Trimiteţi</string>
   <string name="clear_history">Ştergeţi istoricul</string>
+  <string name="clear_chat_history_dialog_button">Șterge</string>
+  <string name="clear_chat_history_dialog_message">Confirmați ștergerea conversației cu %s?</string>
   <string name="contact_is_offline">Destinatarul este offline. Mesajele trimise sunt livrate când vin înapoi on-line.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Persoan de contact nu este disponibilă</string>
   <string name="FILE_NOT_FOUND">Fișierul nu a fost găsit</string>
