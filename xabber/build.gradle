@@ -95,6 +95,7 @@ dependencies {
     compile "org.igniterealtime.smack:smack-android-extensions:4.2.1-20170405.080126-7"
     compile "org.igniterealtime.smack:smack-experimental:4.2.1-20170405.080149-7"
     compile "org.igniterealtime.smack:smack-tcp:4.2.1-20170405.080228-7"
+    compile "org.igniterealtime.smack:smack-resolver-dnsjava:4.2.1-20170405.080225-7"
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v13:$supportVersion"

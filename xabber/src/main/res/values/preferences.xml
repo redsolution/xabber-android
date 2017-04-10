@@ -293,6 +293,21 @@
     <string name="connection_use_carbons_key">connection_use_carbons_new</string>
     <bool name="connection_use_carbons_default">true</bool>
 
+    <string name="connection_dns_resolver_type_key">connection_dns_resolver_type</string>
+
+    <string name="connection_dns_resolver_type_dns_java_resolver_value">connection_dns_resolver_type_dns_java_resolver</string>
+    <string name="connection_dns_resolver_type_mini_dns_resolver_value">connection_dns_resolver_type_mini_dns_resolver</string>
+
+    <string-array name="connection_dns_resolver_type_entries">
+        <item>@string/connection_dns_resolver_type_dns_java_resolver</item>
+        <item>@string/connection_dns_resolver_type_mini_dns_resolver</item>
+    </string-array>
+    <string-array name="connection_dns_resolver_type_entry_values">
+        <item>@string/connection_dns_resolver_type_dns_java_resolver_value</item>
+        <item>@string/connection_dns_resolver_type_mini_dns_resolver_value</item>
+    </string-array>
+    <string name="connection_dns_resolver_type_default">@string/connection_dns_resolver_type_dns_java_resolver_value</string>
+
     <string name="connection_use_plain_text_auth_key">connection_use_plain_text_auth</string>
     <bool name="connection_use_plain_text_auth_default">false</bool>
 

@@ -45,6 +45,14 @@
         android:defaultValue="@bool/connection_use_carbons_default"
         />
 
+    <ListPreference
+        android:title="@string/connection_dns_resolver_type"
+        android:key="@string/connection_dns_resolver_type_key"
+        android:entries="@array/connection_dns_resolver_type_entries"
+        android:entryValues="@array/connection_dns_resolver_type_entry_values"
+        android:defaultValue="@string/connection_dns_resolver_type_default"
+        />
+
     <PreferenceCategory
         android:title="@string/connection_priority"
         >
