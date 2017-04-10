@@ -30,6 +30,7 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -38,6 +39,8 @@ import java.util.List;
 
 public class AccountListAdapter extends RecyclerView.Adapter {
 
+    @SuppressWarnings("WeakerAccess")
+    static final String LOG_TAG = AccountListAdapter.class.getSimpleName();
     @SuppressWarnings("WeakerAccess")
     List<AccountItem> accountItems;
     @SuppressWarnings("WeakerAccess")
@@ -116,7 +119,13 @@ public class AccountListAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View v) {
-            AccountItem accountItem = accountItems.get(getAdapterPosition());
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+
+            AccountItem accountItem = accountItems.get(adapterPosition);
 
             switch (v.getId()) {
                 case R.id.item_account_switch:
@@ -133,7 +142,13 @@ public class AccountListAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            AccountItem accountItem = accountItems.get(getAdapterPosition());
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+                return;
+            }
+
+            AccountItem accountItem = accountItems.get(adapterPosition);
 
             MenuInflater inflater = activity.getMenuInflater();
             inflater.inflate(R.menu.item_account, menu);
@@ -150,7 +165,13 @@ public class AccountListAdapter extends RecyclerView.Adapter {
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            AccountItem accountItem = accountItems.get(getAdapterPosition());
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onMenuItemClick: no position");
+                return false;
+            }
+
+            AccountItem accountItem = accountItems.get(adapterPosition);
 
             switch (item.getItemId()) {
                 case R.id.action_account_edit_status:

@@ -558,6 +558,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     public static abstract class Message extends BasicMessage implements View.OnClickListener {
 
+        private static final String LOG_TAG = Message.class.getSimpleName();
         TextView messageTime;
         TextView messageHeader;
         TextView messageUnencrypted;
@@ -588,10 +589,16 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         @Override
         public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+
             if (v.getId() == R.id.message_image) {
-                onClickListener.onMessageImageClick(itemView, getAdapterPosition());
+                onClickListener.onMessageImageClick(itemView, adapterPosition);
             } else {
-                onClickListener.onMessageClick(messageBalloon, getAdapterPosition());
+                onClickListener.onMessageClick(messageBalloon, adapterPosition);
             }
         }
 

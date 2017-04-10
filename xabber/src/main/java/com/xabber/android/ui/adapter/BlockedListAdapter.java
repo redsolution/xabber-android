@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +14,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -102,6 +102,7 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private class BlockListItemViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
+        private final String LOG_TAG = BlockListItemViewHolder.class.getSimpleName();
         @Nullable
         final ImageView avatar;
         final TextView name;
@@ -126,7 +127,13 @@ public class BlockedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         @Override
         public void onClick(View v) {
-            UserJid userJid = blockedContacts.get(getAdapterPosition());
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+
+            UserJid userJid = blockedContacts.get(adapterPosition);
 
             if (checkedContacts.contains(userJid)) {
                 checkedContacts.remove(userJid);
