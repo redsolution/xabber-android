@@ -28,6 +28,13 @@
 -keep class org.jivesoftware.smack.** { *; }
 -keep class org.jivesoftware.smackx.** { *; }
 
+# This dnsjava class uses old Sun API
+-dontnote org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
+-dontwarn org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
+
+# See http://stackoverflow.com/questions/5701126, happens in dnsjava
+-optimizations !code/allocation/variable
+
 # OkHttp
 -keepattributes Signature
 -keepattributes *Annotation*
