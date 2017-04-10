@@ -7,9 +7,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 
 class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
 
+    private static final String LOG_TAG = ContactListItemViewHolder.class.getSimpleName();
     final ImageView color;
     final ImageView avatar;
     final TextView name;
@@ -55,16 +57,28 @@ class ContactListItemViewHolder extends RecyclerView.ViewHolder implements View.
 
     @Override
     public void onClick(View v) {
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+
         if (v.getId() == R.id.avatar) {
-            listener.onContactAvatarClick(getAdapterPosition());
+            listener.onContactAvatarClick(adapterPosition);
         } else {
-            listener.onContactClick(getAdapterPosition());
+            listener.onContactClick(adapterPosition);
         }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        listener.onContactCreateContextMenu(getAdapterPosition(), menu);
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+            return;
+        }
+
+        listener.onContactCreateContextMenu(adapterPosition, menu);
     }
 
 }

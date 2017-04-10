@@ -13,6 +13,7 @@
   <string name="account_type">Tipul contului</string>
   <string name="account_type_hints_gtalk">numele de utilizator pentru gmail.com sau domeniu Google Apps</string>
   <string name="account_type_helps_gtalk">Dacă nu aveţi un cont Google, puteţi crea unul la http://mail.Google.com?hl=ro \nDeasemenea poţi folosi numele_de_utilizator@domeniul_tau_google</string>
+  <string name="account_xmpp_register_warning">Înainte de a te conecta prin Xabber, trebuie să <a href="http://www.google.com/#q=register an XMPP account">creezi un cont</a>!</string>
   <string name="account_type_helps_xmpp">Dacă doriţi să aflaţi mai multe despre XMPP (Jabber) gasiţi aici: https://xmpp.org</string>
   <string name="account_user_name">Nume de utilizator</string>
   <string name="EMPTY_SERVER_NAME">Numele server-ului nu este specificat</string>

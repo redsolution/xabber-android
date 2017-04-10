@@ -7,11 +7,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 
 
 class AccountGroupViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener, View.OnCreateContextMenuListener {
 
+    private static final String LOG_TAG = AccountGroupViewHolder.class.getSimpleName();
     final ImageView avatar;
     final TextView name;
     final TextView secondLineMessage;
@@ -49,17 +51,29 @@ class AccountGroupViewHolder extends RecyclerView.ViewHolder
 
     @Override
     public void onClick(View view) {
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+
         if (view.getId() == R.id.avatar) {
-            listener.onAccountAvatarClick(getAdapterPosition());
+            listener.onAccountAvatarClick(adapterPosition);
         } else if (view.getId() == R.id.contact_list_item_status_icon) {
-            listener.onAccountMenuClick(getAdapterPosition(), view);
+            listener.onAccountMenuClick(adapterPosition, view);
         } else {
-            listener.onAccountGroupClick(getAdapterPosition());
+            listener.onAccountGroupClick(adapterPosition);
         }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        listener.onAccountGroupCreateContextMenu(getAdapterPosition(), menu);
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+            return;
+        }
+
+        listener.onAccountGroupCreateContextMenu(adapterPosition, menu);
     }
 }

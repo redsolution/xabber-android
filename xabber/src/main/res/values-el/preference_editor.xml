@@ -86,4 +86,5 @@
   <string name="connection_use_plain_text_auth">Απλό κείμενο\nΧρησιμοποίησε έλεγχο ταυτότητας απλού κειμένου για όλους τους λογαριασμούς. Δε συνιστάται.</string>
   <string name="events_phrases">Φράσεις κλειδιά\nΔημιουργία προσωποποιημένων ειδοποιήσεων για τα λαμβανόμενα μηνύματα που περιέχουν συγκεκριμένες φράσεις</string>
   <string name="security_clear_certificate_warning">Θέλετε πραγματικά να αφαιρέσετε όλα τα αγνοημένα πιστοποιητικά;</string>
+  <string name="account_error_settings">Ρυθμίσεις</string>
 </resources>

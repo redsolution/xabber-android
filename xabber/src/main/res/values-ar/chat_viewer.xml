@@ -10,6 +10,8 @@
   <string name="chat_input_hint">أكتب رسالتك هنا</string>
   <string name="chat_send">أرسل</string>
   <string name="clear_history">مسح سجل الرسائل</string>
+  <string name="clear_chat_history_dialog_button">إزالة</string>
+  <string name="clear_chat_history_dialog_message">هل تريد إزالة كافة محفوظات المحادثة مع %s حقاً؟</string>
   <string name="contact_is_offline">المستلم غير متاح. سيتم تسليم الرسائل التي ترسلها عندما يصبح متاحاً.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">طرف الاتصال غير متاح</string>
   <string name="FILE_NOT_FOUND">ملف غير موجود</string>
@@ -17,6 +19,8 @@
   <string name="message_quote">اقتباس</string>
   <string name="message_remove">احذف من سجل الرسائل</string>
   <string name="message_repeat">أعد محاولة الإرسال</string>
+  <string name="message_open_file">فتح</string>
+  <string name="message_save_file">حفظ</string>
   <string name="save_history">حفظ السجل محلياً\nتخزين سجل الرسائل محلياً</string>
   <string name="show_history">إظهار سجل الرسائل</string>
   <string name="action_attention_called">تم إرسال طلب انتباه</string>
@@ -80,4 +84,15 @@
   <string name="chat_events_show_text_global">استخدم الإعدادات العامة</string>
   <string name="chat_events_show_text_always">إظهار نص الرسالة</string>
   <string name="chat_events_show_text_never">إخفاء نص الرسالة</string>
+  <string name="sending_file">جار إرسال ملف %s</string>
+  <string name="error_sending_file">خطأ في إرسال ملف %s</string>
+  <string name="no_application_to_open_file">لايمكن العثور على تطبيق لفتح هذا الملف</string>
+  <string name="could_not_save_file">تعذر حفظ الملف</string>
+  <string name="file_saved_successfully">تم حفظ الملف بنجاح</string>
+  <string name="received_by">تم الاستلام بواسطة %s</string>
+  <string name="could_not_get_path_to_file">لا يمكن الحصول على المسار إلى ملف</string>
+  <string name="message_open_private_chat">فتح محادثة خاصة</string>
+  <string name="http_file_upload_slot_error">لا يمكن تحميل الملف. كبير جداً؟</string>
+  <string name="no_permission_to_read_files">لا يوجد إذن لقراءة الملفات</string>
+  <string name="no_permission_to_write_files">لا يوجد إذن لكتابة الملفات</string>
 </resources>

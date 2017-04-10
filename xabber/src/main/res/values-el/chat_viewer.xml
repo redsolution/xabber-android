@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Πληκτρολογήστε το μήνυμά σας εδώ</string>
   <string name="chat_send">Αποστολή</string>
   <string name="clear_history">Καθαρισμός ιστορικού</string>
+  <string name="clear_chat_history_dialog_button">Καθαρισμός</string>
+  <string name="clear_chat_history_dialog_message">Θέλετε πραγματικά να καθαρίσετε όλο το ιστορικό συνομιλίας με %s;</string>
   <string name="contact_is_offline">Ο παραλήπτης είναι εκτός σύνδεσης. Τα μηνύματα που στέλνετε θα παραδοθούν όταν επιστρέψουν σε σύνδεση.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Η επαφή δεν είναι διαθέσιμη</string>
   <string name="FILE_NOT_FOUND">Το αρχείο δε βρέθηκε</string>

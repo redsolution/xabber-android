@@ -25,6 +25,7 @@
   <string name="CONNECTION_FAILED">خطأ في الاتصال</string>
   <string name="contact_add">إضف طرف اتصال</string>
   <string name="contact_delete">حذف</string>
+  <string name="contact_block">حظر جهة الاتصال</string>
   <string name="contact_delete_confirm">هل حقاً تريد أن تحذف طرف الاتصال %1$s من حساب %2$s؟</string>
   <string name="contact_list">قائمة الاتصال</string>
   <string name="discard_subscription">رفض الاتصال</string>
@@ -54,8 +55,16 @@
   <string name="show_offline_never">لا تظهر نهائياً</string>
   <string name="show_offline_normal">استخدام الإعدادات العامة</string>
   <string name="show_offline_settings">إظهار الأطراف الغير متاحة</string>
+  <string name="start_at_boot">حمل عند تشغيل الجهاز</string>
   <string name="start_at_boot_suggest">هل تريد تشغيل Xabber عند بدء نظام التشغيل؟\nيمكن تغيير هذا الإعداد من \"الإعدادات\" → \"إعدادات الاتصال\" → \"تشغيل عند بدء النظام\"</string>
   <string name="contact_search_hint">بحث في أطراف الاتصال</string>
   <string name="sender_is_you">أنت</string>
   <string name="xmpp_accounts">حسابات XMPP</string>
+  <string name="block_list">قائمة الحظر</string>
+  <string name="contact_blocked_successfully">تم حظر جهة الاتصال بنجاح</string>
+  <string name="error_blocking_contact">خطأ في حظر جهة اتصال</string>
+  <string name="unblock_contact">إلغاء حظر جهة الإتصال</string>
+  <string name="contacts_unblocked_successfully">تم إلغاء حظر جهات الاتصال بنجاح</string>
+  <string name="error_unblocking_contacts">خطأ في إلغاء حظر جهات الاتصال</string>
+  <string name="block_contact_confirm">هل حقاً تريد أن تحظر طرف الاتصال %1$s من حساب %2$s؟</string>
 </resources>

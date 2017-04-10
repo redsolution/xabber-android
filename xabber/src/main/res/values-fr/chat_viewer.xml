@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Écrivez votre message ici</string>
   <string name="chat_send">Envoyer</string>
   <string name="clear_history">Effacer l\'historique</string>
+  <string name="clear_chat_history_dialog_button">Effacer</string>
+  <string name="clear_chat_history_dialog_message">Voulez-vous vraiment supprimer l\'historique de vos discussions avec %s ?</string>
   <string name="contact_is_offline">Votre interlocuteur n\'est pas en ligne. Il recevra vos messages à son retour.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Le contact n\'est pas disponible</string>
   <string name="FILE_NOT_FOUND">Fichier introuvable</string>

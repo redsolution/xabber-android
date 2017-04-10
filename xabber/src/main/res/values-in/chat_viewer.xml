@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Ketik pesan Anda di sini</string>
   <string name="chat_send">Kirim</string>
   <string name="clear_history">Bersihkan riwayat</string>
+  <string name="clear_chat_history_dialog_button">Hapus</string>
+  <string name="clear_chat_history_dialog_message">Anda yakin ingin menghapus riwayat obrolan dengan %s?</string>
   <string name="contact_is_offline">Penerima sedang tidak aktif. Pesan Anda akan terkirim saat mereka kembali aktif.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontak tidak tersedia</string>
   <string name="FILE_NOT_FOUND">Berkas tidak ditemukan</string>

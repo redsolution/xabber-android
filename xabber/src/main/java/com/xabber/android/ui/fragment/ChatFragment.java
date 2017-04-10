@@ -2,6 +2,7 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -110,6 +111,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private static final String SAVE_ACCOUNT = "com.xabber.android.ui.fragment.ARGUMENT_ACCOUNT";
     private static final String SAVE_USER = "com.xabber.android.ui.fragment.ARGUMENT_USER";
+    private static final String LOG_TAG = ChatFragment.class.getSimpleName();
 
     private final long STOP_TYPING_DELAY = 4000; // in ms
 
@@ -1111,6 +1113,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 || itemViewType == ChatMessageAdapter.VIEW_TYPE_OUTGOING_MESSAGE) {
 
             clickedMessageItem = chatMessageAdapter.getMessageItem(position);
+            if (clickedMessageItem == null) {
+                LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
+                return;
+            }
 
             PopupMenu popup = new PopupMenu(getActivity(), caller);
             popup.inflate(R.menu.item_message);
@@ -1140,10 +1146,20 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Override
     public void onMessageImageClick(View caller, int position) {
         MessageItem messageItem = chatMessageAdapter.getMessageItem(position);
+        if (messageItem == null) {
+            LogManager.w(LOG_TAG, "onMessageImageClick: null message item. Position: " + position);
+            return;
+        }
+
 
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(messageItem.getText()));
-        startActivity(i);
+        try {
+            startActivity(i);
+            // possible if image was not sent and don't have URL yet.
+        } catch (ActivityNotFoundException e) {
+            LogManager.exception(LOG_TAG, e);
+        }
     }
 
     public void playIncomingAnimation() {

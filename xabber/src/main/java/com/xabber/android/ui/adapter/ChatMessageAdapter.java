@@ -19,6 +19,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
@@ -72,6 +73,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     public static final int VIEW_TYPE_OUTGOING_MESSAGE = 3;
     private static final int VIEW_TYPE_HINT = 1;
     private static final int VIEW_TYPE_ACTION_MESSAGE = 4;
+    private static final String LOG_TAG = ChatMessageAdapter.class.getSimpleName();
 
     private final Context context;
     private final Message.MessageClickListener messageClickListener;
@@ -307,6 +309,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
     }
 
+    @Nullable
     public MessageItem getMessageItem(int position) {
         if (position == RecyclerView.NO_POSITION) {
             return null;
@@ -316,15 +319,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             return realmResults.get(position);
         } else {
             return null;
-        }
-    }
-
-    public String getMessageItemId(int position) {
-        MessageItem messageItem = getMessageItem(position);
-        if (messageItem == null) {
-            return null;
-        } else {
-            return messageItem.getUniqueId();
         }
     }
 
@@ -358,6 +352,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         final int viewType = getItemViewType(position);
 
         MessageItem messageItem = getMessageItem(position);
+
+        if (messageItem == null) {
+            LogManager.w(LOG_TAG, "onBindViewHolder Null message item. Position: " + position);
+            return;
+        }
 
         switch (viewType) {
             case VIEW_TYPE_HINT:
@@ -395,6 +394,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         MessageItem messageItem = getMessageItem(position);
+        if (messageItem == null) {
+            return 0;
+        }
+
         if (messageItem.getAction() != null) {
             return VIEW_TYPE_ACTION_MESSAGE;
         }
@@ -558,6 +561,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     public static abstract class Message extends BasicMessage implements View.OnClickListener {
 
+        private static final String LOG_TAG = Message.class.getSimpleName();
         TextView messageTime;
         TextView messageHeader;
         TextView messageUnencrypted;
@@ -588,10 +592,16 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         @Override
         public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) {
+                LogManager.w(LOG_TAG, "onClick: no position");
+                return;
+            }
+
             if (v.getId() == R.id.message_image) {
-                onClickListener.onMessageImageClick(itemView, getAdapterPosition());
+                onClickListener.onMessageImageClick(itemView, adapterPosition);
             } else {
-                onClickListener.onMessageClick(messageBalloon, getAdapterPosition());
+                onClickListener.onMessageClick(messageBalloon, adapterPosition);
             }
         }
 

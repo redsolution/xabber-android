@@ -17,17 +17,20 @@ package com.xabber.android.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.helper.OrbotHelper;
 
 public class OrbotInstallerDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     private final static String MARKET_SEARCH = "market://search?q=pname:%s";
+    private static final String LOG_TAG = OrbotInstallerDialog.class.getSimpleName();
 
     public static DialogFragment newInstance() {
         return new OrbotInstallerDialog();
@@ -49,7 +52,11 @@ public class OrbotInstallerDialog extends DialogFragment implements DialogInterf
         if (which == Dialog.BUTTON_POSITIVE) {
             Uri uri = Uri.parse(String.format(MARKET_SEARCH, OrbotHelper.URI_ORBOT));
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            getActivity().startActivity(intent);
+            try {
+                getActivity().startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
         }
     }
 }

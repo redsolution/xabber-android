@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Scrivi qui il tuo messaggio</string>
   <string name="chat_send">Invia</string>
   <string name="clear_history">Cancella cronologia</string>
+  <string name="clear_chat_history_dialog_button">Cancella</string>
+  <string name="clear_chat_history_dialog_message">Vuoi davvero cancellare tutta la cronologia della chat con %s?</string>
   <string name="contact_is_offline">Il destinatario è offline. I messaggi inviati saranno consegnati quando il destinatario tornerà online.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Il contatto non è disponibile</string>
   <string name="FILE_NOT_FOUND">File non trovato</string>

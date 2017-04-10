@@ -17,6 +17,11 @@
   <string name="contacts_show_panel">إظهار لوحة الحسابات\nإظهار أزرار بالصور الرمزية في الركن اليمين السفلي لقائمة أطراف الاتصال</string>
   <string name="contacts_stay_active_chats">تكرار المحادثات النشطة\nأظهر المحادثات النشطة بأعلى قائمة الاتصال وكذلك في مجموعات الاتصال</string>
   <string name="debug_log">سجل التصحيح\nكتابة الرسائل لسجل التصحيح (برجاء إعادة تشغيل البرنامج لتطبيق التغيير)</string>
+  <string name="debug_file_log_title">كتابة ملف سجل التصحيح \nكتابة سجل التصحيح إلى ملف محلي (يمكنك مشاركته).</string>
+  <string name="debug_log_files_title">ملفات السجل\nقائمة ملفات السجل المكتوبة.</string>
+  <string name="debug_log_files_activity_title">ملفات السجل</string>
+  <string name="debug_connection_errors_title">إظهار أخطاء الاتصال\nإظهار اطارات منبثقة ﻷخطاء الاتصال</string>
+  <string name="debug_crash_reports_title">إرسال تقارير الأعطال \nإرسال تقارير الأعطال بهوية مجهولة لمساعدة تطوير Xabber (الرجاء إعادة تشغيل التطبيق لتطبيق التغييرات).</string>
   <string name="events_lightning">إشارة ضوئية\nغمز ضوء LED للإشعار</string>
   <string name="events_persistent">أيقونة شريط المهام\nاظهار مستمر للإخطار. هذا الخيار يمنع نظام Android من إزالة التطبيق من الذاكرة</string>
   <string name="events_sound">تنبيه صوتي\nاختر صوت التنبيه</string>
@@ -78,6 +83,9 @@
   <string name="connection_load_vcard">حمّل بطاقة vCard\nحمّل وحدّث البيانات الشخصية وصورة طرف الاتصال. عطّلها لتقليل استخدام بيانات الشبكة.</string>
   <string name="connection_load_images">تحميل صور\nتحميل الصور من رابط الملف تلقائياً. تعطيل للحد من استخدام بيانات الهاتف.</string>
   <string name="connection_use_carbons">وضع النسخة الكربونية\nقد تكون غير مستقرة!سوف تشارك المحادثات لنفس الحساب على هذا العميل. عطّلها لتقليل استخدام بيانات الشبكة.</string>
+  <string name="connection_use_plain_text_auth">المصادقة بنص غير مشفر \nاستخدام نص غير مشفر لمصادقة
+كافة الحسابات. لا يوصي به.</string>
   <string name="events_phrases">عبارات مفتاحية\nتخصيص إخطارات للرسائل المستقبلة التي تحتوي على عبارات معينة</string>
   <string name="security_clear_certificate_warning">هل ترغب حقاً في حذف كل الشهادات المهملة؟</string>
+  <string name="account_error_settings">إعدادات</string>
 </resources>

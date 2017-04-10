@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Введіть повідомлення</string>
   <string name="chat_send">Надіслати</string>
   <string name="clear_history">Очистити історію</string>
+  <string name="clear_chat_history_dialog_button">Очистити</string>
+  <string name="clear_chat_history_dialog_message">Ви дійсно хочете очистити всю історію чату з %s?</string>
   <string name="contact_is_offline">Повідомлення доставлено на сервер отримувача і можуть бути прочитані ним після підключення до мережі</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступний</string>
   <string name="FILE_NOT_FOUND">Файл не знайдено</string>
@@ -84,7 +86,13 @@
   <string name="chat_events_show_text_never">Приховати текст повідомлення</string>
   <string name="sending_file">Надсилання файлу %s</string>
   <string name="error_sending_file">Помилка при надсиланні файлу %s</string>
+  <string name="no_application_to_open_file">Не знайдено додатку для відкриття цього файлу</string>
   <string name="could_not_save_file">Не вдалося зберегти файл</string>
   <string name="file_saved_successfully">Файл успішно збережений</string>
+  <string name="received_by">Отримано за допомогою %s</string>
+  <string name="could_not_get_path_to_file">Не вдалося отримати шлях до файлу</string>
+  <string name="message_open_private_chat">Почати особистий чат</string>
   <string name="http_file_upload_slot_error">Не вдається вивантажити файл. Завеликий?</string>
+  <string name="no_permission_to_read_files">Немає дозволу на читання файлів</string>
+  <string name="no_permission_to_write_files">Немає дозволу на зберігання файлів</string>
 </resources>

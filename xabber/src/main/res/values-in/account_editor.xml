@@ -13,7 +13,7 @@
   <string name="account_type">Jenis akun</string>
   <string name="account_type_hints_gtalk">nama pengguna untuk gmail.com atau domain Aplikasi Google</string>
   <string name="account_type_helps_gtalk">Jika anda belum memiliki akun Google, anda dapat membuatnya di http://mail.google.com\n Anda juga dapat menggunakan nama_pengguna_anda@domain_google_anda</string>
-  <string name="account_xmpp_register_warning">Anda harus <a href="http://www.google.com/#q=register XMPP account">mendaftar akun XMPP</a> sebelum menambahkannya dalam Xabber!</string>
+  <string name="account_xmpp_register_warning">Anda harus <a href="http://www.google.com/#q=mendaftar akun XMPP">mendaftar akun XMPP</a> sebelum menambahkannya dalam Xabber!</string>
   <string name="account_type_helps_xmpp">Jika anda ingin mempelajari XMPP (Jabber) lebih lanjut, kunjungi: https://xmpp.org</string>
   <string name="account_user_name">Nama pengguna</string>
   <string name="EMPTY_SERVER_NAME">Nama server belum ditentukan</string>

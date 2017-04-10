@@ -41,6 +41,7 @@ import com.xabber.xmpp.vcardupdate.VCardUpdate;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.parts.Resourcepart;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -170,11 +171,17 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (userEntityBareJid == null) {
             return null;
         }
+
+        Resourcepart resourcepart = user.getJid().getResourceOrNull();
+        if (resourcepart == null) {
+            return null;
+        }
+
         if (MUCManager.getInstance().hasRoom(account, userEntityBareJid)) {
             final Collection<Occupant> occupants = MUCManager.getInstance().getOccupants(account,
                     userEntityBareJid);
             for (Occupant occupant : occupants) {
-                if (occupant.getNickname().equals(user.getJid().getResourceOrNull())) {
+                if (occupant.getNickname().equals(resourcepart)) {
                     return occupant;
                 }
             }

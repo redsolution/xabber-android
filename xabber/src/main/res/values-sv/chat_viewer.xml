@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Skriv meddelande här</string>
   <string name="chat_send">Skicka</string>
   <string name="clear_history">Rensa historik</string>
+  <string name="clear_chat_history_dialog_button">Rensa</string>
+  <string name="clear_chat_history_dialog_message">Vill du verkligen rensa all chatt-historik med %s?</string>
   <string name="contact_is_offline">Mottagaren är offline. Meddelande du skickar levereras när mottagaren är online igen.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Kontakten är inte tillgänglig</string>
   <string name="FILE_NOT_FOUND">Filen hittades inte</string>

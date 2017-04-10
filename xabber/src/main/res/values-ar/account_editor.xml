@@ -13,6 +13,7 @@
   <string name="account_type">نوع الحساب</string>
   <string name="account_type_hints_gtalk">معرف gmail.com أو نطاق تطبيقات Google</string>
   <string name="account_type_helps_gtalk">إن لم يكن لديك حساب Google بإمكانك إنشاء حساب في http://mail.google.com\nأيضاً يمكنك استخدام your_user_name@your_google_domain</string>
+  <string name="account_xmpp_register_warning">يجب عليك <a href="http://www.google.com/#q=register an XMPP account"> تسجيل حساب XMPP</a> قبل إضافته إلى Xabber!</string>
   <string name="account_type_helps_xmpp">لمعرفة المزيد عن XMPP (Jabber) الرابط: https://xmpp.org</string>
   <string name="account_user_name">اسم المستخدم</string>
   <string name="EMPTY_SERVER_NAME">لم يتم تحديد اسم الخادم</string>
@@ -27,6 +28,7 @@
   <string name="account_compression_summary">علِّم لتفعيل ضغط البيانات</string>
   <string name="account_custom">تخصيص المضيف</string>
   <string name="account_custom_summary">استخدم إعداد مخصص للمضيف بدلاً من سجل SRV</string>
+  <string name="account_enabled_summary">علِّم لتفعيل الحساب</string>
   <string name="account_invalid_port">المنفذ يجب أن يكون رقماً (الافتراضي: 5222)</string>
   <string name="account_invalid_port_range">المنفذ يجب أن يتراوح بين 1 إلى 65535 (الافتراضي: 5222)</string>
   <string name="account_invalid_priority">قيمة الأولوية يجب أن تكون بين -128 و 127 (الافتراضي: 10)</string>
@@ -59,7 +61,9 @@
   <string name="INCORRECT_USER_NAME">اسم المستخدم غير صحيح. أنظر للنص المساعد بالأسفل لمزيد من التفاصيل.</string>
   <string name="orbot_required_message">كي تستخدم شبكة TOR يجب تثبيت وتفعيل برنامج Orbot. هل ترغيب في تثبيته من المتجر؟</string>
   <string name="orbot_required_title">تثبيت Orbot?</string>
+  <string name="install_orbot">تثبيت Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">فشل تسجيل الحساب على الخادم.</string>
+  <string name="SERVER_INFO_ERROR">لا يمكن الحصول على معلومات الخادم.</string>
   <string name="account_color">لون الحساب</string>
   <string name="account_color_name_green">أخضر</string>
   <string name="account_color_name_orange">برتقالي</string>
@@ -69,4 +73,23 @@
   <string name="account_color_name_teal">أزرق مخضر</string>
   <string name="account_color_name_blue_grey">أزرق رمادي</string>
   <string name="account_color_name_cyan">سماوي</string>
+  <string name="account_connection_settings">إعدادات الاتصال</string>
+  <string name="blocked_contacts">جهات الاتصال المحظورة</string>
+  <string name="blocked_contacts_unknown">لا يمكن تحديد الدعم لمنع جهات الاتصال.</string>
+  <string name="blocked_contacts_not_supported">الحظر غير معتمد من قبل الخادم.</string>
+  <string name="blocked_contacts_empty">لا توجد جهات اتصال محظورة.</string>
+  <string name="account_chat_history">سجل المحادثات</string>
+  <string name="account_history_options_summary">خيارات التخزين لرسائل المحادثة</string>
+  <string name="account_chat_history_unknown">الدعم الخادم لتخزين سجل المحادثات لم يتحدد بعد</string>
+  <string name="account_chat_history_not_supported">الخادم لا يدعم تخزين سجل المحادثات.</string>
+  <string name="account_mam_default_behavior_title">إدارة أرشيف الرسائل</string>
+  <string name="account_mam_default_behavior_always">تخزين كافة الرسائل على الخادم</string>
+  <string name="account_mam_default_behavior_roster">تخزين الرسائل من الأطراف التي على قائمة جهات الاتصال على الخادم</string>
+  <string name="account_mam_default_behavior_never">لا تقم بتخزين أية رسائل على الخادم</string>
+  <string name="account_mam_sync_title">تحميل سجل الرسائل</string>
+  <string name="account_mam_sync_all">تحميل السجلات لكافة جهات الاتصال</string>
+  <string name="account_mam_sync_current">تحميل السجلات للمحادثات المفتوحة فقط</string>
+  <string name="account_mam_sync_none">لا تقم بتحميل السجلات لأي شخص</string>
+  <string name="account_clear_history_on_exit_title">مسح السجلات عند الخروج</string>
+  <string name="account_clear_history_on_exit_summary">حذف كافة رسائل المحادثة من الجهاز قبل الخروج من Xabber.</string>
 </resources>

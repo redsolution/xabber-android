@@ -83,6 +83,9 @@
   <string name="connection_load_vcard">Загружать vCard\nЗагружать и обновлять персональную информацию и аватары контактов. Отключение поможет сэкономить трафик.</string>
   <string name="connection_load_images">Загружать изображения\nЗагружать изображения по ссылкам автоматически. Отключите для экономии трафика.</string>
   <string name="connection_use_carbons">Сообщения carbons\nПринимать сообщения других сессий Вашей учетной записи. Отключение поможет сэкономить трафик.</string>
+  <string name="connection_dns_resolver_type">Тип DNS-клиента</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (экспериментальный)</string>
   <string name="connection_use_plain_text_auth">Аутентификация открытым текстом\n
 Использовать открытую аутентификацию для всех аккаунтов. Не рекомендуется.</string>
   <string name="events_phrases">Ключевые фразы\nНастройки уведомлений о сообщениях содержащих ключевые фразы</string>

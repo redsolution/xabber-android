@@ -13,7 +13,7 @@
   <string name="account_type">Kontotype</string>
   <string name="account_type_hints_gtalk">brukernavn for gmail.com eller Google Apps-domene</string>
   <string name="account_type_helps_gtalk">Hvis du ikke har en Google-konto kan du lage en ny på http://mail.google.com\nDu kan også bruke ditt_brukernavn@ditt_google_domene</string>
-  <string name="account_xmpp_register_warning">Du må <a href="http://www.google.com/#q=registrere en XMPP-konto"></a> før du legger den til i Xabber!</string>
+  <string name="account_xmpp_register_warning">Du må <a href="http://www.google.com/#q=registrere en XMPP-konto">registrere en XMPP-konto</a> før du legger den til i Xabber!</string>
   <string name="account_type_helps_xmpp">Hvis du vil lære mer om XMPP (Jabber) se her: https://xmpp.org</string>
   <string name="account_user_name">Brukernavn</string>
   <string name="EMPTY_SERVER_NAME">Tjenernavn er ikke angitt</string>

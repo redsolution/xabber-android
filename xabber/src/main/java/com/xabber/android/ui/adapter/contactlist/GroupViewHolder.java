@@ -7,9 +7,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.log.LogManager;
 
 
 class GroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
+    private static final String LOG_TAG = GroupViewHolder.class.getSimpleName();
     final ImageView indicator;
     final TextView name;
     final ImageView groupOfflineIndicator;
@@ -36,11 +38,23 @@ class GroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        listener.onGroupClick(getAdapterPosition());
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onClick: no position");
+            return;
+        }
+
+        listener.onGroupClick(adapterPosition);
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        listener.onGroupCreateContextMenu(getAdapterPosition(), menu);
+        int adapterPosition = getAdapterPosition();
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            LogManager.w(LOG_TAG, "onCreateContextMenu: no position");
+            return;
+        }
+
+        listener.onGroupCreateContextMenu(adapterPosition, menu);
     }
 }

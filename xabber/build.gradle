@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 343
-        versionName '1.0.171'
+        versionCode 345
+        versionName '1.0.173'
     }
 
     lintOptions {
@@ -92,9 +92,10 @@ dependencies {
     compile project('MemorizingTrustManager')
     compile project('emojicon')
 
-    compile "org.igniterealtime.smack:smack-android-extensions:4.2.1-20170404.010458-5"
-    compile "org.igniterealtime.smack:smack-experimental:4.2.1-20170404.010520-5"
-    compile "org.igniterealtime.smack:smack-tcp:4.2.1-20170404.010559-5"
+    compile "org.igniterealtime.smack:smack-android-extensions:4.2.1-20170405.080126-7"
+    compile "org.igniterealtime.smack:smack-experimental:4.2.1-20170405.080149-7"
+    compile "org.igniterealtime.smack:smack-tcp:4.2.1-20170405.080228-7"
+    compile "org.igniterealtime.smack:smack-resolver-dnsjava:4.2.1-20170405.080225-7"
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v13:$supportVersion"

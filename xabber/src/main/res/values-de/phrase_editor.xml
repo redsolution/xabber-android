@@ -9,5 +9,5 @@
   <string name="phrase_regexp">Regulärer Ausdruck</string>
   <string name="phrase_sound">Benachrichtigungston auswählen</string>
   <string name="phrase_text">Zu suchender Text</string>
-  <string name="phrase_user">Teil der Jabber-ID des Kontakts</string>
+  <string name="phrase_user">Ein Teil der Jabber-ID eines Kontakts</string>
 </resources>

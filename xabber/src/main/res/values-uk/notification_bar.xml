@@ -42,4 +42,5 @@
   <string name="PASSWORD_REQUIRED">Необхідний пароль</string>
   <string name="pay_attention">Зверніть увагу</string>
   <string name="subscription_request_message">Запит авторизації</string>
+  <string name="conference_private_chat">Приватний чат конференції</string>
 </resources>

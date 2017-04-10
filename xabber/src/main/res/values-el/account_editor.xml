@@ -13,6 +13,7 @@
   <string name="account_type">Τύπος λογαριασμού</string>
   <string name="account_type_hints_gtalk">όνομα χρήστη για gmail.com ή τομέα Google Apps</string>
   <string name="account_type_helps_gtalk">Αν δεν έχετε λογαριασμό Google μπορείτε να δημιουργήσετε έναν στο http://mail.google.com \nΕπίσης μπορείτε να χρησιμοποιήσετε your_user_name@your_google_domain</string>
+  <string name="account_xmpp_register_warning">Πρέπει να<a href="http://www.google.com/#q=register an XMPP account">καταχωρήσετε έναν λογαριασμό XMPP</a> πριν τον προσθέσετε στο Xabber!</string>
   <string name="account_type_helps_xmpp">Αν θέλετε να μάθετε περισσότερα για το XMPP (Jabber) εδώ: https://xmpp.org</string>
   <string name="account_user_name">Όνομα χρήστη</string>
   <string name="EMPTY_SERVER_NAME">Το όνομα του εξυπηρετητή δεν έχει καθοριστεί</string>
@@ -62,6 +63,7 @@
   <string name="orbot_required_title">Εγκατάσταση Orbot;</string>
   <string name="install_orbot">Εγκατέστησε το Orbot</string>
   <string name="ACCOUNT_REGISTER_FAILED">Αποτυχία κατοχύρωσης λογαριασμού στον εξυπηρετητή.</string>
+  <string name="SERVER_INFO_ERROR">Αδυναμία λήψης πληροφοριών διακομιστή.</string>
   <string name="account_color">Χρώμα λογαριασμού</string>
   <string name="account_color_name_green">Πράσινο</string>
   <string name="account_color_name_orange">Πορτοκαλί</string>

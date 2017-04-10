@@ -10,6 +10,8 @@
   <string name="chat_input_hint">メッセージをここに入力してください</string>
   <string name="chat_send">送信</string>
   <string name="clear_history">履歴をクリア</string>
+  <string name="clear_chat_history_dialog_button">クリア</string>
+  <string name="clear_chat_history_dialog_message">%s とのチャット履歴をすべて消去しますか?</string>
   <string name="contact_is_offline">送信先はオフラインです. あなたが送信したメッセージは次回送信先がオンラインに戻った時に配送されます.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">連絡先が利用可能ではありません</string>
   <string name="FILE_NOT_FOUND">ファイルが見つかりません</string>

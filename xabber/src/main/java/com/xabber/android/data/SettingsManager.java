@@ -21,15 +21,16 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.WakeLockManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -40,7 +41,6 @@ import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.utils.Emoticons;
-import com.xabber.android.data.extension.carbons.CarbonManager;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -427,6 +427,23 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.connection_use_carbons_default);
     }
 
+    public static DnsResolverType connectionDnsResolver() {
+        String value = getString(R.string.connection_dns_resolver_type_key,
+                R.string.connection_dns_resolver_type_default);
+        return getDnsResolverType(value);
+    }
+
+    @NonNull
+    public static DnsResolverType getDnsResolverType(String value) {
+        if (Application.getInstance().getString(R.string.connection_dns_resolver_type_dns_java_resolver_value).equals(value)) {
+            return DnsResolverType.dnsJavaResolver;
+        } else if (Application.getInstance().getString(R.string.connection_dns_resolver_type_mini_dns_resolver_value).equals(value)) {
+            return DnsResolverType.miniDnsResolver;
+        } else {
+            throw new IllegalStateException("Unknown preference value for DNS resolver type");
+        }
+    }
+
     public static boolean connectionUsePlainTextAuth() {
         return getBoolean(R.string.connection_use_plain_text_auth_key,
                 R.bool.connection_use_plain_text_auth_default);
@@ -739,6 +756,20 @@ public class SettingsManager implements OnInitializedListener,
          */
         normal
 
+    }
+
+    public enum DnsResolverType {
+        /**
+         * Use DNS resolver based on dnsjava
+         * http://dnsjava.org/
+         */
+        dnsJavaResolver,
+
+        /**
+         * Use DNS resolver based on MiniDNS - experimental
+         * https://github.com/rtreffer/minidns
+         */
+        miniDnsResolver
     }
 
     public enum EventsMessage {
