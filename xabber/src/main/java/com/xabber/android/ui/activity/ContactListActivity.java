@@ -43,7 +43,6 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
@@ -55,9 +54,9 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.intent.EntityIntentBuilder;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
@@ -66,6 +65,7 @@ import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment.OnChooseListener;
 import com.xabber.android.ui.dialog.BatteryOptimizationDisableDialog;
 import com.xabber.android.ui.dialog.ContactSubscriptionDialog;
+import com.xabber.android.ui.dialog.CrashReportDialog;
 import com.xabber.android.ui.dialog.DarkThemeIntroduceDialog;
 import com.xabber.android.ui.dialog.MucInviteDialog;
 import com.xabber.android.ui.dialog.MucPrivateChatInvitationDialog;
@@ -400,21 +400,25 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
                 Locale currentLocale = getResources().getConfiguration().locale;
                 if (!currentLocale.getLanguage().equals("en") && !getResources().getBoolean(R.bool.is_translated)) {
                     new TranslationDialog().show(getFragmentManager(), "TRANSLATION_DIALOG");
-                    SettingsManager.setTranslationSuggested();
                 }
+            }
+
+            if (SettingsManager.isCrashReportsSupported()
+                    && !SettingsManager.isCrashReportsDialogShown()) {
+                CrashReportDialog.newInstance().show(getFragmentManager(), CrashReportDialog.class.getSimpleName());
+            }
+
+            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
+                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 1) {
+                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
+                }
+            } else {
+                SettingsManager.setDarkThemeSuggested();
             }
 
             if (SettingsManager.bootCount() > 2 && !SettingsManager.connectionStartAtBoot()
                     && !SettingsManager.startAtBootSuggested()) {
                 StartAtBootDialogFragment.newInstance().show(getFragmentManager(), "START_AT_BOOT");
-            }
-
-            if (SettingsManager.interfaceTheme() != SettingsManager.InterfaceTheme.dark) {
-                if (!SettingsManager.isDarkThemeSuggested() && SettingsManager.bootCount() > 0) {
-                    new DarkThemeIntroduceDialog().show(getFragmentManager(), DarkThemeIntroduceDialog.class.getSimpleName());
-                }
-            } else {
-                SettingsManager.setDarkThemeSuggested();
             }
         }
     }

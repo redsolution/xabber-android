@@ -3,8 +3,8 @@ package com.xabber.android.ui.preferences;
 import android.os.Bundle;
 import android.preference.PreferenceScreen;
 
-import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 
 public class DebugSettingsFragment extends android.preference.PreferenceFragment {
@@ -20,7 +20,7 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.cache_clear_key)));
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_connection_errors_key)));
 
-        if (!BuildConfig.FLAVOR.equals("beta")) {
+        if (!SettingsManager.isCrashReportsSupported()) {
             preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_crash_reports_key)));
         }
 
