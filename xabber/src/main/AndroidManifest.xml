@@ -91,7 +91,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.LoadActivity" />
+        <activity android:name=".ui.activity.LoadActivity"
+            android:noHistory="true"
+            />
         <activity
             android:name=".ui.activity.AboutActivity"
             android:label="@string/about_viewer"
