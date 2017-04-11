@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">ملفات السجل\nقائمة ملفات السجل المكتوبة.</string>
   <string name="debug_log_files_activity_title">ملفات السجل</string>
   <string name="debug_connection_errors_title">إظهار أخطاء الاتصال\nإظهار اطارات منبثقة ﻷخطاء الاتصال</string>
-  <string name="debug_crash_reports_title">إرسال تقارير الأعطال \nإرسال تقارير الأعطال بهوية مجهولة لمساعدة تطوير Xabber (الرجاء إعادة تشغيل التطبيق لتطبيق التغييرات).</string>
   <string name="events_lightning">إشارة ضوئية\nغمز ضوء LED للإشعار</string>
   <string name="events_persistent">أيقونة شريط المهام\nاظهار مستمر للإخطار. هذا الخيار يمنع نظام Android من إزالة التطبيق من الذاكرة</string>
   <string name="events_sound">تنبيه صوتي\nاختر صوت التنبيه</string>

@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">ログファイル\n書き込まれたログファイルの一覧。</string>
   <string name="debug_log_files_activity_title">ログファイル</string>
   <string name="debug_connection_errors_title">接続エラーを表示\n接続例外のポップアップを表示します</string>
-  <string name="debug_crash_reports_title">クラッシュレポートを送信\n匿名のクラッシュレポートを送信して Xabber の開発を支援します (変更を適用するためアプリケーションを再起動してください)。</string>
   <string name="events_lightning">ライト通知\n通知時に LED を点滅します</string>
   <string name="events_persistent">タスクバーアイコン\n永続的な通知を表示します。このオプションは、Android がアプリケーションをメモリからアンロードしないようにします</string>
   <string name="events_sound">オーディオ・アラート\n通知サウンドを選択します</string>

@@ -50,7 +50,7 @@
   <string name="account_syncable">Integrovat do systémových kontaktů</string>
   <string name="account_syncable_summary">Zobrazit Kontakty z tohoto účtu v seznamu kontaktů telefonu</string>
   <string name="account_tls_enable">Povolit protokol TLS</string>
-  <string name="account_tls_enable_summary">Používat šifrování TLS při připojení k serveru</string>
+  <string name="account_tls_enable_summary">Pokud je to možné používat šifrování TLS při připojení k serveru</string>
   <string name="account_tls_legacy">Starší verze SSL</string>
   <string name="account_tls_legacy_summary">Použít starší šifrování SSL při připojení k serveru</string>
   <string name="account_tls_mode">Použití protokolu TLS/SSL</string>

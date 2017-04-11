@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Log-bestanden\nLijst van geschreven log-bestanden.</string>
   <string name="debug_log_files_activity_title">Log-bestanden</string>
   <string name="debug_connection_errors_title">Toon verbindingsfouten\nToon pop-ups van verbindingsfouten</string>
-  <string name="debug_crash_reports_title">Verstuur crash rapporten\nVerstuur anonieme crashrapporten om Xabber te helpen bij ontwikkeling (start opnieuw op toepassing op wijzigingen toepassen).</string>
   <string name="events_lightning">LED indicator\nKnipper LED bij melding</string>
   <string name="events_persistent">Taakbalk icon\nToon persistente kennisgeving. Deze optie voorkomt dat Android de app uit het geheugen haalt</string>
   <string name="events_sound">Geluidssignaal\nKies geluid melding</string>

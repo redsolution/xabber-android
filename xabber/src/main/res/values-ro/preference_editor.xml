@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Fișiere log\nListă cu fișiere de tip jurnal.</string>
   <string name="debug_log_files_activity_title">Fișiere jurnal</string>
   <string name="debug_connection_errors_title">Arată erorile de conexiune\nAfișează pop-up cu erorile de conexiune</string>
-  <string name="debug_crash_reports_title">Trimite rapoarte în caz eroare fatală\nTrimite rapoarte anonime pentru dezvoltatorii Xabber atunci când apar erori ce duc la închiderea aplicației (restartați aplicația pentru aplicare).</string>
   <string name="events_lightning">Indicator LED\nAvertizare vizuală prin intermediul LED-ului</string>
   <string name="events_persistent">Icon notificare\nArată notificare persistentă. Această opțiune previne închiderea aplicației de către sistem</string>
   <string name="events_sound">Alertă audio\nAlegeți un sunet de notificare</string>

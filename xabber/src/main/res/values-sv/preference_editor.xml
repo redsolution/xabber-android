@@ -21,8 +21,6 @@
   <string name="debug_log_files_title">Loggfiler\n Lista med sparade loggfiler.</string>
   <string name="debug_log_files_activity_title">Loggfiler</string>
   <string name="debug_connection_errors_title">Visa anslutningsfel\nVisa popupper om anslutningsfel</string>
-  <string name="debug_crash_reports_title">Skicka krashrapporter\n
-Sänd anonymiserade krashrapporter för att hjälpa till med utvecklingen av Xabber (vänligen, starta om appen för att ändringarna ska gå igenom).</string>
   <string name="events_lightning">Ljusindikator \nBlinka led vid notifiering</string>
   <string name="events_persistent">Aktivitetsfältets ikon\nVisa ständigt meddelande. Detta alternativ hindrar Android från att rensa appen från minnet</string>
   <string name="events_sound">Notifieringsljud \nVälj ljud för notifieringar</string>

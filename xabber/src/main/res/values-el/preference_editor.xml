@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Αρχεία καταγραφής\nΛίστα εγγραμμένων αρχείων καταγραφής.</string>
   <string name="debug_log_files_activity_title">Αρχεία καταγραφής</string>
   <string name="debug_connection_errors_title">Εμφάνιση σφαλμάτων σύνδεσης\nΕμφάνισε εξαιρέσεις σύνδεσης σε αναδυόμενα παράθυρα</string>
-  <string name="debug_crash_reports_title">Αποστολή αναφορών συντριβής\nΣτείλε ανώνυμες αναφορές συντριβής για να βοηθήσετε την ανάπτυξη του Xabber (παρακαλώ επανεκκινήστε το πρόγραμμα για να εφαρμοστούν οι αλλαγές).</string>
   <string name="events_lightning">Φωτεινή ένδειξη\nΑναβόσβημα του LED για ειδοποίηση</string>
   <string name="events_persistent">Εικονίδιο γραμμής εργασιών\nΔείξε επίμονα τις ειδοποιήσεις. Αυτή η επιλογή αποτρέπει το Android από το ξεφόρτωμα της εφαρμογής από τη μνήμη</string>
   <string name="events_sound">Ακουστική ειδοποίηση\nΕπιλέξτε ήχο ειδοποίησης</string>

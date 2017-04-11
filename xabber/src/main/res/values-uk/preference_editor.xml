@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Файли журналу\nСписок записаних файлів журналу.</string>
   <string name="debug_log_files_activity_title">Файли журналу</string>
   <string name="debug_connection_errors_title">Показувати помилки з\'єднання\nВідображати спливаючі сповіщення при обривах з\'єднання</string>
-  <string name="debug_crash_reports_title">Надсилати звіти про помилки\nНадсилати анонімні звіти про помилки, щоб допомогти розробникам Xabber (будь ласка, перезавантажте додаток для внесення змін).</string>
   <string name="events_lightning">Світлова індикація\nБлимати LED індикатором при сповіщеннях</string>
   <string name="events_persistent">Піктограма на Taskbar\nВідображати постійне повідомлення. Цей параметр запобігає Android вигружати програму з пам\'яті</string>
   <string name="events_sound">Звукові сповіщення\nОберіть звукове сповіщення</string>

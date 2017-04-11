@@ -21,7 +21,10 @@
   <string name="debug_log_files_title">Файлы журнала\nСписок записанных файлов журнала.</string>
   <string name="debug_log_files_activity_title">Файлы журнала</string>
   <string name="debug_connection_errors_title">Отображать ошибки соединения\nПоказывать ошибки соединения во всплывающих окнах.</string>
-  <string name="debug_crash_reports_title">Отправлять сообщения об ошибках\nОтправлять анонимные сообщения об ошибках, чтобы помочь разработке Xabber (перезапустите приложение для применения изменений).</string>
+  <string name="debug_crash_reports_title">Сбор диагностической информации\nРазрешив сбор информации о сбоях вы поможете разработчикам улучшить Xabber (пожалуйста, перезапустите приложение, чтобы применить изменения).</string>
+  <string name="debug_crash_reports_dialog_title">Сбор диагностической информации</string>
+  <string name="debug_crash_reports_dialog_message">Xabber собирает анонимные данные о сбоях приложения. Вы можете отключить этот функционал в настройках, но это затруднит нам разработку приложения.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Настройки</string>
   <string name="events_lightning">Подсветка\nМигать подсветкой для оповещения</string>
   <string name="events_persistent">Иконка в панели задач\nОтображать постоянное уведомление. Включение предотвращает выгрузку приложения при нехватке памяти</string>
   <string name="events_sound">Звуковое оповещение\nВыберите звуковое оповещение</string>
