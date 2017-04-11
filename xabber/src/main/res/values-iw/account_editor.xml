@@ -4,8 +4,8 @@
   <string name="account_compression">השתמש בדחיסה</string>
   <string name="account_enabled">מאופשר</string>
   <string name="account_host">מארח</string>
-  <string name="account_password">סיסמה</string>
-  <string name="confirm_password">אשר את הסיסמה</string>
+  <string name="account_password">ססמה</string>
+  <string name="confirm_password">אישור הססמה</string>
   <string name="account_port">יציאה</string>
   <string name="account_priority">עדיפות</string>
   <string name="account_resource">משאב</string>
@@ -23,7 +23,7 @@
   <string name="account_archive_mode_available">על השרת כאשר זמין</string>
   <string name="account_archive_mode_dont_store">אל תאחסן</string>
   <string name="account_archive_mode_local">באופן מקומי על מכשיר זה</string>
-  <string name="account_archive_mode_server">על שרת</string>
+  <string name="account_archive_mode_server">על השרת</string>
   <string name="account_archive_mode_unread">שמור באופן מקומי רק הודעות שלא נקראו או שלא נשלחו</string>
   <string name="account_compression_summary">סמן כדי לאפשר דחיסת נתונים</string>
   <string name="account_custom">מארח מותאם אישית</string>
@@ -72,4 +72,6 @@
   <string name="account_color_name_teal">טורקיז</string>
   <string name="account_color_name_blue_grey">כחול אפור</string>
   <string name="account_color_name_cyan">תכול</string>
+  <string name="account_mam_sync_title">טעינת היסטוריית הודעות</string>
+  <string name="account_mam_sync_all">טעינת היסטוריה עבור כל המשתמשים</string>
 </resources>

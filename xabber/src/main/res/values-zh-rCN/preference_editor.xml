@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">日志文件\n写入的日志文件列表。</string>
   <string name="debug_log_files_activity_title">日志文件</string>
   <string name="debug_connection_errors_title">显示连接错误\n显示连接异常弹出消息</string>
-  <string name="debug_crash_reports_title">发送崩溃报告\n发送匿名崩溃报告以帮助 Xabber 开发(请重启程序以应用更改)。</string>
   <string name="events_lightning">灯光提示\n通知时闪烁LED</string>
   <string name="events_persistent">任务栏图标\n显示持久性通知，此选项可防止Android从内存中卸载该程序</string>
   <string name="events_sound">声音提示\n选择提示音</string>

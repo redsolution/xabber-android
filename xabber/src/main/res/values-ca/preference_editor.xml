@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Arxius de registre\nLlista de fitxers de registre escrits.</string>
   <string name="debug_log_files_activity_title">Fitxers de registre</string>
   <string name="debug_connection_errors_title">Mostra errors deconnexió\nMostra excepcions de connexió en finestres emergents</string>
-  <string name="debug_crash_reports_title">Enviar informes d\'error \nEnviar informes d\'errors anònims per ajudar el desenvolupament de Xabber (si us plau reinicieu l\'aplicació desprès d\'aplicar els canvis).</string>
   <string name="events_lightning">Indication luminosa\nBlink llum LED al rebre una notificació</string>
   <string name="events_persistent">Icona de la barra de tasques\nMostra notificació persistent. Aquesta opció impedeix que Android descarregui la app de la memòria</string>
   <string name="events_sound">Alerta sonora\nTrieu el so de notificació</string>
@@ -83,6 +82,9 @@
   <string name="connection_load_vcard">Càrrega vCard\nCàrrega i actualitza la informació de contacte i avatar. Desactivar per reduir l\'ús de trànsit.</string>
   <string name="connection_load_images">Carregar imatges\nCarregar URL del fitxer automàticament. Desactivar per reduir l\'ús de trànsit.</string>
   <string name="connection_use_carbons">Mode copia carbó\nPot ser inestable! Això compartirà les sessions pel mateix compte en aquest client. Desactivar per reduir l\'ús de trànsit.</string>
+  <string name="connection_dns_resolver_type">Tipus de resolució DNS</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
   <string name="connection_use_plain_text_auth">Autenticació amb text sense format\nUsar text en clar per a tots els comptes. No es recomana.</string>
   <string name="events_phrases">Phrases\nCreate clau personalitzat notificacions de missatges rebuts que contenen frases específiques</string>
   <string name="security_clear_certificate_warning">Realment voleu eliminar tot ignorats certificats?</string>

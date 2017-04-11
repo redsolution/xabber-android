@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Logdateien\nListe der geschriebenen Logdateien.</string>
   <string name="debug_log_files_activity_title">Logdateien</string>
   <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>
-  <string name="debug_crash_reports_title">Absturzberichte senden\nSende anonyme Absturzberichte um bei der Xabber Entwicklung zu helfen (Bitte starten Sie die Anwendung neu, um die Änderungen anzuwenden).</string>
   <string name="events_lightning">LED-Benachrichtigung\nLED blinkt bei Benachrichtigung</string>
   <string name="events_persistent">Taskleisten Icon\nAnzeige einer dauerhaften Benachrichtigung. Diese Option verhindert, dass Android die Anwendung  aus dem Speicher entfernt</string>
   <string name="events_sound">Benachrichtigungston\nBenachrichtigungston wählen</string>

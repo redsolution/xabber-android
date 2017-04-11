@@ -24,6 +24,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
@@ -493,6 +494,21 @@ public class SettingsManager implements OnInitializedListener,
 
     public static boolean sendCrashReports() {
         return getBoolean(R.string.debug_crash_reports_key, R.bool.debug_crash_reports_default);
+    }
+
+    public static boolean isCrashReportsSupported() {
+        return BuildConfig.FLAVOR.equals("beta")
+                || BuildConfig.FLAVOR.equals("vip")
+                || BuildConfig.FLAVOR.equals("prod");
+
+    }
+
+    public static boolean isCrashReportsDialogShown() {
+        return getBoolean(R.string.debug_crash_reports_dialog_key, false);
+    }
+
+    public static void setCrashReportsDialogShown() {
+        setBoolean(R.string.debug_crash_reports_dialog_key, true);
     }
 
     public static InterfaceTheme interfaceTheme() {

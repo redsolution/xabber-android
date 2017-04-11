@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Escriviu aquí el vostre missatge</string>
   <string name="chat_send">Enviar</string>
   <string name="clear_history">Netejar l\'historial</string>
+  <string name="clear_chat_history_dialog_button">Esborrar</string>
+  <string name="clear_chat_history_dialog_message">Voleu realment esborrar tot l\'Historial de xat amb %s?</string>
   <string name="contact_is_offline">El destinatari està fora de línia. Els missatges es lliuraran quan es connecti.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">El contacte no està disponible</string>
   <string name="FILE_NOT_FOUND">L’arxiu no existeix</string>

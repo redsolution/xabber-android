@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Loggfiler\nListe over skrevne loggfiler.</string>
   <string name="debug_log_files_activity_title">Loggfiler</string>
   <string name="debug_connection_errors_title">Vis tilkoblingsfeil\nVis oppsprettsvinduer med tilkoblingsunntak</string>
-  <string name="debug_crash_reports_title">Send kræsjrapporter\nSend anonyme kræsjrapporter for å hjelpe utviklingen av Xabber. (Start programmet på nytt for at disse endringene skal tre i effekt).</string>
   <string name="events_lightning">Lysvarsel\nBlink LED-lyset ved varsler</string>
   <string name="events_persistent">Ikon på oppgavelinjen\nVis vedvarende melding. Dette alternativet hindrer at Android fjerner programmet fra minnet</string>
   <string name="events_sound">Varslingslyd\nVelg varslingslyd</string>

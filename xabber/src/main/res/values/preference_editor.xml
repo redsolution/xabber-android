@@ -22,7 +22,11 @@
     <string name="debug_log_files_title">Log files\nList of written log files.</string>
     <string name="debug_log_files_activity_title">Log files</string>
     <string name="debug_connection_errors_title">Show connection errors\nDisplay connection exceptions pop-ups</string>
-    <string name="debug_crash_reports_title">Send crash reports\nSend anonymous crash reports to help Xabber development (please restart application to apply changes).</string>
+    <string name="debug_crash_reports_title">Share crash and diagnostics data\nHelp app developers improve Xabber by allowing to share crash and diagnostics data with them (please restart application to apply changes).</string>
+
+    <string name="debug_crash_reports_dialog_title">Crash and diagnostics data</string>
+    <string name="debug_crash_reports_dialog_message">Xabber gathers anonymous bug reports. You may disable it in debug settings, but it will hinder our ability to provide reliable messaging experience to Xabber users.</string>
+    <string name="debug_crash_reports_dialog_settings_button">Settings</string>
 
     <string name="events_lightning">Light indication\nBlink LED on notification</string>
     <string name="events_persistent">Taskbar icon\nShow persistent notification. This option prevents Android from unloading the app from memory</string>

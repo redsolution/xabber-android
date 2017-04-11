@@ -74,6 +74,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public class Application extends android.app.Application {
 
+    private static final String LOG_TAG = Application.class.getSimpleName();
     private static Application instance;
     private final ArrayList<Object> registeredManagers;
     /**
@@ -204,22 +205,24 @@ public class Application extends android.app.Application {
     }
 
     private void onClose() {
-        LogManager.i(this, "onClose");
+        LogManager.i(LOG_TAG, "onClose1");
         for (Object manager : registeredManagers) {
             if (manager instanceof OnCloseListener) {
                 ((OnCloseListener) manager).onClose();
             }
         }
         closed = true;
+        LogManager.i(LOG_TAG, "onClose2");
     }
 
     void onUnload() {
-        LogManager.i(this, "onUnload");
+        LogManager.i(LOG_TAG, "onUnload1");
         for (Object manager : registeredManagers) {
             if (manager instanceof OnUnloadListener) {
                 ((OnUnloadListener) manager).onUnload();
             }
         }
+        LogManager.i(LOG_TAG, "onUnload2");
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
@@ -272,8 +275,10 @@ public class Application extends android.app.Application {
      * Requests to close application in some time in future.
      */
     public void requestToClose() {
+        LogManager.i(LOG_TAG, "requestToClose1");
         closing = true;
         stopService(XabberService.createIntent(this));
+        LogManager.i(LOG_TAG, "requestToClose2");
     }
 
     /**
@@ -353,7 +358,10 @@ public class Application extends android.app.Application {
      * Service have been destroyed.
      */
     public void onServiceDestroy() {
+        LogManager.i(LOG_TAG, "onServiceDestroy");
+
         if (closed) {
+            LogManager.i(LOG_TAG, "onServiceDestroy closed");
             return;
         }
         onClose();

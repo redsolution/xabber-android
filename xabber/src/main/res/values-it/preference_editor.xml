@@ -21,7 +21,10 @@
   <string name="debug_log_files_title">File di log\nLista dei file di log scritti.</string>
   <string name="debug_log_files_activity_title">File di log</string>
   <string name="debug_connection_errors_title">Mostra errori di connessione\nMostra problemi di connessione in pop-up</string>
-  <string name="debug_crash_reports_title">Invia i report dei crash\nInvia i resoconti anonimi dei crash per aiutare lo sviluppo di Xabber (per favore riavvia l\'applicazione per applicare i cambiamenti).</string>
+  <string name="debug_crash_reports_title">Condividi i dati dei crash e di diagnostica\nAiuta gli sviluppatori della app a migliorare Xabber, acconsentendo di condividere dati dei crash e di diagnostica con loro (si prega di riavviare l\'app per applicare le modifiche).</string>
+  <string name="debug_crash_reports_dialog_title">Dati dei crash e di diagnostica</string>
+  <string name="debug_crash_reports_dialog_message">Xabber raccoglie rapporti anonimi sugli errori. È possibile disattivare questa opzione nelle impostazioni di debug, ma farlo ostacolerà la nostra capacità di fornire una esperienza di messaggistica affidabile per gli utenti di Xabber.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Impostazioni</string>
   <string name="events_lightning">Indicatore luminoso \nLampeggio LED durante la notifica</string>
   <string name="events_persistent">Icona nella barra delle applicazioni\nMostra una notifica persistente. Questa opzione evita che Android scarichi l\'app dalla memoria</string>
   <string name="events_sound">Suoneria\nScegli il suono di notifica</string>
@@ -83,6 +86,9 @@
   <string name="connection_load_vcard">Carica vCard\nCarica ed aggiorna le informazioni personali di contatto e l\'avatar. Disabilita per ridurre l\'utilizzo del traffico.</string>
   <string name="connection_load_images">Carica immagini\nCarica automaticamente le immagini dall\'URL del file. Disabilitare per ridurre l\'utilizzo del traffico dati.</string>
   <string name="connection_use_carbons">modalità copia-carbone\nPotrebbe essere instabile! Condividi la medesima sessione per ogni account con ogni dispositivo connesso. Disabilitare per ridurre l\'utilizzo del traffico.</string>
+  <string name="connection_dns_resolver_type">Tipo di risolutore DNS</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNS Java Resolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (sperimentale)</string>
   <string name="connection_use_plain_text_auth">Autenticazione in chiaro\nUsa l\'autenticazione in chiaro per tutti gli account. Sconsigliato.</string>
   <string name="events_phrases">frasi chiave\nCrea notifiche personalizzate per messaggi ricevuti contenenti una specifica frase</string>
   <string name="security_clear_certificate_warning">Vuoi davvero rimuovere tutti i certificati ignorati?</string>

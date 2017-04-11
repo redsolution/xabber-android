@@ -21,7 +21,6 @@
   <string name="debug_log_files_title">Soubory protokolu ladění\nSeznam zapsaných souborů protokolů ladění.</string>
   <string name="debug_log_files_activity_title">Soubory protokolů ladění</string>
   <string name="debug_connection_errors_title">Ukázat chyby připojení\nZobrazovat chyby připojení ve vyskakovacích oknech</string>
-  <string name="debug_crash_reports_title">Odeslat zprávu zhroucení\nOdeslat anonymě zprávu zhroucení vývojářům Xabberu (restartujte aplikaci pro uplatnění změn).</string>
   <string name="events_lightning">Vizuální oznámení\nUpozorní vizuálně na událost pomocí LED</string>
   <string name="events_persistent">Ikona v oznamovací oblasti\nTrvale zobrazí ikonu aplikace v oznamovací oblasti. To zajistí, že se aplikace udrží v paměti</string>
   <string name="events_sound">Zvukové upozornění\nZvolte zvuk upozornění</string>
@@ -83,6 +82,9 @@
   <string name="connection_load_vcard">Načítat vizitky\nStahovat a aktualizovat informace o kontaktech včetně avatarů. Zakažte pro snížení datových přenosů.</string>
   <string name="connection_load_images">Načítání obrázků\nAutomaticky načítat obrázky z URL. Zakažte pro snížení přenášených dat.</string>
   <string name="connection_use_carbons">Carbon-copied mód\nMůže způsobovat problémy! Umožňuje přijímat zprávy ve více klientech současně. Musí být podpora i na serveru.</string>
+  <string name="connection_dns_resolver_type">Typ překládání DNS</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimentální)</string>
   <string name="connection_use_plain_text_auth">Autentizace prostým textem\nPoužít autentizaci prostým textem pro všechny účty. Nedoporučuje se.</string>
   <string name="events_phrases">Notifikace dle klíčového slova\nVytvoří Vaši vlastní notifikaci, na základě specifické fráze v příchozí zprávě</string>
   <string name="security_clear_certificate_warning">Opravdu chcete odstranit všechny ignorované certifikáty?</string>
