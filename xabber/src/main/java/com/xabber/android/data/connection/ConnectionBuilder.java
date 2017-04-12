@@ -8,6 +8,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.proxy.ProxyInfo;
 import org.jivesoftware.smack.sasl.provided.SASLDigestMD5Mechanism;
@@ -49,6 +50,8 @@ class ConnectionBuilder {
         builder.setProxyInfo(getProxyInfo(connectionSettings));
 
         try {
+            LogManager.i(LOG_TAG, "SettingsManager.securityCheckCertificate: " + SettingsManager.securityCheckCertificate());
+
             if (SettingsManager.securityCheckCertificate()) {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 MemorizingTrustManager mtm = CertificateManager.getInstance().getNewMemorizingTrustManager(account);
@@ -58,6 +61,7 @@ class ConnectionBuilder {
                         mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()));
             } else {
                 TLSUtils.acceptAllCertificates(builder);
+                builder.setHostnameVerifier(new AllowAllHostnameVerifier());
             }
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             LogManager.exception(LOG_TAG, e);
