@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Arxius de registre\nLlista de fitxers de registre escrits.</string>
   <string name="debug_log_files_activity_title">Fitxers de registre</string>
   <string name="debug_connection_errors_title">Mostra errors deconnexió\nMostra excepcions de connexió en finestres emergents</string>
+  <string name="debug_crash_reports_title">Compartir dades de diagnosi i errors.\nAjuda els desenvolupadors a millorar Xabber compartint dades de diagnosi i errors amb ells (per favor, reinicieu l\'aplicació per aplicar els canvis).</string>
+  <string name="debug_crash_reports_dialog_title">Dades de diagnosi i errors</string>
+  <string name="debug_crash_reports_dialog_message">Xabber recull informes d\'error anònims. Vostè pot impossibilitar-ho en la configuració de depuració, però dificulta la nostra capacitat per proporcionar una experiència de missatgeria fiable als usuaris de Xabber.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Configuració</string>
   <string name="events_lightning">Indication luminosa\nBlink llum LED al rebre una notificació</string>
   <string name="events_persistent">Icona de la barra de tasques\nMostra notificació persistent. Aquesta opció impedeix que Android descarregui la app de la memòria</string>
   <string name="events_sound">Alerta sonora\nTrieu el so de notificació</string>

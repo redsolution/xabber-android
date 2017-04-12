@@ -13,6 +13,7 @@
   <string name="account_type">Tipo de Cuenta</string>
   <string name="account_type_hints_gtalk">Nombre de usuario para gmail.com o dominio de Google Apps</string>
   <string name="account_type_helps_gtalk">Si no tienes una cuenta en Google puedes crear una en http://mail.google.com\nSi ya dispones de una, puedes usar tu_nombre_de_usuario@tu_dominio_en_Google</string>
+  <string name="account_xmpp_register_warning">¡Usted debe <a href="http://www.google.com/#q=register an XMPP account"> registrar una cuenta XMPP</a> antes de agregar a Xabber!</string>
   <string name="account_type_helps_xmpp">Para saber más sobre XMPP (Jabber): https://xmpp.org</string>
   <string name="account_user_name">Usuario</string>
   <string name="EMPTY_SERVER_NAME">Nombre de servidor no especificado</string>
@@ -74,6 +75,7 @@
   <string name="account_color_name_cyan">Cian</string>
   <string name="account_connection_settings">Configuración de conexion</string>
   <string name="blocked_contacts">Contactos bloqueados</string>
+  <string name="blocked_contacts_unknown">No se puede determinar el soporte para el bloqueo de contactos.</string>
   <string name="blocked_contacts_not_supported">El bloqueo no es soportado por el servidor.</string>
   <string name="blocked_contacts_empty">Sin contactos bloqueados.</string>
   <plurals name="blocked_contacts_number">

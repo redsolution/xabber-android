@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Loggfiler\nListe over skrevne loggfiler.</string>
   <string name="debug_log_files_activity_title">Loggfiler</string>
   <string name="debug_connection_errors_title">Vis tilkoblingsfeil\nVis oppsprettsvinduer med tilkoblingsunntak</string>
+  <string name="debug_crash_reports_title">Del kræsj- og diagnostikk-data\nHjelp utviklere å forbedre Xabber ved å dele kræsj- og diagnostikk-data med dem (start programmet på nytt slik at endringer kan tre i kraft).</string>
+  <string name="debug_crash_reports_dialog_title">Kræsj- og diagnostikk-data</string>
+  <string name="debug_crash_reports_dialog_message">Xabber innhenter anonyme feilrettingsrapporter. Du kan skru det av i feilrettings-innstillingene, men det vil forhindre vår mulighet til å tilby en robust meldingstjeneste til Xabber-brukere.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Innstillinger</string>
   <string name="events_lightning">Lysvarsel\nBlink LED-lyset ved varsler</string>
   <string name="events_persistent">Ikon på oppgavelinjen\nVis vedvarende melding. Dette alternativet hindrer at Android fjerner programmet fra minnet</string>
   <string name="events_sound">Varslingslyd\nVelg varslingslyd</string>
@@ -82,6 +86,9 @@
   <string name="connection_load_vcard">Last inn vCard\nLast og oppdater en kontaktens personinfo og avatar. Skru av for å redusere databruk.</string>
   <string name="connection_load_images">Last inn bilder\nLast bilder fra fil-nettadresse automatisk. Skru av for å redusere databruk.</string>
   <string name="connection_use_carbons">Kringkastingsmottak\nKan være ustabilt! Vil dele gjeldende økt med alle enheter som bruker denne kontoen. Skru av for å redusere databruk.</string>
+  <string name="connection_dns_resolver_type">Type DNS-fortolker</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaFortolker</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSFortolker (eksperimentell)</string>
   <string name="connection_use_plain_text_auth">Klartekstbekreftelse\nBruk klartekstbekreftelse for alle kontoer. Ikke anbefalt.</string>
   <string name="events_phrases">Nøkkelsetninger\nOpprett egendefinert varsel for mottatte meldinger som inneholder gitte setninger</string>
   <string name="security_clear_certificate_warning">Ønsker du virkelig å fjerne alle ignorerte sertifikater?</string>

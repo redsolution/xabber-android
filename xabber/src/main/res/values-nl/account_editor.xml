@@ -13,6 +13,7 @@
   <string name="account_type">Account-type</string>
   <string name="account_type_hints_gtalk">gebruikersnaam voor gmail.com of Google Apps domein</string>
   <string name="account_type_helps_gtalk">Als u geen Google account heeft kunt u er een aanmaken op: http://mail.google.com\nU kunt ook uw gebruikersnaam@uw_google_domein gebruiken</string>
+  <string name="account_xmpp_register_warning">U moet <a href="http://www.google.com/#q=register an XMPP account"> een XMPP account registreren</a> voordat u het toevoegt aan Xabber!</string>
   <string name="account_type_helps_xmpp">Wilt u meer weten over XMPP (Jabber) kijk hier: https://xmpp.org</string>
   <string name="account_user_name">Gebruikersnaam</string>
   <string name="EMPTY_SERVER_NAME">Naam server niet gespecifieerd</string>

@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Soubory protokolu ladění\nSeznam zapsaných souborů protokolů ladění.</string>
   <string name="debug_log_files_activity_title">Soubory protokolů ladění</string>
   <string name="debug_connection_errors_title">Ukázat chyby připojení\nZobrazovat chyby připojení ve vyskakovacích oknech</string>
+  <string name="debug_crash_reports_title">Sdílet data o pádech a diagnostiky\nPomozte vývojářům vylepšit Xabber tím, že s nimi budete sdílet dat o pádech a diagnostická data (prosíme, restartujte aplikaci pro použití změny).</string>
+  <string name="debug_crash_reports_dialog_title">Pádová a diagnostická data</string>
+  <string name="debug_crash_reports_dialog_message">Xabber shromažďuje anonymní zprávy o chybách. To lze sice vypnout v nastavení ladění, ale ochromí to naši schopnost poskytovat spolehlivý nástroj pro zasílání zpráv uživatelům Xabberu.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Nastavení</string>
   <string name="events_lightning">Vizuální oznámení\nUpozorní vizuálně na událost pomocí LED</string>
   <string name="events_persistent">Ikona v oznamovací oblasti\nTrvale zobrazí ikonu aplikace v oznamovací oblasti. To zajistí, že se aplikace udrží v paměti</string>
   <string name="events_sound">Zvukové upozornění\nZvolte zvuk upozornění</string>
