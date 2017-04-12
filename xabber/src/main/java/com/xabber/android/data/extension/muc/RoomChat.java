@@ -25,6 +25,7 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -201,6 +202,7 @@ public class RoomChat extends AbstractChat {
         final Resourcepart resource = from.getResourceOrNull();
         if (stanza instanceof Message) {
             final Message message = (Message) stanza;
+
             if (message.getType() == Message.Type.error) {
                 UserJid invite = invites.remove(message.getStanzaId());
                 if (invite != null) {

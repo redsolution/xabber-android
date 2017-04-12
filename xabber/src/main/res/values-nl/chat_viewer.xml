@@ -10,6 +10,8 @@
   <string name="chat_input_hint">Schrijf hier je bericht</string>
   <string name="chat_send">Verzend</string>
   <string name="clear_history">Wis geschiedenis</string>
+  <string name="clear_chat_history_dialog_button">Verwijderen</string>
+  <string name="clear_chat_history_dialog_message">Wilt u echt alle chatgeschiedenis met %s wissen?</string>
   <string name="contact_is_offline">Contact is offline. Berichten worden afgeleverd wanneer hij/zij online gaat.</string>
   <string name="ENTRY_IS_NOT_AVAILABLE">Contact is niet beschikbaar</string>
   <string name="FILE_NOT_FOUND">Bestand niet gevonden</string>

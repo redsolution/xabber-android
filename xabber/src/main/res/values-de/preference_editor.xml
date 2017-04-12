@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Logdateien\nListe der geschriebenen Logdateien.</string>
   <string name="debug_log_files_activity_title">Logdateien</string>
   <string name="debug_connection_errors_title">Zeige Verbindungsfehler\nPopups für Verbingsungsausnahmefehler anzeigen</string>
+  <string name="debug_crash_reports_title">Absturz- und Diagnosedaten teilen\nHilf den App-Entwicklern Xabber zu verbessern indem Du erlaubst, die Absturz- und Diagnosedaten mit ihnen zu teilen (Um die Änderung wirksam werden zu lassen, muss die Anwendung neu gestartet werden).</string>
+  <string name="debug_crash_reports_dialog_title">Absturz- und Diagnosedaten</string>
+  <string name="debug_crash_reports_dialog_message">Xabber sammelt anonyme Fehlerberichte. Sie können es in den Debugeinstellungen deaktivieren, aber es wird unsere Fähigkeit, an zuverlässige Messagingerfahrung für Xabber Benutzer zu gelangen, behindern.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Einstellungen</string>
   <string name="events_lightning">LED-Benachrichtigung\nLED blinkt bei Benachrichtigung</string>
   <string name="events_persistent">Taskleisten Icon\nAnzeige einer dauerhaften Benachrichtigung. Diese Option verhindert, dass Android die Anwendung  aus dem Speicher entfernt</string>
   <string name="events_sound">Benachrichtigungston\nBenachrichtigungston wählen</string>
@@ -82,6 +86,9 @@
   <string name="connection_load_vcard">Lade vCard\nLaden und Aktualisieren von Kontaktdaten und Avataren. Deaktivieren, um Netzwerkverkehr zu reduzieren.</string>
   <string name="connection_load_images">Bilder laden\nBilder von der Datei URL automatisch herunterladen. Deaktivieren um Netzwerkverkehr zu reduzieren.</string>
   <string name="connection_use_carbons">Carbon copy Mode\nMöglicherweise instabil! Wird Sitzungen für dasselbe Konto auf diesem Client teilen. Deaktivieren, um die Netzwerkverkehr zu reduzieren.</string>
+  <string name="connection_dns_resolver_type">DNS-Resolver Typ</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimentell)</string>
   <string name="connection_use_plain_text_auth">Klartext Authentifizierung. Nur-Text-Authentifizierung für alle Konten. Nicht zu empfehlen.</string>
   <string name="events_phrases">Schlüsselbegriffe\nBenachrichtigung wenn Nachrichten voreingestellte Begriffe enthalten und auswahl des dazugehörigen Klanges</string>
   <string name="security_clear_certificate_warning">Wollen Sie wirklich alle ignorierten Zertifikate entfernen?</string>

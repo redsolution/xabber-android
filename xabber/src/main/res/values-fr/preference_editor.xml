@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Fichier journaux\nListe des fichiers journaux enregistrés.</string>
   <string name="debug_log_files_activity_title">Fichiers journaux</string>
   <string name="debug_connection_errors_title">Montrer erreurs de connexion\nAffiche les pop-ups d\'exception de connexion</string>
+  <string name="debug_crash_reports_title">Partager les données de plantage et de diagnostiques\nAidez les développeurs à améliorer Xabber en autoriser le partage des données de plantages et de diagnostiques avec eux (veuillez redémarrer l\'application pour appliquer les modifications).</string>
+  <string name="debug_crash_reports_dialog_title">Données de plantage et de diagnostiques</string>
+  <string name="debug_crash_reports_dialog_message">Xabber récupère des rapports de bugs anonyme. Vous pouvez le désactiver dans les paramètre de debogage, mails cela peut entraver notre capacité à fournir une expérience utilisateur fiable.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Paramètres</string>
   <string name="events_lightning">Notification lumineuse\nLa LED clignote lors d\'une notification</string>
   <string name="events_persistent">Icône de barre des tâches\nAffiche une notification permanente. Cette option force Android à garder l\'application en mémoire</string>
   <string name="events_sound">Sonnerie\nChoisir la sonnerie de notification</string>

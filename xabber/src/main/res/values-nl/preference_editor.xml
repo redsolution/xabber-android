@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Log-bestanden\nLijst van geschreven log-bestanden.</string>
   <string name="debug_log_files_activity_title">Log-bestanden</string>
   <string name="debug_connection_errors_title">Toon verbindingsfouten\nToon pop-ups van verbindingsfouten</string>
+  <string name="debug_crash_reports_title">Deel crash en diagnostische gegevens\nHelp app ontwikkelaars Xabber verbeteren door crash en diagnostiek gegevens te delen met hen (start opnieuw op toepassing op wijzigingen toepassen).</string>
+  <string name="debug_crash_reports_dialog_title">Crash en diagnostische gegevens</string>
+  <string name="debug_crash_reports_dialog_message">Xabber verzamelt anonieme bugrapporten. U kunt dit uitschakelen bij de debug-instellingen, maar zal een belemmering vormen om een betrouwbare Xabber berichten ervaring te creëren voor de gebruikers.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Instellingen</string>
   <string name="events_lightning">LED indicator\nKnipper LED bij melding</string>
   <string name="events_persistent">Taakbalk icon\nToon persistente kennisgeving. Deze optie voorkomt dat Android de app uit het geheugen haalt</string>
   <string name="events_sound">Geluidssignaal\nKies geluid melding</string>
@@ -82,6 +86,9 @@
   <string name="connection_load_vcard">Laad vCard\nLaad en update persoonlijke informatie en avatar van contact. Zet uit om dataverkeer te besparen.</string>
   <string name="connection_load_images">Laadt afbeeldingen\nLaat afbeeldingen van bestands-URL automatisch. Uitschakelen om dataverkeer te reduceren.</string>
   <string name="connection_use_carbons">Carbon-copied modus\nKan instabiel zijn! Sessies voor dezelfde account op deze client delen. Uitschakelen om data verbruik te verminderen.</string>
+  <string name="connection_dns_resolver_type">DNS-resolver type</string>
+  <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
+  <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimenteel)</string>
   <string name="connection_use_plain_text_auth">Platte tekst authenticatie\nGebruik platte tekst authenticatie voor alle accounts. Niet aanbevolen.</string>
   <string name="events_phrases">Belangrijke zin\nCreëer aangepaste meldingen voor ontvangen berichten die specifieke zinnen bevatten</string>
   <string name="security_clear_certificate_warning">Wilt u echt alle genegeerde certificaten verwijderen?</string>

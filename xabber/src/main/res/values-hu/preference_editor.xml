@@ -21,6 +21,10 @@
   <string name="debug_log_files_title">Naplófájlok\nNaplófájlok listája.</string>
   <string name="debug_log_files_activity_title">Naplófájlok</string>
   <string name="debug_connection_errors_title">Kapcsolódási hibák mutatása\nFelugró ablakok megjelenítése a kapcsolódási kivételekről</string>
+  <string name="debug_crash_reports_title">Összeomlási és diagnosztikai adatok megosztása\nSegítsd a fejlesztőket a Xabber javításában azzal, hogy megosztod az összeomlási és diagnosztikai adatokat velük (a változások alkalmazásához újra kell indítani az alkalmazást).</string>
+  <string name="debug_crash_reports_dialog_title">Összeomlási és diagnosztikai adatok</string>
+  <string name="debug_crash_reports_dialog_message">A Xabber névtelen hibajelentéseket gyűjt össze. Ezt letilthatod a hibakeresési beállításoknál, de ezzel megnehezíted, hogy a Xabber felhasználóinak megbízható üzenetszolgáltatást nyújthassunk.</string>
+  <string name="debug_crash_reports_dialog_settings_button">Beállítások</string>
   <string name="events_lightning">Fényjelzés\nA LED villogtatása értesítés esetén</string>
   <string name="events_persistent">Tálca ikon\nFolyamatosan látszik az értesítési területen. Ez megakadályozza, hogy az Android törölje az alkalmazást a memóriából</string>
   <string name="events_sound">Hangjelzés\nVálaszd ki az értesítés hangját</string>

@@ -299,7 +299,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         if (resource == null) {
             messageItem.setResource(Resourcepart.EMPTY);
+        } else {
+            messageItem.setResource(resource);
         }
+
         if (action != null) {
             messageItem.setAction(action.toString());
         }
