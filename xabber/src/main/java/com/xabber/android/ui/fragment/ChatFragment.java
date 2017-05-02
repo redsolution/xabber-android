@@ -849,12 +849,24 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     menu.findItem(R.id.action_leave_conference).setVisible(true);
                 }
             }
+
+            // hide regular chat menu items
+            menu.findItem(R.id.action_view_contact).setVisible(false);
+            menu.findItem(R.id.action_close_chat).setVisible(false);
+            menu.findItem(R.id.action_block_contact).setVisible(false);
         }
 
         if (abstractChat instanceof RegularChat) {
             menu.findItem(R.id.action_view_contact).setVisible(true);
             menu.findItem(R.id.action_close_chat).setVisible(true);
             menu.findItem(R.id.action_block_contact).setVisible(true);
+
+            // hide room chat menu items
+            menu.findItem(R.id.action_list_of_occupants).setVisible(false);
+            menu.findItem(R.id.action_join_conference).setVisible(false);
+            menu.findItem(R.id.action_invite_to_chat).setVisible(false);
+            menu.findItem(R.id.action_authorization_settings).setVisible(false);
+            menu.findItem(R.id.action_leave_conference).setVisible(false);
         }
     }
 
