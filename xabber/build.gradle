@@ -72,6 +72,10 @@ android {
         }
     }
 
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
+
     splits {
         abi {
             enable true
