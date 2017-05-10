@@ -16,6 +16,7 @@ package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -125,6 +126,9 @@ public class OccupantListAdapter extends BaseAdapter implements
                         .getUserAvatarForContactList(UserJid.from(occupant.getJid())));
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
+                // set default avatar
+                avatarView.setImageDrawable(
+                        ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_avatar_1));
             }
         }
         affilationView.setImageLevel(occupant.getAffiliation().ordinal());
