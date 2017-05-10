@@ -18,6 +18,8 @@ import android.app.Activity;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
@@ -52,6 +54,7 @@ import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
 
+import io.fabric.sdk.android.Fabric;
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
 
@@ -291,6 +294,13 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Set up Crashlytics, disabled for debug builds
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
+
+        // Initialize Fabric with the debug-disabled crashlytics.
+        Fabric.with(this, crashlyticsKit);
 
         if (BuildConfig.DEBUG) {
             AndroidDevMetrics.initWith(this);
