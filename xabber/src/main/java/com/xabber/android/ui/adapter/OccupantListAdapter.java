@@ -123,7 +123,7 @@ public class OccupantListAdapter extends BaseAdapter implements
         } else {
             try {
                 avatarView.setImageDrawable(AvatarManager.getInstance()
-                        .getUserAvatarForContactList(UserJid.from(occupant.getJid())));
+                        .getUserAvatar(UserJid.from(occupant.getJid())));
             } catch (UserJid.UserJidCreateException e) {
                 LogManager.exception(this, e);
                 // set default avatar

@@ -271,6 +271,7 @@ public class RoomChat extends AbstractChat {
             if (presence.getType() == Presence.Type.available) {
                 Occupant oldOccupant = occupants.get(resource);
                 Occupant newOccupant = createOccupant(resource, presence);
+                newOccupant.setJid(from);
                 occupants.put(resource, newOccupant);
                 if (oldOccupant == null) {
                     onAvailable(resource);
