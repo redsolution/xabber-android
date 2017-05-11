@@ -464,6 +464,9 @@
         </activity>
         <activity android:name=".ui.activity.IntroActivity"
             android:theme="@style/ThemeDark"/>
+        <meta-data
+                android:name="io.fabric.ApiKey"
+                android:value="9bdf348a43f531b948aec39bef16cb045f0d7e3d" />
     </application>
 
 </manifest>
