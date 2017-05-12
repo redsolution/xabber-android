@@ -101,7 +101,7 @@ class ConnectionThread {
         switch (SettingsManager.connectionDnsResolver()) {
             case dnsJavaResolver:
                 LogManager.i(this, "Use DNS Java resolver");
-                DNSJavaResolver.setup();
+                ExtDNSJavaResolver.setup();
                 break;
             case miniDnsResolver:
                 LogManager.i(this, "Use Mini DNS resolver");
