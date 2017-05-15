@@ -300,7 +300,9 @@ public class Application extends android.app.Application {
                 .build();
 
         // Initialize Fabric with the debug-disabled crashlytics.
-        Fabric.with(this, crashlyticsKit);
+        if (BuildConfig.USE_CRASHLYTICS) {
+            Fabric.with(this, crashlyticsKit);
+        }
 
         if (BuildConfig.DEBUG) {
             AndroidDevMetrics.initWith(this);
