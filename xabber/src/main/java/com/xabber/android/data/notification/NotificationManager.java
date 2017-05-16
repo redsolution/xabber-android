@@ -465,11 +465,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void notify(int id, Notification notification) {
-        LogManager.i(this, "Notification: " + id
-                + ", ticker: " + notification.tickerText
+        String msg = "Notification: " + id
                 + ", sound: " + notification.sound
                 + ", vibro: " + (notification.defaults & Notification.DEFAULT_VIBRATE)
-                + ", light: " + (notification.defaults & Notification.DEFAULT_LIGHTS));
+                + ", light: " + (notification.defaults & Notification.DEFAULT_LIGHTS);
+        LogManager.i(this, msg + ", ticker: " + notification.tickerText, msg + ", ticker: ***");
         try {
             notificationManager.notify(id, notification);
         } catch (SecurityException e) {

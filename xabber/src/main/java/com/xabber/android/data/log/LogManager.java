@@ -96,6 +96,21 @@ public class LogManager {
         }
     }
 
+    /**
+     * Overload of iString
+     * Don't write to log confidential information
+     * Write to log censored message
+     */
+    public static void iString(String tag, String msg, String censoredMsg) {
+        if (debuggable) {
+            Log.i(tag, msg);
+        }
+
+        if (fileLog) {
+            FileLog.d(tag, censoredMsg);
+        }
+    }
+
     private static void wString(String tag, String msg) {
         if (debuggable) {
             Log.w(tag, msg);
@@ -126,6 +141,10 @@ public class LogManager {
 
     static public void i(Object obj, String msg) {
         iString(obj.toString(), msg);
+    }
+
+    static public void i(Object obj, String msg, String censoredMsg) {
+        iString(obj.toString(), msg, censoredMsg);
     }
 
     static public void w(Object obj, String msg) {

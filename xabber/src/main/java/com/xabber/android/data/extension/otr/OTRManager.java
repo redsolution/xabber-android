@@ -437,11 +437,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
      * Transform incoming message after receiving.
      */
     public String transformReceiving(AccountJid account, UserJid user, String content) throws OtrException {
-        LogManager.i(this, "transform incoming message... " + content);
+        LogManager.i(this, "transform incoming message... " + content, "transform incoming message... ***");
         Session session = getOrCreateSession(account.toString(), user.toString());
         try {
             String s = session.transformReceiving(content);
-            LogManager.i(this, "transformed incoming message: " + s + " session status: " + session.getSessionStatus());
+            LogManager.i(this,
+                    "transformed incoming message: " + s + " session status: " + session.getSessionStatus(),
+                    "transformed incoming message: " + "***" + " session status: " + session.getSessionStatus());
             return s;
         } catch (UnsupportedOperationException e) {
             throw new OtrException(e);
