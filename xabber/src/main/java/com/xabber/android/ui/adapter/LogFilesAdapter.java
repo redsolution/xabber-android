@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.extension.file.FileManager;
 
@@ -88,7 +89,9 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         emailIntent .setType("vnd.android.cursor.dir/email");
         emailIntent .putExtra(Intent.EXTRA_STREAM, FileManager.getFileUri(file));
-        emailIntent .putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.application_title_full) + " log file");
+        emailIntent .putExtra(Intent.EXTRA_SUBJECT,
+                file.getName().substring(0, file.getName().length() - 4).replaceAll("_"," ")
+                        + " log file");
         context.startActivity(Intent.createChooser(emailIntent , "Send log file"));
     }
 

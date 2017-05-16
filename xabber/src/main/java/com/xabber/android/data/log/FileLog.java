@@ -46,6 +46,7 @@ class FileLog {
 
     public FileLog() {
         dateFormat = FastDateFormat.getInstance("yyyy-MM-dd_HH-mm-ss", Locale.US);
+        String appName = Application.getInstance().getString(R.string.application_title_full).replaceAll("\\s+","");
         try {
             File sdCard = Application.getInstance().getApplicationContext().getExternalFilesDir(null);
             if (sdCard == null) {
@@ -53,7 +54,8 @@ class FileLog {
             }
             File dir = new File(sdCard.getAbsolutePath() + "/logs");
             dir.mkdirs();
-            currentFile = new File(dir, dateFormat.format(System.currentTimeMillis()) + ".txt");
+            currentFile = new File(dir, appName + "_" + BuildConfig.VERSION_NAME
+                    + "_" + dateFormat.format(System.currentTimeMillis()) + ".txt");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +65,7 @@ class FileLog {
             FileOutputStream stream = new FileOutputStream(currentFile);
             streamWriter = new OutputStreamWriter(stream);
             streamWriter.write("-----start log " + dateFormat.format(System.currentTimeMillis())
-                    + " " + Application.getInstance().getString(R.string.application_title_full)
+                    + " " + appName
                     + " " + BuildConfig.VERSION_NAME
                     + " Android " + Build.VERSION.RELEASE
                     + " SDK " + Build.VERSION.SDK_INT
