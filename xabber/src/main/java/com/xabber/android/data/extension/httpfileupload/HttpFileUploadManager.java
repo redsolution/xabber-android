@@ -24,6 +24,7 @@ import org.jxmpp.jid.Jid;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -147,7 +148,13 @@ public class HttpFileUploadManager {
 
         ServiceDiscoveryManager discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
 
-        List<DomainBareJid> services = discoManager.findServices(com.xabber.xmpp.httpfileupload.Request.NAMESPACE, true, true);
+        List<DomainBareJid> services;
+        try {
+            services = discoManager.findServices(com.xabber.xmpp.httpfileupload.Request.NAMESPACE, true, true);
+        } catch (ClassCastException e) {
+            services = Collections.emptyList();
+            LogManager.exception(this, e);
+        }
 
         if (!services.isEmpty()) {
             final DomainBareJid uploadServerUrl = services.get(0);
