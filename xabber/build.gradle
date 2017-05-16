@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 351
-        versionName '2.0.2(351)'
+        versionCode 352
+        versionName '2.0.2(352)'
     }
 
     lintOptions {
