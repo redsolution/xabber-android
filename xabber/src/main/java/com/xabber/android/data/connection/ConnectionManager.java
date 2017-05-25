@@ -55,6 +55,17 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
         LogManager.i(LOG_TAG, "ConnectionManager");
         org.jivesoftware.smackx.ping.PingManager.setDefaultPingInterval(PING_INTERVAL_SECONDS);
         SmackConfiguration.setDefaultReplyTimeout(PACKET_REPLY_TIMEOUT);
+        /*
+            Fix working with Nimbuzz.com
+            Smack have error - ServiceDiscoveryManager: Exception while discovering info for
+                                feature urn:xmpp:http:upload:0 of  conference....com node: null
+
+            That exception shows that HttpFileUploadManager was unable to discover an service
+            So disabling HttpFileUploadManager by default fixed this error
+
+            HttpFileUploadManager will enabled later in ConnectionListener.authenticated() if server support it
+         */
+        SmackConfiguration.addDisabledSmackClass("org.jivesoftware.smackx.httpfileupload.HttpFileUploadManager");
     }
 
     @Override
