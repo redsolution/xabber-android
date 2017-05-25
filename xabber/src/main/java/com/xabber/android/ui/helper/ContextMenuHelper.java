@@ -353,14 +353,6 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_edit_account).setIntent(AccountActivity.createIntent(activity, account));
 
         if (state.isConnected()) {
-            menu.findItem(R.id.action_contact_info).setVisible(true).setOnMenuItemClickListener(
-                    new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            activity.startActivity(AccountActivity.createIntent(activity, account));
-                            return true;
-                        }
-                    });
             menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(ContactAddActivity.createIntent(activity, account));
         }
 

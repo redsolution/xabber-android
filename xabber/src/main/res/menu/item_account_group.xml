@@ -10,10 +10,6 @@
     <item android:id="@+id/action_edit_account"
         android:title="@string/account_editor" />
 
-    <item android:id="@+id/action_contact_info"
-        android:visible="false"
-        android:title="@string/contact_viewer" />
-
     <item android:id="@+id/action_add_contact"
         android:visible="false"
         android:title="@string/contact_add" />
