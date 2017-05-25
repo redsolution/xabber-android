@@ -4,7 +4,7 @@
     <string name="account_add">Add account</string>
     <string name="account_register">Register new account</string>
     <string name="account_delete">Delete account</string>
-    <string name="account_editor">Edit account</string>
+    <string name="account_editor">Account settings</string>
     <string name="account_state_registration">Registering</string>
     <string name="account_state_authentication">Authorizing</string>
     <string name="account_state_connected">Online</string>

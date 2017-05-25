@@ -5,7 +5,7 @@
   <string name="account_add">Добавить учетную запись</string>
   <string name="account_register">Зарегистрировать новую учетную запись</string>
   <string name="account_delete">Удалить учетную запись</string>
-  <string name="account_editor">Редактировать учетную запись</string>
+  <string name="account_editor">Параметры учетной записи</string>
   <string name="account_state_registration">Регистрация</string>
   <string name="account_state_authentication">Авторизация</string>
   <string name="account_state_connected">В сети</string>
