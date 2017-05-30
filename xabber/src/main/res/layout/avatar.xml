@@ -7,4 +7,6 @@
     android:layout_width="@dimen/avatar_size_toolbar"
     android:layout_height="@dimen/avatar_size_toolbar"
     android:src="@drawable/ic_avatar_1"
-    tools:showIn="@layout/item_contact" />
+    android:scaleType="centerCrop"
+    tools:showIn="@layout/item_contact"
+    />

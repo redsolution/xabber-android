@@ -20,7 +20,9 @@
         android:layout_width="@dimen/avatar_large_size"
         android:layout_height="@dimen/avatar_large_size"
         android:src="@drawable/ic_avatar_1"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerCrop"
+        />
 
     <LinearLayout
         android:id="@+id/name_holder"
