@@ -43,7 +43,7 @@ import java.util.UUID;
  */
 public class AccountItem extends ConnectionItem {
 
-    public static final String UNDEFINED_PASSWORD = "com.xabber.android.data.core.AccountItem.UNDEFINED_PASSWORD";
+    public static final String UNDEFINED_PASSWORD = "";
 
     /**
      * Id in database.
