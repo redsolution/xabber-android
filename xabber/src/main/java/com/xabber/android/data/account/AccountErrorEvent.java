@@ -12,7 +12,8 @@ public class AccountErrorEvent implements Serializable {
 
     public enum Type implements Serializable {
         AUTHORIZATION,
-        CONNECTION
+        CONNECTION,
+        PASS_REQUIRED
     }
 
     public AccountErrorEvent(AccountJid account, Type type, String message) {

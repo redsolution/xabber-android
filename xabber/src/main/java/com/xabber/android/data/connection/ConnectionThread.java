@@ -98,6 +98,16 @@ class ConnectionThread {
         java.util.logging.Logger.getLogger(AbstractXMPPConnection.class.getName()).setLevel(Level.FINEST);
         java.util.logging.Logger.getLogger(DNSUtil.class.getName()).setLevel(Level.FINEST);
 
+        if (connection.getConfiguration().getPassword().isEmpty()) {
+            AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
+                    AccountErrorEvent.Type.PASS_REQUIRED, "");
+
+            com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
+            com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+            EventBus.getDefault().postSticky(accountErrorEvent);
+            return;
+        }
+
         switch (SettingsManager.connectionDnsResolver()) {
             case dnsJavaResolver:
                 LogManager.i(this, "Use DNS Java resolver");

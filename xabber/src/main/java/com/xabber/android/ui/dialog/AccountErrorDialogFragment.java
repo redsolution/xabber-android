@@ -60,6 +60,9 @@ public class AccountErrorDialogFragment extends DialogFragment implements Dialog
             case CONNECTION:
                 mainTextView.setText(R.string.CONNECTION_FAILED);
                 break;
+            case PASS_REQUIRED:
+                mainTextView.setText(R.string.PASSWORD_REQUIRED);
+                break;
         }
 
         final TextView detailTextView = (TextView) view.findViewById(R.id.account_error_detail_text);
