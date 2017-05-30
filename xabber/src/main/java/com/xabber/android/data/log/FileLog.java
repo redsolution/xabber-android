@@ -31,7 +31,7 @@ class FileLog {
     private File networkFile = null;
 
     private static final int LOG_FILE_MAX_SIZE = 8000000; // 8mb
-    private static final int LOG_FILE_MAX_COUNT = 6;
+    private static final int LOG_FILE_MAX_COUNT = 16;
     private static volatile FileLog Instance = null;
     public static FileLog getInstance() {
         FileLog localInstance = Instance;
