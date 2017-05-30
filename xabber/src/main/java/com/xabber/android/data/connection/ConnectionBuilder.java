@@ -11,6 +11,7 @@ import com.xabber.android.data.log.LogManager;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.proxy.ProxyInfo;
+import org.jivesoftware.smack.sasl.core.SCRAMSHA1Mechanism;
 import org.jivesoftware.smack.sasl.provided.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
@@ -20,6 +21,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
@@ -66,8 +68,6 @@ class ConnectionBuilder {
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             LogManager.exception(LOG_TAG, e);
         }
-
-        setUpSasl();
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());
         return new XMPPTCPConnection(builder.build());
@@ -143,11 +143,5 @@ class ConnectionBuilder {
         }
 
         return proxyInfo;
-    }
-
-    private synchronized static void setUpSasl() {
-        // TODO: DIGEST-MD5 mechanism disabled due to implementation problems
-        // should be enabled back when fixed in Smack
-        SASLAuthentication.blacklistSASLMechanism(SASLDigestMD5Mechanism.NAME);
     }
 }
