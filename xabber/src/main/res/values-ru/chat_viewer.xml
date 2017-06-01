@@ -16,6 +16,7 @@
   <string name="ENTRY_IS_NOT_AVAILABLE">Контакт не доступен</string>
   <string name="FILE_NOT_FOUND">Файл не найден</string>
   <string name="message_copy">Копировать</string>
+  <string name="message_appeal">Обратиться</string>
   <string name="message_quote">Цитировать</string>
   <string name="message_remove">Удалить из истории</string>
   <string name="message_repeat">Повторить отправку</string>

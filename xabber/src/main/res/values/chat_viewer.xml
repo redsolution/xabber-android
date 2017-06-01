@@ -15,6 +15,7 @@
     <string name="ENTRY_IS_NOT_AVAILABLE">Contact is not available</string>
     <string name="FILE_NOT_FOUND">File not found</string>
     <string name="message_copy">Copy</string>
+    <string name="message_appeal">Appeal</string>
     <string name="message_quote">Quote</string>
     <string name="message_remove">Remove from history</string>
     <string name="message_repeat">Retry sending</string>

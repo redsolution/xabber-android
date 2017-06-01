@@ -1014,6 +1014,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                         .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
                 return true;
 
+            case R.id.action_message_appeal:
+                setInputText(clickedMessageItem.getResource().toString() + ", ");
+                return true;
+
             case R.id.action_message_quote:
                 setInputText("> " + clickedMessageItem.getText() + "\n");
                 return true;
@@ -1149,6 +1153,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
                     .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
                 menu.findItem(R.id.action_message_open_muc_private_chat).setVisible(true);
+                menu.findItem(R.id.action_message_appeal).setVisible(true);
             }
 
             popup.show();

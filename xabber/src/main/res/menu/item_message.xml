@@ -4,6 +4,11 @@
         android:visible="false"
         android:title="@string/message_repeat" />
 
+    <item android:id="@+id/action_message_appeal"
+        android:title="@string/message_appeal"
+        android:visible="false"
+        />
+
     <item android:id="@+id/action_message_quote"
         android:title="@string/message_quote" />
 
