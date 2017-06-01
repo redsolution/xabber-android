@@ -28,7 +28,7 @@
         android:layout_alignTop="@+id/message_text"
         android:layout_marginLeft="6dp"
         android:layout_marginTop="3dp"
-
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_avatar_1"
         />
 
