@@ -5,6 +5,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.mam.MamManager;
@@ -65,6 +66,7 @@ class ConnectionListener implements org.jivesoftware.smack.ConnectionListener {
         HttpFileUploadManager.getInstance().onAuthorized(connectionItem);
 
         PresenceManager.getInstance().onAuthorized(connectionItem);
+        BookmarksManager.getInstance().onAuthorized(connectionItem.getAccount());
 
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
