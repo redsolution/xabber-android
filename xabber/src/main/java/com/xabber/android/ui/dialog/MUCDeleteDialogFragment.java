@@ -56,7 +56,7 @@ public class MUCDeleteDialogFragment extends DialogFragment implements DialogInt
 
         MUCManager.getInstance().removeRoom(account, user.getJid().asEntityBareJidIfPossible());
         MessageManager.getInstance().closeChat(account, user);
-        BookmarksManager.getInstance().romoveConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
+        BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
         NotificationManager.getInstance().removeMessageNotification(account, user);
     }
 }

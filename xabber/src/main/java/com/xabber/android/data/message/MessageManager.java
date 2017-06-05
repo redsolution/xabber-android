@@ -15,6 +15,7 @@
 package com.xabber.android.data.message;
 
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
@@ -157,6 +158,12 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
+        return chats;
+    }
+
+    public Collection<AbstractChat> getChats(AccountJid account) {
+        List<AbstractChat> chats = new ArrayList<>();
+        chats.addAll(this.chats.getNested(account.toString()).values());
         return chats;
     }
 
