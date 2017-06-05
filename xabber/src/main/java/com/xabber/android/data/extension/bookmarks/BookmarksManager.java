@@ -18,6 +18,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.bookmarks.BookmarkManager;
 import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
+import org.jivesoftware.smackx.bookmarks.BookmarkedURL;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -35,12 +36,57 @@ import java.util.List;
 
 public class BookmarksManager {
 
+    private static final String XABBER_NAME = "Do not remove this url. Required for Xabber conference synchronization.";
+    private static final String XABBER_URL = "www.xabber.com";
+
     private static BookmarksManager instance;
 
     public static BookmarksManager getInstance() {
         if (instance == null)
             instance = new BookmarksManager();
         return instance;
+    }
+
+    public List<BookmarkedURL> getUrlFromBookmarks(AccountJid accountJid) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        List<BookmarkedURL> urls = Collections.emptyList();
+        if (accountItem != null) {
+            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
+            try {
+                urls = bookmarkManager.getBookmarkedURLs();
+            } catch (SmackException.NoResponseException | InterruptedException |
+                    SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+                LogManager.exception(this, e);
+            }
+        }
+        return urls;
+    }
+
+    public void addUrlToBookmarks(AccountJid accountJid, String url, String name, boolean isRSS) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+
+        if (accountItem != null) {
+            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
+            try {
+                bookmarkManager.addBookmarkedURL(url, name, isRSS);
+            } catch (SmackException.NoResponseException | InterruptedException |
+                    SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+                LogManager.exception(this, e);
+            }
+        }
+    }
+
+    public void removeUrlFromBookmarks(AccountJid accountJid, String url) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem != null) {
+            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
+            try {
+                bookmarkManager.removeBookmarkedURL(url);
+            } catch (SmackException.NoResponseException | InterruptedException |
+                    SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+                LogManager.exception(this, e);
+            }
+        }
     }
 
     public void addConferenceToBookmarks(AccountJid accountJid, String conferenceName,
@@ -104,6 +150,24 @@ public class BookmarksManager {
             }
         }
 
+        // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
+        if (!isBookmarkCheckedByXabber(account)) {
+            // add conferences from phone to bookmarks
+            Collection<AbstractChat> chats = MessageManager.getInstance().getChats(account);
+            if (!chats.isEmpty()) {
+                for (AbstractChat chat : chats) {
+                    if (chat instanceof RoomChat) {
+                        RoomChat roomChat = (RoomChat) chat;
+                        if (!hasConference(conferences, roomChat.getTo())) {
+                            addConferenceToBookmarks(account, roomChat.getTo().toString(), roomChat.getTo(), roomChat.getNickname());
+                        }
+                    }
+                }
+            }
+            // add url about check to bookmarks
+            addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
+        }
+
         Collection<AbstractChat> chats = MessageManager.getInstance().getChats(account);
         if (!chats.isEmpty()) {
             for (AbstractChat chat : chats) {
@@ -115,6 +179,16 @@ public class BookmarksManager {
                 }
             }
         }
+    }
+
+    private boolean isBookmarkCheckedByXabber(AccountJid account) {
+        List<BookmarkedURL> urls = getUrlFromBookmarks(account);
+        if (!urls.isEmpty()) {
+            for (BookmarkedURL url : urls) {
+                if (url.getURL().equals(XABBER_URL)) return true;
+            }
+        }
+        return false;
     }
 
     private boolean hasConference(List<BookmarkedConference> conferences, EntityBareJid jid) {

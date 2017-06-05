@@ -117,7 +117,7 @@ public class RoomChat extends AbstractChat {
         return user.getJid().asEntityBareJidIfPossible();
     }
 
-    Resourcepart getNickname() {
+    public Resourcepart getNickname() {
         return nickname;
     }
 
