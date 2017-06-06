@@ -10,7 +10,8 @@ public enum  AccountOption {
     COLOR(R.drawable.ic_color_lens_grey600_24dp, R.string.account_color),
     BLOCK_LIST(R.drawable.ic_block_grey600_24dp, R.string.blocked_contacts),
     SERVER_INFO(R.drawable.ic_info_grey600_24dp, R.string.account_server_info),
-    CHAT_HISTORY(R.drawable.ic_archive_grey600_24dp, R.string.account_chat_history);
+    CHAT_HISTORY(R.drawable.ic_archive_grey600_24dp, R.string.account_chat_history),
+    BOOKMARKS(R.drawable.ic_bookmark, R.string.account_bookmarks);
 
     @DrawableRes
     private final int iconId;

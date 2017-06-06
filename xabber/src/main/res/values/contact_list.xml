@@ -89,4 +89,7 @@
     <string name="intro_create_xabber_account">Create Xabber Account</string>
     <string name="intro_faq">If you do not have an XMPP account, please <a href="https://www.xabber.com/faq/">read our F.A.Q.</a> on how to get one.</string>
     <string name="intro_web_search_register_xmpp">Register XMPP Account</string>
+
+    <string name="remove_url_bookmarks">Remove urls</string>
+    <string name="remove_conference_bookmarks">Remove conferences</string>
 </resources>

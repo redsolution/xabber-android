@@ -171,6 +171,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
         AccountOption.CHAT_HISTORY.setDescription(getString(R.string.account_history_options_summary));
 
+        AccountOption.BOOKMARKS.setDescription(getString(R.string.account_bookmarks_summary));
+
         accountOptionsAdapter.notifyDataSetChanged();
     }
 
@@ -252,6 +254,9 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
             case CHAT_HISTORY:
                 startActivity(AccountHistorySettingsActivity.createIntent(this, account));
+                break;
+            case BOOKMARKS:
+                startActivity(BookmarksActivity.createIntent(this, account));
                 break;
         }
     }

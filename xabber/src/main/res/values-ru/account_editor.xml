@@ -97,4 +97,6 @@
   <string name="account_mam_sync_none">Не загружать историю</string>
   <string name="account_clear_history_on_exit_title">Очищать историю при выходе</string>
   <string name="account_clear_history_on_exit_summary">Удалять все сообщения с устройства перед выходом из Xabber.</string>
+  <string name="account_bookmarks">Закладки</string>
+  <string name="account_bookmarks_summary">Список закладок для этого аккаунта</string>
 </resources>

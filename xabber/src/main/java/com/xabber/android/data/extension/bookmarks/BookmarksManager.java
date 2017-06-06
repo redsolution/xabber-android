@@ -121,7 +121,7 @@ public class BookmarksManager {
     }
 
     @NonNull
-    private List<BookmarkedConference> getConferencesFromBookmarks(AccountJid accountJid) {
+    public List<BookmarkedConference> getConferencesFromBookmarks(AccountJid accountJid) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         List<BookmarkedConference> conferences = Collections.emptyList();
         if (accountItem != null) {
