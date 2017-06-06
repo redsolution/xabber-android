@@ -131,6 +131,7 @@ dependencies {
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v13:$supportVersion"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile 'org.jitsi:org.otr4j:0.22'
     compile 'com.google.zxing:android-integration:3.3.0'

@@ -8,16 +8,18 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.bookmarks.BookmarkVO;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.adapter.ServerInfoAdapter;
+import com.xabber.android.ui.adapter.BookmarkAdapter;
 import com.xabber.android.ui.color.BarPainter;
 
 import org.jivesoftware.smack.SmackException;
@@ -36,8 +38,9 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
     private static final String LOG_TAG = BookmarksActivity.class.getSimpleName();
     private AccountItem accountItem;
-    private ServerInfoAdapter bookmarksAdapter;
+    private BookmarkAdapter bookmarksAdapter;
     private View progressBar;
+    private TextView tvNotSupport;
 
     public static Intent createIntent(Context context, AccountJid account) {
         return new AccountIntentBuilder(context, BookmarksActivity.class).setAccount(account).build();
@@ -50,7 +53,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_server_info);
+        setContentView(R.layout.activity_bokmarks);
 
         final Intent intent = getIntent();
 
@@ -84,7 +87,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.server_info_recycler_view);
 
-        bookmarksAdapter = new ServerInfoAdapter();
+        bookmarksAdapter = new BookmarkAdapter(this);
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -92,12 +95,14 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
 
         progressBar = findViewById(R.id.server_info_progress_bar);
+        tvNotSupport = (TextView) findViewById(R.id.tvNotSupport);
 
         requestBookmarks();
     }
 
     private void requestBookmarks() {
         progressBar.setVisibility(View.VISIBLE);
+        tvNotSupport.setVisibility(View.GONE);
 
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
@@ -105,19 +110,24 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 try {
                     boolean support = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
                     if (!support) {
-                        showNotSupported();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showNotSupported();
+                            }
+                        });
                     }
                 } catch (InterruptedException | SmackException.NoResponseException
                         | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     LogManager.exception(LOG_TAG, e);
                 }
 
-                final List<String> bookmarks = getBookmarks();
+                final List<BookmarkVO> bookmarks = getBookmarks();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         progressBar.setVisibility(View.GONE);
-                        bookmarksAdapter.setServerInfoList(bookmarks);
+                        bookmarksAdapter.setItems(bookmarks);
                     }
                 });
             }
@@ -125,46 +135,33 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
     }
 
     private void showNotSupported() {
-        final List<String> list = new ArrayList<>();
-        list.add("Server not support bookmarks");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setVisibility(View.GONE);
-                bookmarksAdapter.setServerInfoList(list);
-            }
-        });
+        progressBar.setVisibility(View.GONE);
+        tvNotSupport.setVisibility(View.VISIBLE);
     }
 
-    private List<String> getBookmarks() {
-        final List<String> bookmarksList = new ArrayList<>();
+    private List<BookmarkVO> getBookmarks() {
+        final List<BookmarkVO> bookmarksList = new ArrayList<>();
 
         // urls
         List<BookmarkedURL> bookmarkedURLs =
                 BookmarksManager.getInstance().getUrlFromBookmarks(accountItem.getAccount());
-        if (bookmarkedURLs.isEmpty()) bookmarksList.add("URL: 0");
-        else bookmarksList.add("URL: " + bookmarkedURLs.size());
 
         for (int i = 0; i < bookmarkedURLs.size(); i++) {
             BookmarkedURL url = bookmarkedURLs.get(i);
-            bookmarksList.add((i+1) + ". " + url.getName() + "\n" + url.getURL());
+            bookmarksList.add(new BookmarkVO(url.getName(), url.getURL()));
         }
-
-        bookmarksList.add("");
 
         // conferences
         List<BookmarkedConference> bookmarkedConferences =
                 BookmarksManager.getInstance().getConferencesFromBookmarks(accountItem.getAccount());
-        if (bookmarkedConferences.isEmpty()) bookmarksList.add("Conferences: 0");
-        else bookmarksList.add("Conferences: " + bookmarkedConferences.size());
 
         for (int i = 0; i < bookmarkedConferences.size(); i++) {
             BookmarkedConference conference = bookmarkedConferences.get(i);
-            bookmarksList.add((i+1) + ". " + conference.getName()
-                    + "\n jid: " + conference.getJid()
-                    + "\n nick: " + conference.getNickname()
-                    + "\n pass: " + conference.getPassword()
-            );
+            bookmarksList.add(new BookmarkVO(
+                    conference.getName(),
+                    conference.getJid().toString(),
+                    conference.getNickname().toString(),
+                    conference.getPassword()));
         }
 
         return bookmarksList;

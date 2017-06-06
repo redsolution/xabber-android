@@ -232,6 +232,8 @@
 
     <color name="contact_list_separator_dark">#11FFFFFF</color>
 
+    <color name="bookmark_list_separator">#24000000</color>
+
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>
 
