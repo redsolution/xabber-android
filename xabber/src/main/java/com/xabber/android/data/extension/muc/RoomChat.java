@@ -447,7 +447,8 @@ public class RoomChat extends AbstractChat {
      */
     private void onKick(Resourcepart resource, org.jxmpp.jid.Jid actor) {
         if (showStatusChange()) {
-            newAction(resource, actor.toString(), ChatAction.kick);
+            if (actor != null) newAction(resource, actor.toString(), ChatAction.kick);
+            else newAction(resource, "", ChatAction.kick);
         }
         if (isSelf(resource)) {
             MUCManager.getInstance().leaveRoom(account, getRoom());
