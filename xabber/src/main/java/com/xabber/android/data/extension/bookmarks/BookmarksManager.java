@@ -47,6 +47,16 @@ public class BookmarksManager {
         return instance;
     }
 
+    public boolean isSupported(AccountJid accountJid) throws XMPPException.XMPPErrorException,
+            SmackException.NotConnectedException, InterruptedException,
+            SmackException.NoResponseException {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem != null) {
+            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
+            return bookmarkManager.isSupported();
+        } else return false;
+    }
+
     public List<BookmarkedURL> getUrlFromBookmarks(AccountJid accountJid) {
         AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
         List<BookmarkedURL> urls = Collections.emptyList();
