@@ -102,8 +102,8 @@ public class BookmarkAdapter extends RecyclerView.Adapter {
             case BookmarkVO.TYPE_CONFERENCE:
                 ConferenceHolder conferenceHolder = (ConferenceHolder) holder;
                 conferenceHolder.tvName.setText(bookmark.getName());
-                conferenceHolder.tvJid.setText(mContext.getString(R.string.bookmark_jid, bookmark.getJid()));
-                conferenceHolder.tvNickname.setText(mContext.getString(R.string.bookmark_nick, bookmark.getNickname()));
+                conferenceHolder.tvJid.setText(bookmark.getJid());
+                conferenceHolder.tvNickname.setText(bookmark.getNickname());
                 conferenceHolder.chbBookmark.setChecked(checkedItems.contains(bookmark));
                 conferenceHolder.chbBookmark.setOnClickListener(onClickListener);
                 break;
