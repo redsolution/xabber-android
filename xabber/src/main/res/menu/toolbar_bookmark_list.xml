@@ -2,15 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_remove_urls"
-        android:title="@string/remove_url_bookmarks"
+    <item android:id="@+id/action_remove_all"
+        android:title="@string/remove_all_bookmarks"
         app:showAsAction="collapseActionView"
         android:orderInCategory="90"
         />
 
-    <item android:id="@+id/action_remove_conferences"
-        android:title="@string/remove_conference_bookmarks"
-        app:showAsAction="collapseActionView"
+    <item android:id="@+id/action_synchronize"
+        android:title="@string/synchronize_bookmarks"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_sync"
+        android:orderInCategory="90"
+        />
+
+    <item android:id="@+id/action_remove_selected"
+        android:title="@string/remove_selected_bookmarks"
+        app:showAsAction="ifRoom"
+        android:visible="false"
         android:orderInCategory="100"
         />
 </menu>

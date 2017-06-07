@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -83,7 +84,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
             }
         });
         toolbar.setTitle(R.string.account_bookmarks);
-        //toolbar.inflateMenu(R.menu.toolbar_bookmark_list);
+        toolbar.inflateMenu(R.menu.toolbar_bookmark_list);
         toolbar.setOnMenuItemClickListener(this);
 
         barPainter = new BarPainter(this, toolbar);
@@ -109,6 +110,14 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         updateMenu();
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_remove_all).setVisible(bookmarksAdapter.getItemCount() > 0);
+        final boolean checkItemsIsEmpty = bookmarksAdapter.getCheckedItems().isEmpty();
+        menu.findItem(R.id.action_remove_selected).setVisible(!checkItemsIsEmpty);
+        return true;
+    }
+
     private void requestBookmarks() {
         progressBar.setVisibility(View.VISIBLE);
         tvNotSupport.setVisibility(View.GONE);
@@ -129,6 +138,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                 } catch (InterruptedException | SmackException.NoResponseException
                         | XMPPException.XMPPErrorException | SmackException.NotConnectedException e) {
                     LogManager.exception(LOG_TAG, e);
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 final List<BookmarkVO> bookmarks = getBookmarks();

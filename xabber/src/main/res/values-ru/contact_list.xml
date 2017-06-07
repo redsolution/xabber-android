@@ -87,6 +87,7 @@
   <string name="intro_create_xabber_account">Создать учётную запись Xabber</string>
   <string name="intro_faq">Если у вас нет учётной записи XMPP, пожалуйста, <a href="https://www.xabber.com/faq/">прочтите наш F.A.Q.</a> о том, как зарегистрироваться.</string>
   <string name="intro_web_search_register_xmpp">Зарегистрировать учётную запись XMPP</string>
-  <string name="remove_url_bookmarks">Удалить ссылки</string>
-  <string name="remove_conference_bookmarks">Удалить конференции</string>
+  <string name="synchronize_bookmarks">Синхронизировать</string>
+  <string name="remove_all_bookmarks">Удалить все</string>
+  <string name="remove_selected_bookmarks">Удалить выделенные</string>
 </resources>
