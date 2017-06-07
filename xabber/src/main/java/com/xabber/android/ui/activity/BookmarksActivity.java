@@ -34,13 +34,17 @@ import java.util.List;
  * Created by valery.miller on 06.06.17.
  */
 
-public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener {
+public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener,
+        BookmarkAdapter.OnBookmarkClickListener {
 
     private static final String LOG_TAG = BookmarksActivity.class.getSimpleName();
     private AccountItem accountItem;
     private BookmarkAdapter bookmarksAdapter;
     private View progressBar;
     private TextView tvNotSupport;
+    private int previousSize;
+    private Toolbar toolbar;
+    private BarPainter barPainter;
 
     public static Intent createIntent(Context context, AccountJid account) {
         return new AccountIntentBuilder(context, BookmarksActivity.class).setAccount(account).build();
@@ -70,7 +74,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
             return;
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,22 +86,27 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         //toolbar.inflateMenu(R.menu.toolbar_bookmark_list);
         toolbar.setOnMenuItemClickListener(this);
 
-        BarPainter barPainter = new BarPainter(this, toolbar);
+        barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.server_info_recycler_view);
 
         bookmarksAdapter = new BookmarkAdapter(this);
-
+        bookmarksAdapter.setListener(this);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(bookmarksAdapter);
-
 
         progressBar = findViewById(R.id.server_info_progress_bar);
         tvNotSupport = (TextView) findViewById(R.id.tvNotSupport);
 
         requestBookmarks();
+    }
+
+    @Override
+    public void onBookmarkClick() {
+        updateToolbar();
+        updateMenu();
     }
 
     private void requestBookmarks() {
@@ -165,6 +174,48 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         }
 
         return bookmarksList;
+    }
+
+    private void updateMenu() {
+        onPrepareOptionsMenu(toolbar.getMenu());
+    }
+
+    private void updateToolbar() {
+        final ArrayList<BookmarkVO> checkedItems = bookmarksAdapter.getCheckedItems();
+
+        final int currentSize = checkedItems.size();
+
+        if (currentSize == previousSize) {
+            return;
+        }
+
+        if (currentSize == 0) {
+            toolbar.setTitle(getString(R.string.account_bookmarks));
+            barPainter.updateWithAccountName(accountItem.getAccount());
+
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+
+        } else {
+            toolbar.setTitle(String.valueOf(currentSize));
+            barPainter.setGrey();
+
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    bookmarksAdapter.setCheckedItems(new ArrayList<BookmarkVO>());
+                    bookmarksAdapter.notifyDataSetChanged();
+                    updateToolbar();
+                    updateMenu();
+                }
+            });
+        }
+
+        previousSize = currentSize;
     }
 
     @Override

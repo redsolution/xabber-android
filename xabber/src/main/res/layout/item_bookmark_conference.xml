@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/ripple_background"
+    android:clickable="true"
+    >
+
+    <CheckBox
+        android:id="@+id/chbBookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_margin="12dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        />
 
     <TextView
         android:id="@+id/tvConferenceName"
@@ -10,6 +23,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/chbBookmark"
         android:text="Conference Name"
         android:textStyle="bold"
         />
@@ -22,6 +38,9 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_below="@id/tvConferenceName"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/chbBookmark"
         android:text="Jid"
         />
 
@@ -34,6 +53,9 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="8dp"
         android:layout_below="@id/tvJid"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/chbBookmark"
         android:text="Nickname"
         />
 
