@@ -44,6 +44,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter {
 
     public void setItems(List<BookmarkVO> items) {
         this.items = items;
+        this.checkedItems.clear();
         notifyDataSetChanged();
     }
 
@@ -153,6 +154,14 @@ public class BookmarkAdapter extends RecyclerView.Adapter {
 
     public ArrayList<BookmarkVO> getCheckedItems() {
         return new ArrayList<>(checkedItems);
+    }
+
+    public ArrayList<BookmarkVO> getAllWithoutXabberUrl() {
+        ArrayList<BookmarkVO> items = new ArrayList<>();
+        for (BookmarkVO item : this.items) {
+            if (!item.getUrl().equals("www.xabber.com")) items.add(item);
+        }
+        return items;
     }
 
     public void setCheckedItems(List<BookmarkVO> checkedItems) {

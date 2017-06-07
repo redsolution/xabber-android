@@ -93,4 +93,6 @@
     <string name="synchronize_bookmarks">Synchronize</string>
     <string name="remove_all_bookmarks">Remove all</string>
     <string name="remove_selected_bookmarks">Remove selected</string>
+    <string name="remove_all_bookmarks_confirm">Do you really want to remove all bookmarks from account %1$s?</string>
+    <string name="remove_selected_bookmarks_confirm">Do you really want to remove selected bookmarks from account %1$s?</string>
 </resources>

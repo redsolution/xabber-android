@@ -19,14 +19,19 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.bookmarks.BookmarkManager;
 import org.jivesoftware.smackx.bookmarks.BookmarkedConference;
 import org.jivesoftware.smackx.bookmarks.BookmarkedURL;
+import org.jxmpp.jid.BareJid;
 import org.jxmpp.jid.EntityBareJid;
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.jxmpp.util.XmppStringUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Manage bookmarks and there requests.
@@ -144,6 +149,29 @@ public class BookmarksManager {
                 bookmarkManager.removeBookmarkedConference(conferenceJid);
             } catch (SmackException.NoResponseException | InterruptedException |
                     SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+                LogManager.exception(this, e);
+            }
+        }
+    }
+
+    public void removeBookmarks(AccountJid accountJid, ArrayList<BookmarkVO> bookmarks) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem != null) {
+            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
+            try {
+                for (BookmarkVO bookmark : bookmarks) {
+                    // remove conferences
+                    if (bookmark.getType() == BookmarkVO.TYPE_CONFERENCE) {
+                        bookmarkManager.removeBookmarkedConference(
+                                JidCreate.from(bookmark.getJid()).asEntityBareJidIfPossible());
+                    }
+                    // remove url
+                    if (bookmark.getType() == BookmarkVO.TYPE_URL)
+                        bookmarkManager.removeBookmarkedURL(bookmark.getUrl());
+                }
+            } catch (SmackException.NoResponseException | InterruptedException |
+                    SmackException.NotConnectedException | XMPPException.XMPPErrorException
+                    | XmppStringprepException e) {
                 LogManager.exception(this, e);
             }
         }
