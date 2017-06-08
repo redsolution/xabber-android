@@ -180,10 +180,11 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         for (int i = 0; i < bookmarkedConferences.size(); i++) {
             BookmarkedConference conference = bookmarkedConferences.get(i);
             bookmarksList.add(new BookmarkVO(
-                    conference.getName(),
-                    conference.getJid().toString(),
-                    conference.getNickname().toString(),
-                    conference.getPassword()));
+                    conference.getName() != null ? conference.getName() : "",
+                    conference.getJid() != null ? conference.getJid().toString() : "",
+                    conference.getNickname() != null ? conference.getNickname().toString() : "",
+                    conference.getPassword() != null ? conference.getPassword() : ""
+                    ));
         }
 
         return bookmarksList;

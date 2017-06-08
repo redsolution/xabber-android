@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.extension.bookmarks.BookmarkVO;
+import com.xabber.android.data.extension.bookmarks.BookmarksManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,7 +73,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter {
                 CheckBox checkBox = (CheckBox) v.findViewById(R.id.chbBookmark);
 
                 // can't remove xabber url which need for conference sync
-                if (bookmark.getUrl().equals("www.xabber.com")) return;
+                if (bookmark.getUrl().equals(BookmarksManager.XABBER_URL)) return;
 
                 if (checkedItems.contains(bookmark)) {
                     checkedItems.remove(bookmark);
@@ -96,7 +97,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter {
                 urlHolder.chbBookmark.setChecked(checkedItems.contains(bookmark));
                 urlHolder.chbBookmark.setOnClickListener(onClickListener);
 
-                if (bookmark.getUrl().equals("www.xabber.com")) urlHolder.chbBookmark.setVisibility(View.INVISIBLE);
+                if (bookmark.getUrl().equals(BookmarksManager.XABBER_URL)) urlHolder.chbBookmark.setVisibility(View.INVISIBLE);
                 else urlHolder.chbBookmark.setVisibility(View.VISIBLE);
                 break;
             case BookmarkVO.TYPE_CONFERENCE:
@@ -159,7 +160,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter {
     public ArrayList<BookmarkVO> getAllWithoutXabberUrl() {
         ArrayList<BookmarkVO> items = new ArrayList<>();
         for (BookmarkVO item : this.items) {
-            if (!item.getUrl().equals("www.xabber.com")) items.add(item);
+            if (!item.getUrl().equals(BookmarksManager.XABBER_URL)) items.add(item);
         }
         return items;
     }

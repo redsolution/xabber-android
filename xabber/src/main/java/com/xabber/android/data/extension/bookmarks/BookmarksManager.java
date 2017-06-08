@@ -41,8 +41,8 @@ import java.util.Set;
 
 public class BookmarksManager {
 
-    private static final String XABBER_NAME = "Do not remove this url. Required for Xabber conference synchronization.";
-    private static final String XABBER_URL = "www.xabber.com";
+    public static final String XABBER_NAME = "Xabber bookmark";
+    public static final String XABBER_URL = "Required to correctly sync bookmarks";
 
     private static BookmarksManager instance;
 
@@ -184,6 +184,18 @@ public class BookmarksManager {
                 if (!MUCManager.getInstance().hasRoom(account, conference.getJid())) {
                     createMUC(account, conference);
                     LogManager.d(this, " Conference " + conference.getName() + "was added to roster from bookmarks");
+                }
+                /*
+                    Fix for strange problem in Smack.
+                    If conference has null-field, then request of bookmark-update will return timeOutException.
+                    To solve: set values for empty field and then update conferences.
+                 */
+                if (conference.getName() == null || conference.getNickname() == null) {
+                    addConferenceToBookmarks(
+                            account,
+                            conference.getJid().getLocalpart().toString(),
+                            conference.getJid(),
+                            getNickname(account, conference.getJid()));
                 }
             }
         }
