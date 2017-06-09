@@ -124,10 +124,10 @@ dependencies {
     compile project('MemorizingTrustManager')
     compile project('emojicon')
 
-    compile 'com.github.str4tocaster.smack:smack-android-extensions:754e542'
-    compile 'com.github.str4tocaster.smack:smack-experimental:754e542'
-    compile 'com.github.str4tocaster.smack:smack-tcp:754e542'
-    compile 'com.github.str4tocaster.smack:smack-resolver-dnsjava:754e542'
+    compile 'com.github.str4tocaster.smack:smack-android-extensions:400be8f'
+    compile 'com.github.str4tocaster.smack:smack-experimental:400be8f'
+    compile 'com.github.str4tocaster.smack:smack-tcp:400be8f'
+    compile 'com.github.str4tocaster.smack:smack-resolver-dnsjava:400be8f'
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:support-v13:$supportVersion"

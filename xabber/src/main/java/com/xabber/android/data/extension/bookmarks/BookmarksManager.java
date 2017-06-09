@@ -191,19 +191,7 @@ public class BookmarksManager {
             for (BookmarkedConference conference : conferences) {
                 if (!MUCManager.getInstance().hasRoom(account, conference.getJid())) {
                     createMUC(account, conference);
-                    LogManager.d(this, " Conference " + conference.getName() + "was added to roster from bookmarks");
-                }
-                /*
-                    Fix for strange problem in Smack.
-                    If conference has null-field, then request of bookmark-update will return timeOutException.
-                    To solve: set values for empty field and then update conferences.
-                 */
-                if (conference.getName() == null || conference.getNickname() == null) {
-                    addConferenceToBookmarks(
-                            account,
-                            conference.getJid().getLocalpart().toString(),
-                            conference.getJid(),
-                            getNickname(account, conference.getJid()));
+                    LogManager.d(this, " Conference " + conference.getJid() + "was added to roster from bookmarks");
                 }
             }
         }
