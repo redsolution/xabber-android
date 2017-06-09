@@ -186,6 +186,8 @@ public class BookmarksManager {
     }
 
     public void onAuthorized(AccountJid account) {
+        cleanCache(account);
+
         List<BookmarkedConference> conferences = getConferencesFromBookmarks(account);
         if (!conferences.isEmpty()) {
             for (BookmarkedConference conference : conferences) {
@@ -246,12 +248,12 @@ public class BookmarksManager {
     }
 
     private void removeMUC(final AccountJid account, final UserJid user) {
+        BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 MUCManager.getInstance().removeRoom(account, user.getJid().asEntityBareJidIfPossible());
                 MessageManager.getInstance().closeChat(account, user);
-                BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
                 NotificationManager.getInstance().removeMessageNotification(account, user);
             }
         });

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
@@ -56,7 +57,13 @@ public class MUCDeleteDialogFragment extends DialogFragment implements DialogInt
 
         MUCManager.getInstance().removeRoom(account, user.getJid().asEntityBareJidIfPossible());
         MessageManager.getInstance().closeChat(account, user);
-        BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
         NotificationManager.getInstance().removeMessageNotification(account, user);
+
+        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
+            @Override
+            public void run() {
+                BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
+            }
+        });
     }
 }
