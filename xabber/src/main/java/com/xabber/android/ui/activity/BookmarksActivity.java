@@ -103,7 +103,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         progressBar = findViewById(R.id.server_info_progress_bar);
         tvNotSupport = (TextView) findViewById(R.id.tvNotSupport);
 
-        requestBookmarks();
+        requestBookmarks(false);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         return true;
     }
 
-    private void requestBookmarks() {
+    private void requestBookmarks(final boolean cleanCache) {
         progressBar.setVisibility(View.VISIBLE);
         tvNotSupport.setVisibility(View.GONE);
 
@@ -143,7 +143,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                         }
                     });
                 } else {
-                    final List<BookmarkVO> bookmarks = getBookmarks();
+                    final List<BookmarkVO> bookmarks = getBookmarks(cleanCache);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -161,8 +161,10 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
         tvNotSupport.setVisibility(View.VISIBLE);
     }
 
-    private List<BookmarkVO> getBookmarks() {
+    private List<BookmarkVO> getBookmarks(boolean cleanCache) {
         final List<BookmarkVO> bookmarksList = new ArrayList<>();
+
+        if (cleanCache) BookmarksManager.getInstance().cleanCache(accountItem.getAccount());
 
         // urls
         List<BookmarkedURL> bookmarkedURLs =
@@ -236,7 +238,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_synchronize:
-                requestBookmarks();
+                requestBookmarks(true);
                 return true;
             case R.id.action_remove_all:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -249,7 +251,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                                 BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
                                         bookmarksAdapter.getAllWithoutXabberUrl());
                                 bookmarksAdapter.setCheckedItems(new ArrayList<BookmarkVO>());
-                                requestBookmarks();
+                                requestBookmarks(false);
                                 updateToolbar();
                                 updateMenu();
                             }
@@ -268,7 +270,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
                                 BookmarksManager.getInstance().removeBookmarks(accountItem.getAccount(),
                                         bookmarksAdapter.getCheckedItems());
                                 bookmarksAdapter.setCheckedItems(new ArrayList<BookmarkVO>());
-                                requestBookmarks();
+                                requestBookmarks(false);
                                 updateToolbar();
                                 updateMenu();
                             }

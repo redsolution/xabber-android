@@ -177,6 +177,14 @@ public class BookmarksManager {
         }
     }
 
+    public void cleanCache(AccountJid accountJid) {
+        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        if (accountItem != null) {
+            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
+            bookmarkManager.cleanCache();
+        }
+    }
+
     public void onAuthorized(AccountJid account) {
         List<BookmarkedConference> conferences = getConferencesFromBookmarks(account);
         if (!conferences.isEmpty()) {
