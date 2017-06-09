@@ -902,6 +902,22 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         skipOnTextChanges = false;
     }
 
+    public void setInputTextAtCursor(String additional) {
+        skipOnTextChanges = true;
+        String currentText = inputView.getText().toString();
+        if (currentText.isEmpty()) {
+            inputView.setText(additional);
+            inputView.setSelection(additional.length());
+        } else {
+            int cursorPosition = inputView.getSelectionStart();
+            String first = currentText.substring(0, cursorPosition);
+            String second = currentText.substring(cursorPosition);
+            inputView.setText(first.concat(additional).concat(second));
+            inputView.setSelection(first.length() + additional.length());
+        }
+        skipOnTextChanges = false;
+    }
+
     public AccountJid getAccount() {
         return account;
     }
@@ -1015,11 +1031,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 return true;
 
             case R.id.action_message_appeal:
-                setInputText(clickedMessageItem.getResource().toString() + ", ");
+                setInputTextAtCursor(clickedMessageItem.getResource().toString() + ", ");
                 return true;
 
             case R.id.action_message_quote:
-                setInputText("> " + clickedMessageItem.getText() + "\n");
+                setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
                 return true;
 
             case R.id.action_message_remove:
