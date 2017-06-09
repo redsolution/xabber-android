@@ -114,8 +114,9 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_remove_all).setVisible(bookmarksAdapter.getItemCount() > 0);
         final boolean checkItemsIsEmpty = bookmarksAdapter.getCheckedItems().isEmpty();
+        menu.findItem(R.id.action_remove_all).setVisible(bookmarksAdapter.getItemCount() > 0 && checkItemsIsEmpty);
+        menu.findItem(R.id.action_synchronize).setVisible(checkItemsIsEmpty);
         menu.findItem(R.id.action_remove_selected).setVisible(!checkItemsIsEmpty);
         return true;
     }
@@ -207,6 +208,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         if (currentSize == 0) {
             toolbar.setTitle(getString(R.string.account_bookmarks));
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
             barPainter.updateWithAccountName(accountItem.getAccount());
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -218,6 +220,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
 
         } else {
             toolbar.setTitle(String.valueOf(currentSize));
+            toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
             barPainter.setGrey();
 
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
