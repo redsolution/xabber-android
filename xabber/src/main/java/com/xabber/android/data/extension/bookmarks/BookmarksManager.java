@@ -248,7 +248,6 @@ public class BookmarksManager {
     }
 
     private void removeMUC(final AccountJid account, final UserJid user) {
-        BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
         Application.getInstance().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -257,6 +256,7 @@ public class BookmarksManager {
                 NotificationManager.getInstance().removeMessageNotification(account, user);
             }
         });
+        BookmarksManager.getInstance().removeConferenceFromBookmarks(account, user.getJid().asEntityBareJidIfPossible());
     }
 
     private void createMUC(AccountJid account, BookmarkedConference conference) {
