@@ -116,7 +116,7 @@ public class RegularChat extends AbstractChat {
                 null,
                 false,
                 false,
-                false,
+                true,
                 false,
                 null);
     }
@@ -152,7 +152,7 @@ public class RegularChat extends AbstractChat {
 
             String thread = message.getThread();
             updateThreadId(thread);
-            boolean unencrypted = false;
+            boolean unencrypted = !OTRManager.getInstance().isEncrypted(text);
             try {
                 text = OTRManager.getInstance().transformReceiving(account, user, text);
             } catch (OtrException e) {

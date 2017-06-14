@@ -433,9 +433,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         if (messageItem.isUnencrypted()) {
-            message.messageUnencrypted.setVisibility(View.VISIBLE);
+            //message.messageUnencrypted.setVisibility(View.VISIBLE);
+            message.ivEncrypted.setImageResource(R.drawable.ic_open_lock);
         } else {
-            message.messageUnencrypted.setVisibility(View.GONE);
+            //message.messageUnencrypted.setVisibility(View.GONE);
+            message.ivEncrypted.setImageResource(R.drawable.ic_lock);
         }
 
         message.messageText.setText(messageItem.getText());
@@ -571,6 +573,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         ImageView messageImage;
         ImageView statusIcon;
+        ImageView ivEncrypted;
 
 
         public Message(View itemView, MessageClickListener onClickListener, @StyleRes int appearance) {
@@ -585,6 +588,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);
 
             statusIcon = (ImageView) itemView.findViewById(R.id.message_status_icon);
+            ivEncrypted = (ImageView) itemView.findViewById(R.id.message_encrypted_icon);
 
             itemView.setOnClickListener(this);
             messageImage.setOnClickListener(this);

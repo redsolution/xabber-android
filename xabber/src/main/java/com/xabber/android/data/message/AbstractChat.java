@@ -30,6 +30,7 @@ import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 
@@ -447,6 +448,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @SuppressWarnings("WeakerAccess")
     boolean sendMessage(MessageItem messageItem) {
         String text = prepareText(messageItem.getText());
+        messageItem.setUnencrypted(!OTRManager.getInstance().isEncrypted(text));
         Long timestamp = messageItem.getTimestamp();
 
         Date currentTime = new Date(System.currentTimeMillis());

@@ -68,11 +68,23 @@
         />
 
     <ImageView
-        android:id="@+id/message_status_icon"
+        android:id="@+id/message_encrypted_icon"
         android:layout_width="14dp"
         android:layout_height="14dp"
         android:layout_alignBottom="@+id/message_time"
         android:layout_toLeftOf="@+id/message_time"
+        android:layout_toStartOf="@+id/message_time"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/ic_open_lock"
+        />
+
+    <ImageView
+        android:id="@+id/message_status_icon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_alignBottom="@+id/message_time"
+        android:layout_toLeftOf="@+id/message_encrypted_icon"
 
         android:src="@drawable/ic_message_delivered_14dp"
         android:layout_marginRight="4dp"

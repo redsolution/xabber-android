@@ -22,7 +22,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/otr_unencrypted_message"
-        android:textSize="11sp" />
+        android:textSize="11sp"
+        android:visibility="gone"
+        />
 
     <github.ankushsachdeva.emojicon.EmojiconTextView
         android:id="@+id/message_text"
