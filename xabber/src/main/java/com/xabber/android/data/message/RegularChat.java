@@ -134,9 +134,9 @@ public class RegularChat extends AbstractChat {
                 this.resource = null;
             }
 
-            if (presence.getType() == Presence.Type.unavailable) {
-                OTRManager.getInstance().onContactUnAvailable(account, user);
-            }
+//            if (presence.getType() == Presence.Type.unavailable) {
+//                OTRManager.getInstance().onContactUnAvailable(account, user);
+//            }
         } else if (packet instanceof Message) {
             final Message message = (Message) packet;
             if (message.getType() == Message.Type.error)

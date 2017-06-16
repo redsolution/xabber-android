@@ -20,6 +20,8 @@ import android.support.annotation.Nullable;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.listeners.OnConnectedListener;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
@@ -82,7 +84,7 @@ import java.util.concurrent.ThreadFactory;
  * @author alexander.ivanov
  */
 public class OTRManager implements OtrEngineHost, OtrEngineListener,
-        OnLoadListener, OnAccountAddedListener, OnAccountRemovedListener, OnCloseListener {
+        OnLoadListener, OnAccountAddedListener, OnAccountRemovedListener, OnCloseListener, OnConnectedListener {
 
     private static OTRManager instance;
     private static Map<SecurityOtrMode, OtrPolicy> POLICIES;
@@ -187,9 +189,13 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     public void refreshSession(AccountJid account, UserJid user) throws NetworkException {
+        refreshSession(account.toString(), user.toString());
+    }
+
+    private void refreshSession(String account, String user) throws NetworkException {
         LogManager.i(this, "Refreshing session for " + user);
         try {
-            getOrCreateSession(account.toString(), user.toString()).refreshSession();
+            getOrCreateSession(account, user).refreshSession();
         } catch (OtrException e) {
             throw new NetworkException(R.string.OTR_ERROR, e);
         }
@@ -690,9 +696,29 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         }
     }
 
+    private void refreshSessions(AccountJid accountJid) {
+        LogManager.i(this, "refresh all sessions for account " + accountJid);
+        NestedMap<String> entities = new NestedMap<>();
+        entities.addAll(actives);
+        for (Entry<String> entry : entities) {
+            if (entry.getFirst().equals(accountJid.toString())) {
+                try {
+                    refreshSession(entry.getFirst(), entry.getSecond());
+                } catch (NetworkException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     public void onClose() {
         endAllSessions();
+    }
+
+    @Override
+    public void onConnected(ConnectionItem connection) {
+        refreshSessions(connection.getAccount());
     }
 
     public void onSettingsChanged() {
@@ -720,22 +746,22 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         // since this is not supported, we don't need to do anything
     }
 
-    public void onContactUnAvailable(AccountJid account, UserJid user) {
-        Session session = sessions.get(account.toString(), user.toString());
-
-        if (session == null) {
-            return;
-        }
-
-        if (session.getSessionStatus() == SessionStatus.ENCRYPTED) {
-            try {
-                LogManager.i(this, "onContactUnAvailable. Refresh session for " + user);
-                session.refreshSession();
-            } catch (OtrException e) {
-                LogManager.exception(this, e);
-            }
-        }
-    }
+//    public void onContactUnAvailable(AccountJid account, UserJid user) {
+//        Session session = sessions.get(account.toString(), user.toString());
+//
+//        if (session == null) {
+//            return;
+//        }
+//
+//        if (session.getSessionStatus() == SessionStatus.ENCRYPTED) {
+//            try {
+//                LogManager.i(this, "onContactUnAvailable. Refresh session for " + user);
+//                session.refreshSession();
+//            } catch (OtrException e) {
+//                LogManager.exception(this, e);
+//            }
+//        }
+//    }
 
     public boolean isEncrypted(String text) {
         if (text.length() < 6) return false;
