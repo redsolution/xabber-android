@@ -100,10 +100,12 @@ class FileLog {
      */
     private void controlFileSize() {
         // create new file if current file is too large
-        if (currentFile.length() >= LOG_FILE_MAX_SIZE) {
-            File newFile = createLogFile();
-            if (newFile != null) {
-                currentFile = newFile;
+        if (currentFile != null) {
+            if (currentFile.length() >= LOG_FILE_MAX_SIZE) {
+                File newFile = createLogFile();
+                if (newFile != null) {
+                    currentFile = newFile;
+                }
             }
         }
     }
