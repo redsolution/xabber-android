@@ -186,6 +186,11 @@ public class ContactListActivity extends ManagedActivity implements OnAccountCha
             return;
         }
 
+        if (!isTaskRoot()) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_contact_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         toolbar.setOnClickListener(this);
