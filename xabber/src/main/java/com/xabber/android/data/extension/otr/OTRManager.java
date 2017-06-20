@@ -764,9 +764,11 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
 //    }
 
     public boolean isEncrypted(String text) {
-        if (text.length() < 6) return false;
-        else {
-            return text.substring(0, 5).equals("?OTR:");
-        }
+        if (text != null) {
+            if (text.length() < 6) return false;
+            else {
+                return text.substring(0, 5).equals("?OTR:");
+            }
+        } else return false;
     }
 }
