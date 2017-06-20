@@ -92,9 +92,9 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     static {
         POLICIES = new HashMap<>();
         POLICIES.put(SecurityOtrMode.disabled, new OtrPolicyImpl(OtrPolicy.NEVER));
-        POLICIES.put(SecurityOtrMode.manual, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_MANUAL & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.auto, new OtrPolicyImpl(OtrPolicy.OPPORTUNISTIC & ~OtrPolicy.ALLOW_V1));
-        POLICIES.put(SecurityOtrMode.required, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_ALWAYS & ~OtrPolicy.ALLOW_V1));
+        POLICIES.put(SecurityOtrMode.manual, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_MANUAL));
+        POLICIES.put(SecurityOtrMode.auto, new OtrPolicyImpl(OtrPolicy.OPPORTUNISTIC));
+        POLICIES.put(SecurityOtrMode.required, new OtrPolicyImpl(OtrPolicy.OTRL_POLICY_ALWAYS));
     }
 
     private final EntityNotificationProvider<SMRequest> smRequestProvider;

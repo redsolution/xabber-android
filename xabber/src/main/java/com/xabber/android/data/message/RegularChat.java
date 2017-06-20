@@ -17,6 +17,9 @@ package com.xabber.android.data.message;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.xabber.android.data.NetworkException;
+import com.xabber.android.data.SettingsManager;
+import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
@@ -79,22 +82,22 @@ public class RegularChat extends AbstractChat {
         return Type.chat;
     }
 
-//    @Override
-//    protected boolean canSendMessage() {
-//        if (super.canSendMessage()) {
-//            if (SettingsManager.securityOtrMode() != SecurityOtrMode.required)
-//                return true;
-//            SecurityLevel securityLevel = OTRManager.getInstance()
-//                    .getSecurityLevel(account, user);
-//            if (securityLevel != SecurityLevel.plain)
-//                return true;
-//            try {
-//                OTRManager.getInstance().startSession(account, user);
-//            } catch (NetworkException e) {
-//            }
-//        }
-//        return false;
-//    }
+    @Override
+    protected boolean canSendMessage() {
+        if (super.canSendMessage()) {
+            if (SettingsManager.securityOtrMode() != SettingsManager.SecurityOtrMode.required)
+                return true;
+            SecurityLevel securityLevel = OTRManager.getInstance()
+                    .getSecurityLevel(account, user);
+            if (securityLevel != SecurityLevel.plain)
+                return true;
+            try {
+                OTRManager.getInstance().startSession(account, user);
+            } catch (NetworkException e) {
+            }
+        }
+        return false;
+    }
 
     @Override
     protected String prepareText(String text) {

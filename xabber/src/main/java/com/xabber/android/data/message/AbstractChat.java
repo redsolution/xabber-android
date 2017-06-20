@@ -420,6 +420,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
 
     public void sendMessages() {
+        if (!canSendMessage()) return;
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
@@ -443,6 +444,10 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
                 realm.close();
             }
         });
+    }
+
+    protected boolean canSendMessage() {
+        return true;
     }
 
     @SuppressWarnings("WeakerAccess")
