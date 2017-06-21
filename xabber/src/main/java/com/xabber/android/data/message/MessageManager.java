@@ -230,7 +230,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 realm.copyToRealm(newMessageItem);
             }
         });
-        chat.sendMessages();
+        if (chat.canSendMessage())
+            chat.sendMessages();
     }
 
     public String createFileMessage(AccountJid account, UserJid user, File file) {
