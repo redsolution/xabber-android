@@ -76,7 +76,7 @@
         android:layout_toStartOf="@+id/message_time"
         android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp"
-        android:src="@drawable/ic_open_lock"
+        android:src="@drawable/ic_lock"
         />
 
     <ImageView

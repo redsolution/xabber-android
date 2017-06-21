@@ -92,7 +92,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
-    private long lastUpdateTimeMillis;
 
     public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatFragment chatFragment) {
         super(context, messageItems, true);
@@ -414,7 +413,6 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
     @Override
     public void onChange() {
-        lastUpdateTimeMillis = System.currentTimeMillis();
         notifyDataSetChanged();
         listener.onMessagesUpdated();
         int itemCount = getItemCount();
@@ -433,11 +431,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         if (messageItem.isUnencrypted()) {
-            //message.messageUnencrypted.setVisibility(View.VISIBLE);
-            message.ivEncrypted.setImageResource(R.drawable.ic_open_lock);
+            message.ivEncrypted.setVisibility(View.GONE);
         } else {
-            //message.messageUnencrypted.setVisibility(View.GONE);
-            message.ivEncrypted.setImageResource(R.drawable.ic_lock);
+            message.ivEncrypted.setVisibility(View.VISIBLE);
         }
 
         message.messageText.setText(messageItem.getText());
@@ -473,7 +469,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         } else if (messageItem.isError()) {
             messageIcon = R.drawable.ic_message_has_error_14dp;
         } else if (!isFileUploadInProgress && !messageItem.isSent()
-                && lastUpdateTimeMillis - messageItem.getTimestamp() > 1000) {
+                && System.currentTimeMillis() - messageItem.getTimestamp() > 1000) {
             messageIcon = R.drawable.ic_message_not_sent_14dp;
         } else if (!messageItem.isDelivered()) {
             if (messageItem.isAcknowledged()) {
