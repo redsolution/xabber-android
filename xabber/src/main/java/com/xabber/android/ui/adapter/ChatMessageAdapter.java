@@ -430,10 +430,10 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
             message.messageHeader.setVisibility(View.GONE);
         }
 
-        if (messageItem.isUnencrypted()) {
-            message.ivEncrypted.setVisibility(View.GONE);
-        } else {
+        if (messageItem.isEncrypted()) {
             message.ivEncrypted.setVisibility(View.VISIBLE);
+        } else {
+            message.ivEncrypted.setVisibility(View.GONE);
         }
 
         message.messageText.setText(messageItem.getText());

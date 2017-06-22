@@ -44,7 +44,8 @@ public class MessageItem extends RealmObject {
         public static final String TEXT = "text";
         public static final String ACTION = "action";
         public static final String INCOMING = "incoming";
-        public static final String UNENCRYPTED = "unencrypted";
+        public static final String ENCRYPTED = "encrypted";
+        public static final String UNENCRYPTED = "unencrypted"; // deprecated
         public static final String OFFLINE = "offline";
         public static final String TIMESTAMP = "timestamp";
         public static final String DELAY_TIMESTAMP = "delayTimestamp";
@@ -95,7 +96,8 @@ public class MessageItem extends RealmObject {
 
     private boolean incoming;
 
-    private boolean unencrypted;
+    private boolean encrypted;
+
     /**
      * Message was received from server side offline storage.
      */
@@ -265,14 +267,6 @@ public class MessageItem extends RealmObject {
         this.incoming = incoming;
     }
 
-    public boolean isUnencrypted() {
-        return unencrypted;
-    }
-
-    public void setUnencrypted(boolean unencrypted) {
-        this.unencrypted = unencrypted;
-    }
-
     public boolean isOffline() {
         return offline;
     }
@@ -429,5 +423,13 @@ public class MessageItem extends RealmObject {
 
     public void setInProgress(boolean inProgress) {
         isInProgress = inProgress;
+    }
+
+    public boolean isEncrypted() {
+        return encrypted;
+    }
+
+    public void setEncrypted(boolean encrypted) {
+        this.encrypted = encrypted;
     }
 }

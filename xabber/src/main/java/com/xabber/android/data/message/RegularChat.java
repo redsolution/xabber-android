@@ -119,7 +119,7 @@ public class RegularChat extends AbstractChat {
                 null,
                 false,
                 false,
-                true,
+                false,
                 false,
                 null);
     }
@@ -155,13 +155,13 @@ public class RegularChat extends AbstractChat {
 
             String thread = message.getThread();
             updateThreadId(thread);
-            boolean unencrypted = !OTRManager.getInstance().isEncrypted(text);
+            boolean encrypted = OTRManager.getInstance().isEncrypted(text);
             try {
                 text = OTRManager.getInstance().transformReceiving(account, user, text);
             } catch (OtrException e) {
                 if (e.getCause() instanceof OTRUnencryptedException) {
                     text = ((OTRUnencryptedException) e.getCause()).getText();
-                    unencrypted = true;
+                    encrypted = false;
                 } else {
                     LogManager.exception(this, e);
                     // Invalid message received.
@@ -181,7 +181,7 @@ public class RegularChat extends AbstractChat {
                     getDelayStamp(message),
                     true,
                     true,
-                    unencrypted,
+                    encrypted,
                     isOfflineMessage(account.getFullJid().getDomain(), packet),
                     packet.getStanzaId());
             EventBus.getDefault().post(new NewIncomingMessageEvent(account, user));

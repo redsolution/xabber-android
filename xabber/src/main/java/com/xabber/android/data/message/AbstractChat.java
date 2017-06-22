@@ -235,15 +235,15 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param delayTimestamp Time when incoming message was sent or outgoing was created.
      * @param incoming       Incoming message.
      * @param notify         Notify user about this message when appropriated.
-     * @param unencrypted    Whether not encrypted message in OTR chat was received.
+     * @param encrypted      Whether encrypted message in OTR chat was received.
      * @param offline        Whether message was received from server side offline storage.
      * @return
      */
     protected void createAndSaveNewMessage(Resourcepart resource, String text,
                                            final ChatAction action, final Date delayTimestamp, final boolean incoming,
-                                           boolean notify, final boolean unencrypted, final boolean offline, final String stanzaId) {
+                                           boolean notify, final boolean encrypted, final boolean offline, final String stanzaId) {
         final MessageItem messageItem = createMessageItem(resource, text, action, delayTimestamp,
-                incoming, notify, unencrypted, offline, stanzaId);
+                incoming, notify, encrypted, offline, stanzaId);
         saveMessageItem(messageItem);
         EventBus.getDefault().post(new NewMessageEvent());
     }
@@ -260,7 +260,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     protected MessageItem createMessageItem(Resourcepart resource, String text, ChatAction action,
                                             Date delayTimestamp, boolean incoming, boolean notify,
-                                            boolean unencrypted, boolean offline, String stanzaId) {
+                                            boolean encrypted, boolean offline, String stanzaId) {
         final boolean visible = MessageManager.getInstance().isVisibleChat(this);
         boolean read = incoming ? visible : true;
         boolean send = incoming;
@@ -316,7 +316,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setIncoming(incoming);
         messageItem.setRead(read);
         messageItem.setSent(send);
-        messageItem.setUnencrypted(unencrypted);
+        messageItem.setEncrypted(encrypted);
         messageItem.setOffline(offline);
         messageItem.setStanzaId(stanzaId);
         FileManager.processFileMessage(messageItem);
@@ -453,7 +453,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
     @SuppressWarnings("WeakerAccess")
     boolean sendMessage(MessageItem messageItem) {
         String text = prepareText(messageItem.getText());
-        messageItem.setUnencrypted(!OTRManager.getInstance().isEncrypted(text));
+        messageItem.setEncrypted(OTRManager.getInstance().isEncrypted(text));
         Long timestamp = messageItem.getTimestamp();
 
         Date currentTime = new Date(System.currentTimeMillis());
