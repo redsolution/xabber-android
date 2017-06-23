@@ -495,11 +495,11 @@ public class MamManager implements OnRosterReceivedListener {
             try {
                 otrMessage = SerializationUtils.toMessage(body);
             } catch (IOException e) {
-                return null;
+                continue;
             }
             if (otrMessage != null) {
                 if (otrMessage.messageType != net.java.otr4j.io.messages.AbstractMessage.MESSAGE_PLAINTEXT)
-                    return null;
+                    continue;
                 body = ((PlainTextMessage) otrMessage).cleanText;
             }
 
