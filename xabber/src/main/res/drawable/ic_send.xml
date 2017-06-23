@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_send_black_24dp" android:minLevel="0" android:maxLevel="0" />
+    <item android:drawable="@drawable/ic_send_encrypted" android:minLevel="1" android:maxLevel="1" />
+    <item android:drawable="@drawable/ic_send_encrypted" android:minLevel="2" android:maxLevel="2" />
+    <item android:drawable="@drawable/ic_send_black_24dp" android:minLevel="3" android:maxLevel="3" />
+</level-list>

@@ -123,7 +123,7 @@
             android:background="?android:selectableItemBackground"
             android:contentDescription="@string/chat_send"
             android:padding="8dp"
-            android:src="@drawable/ic_send_black_24dp"
+            android:src="@drawable/ic_send"
             android:tint="?attr/chat_input_button_color"
             />
     </LinearLayout>

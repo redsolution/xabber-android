@@ -876,6 +876,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         toolbar.setBackgroundColor(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
         setUpOptionsMenu(toolbar.getMenu());
         updateSecurityButton();
+        updateSendButtonSecurityLevel();
     }
 
     private void scrollDown() {
@@ -889,6 +890,12 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             // strange null ptr happens
             securityButton.setImageLevel(securityLevel.getImageLevel());
         }
+    }
+
+    private void updateSendButtonSecurityLevel() {
+        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+        if (sendButton != null)
+            sendButton.setImageLevel(securityLevel.getImageLevel());
     }
 
     public boolean isEqual(BaseEntity chat) {
