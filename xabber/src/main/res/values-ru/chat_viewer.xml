@@ -96,4 +96,11 @@
   <string name="http_file_upload_slot_error">Не удалось загрузить файл. Слишком большой?</string>
   <string name="no_permission_to_read_files">Нет разрешения на чтение файлов</string>
   <string name="no_permission_to_write_files">Нет разрешения на сохранение файлов</string>
+  <string name="error_description_title">Описание ошибки:</string>
+  <string name="message_status_sent">Отправлено</string>
+  <string name="message_status_delivered">Доставлено</string>
+  <string name="message_status_synced">Получено из истории</string>
+  <string name="message_status_error">Ошибка</string>
+  <string name="message_status_forwarded">Отправлено с другого устройства</string>
+  <string name="message_status_not_sent">Отправляется</string>
 </resources>

@@ -11,7 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -27,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -79,6 +82,7 @@ import com.xabber.android.ui.activity.FingerprintActivity;
 import com.xabber.android.ui.activity.OccupantListActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
+import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
@@ -86,12 +90,16 @@ import com.xabber.android.ui.dialog.ChatHistoryClearDialog;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.android.ui.preferences.ChatContactSettings;
+import com.xabber.android.ui.widget.CustomMessageMenu;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.jid.impl.JidCreate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,7 +112,7 @@ import io.realm.Sort;
 public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickListener,
         View.OnClickListener, Toolbar.OnMenuItemClickListener,
         ChatMessageAdapter.Message.MessageClickListener, HttpUploadListener,
-        ChatMessageAdapter.Listener {
+        ChatMessageAdapter.Listener, AdapterView.OnItemClickListener, PopupWindow.OnDismissListener {
 
     public static final String ARGUMENT_ACCOUNT = "ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_USER = "ARGUMENT_USER";
@@ -152,6 +160,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private RealmResults<SyncInfo> syncInfoResults;
     private RealmResults<MessageItem> messageItems;
     private boolean toBeScrolled;
+
+    private List<HashMap<String, String>> menuItems = null;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -1021,49 +1031,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 startActivity(OccupantListActivity.createIntent(getActivity(), account, user));
                 return true;
 
-            /* message popup menu */
-
-            case R.id.action_message_repeat:
-                if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
-                    uploadFile(clickedMessageItem.getFilePath());
-                } else {
-                    sendMessage(clickedMessageItem.getText());
-                }
-                return true;
-
-            case R.id.action_message_copy:
-                Spannable spannable = MessageItem.getSpannable(clickedMessageItem);
-                ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
-                        .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
-                return true;
-
-            case R.id.action_message_appeal:
-                setInputTextAtCursor(clickedMessageItem.getResource().toString() + ", ");
-                return true;
-
-            case R.id.action_message_quote:
-                setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
-                return true;
-
-            case R.id.action_message_remove:
-                MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
-                return true;
-
-            case R.id.action_message_open_muc_private_chat:
-                UserJid occupantFullJid = null;
-                try {
-                    occupantFullJid = UserJid.from(
-                            JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
-                                    clickedMessageItem.getResource()));
-                    MessageManager.getInstance().openChat(account, occupantFullJid);
-                    startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
-
-                } catch (UserJid.UserJidCreateException e) {
-                    LogManager.exception(this, e);
-                }
-
-                return true;
-
             default:
                 return false;
         }
@@ -1156,31 +1123,111 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 LogManager.w(LOG_TAG, "onMessageClick null message item. Position: " + position);
                 return;
             }
-
-            PopupMenu popup = new PopupMenu(getActivity(), caller);
-            popup.inflate(R.menu.item_message);
-            popup.setOnMenuItemClickListener(this);
-
-            final Menu menu = popup.getMenu();
-
-            if (clickedMessageItem.isError()) {
-                menu.findItem(R.id.action_message_repeat).setVisible(true);
-            }
-
-            if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
-                menu.findItem(R.id.action_message_copy).setVisible(false);
-                menu.findItem(R.id.action_message_quote).setVisible(false);
-                menu.findItem(R.id.action_message_remove).setVisible(false);
-            }
-
-            if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
-                    .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
-                menu.findItem(R.id.action_message_open_muc_private_chat).setVisible(true);
-                menu.findItem(R.id.action_message_appeal).setVisible(true);
-            }
-
-            popup.show();
+            showCustomMenu(caller);
         }
+    }
+
+    public void showCustomMenu(View anchor) {
+        menuItems = new ArrayList<HashMap<String, String>>();
+
+        if (clickedMessageItem.isError()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_repeat", getString(R.string.message_repeat));
+        }
+
+        if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
+                .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_appeal", getString(R.string.message_appeal));
+        }
+
+        if (!MessageItem.isUploadFileMessage(clickedMessageItem)) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_quote", getString(R.string.message_quote));
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_copy", getString(R.string.message_copy));
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_remove", getString(R.string.message_remove));
+        }
+
+        if (clickedMessageItem.isIncoming() && MUCManager.getInstance()
+                .hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_open_muc_private_chat", getString(R.string.message_open_private_chat));
+        }
+
+        if (clickedMessageItem.isForwarded()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_FORWARDED);
+        } else if (clickedMessageItem.isReceivedFromMessageArchive()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_SYNCED);
+        } else if (clickedMessageItem.isError()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ERROR);
+        } else if (!clickedMessageItem.isSent()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_NOT_SEND);
+        } else if (clickedMessageItem.isDelivered()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_DELIVERED);
+        } else if (clickedMessageItem.isAcknowledged()) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_ACK);
+        }
+
+        CustomMessageMenu.showMenu(getActivity(), anchor, menuItems, this, this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (menuItems != null && menuItems.size() > position) {
+            HashMap<String, String> menuItem = menuItems.get(position);
+
+            switch (menuItem.get(CustomMessageMenuAdapter.KEY_ID)) {
+                case "action_message_repeat":
+                    if (MessageItem.isUploadFileMessage(clickedMessageItem)) {
+                        uploadFile(clickedMessageItem.getFilePath());
+                    } else {
+                        sendMessage(clickedMessageItem.getText());
+                    }
+                    break;
+                case "action_message_copy":
+                    Spannable spannable = MessageItem.getSpannable(clickedMessageItem);
+                    ((ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE))
+                            .setPrimaryClip(ClipData.newPlainText(spannable, spannable));
+                    break;
+                case "action_message_appeal":
+                    setInputTextAtCursor(clickedMessageItem.getResource().toString() + ", ");
+                    break;
+                case "action_message_quote":
+                    setInputTextAtCursor("> " + clickedMessageItem.getText() + "\n");
+                    break;
+                case "action_message_remove":
+                    MessageManager.getInstance().removeMessage(clickedMessageItem.getUniqueId());
+                    break;
+                case "action_message_open_muc_private_chat":
+                    UserJid occupantFullJid = null;
+                    try {
+                        occupantFullJid = UserJid.from(
+                                JidCreate.domainFullFrom(user.getJid().asDomainBareJid(),
+                                        clickedMessageItem.getResource()));
+                        MessageManager.getInstance().openChat(account, occupantFullJid);
+                        startActivity(ChatActivity.createSpecificChatIntent(getActivity(), account, occupantFullJid));
+
+                    } catch (UserJid.UserJidCreateException e) {
+                        LogManager.exception(this, e);
+                    }
+                    break;
+                case "action_message_status":
+                    if (clickedMessageItem.isError())
+                        showError(clickedMessageItem.getErrorDescription());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onDismiss() {
+        menuItems = null;
+    }
+
+    private void showError(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.error_description_title)
+                .setMessage(message)
+                .setPositiveButton("Ok", null)
+                .show();
     }
 
     @Override
