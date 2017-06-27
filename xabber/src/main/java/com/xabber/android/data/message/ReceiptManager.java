@@ -24,6 +24,7 @@ import com.xabber.android.data.database.MessageDatabaseManager;
 import com.xabber.android.data.database.messagerealm.MessageItem;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.adapter.ChatMessageAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.ConnectionCreationListener;
@@ -32,6 +33,7 @@ import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smackx.receipts.DeliveryReceipt;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
 import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
@@ -125,6 +127,12 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
                 .equalTo(MessageItem.Fields.STANZA_ID, message.getStanzaId()).findFirst();
         if (first != null) {
             first.setError(true);
+            XMPPError error = message.getError();
+            if (error != null) {
+                String errorStr = error.toString();
+                String descr = error.getDescriptiveText(null);
+                first.setErrorDescription(errorStr + "\n" + descr);
+            }
         }
         realm.commitTransaction();
         realm.close();

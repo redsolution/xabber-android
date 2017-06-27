@@ -112,7 +112,7 @@ public class HttpFileUploadManager {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             LogManager.i(HttpFileUploadManager.this, "onFailure " + e.getMessage());
-                            MessageManager.getInstance().updateMessageWithError(fileMessageId);
+                            MessageManager.getInstance().updateMessageWithError(fileMessageId, e.toString());
                         }
 
                         @Override
@@ -121,7 +121,7 @@ public class HttpFileUploadManager {
                             if (response.isSuccessful()) {
                                 MessageManager.getInstance().updateFileMessage(account, user, fileMessageId, slot.getGetUrl());
                             } else {
-                                MessageManager.getInstance().updateMessageWithError(fileMessageId);
+                                MessageManager.getInstance().updateMessageWithError(fileMessageId, response.message());
                             }
                         }
                     });

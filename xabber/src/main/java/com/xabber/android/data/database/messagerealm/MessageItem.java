@@ -50,6 +50,7 @@ public class MessageItem extends RealmObject {
         public static final String TIMESTAMP = "timestamp";
         public static final String DELAY_TIMESTAMP = "delayTimestamp";
         public static final String ERROR = "error";
+        public static final String ERROR_DESCR = "errorDescription";
         public static final String DELIVERED = "delivered";
         public static final String SENT = "sent";
         public static final String READ = "read";
@@ -118,6 +119,7 @@ public class MessageItem extends RealmObject {
      * Error response received on send request.
      */
     private boolean error;
+    private String errorDescription;
     /**
      * Receipt was received for sent message.
      */
@@ -431,5 +433,13 @@ public class MessageItem extends RealmObject {
 
     public void setEncrypted(boolean encrypted) {
         this.encrypted = encrypted;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+
+    public void setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
     }
 }

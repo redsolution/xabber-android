@@ -268,7 +268,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         chat.sendMessages();
     }
 
-    public void updateMessageWithError(final String messageId) {
+    public void updateMessageWithError(final String messageId, final String errorDescription) {
         Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -280,6 +280,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
                 if (messageItem != null) {
                     messageItem.setError(true);
+                    messageItem.setErrorDescription(errorDescription);
                     messageItem.setInProgress(false);
                 }
             }
