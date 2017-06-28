@@ -230,6 +230,11 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         endSession(account.toString(), user.toString());
     }
 
+    @Nullable
+    private Session getSession(String account, String user) {
+        return sessions.get(account, user);
+    }
+
     private Session getOrCreateSession(String account, String user) {
         Session session = sessions.get(account, user);
         if (session != null) {
@@ -453,6 +458,24 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             return s;
         } catch (UnsupportedOperationException e) {
             throw new OtrException(e);
+        }
+    }
+
+    public String transformReceivingIfSessionExist(AccountJid account, UserJid user, String content) throws OtrException {
+        LogManager.i(this, "transform incoming message... " + content, "transform incoming message... ***");
+        Session session = getSession(account.toString(), user.toString());
+        if (session != null) {
+            try {
+                String s = session.transformReceiving(content);
+                LogManager.i(this,
+                        "transformed incoming message: " + s + " session status: " + session.getSessionStatus(),
+                        "transformed incoming message: " + "***" + " session status: " + session.getSessionStatus());
+                return s;
+            } catch (UnsupportedOperationException e) {
+                throw new OtrException(e);
+            }
+        } else {
+            return content;
         }
     }
 

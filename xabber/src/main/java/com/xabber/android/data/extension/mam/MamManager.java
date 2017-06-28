@@ -14,6 +14,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
@@ -21,6 +22,7 @@ import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 
+import net.java.otr4j.OtrException;
 import net.java.otr4j.io.SerializationUtils;
 import net.java.otr4j.io.messages.PlainTextMessage;
 
@@ -497,10 +499,16 @@ public class MamManager implements OnRosterReceivedListener {
             } catch (IOException e) {
                 continue;
             }
+            boolean encrypted = false;
             if (otrMessage != null) {
                 if (otrMessage.messageType != net.java.otr4j.io.messages.AbstractMessage.MESSAGE_PLAINTEXT)
-                    continue;
-                body = ((PlainTextMessage) otrMessage).cleanText;
+                    try {
+                        body = OTRManager.getInstance().transformReceivingIfSessionExist(chat.getAccount(), chat.getUser(), body);
+                        encrypted = true;
+                    } catch (Exception e) {
+                        continue;
+                    }
+                else body = ((PlainTextMessage) otrMessage).cleanText;
             }
 
             boolean incoming = message.getFrom().asBareJid().equals(chat.getUser().getJid().asBareJid());
@@ -520,6 +528,7 @@ public class MamManager implements OnRosterReceivedListener {
             messageItem.setReceivedFromMessageArchive(true);
             messageItem.setRead(true);
             messageItem.setSent(true);
+            messageItem.setEncrypted(encrypted);
 
             FileManager.processFileMessage(messageItem);
 
