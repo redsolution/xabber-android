@@ -13,6 +13,8 @@ import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
+
 /**
  * Created by valery.miller on 27.06.17.
  */
@@ -31,6 +33,7 @@ public class CustomMessageMenu {
         popup.setAdapter(adapter);
         popup.setAnchorView(anchor);
         popup.setModal(true);
+        popup.setSoftInputMode(SOFT_INPUT_ADJUST_NOTHING);
         popup.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
