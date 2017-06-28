@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/grey_200"
+    android:background="?attr/message_status_item_background_color"
     >
 
     <RelativeLayout
