@@ -501,13 +501,17 @@ public class MamManager implements OnRosterReceivedListener {
             }
             boolean encrypted = false;
             if (otrMessage != null) {
-                if (otrMessage.messageType != net.java.otr4j.io.messages.AbstractMessage.MESSAGE_PLAINTEXT)
+                if (otrMessage.messageType != net.java.otr4j.io.messages.AbstractMessage.MESSAGE_PLAINTEXT) {
+                    encrypted = true;
                     try {
                         body = OTRManager.getInstance().transformReceivingIfSessionExist(chat.getAccount(), chat.getUser(), body);
-                        encrypted = true;
+                        if (OTRManager.getInstance().isEncrypted(body)) {
+                            continue;
+                        }
                     } catch (Exception e) {
                         continue;
                     }
+                }
                 else body = ((PlainTextMessage) otrMessage).cleanText;
             }
 
