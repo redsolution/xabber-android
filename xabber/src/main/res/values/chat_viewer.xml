@@ -74,6 +74,7 @@
     <string name="otr_start">Start encryption</string>
     <string name="otr_unencrypted_message">This message has not been encrypted</string>
     <string name="otr_unreadable_message">The encrypted message you sent is unreadable</string>
+    <string name="otr_not_decrypted_message">Message cannot be decrypted</string>
     <string name="otr_verification">OTR verification</string>
     <string name="otr_verify_fingerprint">Verify with fingerprint</string>
     <string name="otr_verify_question">Verify with question</string>

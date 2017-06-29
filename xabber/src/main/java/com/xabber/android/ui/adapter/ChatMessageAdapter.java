@@ -48,6 +48,7 @@ import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
@@ -437,7 +438,13 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         }
 
         message.messageText.setText(messageItem.getText());
-        message.messageText.setVisibility(View.VISIBLE);
+        if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
+            message.messageText.setVisibility(View.GONE);
+            message.messageNotDecrypted.setVisibility(View.VISIBLE);
+        } else {
+            message.messageText.setVisibility(View.VISIBLE);
+            message.messageNotDecrypted.setVisibility(View.GONE);
+        }
 
         String time = StringUtils.getSmartTimeText(context, new Date(messageItem.getTimestamp()));
 
@@ -562,7 +569,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         private static final String LOG_TAG = Message.class.getSimpleName();
         TextView messageTime;
         TextView messageHeader;
-        TextView messageUnencrypted;
+        TextView messageNotDecrypted;
         View messageBalloon;
 
         MessageClickListener onClickListener;
@@ -578,7 +585,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
             messageHeader = (TextView) itemView.findViewById(R.id.message_header);
-            messageUnencrypted = (TextView) itemView.findViewById(R.id.message_unencrypted);
+            messageNotDecrypted = (TextView) itemView.findViewById(R.id.message_not_decrypted);
             messageBalloon = itemView.findViewById(R.id.message_balloon);
 
             messageImage = (ImageView) itemView.findViewById(R.id.message_image);

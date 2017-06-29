@@ -18,12 +18,12 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/message_unencrypted"
+        android:id="@+id/message_not_decrypted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/otr_unencrypted_message"
-        android:textSize="11sp"
+        android:text="@string/otr_not_decrypted_message"
         android:visibility="gone"
+        android:textStyle="italic"
         />
 
     <github.ankushsachdeva.emojicon.EmojiconTextView
