@@ -20,6 +20,7 @@
   <string name="message_quote">Цитировать</string>
   <string name="message_remove">Удалить из истории</string>
   <string name="message_repeat">Повторить отправку</string>
+  <string name="message_otr_show_original">Показать/Скрыть оригинальное сообщение</string>
   <string name="message_open_file">Открыть</string>
   <string name="message_save_file">Сохранить</string>
   <string name="save_history">Сохранять локальную историю сообщений\nХранить историю переписки на устройстве</string>

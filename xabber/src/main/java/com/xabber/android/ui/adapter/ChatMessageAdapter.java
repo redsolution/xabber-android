@@ -61,7 +61,9 @@ import com.xabber.android.utils.StringUtils;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Resourcepart;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
@@ -93,6 +95,7 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
     private AccountJid account;
     private UserJid user;
     private int prevItemCount;
+    private List<String> itemsNeedOriginalText;
 
     public ChatMessageAdapter(Context context, RealmResults<MessageItem> messageItems, AbstractChat chat, ChatFragment chatFragment) {
         super(context, messageItems, true);
@@ -112,11 +115,19 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         this.listener = chatFragment;
 
         prevItemCount = getItemCount();
+
+        itemsNeedOriginalText = new ArrayList<>();
     }
 
     public interface Listener {
         void onMessageNumberChanged(int prevItemCount);
         void onMessagesUpdated();
+    }
+
+    public void addOrRemoveItemNeedOriginalText(String messageId) {
+        if (itemsNeedOriginalText.contains(messageId))
+            itemsNeedOriginalText.remove(messageId);
+        else itemsNeedOriginalText.add(messageId);
     }
 
     private void setUpOutgoingMessage(Message holder, final MessageItem messageItem) {
@@ -439,7 +450,9 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
         message.messageText.setText(messageItem.getText());
         if (OTRManager.getInstance().isEncrypted(messageItem.getText())) {
-            message.messageText.setVisibility(View.GONE);
+            if (itemsNeedOriginalText.contains(messageItem.getUniqueId()))
+                message.messageText.setVisibility(View.VISIBLE);
+            else message.messageText.setVisibility(View.GONE);
             message.messageNotDecrypted.setVisibility(View.VISIBLE);
         } else {
             message.messageText.setVisibility(View.VISIBLE);

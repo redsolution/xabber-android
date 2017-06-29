@@ -1150,6 +1150,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             CustomMessageMenu.addMenuItem(menuItems, "action_message_open_muc_private_chat", getString(R.string.message_open_private_chat));
         }
 
+        if (OTRManager.getInstance().isEncrypted(clickedMessageItem.getText())) {
+            CustomMessageMenu.addMenuItem(menuItems, "action_message_show_original_otr", getString(R.string.message_otr_show_original));
+        }
+
         if (clickedMessageItem.isForwarded()) {
             CustomMessageMenu.addMenuItem(menuItems, "action_message_status", CustomMessageMenuAdapter.STATUS_FORWARDED);
         } else if (clickedMessageItem.isReceivedFromMessageArchive()) {
@@ -1206,6 +1210,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     } catch (UserJid.UserJidCreateException e) {
                         LogManager.exception(this, e);
                     }
+                    break;
+                case "action_message_show_original_otr":
+                    chatMessageAdapter.addOrRemoveItemNeedOriginalText(clickedMessageItem.getUniqueId());
+                    chatMessageAdapter.notifyDataSetChanged();
                     break;
                 case "action_message_status":
                     if (clickedMessageItem.isError())
