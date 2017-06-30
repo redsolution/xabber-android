@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 
@@ -143,6 +144,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private RecyclerView realmRecyclerView;
     private ChatMessageAdapter chatMessageAdapter;
     private LinearLayoutManager layoutManager;
+    private SwipeRefreshLayout swipeContainer;
 
     boolean isInputEmpty = true;
     private boolean skipOnTextChanges = false;
@@ -283,6 +285,21 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
                 if (dy >= 0) {
                     toBeScrolled = false;
+                }
+            }
+        });
+
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer.setColorSchemeColors(ColorManager.getInstance().getAccountPainter().getAccountMainColor(account));
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeContainer.setRefreshing(false);
+                AbstractChat chat = getChat();
+                if (chat != null) {
+                    if (chat.isRemotePreviousHistoryCompletelyLoaded())
+                        Toast.makeText(getActivity(), R.string.toast_no_history, Toast.LENGTH_SHORT).show();
+                    else requestRemoteHistoryLoad();
                 }
             }
         });
@@ -627,6 +644,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             LogManager.i(this, "PreviousHistoryLoadStartedEvent");
             previousHistoryProgressBar.setVisibility(View.VISIBLE);
             isRemoteHistoryRequested = true;
+            swipeContainer.setRefreshing(true);
         }
     }
 
@@ -636,6 +654,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             LogManager.i(this, "PreviousHistoryLoadFinishedEvent");
             isRemoteHistoryRequested = false;
             previousHistoryProgressBar.setVisibility(View.GONE);
+            swipeContainer.setRefreshing(false);
         }
     }
 

@@ -105,4 +105,5 @@
   <string name="message_status_error">Ошибка</string>
   <string name="message_status_forwarded">Отправлено с другого устройства</string>
   <string name="message_status_not_sent">Отправляется</string>
+  <string name="toast_no_history">В истории больше нет сообщений</string>
 </resources>

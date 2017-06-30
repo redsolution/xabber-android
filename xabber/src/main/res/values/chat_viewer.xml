@@ -109,4 +109,5 @@
     <string name="message_status_forwarded">Sent from another device </string>
     <string name="message_status_not_sent">Sending</string>
 
+    <string name="toast_no_history">There are no more messages in the history</string>
 </resources>
