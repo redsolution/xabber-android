@@ -338,11 +338,11 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
         switch (viewType) {
             case VIEW_TYPE_HINT:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_message_info, parent, false), appearanceStyle);
+                        .inflate(R.layout.item_message_info, parent, false));
 
             case VIEW_TYPE_ACTION_MESSAGE:
                 return new BasicMessage(LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.item_action_message, parent, false), appearanceStyle);
+                        .inflate(R.layout.item_action_message, parent, false));
 
             case VIEW_TYPE_INCOMING_MESSAGE:
                 return new IncomingMessage(LayoutInflater.from(parent.getContext())
@@ -574,6 +574,12 @@ public class ChatMessageAdapter extends RealmRecyclerViewAdapter<MessageItem, Ch
 
             messageText = (TextView) itemView.findViewById(R.id.message_text);
             messageText.setTextAppearance(itemView.getContext(), appearance);
+        }
+
+        BasicMessage(View itemView) {
+            super(itemView);
+
+            messageText = (TextView) itemView.findViewById(R.id.message_text);
         }
     }
 

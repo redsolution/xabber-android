@@ -19,7 +19,7 @@
 
     <style name="ChatHeader.Delay">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="ChatText" parent="@android:style/TextAppearance">
