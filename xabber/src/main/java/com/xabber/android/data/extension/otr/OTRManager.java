@@ -22,6 +22,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnCloseListener;
@@ -64,6 +65,7 @@ import net.java.otr4j.session.SessionID;
 import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
 
+import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyPair;
@@ -259,8 +261,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         LogManager.i(this, "injectMessage. user: " + user + " message: " + msg);
         AbstractChat abstractChat = getChat(account, user);
         SSNManager.getInstance().setSessionOtrMode(account, user, abstractChat.getThreadId(), OtrMode.prefer);
+        Message message = abstractChat.createMessagePacket(msg);
+        CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
         try {
-            StanzaSender.sendStanza(abstractChat.getAccount(), abstractChat.createMessagePacket(msg));
+            StanzaSender.sendStanza(abstractChat.getAccount(), message);
         } catch (NetworkException e) {
             throw new OtrException(e);
         }

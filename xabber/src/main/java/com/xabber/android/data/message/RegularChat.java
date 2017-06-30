@@ -41,6 +41,7 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.jid.parts.Resourcepart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Date;
 
@@ -55,11 +56,20 @@ public class RegularChat extends AbstractChat {
      * Resource used for contact.
      */
     private Resourcepart resource;
+    private Resourcepart OTRresource;
 
 
     RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
         super(account, user, isPrivateMucChat);
         resource = null;
+    }
+
+    public Resourcepart getOTRresource() {
+        return OTRresource;
+    }
+
+    public void setOTRresource(Resourcepart OTRresource) {
+        this.OTRresource = OTRresource;
     }
 
     public Resourcepart getResource() {
@@ -69,11 +79,15 @@ public class RegularChat extends AbstractChat {
     @NonNull
     @Override
     public Jid getTo() {
-        if (resource == null
-                || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat )) {
-            return user.getJid();
+        if (OTRresource != null) {
+            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), OTRresource);
         } else {
-            return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
+            if (resource == null
+                    || (MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible()) && getType() != Message.Type.groupchat)) {
+                return user.getJid();
+            } else {
+                return JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource);
+            }
         }
     }
 
@@ -109,6 +123,21 @@ public class RegularChat extends AbstractChat {
             return null;
         }
     }
+
+//    @Override
+//    protected MessageItem createNewMessageItem(String text) {
+//        Resourcepart resource = OTRresource;
+//        return createMessageItem(
+//                resource,
+//                text,
+//                null,
+//                null,
+//                false,
+//                false,
+//                false,
+//                false,
+//                null);
+//    }
 
     @Override
     protected MessageItem createNewMessageItem(String text) {

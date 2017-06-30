@@ -10,6 +10,7 @@ import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
+import com.xabber.android.ui.adapter.ChatMessageAdapter;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -137,9 +138,18 @@ public class CarbonManager {
             return;
         }
 
-        if (isCarbonsEnabledForConnection(AccountManager.getInstance().getAccount(abstractChat.getAccount()))) {
-            return;
-        }
+//        if (isCarbonsEnabledForConnection(AccountManager.getInstance().getAccount(abstractChat.getAccount()))) {
+//            return;
+//        }
+        CarbonExtension.Private.addTo(message);
+    }
+
+    /**
+     * Marks the message as non-carbon-copied
+     * Should used for establishing OTR-session
+     * @param message      the <tt>Message</tt> to be sent
+     */
+    public void setMessageToIgnoreCarbons(Message message) {
         CarbonExtension.Private.addTo(message);
     }
 }
