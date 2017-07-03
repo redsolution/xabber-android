@@ -411,15 +411,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
-//    public Message createMessagePacket(String body, Resourcepart resource) {
-//        Message message = new Message();
-//        message.setTo(JidCreate.fullFrom(user.getJid().asEntityBareJidIfPossible(), resource));
-//        message.setType(getType());
-//        message.setBody(body);
-//        message.setThread(threadId);
-//        return message;
-//    }
-
     /**
      * Prepare text to be send.
      *
@@ -466,8 +457,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         messageItem.setEncrypted(OTRManager.getInstance().isEncrypted(text));
         Long timestamp = messageItem.getTimestamp();
 
-        //Resourcepart resourcepart = messageItem.getResource();
-
         Date currentTime = new Date(System.currentTimeMillis());
         Date delayTimestamp = null;
 
@@ -479,9 +468,6 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         Message message = null;
         if (text != null) {
-//            if (resourcepart != null)
-//                message = createMessagePacket(text, resourcepart);
-//            else message = createMessagePacket(text);
             message = createMessagePacket(text);
         }
 

@@ -124,21 +124,6 @@ public class RegularChat extends AbstractChat {
         }
     }
 
-//    @Override
-//    protected MessageItem createNewMessageItem(String text) {
-//        Resourcepart resource = OTRresource;
-//        return createMessageItem(
-//                resource,
-//                text,
-//                null,
-//                null,
-//                false,
-//                false,
-//                false,
-//                false,
-//                null);
-//    }
-
     @Override
     protected MessageItem createNewMessageItem(String text) {
         return createMessageItem(
