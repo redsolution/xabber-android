@@ -475,7 +475,8 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     public String transformReceivingIfSessionExist(AccountJid account, UserJid user, String content) throws OtrException {
         LogManager.i(this, "transform incoming message... " + content, "transform incoming message... ***");
         Session session = getSession(account.toString(), user.toString());
-        if (session != null) {
+        SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
+        if (session != null && (securityLevel == SecurityLevel.encrypted || securityLevel == SecurityLevel.verified)) {
             try {
                 String s = session.transformReceiving(content);
                 LogManager.i(this,
