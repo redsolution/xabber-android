@@ -44,6 +44,7 @@ import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -66,6 +67,7 @@ import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
 
 import org.jivesoftware.smack.packet.Message;
+import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyPair;
@@ -411,6 +413,11 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
             sessions.remove(sessionID.getAccountID(), sessionID.getUserID());
             finished.put(sessionID.getAccountID(), sessionID.getUserID(), true);
             newAction(sessionID.getAccountID(), sessionID.getUserID(), null, ChatAction.otr_finish);
+            // if session was finished then clear OTR-resource for this chat
+            RegularChat chat = (RegularChat) getChat(sessionID.getAccountID(), sessionID.getUserID());
+            if (chat != null) {
+                chat.setOTRresource(null);
+            }
         } else {
             throw new IllegalStateException();
         }

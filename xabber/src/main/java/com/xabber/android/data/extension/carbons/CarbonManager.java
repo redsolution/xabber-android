@@ -134,7 +134,7 @@ public class CarbonManager {
 
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(abstractChat.getAccount(), abstractChat.getUser());
 
-        if (securityLevel == SecurityLevel.plain) {
+        if (securityLevel == SecurityLevel.plain || securityLevel == SecurityLevel.finished) {
             return;
         }
 
