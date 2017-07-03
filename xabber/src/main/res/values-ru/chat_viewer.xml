@@ -81,6 +81,10 @@
   <string name="otr_verify_fingerprint">Проверка отпечатком пальца</string>
   <string name="otr_verify_question">Проверка вопросом</string>
   <string name="otr_verify_secret">Проверка секретным ключом</string>
+  <string name="otr_select_resource">Выберете ресурс для OTR:</string>
+  <string name="otr_select_toast_no_chat">OTR-Сессия не установлена: no chat</string>
+  <string name="otr_select_toast_no_resource">OTR-Сессия не установлена: no resource</string>
+  <string name="otr_select_toast_resources_not_found">Ресурсы не найдены</string>
   <string name="recent_chats">Недавние чаты</string>
   <string name="under_construction">В разработке</string>
   <string name="under_construction_message">Этот экран находится в разработке</string>

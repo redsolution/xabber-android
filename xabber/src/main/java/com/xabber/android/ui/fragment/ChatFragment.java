@@ -983,12 +983,11 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             /* security menu */
 
             case R.id.action_start_encryption:
-                //startEncryption(account, user);
-                showResourceChoiceAlert(account, user);
+                showResourceChoiceAlert(account, user, false);
                 return true;
 
             case R.id.action_restart_encryption:
-                restartEncryption(account, user);
+                showResourceChoiceAlert(account, user, true);
                 return true;
 
             case R.id.action_stop_encryption:
@@ -1088,7 +1087,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void restartEncryption(AccountJid account, UserJid user) {
-        // переустановка ресурса
         try {
             OTRManager.getInstance().refreshSession(account, user);
         } catch (NetworkException e) {
@@ -1104,7 +1102,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
     }
 
-    private void showResourceChoiceAlert(final AccountJid account, final UserJid user) {
+    private void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
         for (Presence presence : allPresences) {
@@ -1115,14 +1113,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         }
         if (allPresences.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Select resource to OTR:");
-            builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.otr_select_resource);
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-            builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -1130,13 +1128,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                         RegularChat chat = (RegularChat) getChat();
                         if (chat != null) {
                             chat.setOTRresource(Resourcepart.from(arrayAdapter.getItem(checkedResource)));
-                            startEncryption(account, user);
+                            if (restartSession) restartEncryption(account, user);
+                            else startEncryption(account, user);
                         } else {
-                            Toast.makeText(getActivity(), "Session not started: no chat", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), R.string.otr_select_toast_no_chat, Toast.LENGTH_SHORT).show();
                         }
                     } catch (XmppStringprepException e) {
                         e.printStackTrace();
-                        Toast.makeText(getActivity(), "Session not started: no resource", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.otr_select_toast_no_resource, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -1147,7 +1146,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                 }
             }).show();
         } else {
-            Toast.makeText(getActivity(), "Resources not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.otr_select_toast_resources_not_found, Toast.LENGTH_SHORT).show();
         }
     }
 
