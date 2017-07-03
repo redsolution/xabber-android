@@ -502,15 +502,17 @@ public class MamManager implements OnRosterReceivedListener {
             boolean encrypted = false;
             if (otrMessage != null) {
                 if (otrMessage.messageType != net.java.otr4j.io.messages.AbstractMessage.MESSAGE_PLAINTEXT) {
-                    encrypted = true;
-                    try {
-                        body = OTRManager.getInstance().transformReceivingIfSessionExist(chat.getAccount(), chat.getUser(), body);
-                        if (OTRManager.getInstance().isEncrypted(body)) {
-                            continue;
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
+                    // decrypting messages from archive temporarily disabled
+//                    encrypted = true;
+//                    try {
+//                        body = OTRManager.getInstance().transformReceivingIfSessionExist(chat.getAccount(), chat.getUser(), body);
+//                        if (OTRManager.getInstance().isEncrypted(body)) {
+//                            continue;
+//                        }
+//                    } catch (Exception e) {
+//                        continue;
+//                    }
+                    continue;
                 }
                 else body = ((PlainTextMessage) otrMessage).cleanText;
             }
