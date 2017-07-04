@@ -35,8 +35,10 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -66,6 +68,7 @@ import com.xabber.android.data.extension.mam.PreviousHistoryLoadStartedEvent;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.extension.muc.RoomState;
+import com.xabber.android.data.extension.otr.AuthAskEvent;
 import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.extension.otr.SecurityLevel;
 import com.xabber.android.data.log.LogManager;
@@ -149,6 +152,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ImageButton attachButton;
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
+    private RelativeLayout notifyLayout;
 
     private RecyclerView realmRecyclerView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -175,6 +179,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private List<HashMap<String, String>> menuItems = null;
 
     private int checkedResource; // use only for alert dialog
+
+    private Intent notifyIntent;
 
     public static ChatFragment newInstance(AccountJid account, UserJid user) {
         ChatFragment fragment = new ChatFragment();
@@ -312,6 +318,15 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                         Toast.makeText(getActivity(), R.string.toast_no_history, Toast.LENGTH_SHORT).show();
                     else requestRemoteHistoryLoad();
                 }
+            }
+        });
+
+        notifyLayout = (RelativeLayout) view.findViewById(R.id.notifyLayout);
+        notifyLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (notifyIntent != null) startActivity(notifyIntent);
+                notifyLayout.setVisibility(View.GONE);
             }
         });
 
@@ -678,6 +693,14 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     public void onEvent(NewIncomingMessageEvent event) {
         if (event.getAccount().equals(account) && event.getUser().equals(user)) {
             playIncomingAnimation();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(AuthAskEvent event) {
+        if (event.getAccount() == getAccount() && event.getUser() == getUser()) {
+            showNotify(true);
+            notifyIntent = event.getIntent();
         }
     }
 
@@ -1432,5 +1455,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         void registerChatFragment(ChatFragment chatFragment);
 
         void unregisterChatFragment();
+    }
+
+    public void showNotify(boolean show) {
+        if (show) notifyLayout.setVisibility(View.VISIBLE);
+        else notifyLayout.setVisibility(View.INVISIBLE);
     }
 }

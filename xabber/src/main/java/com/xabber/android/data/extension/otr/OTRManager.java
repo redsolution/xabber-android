@@ -66,6 +66,7 @@ import net.java.otr4j.session.SessionID;
 import net.java.otr4j.session.SessionImpl;
 import net.java.otr4j.session.SessionStatus;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -435,8 +436,12 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     @Override
     public void askForSecret(SessionID sessionID, InstanceTag receiverTag, String question) {
         try {
-            smRequestProvider.add(new SMRequest(AccountJid.from(sessionID.getAccountID()),
-                    UserJid.from(sessionID.getUserID()), question), true);
+            SMRequest request = new SMRequest(AccountJid.from(sessionID.getAccountID()),
+                    UserJid.from(sessionID.getUserID()), question);
+            smRequestProvider.add(request, true);
+            // event of adding auth request to fragment
+            EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(sessionID.getAccountID()),
+                    UserJid.from(sessionID.getUserID()), request.getIntent()));
         } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
