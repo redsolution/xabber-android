@@ -32,7 +32,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -52,6 +51,8 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
+import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.extension.capability.ClientInfo;
 import com.xabber.android.data.extension.cs.ChatStateManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
@@ -86,6 +87,7 @@ import com.xabber.android.ui.activity.OccupantListActivity;
 import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.android.ui.adapter.ChatMessageAdapter;
 import com.xabber.android.ui.adapter.CustomMessageMenuAdapter;
+import com.xabber.android.ui.adapter.ResourceAdapter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatExportDialogFragment;
@@ -107,6 +109,7 @@ import org.jxmpp.stringprep.XmppStringprepException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -1104,30 +1107,66 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
 
     private void showResourceChoiceAlert(final AccountJid account, final UserJid user, final boolean restartSession) {
         final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, user.getJid());
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+
+        final List<Map<String, String>> items = new ArrayList<>();
         for (Presence presence : allPresences) {
             Jid fromJid = presence.getFrom();
+            ClientInfo clientInfo = CapabilitiesManager.getInstance().getCachedClientInfo(fromJid);
+
+            String client = "";
+            if (clientInfo == null) {
+                CapabilitiesManager.getInstance().requestClientInfoByUser(account, fromJid);
+            } else if (clientInfo == ClientInfo.INVALID_CLIENT_INFO) {
+                client = getString(R.string.unknown);
+            } else {
+                String name = clientInfo.getName();
+                if (name != null) {
+                    client = name;
+                }
+
+                String type = clientInfo.getType();
+                if (type != null) {
+                    if (client.isEmpty()) {
+                        client = type;
+                    } else {
+                        client = client + "/" + type;
+                    }
+                }
+            }
+
+            Map<String, String> map = new HashMap<>();
+            if (!client.isEmpty()) {
+                map.put(ResourceAdapter.KEY_CLIENT, client);
+            }
+
             Resourcepart resourceOrNull = fromJid.getResourceOrNull();
-            if (resourceOrNull != null)
-                arrayAdapter.add(resourceOrNull.toString());
+            if (resourceOrNull != null) {
+                map.put(ResourceAdapter.KEY_RESOURCE, resourceOrNull.toString());
+                items.add(map);
+            }
         }
-        if (allPresences.size() > 0) {
+        final ResourceAdapter adapter = new ResourceAdapter(getActivity(), items);
+        adapter.setCheckedItem(checkedResource);
+
+        if (items.size() > 0) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle(R.string.otr_select_resource);
             builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    checkedResource = adapter.getCheckedItem();
                 }
             });
             builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    checkedResource = adapter.getCheckedItem();
                     try {
                         RegularChat chat = (RegularChat) getChat();
                         if (chat != null) {
-                            chat.setOTRresource(Resourcepart.from(arrayAdapter.getItem(checkedResource)));
+                            chat.setOTRresource(Resourcepart.from(items.get(checkedResource).get(ResourceAdapter.KEY_RESOURCE)));
                             if (restartSession) restartEncryption(account, user);
                             else startEncryption(account, user);
                         } else {
@@ -1139,12 +1178,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
                     }
                 }
             });
-            builder.setSingleChoiceItems(arrayAdapter, checkedResource, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    checkedResource = which;
-                }
-            }).show();
+            builder.setSingleChoiceItems(adapter, checkedResource, null).show();
         } else {
             Toast.makeText(getActivity(), R.string.otr_select_toast_resources_not_found, Toast.LENGTH_SHORT).show();
         }
