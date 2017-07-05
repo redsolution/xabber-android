@@ -482,7 +482,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            if (chat.onPacket(user, stanza)) {
+            if (chat.onPacket(user, stanza, false)) {
                 processed = true;
                 break;
             }
@@ -509,7 +509,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
 
             if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
                 try {
-                    createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza);
+                    createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza, false);
                 } catch (UserJid.UserJidCreateException e) {
                     LogManager.exception(this, e);
                 }
@@ -523,7 +523,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 }
             }
 
-            createChat(account, user).onPacket(user, stanza);
+            createChat(account, user).onPacket(user, stanza, false);
         }
     }
 
@@ -567,7 +567,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         }
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            if (chat.onPacket(companion, message)) {
+            if (chat.onPacket(companion, message, true)) {
                 processed = true;
                 break;
             }
@@ -582,7 +582,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         if (body == null) {
             return;
         }
-        createChat(account, companion).onPacket(companion, message);
+        createChat(account, companion).onPacket(companion, message, true);
 
     }
     @Override

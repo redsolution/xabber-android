@@ -188,8 +188,8 @@ public class RoomChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(UserJid bareAddress, Stanza stanza) {
-        if (!super.onPacket(bareAddress, stanza)) {
+    protected boolean onPacket(UserJid bareAddress, Stanza stanza, boolean isCarbons) {
+        if (!super.onPacket(bareAddress, stanza, isCarbons)) {
             return false;
         }
 

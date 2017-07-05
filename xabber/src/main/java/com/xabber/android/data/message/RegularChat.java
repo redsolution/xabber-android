@@ -41,7 +41,6 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.jid.parts.Resourcepart;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.Date;
 
@@ -139,8 +138,8 @@ public class RegularChat extends AbstractChat {
     }
 
     @Override
-    protected boolean onPacket(UserJid bareAddress, Stanza packet) {
-        if (!super.onPacket(bareAddress, packet))
+    protected boolean onPacket(UserJid bareAddress, Stanza packet, boolean isCarbons) {
+        if (!super.onPacket(bareAddress, packet, isCarbons))
             return false;
         final Resourcepart resource = packet.getFrom().getResourceOrNull();
         if (packet instanceof Presence) {
@@ -175,16 +174,19 @@ public class RegularChat extends AbstractChat {
             }
 
             boolean encrypted = OTRManager.getInstance().isEncrypted(text);
-            try {
-                text = OTRManager.getInstance().transformReceiving(account, user, text);
-            } catch (OtrException e) {
-                if (e.getCause() instanceof OTRUnencryptedException) {
-                    text = ((OTRUnencryptedException) e.getCause()).getText();
-                    encrypted = false;
-                } else {
-                    LogManager.exception(this, e);
-                    // Invalid message received.
-                    return true;
+
+            if (!isCarbons) {
+                try {
+                    text = OTRManager.getInstance().transformReceiving(account, user, text);
+                } catch (OtrException e) {
+                    if (e.getCause() instanceof OTRUnencryptedException) {
+                        text = ((OTRUnencryptedException) e.getCause()).getText();
+                        encrypted = false;
+                    } else {
+                        LogManager.exception(this, e);
+                        // Invalid message received.
+                        return true;
+                    }
                 }
             }
 

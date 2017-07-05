@@ -545,7 +545,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * @param packet
      * @return Whether packet was directed to this chat.
      */
-    protected boolean onPacket(UserJid userJid, Stanza packet) {
+    protected boolean onPacket(UserJid userJid, Stanza packet, boolean isCarbons) {
         return accept(userJid);
     }
 
