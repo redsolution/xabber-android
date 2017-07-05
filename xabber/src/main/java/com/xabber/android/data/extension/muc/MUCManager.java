@@ -174,6 +174,7 @@ public class MUCManager implements OnLoadListener, OnPacketListener {
     }
 
     public boolean isMucPrivateChat(AccountJid account, UserJid user) {
+        if (user == null) return false;
         EntityBareJid entityBareJid = user.getJid().asEntityBareJidIfPossible();
         if (entityBareJid == null) {
             return false;
