@@ -169,6 +169,11 @@ public class RegularChat extends AbstractChat {
 
             String thread = message.getThread();
             updateThreadId(thread);
+
+            if (resource != null && !resource.equals(Resourcepart.EMPTY)) {
+                this.resource = resource;
+            }
+
             boolean encrypted = OTRManager.getInstance().isEncrypted(text);
             try {
                 text = OTRManager.getInstance().transformReceiving(account, user, text);
@@ -182,12 +187,11 @@ public class RegularChat extends AbstractChat {
                     return true;
                 }
             }
+
             // System message received.
             if (text == null || text.trim().equals(""))
                 return true;
-            if (resource != null && !resource.equals(Resourcepart.EMPTY)) {
-                this.resource = resource;
-            }
+
             createAndSaveNewMessage(
                     resource,
                     text,
