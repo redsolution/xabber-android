@@ -220,7 +220,8 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
 
         getSelectedPageDataFromIntent();
         getInitialChatFromIntent();
-        selectChat(account, user);
+        if (account != null && user != null)
+            selectChat(account, user);
     }
 
 
