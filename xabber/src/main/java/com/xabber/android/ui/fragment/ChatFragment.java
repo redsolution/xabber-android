@@ -1107,10 +1107,6 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     private void stopEncryption(AccountJid account, UserJid user) {
-        RegularChat chat = (RegularChat) getChat();
-        if (chat != null)
-            chat.setOTRresource(null);
-
         try {
             OTRManager.getInstance().endSession(account, user);
         } catch (NetworkException e) {
