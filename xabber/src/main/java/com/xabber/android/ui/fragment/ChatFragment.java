@@ -38,6 +38,7 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xabber.android.R;
@@ -151,7 +152,10 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     private ImageButton attachButton;
     private View lastHistoryProgressBar;
     private View previousHistoryProgressBar;
+
     private RelativeLayout notifyLayout;
+    private TextView tvNotifyTitle;
+    private TextView tvNotifyAction;
 
     private RecyclerView realmRecyclerView;
     private ChatMessageAdapter chatMessageAdapter;
@@ -320,6 +324,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
             }
         });
 
+        tvNotifyTitle = (TextView) view.findViewById(R.id.tvNotifyTitle);
+        tvNotifyAction = (TextView) view.findViewById(R.id.tvNotifyAction);
         notifyLayout = (RelativeLayout) view.findViewById(R.id.notifyLayout);
         notifyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1461,9 +1467,16 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         AbstractChat chat = getChat();
         if (chat != null && chat instanceof RegularChat) {
             notifyIntent = ((RegularChat)chat).getIntent();
-            if (notifyIntent != null)
+            if (notifyIntent != null) {
+                if (notifyIntent.getBooleanExtra(QuestionActivity.EXTRA_FIELD_CANCEL, false)) {
+                    tvNotifyTitle.setText(R.string.otr_verification_progress_title);
+                    tvNotifyAction.setText(R.string.otr_verification_notify_button_cancel);
+                } else {
+                    tvNotifyTitle.setText(R.string.otr_verification_notify_title);
+                    tvNotifyAction.setText(R.string.otr_verification_notify_button);
+                }
                 notifyLayout.setVisibility(View.VISIBLE);
-            else notifyLayout.setVisibility(View.GONE);
+            } else notifyLayout.setVisibility(View.GONE);
         }
     }
 }

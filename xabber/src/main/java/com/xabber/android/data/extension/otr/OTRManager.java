@@ -674,12 +674,29 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     private void addSMProgress(AccountJid account, UserJid user) {
+        // add android notification
         smProgressProvider.add(new SMProgress(account, user), false);
+
+        // set notify intent to chat
+        setNotifyIntentToChat(
+                QuestionActivity.createCancelIntent(Application.getInstance(), account, user),
+                account, user);
+
+        // send event of auth progress to fragment
+        EventBus.getDefault().post(new AuthAskEvent(account, user));
     }
 
     private void removeSMProgress(String account, String user) {
         try {
+            // remove android notification
             smProgressProvider.remove(AccountJid.from(account), UserJid.from(user));
+
+            // set notify intent to null in chat
+            setNotifyIntentToChat(null, AccountJid.from(account), UserJid.from(user));
+
+            // send event of cancel auth request to fragment
+            EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(account), UserJid.from(user)));
+
         } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }

@@ -85,7 +85,9 @@
     <string name="otr_select_toast_no_resource">OTR-Session not started: no resource</string>
     <string name="otr_select_toast_resources_not_found">Resources not found</string>
     <string name="otr_verification_notify_title">OTR verification request</string>
+    <string name="otr_verification_progress_title">OTR verification in progress</string>
     <string name="otr_verification_notify_button">OPEN</string>
+    <string name="otr_verification_notify_button_cancel">CANCEL</string>
 
     <string name="recent_chats">Recent chats</string>
 

@@ -86,7 +86,9 @@
   <string name="otr_select_toast_no_resource">OTR-Сессия не установлена: no resource</string>
   <string name="otr_select_toast_resources_not_found">Ресурсы не найдены</string>
   <string name="otr_verification_notify_title">Запрос OTR-авторизации</string>
+  <string name="otr_verification_progress_title">Ожидание OTR-авторизации</string>
   <string name="otr_verification_notify_button">ОТКРЫТЬ</string>
+  <string name="otr_verification_notify_button_cancel">ОТМЕНИТЬ</string>
   <string name="recent_chats">Недавние чаты</string>
   <string name="under_construction">В разработке</string>
   <string name="under_construction_message">Этот экран находится в разработке</string>
