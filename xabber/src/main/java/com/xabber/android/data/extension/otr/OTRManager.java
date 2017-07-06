@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.extension.otr;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
 
@@ -48,6 +49,7 @@ import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.activity.QuestionActivity;
 import com.xabber.xmpp.archive.OtrMode;
 
 import net.java.otr4j.OtrEngineHost;
@@ -68,7 +70,6 @@ import net.java.otr4j.session.SessionStatus;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.packet.Message;
-import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.security.KeyPair;
@@ -436,12 +437,21 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     @Override
     public void askForSecret(SessionID sessionID, InstanceTag receiverTag, String question) {
         try {
+            AccountJid accountJid = AccountJid.from(sessionID.getAccountID());
+            UserJid userJid = UserJid.from(sessionID.getUserID());
+
+            // set notify intent to chat
+            setNotifyIntentToChat(QuestionActivity.createIntent(Application.getInstance(), accountJid, userJid, question != null, true, question),
+                    accountJid, userJid);
+
+            // show android notification
             SMRequest request = new SMRequest(AccountJid.from(sessionID.getAccountID()),
                     UserJid.from(sessionID.getUserID()), question);
             smRequestProvider.add(request, true);
-            // event of adding auth request to fragment
-            EventBus.getDefault().post(new AuthAskEvent(AccountJid.from(sessionID.getAccountID()),
-                    UserJid.from(sessionID.getUserID()), request.getIntent()));
+
+            // send event of adding auth request to fragment
+            EventBus.getDefault().post(new AuthAskEvent(accountJid, userJid));
+
         } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
@@ -645,12 +655,19 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
     }
 
     private void removeSMRequest(AccountJid account, UserJid user) {
+        // remove android notification
         smRequestProvider.remove(account, user);
+
+        // set notify intent to null in chat
+        setNotifyIntentToChat(null, account, user);
+
+        // send event of cancel auth request to fragment
+        EventBus.getDefault().post(new AuthAskEvent(account, user));
     }
 
     private void removeSMRequest(String account, String user) {
         try {
-            smRequestProvider.remove(AccountJid.from(account), UserJid.from(user));
+            removeSMRequest(AccountJid.from(account), UserJid.from(user));
         } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
             LogManager.exception(this, e);
         }
@@ -793,5 +810,10 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
                 return text.substring(0, 5).equals("?OTR:");
             }
         } else return false;
+    }
+
+    private void setNotifyIntentToChat(Intent intent, AccountJid accountJid, UserJid userJid) {
+        RegularChat chat = (RegularChat) MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+        chat.setIntent(intent);
     }
 }

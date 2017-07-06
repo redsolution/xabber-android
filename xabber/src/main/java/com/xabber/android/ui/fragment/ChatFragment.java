@@ -35,7 +35,6 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -382,6 +381,8 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         updateContact();
         restoreInputState();
         restoreScrollState();
+
+        showHideNotifyIfNeed();
     }
 
     @Override
@@ -699,8 +700,7 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(AuthAskEvent event) {
         if (event.getAccount() == getAccount() && event.getUser() == getUser()) {
-            showNotify(true);
-            notifyIntent = event.getIntent();
+            showHideNotifyIfNeed();
         }
     }
 
@@ -1457,8 +1457,13 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
         void unregisterChatFragment();
     }
 
-    public void showNotify(boolean show) {
-        if (show) notifyLayout.setVisibility(View.VISIBLE);
-        else notifyLayout.setVisibility(View.INVISIBLE);
+    public void showHideNotifyIfNeed() {
+        RegularChat chat = (RegularChat) getChat();
+        if (chat != null) {
+            notifyIntent = chat.getIntent();
+            if (notifyIntent != null)
+                notifyLayout.setVisibility(View.VISIBLE);
+            else notifyLayout.setVisibility(View.GONE);
+        }
     }
 }

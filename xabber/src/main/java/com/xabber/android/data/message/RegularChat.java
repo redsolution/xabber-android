@@ -14,6 +14,7 @@
  */
 package com.xabber.android.data.message;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -56,11 +57,20 @@ public class RegularChat extends AbstractChat {
      */
     private Resourcepart resource;
     private Resourcepart OTRresource;
+    private Intent intent;
 
 
     RegularChat(AccountJid account, UserJid user, boolean isPrivateMucChat) {
         super(account, user, isPrivateMucChat);
         resource = null;
+    }
+
+    public Intent getIntent() {
+        return intent;
+    }
+
+    public void setIntent(Intent intent) {
+        this.intent = intent;
     }
 
     public Resourcepart getOTRresource() {

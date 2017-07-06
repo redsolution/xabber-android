@@ -1,7 +1,5 @@
 package com.xabber.android.data.extension.otr;
 
-import android.content.Intent;
-
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 
@@ -13,12 +11,10 @@ public class AuthAskEvent {
 
     private AccountJid account;
     private UserJid user;
-    private Intent intent;
 
-    public AuthAskEvent(AccountJid account, UserJid user, Intent intent) {
+    public AuthAskEvent(AccountJid account, UserJid user) {
         this.account = account;
         this.user = user;
-        this.intent = intent;
     }
 
     public AccountJid getAccount() {
@@ -27,9 +23,5 @@ public class AuthAskEvent {
 
     public UserJid getUser() {
         return user;
-    }
-
-    public Intent getIntent() {
-        return intent;
     }
 }
