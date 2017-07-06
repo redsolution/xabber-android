@@ -1458,9 +1458,9 @@ public class ChatFragment extends Fragment implements PopupMenu.OnMenuItemClickL
     }
 
     public void showHideNotifyIfNeed() {
-        RegularChat chat = (RegularChat) getChat();
-        if (chat != null) {
-            notifyIntent = chat.getIntent();
+        AbstractChat chat = getChat();
+        if (chat != null && chat instanceof RegularChat) {
+            notifyIntent = ((RegularChat)chat).getIntent();
             if (notifyIntent != null)
                 notifyLayout.setVisibility(View.VISIBLE);
             else notifyLayout.setVisibility(View.GONE);
