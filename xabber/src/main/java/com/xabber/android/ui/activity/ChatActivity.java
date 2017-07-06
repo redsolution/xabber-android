@@ -41,6 +41,7 @@ import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.NewMessageEvent;
+import com.xabber.android.data.message.RegularChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnContactChangedListener;
@@ -51,7 +52,6 @@ import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.fragment.ChatFragment;
 import com.xabber.android.ui.fragment.RecentChatFragment;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -75,6 +75,14 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
     private static final String ACTION_ATTENTION = "com.xabber.android.data.ATTENTION";
     private static final String ACTION_RECENT_CHATS = "com.xabber.android.data.RECENT_CHATS";
     private static final String ACTION_SPECIFIC_CHAT = "com.xabber.android.data.ACTION_SPECIFIC_CHAT";
+
+    public static final String EXTRA_OTR_REQUEST = "com.xabber.android.data.EXTRA_OTR_REQUEST";
+    public static final String EXTRA_OTR_PROGRESS = "com.xabber.android.data.EXTRA_OTR_PROGRESS";
+//    public static final String ACTION_OTR_REQUEST = "com.xabber.android.data.ACTION_OTR_REQUEST";
+//    public static final String ACTION_OTR_PROGRESS = "com.xabber.android.data.ACTION_OTR_PROGRESS";
+    public final static String KEY_ACCOUNT = "KEY_ACCOUNT";
+    public final static String KEY_USER = "KEY_USER";
+    public final static String KEY_QUESTION = "KEY_QUESTION";
 
     private static final String SAVE_SELECTED_PAGE = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_PAGE";
     private static final String SAVE_SELECTED_ACCOUNT = "com.xabber.android.ui.activity.ChatActivity.SAVE_SELECTED_ACCOUNT";
@@ -252,6 +260,40 @@ public class ChatActivity extends ManagedActivity implements OnContactChangedLis
                 exitOnSend = true;
             }
         }
+
+        if (intent.getBooleanExtra(EXTRA_OTR_REQUEST, false) ||
+                intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
+            handleOtrIntent(intent);
+        }
+    }
+
+    private void handleOtrIntent(Intent intent) {
+        String account = intent.getStringExtra(KEY_ACCOUNT);
+        String user = intent.getStringExtra(KEY_USER);
+        String question = intent.getStringExtra(KEY_QUESTION);
+
+        if (account != null && user != null) {
+            try {
+                AccountJid accountJid = AccountJid.from(account);
+                UserJid userJid = UserJid.from(user);
+                AbstractChat chat = MessageManager.getInstance().getOrCreateChat(accountJid, userJid);
+
+                if (chat != null && chat instanceof RegularChat) {
+                    if (intent.getBooleanExtra(EXTRA_OTR_PROGRESS, false)) {
+                        ((RegularChat) chat).setIntent(QuestionActivity.createCancelIntent(
+                                Application.getInstance(), accountJid, userJid));
+                    } else {
+                        ((RegularChat)chat).setIntent(QuestionActivity.createIntent(
+                                Application.getInstance(),
+                                accountJid, userJid, question != null, true, question));
+                    }
+                }
+            } catch (UserJid.UserJidCreateException | XmppStringprepException e) {
+                e.printStackTrace();
+            }
+        }
+        getIntent().removeExtra(EXTRA_OTR_REQUEST);
+        getIntent().removeExtra(EXTRA_OTR_PROGRESS);
     }
 
     @Override

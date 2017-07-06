@@ -33,7 +33,11 @@ public class SMProgress extends BaseEntity implements EntityNotificationItem {
 
     @Override
     public Intent getIntent() {
-        return ChatActivity.createClearTopIntent(Application.getInstance(), account, user);
+        Intent intent = ChatActivity.createClearTopIntent(Application.getInstance(), account, user);
+        intent.putExtra(ChatActivity.EXTRA_OTR_PROGRESS, true);
+        intent.putExtra(ChatActivity.KEY_ACCOUNT, account.toString());
+        intent.putExtra(ChatActivity.KEY_USER, user.toString());
+        return intent;
     }
 
     @Override
