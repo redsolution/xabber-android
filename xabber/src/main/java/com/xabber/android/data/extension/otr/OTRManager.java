@@ -493,7 +493,7 @@ public class OTRManager implements OtrEngineHost, OtrEngineListener,
         SecurityLevel securityLevel = OTRManager.getInstance().getSecurityLevel(account, user);
         if (session != null && (securityLevel == SecurityLevel.encrypted || securityLevel == SecurityLevel.verified)) {
             try {
-                String s = session.transformReceiving(content);
+                String s = ((SessionImpl)session).transformReceivingWithoutInject(content);
                 LogManager.i(this,
                         "transformed incoming message: " + s + " session status: " + session.getSessionStatus(),
                         "transformed incoming message: " + "***" + " session status: " + session.getSessionStatus());

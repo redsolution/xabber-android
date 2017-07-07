@@ -502,17 +502,16 @@ public class MamManager implements OnRosterReceivedListener {
             boolean encrypted = false;
             if (otrMessage != null) {
                 if (otrMessage.messageType != net.java.otr4j.io.messages.AbstractMessage.MESSAGE_PLAINTEXT) {
-                    // decrypting messages from archive temporarily disabled
-//                    encrypted = true;
-//                    try {
-//                        body = OTRManager.getInstance().transformReceivingIfSessionExist(chat.getAccount(), chat.getUser(), body);
-//                        if (OTRManager.getInstance().isEncrypted(body)) {
-//                            continue;
-//                        }
-//                    } catch (Exception e) {
-//                        continue;
-//                    }
-                    continue;
+                    encrypted = true;
+                    try {
+                        // this transforming just decrypt message if have keys. No action as injectMessage or something else
+                        body = OTRManager.getInstance().transformReceivingIfSessionExist(chat.getAccount(), chat.getUser(), body);
+                        if (OTRManager.getInstance().isEncrypted(body)) {
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        continue;
+                    }
                 }
                 else body = ((PlainTextMessage) otrMessage).cleanText;
             }
