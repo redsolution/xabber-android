@@ -166,7 +166,7 @@ public class MamManager implements OnRosterReceivedListener {
         Application.getInstance().runInBackgroundUserRequest(new Runnable() {
             @Override
             public void run() {
-                getLastHistory(chat);
+                getLastHistory(chat, false);
             }
         });
     }
@@ -175,7 +175,7 @@ public class MamManager implements OnRosterReceivedListener {
         Application.getInstance().runInBackground(new Runnable() {
             @Override
             public void run() {
-                getLastHistory(chat);
+                getLastHistory(chat, true);
             }
         });
     }
@@ -187,13 +187,15 @@ public class MamManager implements OnRosterReceivedListener {
     }
 
     @SuppressWarnings("WeakerAccess")
-    void getLastHistory(AbstractChat chat) {
+    void getLastHistory(AbstractChat chat, boolean ignoreTime) {
         if (chat == null) {
             return;
         }
 
-        if (isTimeToRefreshHistory(chat)) {
-            return;
+        if (!ignoreTime) {
+            if (isTimeToRefreshHistory(chat)) {
+                return;
+            }
         }
 
         final AccountItem accountItem = AccountManager.getInstance().getAccount(chat.getAccount());
