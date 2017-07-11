@@ -562,6 +562,24 @@ public class SettingsManager implements OnInitializedListener,
             throw new IllegalStateException();
     }
 
+    public static SpamFilterMode spamFilterMode() {
+        String value = getString(R.string.spam_filter_key, R.string.spam_filter_default);
+
+        if (Application.getInstance().getString(R.string.spam_filter_1_value).equals(value))
+            return SpamFilterMode.disabled;
+
+        else if (Application.getInstance().getString(R.string.spam_filter_2_value).equals(value))
+            return SpamFilterMode.onlyRoster;
+
+        else if (Application.getInstance().getString(R.string.spam_filter_3_value).equals(value))
+            return SpamFilterMode.authCaptcha;
+
+        else if (Application.getInstance().getString(R.string.spam_filter_4_value).equals(value))
+            return SpamFilterMode.noAuth;
+
+        else throw new IllegalStateException();
+    }
+
     public static boolean securityOtrHistory() {
         return getBoolean(R.string.security_otr_history_key,
                 R.bool.security_otr_history_default);
@@ -866,6 +884,30 @@ public class SettingsManager implements OnInitializedListener,
          */
         required
 
+    }
+
+    public enum SpamFilterMode {
+        /**
+         * Spam filter is disabled.
+         */
+        disabled,
+
+        /**
+         * Receiving messages only from roster.
+         */
+        onlyRoster,
+
+        /**
+         * Receiving messages only from roster.
+         * Auth requests only with captcha.
+         */
+        authCaptcha,
+
+        /**
+         * Receiving messages only from roster.
+         * No auth requests.
+         */
+        noAuth
     }
 
 }

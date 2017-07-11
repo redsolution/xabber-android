@@ -15,7 +15,6 @@
 package com.xabber.android.data.message;
 
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.xabber.android.R;
@@ -30,6 +29,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
 import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.StanzaSender;
 import com.xabber.android.data.connection.listeners.OnDisconnectListener;
 import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.database.MessageDatabaseManager;
@@ -38,6 +38,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -46,6 +47,7 @@ import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.OnStatusChangeListener;
+import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.utils.StringUtils;
 
@@ -56,6 +58,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
 import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.FullJid;
+import org.jxmpp.jid.Jid;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -507,6 +510,47 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                 return;
             }
 
+            //check for spam
+            if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
+                    && RosterManager.getInstance().getRosterContact(account, user) == null ) {
+
+                String thread = ((Message) stanza).getThread();
+
+                if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
+                    // check if this message is captcha-answer
+                    String captchaAnswer = CaptchaManager.getInstance().getCaptcha(account, user).getAnswer();
+                    if (captchaAnswer != null) {
+                        if (body.equals(captchaAnswer)) {
+                            // captcha solved successfully
+                            // remove this captcha
+                            CaptchaManager.getInstance().removeCaptcha(account, user);
+
+                            // show auth
+                            PresenceManager.getInstance().handleSubscriptionRequest(account, user);
+                            sendMessageWithoutChat(user.getJid(), thread, account, "Captcha-answer is correct. Subscription request showed.");
+                            return;
+                        } else {
+                            // captcha solved unsuccessfully
+                            // send warning-message
+                            sendMessageWithoutChat(user.getJid(), thread, account, "Captcha-answer is incorrect");
+                            return;
+                        }
+                    } else {
+                        // no captcha exist and user not from roster
+                        sendMessageWithoutChat(user.getJid(), thread, account, "This user limited receiving messages from not-authorized users");
+                        // and skip received message as spam
+                        return;
+                    }
+
+                } else {
+                    // if message from not-roster user
+                    // send a warning message to sender
+                    sendMessageWithoutChat(user.getJid(), thread, account, "This user limited receiving messages from not-authorized users");
+                    // and skip received message as spam
+                    return;
+                }
+            }
+
             if (message.getType() == Message.Type.chat && MUCManager.getInstance().hasRoom(account, user.getJid().asEntityBareJidIfPossible())) {
                 try {
                     createPrivateMucChat(account, user.getJid().asFullJidIfPossible()).onPacket(user, stanza, false);
@@ -524,6 +568,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
             }
 
             createChat(account, user).onPacket(user, stanza, false);
+        }
+    }
+
+    public void sendMessageWithoutChat(Jid to, String threadId, AccountJid account, String text) {
+        Message message = new Message();
+        message.setTo(to);
+        message.setType(Message.Type.chat);
+        message.setBody(text);
+        message.setThread(threadId);
+        try {
+            StanzaSender.sendStanza(account, message);
+        } catch (NetworkException e) {
+            e.printStackTrace();
         }
     }
 

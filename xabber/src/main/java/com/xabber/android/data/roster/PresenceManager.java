@@ -20,6 +20,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.OnLoadListener;
+import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
@@ -31,15 +32,19 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
+import com.xabber.android.data.extension.captcha.Captcha;
+import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.Occupant;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.EntityNotificationProvider;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
+import org.jivesoftware.smack.util.StringUtils;
 import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -286,18 +291,75 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
         if (presence.getType() == Presence.Type.subscribe) {
             AccountJid account = connection.getAccount();
 
-            // Subscription request
-            Set<UserJid> set = requestedSubscriptions.get(account);
-            if (set != null && set.contains(from)) {
+            // check spam-filter settings
+
+            // reject all subscribe-requests
+            if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.noAuth) {
+                // send a warning message to sender
+                MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
+                        StringUtils.randomString(12), account,
+                        "This user does not accept subscriptions");
+                // and discard subscription
                 try {
-                    acceptSubscription(account, from);
-                } catch (NetworkException e) {
-                    LogManager.exception(this, e);
+                    discardSubscription(account, UserJid.from(from.toString()));
+                } catch (NetworkException | UserJid.UserJidCreateException e) {
+                    e.printStackTrace();
                 }
-                subscriptionRequestProvider.remove(account, from);
-            } else {
-                subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
+
+                return;
             }
+
+            // require captcha for subscription
+            if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
+
+                Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, from);
+
+                // if captcha for this user already exist, check expires time and discard if need
+                if (captcha != null) {
+
+                    if (captcha.getExpiresDate() < System.currentTimeMillis()) {
+                        // discard subscription
+                        try {
+                            discardSubscription(account, UserJid.from(from.toString()));
+                        } catch (NetworkException | UserJid.UserJidCreateException e) {
+                            e.printStackTrace();
+                        }
+                        return;
+                    }
+
+                    // skip subscription, waiting for captcha in messageManager
+                    return;
+
+                } else {
+                    // generate captcha
+                    String captchaQuestion = CaptchaManager.getInstance().generateAndSaveCaptcha(account, from);
+
+                    // send captcha message to sender
+                    MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
+                            StringUtils.randomString(12), account,
+                            "This user limited subscriptions. To request a subscription, solve captcha: " + captchaQuestion);
+
+                    // and skip subscription, waiting for captcha in messageManager
+                    return;
+                }
+            }
+
+            // subscription request
+            handleSubscriptionRequest(account, from);
+        }
+    }
+
+    public void handleSubscriptionRequest(AccountJid account, UserJid from) {
+        Set<UserJid> set = requestedSubscriptions.get(account);
+        if (set != null && set.contains(from)) {
+            try {
+                acceptSubscription(account, from);
+            } catch (NetworkException e) {
+                LogManager.exception(this, e);
+            }
+            subscriptionRequestProvider.remove(account, from);
+        } else {
+            subscriptionRequestProvider.add(new SubscriptionRequest(account, from), null);
         }
     }
 

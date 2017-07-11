@@ -26,6 +26,27 @@
 
     <string name="default_sound">com.xabber.android.DEFAULT_SOUND</string>
 
+    <!-- preference_spam -->
+    <string name="spam_filter_key">spam_key</string>
+    <string-array name="spam_filter_entries">
+        <item>@string/spam_filter_1</item>
+        <item>@string/spam_filter_2</item>
+        <item>@string/spam_filter_3</item>
+        <item>@string/spam_filter_4</item>
+    </string-array>
+    <string-array name="spam_filter_entryvalues">
+        <item>@string/spam_filter_1_value</item>
+        <item>@string/spam_filter_2_value</item>
+        <item>@string/spam_filter_3_value</item>
+        <item>@string/spam_filter_4_value</item>
+    </string-array>
+    <string name="spam_filter_default">@string/spam_filter_1_value</string>
+
+    <string name="spam_filter_1_value">spam_filter_1</string>
+    <string name="spam_filter_2_value">spam_filter_2</string>
+    <string name="spam_filter_3_value">spam_filter_3</string>
+    <string name="spam_filter_4_value">spam_filter_4</string>
+
 <!-- preference_interface -->
     <string name="interface_theme_key">interface_theme</string>
     <string name="interface_theme_normal_value">normal</string>

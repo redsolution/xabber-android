@@ -48,6 +48,14 @@
             android:targetClass="com.xabber.android.ui.preferences.NotificationsSettings"
             android:targetPackage="@string/application_package" />
     </Preference>
+    <ListPreference
+        android:title="@string/preference_spam_filter"
+        android:key="@string/spam_filter_key"
+        android:entries="@array/spam_filter_entries"
+        android:entryValues="@array/spam_filter_entryvalues"
+        android:defaultValue="@string/spam_filter_default"
+        android:summary="%s"
+        />
     <Preference
         android:key="@string/preference_connection"
         android:title="@string/preference_connection">

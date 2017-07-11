@@ -47,6 +47,12 @@
     <string name="preference_editor">Settings</string>
     <string name="preference_events">Notifications\nNotification settings</string>
     <string name="preference_interface">Theme settings\nAppearance settings</string>
+    <string name="preference_spam_filter">Spam filter settings</string>
+
+    <string name="spam_filter_1">No spam filter</string>
+    <string name="spam_filter_2">Messages only from roster</string>
+    <string name="spam_filter_3">Messages only from roster. Auth requests only with captcha</string>
+    <string name="spam_filter_4">Messages only from roster. No auth requests</string>
 
     <string name="about_viewer">About</string>
 
