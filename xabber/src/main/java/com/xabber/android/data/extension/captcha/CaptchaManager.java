@@ -16,6 +16,7 @@ public class CaptchaManager {
 
     private static final int MAX_SAVED_CAPTCHAS = 15;
     private static final int CAPTCHA_LIFE_TIME_MILLIS = 60000 * 15;
+    public static final int CAPTCHA_MAX_ATTEMPT_COUNT = 5;
 
     private static CaptchaManager instance;
     private List<Captcha> currentCaptchas;

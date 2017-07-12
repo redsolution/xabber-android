@@ -8,6 +8,7 @@ public class Captcha {
 
     private String key;
     private long expiresDate;
+    private int attemptCount = 0;
     private String question;
     private String answer;
 
@@ -32,5 +33,13 @@ public class Captcha {
 
     public String getAnswer() {
         return answer;
+    }
+
+    public int getAttemptCount() {
+        return attemptCount;
+    }
+
+    public void setAttemptCount(int attemptCount) {
+        this.attemptCount = attemptCount;
     }
 }

@@ -521,6 +521,20 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                     // check if this message is captcha-answer
                     Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, user);
                     if (captcha != null) {
+                        // attempt limit overhead
+                        if (captcha.getAttemptCount() > CaptchaManager.CAPTCHA_MAX_ATTEMPT_COUNT) {
+                            // remove this captcha
+                            CaptchaManager.getInstance().removeCaptcha(account, user);
+                            // discard subscription
+                            try {
+                                PresenceManager.getInstance().discardSubscription(account, user);
+                            } catch (NetworkException e) {
+                                e.printStackTrace();
+                            }
+                            sendMessageWithoutChat(user.getJid(), thread, account,
+                                    Application.getInstance().getResources().getString(R.string.spam_filter_captcha_many_attempts));
+                            return;
+                        }
                         if (body.equals(captcha.getAnswer())) {
                             // captcha solved successfully
                             // remove this captcha
@@ -533,6 +547,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
                             return;
                         } else {
                             // captcha solved unsuccessfully
+                            // increment attempt count
+                            captcha.setAttemptCount(captcha.getAttemptCount() + 1);
                             // send warning-message
                             sendMessageWithoutChat(user.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_incorrect));
