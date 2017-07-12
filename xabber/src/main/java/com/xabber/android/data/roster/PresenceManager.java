@@ -298,7 +298,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                 // send a warning message to sender
                 MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
                         StringUtils.randomString(12), account,
-                        "This user does not accept subscriptions");
+                        Application.getInstance().getResources().getString(R.string.spam_filter_ban_subscription));
                 // and discard subscription
                 try {
                     discardSubscription(account, UserJid.from(from.toString()));
@@ -337,7 +337,7 @@ public class PresenceManager implements OnLoadListener, OnAccountDisabledListene
                     // send captcha message to sender
                     MessageManager.getInstance().sendMessageWithoutChat(from.getJid(),
                             StringUtils.randomString(12), account,
-                            "This user limited subscriptions. To request a subscription, solve captcha: " + captchaQuestion);
+                            Application.getInstance().getResources().getString(R.string.spam_filter_limit_subscription) + " " + captchaQuestion);
 
                     // and skip subscription, waiting for captcha in messageManager
                     return;

@@ -94,4 +94,10 @@
   <string name="events_phrases">Ключевые фразы\nНастройки уведомлений о сообщениях содержащих ключевые фразы</string>
   <string name="security_clear_certificate_warning">Вы действительно хотите удалить все игнорируемые сертификаты?</string>
   <string name="account_error_settings">Настройки</string>
+
+  <string name="preference_spam_filter">Настройки спам-фильтра</string>
+  <string name="spam_filter_1">Не использовать спам-фильтр</string>
+  <string name="spam_filter_2">Принимать сообщения только из контакт-листа</string>
+  <string name="spam_filter_3">Принимать сообщения только из контакт-листа. Запросы авторизации только через каптчу</string>
+  <string name="spam_filter_4">Принимать сообщения только из контакт-листа. Не принимать запросы авторизации</string>
 </resources>
