@@ -6,6 +6,7 @@ import com.xabber.android.data.entity.UserJid;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by valery.miller on 11.07.17.
@@ -38,11 +39,7 @@ public class CaptchaManager {
             currentCaptchas.remove(0);
 
         // generate new captcha
-        Captcha captcha = new Captcha(
-                account.toString() + user.toString(),
-                System.currentTimeMillis() + CAPTCHA_LIFE_TIME_MILLIS,
-                "5 + 5 = ?",
-                "10");
+        Captcha captcha = generateRandomCaptcha(account, user);
 
         // save captcha-answer to ram
         currentCaptchas.add(captcha);
@@ -69,5 +66,41 @@ public class CaptchaManager {
             if (iterator.next().getKey().equals(key))
                 iterator.remove();
         }
+    }
+
+    public Captcha generateRandomCaptcha(AccountJid account, UserJid user) {
+        Random random = new Random(System.currentTimeMillis());
+        int firstNumber = random.nextInt(9) + 1;
+        int secondNumber = random.nextInt(9) + 1;
+        int action = random.nextInt(3);
+        String answer = "";
+        String question = "";
+
+        if (firstNumber < secondNumber) {
+            int temp = firstNumber;
+            firstNumber = secondNumber;
+            secondNumber = temp;
+        }
+
+        switch (action) {
+            case 0:
+                answer = "" + (firstNumber + secondNumber);
+                question = firstNumber + " + " + secondNumber + " = ?";
+                break;
+            case 1:
+                answer = "" + (firstNumber - secondNumber);
+                question = firstNumber + " - " + secondNumber + " = ?";
+                break;
+            case 2:
+                answer = "" + (firstNumber * secondNumber);
+                question = firstNumber + " * " + secondNumber + " = ?";
+                break;
+        }
+
+        return new Captcha(
+                account.toString() + user.toString(),
+                System.currentTimeMillis() + CAPTCHA_LIFE_TIME_MILLIS,
+                question,
+                answer);
     }
 }
