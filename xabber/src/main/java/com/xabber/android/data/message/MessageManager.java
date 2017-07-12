@@ -40,6 +40,7 @@ import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.entity.UserJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
+import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomChat;
 import com.xabber.android.data.log.LogManager;
@@ -600,6 +601,8 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         message.setType(Message.Type.chat);
         message.setBody(text);
         message.setThread(threadId);
+        // send auto-generated messages without carbons
+        CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
         try {
             StanzaSender.sendStanza(account, message);
         } catch (NetworkException e) {
@@ -645,6 +648,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener, OnDisco
         } catch (UserJid.UserJidCreateException e) {
             return;
         }
+
+        //check for spam
+        if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
+                && RosterManager.getInstance().getRosterContact(account, companion) == null ) {
+            // just ignore carbons from not-authorized user
+            return;
+        }
+
         boolean processed = false;
         for (AbstractChat chat : chats.getNested(account.toString()).values()) {
             if (chat.onPacket(companion, message, true)) {
