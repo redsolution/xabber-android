@@ -83,6 +83,10 @@ public class AbstractContact extends BaseEntity {
         return StatusMode.createStatusMode(RosterManager.getInstance().getPresence(account, user));
     }
 
+    public boolean isSubscribed() {
+        return StatusMode.isSubscribed(RosterManager.getInstance().getPresence(account, user));
+    }
+
     public String getStatusText() {
         final String statusText = PresenceManager.getInstance().getStatusText(account, user);
         if (statusText == null) {

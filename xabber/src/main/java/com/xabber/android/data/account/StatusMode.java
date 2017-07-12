@@ -64,14 +64,14 @@ public enum StatusMode {
     /**
      * Account is in connection state.
      * <p/>
-     * Don't use it for {@link AccountManager#setStatus(String, StatusMode)}.
+     * Don't use it for {@link AccountManager#/setStatus(String, StatusMode)}.
      */
     connection,
 
     /**
      * Account is unable to get presence information. Account is unsubscribed.
      * <p/>
-     * Don't use it for {@link AccountManager#setStatus(String, StatusMode)}.
+     * Don't use it for {@link AccountManager#/setStatus(String, StatusMode)}.
      */
     unsubscribed;
 
@@ -104,10 +104,25 @@ public enum StatusMode {
             case subscribe:
             case subscribed:
             case unsubscribe:
+                // TODO: 12.07.17 possibly bug
             case probe:
                 return StatusMode.unavailable;
         }
         return StatusMode.unavailable;
+    }
+
+    // using only for determine show or not button "request subscription"
+    static public boolean isSubscribed(Presence presence) {
+        if (presence != null) {
+            switch (presence.getType()) {
+                case available:
+                    return true;
+                case subscribed:
+                    return true;
+                default:
+                    return false;
+            }
+        } else return false;
     }
 
     /**
