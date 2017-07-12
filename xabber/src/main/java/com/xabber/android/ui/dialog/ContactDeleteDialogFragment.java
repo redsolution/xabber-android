@@ -12,6 +12,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -56,11 +57,18 @@ public class ContactDeleteDialogFragment extends DialogFragment implements Dialo
             MessageManager.getInstance().closeChat(account, user);
 
             try {
+                // discard subscription
                 PresenceManager.getInstance().discardSubscription(account, user);
             } catch (NetworkException e) {
                 Application.getInstance().onError(R.string.CONNECTION_FAILED);
             }
 
+            // delete chat
+            AbstractChat chat = MessageManager.getInstance().getChat(account, user);
+            if (chat != null)
+                MessageManager.getInstance().removeChat(chat);
+
+            // remove roster contact
             RosterManager.getInstance().removeContact(account, user);
 
             if (getActivity() instanceof ContactActivity) {
