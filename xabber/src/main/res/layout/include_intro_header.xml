@@ -21,7 +21,7 @@
         android:textSize="24sp"
         android:textColor="@color/white"
         android:gravity="center_horizontal"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:textAlignment="center"
         android:text="@string/intro_welcome" />
 

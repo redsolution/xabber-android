@@ -67,8 +67,6 @@ public class IntroActivity extends ManagedActivity {
         Button registerAccountButton = (Button) findViewById(R.id.intro_register_account_button);
         Button createXabberAccountButton = (Button) findViewById(R.id.intro_create_xabber_account_button);
 
-        createXabberAccountButton.setVisibility(View.GONE);
-
         haveAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

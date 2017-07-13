@@ -8,27 +8,6 @@
     >
 
     <Button
-        android:id="@+id/intro_have_account_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/intro_have_account"
-        android:textColor="@color/black"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:theme="@style/WhiteButton"
-
-        />
-
-    <Button
-        android:id="@+id/intro_register_account_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/intro_register_account"
-        android:textColor="@color/black"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:theme="@style/WhiteButton"
-        android:layout_marginTop="12dp" />
-
-    <Button
         android:id="@+id/intro_create_xabber_account_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +15,65 @@
         android:textColor="@color/white"
         style="@style/Widget.AppCompat.Button.Colored"
         android:theme="@style/RedButton"
-        android:layout_marginTop="12dp" />
+        />
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        >
+
+        <TextView
+            android:id="@+id/tvLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
+            android:text=""
+            android:textColor="@color/white_text_secondary"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/tvLabel"
+            android:layout_marginLeft="5dp"
+            android:background="@color/white_text_secondary"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/tvLabel"
+            android:layout_marginRight="5dp"
+            android:background="@color/white_text_secondary"
+            />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/intro_have_account_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/intro_have_account"
+        android:textColor="@color/black"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/WhiteButton"
+        />
+
+    <Button
+        android:id="@+id/intro_register_account_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/intro_register_account"
+        android:textColor="@color/black"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/WhiteButton"
+        />
 
 </LinearLayout>

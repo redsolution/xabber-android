@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="50dp"
         android:id="@+id/intro_root_layout"
         android:fitsSystemWindows="true"
         tools:context="com.xabber.android.ui.activity.IntroActivity">
@@ -21,7 +21,8 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             />
 
         <include layout="@layout/include_intro_buttons" />
