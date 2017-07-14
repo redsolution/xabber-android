@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/loginLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:theme="@style/TextAppearence.App.TextInputLayout"
+        android:textColorHint="@color/white"
+        >
+
+        <EditText
+            android:id="@+id/edtLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/white"
+            android:inputType="textEmailAddress"
+            android:hint="Xabber username or email"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/passLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loginLabel"
+        app:theme="@style/TextAppearence.App.TextInputLayout"
+        android:textColorHint="@color/white"
+        >
+
+        <EditText
+            android:id="@+id/edtPass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:hint="Password"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passLabel"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/RedButton"
+        android:textColor="@color/white"
+        android:text="login"
+        />
+
+    <RelativeLayout
+        android:id="@+id/rlForgotPass"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@id/btnLogin"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white_text_secondary"
+            android:textSize="12sp"
+            android:text="FORGOT PASSWORD?"
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>
