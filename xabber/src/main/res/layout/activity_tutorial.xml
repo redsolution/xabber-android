@@ -18,7 +18,10 @@
     <com.github.paolorotolo.appintro.AppIntroViewPager
         android:id="@+id/view_pager"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/space"
+        android:layout_toLeftOf="@+id/spaceRight"
+        />
 
     <LinearLayout
         android:id="@+id/bottom"
@@ -26,6 +29,7 @@
         android:layout_height="48dp"
         android:background="@android:color/transparent"
         android:layout_above="@+id/rlButtons"
+        android:layout_toLeftOf="@+id/spaceRight"
         android:gravity="bottom"
         android:orientation="vertical">
 
@@ -102,7 +106,8 @@
         android:id="@+id/rlButtons"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/space"
+        android:layout_toLeftOf="@+id/spaceRight"
         android:orientation="horizontal"
         >
 
@@ -143,4 +148,16 @@
         </RelativeLayout>
 
     </LinearLayout>
+    <Space
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/intro_screen_bottom_space_height"
+        android:layout_alignParentBottom="true"
+        />
+    <Space
+        android:id="@+id/spaceRight"
+        android:layout_width="@dimen/intro_screen_right_space_wight"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        />
 </RelativeLayout>
