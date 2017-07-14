@@ -475,6 +475,8 @@
             android:theme="@style/ThemeDark"/>
         <activity android:name=".ui.activity.TutorialActivity"
             android:theme="@style/ThemeDark"/>
+        <activity android:name=".ui.activity.XabberLoginActivity"
+            android:theme="@style/ThemeDark"/>
     </application>
 
 </manifest>

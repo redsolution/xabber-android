@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.github.paolorotolo.appintro.AppIntroBase;
@@ -24,6 +25,8 @@ public class TutorialActivity extends AppIntroBase {
 
     private ImageButton imbDone;
     private ImageButton imbNext;
+    private RelativeLayout rlLogin;
+    private RelativeLayout rlRegister;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, TutorialActivity.class);
@@ -42,6 +45,16 @@ public class TutorialActivity extends AppIntroBase {
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
         ImageView backgroundImage = (ImageView) findViewById(R.id.intro_background_image);
+
+        rlLogin = (RelativeLayout) findViewById(R.id.rlLogin);
+        rlLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(XabberLoginActivity.createIntent(TutorialActivity.this));
+            }
+        });
+
+        rlRegister = (RelativeLayout) findViewById(R.id.rlRegister);
 
         Glide.with(this)
                 .load(R.drawable.intro_background)

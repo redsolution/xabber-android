@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include layout="@layout/include_intro_background_image" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:fitsSystemWindows="true"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        >
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/loginLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:theme="@style/TextAppearence.App.TextInputLayout"
+            android:textColorHint="@color/white"
+            >
+
+            <EditText
+                android:id="@+id/edtLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textColor="@color/white"
+                android:inputType="textEmailAddress"
+                android:hint="Xabber username or email"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/passLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/loginLabel"
+            app:theme="@style/TextAppearence.App.TextInputLayout"
+            android:textColorHint="@color/white"
+            >
+
+            <EditText
+                android:id="@+id/edtPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:inputType="textPassword"
+                android:textColor="@color/white"
+                android:hint="Password"
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/passLabel"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:theme="@style/RedButton"
+            android:textColor="@color/white"
+            android:text="login"
+            />
+
+        <RelativeLayout
+            android:id="@+id/rlForgotPass"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_below="@id/btnLogin"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:text="FORGOT PASSWORD?"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/socialTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/llSocialLogos"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            >
+
+            <TextView
+                android:id="@+id/tvLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
+                android:text="Social Sign In"
+                android:textColor="@color/white_text_secondary"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/tvLabel"
+                android:layout_marginLeft="5dp"
+                android:background="@color/white_text_secondary"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/tvLabel"
+                android:layout_marginRight="5dp"
+                android:background="@color/white_text_secondary"
+                />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/llSocialLogos"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/tvInfo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            >
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_google_plus"
+                />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_facebook"
+                />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_twitter"
+                />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_github_logo"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="8dp"
+            android:textColor="@color/white_text_secondary"
+            android:textAlignment="center"
+            android:text="Xabber account is required to use redsolution XMPP services and sync device settings."
+            />
+
+    </RelativeLayout>
+
+</RelativeLayout>
