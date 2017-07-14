@@ -85,7 +85,7 @@
   <string name="intro_have_account">Подключить XMPP аккаунт</string>
   <string name="intro_register_account">Зарегистрировать XMPP аккаунт</string>
   <string name="intro_create_xabber_account">Вход в Xabber</string>
-  <string name="intro_use_third_party_accounts">использовать сторонние XMPP аккаунты</string>
+  <string name="intro_use_third_party_accounts">сторонние XMPP аккаунты</string>
   <string name="intro_faq">Если у вас нет учётной записи XMPP, пожалуйста, <a href="https://www.xabber.com/faq/">прочтите наш F.A.Q.</a> о том, как зарегистрироваться.</string>
   <string name="intro_web_search_register_xmpp">Зарегистрировать учётную запись XMPP</string>
   <string name="synchronize_bookmarks">Синхронизировать</string>

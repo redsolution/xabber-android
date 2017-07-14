@@ -31,7 +31,7 @@
             android:layout_centerInParent="true"
             android:layout_marginLeft="7dp"
             android:layout_marginRight="7dp"
-            android:text=""
+            android:text="@string/intro_use_third_party_accounts"
             android:textColor="@color/white_text_secondary"
             />
 
